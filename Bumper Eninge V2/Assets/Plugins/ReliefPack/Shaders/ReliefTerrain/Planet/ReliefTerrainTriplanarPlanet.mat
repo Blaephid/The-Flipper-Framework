@@ -1,0 +1,243 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ReliefTerrainTriplanarPlanet
+  m_Shader: {fileID: 4800000, guid: 60a52f67aff72cb4fa47c5360093cc80, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - TERRAIN_RippleMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap01:
+        m_Texture: {fileID: 2800000, guid: 907f6839ed9a12d45a4bdec6b7500003, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap23:
+        m_Texture: {fileID: 2800000, guid: 5cb3d133f7f869a4eb745c7e21d48641, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMapGlobal:
+        m_Texture: {fileID: 2800000, guid: 290d7c2deedd33f44803b2e9b422cf9d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorMapGlobal:
+        m_Texture: {fileID: 2800000, guid: ac27b38b91bb9ab4695fb984e9409080, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMapGlobal:
+        m_Texture: {fileID: 2800000, guid: 271df3f72a1d2aa4ea40b284b56840e0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SparkleMap:
+        m_Texture: {fileID: 2800000, guid: 58d91b9c15e76ee489eb634baedb9497, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatA0:
+        m_Texture: {fileID: 2800000, guid: 4874bc6fe33a3094582dcd43c235615e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatA1:
+        m_Texture: {fileID: 2800000, guid: 6051b49901b66cb4396d216d18ece265, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatA2:
+        m_Texture: {fileID: 2800000, guid: 4e728956bb4b00045ad91aead5ff1ce2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatA3:
+        m_Texture: {fileID: 2800000, guid: 677556af4fd8f564ca5ba4dff30ab10a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TERRAIN_HeightMap:
+        m_Texture: {fileID: 2800000, guid: 29e5d0a42ea814744b533fa9cf9a0a86, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VerticalTexture:
+        m_Texture: {fileID: 2800000, guid: c769df3f35825744d89c215b2c7d0d21, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - RTP_BackLightStrength: 0
+    - RTP_ReflexLightDiffuseSoftness: 0
+    - RTP_ReflexLightSpecularity: 0.1
+    - TERRAIN_DropletsSpeed: 15
+    - TERRAIN_FlowCycleScale: 1
+    - TERRAIN_FlowMipOffset: 1
+    - TERRAIN_FlowScale: 1
+    - TERRAIN_FlowSpeed: 0.61538464
+    - TERRAIN_GlobalWetness: 1
+    - TERRAIN_RainIntensity: 1
+    - TERRAIN_RippleScale: 1
+    - TERRAIN_WetDarkening: 0.5
+    - TERRAIN_WetDropletsStrength: 0.1
+    - TERRAIN_WetHeight_Transition: 20
+    - TERRAIN_WetHeight_Treshold: -500
+    - TERRAIN_mipoffset_flowSpeed: 0.1
+    - _BumpMapGlobalScale: 0.005
+    - _Color1: 0
+    - _Color2: 0
+    - _Color3: 0
+    - _Color4: 0
+    - _CoverageColor1Comp: 1
+    - _CoverageColor1Strength: 0
+    - _CoverageColor2Comp: 1
+    - _CoverageColor2Strength: 0
+    - _CoverageColor3Comp: 1
+    - _CoverageColor3Strength: 10
+    - _CoverageColor4Comp: 1
+    - _CoverageColor4Strength: 10
+    - _EmissionFromColormapAlphaColormap: 0
+    - _EmissionFromColormapAlphaLightDependent: 2.8846154
+    - _EmissionFromColormapAlphaNear: 0.5576923
+    - _EquatorBias: 1
+    - _EquatorSize: 0.5576923
+    - _EquatorSnowDamp: 0
+    - _FarNormalDamp: 0
+    - _Fdensity: 0.06
+    - _Fend: 200
+    - _Fstart: 10
+    - _GlobalColorMapBrightness: 0.84615386
+    - _GlobalColorMapBrightnessFar: 0.8461539
+    - _GlobalColorMapDistortByPerlin: 0.0034615383
+    - _GlobalColorMapNearMIP: 0
+    - _GlobalColorMapSaturation: 0.7692308
+    - _GlobalColorMapSaturationByPerlin: 0.07692308
+    - _GlobalColorMapSaturationFar: 0.7692308
+    - _GlossFromColormapAlphaGloss: 0.26923075
+    - _GlossFromColormapAlphaNear: 0.43076923
+    - _GlossFromColormapAlphaStrength: 0.15384611
+    - _GlossFromColormapColorGloss: 0.4423077
+    - _GlossFromColormapColorMultiplier: 1
+    - _GlossFromColormapComp: 0.63461536
+    - _NormalMapGlobalFarOnly: 40
+    - _NormalMapGlobalStrength: 2
+    - _PlanetAtmosphereLength: 4
+    - _PlanetRadius: 100
+    - _PolarBias: 0
+    - _PolarSize: 1
+    - _PolarSnowBoost: 0.5384616
+    - _PolarSnowStrength: 1.1153846
+    - _RTP_MIP_BIAS: -0.30769232
+    - _SlopeValue1: 0
+    - _SlopeValue2: 0
+    - _SlopeValue3: 0
+    - _SlopeValue4: 0
+    - _TERRAIN_ExtrudeHeight: 0.19292308
+    - _TERRAIN_ReliefTransformTriplanarZ: 0.2
+    - _TERRAIN_distance_start: 0
+    - _TERRAIN_distance_start_bumpglobal: 0
+    - _TERRAIN_distance_transition: 5
+    - _TERRAIN_distance_transition_bumpglobal: 9.26
+    - _Value1: 0
+    - _Value2: 0.072
+    - _Value3: 0.317
+    - _VerticalTextureGlobalBumpInfluence: 0.17884617
+    - _VerticalTextureTiling: 2
+    - _blend_multiplier: 1
+    - _occlusionStrength: 1
+    - rtp_global_color_brightness_to_snow: 0
+    - rtp_mipoffset_globalnorm_offset: 0
+    - rtp_perlin_start_val: 0.5
+    - rtp_snow_BumpMicro: 0.08
+    - rtp_snow_Frost: 0
+    - rtp_snow_MicroTiling: 1
+    - rtp_snow_TranslucencyDeferredLightIndex: 0
+    - rtp_snow_deep_factor: 2.87
+    - rtp_snow_diff_fresnel: 0.26923078
+    - rtp_snow_edge_definition: 2
+    - rtp_snow_fresnel: 0.54307693
+    - rtp_snow_gloss: 0.19999999
+    - rtp_snow_height_transition: 5
+    - rtp_snow_height_treshold: 103.4
+    - rtp_snow_metallic: 0.1
+    - rtp_snow_occlusionStrength: 0.5
+    - rtp_snow_slope_factor: 3.7499998
+    - rtp_snow_specular: 0.4192308
+    - rtp_snow_strength: 1
+    m_Colors:
+    - RTP_DiffFresnel0123: {r: 0, g: 0, b: 0, a: 0}
+    - RTP_Fresnel0123: {r: 0, g: 0, b: 0, a: 0}
+    - RTP_FresnelAtten0123: {r: 0, g: 0, b: 0, a: 0}
+    - RTP_ReflexLightDiffuseColor1: {r: 0.6716418, g: 0.86222714, b: 1, a: 0.2901961}
+    - RTP_ReflexLightDiffuseColor2: {r: 0.7238806, g: 0.8841457, b: 1, a: 0.27450982}
+    - RTP_ReflexLightSpecColor: {r: 1, g: 1, b: 1, a: 0.05}
+    - RTP_gloss2mask0123: {r: 0, g: 0, b: 0, a: 0}
+    - RTP_glossMax0123: {r: 1, g: 1, b: 1, a: 1}
+    - RTP_glossMin0123: {r: 0, g: 0, b: 0, a: 0}
+    - RTP_gloss_mult0123: {r: 0.3, g: 0.3, b: 0.2, a: 0.3}
+    - RTP_gloss_shaping0123: {r: 0.2, g: 0.5, b: 0.5, a: 0.5}
+    - RTP_metallic0123: {r: 0, g: 0, b: 0, a: 0}
+    - TERRAIN_Flow0123: {r: 1, g: 1, b: 1, a: 1}
+    - TERRAIN_LayerWetStrength0123: {r: 0, g: 0, b: 1, a: 0}
+    - TERRAIN_Refraction0123: {r: 0.02, g: 0.02, b: 0.02, a: 0.02}
+    - TERRAIN_WaterColor0: {r: 0.5, g: 0.7, b: 1, a: 0.5}
+    - TERRAIN_WaterColor1: {r: 0.5, g: 0.7, b: 1, a: 0.5}
+    - TERRAIN_WaterColor2: {r: 0.26865673, g: 0.17045864, b: 0.062151928, a: 0}
+    - TERRAIN_WaterColor3: {r: 0.5, g: 0.7, b: 1, a: 0.5}
+    - TERRAIN_WaterEdge0123: {r: 1, g: 1, b: 1, a: 1}
+    - TERRAIN_WaterEmission0123: {r: 0, g: 0, b: 1.81, a: 0}
+    - TERRAIN_WaterGloss0123: {r: 0.2, g: 0.2, b: 0.2, a: 0.2}
+    - TERRAIN_WaterIBL_SpecWaterStrength0123: {r: 1, g: 1, b: 1, a: 1}
+    - TERRAIN_WaterIBL_SpecWetStrength0123: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - TERRAIN_WaterLevel0123: {r: 0.5, g: 0.5, b: 1.5, a: 0.5}
+    - TERRAIN_WaterLevelSlopeDamp0123: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
+    - TERRAIN_WaterOpacity0123: {r: 0.2, g: 0.2, b: 0.2, a: 0.2}
+    - TERRAIN_WaterSpecularity0123: {r: 0.1, g: 0.1, b: -0.46, a: 0.1}
+    - TERRAIN_WetFlow0123: {r: 1, g: 1, b: 1, a: 1}
+    - TERRAIN_WetGloss0123: {r: 0.2, g: 0.2, b: 0.2, a: 0.2}
+    - TERRAIN_WetRefraction0123: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - TERRAIN_WetSpecularity0123: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
+    - _BumpMapGlobalStrength0123: {r: 4, g: 3, b: 8, a: 3}
+    - _Color1: {r: 1, g: 1, b: 1, a: 1}
+    - _Color2: {r: 1, g: 1, b: 1, a: 1}
+    - _Color3: {r: 1, g: 1, b: 1, a: 1}
+    - _Color4: {r: 1, g: 1, b: 1, a: 1}
+    - _CoverageColor1: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+    - _CoverageColor2: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+    - _CoverageColor3: {r: 0.8509804, g: 0.79607844, b: 0.654902, a: 1}
+    - _CoverageColor4: {r: 0.4392157, g: 0.4392157, b: 0.4392157, a: 1}
+    - _CoverageColorMultiplier: {r: 0, g: 0, b: 0, a: 0}
+    - _CoverageColorStrength: {r: 0, g: 0, b: 0, a: 0}
+    - _EmissionFromColormapAlphaColor: {r: 0.20895523, g: 0.116636306, b: 0.049899753,
+        a: 1}
+    - _EquatorColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _FColor: {r: 0.91791046, g: 0.79987854, b: 0.61650705, a: 1}
+    - _FColor2: {r: 0.53731346, g: 0.29100502, b: 0.24860771, a: 1}
+    - _FColor3: {r: 0.5074627, g: 0.2854577, b: 0.12497214, a: 0.08235294}
+    - _FarSpecCorrection0123: {r: 0, g: 0, b: 0, a: 0}
+    - _GlobalColorMapBlendValues: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorPerLayer0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlossFromColormapColor: {r: 0.015686275, g: 0.08235294, b: 0.18039216, a: 0}
+    - _GlossFromColormapColorColor: {r: 1, g: 0, b: 0, a: 1}
+    - _LayerAlbedo2SpecColor0123: {r: 0, g: 0, b: 0, a: 0}
+    - _LayerBrightness0123: {r: 1, g: 1, b: 0.4, a: 0.5}
+    - _LayerBrightness2Spec0123: {r: 0, g: 0, b: 0, a: 0}
+    - _LayerSaturation0123: {r: 1, g: 0.3, b: 0.6, a: 1}
+    - _MIPmult0123: {r: 1, g: 1, b: 1, a: 1}
+    - _MixBlend0123: {r: 1, g: 1, b: 1, a: 1}
+    - _MixBrightness0123: {r: 2, g: 2, b: 2, a: 2}
+    - _MixReplace0123: {r: 1, g: 1, b: 1, a: 1}
+    - _MixSaturation0123: {r: 0, g: 0, b: 0, a: 0}
+    - _MixScale0123: {r: 0.05, g: 0.025, b: 0.1, a: 0.05}
+    - _Spec0123: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _VerticalTexture0123: {r: 2, g: 0.5, b: 1, a: 1}
+    - planet_worldCenter: {r: 0, g: 0, b: 0, a: 0}
+    - rtp_customAmbientCorrection: {r: 0, g: 0, b: 0, a: 1}
+    - rtp_snow_color: {r: 0.63432837, g: 0.6273766, b: 0.5633215, a: 1}
+    - rtp_snow_strength_per_layer0123: {r: 1, g: 1, b: 1, a: 1}

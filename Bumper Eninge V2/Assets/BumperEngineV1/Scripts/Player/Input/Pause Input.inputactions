@@ -1,0 +1,34 @@
+{
+    "name": "Pause Input",
+    "maps": [
+        {
+            "name": "Pause",
+            "id": "589b5173-bbae-465e-abba-6f90123dd23c",
+            "actions": [
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "f5d4ef32-41a8-4b6e-81d2-c9c686a82e0e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5ac67b6e-da32-451b-b5a6-73fc0c3b2f38",
+                    "path": "<SwitchProControllerHID>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

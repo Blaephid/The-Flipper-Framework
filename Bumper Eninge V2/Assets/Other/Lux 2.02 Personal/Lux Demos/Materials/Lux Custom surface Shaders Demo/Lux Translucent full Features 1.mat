@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Lux Translucent full Features 1
+  m_Shader: {fileID: 4800000, guid: ea8dbf43656a14e93826f14f5a818ed4, type: 3}
+  m_ShaderKeywords: EFFECT_BUMP GEOM_TYPE_BRANCH_DETAIL GEOM_TYPE_LEAF
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 34dd97e8a79584ac3bb524c198ec3b7f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CustomSnowMaskBump:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 2800000, guid: 709ee796a7bd049d99744f5d55859909, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 2800000, guid: b3472a995dd3046e0924075de4a2eb18, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DispTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 2d56d51e7342b4daf95ddc044d027b03, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 2800000, guid: a703ecebfb6704544b9f1327ee5e9d20, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SkidBumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 2800000, guid: 8c3d5dd5012684a349ad9ec388b6e0bb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap2:
+        m_Texture: {fileID: 2800000, guid: 59533170bcfef4867b081bd8fa4f0884, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TranslucencyOcclusion:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TranslucencyTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _CustomSnowMaskBumpTiling: 1
+    - _Cutoff: 0.2
+    - _DiffuseScatteringBias: 0
+    - _DiffuseScatteringBias2: 0
+    - _DiffuseScatteringContraction: 8
+    - _DiffuseScatteringContraction2: 8
+    - _Displacement: 0.3
+    - _EnableIndependentPuddleMaskTiling: 0
+    - _EnablePOM: 1
+    - _Glossiness: 0.277
+    - _LinearSteps: 20
+    - _Lux_FlowInterval: 1
+    - _Lux_FlowNormalStrength: 1
+    - _Lux_FlowNormalTiling: 2
+    - _Lux_FlowRefraction: 0.02
+    - _Lux_FlowSpeed: 0.05
+    - _MixMappingControl: 1
+    - _Parallax: 0.0741
+    - _ParallaxTiling: 1
+    - _PuddleMaskTiling: 1
+    - _ScatteringPower: 4.9
+    - _SnowDetailStrength: 0.2
+    - _SnowDetailTiling: 3
+    - _SnowMaskTiling: 0.3
+    - _SnowNormalStrength: 0.89
+    - _SnowOpacity: 0.928
+    - _SnowSlopeDamp: 1
+    - _SnowTiling: 1
+    - _Tess: 4
+    - _TranslucencyStrength: 0.7
+    - _TranslucenyStrength: 0.8
+    - _UseMixMapping: 1
+    - _WaterSlopeDamp: 0.5
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color2: {r: 1, g: 1, b: 1, a: 1}
+    - _DiffuseScatteringCol: {r: 0, g: 0, b: 0, a: 1}
+    - _DiffuseScatteringCol2: {r: 0, g: 0, b: 0, a: 1}
+    - _SnowAccumulation: {r: 0.6, g: 0, b: 0, a: 0}
+    - _SnowDetailTiling: {r: 4, g: 4, b: 0, a: 0}
+    - _SnowMaskTiling: {r: 0.3, g: 0.3, b: 0, a: 0}
+    - _SnowTiling: {r: 2, g: 2, b: 0, a: 0}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _WaterAccumulationCracksPuddles: {r: 1.32, g: 0.97, b: 0.5, a: 1.05}
+    - _WaterAccumulationCracksPuddles2: {r: 0, g: 0.83, b: 0, a: 0.78}
+    - _WaterColor: {r: 0, g: 0, b: 0, a: 0}
+    - _WaterColor2: {r: 0, g: 0, b: 0, a: 0}

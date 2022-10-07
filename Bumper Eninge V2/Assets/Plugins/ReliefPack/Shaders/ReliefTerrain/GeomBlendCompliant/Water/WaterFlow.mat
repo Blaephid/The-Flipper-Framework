@@ -1,0 +1,240 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: WaterFlow
+  m_Shader: {fileID: 4800000, guid: ce52e09da42ccc74eb5fc1cff6fa130d, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2012
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - TERRAIN_FlowingMap:
+        m_Texture: {fileID: 2800000, guid: 8238403a96f1dc7438313114f1ce4eed, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - TERRAIN_RippleMap:
+        m_Texture: {fileID: 2800000, guid: 87b672e098a28584d82865fa6f149b44, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - TER_Cube:
+        m_Texture: {fileID: 8900000, guid: 1acb9f05f8b6ac24190f61b4ca6ec116, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - TER_Refl:
+        m_Texture: {fileID: 2800000, guid: 89807fd3eb4d06746b8e99127fae3f54, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: fb87a6d9f1021274ba65964755cc3ba4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMapCombined:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMapPerlin:
+        m_Texture: {fileID: 2800000, guid: 290d7c2deedd33f44803b2e9b422cf9d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorMapGlobal:
+        m_Texture: {fileID: 2800000, guid: 7d0d715b1a395244981126dc3360bf44, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FlowMap:
+        m_Texture: {fileID: 2800000, guid: f56925d41483d174a8669b885cfb32d2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FlowingMap:
+        m_Texture: {fileID: 2800000, guid: 8238403a96f1dc7438313114f1ce4eed, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMap:
+        m_Texture: {fileID: 2800000, guid: 39e5c6ee61ba00243af0f2e1a08cc95a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMapCombined:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 9131e55c4e116df46bf4658c152940e3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionMap:
+        m_Texture: {fileID: 2800000, guid: 9e339e68b28a13543bda753fe8e9ff6b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RippleMap:
+        m_Texture: {fileID: 2800000, guid: 87b672e098a28584d82865fa6f149b44, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 2800000, guid: 9131e55c4e116df46bf4658c152940e3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Specular:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TERRAIN_Control:
+        m_Texture: {fileID: 2800002, guid: 925325eef1545ad49ac1c7a0b0b3ff56, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TERRAIN_FlowingMap:
+        m_Texture: {fileID: 2800000, guid: 8238403a96f1dc7438313114f1ce4eed, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TERRAIN_HeightMap:
+        m_Texture: {fileID: 2800000, guid: 6337695ac9da4b04087a90dd2dac122d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TERRAIN_RippleMap:
+        m_Texture: {fileID: 2800000, guid: 87b672e098a28584d82865fa6f149b44, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VerticalTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WetMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WetMask2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - TERRAIN_DropletsSpeed: 10
+    - TERRAIN_ExtrudeHeight: 0.03975
+    - TERRAIN_Flow: 0.475
+    - TERRAIN_FlowScale: 1
+    - TERRAIN_FlowSpeed: 1
+    - TERRAIN_FlowSpeedMap: 0.1212
+    - TERRAIN_FresnelOffset: 0.2
+    - TERRAIN_FresnelPow: 2
+    - TERRAIN_GlobalWetness: 1
+    - TERRAIN_LayerReflection: 0.7692308
+    - TERRAIN_LayerWetStrength: 1
+    - TERRAIN_RainIntensity: 1
+    - TERRAIN_ReflDistortion: 0.05
+    - TERRAIN_ReflectionRotSpeed: 0.3
+    - TERRAIN_Refraction: 0.028461538
+    - TERRAIN_RippleScale: 2
+    - TERRAIN_WaterEdge: 2.2115386
+    - TERRAIN_WaterGloss: 0.86538464
+    - TERRAIN_WaterLevel: 0.7307693
+    - TERRAIN_WaterLevelSlopeDamp: 0.25
+    - TERRAIN_WaterOpacity: 0.09615384
+    - TERRAIN_WaterSpecularity: 1
+    - TERRAIN_WetDropletsStrength: 0
+    - TERRAIN_WetGloss: 0.1
+    - TERRAIN_WetReflection: 0.3846153
+    - TERRAIN_WetRefraction: 0.09615385
+    - TERRAIN_WetSpecularity: 0.15384614
+    - _BumpMapGlobalScale: 0.01
+    - _BumpMapPerlinBlend: 0.3
+    - _BumpMapPerlinBlendA: 0.3
+    - _BumpMapPerlinBlendB: 0.3
+    - _DeepFlowingPower: 0
+    - _DropletsSpeed: 10
+    - _ExtrudeHeight: 0.04
+    - _Flow: 0.26923078
+    - _FlowScale: 0.25
+    - _FlowSpeed: 0.21153846
+    - _FlowingPower: 0
+    - _FresnelPow: 0.5
+    - _GlobalWetness: 1
+    - _GlossMax: 1
+    - _GlossMin: 0
+    - _Glossiness: 0
+    - _Intensity: 1
+    - _Metalness: 0
+    - _NormalPower: 2.5192308
+    - _ReflDistortion: 0.1
+    - _ReflectionRotSpeed: 0.46153846
+    - _Refraction: 0.011538462
+    - _RefractionPower: 0
+    - _RippleScale: 1
+    - _Shininess: 0.11387695
+    - _Speed: 10
+    - _TERRAIN_DropletsSpeed: 1
+    - _TERRAIN_ExtrudeHeight: 0.049615383
+    - _TERRAIN_Flow: 0.1
+    - _TERRAIN_FlowScale: 1
+    - _TERRAIN_FlowSpeed: 0.25
+    - _TERRAIN_FresnelPow: 2
+    - _TERRAIN_GlobalWetness: 1
+    - _TERRAIN_LayerWetStrength: 1
+    - _TERRAIN_RainIntensity: 1
+    - _TERRAIN_ReflDistortion: 0.05
+    - _TERRAIN_ReflectionRotSpeed: 0.3
+    - _TERRAIN_Refraction: 0.02
+    - _TERRAIN_RippleScale: 1
+    - _TERRAIN_TERRAIN_Refraction: 0.02
+    - _TERRAIN_WaterEdge: 1.7115384
+    - _TERRAIN_WaterGloss: 1
+    - _TERRAIN_WaterLevel: 0.5
+    - _TERRAIN_WaterLevelSlopeDamp: 4
+    - _TERRAIN_WaterOpacity: 0.5
+    - _TERRAIN_WetReflection: 0.5
+    - _TERRAIN_WetRefraction: 1
+    - _TERRAIN_WetSpecularity: 0.1
+    - _TERRAIN_distance_start: 0
+    - _TERRAIN_distance_start_bumpglobal: 0
+    - _TERRAIN_distance_transition: 20
+    - _TERRAIN_distance_transition_bumpglobal: 32
+    - _Tim: 0
+    - _VerticalTextureGlobalBumpInfluence: 0
+    - _VerticalTextureStrength: 0.5
+    - _VerticalTextureTiling: 50
+    - _WaterEdge: 16
+    - _WaterGloss: 1
+    - _WaterLevel: 0
+    - _WaterLevelSlopeDamp: 0.25
+    - _WaterOpacity: 0.923077
+    - _WaterTransparency: 1
+    - _WetFlowing: 0.5
+    - _WetFlowingPower: 0.25
+    - _WetReflection: 1.5
+    - _WetRefraction: 0.25
+    - _WetSpecularity: 1
+    - _WetStrength: 1
+    - _uvBlendAmount: 0.5
+    - _uvBlendSaturation: 0.5
+    - _uvBlendScale: 0.2
+    - p0: 0.1
+    - rtp_perlin_start_val: 0.6
+    m_Colors:
+    - TERRAIN_ReflColorA: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - TERRAIN_ReflColorB: {r: 0.64223653, g: 0.6552754, b: 0.6940298, a: 0.5019608}
+    - TERRAIN_WaterColor: {r: 0.5958045, g: 0.68128836, b: 0.6985294, a: 0.052}
+    - TERRAIN_WaterSpecGloss: {r: 0.25, g: 0.25, b: 0.25, a: 0.8}
+    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _MainColor: {r: 0.4402985, g: 0.4402985, b: 0.4402985, a: 1}
+    - _ReflColor: {r: 0.8443974, g: 0.8744397, b: 0.9925373, a: 1}
+    - _ReflColorA: {r: 0.9477612, g: 0.9477612, b: 0.9477612, a: 1}
+    - _ReflColorB: {r: 0.18957452, g: 0.20531002, b: 0.2761194, a: 0}
+    - _SpecColor: {r: 0.125, g: 0.125, b: 0.125, a: 1}
+    - _SpecColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _TERRAIN_PosSize: {r: 0, g: 0, b: 600, a: 600}
+    - _TERRAIN_ReflColorA: {r: 1, g: 1, b: 1, a: 1}
+    - _TERRAIN_ReflColorB: {r: 1, g: 1, b: 1, a: 1}
+    - _TERRAIN_Tiling: {r: 3, g: 3, b: 0, a: 0}
+    - _TERRAIN_WaterColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WaterColor: {r: 0.43272445, g: 0.47200543, b: 0.5522388, a: 0.16078432}

@@ -1,0 +1,6 @@
+Alien planet taken from http://freebitmaps.blogspot.com/2010/10/srgb-planet-spot.html under Creative Commons license.
+Visit their site to get more wonderful textures !
+
+Bumpmap and heightmap (temporarily not used, but could be useful when teture driven tesellation features appear in eigther RTP or planet generation solutions) made with B2M.
+
+Alpha channel for emissive mask has been processed via desaturated and leveled source image.

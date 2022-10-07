@@ -1,0 +1,6 @@
+To generate flowMaps, you may use free tool by S. Adaszewski.
+Stones_flowMap.ff file in this folder is flow field saved by the tool basing on Stones&pebbles heightmap texture.
+
+http://algoholic.eu/flow-field-editor-update/
+
+Note that Stones_flowMap.png has been prepared to follow U texture direction and may look a bit weird when you'll try to force the flow in different direction by different surface normals (transforming object).

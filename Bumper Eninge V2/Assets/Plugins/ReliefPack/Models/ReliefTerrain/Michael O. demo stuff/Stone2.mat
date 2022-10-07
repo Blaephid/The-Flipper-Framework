@@ -1,0 +1,390 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Stone2
+  m_Shader: {fileID: 4800000, guid: 12ba9bc3a1a2f6f4c97a4361871cb4e0, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - TERRAIN_CausticsTex:
+        m_Texture: {fileID: 2800000, guid: bc71529648435b4429777b09f76ce8d4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - TERRAIN_RippleMap:
+        m_Texture: {fileID: 2800000, guid: 87b672e098a28584d82865fa6f149b44, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: d16ab62092d63c340b7835c9186e6408, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap01:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap23:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMapGlobal:
+        m_Texture: {fileID: 2800000, guid: 290d7c2deedd33f44803b2e9b422cf9d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMapPerlin:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMapSnow:
+        m_Texture: {fileID: 2800000, guid: fb9a336e4ad0b084f806d539d827eb2f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorMapGlobal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorSnow:
+        m_Texture: {fileID: 2800000, guid: 731b55817eb3dae48a8c34a13354f4f7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailBumpTex:
+        m_Texture: {fileID: 2800000, guid: 8238403a96f1dc7438313114f1ce4eed, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 577eaba878c11bd44b36dc3465eb932a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SparkleMap:
+        m_Texture: {fileID: 2800000, guid: 58d91b9c15e76ee489eb634baedb9497, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SparkleMapSnowUI:
+        m_Texture: {fileID: 2800000, guid: 58d91b9c15e76ee489eb634baedb9497, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SparkleMapUI:
+        m_Texture: {fileID: 2800000, guid: 58d91b9c15e76ee489eb634baedb9497, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatA0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatA1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatA2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatA3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatAtlasA:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TERRAIN_Control:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TERRAIN_HeightMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TERRAIN_HeightMapBase:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VerticalTexture:
+        m_Texture: {fileID: 2800000, guid: e43e5115570674c4f82c48f2f532a90c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - ADV_COLOR_MAP_BLENDING: 0
+    - BLENDING_HEIGHT: 1
+    - COLOR_MAP: 0
+    - EmissionRefractAnimSpeed: 2
+    - EmissionRefractFiltering: 2
+    - POM2PM_FACTOR: 1
+    - RTP_AOamp: 0.5
+    - RTP_AOsharpness: 1
+    - RTP_CAUSTICS: 0
+    - RTP_EMISSION: 0
+    - RTP_FUILD_EMISSION_WRAP: 0
+    - RTP_GLITTER: 0
+    - RTP_HEIGHTBLEND_AO: 0
+    - RTP_HOTAIR_EMISSION: 0
+    - RTP_NORMALS_FOR_REPLACE_UV_BLEND: 0
+    - RTP_SNOW: 0
+    - RTP_SUPER_DETAIL: 0
+    - RTP_USE_COLOR_ATLAS: 0
+    - RTP_UV_BLEND: 1
+    - RTP_VERTICAL_TEXTURE: 0
+    - RTP_WETNESS: 0
+    - RTP_WET_RIPPLE_TEXTURE: 0
+    - SIMPLE_WATER: 0
+    - TERRAIN_CausticsAnimSpeed: 2
+    - TERRAIN_CausticsTilingScale: 2
+    - TERRAIN_CausticsWaterDeepFadeLength: 20
+    - TERRAIN_CausticsWaterLevel: 0
+    - TERRAIN_CausticsWaterLevelByAngle: 4
+    - TERRAIN_CausticsWaterShallowFadeLength: 1
+    - TERRAIN_DropletsSpeed: 15
+    - TERRAIN_FlowCycleScale: 1
+    - TERRAIN_FlowMipOffset: 1
+    - TERRAIN_FlowScale: 1
+    - TERRAIN_FlowSpeed: 0.5
+    - TERRAIN_GlobalWetness: 1
+    - TERRAIN_RainIntensity: 1
+    - TERRAIN_RippleScale: 1
+    - TERRAIN_WetDarkening: 0.5
+    - TERRAIN_WetDropletsStrength: 0.1
+    - TERRAIN_WetHeight_Transition: 20
+    - TERRAIN_WetHeight_Treshold: -500
+    - TERRAIN_mipoffset_flowSpeed: 0.1
+    - _BumpMapGlobalScale: 0.1
+    - _BumpMapPerlinBlend: 0.3
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DIST_STEPS: 20
+    - _DetailDistanceScale: 10
+    - _DetailNormalMapScale: 1
+    - _DetailScale: 10
+    - _DetailScaleX: 0
+    - _DetailScaleY: 1
+    - _DstBlend: 10
+    - _ExtrudeHeight: 0.05
+    - _FarNormalDamp: 0
+    - _GlitterColorization: 0.5
+    - _GlitterDensity: 0.1
+    - _GlitterFilter: 0
+    - _GlitterTiling: 1
+    - _GlobalColorMapBrightness: 0.8
+    - _GlobalColorMapDistortByPerlin: 0.005
+    - _GlobalColorMapNearMIP: 0.8
+    - _GlobalColorMapSaturation: 0.8
+    - _GlossMax: 0.578
+    - _GlossMin: 0.093
+    - _Glossiness: 0.5
+    - _LightmapShading: 1
+    - _Metallic: 0
+    - _Metalness: 0.162
+    - _Mode: 2
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _RTP_MIP_BIAS: 0
+    - _SHADOW_SMOOTH_STEPS: 4
+    - _SHADOW_STEPS: 20
+    - _SelfShadowStrength: 0.5
+    - _ShadowSmoothing: 1
+    - _Shininess: 1.8637875
+    - _SrcBlend: 5
+    - _SuperDetailTiling: 4
+    - _TERRAIN_DIST_STEPS: 20
+    - _TERRAIN_ExtrudeHeight: 0.06
+    - _TERRAIN_ReliefTransformTriplanarZ: 3
+    - _TERRAIN_SHADOW_STEPS: 20
+    - _TERRAIN_SelfShadowStrength: 0.8
+    - _TERRAIN_ShadowSmoothing: 1
+    - _TERRAIN_ShadowSoftnessFade: 1
+    - _TERRAIN_WAVELENGTH: 2
+    - _TERRAIN_WAVELENGTH_SHADOWS: 2
+    - _TERRAIN_distance_start: 2
+    - _TERRAIN_distance_start_bumpglobal: 22
+    - _TERRAIN_distance_transition: 20
+    - _TERRAIN_distance_transition_bumpglobal: 40
+    - _UVSec: 0
+    - _VerticalTextureGlobalBumpInfluence: 0.01
+    - _VerticalTextureTiling: 50
+    - _WAVELENGTH: 1
+    - _WAVELENGTH_SHADOWS: 8
+    - _ZWrite: 0
+    - _blend_multiplier: 1
+    - _distance_start: 5
+    - _distance_transition: 52.83582
+    - _occlusionStrength: 1
+    - _snow_mult: 1
+    - active_layer: 0
+    - block_caustics: 1
+    - block_features: 1
+    - block_glitter: 1
+    - block_globalcolormap: 1
+    - block_layerprops: 1
+    - block_main: 1
+    - block_perlin: 1
+    - block_rain: 1
+    - block_snow: 1
+    - block_superdetail: 1
+    - block_textures: 1
+    - block_vert_tex: 1
+    - block_wetness: 1
+    - dummy_POM: 0
+    - dummy_UVblend: 0
+    - dummy_caustics: 0
+    - dummy_emissionRefr: 0
+    - dummy_end: 0
+    - dummy_fakeAO: 0
+    - dummy_features2: 0
+    - dummy_features3: 0
+    - dummy_features4: 0
+    - dummy_features5: 0
+    - dummy_features6: 0
+    - dummy_glitter: 0
+    - dummy_globalcolormap: 0
+    - dummy_globaltextiling: 0
+    - dummy_layerAdvColormap: 0
+    - dummy_layerColormap: 0
+    - dummy_layerCorr: 0
+    - dummy_layerEmission: 0
+    - dummy_layerFakeAO: 0
+    - dummy_layerGlitter: 0
+    - dummy_layerPBR: 0
+    - dummy_layerRefrEmission: 0
+    - dummy_layerUVBlend: 0
+    - dummy_layersuperdetail: 0
+    - dummy_misc: 0
+    - dummy_perlin: 0
+    - dummy_rain: 0
+    - dummy_snow: 0
+    - dummy_superdetail: 0
+    - dummy_textures: 0
+    - dummy_tiling: 0
+    - dummy_vert_tex: 0
+    - dummy_wetness: 0
+    - rtp: 0
+    - rtp_global_color_brightness_to_snow: 1
+    - rtp_mipoffset_globalnorm_offset: 0
+    - rtp_perlin_start_val: 0.3
+    - rtp_snow_BumpMicro: 0.1
+    - rtp_snow_Frost: 0
+    - rtp_snow_MicroTiling: 1
+    - rtp_snow_TranslucencyDeferredLightIndex: 0
+    - rtp_snow_diff_fresnel: 0.5
+    - rtp_snow_edge_definition: 2
+    - rtp_snow_gloss: 0.2
+    - rtp_snow_metallic: 0.1
+    - rtp_snow_mult: 1
+    - rtp_snow_occlusionStrength: 0.5
+    - rtp_snow_slope_factor: 2
+    m_Colors:
+    - RTP_AO_0123: {r: 0.2, g: 0.2, b: 0.2, a: 0.2}
+    - RTP_DiffFresnel0123: {r: 0, g: 0, b: 0, a: 0}
+    - RTP_glossMax0123: {r: 1, g: 1, b: 1, a: 1}
+    - RTP_glossMin0123: {r: 0, g: 0, b: 0, a: 0}
+    - RTP_metallic0123: {r: 0, g: 0, b: 0, a: 0}
+    - TERRAIN_CausticsColor: {r: 1, g: 1, b: 1, a: 0}
+    - TERRAIN_Flow0123: {r: 1, g: 1, b: 1, a: 1}
+    - TERRAIN_LayerWetStrength0123: {r: 1, g: 1, b: 1, a: 1}
+    - TERRAIN_Refraction0123: {r: 0.02, g: 0.02, b: 0.02, a: 0.02}
+    - TERRAIN_WaterColor0: {r: 0.5, g: 0.7, b: 1, a: 0.5}
+    - TERRAIN_WaterColor1: {r: 0.5, g: 0.7, b: 1, a: 0.5}
+    - TERRAIN_WaterColor2: {r: 0.5, g: 0.7, b: 1, a: 0.5}
+    - TERRAIN_WaterColor3: {r: 0.5, g: 0.7, b: 1, a: 0.5}
+    - TERRAIN_WaterEdge0123: {r: 1, g: 1, b: 1, a: 1}
+    - TERRAIN_WaterEmission0123: {r: 0, g: 0, b: 0, a: 0}
+    - TERRAIN_WaterGloss0123: {r: 0.2, g: 0.2, b: 0.2, a: 0.2}
+    - TERRAIN_WaterGlossDamper0123: {r: 0, g: 0, b: 0, a: 0}
+    - TERRAIN_WaterLevel0123: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - TERRAIN_WaterLevelSlopeDamp0123: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
+    - TERRAIN_WaterMetallic0123: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
+    - TERRAIN_WetFlow0123: {r: 1, g: 1, b: 1, a: 1}
+    - TERRAIN_WetGloss0123: {r: 0.2, g: 0.2, b: 0.2, a: 0.2}
+    - TERRAIN_WetRefraction0123: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _BumpMapGlobalStrength0123: {r: 0.3, g: 0.3, b: 0.3, a: 0.3}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailColor: {r: 1, g: 1, b: 1, a: 0.45490196}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FarSpecCorrection0123: {r: 0, g: 0, b: 0, a: 0}
+    - _GlitterColor: {r: 1, g: 1, b: 1, a: 0.1}
+    - _GlitterStrength0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorBottom0123: {r: 0, g: 0, b: 0, a: 0}
+    - _GlobalColorColormapHiSat0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorColormapLoSat0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorHiBlend0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorLayerHiSat0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorLayerLoSat0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorLoBlend0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorMapBlendValues: {r: 0.3, g: 0.6, b: 0.8, a: 0}
+    - _GlobalColorPerLayer0123: {r: 1, g: 1, b: 1, a: 1}
+    - _GlobalColorTop0123: {r: 1, g: 1, b: 1, a: 1}
+    - _LayerBrightness0123: {r: 1, g: 1, b: 1, a: 1}
+    - _LayerEmission0123: {r: 1, g: 1, b: 1, a: 1}
+    - _LayerEmissionColor0: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    - _LayerEmissionColor1: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    - _LayerEmissionColor2: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    - _LayerEmissionColor3: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    - _LayerEmissionRefractHBedge0123: {r: 0, g: 0, b: 0, a: 0}
+    - _LayerEmissionRefractStrength0123: {r: 0, g: 0, b: 0, a: 0}
+    - _LayerSaturation0123: {r: 1, g: 1, b: 1, a: 1}
+    - _MIPmult0123: {r: 0, g: 0, b: 0, a: 0}
+    - _MixBlend0123: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _MixBrightness0123: {r: 2, g: 2, b: 2, a: 2}
+    - _MixReplace0123: {r: 0, g: 0, b: 0, a: 0}
+    - _MixSaturation0123: {r: 1, g: 1, b: 1, a: 1}
+    - _MixScale0123: {r: 0.2, g: 0.2, b: 0.2, a: 0.2}
+    - _ReliefTransform: {r: 1, g: 1, b: 0, a: 0}
+    - _SnowGlitterColor: {r: 1, g: 1, b: 1, a: 0.1}
+    - _SpecColor: {r: 0.49253732, g: 0.49253732, b: 0.49253732, a: 1}
+    - _SuperDetailStrengthNormal0123: {r: 1, g: 1, b: 1, a: 1}
+    - _TERRAIN_PosSize: {r: 0, g: 0, b: 2000, a: 2000}
+    - _TERRAIN_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _VerticalTexture0123: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - rtp_snow_color: {r: 0.9, g: 0.9, b: 1, a: 1}
+    - rtp_snow_strength_per_layer0123: {r: 1, g: 1, b: 1, a: 1}

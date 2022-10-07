@@ -1,0 +1,94 @@
+In Planetary Terrain (older version 1.01) it's necessary to modify scripts to make it usable with RTP.
+
+1. Surface.cs
+
+- find line:
+
+	mesh.RecalculateBounds();
+
+  and put this after:
+
+	// RTP needs this
+	RTPTangentSolver.Solve(mesh, true);
+
+(we need tangents for global normalmapping working)
+
+- find line:
+
+	// calculate uv's
+	uvs[col * detail + row] = new Vector2(uvStartX + ((float)(row+1) / detail) * uvResolution, uvStartY + ((float)(col+1) / detail) * uvResolution);
+
+  and _remove_ it (comment)
+
+- find line:
+
+	// scale to planet radius
+	vertices[col * detail + row] *= planet.radius;
+
+  and put this _before_:
+
+	// calculate uv's
+	int curIdx=col * detail + row;
+	uvs[curIdx] = new Vector2(Mathf.Atan2(vertices[curIdx].z, vertices[curIdx].x)/Mathf.PI*0.5f+0.5f, vertices[curIdx].y*0.5f+0.5f);
+	// take care of edge wrap
+	if (staticX) {
+		if ( vertices[curIdx].x<0 ) {
+			if ( (row==detail-1) && vertices[curIdx].z>-0.01f && vertices[curIdx].z<0.01f) uvs[curIdx].x=0;
+			if ( (row==0) && vertices[curIdx].z>-0.01f && vertices[curIdx].z<0.01f) uvs[curIdx].x=1;
+		}
+	} else if (staticY) {
+		if ( vertices[curIdx].y>0 ) {
+			if ( (col==detail-1) && vertices[curIdx].x<0 && vertices[curIdx].z>-0.01f && vertices[curIdx].z<0.01f ) uvs[curIdx].x=0;
+			if ( (col==0) && vertices[curIdx].x<0 && vertices[curIdx].z>-0.01f && vertices[curIdx].z<0.01f ) uvs[curIdx].x=1;
+		} else {
+			if ( (col==detail-1) && vertices[curIdx].x<0 && vertices[curIdx].z>-0.01f && vertices[curIdx].z<0.01f ) uvs[curIdx].x=1;
+			if ( (col==0) && vertices[curIdx].x<0 && vertices[curIdx].z<0.01f && vertices[curIdx].z>-0.01f ) uvs[curIdx].x=0;
+		}
+	}
+				
+				
+  (we need to calculate uv coords different way to conform spherical maps)
+
+
+--------------------------------------------------------------
+
+
+2. SurfaceColor.cs
+
+find this first occurence in Apply() function (line 57 in PT1.01):
+
+	material = new Material(shader);		
+
+and put this line before (we need to make it conditional to not overwrite RTP material on every planet build):
+
+	if(material == null)
+
+
+--------------------------------------------------------------
+
+
+3. SurfaceColorEditor.cs
+
+find this line:
+
+	surfaceColor.shader = (Shader)EditorGUILayout.ObjectField(surfaceColor.shader, typeof(Shader), false);
+
+and put this line after:
+
+	surfaceColor.material = (Material)EditorGUILayout.ObjectField(surfaceColor.material, typeof(Material), false);
+
+as we need to put planet material in material slot of SurfaceColor component. This way PT when making dynamicaly LOD mesh will use RTP material instead. You can use example material that's included here in folder (ReliefTerrainTriplanarPlanet.mat).
+
+
+--------------------------------------------------------------
+
+
+4. FogController.cs
+
+I haven't played with this script but you'll probably need to modify this (RTP shader uses its own fog, not controlled by RenderSettings).
+
+
+--------------------------------------------------------------
+
+
+Hopefully next PlanetaryTerrain releases will handle RTP out-fo-the-box (would be great from HenryV as I put much effort into making RTP shaders working on his package :))

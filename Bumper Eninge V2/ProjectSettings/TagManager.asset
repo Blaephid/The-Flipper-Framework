@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Spring
+  - HomingTarget
+  - Ring
+  - Enemy
+  - SpeedPad
+  - MovingRing
+  - CameraTrigger
+  - GoalRing
+  - Checkpoint
+  - Pit
+  - Monitor
+  - Rail
+  - MovingPlatform
+  - Hazard
+  - SpawnPoint
+  - Bumper
+  - Switch
+  - CancelHoming
+  - StopHomming
+  - ZipLine
+  - PulleyHandle
+  - HintRing
+  - PathTrigger
+  - Attack
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Player_01
+  - Player_02
+  - Player_03
+  - Player_04
+  - Obj
+  - Enemies
+  - EnemyTrigger
+  - MovingRing
+  - PostProcessGlobal
+  - Homing Target
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Rail
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0

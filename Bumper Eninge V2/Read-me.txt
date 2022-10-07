@@ -1,0 +1,16 @@
+
+This port to 2019 was made by Gabriel Gonzalez(Aka Greedy).
+
+Fixes:
+
+-Complete port to 2019 Unity
+
+-Implementation of a more robust Stick to ground code.
+
+-Fix for the Bounce Glitch.
+
+Known Issues:
+
+-There's a small glitch that makes your character get stuck when playing in editor.
+	Your character appears to be glued in place when moving, or slowing down for no reason. 
+	This can be fixed by restarting Unity. The reason this happens still a mistery to me.

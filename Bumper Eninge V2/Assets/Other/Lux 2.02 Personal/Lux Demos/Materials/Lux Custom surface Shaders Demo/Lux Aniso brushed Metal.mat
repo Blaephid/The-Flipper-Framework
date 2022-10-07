@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Lux Aniso brushed Metal
+  m_Shader: {fileID: 4800000, guid: dbe0fca8598554ac79809e1e4932aec0, type: 3}
+  m_ShaderKeywords: _SPECGLOSSMAP
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 8, y: 8}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 2800000, guid: f2a55b4c74c374bc0a67d4a32b8bdbbd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TangentDir:
+        m_Texture: {fileID: 2800000, guid: 20626b52ef1c8482184b1f200007b2fc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BumpScale: 1
+    - _Cutoff: 0
+    - _DetailNormalMapScale: 1
+    - _DiffuseScatteringBias: 0
+    - _DiffuseScatteringContraction: 10
+    - _DstBlend: 0
+    - _EnableBackfaceSmoothnessExtinction: 0
+    - _EnableMetallGlossMap: 0
+    - _EnableSpecGlossMap: 1
+    - _Glossiness: 0.7
+    - _Metallic: 1
+    - _Mode: 0
+    - _OcclusionStrength: 0.335
+    - _Parallax: 0.02
+    - _RoughnessX: 0.975
+    - _RoughnessY: 0
+    - _SmoothnessExtinction: 0.5
+    - _SmoothnessX: 0.975
+    - _SmoothnessY: 0
+    - _SrcBlend: 1
+    - _TangentDirStrength: 1
+    - _Translucency: 0
+    - _UVSec: 0
+    - _VertexOcclusionStrength: 0.5
+    - _ZWrite: 1
+    m_Colors:
+    - _BaseTangentDir: {r: 0, g: 1, b: 0, a: 0}
+    - _Color: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
+    - _DiffuseScatteringCol: {r: 0, g: 0, b: 0, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecColor: {r: 0.25, g: 0.25, b: 0.25, a: 1}
+    - _TangentDir: {r: 1, g: 0, b: 0, a: 0}

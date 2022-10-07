@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: WaterShader_FlowMap_2VertexPaint
+  m_Shader: {fileID: 4800000, guid: 7bcd23849d3326149b6985a445b69edd, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - TERRAIN_FlowingMap:
+        m_Texture: {fileID: 2800000, guid: 8238403a96f1dc7438313114f1ce4eed, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - TERRAIN_RippleMap:
+        m_Texture: {fileID: 2800000, guid: 87b672e098a28584d82865fa6f149b44, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 950dc63486fbbc349bacddedc914e642, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap2:
+        m_Texture: {fileID: 2800000, guid: fb87a6d9f1021274ba65964755cc3ba4, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _FlowMap:
+        m_Texture: {fileID: 2800000, guid: 3b7b1d371f4222c4694560b99d57ba3e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMap:
+        m_Texture: {fileID: 2800000, guid: 0050d60e91d299247a90fba85a009a64, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMap2:
+        m_Texture: {fileID: 2800000, guid: 39e5c6ee61ba00243af0f2e1a08cc95a, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 0add48120d745614a836ef986fc98d96, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex2:
+        m_Texture: {fileID: 2800000, guid: 9131e55c4e116df46bf4658c152940e3, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionMap:
+        m_Texture: {fileID: 2800000, guid: 9e339e68b28a13543bda753fe8e9ff6b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 2800000, guid: 0add48120d745614a836ef986fc98d96, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap2:
+        m_Texture: {fileID: 2800000, guid: 9131e55c4e116df46bf4658c152940e3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - TERRAIN_DropletsSpeed: 15
+    - TERRAIN_ExtrudeHeight: 0.08
+    - TERRAIN_Flow: 0.672
+    - TERRAIN_FlowScale: 0.6
+    - TERRAIN_FlowSpeed: 0.65
+    - TERRAIN_FlowSpeedMap: 0.2
+    - TERRAIN_FresnelOffset: 0.13846153
+    - TERRAIN_FresnelPow: 13.509615
+    - TERRAIN_LayerReflection: 1.0384616
+    - TERRAIN_LayerWetStrength: 1
+    - TERRAIN_RainIntensity: 1
+    - TERRAIN_ReflDistortion: 0.053846154
+    - TERRAIN_ReflectionRotSpeed: 0.33846155
+    - TERRAIN_Refraction: 0.009230769
+    - TERRAIN_RippleScale: 2
+    - TERRAIN_WaterEdge: 1.54
+    - TERRAIN_WaterGloss: 0.837
+    - TERRAIN_WaterLevel: 0.88461536
+    - TERRAIN_WaterLevelSlopeDamp: 1.7403847
+    - TERRAIN_WaterOpacity: 0
+    - TERRAIN_WaterSpecularity: 0.5
+    - TERRAIN_WetDropletsStrength: 0.09615385
+    - TERRAIN_WetGloss: 0.504
+    - TERRAIN_WetReflection: 0.5769231
+    - TERRAIN_WetRefraction: 0.15384616
+    - TERRAIN_WetSpecularity: 0.1
+    - _GlossMax: 1
+    - _GlossMax2: 1
+    - _GlossMin: 0
+    - _GlossMin2: 0
+    - _Glossiness: 0
+    - _Glossiness2: 0
+    - _Metalness: 0
+    - _Metalness2: 0
+    - _Shininess: 0.5
+    m_Colors:
+    - TERRAIN_ReflColorA: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - TERRAIN_ReflColorB: {r: 0.7718868, g: 0.8413713, b: 0.9402985, a: 0.23921569}
+    - TERRAIN_WaterColor: {r: 0.64765346, g: 0.70772886, b: 0.72794116, a: 0.07058824}
+    - TERRAIN_WaterSpecGloss: {r: 0.24999997, g: 0.24999997, b: 0.24999997, a: 0.8}
+    - _Color: {r: 0.8161765, g: 0.7801687, b: 0.7801687, a: 1}
+    - _Color2: {r: 0.53676474, g: 0.53676474, b: 0.53676474, a: 1}
+    - _SpecColor: {r: 0.17647055, g: 0.17647055, b: 0.17647055, a: 1}
+    - _SpecColor2: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

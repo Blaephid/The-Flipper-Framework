@@ -1,0 +1,9 @@
+RTP can work in 2 modes:
+
+1. 4 layer per pass
+2. 8 layers in first pass
+
+In first mode if you use more than 4 layers (up to 8), layers 4-7 will be realised in 2nd pass (AddPass shader).
+
+In 2nd mode layers 0-7 will be rendered in single pass, layers 8-11 will be rendered in AddPass. We can't use more than 12 layers (result might be unpredictible).
+In Deferred lighting you CAN'T use add passes due to missing Smoothness and occlusion blending (everything should be rendered in one pass - either 4 or 8 layers).

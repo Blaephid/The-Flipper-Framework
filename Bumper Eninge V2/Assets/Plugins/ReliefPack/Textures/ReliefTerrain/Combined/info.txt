@@ -1,0 +1,11 @@
+Textures used in "2PM" vertex paint shaders for geometry blend.
+
+Combined bumpmaps are made like this:
+ 1. open Window/Relief Tools/4 to 1 texture channel mixer
+ 2. target texture channels are:
+     - R = A from 1st bumpmap
+     - G = G from 1st bumpmap
+     - B = A from 2st bumpmap
+     - A = G from 2st bumpmap
+
+Combined heightmap uses RG channels - you can make it using the same tool above
