@@ -506,7 +506,7 @@ public class Action12_WallRunning : MonoBehaviour
         Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
 
 
-        if ((CharacterAnimator.transform.forward - wallForward).magnitude > (CharacterAnimator.transform.forward - -wallForward).magnitude)
+        if ((CharacterAnimator.transform.forward - wallForward).sqrMagnitude > (CharacterAnimator.transform.forward - -wallForward).sqrMagnitude)
             wallForward = -wallForward;
 
         //Set direction facing

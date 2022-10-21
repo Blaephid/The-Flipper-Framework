@@ -5680,13 +5680,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d59a77daaf0eb94dbc773f4673d5ece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartAccell: 0.15
+  StartAccell: 0.16
   AccellOverSpeed:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0025330873
-      value: 2.7411337
+      time: -0.0021401737
+      value: 3.1533155
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -5694,8 +5694,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.08061549
-      value: 2.2495768
+      time: 0.13225505
+      value: 2.437176
       inSlope: -6.2290688
       outSlope: -6.2290688
       tangentMode: 0
@@ -5703,26 +5703,26 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.97632855
     - serializedVersion: 3
-      time: 0.13653512
-      value: 0.41950482
-      inSlope: -8.146173
-      outSlope: -8.146173
+      time: 0.17671914
+      value: 0.6008403
+      inSlope: -8.096436
+      outSlope: -8.096436
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.21427786
-      outWeight: 0.27544382
+      outWeight: 0.6979285
     - serializedVersion: 3
-      time: 0.2290408
-      value: 0.105800614
-      inSlope: -0.08884709
-      outSlope: -0.08884709
+      time: 0.26528805
+      value: 0.15176009
+      inSlope: -0.656459
+      outSlope: -0.656459
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.902454
-      outWeight: 0.31463337
+      outWeight: 0.17454018
     - serializedVersion: 3
-      time: 0.9914608
-      value: 0.033247977
+      time: 1.0028133
+      value: 0.016310722
       inSlope: 0.008464342
       outSlope: 0.008464342
       tangentMode: 0
@@ -5735,7 +5735,7 @@ MonoBehaviour:
   AccellShiftOverSpeed: 1
   TangentialDrag: 7.5
   TangentialDragShiftSpeed: 1
-  TurnSpeed: 80
+  TurnSpeed: 70
   SlowedTurnSpeed: 200
   TurnRateOverAngle:
     serializedVersion: 2
@@ -5842,12 +5842,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  StartTopSpeed: 120
-  StartMaxSpeed: 210
-  StartMaxFallingSpeed: -450
-  StartJumpPower: 1.5
-  MoveDecell: 1.03
-  AirDecell: 1.08
+  StartTopSpeed: 90
+  StartMaxSpeed: 150
+  StartMaxFallingSpeed: -400
+  StartJumpPower: 1.2
+  MoveDecell: 1.04
+  AirDecell: 1.1
   GroundStickingDistance: 0.1
   GroundStickingPower: -1.4
   InputLerpingRateOverSpeed:
@@ -5863,7 +5863,7 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.20073509
+      time: 0.14610863
       value: 20.77298
       inSlope: 0.16642177
       outSlope: 0.16642177
@@ -5872,8 +5872,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.5502242
-      value: 5.8275557
+      time: 0.44826496
+      value: 5.7186995
       inSlope: -0.25124428
       outSlope: -0.25124428
       tangentMode: 0
@@ -5928,14 +5928,14 @@ MonoBehaviour:
     m_RotationOrder: 4
   UtopiaIntensity: 220
   UtopiaInitialInputLerpSpeed: 10
-  SlopeEffectLimit: 0.88
+  SlopeEffectLimit: 0.9
   StandOnSlopeLimit: 0.8
   SlopePower: -1.5
   SlopeRunningAngleLimit: 0.5
-  SlopeSpeedLimit: 90
-  UphillMultiplier: 0.6
-  DownhillMultiplier: 0.7
-  StartDownhillMultiplier: -2
+  SlopeSpeedLimit: 110
+  UphillMultiplier: 0.55
+  DownhillMultiplier: 0.5
+  StartDownhillMultiplier: -1.6
   SlopePowerOverSpeed:
     serializedVersion: 2
     m_Curve:
@@ -5949,8 +5949,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.7308518
     - serializedVersion: 3
-      time: 0.53657866
-      value: 0.6611633
+      time: 0.58145475
+      value: 0.7018737
       inSlope: -0.79097927
       outSlope: -0.79097927
       tangentMode: 0
@@ -5969,9 +5969,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  StickingLerps: {x: 0.885, y: 1.5}
-  StickingNormalLimit: 0.4
-  StickCastAhead: 1.9
+  StickingLerps: {x: 0.9, y: 1.2}
+  StickingNormalLimit: 0.3
+  StickCastAhead: 1.5
   negativeGHoverHeight: 0.6115
   RayToGroundDistance: 0.9
   RaytoGroundSpeedRatio: 0.01
@@ -5981,43 +5981,43 @@ MonoBehaviour:
   RotationResetThreshold: -0.1
   Playermask:
     serializedVersion: 2
-    m_Bits: 69655
-  AirControlAmmount: 2
-  AirSkiddingForce: 25
-  StopAirMovementIfNoInput: 0
-  Gravity: {x: 0, y: -2, z: 0}
+    m_Bits: 23
+  AirControlAmmount: 1.4
+  AirSkiddingForce: 6
+  StopAirMovementIfNoInput: 1
+  Gravity: {x: 0, y: -1.5, z: 0}
   MaxEnergy: 200
   ChunkEnergy: 40
   EnergyBonus: 0
   CurrentEnergy: 0
   RollingLandingBoost: 1.4
-  RollingDownhillBoost: 3
-  RollingUphillBoost: 1.12
+  RollingDownhillBoost: 1.8
+  RollingUphillBoost: 1.11
   RollingStartSpeed: 30
-  RollingTurningDecreace: 0.7
+  RollingTurningDecreace: 0.6
   RollingFlatDecell: 1.009
   SlopeTakeoverAmount: 0.995
-  SpeedToStopAt: 10
+  SpeedToStopAt: 16
   SkiddingStartPoint: 5
-  SkiddingIntensity: -3
+  SkiddingIntensity: -4
   StartJumpDuration: 0.2
   StartSlopedJumpDuration: 0.2
-  StartJumpSpeed: 5
-  JumpSlopeConversion: 0.05
+  StartJumpSpeed: 4
+  JumpSlopeConversion: 0.03
   StopYSpeedOnRelease: 2
   JumpRollingLandingBoost: 0
   canDoubleJump: 1
   canTripleJump: 0
-  doubleJumpSpeed: 6
-  doubleJumpDuration: 0.15
+  doubleJumpSpeed: 4.5
+  doubleJumpDuration: 0.14
   StepSpeed: 70
-  StepDistance: 17
+  StepDistance: 20
   AirStepSpeed: 60
   AirStepDistance: 12
   StepLayerMask:
     serializedVersion: 2
     m_Bits: 12289
-  TargetSearchDistance: 35
+  TargetSearchDistance: 25
   TargetLayer:
     serializedVersion: 2
     m_Bits: 131072
@@ -6025,54 +6025,54 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   FieldOfView: 0.2
-  IconScale: 2
-  IconDistanceScaling: 0.3
+  IconScale: 1.5
+  IconDistanceScaling: 0.2
   FacingAmount: 0.6
-  HomingAttackSpeed: 80
+  HomingAttackSpeed: 70
   HomingTimerLimit: 1
-  HomingSuccessDelay: 0.3
+  HomingSuccessDelay: 0.4
   CanDashDuringFall: 1
   isAdditive: 1
   AirDashSpeed: 60
   AirDashDuration: 0.4
   MaximumSpeed: 25
-  MaximumSlope: 0.8
-  SpinDashChargingSpeed: 1.09
-  MinimunCharge: 30
-  MaximunCharge: 130
-  SpinDashStillForce: 1.07
-  DropSpeed: 220
+  MaximumSlope: 0.92
+  SpinDashChargingSpeed: 1.08
+  MinimunCharge: 20
+  MaximunCharge: 100
+  SpinDashStillForce: 1.05
+  DropSpeed: 100
   BounceMaxSpeed: 140
   BounceUpSpeeds:
-  - 55
-  - 65
+  - 40
+  - 50
+  - 60
+  - 68
   - 75
-  - 85
-  - 95
-  BounceUpMaxSpeed: 90
+  BounceUpMaxSpeed: 75
   BounceConsecutiveFactor: 1.05
-  BounceHaltFactor: 0.9
-  LightDashTargetSearchDistance: 200
+  BounceHaltFactor: 0.85
+  LightDashTargetSearchDistance: 50
   LightDashIconScale: 0
   DashSpeed: 120
   EndingSpeedFactor: 1.2
   MinimumEndingSpeed: 60
-  DropDashChargingSpeed: 1.5
-  DropMinimunCharge: 70
-  DropMaximunCharge: 200
-  BouncingPower: 45
-  HomingBouncingPower: 40
-  EnemyHomingStoppingPowerWhenAdditive: 10
+  DropDashChargingSpeed: 1.4
+  DropMinimunCharge: 40
+  DropMaximunCharge: 150
+  BouncingPower: 60
+  HomingBouncingPower: 55
+  EnemyHomingStoppingPowerWhenAdditive: 50
   StopOnHomingAttackHit: 1
-  StopOnHit: 0
-  EnemyDamageShakeAmmount: 0.4
-  EnemyHitShakeAmmount: 2
+  StopOnHit: 1
+  EnemyDamageShakeAmmount: 0.5
+  EnemyHitShakeAmmount: 1.2
   KnockbackUpwardsForce: 30
   ResetSpeedOnHit: 0
-  KnockbackForce: 30
+  KnockbackForce: 40
   InvincibilityTime: 90
   MaxRingLoss: 20
-  RingReleaseSpeed: 700
+  RingReleaseSpeed: 600
   RingArcSpeed: 20
   FlickerSpeed: 3
   MinStartSpeed: 20
@@ -6089,7 +6089,7 @@ MonoBehaviour:
   SkinOffsetPosRail: {x: 0, y: -0.4, z: 0}
   SkinOffsetPosZip: {x: 0, y: -0.4, z: 0}
   OffsetRail: 2.05
-  OffsetZip: -6
+  OffsetZip: -7
   KickDuration: 0.6
   kickForce: 2000
   kickDamage: 1
@@ -6859,6 +6859,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isZipLine: 0
   skinRotationSpeed: 20
+  PlayerSpeed: 0
   TargetDistance: 10
   CameraLerp: 10
 --- !u!114 &114329351316114260
@@ -6952,6 +6953,7 @@ MonoBehaviour:
   skinRotationSpeed: 20
   SkinOffsetPos: {x: 0, y: 0, z: 0}
   Offset: 2.05
+  PlayerSpeed: 0
   TargetDistance: 10
   CameraLerp: 10
   OriginalRayToGroundRot: 0
@@ -6999,6 +7001,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skinRotationSpeed: 20
+  ClimbingSpeed: 0
+  RunningSpeed: 0
 --- !u!114 &114332006758487302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18480,7 +18484,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7785066, y: 1}
+    m_SensorSize: {x: 1.7771084, y: 1}
   m_Transitions:
     m_BlendHint: 1
     m_InheritPosition: 0
@@ -19501,8 +19505,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
-  m_LocalRotation: {x: 0.38468015, y: -0, z: 0.00000004470348, w: 0.9230499}
-  m_LocalPosition: {x: 22.072906, y: 38.967415, z: -880.2802}
+  m_LocalRotation: {x: -0.03439242, y: 0.94383913, z: 0.10415202, w: 0.31166857}
+  m_LocalPosition: {x: -318.0297, y: 183.78723, z: 455.36124}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19640,7 +19644,7 @@ MonoBehaviour:
   MoveHeightBasedOnSpeed: 1
   HeightToLock: 20
   HeightFollowSpeed: 7
-  FallSpeedThreshold: -130
+  FallSpeedThreshold: -110
   CameraMaxDistance: -14
   CameraYOffset: 3.5
   AngleThreshold: 0.3
@@ -19656,7 +19660,7 @@ MonoBehaviour:
   yMinLimit: -100
   yMaxLimit: 100
   StartLockCam: 0
-  LockCamAtHighSpeed: 80
+  LockCamAtHighSpeed: 60
   y: 20
   MoveLerpingSpeed: 3
   RotationLerpingSpeed: 10
@@ -19665,7 +19669,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   LockedRotationSpeed: 5
-  ShakeDampen: 20
+  ShakeDampen: 5
 --- !u!114 &1617007407978008853
 MonoBehaviour:
   m_ObjectHideFlags: 0

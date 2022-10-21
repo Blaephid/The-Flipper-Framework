@@ -144,7 +144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 150
+  Path: 0
+  Speed: 80
   LockToDirection: 1
   LockControl: 1
   LockControlTime: 40
@@ -153,6 +154,7 @@ MonoBehaviour:
   isDashRing: 1
   ResetRotation: 1
   AffectCamera: 1
+  path: {fileID: 0}
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0
@@ -346,3 +348,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StopRender: 0
+  Des: 0
