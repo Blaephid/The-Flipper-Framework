@@ -25,8 +25,8 @@ public class DebugUI : MonoBehaviour {
     void Update () {
 
         string debug = " DEBUG \n" +
-            " Speed: " + phys.p_rigidbody.velocity + "\n" +
-            " Speed Magnitude: " + phys.p_rigidbody.velocity.magnitude + "\n" +
+            " Speed: " + phys.rb.velocity + "\n" +
+            " Speed Magnitude: " + phys.rb.velocity.magnitude + "\n" +
             " SlopePower: " + phys.curvePosSlope + "\n" +
             " Grounded: " + phys.Grounded + "\n" +
             " TangentialDragOver: " + phys.curvePosTang + "\n" +

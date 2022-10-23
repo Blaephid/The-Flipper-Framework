@@ -59,7 +59,7 @@ public class Action09_SpinKick : MonoBehaviour
         originalTurnSpeed = Player.TurnSpeed;
         originalAccel = Player.MoveAccell;
         originalDecel = Player.MoveDecell;
-        originalDirection = new Vector2(Player.p_rigidbody.velocity.x, Player.p_rigidbody.velocity.z);
+        originalDirection = new Vector2(Player.rb.velocity.x, Player.rb.velocity.z);
 
         //CHanges collider to decrease height
         slideCol.gameObject.SetActive(true);

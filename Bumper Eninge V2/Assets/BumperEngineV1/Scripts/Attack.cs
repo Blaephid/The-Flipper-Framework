@@ -50,12 +50,12 @@ public class Attack : MonoBehaviour
 
 					StartCoroutine(ResetTriggerBool());
 
-					newSpeed = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
-					newSpeed.y = BouncingPower + Mathf.Abs(Player.p_rigidbody.velocity.y);
-					if (newSpeed.y > Player.p_rigidbody.velocity.y * 1.5f)
-						newSpeed.y = Player.p_rigidbody.velocity.y * 1.5f;
+					newSpeed = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+					newSpeed.y = BouncingPower + Mathf.Abs(Player.rb.velocity.y);
+					if (newSpeed.y > Player.rb.velocity.y * 1.5f)
+						newSpeed.y = Player.rb.velocity.y * 1.5f;
 
-					Player.p_rigidbody.velocity = newSpeed;
+					Player.rb.velocity = newSpeed;
 
 				}
 
@@ -67,7 +67,7 @@ public class Attack : MonoBehaviour
 					//An additive hit that keeps momentum
 					if (Actions.HomingPressed || Actions.JumpPressed)
 					{
-						newSpeed = new Vector3(Player.p_rigidbody.velocity.x * 0.8f, HomingBouncingPower, Player.p_rigidbody.velocity.z * 0.8f);
+						newSpeed = new Vector3(Player.rb.velocity.x * 0.8f, HomingBouncingPower, Player.rb.velocity.z * 0.8f);
 						Actions.SpecialPressed = false;
 						Actions.HomingPressed = false;
 						//Debug.Log("Additive Hit");
@@ -77,12 +77,12 @@ public class Attack : MonoBehaviour
 					//A normal hit that decreases speed
 					else
 					{
-						newSpeed = new Vector3(Player.p_rigidbody.velocity.x * 0.3f, HomingBouncingPower, Player.p_rigidbody.velocity.z * 0.15f);
+						newSpeed = new Vector3(Player.rb.velocity.x * 0.3f, HomingBouncingPower, Player.rb.velocity.z * 0.15f);
 						//Debug.Log("Normal Hit");
 					}
 					
 
-					Player.p_rigidbody.velocity = newSpeed;
+					Player.rb.velocity = newSpeed;
 					
 
 
@@ -97,9 +97,9 @@ public class Attack : MonoBehaviour
 
 					newSpeed = new Vector3(1, 0, 1);
 
-					newSpeed = Vector3.Scale(Player.p_rigidbody.velocity, newSpeed);
+					newSpeed = Vector3.Scale(Player.rb.velocity, newSpeed);
 					newSpeed.y = HomingBouncingPower * 1.8f;
-					Player.p_rigidbody.velocity = newSpeed;
+					Player.rb.velocity = newSpeed;
 
 					if (Stats != null)
 						Player.HomingDelay = Stats.HomingSuccessDelay;
@@ -155,12 +155,12 @@ public class Attack : MonoBehaviour
 							StartCoroutine(ResetTriggerBool());
 
 							
-							newSpeed = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
-							newSpeed.y = BouncingPower + Mathf.Abs(Player.p_rigidbody.velocity.y);
-							if (newSpeed.y > Player.p_rigidbody.velocity.y * 1.5f)
-								newSpeed.y = Player.p_rigidbody.velocity.y * 1.5f;
+							newSpeed = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+							newSpeed.y = BouncingPower + Mathf.Abs(Player.rb.velocity.y);
+							if (newSpeed.y > Player.rb.velocity.y * 1.5f)
+								newSpeed.y = Player.rb.velocity.y * 1.5f;
 							
-							Player.p_rigidbody.velocity = newSpeed;
+							Player.rb.velocity = newSpeed;
 
 						}
 
@@ -172,7 +172,7 @@ public class Attack : MonoBehaviour
 							//An additive hit that keeps momentum
 							if (Actions.HomingPressed || Actions.JumpPressed)
                             {
-								newSpeed = new Vector3(Player.p_rigidbody.velocity.x * 0.8f, HomingBouncingPower, Player.p_rigidbody.velocity.z * 0.8f);
+								newSpeed = new Vector3(Player.rb.velocity.x * 0.8f, HomingBouncingPower, Player.rb.velocity.z * 0.8f);
 								//Actions.SpecialPressed = false;
 								//Actions.HomingPressed = false;
 
@@ -181,11 +181,11 @@ public class Attack : MonoBehaviour
 							//A normal hit that decreases speed
 							else
 							{ 		
-								newSpeed = new Vector3(Player.p_rigidbody.velocity.x * 0.3f, HomingBouncingPower, Player.p_rigidbody.velocity.z * 0.15f);
+								newSpeed = new Vector3(Player.rb.velocity.x * 0.3f, HomingBouncingPower, Player.rb.velocity.z * 0.15f);
 							}
 								
 
-							Player.p_rigidbody.velocity = newSpeed;
+							Player.rb.velocity = newSpeed;
 							
 							
 							Player.HomingDelay = Stats.HomingSuccessDelay;
@@ -199,9 +199,9 @@ public class Attack : MonoBehaviour
 							
 							newSpeed = new Vector3(1, 0, 1);
 							
-							newSpeed = Vector3.Scale(Player.p_rigidbody.velocity, newSpeed);
+							newSpeed = Vector3.Scale(Player.rb.velocity, newSpeed);
 							newSpeed.y = HomingBouncingPower * 1.8f;
-							Player.p_rigidbody.velocity = newSpeed;
+							Player.rb.velocity = newSpeed;
 
 							if (Stats != null)
 								Player.HomingDelay = Stats.HomingSuccessDelay;
@@ -235,7 +235,7 @@ public class Attack : MonoBehaviour
 			}
 		}
 
-		Debug.Log(Player.p_rigidbody.velocity);
+		Debug.Log(Player.rb.velocity);
 	}
 
 	private IEnumerator ResetTriggerBool()

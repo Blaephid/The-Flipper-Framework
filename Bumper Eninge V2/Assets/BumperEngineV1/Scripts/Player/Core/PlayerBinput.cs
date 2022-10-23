@@ -71,66 +71,69 @@ public class PlayerBinput : MonoBehaviour {
     {
         // Get curve position
 
-        InputLerpSpeed = InputLerpingRateOverSpeed.Evaluate((Player.p_rigidbody.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
-        UtopiaLerpingSpeed = UtopiaInputLerpingRateOverSpeed.Evaluate((Player.p_rigidbody.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
+        InputLerpSpeed = InputLerpingRateOverSpeed.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
+        UtopiaLerpingSpeed = UtopiaInputLerpingRateOverSpeed.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
 
-        
 
-		// calculate move direction
-		if (cam != null)
-		{
+
+        AcquireMoveInput();
+
+    }
+
+    void AcquireMoveInput()
+    {
+        // calculate move direction
+        if (cam != null)
+        {
             moveX = Actions.moveX;
             moveY = Actions.moveY;
-			moveInp = new Vector3(moveX, 0, moveY);
+            moveInp = new Vector3(moveX, 0, moveY);
 
-			InitialInputMag = moveInp.sqrMagnitude;
-			InitialLerpedInput = Mathf.Lerp(InitialLerpedInput, InitialInputMag, Time.deltaTime * UtopiaInitialInputLerpSpeed);
+            InitialInputMag = moveInp.sqrMagnitude;
+            InitialLerpedInput = Mathf.Lerp(InitialLerpedInput, InitialInputMag, Time.deltaTime * UtopiaInitialInputLerpSpeed);
 
-			float currentInputSpeed = (!UtopiaTurning) ? InputLerpSpeed : UtopiaLerpingSpeed;
+            float currentInputSpeed = (!UtopiaTurning) ? InputLerpSpeed : UtopiaLerpingSpeed;
 
             //Make movement relative to camera
 
-			if (moveInp != Vector3.zero && !onPath)
-			{
-				Vector3 transformedInput;
-				transformedInput = Quaternion.FromToRotation(cam.up, Player.GroundNormal) * (cam.rotation * moveInp);    
-				transformedInput = transform.InverseTransformDirection (transformedInput);
-				transformedInput.y = 0.0f;
-				
-				Player.RawInput = transformedInput;
-				moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * currentInputSpeed);
-			}
-			else if (!onPath)
-			{
-				//Debug.Log ("InputNull");
-				Vector3 transformedInput = Quaternion.FromToRotation(cam.up, Player.GroundNormal) * (cam.rotation * moveInp);
-				transformedInput = transform.InverseTransformDirection(transformedInput);
-				transformedInput.y = 0.0f;
-				Player.RawInput = transformedInput;
-				moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * (UtopiaLerpingSpeed*UtopiaIntensity));
-			}
-				
-			if (moveInp.x < 0.01 && moveInp.z < 0.01 && moveInp.x > -0.01 && moveInp.z > -0.01) 
-			{
-				moveInp = Vector3.zero;
-			}
+            if (moveInp != Vector3.zero && !onPath)
+            {
+                Vector3 transformedInput;
+                transformedInput = Quaternion.FromToRotation(cam.up, Player.GroundNormal) * (cam.rotation * moveInp);
+                transformedInput = transform.InverseTransformDirection(transformedInput);
+                transformedInput.y = 0.0f;
 
-			move = moveInp;
-		}
+                Player.RawInput = transformedInput;
+                moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * currentInputSpeed);
+            }
+            else if (!onPath)
+            {
+                //Debug.Log ("InputNull");
+                Vector3 transformedInput = Quaternion.FromToRotation(cam.up, Player.GroundNormal) * (cam.rotation * moveInp);
+                transformedInput = transform.InverseTransformDirection(transformedInput);
+                transformedInput.y = 0.0f;
+                Player.RawInput = transformedInput;
+                moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * (UtopiaLerpingSpeed * UtopiaIntensity));
+            }
+
+            if (moveInp.x < 0.01 && moveInp.z < 0.01 && moveInp.x > -0.01 && moveInp.z > -0.01)
+            {
+                moveInp = Vector3.zero;
+            }
+
+            move = moveInp;
+        }
 
         //Lock Input Funcion
         if (LockInput)
         {
             //Debug.Log(LockedCounter);
-            LockedInputFunction();
+            LockedInputFunction(move);
         }
 
         InputExporter.x = moveInp.x;
         InputExporter.y = moveInp.y;
-
     }
-
-
 
     void FixedUpdate()
     {
@@ -140,7 +143,7 @@ public class PlayerBinput : MonoBehaviour {
 
     }
 
-    void LockedInputFunction()
+    void LockedInputFunction(Vector2 oldMove)
     {
         move = Vector3.zero;
         LockedCounter += 1;
@@ -161,6 +164,7 @@ public class PlayerBinput : MonoBehaviour {
         {
             Player.MoveDecell = prevDecel;
             LockInput = false;
+            move = oldMove;
         }
     }
 

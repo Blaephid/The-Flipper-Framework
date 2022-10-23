@@ -58,7 +58,7 @@ public class Action06_Bounce : MonoBehaviour {
 		////Debug.Log ("BounceDrop");
 		sounds.BounceStartSound();
 		BounceAvailable = false;
-		Player.p_rigidbody.velocity = new Vector3(Player.p_rigidbody.velocity.x * BounceHaltFactor, 0f, Player.p_rigidbody.velocity.z * BounceHaltFactor);
+		Player.rb.velocity = new Vector3(Player.rb.velocity.x * BounceHaltFactor, 0f, Player.rb.velocity.z * BounceHaltFactor);
 		Player.AddVelocity (new Vector3 (0, -DropSpeed, 0));
 
 		HomingTrailScript.emitTime = -1f;
@@ -87,7 +87,7 @@ public class Action06_Bounce : MonoBehaviour {
 
 		HomingTrailScript.emit = true;
 
-		Player.p_rigidbody.velocity = new Vector3 (Player.p_rigidbody.velocity.x, CurrentBounceAmount, Player.p_rigidbody.velocity.z);
+		Player.rb.velocity = new Vector3 (Player.rb.velocity.x, CurrentBounceAmount, Player.rb.velocity.z);
 		Player.AddVelocity (Player.GroundNormal);
 
 		sounds.BounceImpactSound ();
@@ -105,7 +105,7 @@ public class Action06_Bounce : MonoBehaviour {
 
 	private void Stomp()
     {
-		Player.p_rigidbody.velocity = new Vector3 (0f, Player.p_rigidbody.velocity.y, 0f);
+		Player.rb.velocity = new Vector3 (0f, Player.rb.velocity.y, 0f);
 		CharacterAnimator.SetInteger("Action", 6);
 
 		jumpBall.SetActive(false);
@@ -128,7 +128,7 @@ public class Action06_Bounce : MonoBehaviour {
 		bool groundhit = Player.Grounded || raycasthit;
 
         //End Action
-        if (!raycasthit && HasBounced && Player.p_rigidbody.velocity.y > 10f) { 
+        if (!raycasthit && HasBounced && Player.rb.velocity.y > 10f) { 
 			
 			HasBounced = false;
 

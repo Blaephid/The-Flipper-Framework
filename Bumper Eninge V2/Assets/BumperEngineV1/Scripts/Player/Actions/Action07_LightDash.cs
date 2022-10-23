@@ -43,8 +43,8 @@ public class Action07_LightDash : MonoBehaviour {
 
     public void InitialEvents()
 	{
-		InitialVelocityMagnitude = Player.p_rigidbody.velocity.magnitude;
-		Player.p_rigidbody.velocity = Vector3.zero;
+		InitialVelocityMagnitude = Player.rb.velocity.magnitude;
+		Player.rb.velocity = Vector3.zero;
 
 		JumpBall.SetActive(false);
 		if (HomingTrailContainer.transform.childCount < 1) 
@@ -65,12 +65,12 @@ public class Action07_LightDash : MonoBehaviour {
 
 		//Set Animator Parameters
 		CharacterAnimator.SetInteger("Action", 7);
-		CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
-		CharacterAnimator.SetFloat("GroundSpeed", Player.p_rigidbody.velocity.magnitude);
+		CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+		CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
 		CharacterAnimator.SetBool("Grounded", Player.Grounded);
 
 		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, Player.p_rigidbody.velocity.y, Player.p_rigidbody.velocity.z);
+		Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
 		Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
 		CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 
@@ -85,7 +85,7 @@ public class Action07_LightDash : MonoBehaviour {
 		{
 			Target = LightDashControl.TargetObject.transform;
 			direction = Target.position - transform.position;
-			Player.p_rigidbody.velocity = direction.normalized * DashSpeed;
+			Player.rb.velocity = direction.normalized * DashSpeed;
 
 			GetComponent<CameraControl>().Cam.FollowDirection(2, 14f, -10,0);
 		}
@@ -97,8 +97,8 @@ public class Action07_LightDash : MonoBehaviour {
 			EndingSpeedResult = Mathf.Max (MinimumEndingSpeed, InitialVelocityMagnitude);
 			////Debug.Log (InitialVelocityMagnitude);
 			////Debug.Log (EndingSpeedResult);
-			Player.p_rigidbody.velocity = Vector3.zero;
-			Player.p_rigidbody.velocity = direction.normalized*EndingSpeedResult*EndingSpeedFactor;
+			Player.rb.velocity = Vector3.zero;
+			Player.rb.velocity = direction.normalized*EndingSpeedResult*EndingSpeedFactor;
 		
 			GetComponent<CameraControl>().Cam.SetCamera(direction.normalized, 2.5f, 20, 5f,10);
 

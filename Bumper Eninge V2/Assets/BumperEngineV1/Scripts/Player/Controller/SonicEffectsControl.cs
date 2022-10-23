@@ -29,16 +29,16 @@ public class SonicEffectsControl : MonoBehaviour {
 
     void FixedUpdate () {
 	
-		if(Player.p_rigidbody.velocity.sqrMagnitude > RunningDustThreshold && Player.Grounded && RunningDust != null)
+		if(Player.rb.velocity.sqrMagnitude > RunningDustThreshold && Player.Grounded && RunningDust != null)
         {
             RunningDust.Emit(Random.Range(0,20));
         }
 
-		if (Player.p_rigidbody.velocity.sqrMagnitude > SpeedLinesThreshold && Player.Grounded && SpeedLines != null && SpeedLines.isPlaying == false) 
+		if (Player.rb.velocity.sqrMagnitude > SpeedLinesThreshold && Player.Grounded && SpeedLines != null && SpeedLines.isPlaying == false) 
 		{
 			SpeedLines.Play ();
 		} 
-		else if (Player.p_rigidbody.velocity.sqrMagnitude < SpeedLinesThreshold && SpeedLines.isPlaying == true || (!Player.Grounded)) 
+		else if (Player.rb.velocity.sqrMagnitude < SpeedLinesThreshold && SpeedLines.isPlaying == true || (!Player.Grounded)) 
 		{
 			SpeedLines.Stop ();
 		}

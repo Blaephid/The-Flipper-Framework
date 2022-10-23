@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 4000013130497754}
   - component: {fileID: 65000010017290134}
   - component: {fileID: 114000010754803480}
+  - component: {fileID: 8349486046636627964}
   - component: {fileID: 82000010483717982}
   m_Layer: 0
   m_Name: DashRing
@@ -155,6 +156,28 @@ MonoBehaviour:
   ResetRotation: 1
   AffectCamera: 1
   path: {fileID: 0}
+--- !u!114 &8349486046636627964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013037187298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DebugForce: 1
+  LineLength: 30
+  isSpring: 0
+  isBoostRing: 1
+  spring: {fileID: 0}
+  speedPad: {fileID: 114000010754803480}
+  Force: 80
+  ShotCenter: {fileID: 4000013130497754}
+  Gravity: {x: 0, y: -1.5, z: 0}
+  PlayerDecell: 1.002
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0

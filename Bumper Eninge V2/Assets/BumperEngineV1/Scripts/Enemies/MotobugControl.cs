@@ -66,7 +66,8 @@ public class MotobugControl : MonoBehaviour {
         MoveTime += 1;
         RandomTime += 1;
 
-        Anim.SetFloat("GroundSpeed", Physics.b_normalSpeed);
+        //ANIME
+        //Anim.SetFloat("GroundSpeed", Physics.b_normalSpeed);
 
         if (MoveTime > 0)
         {

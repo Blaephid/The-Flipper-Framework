@@ -18,6 +18,7 @@ public class PlayerBhysics : MonoBehaviour
 
     [HideInInspector] public float MoveDecell = 1.3f;
     [HideInInspector] public float AirDecell = 1.05f;
+    [HideInInspector] public float naturalAirDecell = 1.01f;
 
     [HideInInspector] public float TangentialDrag;
     [HideInInspector] public float TangentialDragShiftSpeed;
@@ -65,20 +66,12 @@ public class PlayerBhysics : MonoBehaviour
     public Vector3 GroundNormal { get; set; }
     public Vector3 CollisionPointsNormal { get; set; }
 
-    public Rigidbody p_rigidbody { get; set; }
+    public Rigidbody rb { get; set; }
 
     [HideInInspector] public bool GravityAffects = true;
     [HideInInspector] public Vector3 StartGravity;
     [HideInInspector] public Vector3 Gravity;
     public Vector3 MoveInput { get; set; }
-
-    [Header("Energy Values")]
-
-
-    [HideInInspector] public float MaxEnergy = 200;
-    [HideInInspector] public float ChunkEnergy = 40;
-    [HideInInspector] public float EnergyBonus = 0;
-    public float CurrentEnergy;
 
     [Header("UI objects")]
 
@@ -169,7 +162,7 @@ public class PlayerBhysics : MonoBehaviour
     private void Start()
     {
         MasterPlayer = this;
-        p_rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         PreviousInput = transform.forward;
         Action = GetComponent<ActionManager>();
         Stats = GetComponent<CharacterStats>();
@@ -244,9 +237,9 @@ public class PlayerBhysics : MonoBehaviour
     void Update()
     {
 
-        SpeedMagnitude = p_rigidbody.velocity.magnitude;
+        SpeedMagnitude = rb.velocity.magnitude;
         //Debug.Log(transform.rotation);
-        Vector3 releVec = transform.rotation * p_rigidbody.velocity;
+        Vector3 releVec = transform.rotation * rb.velocity;
         HorizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
         playerPos = transform.position;
     }
@@ -271,32 +264,32 @@ public class PlayerBhysics : MonoBehaviour
         }
 
         //Set Curve thingies
-        curvePosAcell = Mathf.Lerp(curvePosAcell, AccellOverSpeed.Evaluate((p_rigidbody.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * AccellShiftOverSpeed);
-        curvePosTang = Mathf.Lerp(curvePosTang, TangDragOverSpeed.Evaluate((p_rigidbody.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * TangentialDragShiftSpeed);
-        curvePosSlope = Mathf.Lerp(curvePosSlope, SlopePowerOverSpeed.Evaluate((p_rigidbody.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * SlopePowerShiftSpeed);
+        curvePosAcell = Mathf.Lerp(curvePosAcell, AccellOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * AccellShiftOverSpeed);
+        curvePosTang = Mathf.Lerp(curvePosTang, TangDragOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * TangentialDragShiftSpeed);
+        curvePosSlope = Mathf.Lerp(curvePosSlope, SlopePowerOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * SlopePowerShiftSpeed);
 
 
 
         // Do it for X and Z
         if (HorizontalSpeedMagnitude > MaxSpeed)
         {
-            Vector3 ReducedSpeed = p_rigidbody.velocity;
-            float keepY = p_rigidbody.velocity.y;
+            Vector3 ReducedSpeed = rb.velocity;
+            float keepY = rb.velocity.y;
             ReducedSpeed = Vector3.ClampMagnitude(ReducedSpeed, MaxSpeed);
             ReducedSpeed.y = keepY;
-            p_rigidbody.velocity = ReducedSpeed;
+            rb.velocity = ReducedSpeed;
         }
 
         //Do it for Y
-        if (Mathf.Abs(p_rigidbody.velocity.y) > MaxFallingSpeed)
+        if (Mathf.Abs(rb.velocity.y) > MaxFallingSpeed)
         {
-            Vector3 ReducedSpeed = p_rigidbody.velocity;
-            float keepX = p_rigidbody.velocity.x;
-            float keepZ = p_rigidbody.velocity.z;
+            Vector3 ReducedSpeed = rb.velocity;
+            float keepX = rb.velocity.x;
+            float keepZ = rb.velocity.z;
             ReducedSpeed = Vector3.ClampMagnitude(ReducedSpeed, MaxSpeed);
             ReducedSpeed.x = keepX;
             ReducedSpeed.z = keepZ;
-            p_rigidbody.velocity = ReducedSpeed;
+            rb.velocity = ReducedSpeed;
         }
 
         //Rotate Colliders     
@@ -343,7 +336,7 @@ public class PlayerBhysics : MonoBehaviour
         CheckForGround();
     }
 
-    void HandleGroundControl(float deltaTime, Vector3 input)
+    Vector3 HandleGroundControl(float deltaTime, Vector3 input)
     {
         //By Damizean
 
@@ -351,7 +344,7 @@ public class PlayerBhysics : MonoBehaviour
         // Fetch velocity in the Player's local frame, decompose into lateral and vertical
         // components.
 
-        Vector3 velocity = p_rigidbody.velocity;
+        Vector3 velocity = rb.velocity;
         Vector3 localVelocity = transform.InverseTransformDirection(velocity);
 
         Vector3 lateralVelocity = new Vector3(localVelocity.x, 0.0f, localVelocity.z);
@@ -479,8 +472,10 @@ public class PlayerBhysics : MonoBehaviour
 
         velocity = transform.TransformDirection(localVelocity);
 
-        velocity = StickToGround(velocity);
-        p_rigidbody.velocity = velocity;
+        if(Grounded)
+            velocity = StickToGround(velocity);
+
+        return velocity;
 
 
     }
@@ -488,7 +483,7 @@ public class PlayerBhysics : MonoBehaviour
     void GroundMovement()
     {
         //Stop Rolling
-        if (p_rigidbody.velocity.sqrMagnitude < 20)
+        if (rb.velocity.sqrMagnitude < 20)
         {
             isRolling = false;
         }
@@ -499,7 +494,8 @@ public class PlayerBhysics : MonoBehaviour
         // Call Ground Control
         //Debug.Log(MoveInput);
         //Debug.Log(curvePosAcell);
-        HandleGroundControl(1, MoveInput * curvePosAcell);
+        Vector3 setVelocity = HandleGroundControl(1, MoveInput * curvePosAcell);
+        rb.velocity = setVelocity;
 
 
     }
@@ -529,7 +525,7 @@ public class PlayerBhysics : MonoBehaviour
         }
 
         //Get out of slope if speed is too low
-        if (p_rigidbody.velocity.sqrMagnitude < SlopeSpeedLimit && SlopeRunningAngleLimit > GroundNormal.y)
+        if (rb.velocity.sqrMagnitude < SlopeSpeedLimit && SlopeRunningAngleLimit > GroundNormal.y)
         {
             transform.rotation = Quaternion.identity;
             AddVelocity(GroundNormal * 3);
@@ -546,7 +542,7 @@ public class PlayerBhysics : MonoBehaviour
         {
 
 
-            if (p_rigidbody.velocity.y > StartDownhillMultiplier)
+            if (rb.velocity.y > StartDownhillMultiplier)
             {
                 //Debug.Log(p_rigidbody.velocity.y);
                 if (!isRolling)
@@ -596,19 +592,19 @@ public class PlayerBhysics : MonoBehaviour
         }
         if (Grounded && TimeOnGround > 0.1f && SpeedMagnitude > 1)
         {
-            float DirectionDot = Vector3.Dot(p_rigidbody.velocity.normalized, hit.normal);
+            float DirectionDot = Vector3.Dot(rb.velocity.normalized, hit.normal);
             Vector3 normal = hit.normal;
-            Vector3 Raycasterpos = p_rigidbody.position + (hit.normal * -0.12f);
+            Vector3 Raycasterpos = rb.position + (hit.normal * -0.12f);
 
             if (EnableDebug)
             {
-                Debug.Log("Speed: " + SpeedMagnitude + "\n Direction DOT: " + DirectionDot + " \n Velocity Normal:" + p_rigidbody.velocity.normalized + " \n  Ground normal : " + hit.normal);
+                Debug.Log("Speed: " + SpeedMagnitude + "\n Direction DOT: " + DirectionDot + " \n Velocity Normal:" + rb.velocity.normalized + " \n  Ground normal : " + hit.normal);
                 Debug.DrawRay(hit.point + (transform.right * 0.2F), hit.normal * 3, Color.yellow, 1);
             }
 
             //If the Raycast Hits something, it adds it's normal to the ground normal making an inbetween value the interpolates the direction;
-            Debug.DrawRay(Raycasterpos, p_rigidbody.velocity * StickCastAhead * Time.deltaTime, Color.black, 1);
-            if (Physics.Raycast(Raycasterpos, p_rigidbody.velocity.normalized, out hitSticking, SpeedMagnitude * StickCastAhead * Time.deltaTime, Playermask))
+            Debug.DrawRay(Raycasterpos, rb.velocity * StickCastAhead * Time.deltaTime, Color.black, 1);
+            if (Physics.Raycast(Raycasterpos, rb.velocity.normalized, out hitSticking, SpeedMagnitude * StickCastAhead * Time.deltaTime, Playermask))
             {
                 if (EnableDebug) Debug.Log("AvoidingGroundCollision");
 
@@ -632,13 +628,13 @@ public class PlayerBhysics : MonoBehaviour
                 {
                     Vector3 Dir = Align(Velocity, normal.normalized);
                     float lerp = StickingLerps.y;
-                    if (Physics.Raycast(Raycasterpos + (p_rigidbody.velocity * StickCastAhead * Time.deltaTime), -hit.normal, out hitSticking, 2.5f, Playermask))
+                    if (Physics.Raycast(Raycasterpos + (rb.velocity * StickCastAhead * Time.deltaTime), -hit.normal, out hitSticking, 2.5f, Playermask))
                     {
                         float dist = hitSticking.distance;
                         if (EnableDebug)
                         {
                             Debug.Log("PlacedDown" + dist);
-                            Debug.DrawRay(Raycasterpos + (p_rigidbody.velocity * StickCastAhead * Time.deltaTime), -hit.normal * 3, Color.cyan, 2);
+                            Debug.DrawRay(Raycasterpos + (rb.velocity * StickCastAhead * Time.deltaTime), -hit.normal * 3, Color.cyan, 2);
                         }
                         if (dist > 1.5f)
                         {
@@ -685,44 +681,63 @@ public class PlayerBhysics : MonoBehaviour
 
     public void AddVelocity(Vector3 force)
     {
-        p_rigidbody.velocity += force;
+        rb.velocity += force;
     }
 
     void AirMovement()
     {
+        Vector3 setVelocity;
         //AddSpeed
-        HandleGroundControl(AirControlAmmount, MoveInput);
-
+        //Air Skidding  
+        if (b_normalSpeed < 0 && (Action.Action == 0 || Action.Action == 1))
+        {
+            setVelocity = HandleGroundControl(1, (MoveInput * AirSkiddingForce) * MoveAccell);
+        }
+        else
+        {
+            if(HorizontalSpeedMagnitude > 10)
+            {
+                setVelocity = HandleGroundControl(AirControlAmmount * 1.3f, MoveInput);
+            }
+            else
+                setVelocity = HandleGroundControl(AirControlAmmount, MoveInput);
+        }
         //Get out of roll
         isRolling = false;
 
-        //Apply Gravity
-        if (GravityAffects)
-            p_rigidbody.velocity += Gravity;
-
-        //Reduce speed
-        if (MoveInput == Vector3.zero && StopAirMovementIfNoInput && p_rigidbody.velocity.sqrMagnitude < 100)
+        if (MoveInput == Vector3.zero && StopAirMovementIfNoInput && rb.velocity.sqrMagnitude < 100)
         {
-            Vector3 ReducedSpeed = p_rigidbody.velocity;
+            Vector3 ReducedSpeed = setVelocity;
             ReducedSpeed.x = ReducedSpeed.x / AirDecell;
             ReducedSpeed.z = ReducedSpeed.z / AirDecell;
-            p_rigidbody.velocity = ReducedSpeed;
+            setVelocity = ReducedSpeed;
+        }
+
+        if (HorizontalSpeedMagnitude > 10)
+        {
+            Vector3 ReducedSpeed = setVelocity;
+            ReducedSpeed.x = ReducedSpeed.x / naturalAirDecell;
+            ReducedSpeed.z = ReducedSpeed.z / naturalAirDecell;
+            setVelocity = ReducedSpeed;
         }
 
         //Get set for landing
         WasOnAir = true;
 
-        //Air Skidding  
-        if (b_normalSpeed < 0 && !Grounded)
-        {
-            HandleGroundControl(1, (MoveInput * AirSkiddingForce) * MoveAccell);
-        }
+        
+
+        //Apply Gravity
+        if (GravityAffects)
+            setVelocity += Gravity;
 
         //Max Falling Speed
-        if (p_rigidbody.velocity.y < MaxFallingSpeed)
+        if (rb.velocity.y < MaxFallingSpeed)
         {
-            p_rigidbody.velocity = new Vector3(p_rigidbody.velocity.x, MaxFallingSpeed, p_rigidbody.velocity.z);
+            setVelocity = new Vector3(setVelocity.x, MaxFallingSpeed, setVelocity.z);
         }
+
+        rb.velocity = setVelocity;
+
 
     }
 
@@ -787,7 +802,7 @@ public class PlayerBhysics : MonoBehaviour
             pointSum = pointSum / col.contacts.Length;
             CollisionPointsNormal = normalSum / col.contacts.Length;
 
-            if (p_rigidbody.velocity.normalized != Vector3.zero)
+            if (rb.velocity.normalized != Vector3.zero)
             {
                 CollisionPoint.position = pointSum;
             }
@@ -813,6 +828,7 @@ public class PlayerBhysics : MonoBehaviour
         StartMaxFallingSpeed = Stats.StartMaxFallingSpeed;
         StartJumpPower = Stats.StartJumpPower;
         MoveDecell = Stats.MoveDecell;
+        naturalAirDecell = Stats.naturalAirDecell;
         AirDecell = Stats.AirDecell;
         GroundStickingDistance = Stats.GroundStickingDistance;
         GroundStickingPower = Stats.GroundStickingPower;
@@ -828,10 +844,6 @@ public class PlayerBhysics : MonoBehaviour
         AirControlAmmount = Stats.AirControlAmmount;
         AirSkiddingForce = Stats.AirSkiddingForce;
         StopAirMovementIfNoInput = Stats.StopAirMovementIfNoInput;
-        MaxEnergy = Stats.MaxEnergy;
-        ChunkEnergy = Stats.ChunkEnergy;
-        EnergyBonus = Stats.EnergyBonus;
-        CurrentEnergy = Stats.CurrentEnergy;
         RollingLandingBoost = Stats.RollingLandingBoost;
         RollingDownhillBoost = Stats.RollingDownhillBoost;
         RollingUphillBoost = Stats.RollingUphillBoost;

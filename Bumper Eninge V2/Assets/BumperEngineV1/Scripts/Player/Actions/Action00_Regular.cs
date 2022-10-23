@@ -68,7 +68,7 @@ public class Action00_Regular : MonoBehaviour {
 		if(Player.SpeedMagnitude < 15 && Player.MoveInput == Vector3.zero && Player.Grounded)
 		{
 			Player.b_normalSpeed = 0;
-			Player.p_rigidbody.velocity *= 0.90f;
+			Player.rb.velocity *= 0.90f;
 			hasSked = false;
 
 		}
@@ -77,7 +77,7 @@ public class Action00_Regular : MonoBehaviour {
 		if((Player.b_normalSpeed < -SkiddingStartPoint) && Player.Grounded)
 		{
 
-			if (Player.SpeedMagnitude >= -SkiddingIntensity) Player.AddVelocity(Player.p_rigidbody.velocity.normalized * SkiddingIntensity * (Player.isRolling ? 0.5f : 1));
+			if (Player.SpeedMagnitude >= -SkiddingIntensity) Player.AddVelocity(Player.rb.velocity.normalized * SkiddingIntensity * (Player.isRolling ? 0.5f : 1));
 			
 			if (!hasSked && Player.Grounded && !Player.isRolling)
 			{
@@ -189,9 +189,9 @@ public class Action00_Regular : MonoBehaviour {
 		if (Actions.JumpPressed && Player.Grounded)
 		{
 			if (Player.SpeedMagnitude < 90)
-				Player.p_rigidbody.velocity *= 0.9f;
+				Player.rb.velocity *= 0.9f;
 			else
-				Player.p_rigidbody.velocity *= 0.85f;
+				Player.rb.velocity *= 0.85f;
 
 			JumpAction.InitialEvents(Player.GroundNormal);
 			Actions.ChangeAction(1);
@@ -200,10 +200,10 @@ public class Action00_Regular : MonoBehaviour {
 
         //Set Animator Parameters
         if (Player.Grounded) { CharacterAnimator.SetInteger("Action", 0); }
-        CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
-		CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player.p_rigidbody.velocity.x+Player.p_rigidbody.velocity.z)/2));
-        CharacterAnimator.SetFloat("GroundSpeed", Player.p_rigidbody.velocity.magnitude);
-		CharacterAnimator.SetFloat("HorizontalInput", Actions.moveX *Player.p_rigidbody.velocity.magnitude);
+        CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+		CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player.rb.velocity.x+Player.rb.velocity.z)/2));
+        CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
+		CharacterAnimator.SetFloat("HorizontalInput", Actions.moveX *Player.rb.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player.Grounded);
         CharacterAnimator.SetFloat("NormalSpeed", Player.b_normalSpeed + SkiddingStartPoint);
 
@@ -226,7 +226,7 @@ public class Action00_Regular : MonoBehaviour {
 		}
 
 		//Play Rolling Sound
-		else if (Actions.RollPressed && Player.Grounded && (Player.p_rigidbody.velocity.sqrMagnitude > Player.RollingStartSpeed)) 
+		else if (Actions.RollPressed && Player.Grounded && (Player.rb.velocity.sqrMagnitude > Player.RollingStartSpeed)) 
 		{
 			if (!Rolling)
 			{
@@ -263,7 +263,7 @@ public class Action00_Regular : MonoBehaviour {
         //Set Skin Rotation
         if (Player.Grounded)
 		{ 
-			Vector3 newForward = Player.p_rigidbody.velocity - transform.up * Vector3.Dot(Player.p_rigidbody.velocity, transform.up);
+			Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
 
             if (newForward.magnitude < 0.1f)
             {
@@ -278,9 +278,13 @@ public class Action00_Regular : MonoBehaviour {
         }
         else
         {
-            Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
-            Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.Gravity.normalized);
-            CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+            Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+			if(VelocityMod != Vector3.zero)
+            {
+				Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.Gravity.normalized);
+				CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+			}
+   
         }
 
 		/////Quickstepping
@@ -386,7 +390,7 @@ public class Action00_Regular : MonoBehaviour {
 
 
 			//Do a Bounce Attack
-			if (Actions.BouncePressed && Player.p_rigidbody.velocity.y < 35f)
+			if (Actions.BouncePressed && Player.rb.velocity.y < 35f)
 			{
 				Actions.Action06.InitialEvents();
 				Actions.ChangeAction(6);
@@ -398,7 +402,7 @@ public class Action00_Regular : MonoBehaviour {
 			if (Actions.Action08 != null)
 			{
 
-				if (!Player.Grounded && Actions.RollPressed && Actions.Action08 != null && Player.p_rigidbody.velocity.y < 20f)
+				if (!Player.Grounded && Actions.RollPressed && Actions.Action08 != null && Player.rb.velocity.y < 20f)
 				{
 					//Actions.Action08.DropDashAvailable = false;
 					Actions.ChangeAction(8);

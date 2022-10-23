@@ -29,6 +29,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -10.614943, y: -6, z: 271.1685}
   m_LocalScale: {x: 2.125547, y: 2.1255462, z: 2.1255462}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -52,10 +53,12 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -81,6 +84,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000012770380332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,4 +100,4 @@ MonoBehaviour:
   Distance: 1000
   TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
     type: 3}
-  Enemy: {fileID: 1000010720554734, guid: 8535d3293b8290641b9c7cdbdbf90251, type: 3}
+  Enemy: {fileID: 1000010720554734, guid: 69122227f361a3d4aae3617e55c68c01, type: 3}

@@ -140,6 +140,8 @@ namespace SplineMesh
 
                 Skin.transform.localPosition = Skin.transform.localPosition + SkinOffsetPosZip;
                 CameraTarget.parent = null;
+                StartCoroutine(setCamera(10));
+               
 
 
             }
@@ -157,9 +159,9 @@ namespace SplineMesh
             range = Range;
             RailTransform = RailPos;
             OnRail = true;
-            PlayerSpeed = Player.p_rigidbody.velocity.magnitude;
+            PlayerSpeed = Player.rb.velocity.magnitude;
             CurveSample sample = Rail_int.RailSpline.GetSampleAtDistance(range);
-            float dotdir = Vector3.Dot(Player.p_rigidbody.velocity.normalized, sample.tangent);
+            float dotdir = Vector3.Dot(Player.rb.velocity.normalized, sample.tangent);
             Crouching = false;
             PulleyRotate = 0f;
 
@@ -200,7 +202,7 @@ namespace SplineMesh
             }
 
 
-            Player.p_rigidbody.velocity = Vector3.zero;
+            Player.rb.velocity = Vector3.zero;
 
         }
 
@@ -241,7 +243,7 @@ namespace SplineMesh
             //Set Animator Parameters
             if (!isZipLine)
             {
-                CharacterAnimator.SetInteger("Action", 0);
+                CharacterAnimator.SetInteger("Action", 1);
 
             }
             else
@@ -249,12 +251,12 @@ namespace SplineMesh
                 CharacterAnimator.SetInteger("Action", 0);
 
             }
-            CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
-            CharacterAnimator.SetFloat("GroundSpeed", Player.p_rigidbody.velocity.magnitude);
-            CharacterAnimator.SetBool("Grounded", Player.Grounded);
+            CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+            CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
+            CharacterAnimator.SetBool("Grounded", false);
 
             //Set Animation Angle
-            Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, Player.p_rigidbody.velocity.y, Player.p_rigidbody.velocity.z);
+            Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
             Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
             CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 
@@ -275,9 +277,9 @@ namespace SplineMesh
                     if (isZipLine)
                     {
                         if (!backwards)
-                            Player.p_rigidbody.velocity = sample.tangent * PlayerSpeed;
+                            Player.rb.velocity = sample.tangent * PlayerSpeed;
                         else
-                            Player.p_rigidbody.velocity = -sample.tangent * PlayerSpeed;
+                            Player.rb.velocity = -sample.tangent * PlayerSpeed;
 
                         jumpCorrectedOffset = -jumpCorrectedOffset;
                         ZipBody.isKinematic = true;
@@ -369,12 +371,20 @@ namespace SplineMesh
             float ammount = (Time.deltaTime * PlayerSpeed);
 
             //Check for Low Speed to change direction so player dont get stuck
-            if (PlayerSpeed < 10)
+            if (PlayerSpeed < 11)
             {
+                PlayerSpeed -= 0.2f;
 
-                backwards = !backwards;
-                PlayerSpeed = 12;
-                ammount = (Time.deltaTime * PlayerSpeed);
+                if(PlayerSpeed < 7)
+                {
+                    if (Player.rb.velocity.normalized.y >= 0.1f)
+                    {
+                        backwards = !backwards;
+                        PlayerSpeed = 12;
+                        ammount = (Time.deltaTime * PlayerSpeed);
+                    }
+
+                }
 
             }
 
@@ -421,8 +431,12 @@ namespace SplineMesh
 
 
                     transform.position = sample.location + RailTransform.position + (transform.up * OffsetZip);
-                    Vector3 tempPos = sample.location + RailTransform.position;
-                    CameraTarget.position = new Vector3(tempPos.x, tempPos.y + OffsetZip, tempPos.z);
+
+                    Cam.FollowDirection(0.8f, 14, -5, 0.1f, true);
+                    CameraTarget.position = sample.location + RailTransform.position;
+                    CameraTarget.rotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, Vector3.up);
+
+
 
                     pulley.transform.position = sample.location + RailTransform.position;
 
@@ -443,10 +457,10 @@ namespace SplineMesh
                     if (isZipLine && ZipBody != null)
                     {
                         ZipBody.velocity = sample.tangent * (PlayerSpeed);
-                        Player.p_rigidbody.velocity = sample.tangent;
+                        Player.rb.velocity = sample.tangent;
                     }
                     else
-                        Player.p_rigidbody.velocity = sample.tangent * (PlayerSpeed);
+                        Player.rb.velocity = sample.tangent * (PlayerSpeed);
 
                     //remove camera tracking at the end of the rail to be safe from strange turns
                     //if (range > Rail_int.RailSpline.Length * 0.9f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f;}
@@ -457,10 +471,10 @@ namespace SplineMesh
                     if (isZipLine && ZipBody != null)
                     {
                         ZipBody.velocity = -sample.tangent * (PlayerSpeed);
-                        Player.p_rigidbody.velocity = -sample.tangent;
+                        Player.rb.velocity = -sample.tangent;
                     }
                     else
-                        Player.p_rigidbody.velocity = -sample.tangent * (PlayerSpeed);
+                        Player.rb.velocity = -sample.tangent * (PlayerSpeed);
                     //remove camera tracking at the end of the rail to be safe from strange turns
                     //if (range < 0.1f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f; }
                 }
@@ -490,7 +504,24 @@ namespace SplineMesh
                 }
                 else
                 {
-                    if (isZipLine) pulley.GetComponent<CapsuleCollider>().enabled = false;
+                    Input.LockInputForAWhile(15f, true);
+
+                    if (isZipLine)
+                    {
+                        pulley.GetComponent<CapsuleCollider>().enabled = false;
+                        if(backwards)
+                        {
+                            Player.rb.velocity = ZipBody.velocity;
+                        }
+                        else
+                        {
+                            Player.rb.velocity = ZipBody.velocity;
+                        }
+
+                        CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
+                    }
+                    
+
                     OnRail = false;
                     Actions.SpecialPressed = false;
                     Actions.HomingPressed = false;
@@ -511,7 +542,7 @@ namespace SplineMesh
             v = (v + 1) / 2;
             //use player vertical speed to find if player is going up or down
             //Debug.Log(Player.p_rigidbody.velocity.normalized.y);
-            if (Player.p_rigidbody.velocity.y >= -3f)
+            if (Player.rb.velocity.y >= -3f)
             {
                 //uphill and straight
                 float lean = UpHillMultiplier;
@@ -519,7 +550,7 @@ namespace SplineMesh
                 //Debug.Log("UpHill : *" + lean);
                 float force = (SlopePower * curvePosSlope) * lean;
                 //Debug.Log(Mathf.Abs(Player.p_rigidbody.velocity.normalized.y - 1));
-                float AbsYPow = Mathf.Abs(Player.p_rigidbody.velocity.normalized.y * Player.p_rigidbody.velocity.normalized.y);
+                float AbsYPow = Mathf.Abs(Player.rb.velocity.normalized.y * Player.rb.velocity.normalized.y);
                 //Debug.Log( "Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
                 force = (AbsYPow * force) + (DragVal * PlayerSpeed);
                 //Debug.Log(force);
@@ -539,7 +570,7 @@ namespace SplineMesh
                 //Debug.Log("DownHill : *" + lean);
                 float force = (SlopePower * curvePosSlope) * lean;
                 //Debug.Log(Mathf.Abs(Player.p_rigidbody.velocity.normalized.y));
-                float AbsYPow = Mathf.Abs(Player.p_rigidbody.velocity.normalized.y * Player.p_rigidbody.velocity.normalized.y);
+                float AbsYPow = Mathf.Abs(Player.rb.velocity.normalized.y * Player.rb.velocity.normalized.y);
                 //Debug.Log("Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
                 force = (AbsYPow * force) - (DragVal * PlayerSpeed);
                 //Debug.Log(force);
@@ -580,6 +611,17 @@ namespace SplineMesh
         //    Cam.OverrideTarget.position = Vector3.Lerp(Cam.OverrideTarget.position, transform.position + (sample.up * TargetDistance), Time.deltaTime * CameraLerp);
         //    Cam.TargetOverriden = true;
         //}
+
+        IEnumerator setCamera(int howLong)
+        {
+            Cam.Locked = true;
+            for(int i = 0; i > howLong; i++)
+            {
+                yield return new WaitForEndOfFrame();
+                Cam.FollowDirection(1.5f, 14, -5, 0.6f, true);
+            }
+            Cam.Locked = false;
+        }
 
 
         void AssignStats()

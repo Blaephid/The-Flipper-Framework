@@ -78,7 +78,7 @@ public class Action02_Homing : MonoBehaviour
         }
         else
         {
-            TargetDirection = Player.p_rigidbody.velocity.normalized;
+            TargetDirection = Player.rb.velocity.normalized;
         }
 
         Timer = 0;
@@ -127,12 +127,12 @@ public class Action02_Homing : MonoBehaviour
 
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 1);
-        CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
-        CharacterAnimator.SetFloat("GroundSpeed", Player.p_rigidbody.velocity.magnitude);
+        CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+        CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player.Grounded);
 
         //Set Animation Angle
-        Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
+        Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
         Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
         CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 
@@ -159,7 +159,7 @@ public class Action02_Homing : MonoBehaviour
 
         direction = Target.position - transform.position;
         newRotation = Vector3.RotateTowards(newRotation, direction, 1f, 0.0f);
-        Player.p_rigidbody.velocity = newRotation * Speed;
+        Player.rb.velocity = newRotation * Speed;
         
 
         //Set Player location when close enough, for precision.

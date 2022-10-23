@@ -83,7 +83,7 @@ public class Action03_SpinDash : MonoBehaviour
 
         effects.DoSpindash(1, SpinDashChargedEffectAmm * charge, energyCharge);
 
-        Player.p_rigidbody.velocity /= SpinDashStillForce;
+        Player.rb.velocity /= SpinDashStillForce;
 
         //Counter to exit after not pressing button for a bit;
         if (!pressedCurrently)
@@ -137,7 +137,7 @@ public class Action03_SpinDash : MonoBehaviour
         {
             
             sounds.SpinDashReleaseSound();
-            Player.p_rigidbody.velocity = charge * (PlayerSkinTransform.forward);
+            Player.rb.velocity = charge * (PlayerSkinTransform.forward);
             //Player.MoveInput = new Vector3 (-1, 0, 0);
 
             Actions.Action00.rollCounter = 0.2f;
@@ -153,7 +153,7 @@ public class Action03_SpinDash : MonoBehaviour
     {
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 0);
-        CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
+        CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
         CharacterAnimator.SetFloat("GroundSpeed", 0);
         CharacterAnimator.SetBool("Grounded", true);
         CharacterAnimator.SetFloat("NormalSpeed", 0);
@@ -170,9 +170,9 @@ public class Action03_SpinDash : MonoBehaviour
         {
             CharRot = Quaternion.LookRotation(Player.MainCamera.transform.forward - Player.GroundNormal * Vector3.Dot(Player.MainCamera.transform.forward, Player.GroundNormal), Vector3.up);
         }
-        else if (Player.p_rigidbody.velocity != Vector3.zero)
+        else if (Player.rb.velocity != Vector3.zero)
         {
-            CharRot = Quaternion.LookRotation(Player.p_rigidbody.velocity, Vector3.up);
+            CharRot = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
         }
         CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * Actions.Action00.skinRotationSpeed);
 

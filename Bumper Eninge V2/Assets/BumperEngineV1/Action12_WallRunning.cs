@@ -74,8 +74,8 @@ public class Action12_WallRunning : MonoBehaviour
         SwitchToGround = false;
         JumpBall.SetActive(false);
 
-        OriginalVelocity = Player.p_rigidbody.velocity;
-        Player.p_rigidbody.velocity = Vector3.zero;
+        OriginalVelocity = Player.rb.velocity;
+        Player.rb.velocity = Vector3.zero;
         distanceFromWall = coreCollider.radius * 1.15f;
 
 
@@ -214,9 +214,9 @@ public class Action12_WallRunning : MonoBehaviour
     void RunningSetup(RaycastHit wallHit, bool wallRight)
     {
         Vector3 wallDirection = wallHit.point - transform.position;
-        Player.p_rigidbody.AddForce(wallDirection * 20f);
+        Player.rb.AddForce(wallDirection * 20f);
 
-        transform.position = wallHit.point + -wallDirection.normalized * distanceFromWall;
+        transform.position = wallHit.point + (wallHit.normal * distanceFromWall);
 
         Running = true;
         Climbing = false;
@@ -227,7 +227,7 @@ public class Action12_WallRunning : MonoBehaviour
 
         ClimbingSpeed = 0f;
         RunningSpeed = Player.HorizontalSpeedMagnitude;
-        scrapingSpeed = Player.p_rigidbody.velocity.y * 0.7f;
+        scrapingSpeed = Player.rb.velocity.y * 0.7f;
 
         //If running with the wall on the right
         if (wallRight)
@@ -243,8 +243,8 @@ public class Action12_WallRunning : MonoBehaviour
         }
 
         //Camera
-        Vector3 newCamPos = transform.position + (wallHit.normal.normalized * 1.1f);
-        newCamPos.y = transform.position.y + 2f;
+        Vector3 newCamPos = camTarget.position + (wallHit.normal.normalized * 1.1f);
+        newCamPos.y += 2f;
         camTarget.position = newCamPos;
         Cam.Cam.SetCamera(CharacterAnimator.transform.forward, 2f, 0, 0.001f, 30);
         Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 2f;
@@ -364,7 +364,7 @@ public class Action12_WallRunning : MonoBehaviour
                 //Drops and send the player back a bit.
                 Vector3 newVec = new Vector3(0f, ClimbingSpeed, 0f);
                 newVec += (-CharacterAnimator.transform.forward * 6f);
-                Player.p_rigidbody.velocity = newVec;
+                Player.rb.velocity = newVec;
 
                 CharacterAnimator.transform.rotation = Quaternion.LookRotation(-wallToClimb.normal, Vector3.up);
                 //Input.LockInputForAWhile(10f, true);
@@ -380,7 +380,7 @@ public class Action12_WallRunning : MonoBehaviour
                 //Vector3 newVec = Player.p_rigidbody.velocity;
                 Vector3 newVec = new Vector3(0f, ClimbingSpeed, 0f);
                 newVec += (CharacterAnimator.transform.forward * 20f);
-                Player.p_rigidbody.velocity = newVec;
+                Player.rb.velocity = newVec;
             }
 
             //Adds a changing deceleration
@@ -430,7 +430,7 @@ public class Action12_WallRunning : MonoBehaviour
 
                 //Set rotation to put feet on ground.
                 Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance, wallLayerMask);
-                Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
+                Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
                 CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, wallToClimb.normal);
             }
 
@@ -457,7 +457,7 @@ public class Action12_WallRunning : MonoBehaviour
 
             else
                 //Sets velocity
-                Player.p_rigidbody.velocity = newVec;
+                Player.rb.velocity = newVec;
 
             //Debug.Log("Scraping Speed is " + scrapingSpeed);
         }
@@ -477,7 +477,7 @@ public class Action12_WallRunning : MonoBehaviour
 
 
             //Sets velocity
-            Player.p_rigidbody.velocity = newVec;
+            Player.rb.velocity = newVec;
         }
     }
 
@@ -488,14 +488,14 @@ public class Action12_WallRunning : MonoBehaviour
 
         //Set rotation to put feet on ground.
         Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), -CharacterAnimator.transform.up, out wallToClimb, climbWallDistance, wallLayerMask);
-        Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
+        Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
         CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, wallToClimb.normal);
 
         //Set velocity to move along and push down to the ground
         Vector3 newVec = CharacterAnimator.transform.forward * (ClimbingSpeed);
         newVec += -wallToClimb.normal * 10f;
 
-        Player.p_rigidbody.velocity = newVec;
+        Player.rb.velocity = newVec;
 
         //Actions.ChangeAction(0);
     }
@@ -535,7 +535,7 @@ public class Action12_WallRunning : MonoBehaviour
         newVec = new Vector3(newVec.x, -scrapingSpeed, newVec.z);
 
         
-        Player.p_rigidbody.velocity = newVec;
+        Player.rb.velocity = newVec;
 
         //Applying force against wall for when going round curves on the outside.
         float forceToWall = RunningSpeed;
@@ -547,9 +547,9 @@ public class Action12_WallRunning : MonoBehaviour
             forceToWall *= 1.6f;
 
         //
-        Player.p_rigidbody.AddForce(-wallNormal * (RunningSpeed * 1.3f));
+        Player.rb.AddForce(-wallNormal * (RunningSpeed * 1.3f));
         if (Counter < 0.3f)
-            Player.p_rigidbody.AddForce(-wallNormal * 2f);
+            Player.rb.AddForce(-wallNormal * 2f);
 
         //Debug.Log(scrapingSpeed);
         //Debug.Log(Player.p_rigidbody.velocity.y);
@@ -587,15 +587,15 @@ public class Action12_WallRunning : MonoBehaviour
             jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.8f);
             //Debug.Log(jumpAngle);
             if (wallOnRight)
-                Player.p_rigidbody.AddForce(transform.right * 2f);
+                Player.rb.AddForce(transform.right * 2f);
             else
-                Player.p_rigidbody.AddForce(-transform.right * 2f);
+                Player.rb.AddForce(-transform.right * 2f);
         }
         else
         {
             jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.6f);
             //Debug.Log(jumpAngle);
-            Player.p_rigidbody.AddForce(-transform.forward * 2f);
+            Player.rb.AddForce(-transform.forward * 2f);
         }
 
         SwitchToJump = 0;
@@ -608,10 +608,10 @@ public class Action12_WallRunning : MonoBehaviour
 
     IEnumerator JumpOverWall(Quaternion originalRotation, float jumpOverCounter = 0)
     {
-        float jumpSpeed = Player.p_rigidbody.velocity.y * 0.6f;
+        float jumpSpeed = Player.rb.velocity.y * 0.6f;
         if (jumpSpeed < 5) jumpSpeed = 5;
 
-        Player.p_rigidbody.velocity = CharacterAnimator.transform.up * jumpSpeed;
+        Player.rb.velocity = CharacterAnimator.transform.up * jumpSpeed;
 
         ExitWall(false);
         Input.LockInputForAWhile(25f, false);
@@ -624,7 +624,7 @@ public class Action12_WallRunning : MonoBehaviour
             if ((!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.6f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance * 1.3f, wallLayerMask)) || jumpOverCounter == 40)
             {
                 //Vector3 newVec = Player.p_rigidbody.velocity + CharacterAnimator.transform.forward * (ClimbingSpeed * 0.1f);
-                Player.p_rigidbody.velocity += CharacterAnimator.transform.forward * 8;
+                Player.rb.velocity += CharacterAnimator.transform.forward * 8;
                 if (Actions.RollPressed)
                 {
                     Actions.ChangeAction(8);

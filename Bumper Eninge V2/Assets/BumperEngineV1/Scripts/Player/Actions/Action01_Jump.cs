@@ -120,9 +120,9 @@ public class Action01_Jump : MonoBehaviour
             transform.position += (InitialNormal * 0.3f);
 
             //Jump higher depending on the speed and the slope you're in
-            if (Player.p_rigidbody.velocity.y > 0 && normaltoJump.y > 0)
+            if (Player.rb.velocity.y > 0 && normaltoJump.y > 0)
             {
-                jumpSlopeSpeed = Player.p_rigidbody.velocity.y * JumpSlopeConversion;
+                jumpSlopeSpeed = Player.rb.velocity.y * JumpSlopeConversion;
             }
 
         }
@@ -162,16 +162,16 @@ public class Action01_Jump : MonoBehaviour
             CharacterAnimator.SetInteger("Action", 1);
         }
 
-        if (!(Player.p_rigidbody.velocity.y < 0.1f && Player.p_rigidbody.velocity.y > -0.1f))
+        if (!(Player.rb.velocity.y < 0.1f && Player.rb.velocity.y > -0.1f))
         {
-            CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
+            CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
         }
         CharacterAnimator.SetFloat("GroundSpeed", Player.HorizontalSpeedMagnitude);
         CharacterAnimator.SetBool("Grounded", Player.Grounded);
         CharacterAnimator.SetBool("isRolling", false);
 
         //Set Animation Angle
-        Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
+        Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
 
         if (VelocityMod != Vector3.zero)
         {
@@ -252,7 +252,7 @@ public class Action01_Jump : MonoBehaviour
             //Do a Bounce Attack
             if (Actions.BouncePressed)
             {
-                if(Actions.Action06.BounceAvailable && Player.p_rigidbody.velocity.y < 35f)
+                if(Actions.Action06.BounceAvailable && Player.rb.velocity.y < 35f)
                 {
                     Actions.Action06.InitialEvents();
                     Actions.ChangeAction(6);
@@ -284,7 +284,7 @@ public class Action01_Jump : MonoBehaviour
 
             if (Actions.RollPressed)
             {
-                if (Player.p_rigidbody.velocity.y < 10f && Actions.Action08 != null)
+                if (Player.rb.velocity.y < 10f && Actions.Action08 != null)
                 {
                     //Debug.Log("Enter DropDash");
                     Actions.ChangeAction(8);
@@ -384,12 +384,12 @@ public class Action01_Jump : MonoBehaviour
         }
 
         //Cancel Jump
-        if (Player.p_rigidbody.velocity.y > 0 && !Actions.JumpPressed && Counter > 0.1)
+        if (Player.rb.velocity.y > 0 && !Actions.JumpPressed && Counter > 0.1)
         {
             //jumpCount = 1;
-            Vector3 Velocity = new Vector3(Player.p_rigidbody.velocity.x, Player.p_rigidbody.velocity.y, Player.p_rigidbody.velocity.z);
+            Vector3 Velocity = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
             Velocity.y = Velocity.y - StopYSpeedOnRelease;
-            Player.p_rigidbody.velocity = Velocity;
+            Player.rb.velocity = Velocity;
         }
 
         //End Action
@@ -480,7 +480,7 @@ public class Action01_Jump : MonoBehaviour
         //SnapOutOfGround to make sure you do jump
         transform.position += (InitialNormal * 0.3f);
 
-        Player.p_rigidbody.velocity = new Vector3(Player.p_rigidbody.velocity.x * 0.92f, Player.p_rigidbody.velocity.y * 0.1f, Player.p_rigidbody.velocity.z * 0.92f);
+        Player.rb.velocity = new Vector3(Player.rb.velocity.x * 0.92f, Player.rb.velocity.y * 0.1f, Player.rb.velocity.z * 0.92f);
 
         GameObject JumpDashParticleClone = Instantiate(Tools.JumpDashParticle, Tools.FeetPoint.position, Quaternion.identity) as GameObject;
 

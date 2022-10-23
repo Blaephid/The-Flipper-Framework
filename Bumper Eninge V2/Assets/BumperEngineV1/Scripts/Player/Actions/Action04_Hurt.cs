@@ -36,15 +36,15 @@ public class Action04_Hurt : MonoBehaviour {
         //Change Velocity
         if (!ResetSpeedOnHit)
         {
-            Vector3 newSpeed = new Vector3((Player.p_rigidbody.velocity.x / 2), KnockbackUpwardsForce, (Player.p_rigidbody.velocity.z / 2));
+            Vector3 newSpeed = new Vector3((Player.rb.velocity.x / 2), KnockbackUpwardsForce, (Player.rb.velocity.z / 2));
             newSpeed.y = KnockbackUpwardsForce;
-            Player.p_rigidbody.velocity = newSpeed;
+            Player.rb.velocity = newSpeed;
         }
         else
         {
             Vector3 newSpeed = -transform.forward * KnockbackForce;
             newSpeed.y = KnockbackUpwardsForce;
-            Player.p_rigidbody.velocity = newSpeed;
+            Player.rb.velocity = newSpeed;
         }
 
     }

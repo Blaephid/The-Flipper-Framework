@@ -160,23 +160,29 @@ public class Objects_Interaction : MonoBehaviour {
 
             if(!col.GetComponent<SpeedPadData>().path)
             {
-                
+
+                Actions.Action02.HomingAvailable = true;
+
                 transform.rotation = Quaternion.identity;
                 //ResetPlayerRotation
-
+ 
                 if (col.GetComponent<SpeedPadData>().LockToDirection)
                 {
-                    Player.p_rigidbody.velocity = Vector3.zero;
-                    Player.AddVelocity(col.transform.forward * col.GetComponent<SpeedPadData>().Speed);
+  
+                    StartCoroutine(applyForce(col.transform.forward * col.GetComponent<SpeedPadData>().Speed, col.transform.position));
                 }
                 else
                 {
                     Player.AddVelocity(col.transform.forward * col.GetComponent<SpeedPadData>().Speed);
+
+                    if (col.GetComponent<SpeedPadData>().Snap)
+                    {
+                        transform.position = col.transform.position;
+                    }
                 }
-                if (col.GetComponent<SpeedPadData>().Snap)
-                {
-                    transform.position = col.transform.position;
-                }
+
+                
+
                 if (col.GetComponent<SpeedPadData>().isDashRing)
                 {
                     Actions.ChangeAction(0);
@@ -284,6 +290,8 @@ public class Objects_Interaction : MonoBehaviour {
         if (col.tag == "Spring")
         {
 
+            Player.GravityAffects = true;
+
             if (Stats != null && (Actions.Action == 2 || Actions.PreviousAction == 2))
                 Player.HomingDelay = Stats.HomingSuccessDelay;
 
@@ -303,12 +311,10 @@ public class Objects_Interaction : MonoBehaviour {
                 if (spring.LockControl)
                 {
                     Inp.LockInputForAWhile(spring.LockTime, false);
-                    Actions.moveX = 0f;
-                    Actions.moveY = 0f;
                 }
 
                 Actions.ChangeAction(0);
-                gameObject.transform.position = spring.BounceCenter.position;
+                
 
                 if (col.GetComponent<AudioSource>()) { col.GetComponent<AudioSource>().Play(); }
                 CharacterAnimator.SetInteger("Action", 0);
@@ -322,21 +328,21 @@ public class Objects_Interaction : MonoBehaviour {
 
                 if (spring.IsAdditive)
                 {
-                    Vector3 newVelocity = (Player.p_rigidbody.velocity * 0.8f) + (spring.transform.up * spring.SpringForce);
-                    if (newVelocity.y > spring.SpringForce * 1.2f)
-                        newVelocity.y = spring.SpringForce * 1.2f;
-                    Player.p_rigidbody.velocity = newVelocity;
+                    Vector3 newVelocity = new Vector3(Player.rb.velocity.x, 0f, Player.rb.velocity.z);
+                    newVelocity = (newVelocity * 0.8f) + (spring.transform.up * spring.SpringForce);
+                    StartCoroutine(applyForce(newVelocity, spring.BounceCenter.position));
                 }
                     
 
                 else
                 {
-                    Player.p_rigidbody.velocity = Vector3.zero;
-                    Player.p_rigidbody.velocity = spring.transform.up * spring.SpringForce;
+                    StartCoroutine(applyForce(spring.transform.up * spring.SpringForce, spring.BounceCenter.position));
                 }
-                
 
-                
+                transform.position = spring.BounceCenter.position;
+
+
+
 
             }
         }
@@ -368,7 +374,7 @@ public class Objects_Interaction : MonoBehaviour {
 				Actions.ChangeAction (0);
 				newSpeed = new Vector3(0, HomingBouncingPower, 0);
 				////Debug.Log (newSpeed);
-				Player.p_rigidbody.velocity = newSpeed;
+				Player.rb.velocity = newSpeed;
 				Player.transform.position = col.ClosestPoint (Player.transform.position);
 				if (Actions.Action02 != null) {
 					Actions.Action02.HomingAvailable = true;
@@ -426,6 +432,19 @@ public class Objects_Interaction : MonoBehaviour {
 			
 	}
 
+    private IEnumerator applyForce(Vector3 force, Vector3 position)
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            transform.position = position;
+            Player.rb.velocity = Vector3.zero;
+            yield return new WaitForFixedUpdate();
+        }
+    
+        transform.position = position;
+        Player.rb.velocity = force;
+
+    }
     public void DamagePlayer()
     {
         if (!Actions.Action04Control.IsHurt && Actions.Action != 4)

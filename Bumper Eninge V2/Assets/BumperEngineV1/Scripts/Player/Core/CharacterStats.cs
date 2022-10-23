@@ -30,6 +30,7 @@ public class CharacterStats : MonoBehaviour
     public float StartJumpPower = 2;
 
     public float MoveDecell = 1.3f;
+    public float naturalAirDecell = 1.005f;
     public float AirDecell = 1.05f;
 
     public float GroundStickingDistance = 1;

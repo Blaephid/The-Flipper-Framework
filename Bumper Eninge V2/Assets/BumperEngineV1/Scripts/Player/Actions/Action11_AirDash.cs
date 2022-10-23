@@ -87,12 +87,12 @@ public class Action11_AirDash : MonoBehaviour
 
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 11);
-        CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
-        CharacterAnimator.SetFloat("GroundSpeed", Player.p_rigidbody.velocity.magnitude);
+        CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+        CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player.Grounded);
 
         //Set Animation Angle
-        Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
+        Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
         Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
         CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 
@@ -108,15 +108,15 @@ public class Action11_AirDash : MonoBehaviour
 
         if (Player.RawInput != Vector3.zero)
         {
-            Vector3 Direction = (transform.TransformDirection(Player.RawInput).normalized + (Player.p_rigidbody.velocity).normalized * 2);
+            Vector3 Direction = (transform.TransformDirection(Player.RawInput).normalized + (Player.rb.velocity).normalized * 2);
             Direction.y = Player.Gravity.y * 0.2f;
-            Player.p_rigidbody.velocity = Direction.normalized * Aspeed;
+            Player.rb.velocity = Direction.normalized * Aspeed;
         }
         else
         {
-            Vector3 Direction = (transform.TransformDirection(Player.PreviousRawInput).normalized + (Player.p_rigidbody.velocity).normalized * 2);
+            Vector3 Direction = (transform.TransformDirection(Player.PreviousRawInput).normalized + (Player.rb.velocity).normalized * 2);
             Direction.y = Player.Gravity.y * 0.2f;
-            Player.p_rigidbody.velocity = Direction.normalized * Aspeed;
+            Player.rb.velocity = Direction.normalized * Aspeed;
         }
 
 

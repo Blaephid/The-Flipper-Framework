@@ -25,12 +25,12 @@ public class SplineController : MonoBehaviour
             
 
             //Get Sonic's current position along the spline
-            CurveSample cur = activeSpline.GetSampleAtDistance(GetClosestPos(PlayerPhys.p_rigidbody.position));
+            CurveSample cur = activeSpline.GetSampleAtDistance(GetClosestPos(PlayerPhys.rb.position));
             //Get the Right vector of the current spline position so we can accurately adjust Sonic's velocity
             Vector3 SplinePlane = Vector3.Cross(cur.tangent, cur.up);
 
             //Project the vector onto the plane
-            PlayerPhys.p_rigidbody.velocity = Vector3.ProjectOnPlane(PlayerPhys.p_rigidbody.velocity, SplinePlane);
+            PlayerPhys.rb.velocity = Vector3.ProjectOnPlane(PlayerPhys.rb.velocity, SplinePlane);
 
             //Project the input too
             //PlayerInput.InputDir = Vector3.ProjectOnPlane(PlayerInput.InputDir, SplinePlane);
@@ -38,9 +38,9 @@ public class SplineController : MonoBehaviour
 
             //Set the Player's position along the spline plane
             Vector3 NewPos = activeSpline.transform.TransformPoint(cur.location);
-            NewPos.y = PlayerPhys.p_rigidbody.position.y;
+            NewPos.y = PlayerPhys.rb.position.y;
             Debug.DrawLine(transform.position, NewPos);
-            PlayerPhys.p_rigidbody.position = Vector3.MoveTowards(PlayerPhys.p_rigidbody.position, NewPos, 1f);
+            PlayerPhys.rb.position = Vector3.MoveTowards(PlayerPhys.rb.position, NewPos, 1f);
         }
     }
 

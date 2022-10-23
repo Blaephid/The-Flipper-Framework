@@ -106,7 +106,7 @@ namespace SplineMesh
 
             PathTopSpeed = pathspeed;
 
-            PlayerSpeed = Player.p_rigidbody.velocity.magnitude;
+            PlayerSpeed = Player.rb.velocity.magnitude;
 
             if (PlayerSpeed < speed)
                 PlayerSpeed = speed;
@@ -139,13 +139,13 @@ namespace SplineMesh
             //Set Animator Parameters as player is always running
 
             CharacterAnimator.SetInteger("Action", 0);
-            CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
-            CharacterAnimator.SetFloat("GroundSpeed", Player.p_rigidbody.velocity.magnitude);
+            CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+            CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
             CharacterAnimator.SetBool("Grounded", Player.Grounded);
             
 
             //Set Animation Angle
-            Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, Player.p_rigidbody.velocity.y, Player.p_rigidbody.velocity.z);
+            Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
             Quaternion CharRot = Quaternion.LookRotation(VelocityMod, sample.up);
             CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 
@@ -173,13 +173,13 @@ namespace SplineMesh
             if (Player.GroundNormal.y < 1 && Player.GroundNormal != Vector3.zero)
             {
                 //UpHill
-                if (Player.p_rigidbody.velocity.y > 0f)
+                if (Player.rb.velocity.y > 0f)
                 {
                     PlayerSpeed -= (1f - Player.GroundNormal.y) * 0.1f;
                 }
 
                 //DownHill
-                if (Player.p_rigidbody.velocity.y < 0f)
+                if (Player.rb.velocity.y < 0f)
                 {
                     PlayerSpeed += (1f - Player.GroundNormal.y) * 0.1f;
                 }
@@ -226,7 +226,7 @@ namespace SplineMesh
                 //Set Player Speed correctly for smoothness
                 if (!backwards)
                 {
-                    Player.p_rigidbody.velocity = sample.tangent * (PlayerSpeed);
+                    Player.rb.velocity = sample.tangent * (PlayerSpeed);
 
 
                     //remove camera tracking at the end of the path to be safe from strange turns
@@ -234,7 +234,7 @@ namespace SplineMesh
                 }
                 else
                 {
-                    Player.p_rigidbody.velocity = -sample.tangent * (PlayerSpeed);
+                    Player.rb.velocity = -sample.tangent * (PlayerSpeed);
 
                     //remove camera tracking at the end of the path to be safe from strange turns
                     //if (range < 0.1f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f; }
@@ -264,7 +264,7 @@ namespace SplineMesh
 
         public void ExitPath()
         {
-            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.p_rigidbody.velocity);
+            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity);
 
             Player.RayToGroundDistancecor = OriginalRayToGround;
             Player.RayToGroundRotDistancecor = OriginalRayToGroundRot;

@@ -5,6 +5,11 @@ using Cinemachine;
 
 public class CineStart : MonoBehaviour
 {
+    public bool RegularAction = true;
+    public bool JumpAction = false;
+    public bool RailAction = false;
+    public bool wallRunAction = false;
+
     public bool Active = true;
     public GameObject camera;
     private Vector3 camPosit;
@@ -40,27 +45,33 @@ public class CineStart : MonoBehaviour
         {
 
             Player = col.GetComponent<PlayerCollider>().getPlayer();
+            ActionManager Actions = Player.GetComponent<ActionManager>();
 
-            if (hedgeCam == null)
+
+            if((Actions.Action == 0 && RegularAction) || (Actions.Action == 1 && JumpAction) || (Actions.Action == 5 && RailAction) || (Actions.Action == 12 && wallRunAction))
             {
-                hedgeCam = Player.GetComponent<CameraControl>().virtCam;
-            }
+                if (hedgeCam == null)
+                {
+                    hedgeCam = Player.GetComponent<CameraControl>().virtCam;
+                }
 
-            ActivateCam();
+                ActivateCam();
 
-            if (lookPlayer)
-            {
-                virCam.LookAt = Player;
-            }
+                if (lookPlayer)
+                {
+                    virCam.LookAt = Player;
+                }
 
-            if (followPlayer)
-            {
-                virCam.Follow = Player;
-            }
+                if (followPlayer)
+                {
+                    virCam.Follow = Player;
+                }
 
-            if (disableMove)
-            {
-                Player.GetComponent<ActionManager>().actionDisable();
+                if (disableMove)
+                {
+                    Player.GetComponent<ActionManager>().actionDisable();
+                }
+
             }
 
             

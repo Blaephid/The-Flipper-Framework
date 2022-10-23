@@ -72,7 +72,6 @@ public class HedgeCamera : MonoBehaviour
 
     public bool Locked { get; set; }
     public LayerMask CollidableLayers;
-    Vector3 lookdir;
     float heighttolook;
     float lookTimer;
     float lookspeed;
@@ -133,7 +132,11 @@ public class HedgeCamera : MonoBehaviour
         //LookTimer
         if (lookTimer < 0)
         {
-            RotateDirection(lookdir, Mathf.RoundToInt(LockedRotationSpeed), heighttolook);
+            Debug.Log("Looking towards");
+            Debug.Log(lookAtDir);
+            Debug.Log(LockedRotationSpeed);
+            Debug.Log(heighttolook);
+            RotateDirection(lookAtDir, LockedRotationSpeed, heighttolook);
             lookTimer += Time.deltaTime;
         }
 
@@ -188,7 +191,7 @@ public class HedgeCamera : MonoBehaviour
         else
         {
             PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, Quaternion.LookRotation(Vector3.forward), Time.deltaTime * CameraVerticalRotationSpeed);
-            RotateDirection(lookdir, Mathf.RoundToInt(LockedRotationSpeed), heighttolook);
+            RotateDirection(lookAtDir, Mathf.RoundToInt(LockedRotationSpeed), heighttolook);
         }
         z = 0;
     }
@@ -224,7 +227,7 @@ public class HedgeCamera : MonoBehaviour
             else
             {
 
-                CurveX = AutoXRotationCurve.Evaluate((Player.p_rigidbody.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
+                CurveX = AutoXRotationCurve.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
                 CurveX = CurveX * 100;
                 x += ((Actions.moveCamX * CurveX) * AutoXRotationSpeed) * Time.deltaTime;
                 
@@ -282,7 +285,7 @@ public class HedgeCamera : MonoBehaviour
 
     void CameraSet()
     {
-        float y = Player.p_rigidbody.velocity.y;
+        float y = Player.rb.velocity.y;
         //bool GoingTowardsCamera = false;
         /*
 		if (Vector3.Dot (transform.forward, Player.rigidbody.velocity) < -10) {
@@ -390,23 +393,23 @@ public class HedgeCamera : MonoBehaviour
         }
     }
 
-    public void RotateDirection(Vector3 dir, int speed, float height)
+    public void RotateDirection(Vector3 dir, float speed, float height)
     {
-
         float dot = Vector3.Dot(dir, transform.right);
+        Debug.Log("RotateDirection");
         x += (dot * speed) * (Time.deltaTime * 100);
         y = Mathf.Lerp(y, height, Time.deltaTime * 5);
 
     }
 
     //Constnaly moves camera to behind player
-    public void FollowDirection(float speed, float height, float distance, float Yspeed)
+    public void FollowDirection(float speed, float height, float distance, float Yspeed, bool Skip = false)
     {
-        if (!Locked)
+        if (!Locked || Skip)
         {
             //Debug.Log(Actions.Action);
             //If not grinding or wall running
-            if (Actions.Action != 5)
+            if (Actions.Action != 5 || Skip)
             {
                 //Debug.Log("Follow Directions" );
 
@@ -425,7 +428,14 @@ public class HedgeCamera : MonoBehaviour
             if (Actions.Action != 5)
             {
                 //Debug.Log("Follow Directions height");
-                y = Mathf.Lerp(y, height, Time.deltaTime * speed);
+                if(Player.Grounded)
+                {
+                    y = Mathf.Lerp(y, height, Time.deltaTime * speed);
+                }
+                else
+                {
+                    y = Mathf.Lerp(y, height, Time.deltaTime * (speed / 6));
+                }
             } 
         }
     }
@@ -448,7 +458,7 @@ public class HedgeCamera : MonoBehaviour
         lookAtDir = dir;
         lookTimer = -duration;
         heighttolook = heightSet;
-        LockedRotationSpeed = InitialLockedRotationSpeed * 0.006f;
+        LockedRotationSpeed = InitialLockedRotationSpeed * 0.01f;
 
     }
     public void SetCamera(Vector3 dir, float duration, float heightSet, float speed)

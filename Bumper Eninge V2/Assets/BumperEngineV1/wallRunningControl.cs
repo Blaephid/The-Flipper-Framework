@@ -75,7 +75,7 @@ public class wallRunningControl : MonoBehaviour
             canCheck = true;
         }
         //Manages what actions can and cannot traverse into a wall run.
-        else if (Actions.Action == 6)
+        else if (Actions.Action == 6 || Actions.Action == 11)
             canCheck = true;
 
         else canCheck = false;

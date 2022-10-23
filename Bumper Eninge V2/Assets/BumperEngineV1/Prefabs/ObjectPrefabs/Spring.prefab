@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 95000013858902734}
   - component: {fileID: 65000014051784484}
   - component: {fileID: 114000012005501162}
+  - component: {fileID: 2764135833240677428}
   - component: {fileID: 82000010920544288}
   m_Layer: 12
   m_Name: Spring
@@ -88,10 +89,28 @@ MonoBehaviour:
   BounceCenter: {fileID: 4000012565524866}
   LockControl: 0
   LockTime: 30
-  LockGravity: 0
-  PlayerGravity: -2
+--- !u!114 &2764135833240677428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010088463082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   DebugForce: 1
-  LineLength: 5
+  LineLength: 15
+  isSpring: 1
+  isBoostRing: 0
+  spring: {fileID: 114000012005501162}
+  speedPad: {fileID: 0}
+  Force: 100
+  ShotCenter: {fileID: 4000012565524866}
+  Gravity: {x: 0, y: -1.5, z: 0}
+  PlayerDecell: 1.002
 --- !u!82 &82000010920544288
 AudioSource:
   m_ObjectHideFlags: 0

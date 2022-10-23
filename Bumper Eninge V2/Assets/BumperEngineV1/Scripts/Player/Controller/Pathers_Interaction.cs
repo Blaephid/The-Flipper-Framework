@@ -56,7 +56,7 @@ public class Pathers_Interaction : MonoBehaviour
         {
             //Deactives player control and freezes movemnt to keep them in line with the upreel.
 
-            Player.p_rigidbody.velocity = Vector3.zero;
+            Player.rb.velocity = Vector3.zero;
             Input.LockInputForAWhile(0f, true);
 
             //Moves the player to the position of the Upreel
@@ -82,7 +82,7 @@ public class Pathers_Interaction : MonoBehaviour
 
     IEnumerator exitPulley()
     {
-        Player.p_rigidbody.velocity = Vector3.zero;
+        Player.rb.velocity = Vector3.zero;
         Player.AddVelocity(new Vector3(0f, 60f, 0f));
 
         yield return new WaitForSeconds(.2f);

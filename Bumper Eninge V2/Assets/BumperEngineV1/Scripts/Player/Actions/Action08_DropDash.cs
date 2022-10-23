@@ -175,7 +175,7 @@ public class Action08_DropDash : MonoBehaviour
         Actions.RollPressed = false;
         Player.isRolling = false;
 
-        Vector3 newForward = Player.p_rigidbody.velocity - transform.up * Vector3.Dot(Player.p_rigidbody.velocity, transform.up);
+        Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
 
         if (newForward.magnitude < 0.1f)
         {
@@ -200,12 +200,12 @@ public class Action08_DropDash : MonoBehaviour
 
         if (new Vector3(newVec.x, 0f, newVec.z).magnitude > Player.HorizontalSpeedMagnitude)
         {
-            Player.p_rigidbody.velocity = newVec;
+            Player.rb.velocity = newVec;
             Cam.Cam.FollowDirection(18, 25f);
         }
         else
         {
-            Player.p_rigidbody.velocity += newVec * 0.3f;
+            Player.rb.velocity += newVec * 0.3f;
             Cam.Cam.FollowDirection(20, 15f);
         }
 
@@ -241,7 +241,7 @@ public class Action08_DropDash : MonoBehaviour
         //Set Animation Angle
         if (!Player.Grounded)
         {
-            Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
+            Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
             Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
             CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * 200);
         }
