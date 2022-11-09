@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Action03_SpinDash : MonoBehaviour
 {
-    CharacterStats Stats;
     CharacterTools Tools;
 
     Animator CharacterAnimator;
@@ -45,7 +44,6 @@ public class Action03_SpinDash : MonoBehaviour
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            Stats = GetComponent<CharacterStats>();
             AssignStats();
         }
     }
@@ -194,13 +192,12 @@ public class Action03_SpinDash : MonoBehaviour
         charge = 0;
     }
 
-
     private void AssignStats()
     {
-        SpinDashChargingSpeed = Stats.SpinDashChargingSpeed;
-        MinimunCharge = Stats.MinimunCharge;
-        MaximunCharge = Stats.MaximunCharge;
-        SpinDashStillForce = Stats.SpinDashStillForce;
+        SpinDashChargingSpeed = Tools.stats.SpinDashChargingSpeed;
+        MinimunCharge = Tools.stats.MinimunCharge;
+        MaximunCharge = Tools.stats.MaximunCharge;
+        SpinDashStillForce = Tools.stats.SpinDashStillForce;
     }
     private void AssignTools()
     {
@@ -216,9 +213,6 @@ public class Action03_SpinDash : MonoBehaviour
         PlayerSkin = Tools.PlayerSkin;
         PlayerSkinTransform = Tools.PlayerSkinTransform;
         SpinDashBall = Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
-
-
-
     }
 }
 

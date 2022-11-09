@@ -11,6 +11,7 @@ public class HintBox : MonoBehaviour
     public int FadeSpread;
     public Animator BoxAnimator;
     public bool IsShowing { get; protected set; }
+    int page = 0;
 
     private void Awake()
     {
@@ -24,19 +25,23 @@ public class HintBox : MonoBehaviour
         hintText.color = initialColor;
         gameObject.SetActive(false);
     }
-    public void ShowHint (string hint, float duration)
+    public void ShowHint (string[] hint, float[] duration)
     {
+        page = 0;
         gameObject.SetActive(true);
         if (hintText == null)
         {
             Debug.LogError("No text asset was assigned to the hint box.");
             return;
         }
-        StartCoroutine(DisplayText(hint, duration));
+        StartCoroutine(DisplayText(hint[0], duration, hint));
     }
 
-    IEnumerator DisplayText (string text, float duration)
+    IEnumerator DisplayText (string text, float[] duration, string[] fullText)
     {
+        bool turnPage = false;
+        Debug.Log(text);
+
         IsShowing = true;
         BoxAnimator.SetBool("Active", true);
         hintText.text = text;
@@ -72,9 +77,18 @@ public class HintBox : MonoBehaviour
                     if (startChar == Length)
                     {
                         hintText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
-                        yield return new WaitForSeconds(duration);
+                        yield return new WaitForSeconds(duration[page]);
+                        page += 1;
+
+                        if(page < fullText.Length)
+                        {
+                            turnPage = true;
+                            
+                        }
+
                         hintText.ForceMeshUpdate();
                         OutOfRange = true;
+
                     }
                 }
             }
@@ -86,5 +100,11 @@ public class HintBox : MonoBehaviour
         BoxAnimator.SetBool("Active", false);
         gameObject.SetActive(false);
         IsShowing = false;
+
+        if(turnPage)
+        {
+            gameObject.SetActive(true);
+            StartCoroutine(DisplayText(fullText[page], duration, fullText));
+        }
     }
 }

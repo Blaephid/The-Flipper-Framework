@@ -1,0 +1,484 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d2c719ae1aa80d49a311cd005f7d906, type: 3}
+  m_Name: Stats - Espio
+  m_EditorClassIdentifier: 
+  Title: Amy
+  StartAccell: 0.22
+  AccellOverSpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.005359521
+      value: 3.0202665
+      inSlope: 0.041935503
+      outSlope: 0.041935503
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.10220286
+      value: 2.83157
+      inSlope: -6.2290688
+      outSlope: -6.2290688
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.97632855
+    - serializedVersion: 3
+      time: 0.23619027
+      value: 0.6304423
+      inSlope: -3.220305
+      outSlope: -3.220305
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.21427786
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.38444394
+      value: 0.20299911
+      inSlope: -0.656459
+      outSlope: -0.656459
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.902454
+      outWeight: 0.17454018
+    - serializedVersion: 3
+      time: 1.0028133
+      value: 0.016310722
+      inSlope: 0.008464342
+      outSlope: 0.008464342
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.3961818
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  AccellShiftOverSpeed: 1
+  TangentialDrag: 6
+  TangentialDragShiftSpeed: 1
+  TurnSpeed: 40
+  SlowedTurnSpeed: 150
+  TurnRateOverAngle:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0035552979
+      value: 0.70057297
+      inSlope: 0.10207153
+      outSlope: 0.10207153
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0054626
+      value: 0.30046844
+      inSlope: -0.39652866
+      outSlope: -0.39652866
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  TurnRateOverAngleSlowed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.003730774
+      value: 0.8004379
+      inSlope: 0.10207153
+      outSlope: 0.10207153
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0000134
+      value: 0.50584567
+      inSlope: -0.29569146
+      outSlope: -0.29569146
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  TangDragOverAngle:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5003967
+      value: 1.0013041
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  TangDragOverSpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.9987793
+      inSlope: -0.27642146
+      outSlope: -0.27642146
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9
+      value: 0.75
+      inSlope: -0.27642146
+      outSlope: -0.27642146
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  StartTopSpeed: 68
+  StartMaxSpeed: 130
+  StartMaxFallingSpeed: -360
+  StartJumpPower: 1.1
+  MoveDecell: 1.063
+  naturalAirDecell: 1.00205
+  AirDecell: 1.28
+  GroundStickingDistance: 0.15
+  GroundStickingPower: -1.7
+  InputLerpingRateOverSpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.00084328733
+      value: 20.841314
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.14610863
+      value: 20.77298
+      inSlope: 0.16642177
+      outSlope: 0.16642177
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.44826496
+      value: 5.7186995
+      inSlope: -0.25124428
+      outSlope: -0.25124428
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.97509766
+      value: 5.4427657
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  UtopiaTurning: 0
+  UtopiaInputLerpingRateOverSpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 10
+      inSlope: -31.337887
+      outSlope: -31.337887
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.49569505
+      value: 1.2311497
+      inSlope: -0.04386031
+      outSlope: -0.04386031
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.98748577
+      value: 0.30047834
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  UtopiaIntensity: 100
+  UtopiaInitialInputLerpSpeed: 10
+  SlopeEffectLimit: 0.9
+  StandOnSlopeLimit: 0.68
+  SlopePower: -1.4
+  SlopeRunningAngleLimit: 0.5
+  SlopeSpeedLimit: 110
+  UphillMultiplier: 0.4
+  DownhillMultiplier: 0.38
+  StartDownhillMultiplier: -1.9
+  SlopePowerOverSpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.011188507
+      value: 0.9058609
+      inSlope: -0.044522513
+      outSlope: -0.044522513
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.7308518
+    - serializedVersion: 3
+      time: 0.58145475
+      value: 0.7018737
+      inSlope: -0.79097927
+      outSlope: -0.79097927
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.10719684
+      outWeight: 0.17956015
+    - serializedVersion: 3
+      time: 0.9947042
+      value: 0.5993156
+      inSlope: -0.0057910345
+      outSlope: -0.0057910345
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.5153387
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  UpHillOverTime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.65367126
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.6708069
+      value: 0.9930725
+      inSlope: 0.37512156
+      outSlope: 0.37512156
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.38432837
+      outWeight: 0.30721503
+    - serializedVersion: 3
+      time: 1.8511314
+      value: 1.23472
+      inSlope: 0.14320901
+      outSlope: 0.14320901
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.24094588
+      outWeight: 0.29123962
+    - serializedVersion: 3
+      time: 4.9918027
+      value: 1.5856023
+      inSlope: 0.07100669
+      outSlope: 0.07100669
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 9.861183
+      value: 1.807732
+      inSlope: 0.0051363083
+      outSlope: 0.0051363083
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.38487157
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  StickingLerps: {x: 0.885, y: 1.5}
+  StickingNormalLimit: 0.3
+  StickCastAhead: 1.6
+  negativeGHoverHeight: 0.6115
+  RayToGroundDistance: 0.9
+  RaytoGroundSpeedRatio: 0.01
+  RaytoGroundSpeedMax: 2.4
+  RayToGroundRotDistance: 1.1
+  RaytoGroundRotSpeedMax: 2.6
+  RotationResetThreshold: -0.1
+  Playermask:
+    serializedVersion: 2
+    m_Bits: 23
+  AirControlAmmount: 1.2
+  AirSkiddingForce: 5
+  StopAirMovementIfNoInput: 1
+  Gravity: {x: 0, y: -1.45, z: 0}
+  RollingLandingBoost: 1.4
+  RollingDownhillBoost: 2
+  RollingUphillBoost: 1.25
+  RollingStartSpeed: 25
+  RollingTurningDecreace: 0.65
+  RollingFlatDecell: 1.0034
+  SlopeTakeoverAmount: 0.995
+  SpeedToStopAt: 10
+  SkiddingStartPoint: 5
+  SkiddingIntensity: -3
+  StartJumpDuration: 0.28
+  StartSlopedJumpDuration: 0.28
+  StartJumpSpeed: 2.4
+  JumpSlopeConversion: 0.025
+  StopYSpeedOnRelease: 2
+  JumpRollingLandingBoost: 0
+  canDoubleJump: 1
+  canTripleJump: 0
+  doubleJumpSpeed: 2.8
+  doubleJumpDuration: 0.28
+  StepSpeed: 80
+  StepDistance: 8
+  AirStepSpeed: 60
+  AirStepDistance: 7
+  StepLayerMask:
+    serializedVersion: 2
+    m_Bits: 8400897
+  TargetSearchDistance: 30
+  TargetLayer:
+    serializedVersion: 2
+    m_Bits: 131072
+  BlockingLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  FieldOfView: 0.2
+  IconScale: 1.5
+  IconDistanceScaling: 0.2
+  FacingAmount: 0.6
+  HomingAttackSpeed: 80
+  HomingTimerLimit: 0.98
+  HomingSuccessDelay: 0.35
+  CanDashDuringFall: 1
+  isAdditive: 1
+  AirDashSpeed: 50
+  AirDashDuration: 0.25
+  MaximumSpeed: 25
+  MaximumSlope: 0.8
+  SpinDashChargingSpeed: 1.065
+  MinimunCharge: 20
+  MaximunCharge: 100
+  SpinDashStillForce: 1.027
+  DropSpeed: 115
+  BounceMaxSpeed: 140
+  BounceUpSpeeds:
+  - 50
+  - 56
+  - 62
+  - 68
+  - 74
+  BounceUpMaxSpeed: 75
+  BounceConsecutiveFactor: 1.05
+  BounceHaltFactor: 0.7
+  LightDashTargetSearchDistance: 60
+  LightDashIconScale: 0
+  DashSpeed: 95
+  EndingSpeedFactor: 1.2
+  MinimumEndingSpeed: 60
+  DropDashChargingSpeed: 1.14
+  DropMinimunCharge: 42
+  DropMaximunCharge: 120
+  BouncingPower: 30
+  HomingBouncingPower: 30
+  EnemyHomingStoppingPowerWhenAdditive: 30
+  StopOnHomingAttackHit: 1
+  StopOnHit: 1
+  EnemyDamageShakeAmmount: 0.5
+  EnemyHitShakeAmmount: 1.2
+  KnockbackUpwardsForce: 25
+  ResetSpeedOnHit: 0
+  KnockbackForce: 42
+  InvincibilityTime: 60
+  MaxRingLoss: 22
+  RingReleaseSpeed: 600
+  RingArcSpeed: 20
+  FlickerSpeed: 3
+  MinStartSpeed: 20
+  RailPushFowardmaxSpeed: 100
+  RailPushFowardIncrements: 5
+  RailPushFowardDelay: 0.8
+  RailSlopePower: 2.5
+  RailUpHillMultiplier: 0.4
+  RailDownHillMultiplier: 0.4
+  RailUpHillMultiplierCrouching: 0.8
+  RailDownHillMultiplierCrouching: 0.75
+  RailDragVal: 0.0001
+  RailPlayerBrakePower: 0.7
+  SkinOffsetPosRail: {x: 0, y: -0.4, z: 0}
+  SkinOffsetPosZip: {x: 0, y: -0.4, z: 0}
+  OffsetRail: 2.05
+  OffsetZip: -5
+  SlideDuration: 0.5
+  SlideForce: 2000
+  slideDamage: 1
+  WallCheckDistance: 1.4
+  minHeight: 2
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  wallDuration: 0
+  scrapeModi: 0.6
+  climbModi: 1.3

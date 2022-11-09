@@ -7,7 +7,6 @@ public class Action06_Bounce : MonoBehaviour {
     ActionManager Action;
     Animator CharacterAnimator;
     PlayerBhysics Player;
-	CharacterStats Stats;
 	CharacterTools Tools;
 
 	PlayerBinput Input;
@@ -42,7 +41,6 @@ public class Action06_Bounce : MonoBehaviour {
 			Tools = GetComponent<CharacterTools>();
 			AssignTools();
 
-			Stats = GetComponent<CharacterStats>();
 			AssignStats();	
 		}
         
@@ -121,14 +119,15 @@ public class Action06_Bounce : MonoBehaviour {
 		Action.ChangeAction(0);
 	}
 
-    void Update()
+    void FixedUpdate()
     {
         bool raycasthit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.95f) + Player.negativeGHoverHeight, Player.Playermask);
 		bool StompHit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.9f), Player.Playermask);
 		bool groundhit = Player.Grounded || raycasthit;
 
+
         //End Action
-        if (!raycasthit && HasBounced && Player.rb.velocity.y > 10f) { 
+        if (!raycasthit && HasBounced && Player.rb.velocity.y > 5f) { 
 			
 			HasBounced = false;
 
@@ -160,6 +159,9 @@ public class Action06_Bounce : MonoBehaviour {
 			}
 		}
 
+		else if(!groundhit && Player.rb.velocity.y == 0 && !HasBounced)
+				Player.rb.velocity = new Vector3(Player.rb.velocity.x, -DropSpeed, Player.rb.velocity.z);
+
         //Stomp
         //else if (StompHit && !HasBounced && Action.SkidPressed)
         //{
@@ -181,14 +183,14 @@ public class Action06_Bounce : MonoBehaviour {
     
 	private void AssignStats()
     {
-		DropSpeed = Stats.DropSpeed;
-		for (int i = 0; i < Stats.BounceUpSpeeds.Count; i++)
+		DropSpeed = Tools.stats.DropSpeed;
+		for (int i = 0; i < Tools.stats.BounceUpSpeeds.Count; i++)
 		{
-			BounceUpSpeeds.Add(Stats.BounceUpSpeeds[i]);
+			BounceUpSpeeds.Add(Tools.stats.BounceUpSpeeds[i]);
 		}
-		BounceUpMaxSpeed = Stats.BounceUpMaxSpeed;
-		BounceConsecutiveFactor = Stats.BounceConsecutiveFactor;
-		BounceHaltFactor = Stats.BounceHaltFactor;
+		BounceUpMaxSpeed = Tools.stats.BounceUpMaxSpeed;
+		BounceConsecutiveFactor = Tools.stats.BounceConsecutiveFactor;
+		BounceHaltFactor = Tools.stats.BounceHaltFactor;
 
 	}
 

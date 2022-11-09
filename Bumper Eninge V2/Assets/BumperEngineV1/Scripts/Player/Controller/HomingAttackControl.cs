@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class HomingAttackControl : MonoBehaviour
 {
     CharacterTools tools;
-    CharacterStats stats;
 
     public bool HasTarget { get; set; }
     [HideInInspector] public GameObject TargetObject;
@@ -51,7 +50,6 @@ public class HomingAttackControl : MonoBehaviour
             tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            stats = GetComponent<CharacterStats>();
             AssignStats();
         }
 
@@ -206,14 +204,14 @@ public class HomingAttackControl : MonoBehaviour
 
     private void AssignStats()
     {
-        TargetSearchDistance = stats.TargetSearchDistance;
-        TargetLayer = stats.TargetLayer;
-        BlockingLayers = stats.BlockingLayers;
-        FieldOfView = stats.FieldOfView;
-        facingAmount = stats.FacingAmount;
+        TargetSearchDistance = tools.stats.TargetSearchDistance;
+        TargetLayer = tools.stats.TargetLayer;
+        BlockingLayers = tools.stats.BlockingLayers;
+        FieldOfView = tools.stats.FieldOfView;
+        facingAmount = tools.stats.FacingAmount;
 
-        IconScale = stats.IconScale;
-        IconDistanceScaling = stats.IconDistanceScaling;
+        IconScale = tools.stats.IconScale;
+        IconDistanceScaling = tools.stats.IconDistanceScaling;
     }
 
 

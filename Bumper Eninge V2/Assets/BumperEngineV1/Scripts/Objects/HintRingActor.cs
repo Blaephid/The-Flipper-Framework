@@ -5,8 +5,8 @@ using UnityEngine;
 public class HintRingActor : MonoBehaviour
 {
     HintBox _hintbox;
-    public string hintText;
-    public float hintDuration;
+    public string[] hintText;
+    public float[] hintDuration;
 
     public float MaxDistance;
     public float MinDistance;

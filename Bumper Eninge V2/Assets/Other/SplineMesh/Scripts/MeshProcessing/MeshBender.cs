@@ -40,17 +40,24 @@ namespace SplineMesh {
             }
         }
 
-        //private void Start()
-        //{
-        //    if (GetComponent<MeshCollider>())
-        //    {
-        //        DestroyImmediate(GetComponent<MeshCollider>());
-        //    }
+        private void Start()
+        {
+            //if (GetComponent<MeshCollider>())
+            //{
+            //    DestroyImmediate(GetComponent<MeshCollider>());
+            //}
 
-        //    gameObject.AddComponent<MeshCollider>();
+            if (!GetComponent<MeshCollider>())
+            {
+                gameObject.AddComponent<MeshCollider>();
 
-        //    Cols = GetComponent<MeshCollider>();
-        //}
+                Cols = GetComponent<MeshCollider>();
+            }
+
+            //gameObject.AddComponent<MeshCollider>();
+
+            //Cols = GetComponent<MeshCollider>();
+        }
 
         private FillingMode mode = FillingMode.StretchToInterval;
         /// <summary>

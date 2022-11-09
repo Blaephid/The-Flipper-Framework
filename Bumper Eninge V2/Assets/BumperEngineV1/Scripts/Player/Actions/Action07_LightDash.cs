@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Action07_LightDash : MonoBehaviour {
-	CharacterStats Stats;
+
 	CharacterTools Tools;
 
 
@@ -35,7 +35,6 @@ public class Action07_LightDash : MonoBehaviour {
 			Tools = GetComponent<CharacterTools>();
 			AssignTools();
 
-			Stats = GetComponent<CharacterStats>();
 			AssignStats();
         }
 	}
@@ -114,9 +113,9 @@ public class Action07_LightDash : MonoBehaviour {
 
 	private void AssignStats()
     {
-		DashSpeed = Stats.DashSpeed;
-		EndingSpeedFactor = Stats.EndingSpeedFactor;
-		MinimumEndingSpeed = Stats.MinimumEndingSpeed;
+		DashSpeed = Tools.stats.DashSpeed;
+		EndingSpeedFactor = Tools.stats.EndingSpeedFactor;
+		MinimumEndingSpeed = Tools.stats.MinimumEndingSpeed;
     }
 
 	private void AssignTools()

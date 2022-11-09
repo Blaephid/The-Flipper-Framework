@@ -4,7 +4,6 @@ using System.Collections;
 public class LightDashControl : MonoBehaviour {
 
     CharacterTools Tools;
-    CharacterStats Stats;
 
     public bool HasTarget { get; set; }
     public static GameObject TargetObject { get; set; }
@@ -27,8 +26,6 @@ public class LightDashControl : MonoBehaviour {
         {
             Tools = GetComponent<CharacterTools>();
             AssignTools();
-
-            Stats=GetComponent<CharacterStats>();
             AssignStats();
         }
         
@@ -101,8 +98,8 @@ public class LightDashControl : MonoBehaviour {
 
     void AssignStats()
     {
-        TargetSearchDistance = Stats.LightDashTargetSearchDistance;
-        IconScale = Stats.LightDashIconScale;
+        TargetSearchDistance = Tools.stats.LightDashTargetSearchDistance;
+        IconScale = Tools.stats.LightDashIconScale;
     }
 
     void AssignTools()

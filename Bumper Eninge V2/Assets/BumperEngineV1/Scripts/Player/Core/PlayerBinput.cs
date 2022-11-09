@@ -7,7 +7,7 @@ public class PlayerBinput : MonoBehaviour {
     private PlayerBhysics Player; // Reference to the ball controller.
     CameraControl Cam;
     ActionManager Actions;
-    CharacterStats Stats;
+    CharacterTools Tools;
 
     public Vector3 moveAcc { get; set; }
     private Vector3 move;
@@ -50,11 +50,10 @@ public class PlayerBinput : MonoBehaviour {
         Actions = GetComponent<ActionManager>();
         Cam = GetComponent<CameraControl>();
 
-        Stats = GetComponent<CharacterStats>();
-        if (Stats != null)
-        {
-            AssignStats();
-        }
+        Tools = GetComponent<CharacterTools>();
+        
+        AssignStats();
+        
 
         prevDecel = Player.MoveDecell;
         //newInput = new PlayerNewInput();
@@ -179,11 +178,11 @@ public class PlayerBinput : MonoBehaviour {
 
     private void AssignStats()
     {
-        InputLerpingRateOverSpeed = Stats.InputLerpingRateOverSpeed;
-        UtopiaTurning = Stats.UtopiaTurning;
-        UtopiaInputLerpingRateOverSpeed = Stats.UtopiaInputLerpingRateOverSpeed;
-        UtopiaIntensity = Stats.UtopiaIntensity;
-        UtopiaInitialInputLerpSpeed = Stats.UtopiaInitialInputLerpSpeed;
+        InputLerpingRateOverSpeed = Tools.stats.InputLerpingRateOverSpeed;
+        UtopiaTurning = Tools.stats.UtopiaTurning;
+        UtopiaInputLerpingRateOverSpeed = Tools.stats.UtopiaInputLerpingRateOverSpeed;
+        UtopiaIntensity = Tools.stats.UtopiaIntensity;
+        UtopiaInitialInputLerpSpeed = Tools.stats.UtopiaInitialInputLerpSpeed;
 
     }
 }

@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class CharacterTools : MonoBehaviour
 {
+    [Header("Stats")]
+    public CharacterStatsObj stats;
+
     [Header("Key Objects")]
     public GameObject JumpBall;
     public GameObject characterCapsule;

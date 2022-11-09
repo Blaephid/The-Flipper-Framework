@@ -5,7 +5,6 @@ using System.Collections;
 public class HurtControl : MonoBehaviour 
 {
     CharacterTools Tools;
-    CharacterStats Stats;
 
     ActionManager Actions;
     PlayerBinput Inp;
@@ -49,7 +48,6 @@ public class HurtControl : MonoBehaviour
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            Stats = GetComponent<CharacterStats>();
             AssignStats();
         }
         InitialDir = transform.forward;
@@ -212,11 +210,11 @@ public class HurtControl : MonoBehaviour
 
     private void AssignStats()
     {
-        InvencibilityTime = Stats.InvincibilityTime;
-        MaxRingLoss = Stats.MaxRingLoss;
-        RingReleaseSpeed = Stats.RingReleaseSpeed;
-        RingArcSpeed = Stats.RingArcSpeed;
-        FlickerSpeed = Stats.FlickerSpeed;
+        InvencibilityTime = Tools.stats.InvincibilityTime;
+        MaxRingLoss = Tools.stats.MaxRingLoss;
+        RingReleaseSpeed = Tools.stats.RingReleaseSpeed;
+        RingArcSpeed = Tools.stats.RingArcSpeed;
+        FlickerSpeed = Tools.stats.FlickerSpeed;
     }
 
     private void AssignTools()

@@ -8,7 +8,6 @@ namespace SplineMesh
     public class MoveAlongPath : MonoBehaviour
     {
         CharacterTools Tools;
-        CharacterStats stats;
 
         PlayerBhysics Player;
         PlayerBinput Input;
@@ -60,7 +59,6 @@ namespace SplineMesh
                 Tools = GetComponent<CharacterTools>();
                 AssignTools();
 
-                stats = GetComponent<CharacterStats>();
                 AssignStats();
             }
 

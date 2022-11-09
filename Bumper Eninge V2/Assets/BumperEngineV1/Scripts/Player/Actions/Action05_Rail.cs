@@ -17,7 +17,6 @@ namespace SplineMesh
         GameObject jumpBall;
 
         CharacterTools Tools;
-        CharacterStats stats;
         ActionManager Actions;
         HedgeCamera Cam;
         public Transform pulley { get; set; }
@@ -80,7 +79,6 @@ namespace SplineMesh
                 Tools = GetComponent<CharacterTools>();
                 AssignTools();
 
-                stats = GetComponent<CharacterStats>();
                 AssignStats();
             }
 
@@ -91,8 +89,8 @@ namespace SplineMesh
 
         private void OnDisable()
         {
-            CameraTarget.parent = ConstantTarget.parent;
-            CameraTarget.position = ConstantTarget.position;
+            //CameraTarget.parent = ConstantTarget.parent;
+            //CameraTarget.position = ConstantTarget.position;
 
             Player.GravityAffects = true;
             //Player.p_rigidbody.useGravity = true;
@@ -112,7 +110,6 @@ namespace SplineMesh
             }
 
         }
-
 
         public void InitialEvents(float Range, Transform RailPos, bool isZip)
         {
@@ -139,10 +136,7 @@ namespace SplineMesh
             {
 
                 Skin.transform.localPosition = Skin.transform.localPosition + SkinOffsetPosZip;
-                CameraTarget.parent = null;
-                StartCoroutine(setCamera(10));
-               
-
+               // CameraTarget.parent = null;
 
             }
 
@@ -167,6 +161,9 @@ namespace SplineMesh
 
             InitialRot = transform.rotation;
 
+            //Vector3 dir = sample.tangent;
+            //Cam.SetCamera(dir, 2.5f, 20f, 1f);
+            //Cam.Locked = false;
 
 
             // Check if was Homingattack
@@ -269,7 +266,7 @@ namespace SplineMesh
 
                 if (Actions.JumpPressed)
                 {
-                    //Cam.CamLagSet(0.8f, 0f);
+                   //Cam.CamLagSet(0.8f, 0f);
 
                     Vector3 jumpCorrectedOffset = (Skin.up * 3f); //Quaternion.LookRotation(Player.p_rigidbody.velocity, transform.up) * (transform.forward * 3.5f);
 
@@ -370,23 +367,23 @@ namespace SplineMesh
             //Increase the Amount of distance trought the Spline by DeltaTime
             float ammount = (Time.deltaTime * PlayerSpeed);
 
-            //Check for Low Speed to change direction so player dont get stuck
-            if (PlayerSpeed < 11)
-            {
-                PlayerSpeed -= 0.2f;
+            ////Check for Low Speed to change direction so player dont get stuck
+            //if (PlayerSpeed < 11)
+            //{
+            //    PlayerSpeed -= 0.2f;
 
-                if(PlayerSpeed < 7)
-                {
-                    if (Player.rb.velocity.normalized.y >= 0.1f)
-                    {
-                        backwards = !backwards;
-                        PlayerSpeed = 12;
-                        ammount = (Time.deltaTime * PlayerSpeed);
-                    }
+            //    if(PlayerSpeed < 7)
+            //    {
+            //        if (Player.rb.velocity.normalized.y >= 0.1f)
+            //        {
+            //            backwards = !backwards;
+            //            PlayerSpeed = 12;
+            //            ammount = (Time.deltaTime * PlayerSpeed);
+            //        }
 
-                }
+            //    }
 
-            }
+            //}
 
             // Increase/Decrease Range depending on direction
 
@@ -414,6 +411,8 @@ namespace SplineMesh
                     Skin.rotation = rot;
                     transform.position = (sample.location) + RailTransform.position + ((sample.Rotation * transform.up * OffsetRail));
 
+                   // Cam.FollowDirection(0.8f, 14, -5, 0.1f, true);
+
                 }
                 else
                 {
@@ -432,9 +431,9 @@ namespace SplineMesh
 
                     transform.position = sample.location + RailTransform.position + (transform.up * OffsetZip);
 
-                    Cam.FollowDirection(0.8f, 14, -5, 0.1f, true);
-                    CameraTarget.position = sample.location + RailTransform.position;
-                    CameraTarget.rotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, Vector3.up);
+                   // Cam.FollowDirection(0.8f, 14, -5, 0.1f, true);
+                    //CameraTarget.position = sample.location + RailTransform.position;
+                   // CameraTarget.localRotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, Vector3.up);
 
 
 
@@ -464,6 +463,10 @@ namespace SplineMesh
 
                     //remove camera tracking at the end of the rail to be safe from strange turns
                     //if (range > Rail_int.RailSpline.Length * 0.9f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f;}
+                    if (range > Rail_int.RailSpline.Length * 0.9f)
+                    {
+                       // Cam.lockCamFor(0.5f);
+                    }
                 }
                 else
                 {
@@ -477,12 +480,11 @@ namespace SplineMesh
                         Player.rb.velocity = -sample.tangent * (PlayerSpeed);
                     //remove camera tracking at the end of the rail to be safe from strange turns
                     //if (range < 0.1f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f; }
+                    if (range > Rail_int.RailSpline.Length * 0.9f)
+                    {
+                      //  Cam.lockCamFor(0.5f);
+                    }
                 }
-
-                //Debug.Log(Player.Grounded);
-                //Debug.Log(Player.p_rigidbody.velocity);
-                //if (isZipLine)
-                //Debug.Log("The pulley velocity is" + ZipBody.velocity);
 
             }
             else
@@ -542,7 +544,9 @@ namespace SplineMesh
             v = (v + 1) / 2;
             //use player vertical speed to find if player is going up or down
             //Debug.Log(Player.p_rigidbody.velocity.normalized.y);
-            if (Player.rb.velocity.y >= -3f)
+
+            //if (Player.rb.velocity.y >= -3f)
+            if (Player.rb.velocity.y > 0.05f)
             {
                 //uphill and straight
                 float lean = UpHillMultiplier;
@@ -562,7 +566,7 @@ namespace SplineMesh
                     PlayerSpeed = Player.MaxSpeed;
                 }
             }
-            else
+            else if (Player.rb.velocity.y < -0.05f)
             {
                 //Downhill
                 float lean = DownHillMultiplier;
@@ -612,36 +616,24 @@ namespace SplineMesh
         //    Cam.TargetOverriden = true;
         //}
 
-        IEnumerator setCamera(int howLong)
-        {
-            Cam.Locked = true;
-            for(int i = 0; i > howLong; i++)
-            {
-                yield return new WaitForEndOfFrame();
-                Cam.FollowDirection(1.5f, 14, -5, 0.6f, true);
-            }
-            Cam.Locked = false;
-        }
-
-
         void AssignStats()
         {
-            MinStartSpeed = stats.MinStartSpeed;
-            PushFowardmaxSpeed = stats.RailPushFowardmaxSpeed;
-            PushFowardIncrements = stats.RailPushFowardIncrements;
-            PushFowardDelay = stats.RailPushFowardDelay;
-            SlopePower = stats.SlopePower;
-            UpHillMultiplier = stats.RailUpHillMultiplier;
-            DownHillMultiplier = stats.RailDownHillMultiplier;
-            UpHillMultiplierCrouching = stats.RailUpHillMultiplierCrouching;
-            DownHillMultiplierCrouching = stats.RailDownHillMultiplierCrouching;
-            DragVal = stats.RailDragVal;
-            PlayerBrakePower = stats.RailPlayerBrakePower;
+            MinStartSpeed = Tools.stats.MinStartSpeed;
+            PushFowardmaxSpeed = Tools.stats.RailPushFowardmaxSpeed;
+            PushFowardIncrements = Tools.stats.RailPushFowardIncrements;
+            PushFowardDelay = Tools.stats.RailPushFowardDelay;
+            SlopePower = Tools.stats.SlopePower;
+            UpHillMultiplier = Tools.stats.RailUpHillMultiplier;
+            DownHillMultiplier = Tools.stats.RailDownHillMultiplier;
+            UpHillMultiplierCrouching = Tools.stats.RailUpHillMultiplierCrouching;
+            DownHillMultiplierCrouching = Tools.stats.RailDownHillMultiplierCrouching;
+            DragVal = Tools.stats.RailDragVal;
+            PlayerBrakePower = Tools.stats.RailPlayerBrakePower;
 
-            SkinOffsetPosRail = stats.SkinOffsetPosRail;
-            SkinOffsetPosZip = stats.SkinOffsetPosZip;
-            OffsetRail = stats.OffsetRail;
-            OffsetZip = stats.OffsetZip;
+            SkinOffsetPosRail = Tools.stats.SkinOffsetPosRail;
+            SkinOffsetPosZip = Tools.stats.SkinOffsetPosZip;
+            OffsetRail = Tools.stats.OffsetRail;
+            OffsetZip = Tools.stats.OffsetZip;
 
         }
 

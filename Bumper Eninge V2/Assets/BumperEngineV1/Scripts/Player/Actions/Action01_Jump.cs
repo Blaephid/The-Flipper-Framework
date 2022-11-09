@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Action01_Jump : MonoBehaviour
 {
-    CharacterStats Stats;
     CharacterTools Tools;
 
     RaycastHit hit;
@@ -86,7 +85,6 @@ public class Action01_Jump : MonoBehaviour
             Tools = GetComponent<CharacterTools>();
             AssignTools();
             
-            Stats = GetComponent<CharacterStats>();
             AssignStats();   
         }
     }
@@ -129,7 +127,6 @@ public class Action01_Jump : MonoBehaviour
 
         else
         {
-            Debug.Log("Jump again");
             JumpAgain();
 
             //Increases jump count
@@ -494,24 +491,24 @@ public class Action01_Jump : MonoBehaviour
     //Reponsible for assigning stats from the stats script.
     private void AssignStats()
     {
-        StartJumpDuration = Stats.StartJumpDuration;
-        StartJumpSpeed = Stats.StartJumpSpeed;
-        StartSlopedJumpDuration = Stats.StartSlopedJumpDuration;
-        JumpSlopeConversion = Stats.JumpSlopeConversion;
-        RollingLandingBoost = Stats.JumpRollingLandingBoost;
-        StopYSpeedOnRelease = Stats.StopYSpeedOnRelease;
+        StartJumpDuration = Tools.stats.StartJumpDuration;
+        StartJumpSpeed = Tools.stats.StartJumpSpeed;
+        StartSlopedJumpDuration = Tools.stats.StartSlopedJumpDuration;
+        JumpSlopeConversion = Tools.stats.JumpSlopeConversion;
+        RollingLandingBoost = Tools.stats.JumpRollingLandingBoost;
+        StopYSpeedOnRelease = Tools.stats.StopYSpeedOnRelease;
 
-        canDoubleJump = Stats.canDoubleJump;
-        canTripleJump = Stats.canTripleJump;
-        doubleJumpDuration = Stats.doubleJumpDuration;
-        doubleJumpSpeed = Stats.doubleJumpSpeed;
+        canDoubleJump = Tools.stats.canDoubleJump;
+        canTripleJump = Tools.stats.canTripleJump;
+        doubleJumpDuration = Tools.stats.doubleJumpDuration;
+        doubleJumpSpeed = Tools.stats.doubleJumpSpeed;
 
-        airStepSpeed = Stats.AirStepSpeed;
-        StepDistance = Stats.AirStepDistance;
-        StepPlayermask = Stats.StepLayerMask;
+        airStepSpeed = Tools.stats.AirStepSpeed;
+        StepDistance = Tools.stats.AirStepDistance;
+        StepPlayermask = Tools.stats.StepLayerMask;
 
-        wallLayerMask = Stats.wallLayerMask;
-        WallCheckDistance = Stats.WallCheckDistance;
+        wallLayerMask = Tools.stats.wallLayerMask;
+        WallCheckDistance = Tools.stats.WallCheckDistance;
     }
 
     //Responsible for assigning objects and components from the tools script.

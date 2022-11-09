@@ -4,11 +4,11 @@ using System.Collections;
 public class Action00_Regular : MonoBehaviour {
 
     public Animator CharacterAnimator;
+	CharacterTools Tools;
     PlayerBhysics Player;
 	PlayerBinput Input;
     ActionManager Actions;
 	CameraControl Cam;
-	CharacterStats Stats;
     public SonicSoundsControl sounds;
 	public GameObject characterCapsule;
 	public GameObject rollingCapsule;
@@ -53,13 +53,12 @@ public class Action00_Regular : MonoBehaviour {
         Actions = GetComponent<ActionManager>();
         JumpAction = GetComponent<Action01_Jump>();
 		Cam = GetComponent<CameraControl>();
+		Tools = GetComponent<CharacterTools>();
     }
 
     private void Start()
     {
-		Stats = GetComponent<CharacterStats>();
-		if (Stats != null)
-			AssignStats();
+		AssignStats();
     }
 
     void FixedUpdate()
@@ -436,18 +435,18 @@ public class Action00_Regular : MonoBehaviour {
 
 	private void AssignStats()
     {
-		SpeedToStopAt = Stats.SpeedToStopAt;
-		MaximumSlope = Stats.MaximumSlope;
-		MaximumSpeed = Stats.MaximumSpeed;
-		SkiddingIntensity = Stats.SkiddingIntensity;
-		SkiddingStartPoint = Stats.SkiddingStartPoint;
-		CanDashDuringFall = Stats.CanDashDuringFall;
+		SpeedToStopAt = Tools.stats.SpeedToStopAt;
+		MaximumSlope = Tools.stats.MaximumSlope;
+		MaximumSpeed = Tools.stats.MaximumSpeed;
+		SkiddingIntensity = Tools.stats.SkiddingIntensity;
+		SkiddingStartPoint = Tools.stats.SkiddingStartPoint;
+		CanDashDuringFall = Tools.stats.CanDashDuringFall;
 
-		quickStepSpeed = Stats.StepSpeed;
-		airStepSpeed = Stats.AirStepSpeed;
-		StepDistance = Stats.StepDistance;
-		airStepDistance = Stats.AirStepDistance;
-		StepPlayermask = Stats.StepLayerMask;
+		quickStepSpeed = Tools.stats.StepSpeed;
+		airStepSpeed = Tools.stats.AirStepSpeed;
+		StepDistance = Tools.stats.StepDistance;
+		airStepDistance = Tools.stats.AirStepDistance;
+		StepPlayermask = Tools.stats.StepLayerMask;
     }
 
 }

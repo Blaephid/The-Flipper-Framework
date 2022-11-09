@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Action08_DropDash : MonoBehaviour
 {
-    CharacterStats Stats;
     CharacterTools Tools;
 
     Animator CharacterAnimator;
@@ -44,7 +43,6 @@ public class Action08_DropDash : MonoBehaviour
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            Stats = GetComponent<CharacterStats>();
             AssignStats();
         }
     }
@@ -278,9 +276,9 @@ public class Action08_DropDash : MonoBehaviour
 
     private void AssignStats()
     {
-        SpinDashChargingSpeed = Stats.DropDashChargingSpeed;
-        MinimunCharge = Stats.DropMinimunCharge;
-        MaximunCharge = Stats.DropMaximunCharge;
+        SpinDashChargingSpeed = Tools.stats.DropDashChargingSpeed;
+        MinimunCharge = Tools.stats.DropMinimunCharge;
+        MaximunCharge = Tools.stats.DropMaximunCharge;
     }
 
     private void AssignTools()

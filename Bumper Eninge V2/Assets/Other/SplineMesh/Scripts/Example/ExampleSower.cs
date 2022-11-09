@@ -37,6 +37,8 @@ namespace SplineMesh
         private Spline spline = null;
         private bool toUpdate = true;
 
+        public bool justStart = true;
+        public bool onEnd;
         public GameObject prefab = null;
         public bool asPrefab = true;
         public float scale = 1, scaleRange = 0;
@@ -96,55 +98,73 @@ namespace SplineMesh
                 return;
 
             float distance = initialSpacing;
-            while (distance <= (spline.Length - EndingSpacing))
+            if (justStart)
             {
-                CurveSample sample = spline.GetSampleAtDistance(distance);
-
-                GameObject go;
-                if (!asPrefab)
+                placeElement(1);
+            }
+            else
+            {
+                while (distance <= (spline.Length - EndingSpacing))
                 {
-                    go = Instantiate(prefab, generated.transform);
+                    placeElement(distance);
+                    distance += spacing + UnityEngine.Random.Range(0, spacingRange);
                 }
-                else
-                {
-#if UNITY_EDITOR                    
-                    go = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+            }
+
+            if (onEnd)
+            {
+                placeElement(spline.Length);
+            }
+        }
+
+        void placeElement(float distance)
+        {
+            CurveSample sample = spline.GetSampleAtDistance(distance);
+
+            GameObject go;
+            if (!asPrefab)
+            {
+                go = Instantiate(prefab, generated.transform);
+            }
+            else
+            {
+#if UNITY_EDITOR
+                go = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
 #else
                     go = Instantiate(prefab, generated.transform);
 #endif
-                    go.transform.parent = generated.transform;
-                }
-                go.transform.localRotation = Quaternion.identity;
-                go.transform.localPosition = Vector3.zero;
-                go.transform.localScale = Vector3.one;
-
-                // move along spline, according to spacing + random
-                go.transform.localPosition = sample.location;
-                // apply scale + random
-                float rangedScale = scale + UnityEngine.Random.Range(0, scaleRange);
-                go.transform.localScale = new Vector3(rangedScale, rangedScale, rangedScale);
-                // rotate with random yaw
-                if (isRandomYaw)
-                {
-                    go.transform.Rotate(0, 0, UnityEngine.Random.Range(-180, 180));
-                }
-                else
-                {
-                    go.transform.rotation = sample.Rotation * Quaternion.Euler(offsetRotation);
-                }
-                // move orthogonaly to the spline, according to offset + random
-                Vector3 binormal = sample.tangent;
-                binormal = Quaternion.LookRotation(Vector3.right, Vector3.up) * binormal;
-                var localOffset = offset + UnityEngine.Random.Range(0, offsetRange * Math.Sign(offset));
-                localOffset *= sample.scale.x;
-                binormal *= localOffset;
-                binormal +=  sample.Rotation * Offset3d ;
-                go.transform.position += binormal;
-
-                distance += spacing + UnityEngine.Random.Range(0, spacingRange);
-                if (alingwithterrain) GroundAlign(go.transform);
+                go.transform.parent = generated.transform;
             }
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localScale = Vector3.one;
+
+            // move along spline, according to spacing + random
+            go.transform.localPosition = sample.location;
+            // apply scale + random
+            float rangedScale = scale + UnityEngine.Random.Range(0, scaleRange);
+            go.transform.localScale = new Vector3(rangedScale, rangedScale, rangedScale);
+            // rotate with random yaw
+            if (isRandomYaw)
+            {
+                go.transform.Rotate(0, 0, UnityEngine.Random.Range(-180, 180));
+            }
+            else
+            {
+                go.transform.rotation = sample.Rotation * Quaternion.Euler(offsetRotation);
+            }
+            // move orthogonaly to the spline, according to offset + random
+            Vector3 binormal = sample.tangent;
+            binormal = Quaternion.LookRotation(Vector3.right, Vector3.up) * binormal;
+            var localOffset = offset + UnityEngine.Random.Range(0, offsetRange * Math.Sign(offset));
+            localOffset *= sample.scale.x;
+            binormal *= localOffset;
+            binormal += sample.Rotation * Offset3d;
+            go.transform.position += binormal;
+
+            if (alingwithterrain) GroundAlign(go.transform);
         }
+    
         void GroundAlign(Transform obj)
         {
             RaycastHit hit;
@@ -155,7 +175,7 @@ namespace SplineMesh
                 obj.position = hit.point;
                 obj.rotation = Quaternion.FromToRotation(obj.up, hit.normal) * obj.rotation;
                 obj.position += Offset3d;
-                Debug.Log(obj.name + " aligned.", this);
+                //Debug.Log(obj.name + " aligned.", this);
             }
             else
             {

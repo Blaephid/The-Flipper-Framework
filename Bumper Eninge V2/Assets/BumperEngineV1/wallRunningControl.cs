@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class wallRunningControl : MonoBehaviour
 {
-    CharacterStats Stats;
     CharacterTools Tools;
 
     Action01_Jump JumpAction;
@@ -50,7 +49,6 @@ public class wallRunningControl : MonoBehaviour
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            Stats = GetComponent<CharacterStats>();
             AssignStats();
         }
     }
@@ -61,17 +59,18 @@ public class wallRunningControl : MonoBehaviour
         //If jumping, step stats reflect jump versions.
         if (Actions.Action == 1)
         {
-            StepRight = JumpAction.StepRight;
-            StepDistance = JumpAction.StepDistance;
-            DistanceToStep = JumpAction.DistanceToStep;
+            //StepRight = JumpAction.StepRight;
+            //StepDistance = JumpAction.StepDistance;
+            //DistanceToStep = JumpAction.DistanceToStep;
             canCheck = true;
+            //  Debug.Log("Can check");
         }
         //If moving normally, step stats refelct normal versions.
         else if (Actions.Action == 0)
         {
-            StepRight = RegularAction.StepRight;
-            StepDistance = RegularAction.airStepDistance;
-            DistanceToStep = RegularAction.DistanceToStep;
+            //StepRight = RegularAction.StepRight;
+            //StepDistance = RegularAction.airStepDistance;
+            //DistanceToStep = RegularAction.DistanceToStep;
             canCheck = true;
         }
         //Manages what actions can and cannot traverse into a wall run.
@@ -83,7 +82,7 @@ public class wallRunningControl : MonoBehaviour
         //If able, check for wall run. Player must be in air, pressing skid, and able to.
         if (Actions.SkidPressed)
         {
-            if (!Player.Grounded && canCheck)
+            if (canCheck)
                 checkWallRun();
         }
 
@@ -100,13 +99,14 @@ public class wallRunningControl : MonoBehaviour
     {
 
         //If High enough above ground and not at an odd rotation
-        if (enoughAboveGround())
+        if (!Player.Grounded)
         {
+
             //Checks for nearby walls using raycasts
             CheckForWall();
 
             //If detecting a wall in front with a near horizontal normal
-            if (wallFront && frontWallDetect.normal.y <= 0.3 && frontWallDetect.normal.y >= -0.2 && Player.HorizontalSpeedMagnitude > 30f)
+            if (wallFront && frontWallDetect.normal.y <= 0.3 && frontWallDetect.normal.y >= -0.2 && Player.HorizontalSpeedMagnitude > 20f)
             {
                 //If facing the wall enough
                 if (Vector3.Dot(CharacterAnimator.transform.forward, frontWallDetect.normal) < -0.85f)
@@ -122,7 +122,7 @@ public class wallRunningControl : MonoBehaviour
             //If detecting a wall to the side
 
             //If detecting a wall on left with correct angle.
-            else if (wallLeft && DistanceToStep < StepDistance / 2  && leftWallDetect.normal.y <= 0.4 && Player.HorizontalSpeedMagnitude > 40f &&
+            else if (wallLeft && DistanceToStep < StepDistance / 2  && leftWallDetect.normal.y <= 0.4 && Player.HorizontalSpeedMagnitude > 28f &&
                 leftWallDetect.normal.y >= -0.4 && !(DistanceToStep > 0 && StepRight))
             {
                 //Enter a wallrun with wall on left.
@@ -131,7 +131,7 @@ public class wallRunningControl : MonoBehaviour
             }
 
             //If detecting a wall on right with correct angle.
-            else if (wallRight && DistanceToStep < StepDistance / 2 && rightWallDetect.normal.y <= 0.4 && Player.HorizontalSpeedMagnitude > 40f &&
+            else if (wallRight && DistanceToStep < StepDistance / 2 && rightWallDetect.normal.y <= 0.4 && Player.HorizontalSpeedMagnitude > 28f &&
                 rightWallDetect.normal.y >= -0.4 && !(DistanceToStep > 0 && !StepRight))
             {
                 //Enter a wallrun with wall on right.
@@ -150,56 +150,55 @@ public class wallRunningControl : MonoBehaviour
 
     private void CheckForWall()
     {
-
         //Checks for wall in front using raycasts, outputing hits and booleans
         wallFront = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out frontWallDetect,
-            WallCheckDistance, wallLayerMask);
+            WallCheckDistance * 2.5f, wallLayerMask);
 
-        //If there isn't a wall and moving fast enough
-        if (!wallFront && Player.HorizontalSpeedMagnitude > 20f)
+        //Checks for nearby walls using raycasts, outputing hits and booleans
+        wallRight = Physics.Raycast(CharacterAnimator.transform.position, CharacterAnimator.transform.right, out rightWallDetect, WallCheckDistance, wallLayerMask);
+        wallLeft = Physics.Raycast(CharacterAnimator.transform.position, -CharacterAnimator.transform.right, out leftWallDetect, WallCheckDistance, wallLayerMask);
+
+        //If no walls directily on sides, checks at angles with greater range.
+        if (!wallRight && !wallLeft && !wallFront)
         {
-            //Increases check range based on speed
-            CheckModifier = (Player.HorizontalSpeedMagnitude * 0.015f) + .5f;
-            wallFront = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out frontWallDetect,
-            WallCheckDistance * CheckModifier, wallLayerMask);
+            //Checks for wall on right first. Sets angle between right and forward and uses it.
+            Vector3 direction = Vector3.Lerp(CharacterAnimator.transform.right, CharacterAnimator.transform.forward, 0.4f);
+            wallRight = Physics.Raycast(CharacterAnimator.transform.position, direction, out rightWallDetect, WallCheckDistance * 2, wallLayerMask);
 
-            //If there is no wall in front, checks for walls on sides instead. Only if moving fast enough.
-            if (!wallFront && Player.HorizontalSpeedMagnitude > 30f)
+            //If no wall on right, checks left.
+            if (!wallRight)
             {
-                //Checks for nearby walls using raycasts, outputing hits and booleans
-                wallRight = Physics.Raycast(CharacterAnimator.transform.position, CharacterAnimator.transform.right, out rightWallDetect, WallCheckDistance, wallLayerMask);
-                wallLeft = Physics.Raycast(CharacterAnimator.transform.position, -CharacterAnimator.transform.right, out leftWallDetect, WallCheckDistance, wallLayerMask);
+                //Same as before but left
+                direction = Vector3.Lerp(-CharacterAnimator.transform.right, CharacterAnimator.transform.forward, 0.4f);
+                wallLeft = Physics.Raycast(CharacterAnimator.transform.position, direction, out leftWallDetect, WallCheckDistance * 2, wallLayerMask);
 
-                //If no walls directily on sides, checks at angles with greater range.
-                if (!wallRight && !wallLeft)
+                //If they find the wall, apply force towards it.
+                if (wallLeft)
                 {
-                    //Checks for wall on right first. Sets angle between right and forward and uses it.
-                    Vector3 direction = Vector3.Lerp(CharacterAnimator.transform.right, CharacterAnimator.transform.forward, 0.4f);
-                    wallRight = Physics.Raycast(CharacterAnimator.transform.position, direction, out rightWallDetect, WallCheckDistance * 2, wallLayerMask);
-
-                    //If no wall on right, checks left.
-                    if (!wallRight)
+                    //Player.p_rigidbody.AddForce(direction * 20f);
+                }
+                else
+                {
+                    //If there isn't a wall and moving fast enough
+                    if (!wallFront)
                     {
-                        //Same as before but left
-                        direction = Vector3.Lerp(-CharacterAnimator.transform.right, CharacterAnimator.transform.forward, 0.4f);
-                        wallLeft = Physics.Raycast(CharacterAnimator.transform.position, direction, out leftWallDetect, WallCheckDistance * 2, wallLayerMask);
+                        //Increases check range based on speed
+                        CheckModifier = (Player.HorizontalSpeedMagnitude * 0.035f) + .5f;
+                        wallFront = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out frontWallDetect,
+                        WallCheckDistance * CheckModifier, wallLayerMask);
 
-                        //If they find the wall, apply force towards it.
-                        if (wallLeft)
-                        {
-                            Debug.Log("Angle left");
-                            //Player.p_rigidbody.AddForce(direction * 20f);
-                        }
-                    }
-                    //If they find the wall, apply force towards it.
-                    else if (wallRight)
-                    {
-                        Debug.Log("Angle Right");
-                        //Player.p_rigidbody.AddForce(direction * 20f);
                     }
                 }
             }
+            //If they find the wall, apply force towards it.
+            else if (wallRight)
+            {
+                //Player.p_rigidbody.AddForce(direction * 20f);
+            }
         }
+
+        
+        
 
         //Checks if the wall can be used. Banned walls are set when the player jumps off the wall.
         if (wallFront)
@@ -218,37 +217,14 @@ public class wallRunningControl : MonoBehaviour
                 wallLeft = false;
         }
 
-
-
-        //Lines being drawn for testing
-
-        //Debug.DrawLine(CharacterAnimator.transform.position, CharacterAnimator.transform.position + CharacterAnimator.transform.right * WallCheckDistance, Color.red);
-        //Debug.DrawLine(CharacterAnimator.transform.position, CharacterAnimator.transform.position + -CharacterAnimator.transform.right * WallCheckDistance, Color.red);
-        //Debug.DrawLine(CharacterAnimator.transform.position, CharacterAnimator.transform.position + CharacterAnimator.transform.forward * WallCheckDistance, Color.red);
-
-        //CheckModifier = (Player.HorizontalSpeedMagnitude * 0.015f) + .5f;
-        //Debug.DrawLine(CharacterAnimator.transform.position, CharacterAnimator.transform.position + CharacterAnimator.transform.forward * (WallCheckDistance * CheckModifier), Color.blue);
-
-        //Vector3 directions = Vector3.Lerp(CharacterAnimator.transform.right, CharacterAnimator.transform.forward, 0.4f);
-        //Debug.DrawLine(CharacterAnimator.transform.position, CharacterAnimator.transform.position + directions * (2 * WallCheckDistance), Color.blue);
-
-        //directions = Vector3.Lerp(-CharacterAnimator.transform.right, CharacterAnimator.transform.forward, 0.4f);
-        //Debug.DrawLine(CharacterAnimator.transform.position, CharacterAnimator.transform.position + directions * (2 * WallCheckDistance), Color.blue);
-
-        //if (wallRight)
-        //    Debug.Log(rightWallDetect.normal);
-        //if (wallLeft)
-        //    Debug.Log(leftWallDetect.normal);
-        //if (wallFront)
-        //    Debug.Log(frontWallDetect.normal);
     }
 
     //Reponsible for assigning stats from the stats script.
     private void AssignStats()
     {
 
-        wallLayerMask = Stats.wallLayerMask;
-        WallCheckDistance = Stats.WallCheckDistance;
+        wallLayerMask = Tools.stats.wallLayerMask;
+        WallCheckDistance = Tools.stats.WallCheckDistance;
     }
 
     //Responsible for assigning objects and components from the tools script.

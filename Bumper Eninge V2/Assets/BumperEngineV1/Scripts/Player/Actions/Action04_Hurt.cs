@@ -5,7 +5,6 @@ public class Action04_Hurt : MonoBehaviour {
 
     Animator CharacterAnimator;
     PlayerBhysics Player;
-    CharacterStats Stats;
     CharacterTools Tools;
     ActionManager Actions;
     SonicSoundsControl sounds;
@@ -24,7 +23,6 @@ public class Action04_Hurt : MonoBehaviour {
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            Stats = GetComponent<CharacterStats>();
             AssignStats();
 
         }
@@ -54,7 +52,7 @@ public class Action04_Hurt : MonoBehaviour {
         //Get out of Action
         counter += 1;
 
-        if (Player.Grounded && counter > 20)
+        if ((Player.Grounded && counter > 20) || counter > 45)
         {
             if (!Actions.Action04Control.isDead)
             { 
@@ -86,9 +84,9 @@ public class Action04_Hurt : MonoBehaviour {
 
     private void AssignStats ()
     {
-        KnockbackForce = Stats.KnockbackForce;
-        KnockbackUpwardsForce = Stats.KnockbackUpwardsForce;
-        ResetSpeedOnHit = Stats.ResetSpeedOnHit;
+        KnockbackForce = Tools.stats.KnockbackForce;
+        KnockbackUpwardsForce = Tools.stats.KnockbackUpwardsForce;
+        ResetSpeedOnHit = Tools.stats.ResetSpeedOnHit;
     }
 
     private void AssignTools()

@@ -13,7 +13,8 @@ public class CameraControl : MonoBehaviour {
         InitialDistance = Cam.CameraMaxDistance;
     }
 
-	public void OnTriggerEnter(Collider col)
+
+    public void OnTriggerEnter(Collider col)
     {
         if(col.tag == "CameraTrigger")
         {
@@ -23,7 +24,7 @@ public class CameraControl : MonoBehaviour {
                 {
                     Vector3 dir = col.transform.forward;
                     Cam.SetCamera(dir, 2f, col.GetComponent<CameraTriggerData>().CameraAltitude, col.GetComponent<CameraTriggerData>().FaceSpeed);
-                    Cam.Locked = true;
+                    Cam.MasterLocked = true;
                     if (col.GetComponent<CameraTriggerData>().changeDistance)
                     {
                         Cam.CameraMaxDistance = col.GetComponent<CameraTriggerData>().ChangeDistance;
@@ -36,6 +37,7 @@ public class CameraControl : MonoBehaviour {
                 else if (col.GetComponent<CameraTriggerData>().Type == TriggerType.SetFree)
                 {
                     Cam.CameraMaxDistance = InitialDistance;
+                    Cam.MasterLocked = false;
                     Cam.Locked = false;
                 }
                 else if (col.GetComponent<CameraTriggerData>().Type == TriggerType.SetFreeAndLookTowards)
@@ -50,14 +52,10 @@ public class CameraControl : MonoBehaviour {
                     {
                         Cam.CameraMaxDistance = col.GetComponent<CameraTriggerData>().ChangeDistance;
                     }
+                    Cam.MasterLocked = false;
                     Cam.Locked = false;
                 }
             }
-        }
-
-        if (col.tag == "Rail")
-        {
-            Cam.Locked = true;
         }
 
     }
@@ -68,8 +66,11 @@ public class CameraControl : MonoBehaviour {
 			if (col.GetComponent<CameraTriggerData> () != null) {
 				if (col.GetComponent<CameraTriggerData> ().Type == TriggerType.LockToDirection && col.GetComponent<CameraTriggerData> ().ReleaseOnExit) {
 					Cam.CameraMaxDistance = InitialDistance;
-					Cam.Locked = false;
-					Vector3 dir = col.transform.forward;
+
+                    Cam.MasterLocked = false;
+                    Cam.Locked = false;
+
+                    Vector3 dir = col.transform.forward;
 					Cam.SetCamera(dir, 2.5f, col.GetComponent<CameraTriggerData>().CameraAltitude);
 				}
 

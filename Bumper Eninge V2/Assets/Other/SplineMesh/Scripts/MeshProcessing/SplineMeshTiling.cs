@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEditor;
 
 namespace SplineMesh {
 
@@ -45,6 +46,10 @@ namespace SplineMesh {
         public bool enableVisual = true;
         public string ObjTag = "Rail";
         public int ObjLayer = 23;
+
+        public GameObject refDir;
+        public bool showEndDir;
+        public bool showStartDir;
 
 
         [Tooltip("The mode to use to fill the choosen interval with the bent mesh.")]
@@ -99,6 +104,29 @@ namespace SplineMesh {
                 .Select(child => child.gameObject).Except(used)) {
                 UOUtility.Destroy(go);
             }
+
+            if (showEndDir && refDir != null)
+            {
+                GameObject go = Instantiate(refDir, generated.transform);
+
+                CurveSample sample = spline.GetSampleAtDistance(spline.Length);
+
+                
+                go.transform.localPosition = sample.location;
+                go.transform.rotation = Quaternion.LookRotation(sample.up, sample.tangent);
+
+            }
+
+            if (showStartDir && refDir != null)
+            {
+                GameObject go = Instantiate(refDir, generated.transform);
+
+                CurveSample sample = spline.GetSampleAtDistance(0);
+
+                go.transform.localPosition = sample.location;
+                go.transform.rotation = Quaternion.LookRotation(sample.up, sample.tangent);
+
+            }
         }
 
         private GameObject FindOrCreate(string name) {
@@ -123,7 +151,8 @@ namespace SplineMesh {
             res.GetComponent<MeshCollider>().material = physicMaterial;
             res.GetComponent<MeshCollider>().enabled = enableCollider;
             res.GetComponent<MeshRenderer>().enabled = enableVisual;
-            res.GetComponent<DeactivateOnStart>().enabled = DeactivateOnStart;
+            if(res.GetComponent<DeactivateOnStart>())
+               res.GetComponent<DeactivateOnStart>().enabled = DeactivateOnStart;
             res.tag = ObjTag;
             res.layer = ObjLayer;
 

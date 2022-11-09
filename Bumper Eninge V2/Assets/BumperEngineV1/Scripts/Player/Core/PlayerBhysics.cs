@@ -5,7 +5,8 @@ using TMPro;
 public class PlayerBhysics : MonoBehaviour
 {
     ActionManager Action;
-    CharacterStats Stats;
+    CharacterTools Tools;
+
     static public PlayerBhysics MasterPlayer;
 
     [Header("Movement Values")]
@@ -53,6 +54,7 @@ public class PlayerBhysics : MonoBehaviour
     [HideInInspector] public float StartDownhillMultiplier = -7;
 
     [HideInInspector] public AnimationCurve SlopePowerOverSpeed;
+    [HideInInspector] public AnimationCurve UpHillOverTime;
     [HideInInspector] public float SlopePowerShiftSpeed;
     [HideInInspector] public float LandingConversionFactor = 2;
 
@@ -73,10 +75,6 @@ public class PlayerBhysics : MonoBehaviour
     [HideInInspector] public Vector3 Gravity;
     public Vector3 MoveInput { get; set; }
 
-    [Header("UI objects")]
-
-    public TextMeshProUGUI EnergyUI;
-    public TextMeshProUGUI MaxEnergyUI;
 
     [Header("Other Values")]
 
@@ -133,6 +131,7 @@ public class PlayerBhysics : MonoBehaviour
     public float SpeedMagnitude { get; set; }
     public float HorizontalSpeedMagnitude { get; set; }
 
+    float timeUpHill;
 
     [Header("Greedy Stick Fix")]
     public bool EnableDebug;
@@ -165,12 +164,9 @@ public class PlayerBhysics : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         PreviousInput = transform.forward;
         Action = GetComponent<ActionManager>();
-        Stats = GetComponent<CharacterStats>();
-
-        if (Stats != null)
-        {
-            AssignStats();
-        }
+        Tools = GetComponent<CharacterTools>();
+        AssignStats();
+        
 
     }
 
@@ -541,24 +537,30 @@ public class PlayerBhysics : MonoBehaviour
         if (Grounded && GroundNormal.y < SlopeEffectLimit)
         {
 
+            if (timeUpHill < 0)
+                timeUpHill = 0;
 
             if (rb.velocity.y > StartDownhillMultiplier)
             {
+                timeUpHill += Time.deltaTime;
                 //Debug.Log(p_rigidbody.velocity.y);
                 if (!isRolling)
                 {
                     Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * UphillMultiplier, 0);
+                    force *= UpHillOverTime.Evaluate(timeUpHill);
                     AddVelocity(force);
                 }
                 else
                 {
                     Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * UphillMultiplier, 0) * RollingUphillBoost;
+                    force *= UpHillOverTime.Evaluate(timeUpHill);
                     AddVelocity(force);
                 }
             }
 
             else
             {
+                timeUpHill -= Time.deltaTime * 0.8f;
                 if (MoveInput != Vector3.zero && b_normalSpeed > 0)
                 {
                     if (!isRolling)
@@ -580,6 +582,8 @@ public class PlayerBhysics : MonoBehaviour
                 }
             }
         }
+        else
+            timeUpHill = 0;
 
     }
 
@@ -695,12 +699,12 @@ public class PlayerBhysics : MonoBehaviour
         }
         else
         {
-            if(HorizontalSpeedMagnitude > 10)
+            if(HorizontalSpeedMagnitude > 14)
             {
-                setVelocity = HandleGroundControl(AirControlAmmount * 1.3f, MoveInput);
+                setVelocity = HandleGroundControl(AirControlAmmount, MoveInput);
             }
             else
-                setVelocity = HandleGroundControl(AirControlAmmount, MoveInput);
+                setVelocity = HandleGroundControl(AirControlAmmount * 1.3f, MoveInput);
         }
         //Get out of roll
         isRolling = false;
@@ -713,7 +717,7 @@ public class PlayerBhysics : MonoBehaviour
             setVelocity = ReducedSpeed;
         }
 
-        if (HorizontalSpeedMagnitude > 10)
+        if (HorizontalSpeedMagnitude > 14)
         {
             Vector3 ReducedSpeed = setVelocity;
             ReducedSpeed.x = ReducedSpeed.x / naturalAirDecell;
@@ -813,59 +817,60 @@ public class PlayerBhysics : MonoBehaviour
     //Matches all changeable stats to how they are set in the character stats script.
     private void AssignStats()
     {
-        StartAccell = Stats.StartAccell;
-        AccellOverSpeed = Stats.AccellOverSpeed;
-        AccellShiftOverSpeed = Stats.AccellShiftOverSpeed;
-        TangentialDrag = Stats.TangentialDrag;
-        TangentialDragShiftSpeed = Stats.TangentialDragShiftSpeed;
-        TurnSpeed = Stats.TurnSpeed;
-        SlowedTurnSpeed = Stats.SlowedTurnSpeed;
-        TurnRateOverAngle = Stats.TurnRateOverAngle;
-        TangDragOverAngle = Stats.TangDragOverAngle;
-        TangDragOverSpeed = Stats.TangDragOverSpeed;
-        StartTopSpeed = Stats.StartTopSpeed;
-        StartMaxSpeed = Stats.StartMaxSpeed;
-        StartMaxFallingSpeed = Stats.StartMaxFallingSpeed;
-        StartJumpPower = Stats.StartJumpPower;
-        MoveDecell = Stats.MoveDecell;
-        naturalAirDecell = Stats.naturalAirDecell;
-        AirDecell = Stats.AirDecell;
-        GroundStickingDistance = Stats.GroundStickingDistance;
-        GroundStickingPower = Stats.GroundStickingPower;
-        SlopeEffectLimit = Stats.SlopeEffectLimit;
-        StandOnSlopeLimit = Stats.StandOnSlopeLimit;
-        SlopePower = Stats.SlopePower;
-        SlopeRunningAngleLimit = Stats.SlopeRunningAngleLimit;
-        SlopeSpeedLimit = Stats.SlopeSpeedLimit;
-        UphillMultiplier = Stats.UphillMultiplier;
-        DownhillMultiplier = Stats.DownhillMultiplier;
-        StartDownhillMultiplier = Stats.StartDownhillMultiplier;
-        SlopePowerOverSpeed = Stats.SlopePowerOverSpeed;
-        AirControlAmmount = Stats.AirControlAmmount;
-        AirSkiddingForce = Stats.AirSkiddingForce;
-        StopAirMovementIfNoInput = Stats.StopAirMovementIfNoInput;
-        RollingLandingBoost = Stats.RollingLandingBoost;
-        RollingDownhillBoost = Stats.RollingDownhillBoost;
-        RollingUphillBoost = Stats.RollingUphillBoost;
-        RollingStartSpeed = Stats.RollingStartSpeed;
-        RollingTurningDecreace = Stats.RollingTurningDecreace;
-        RollingFlatDecell = Stats.RollingFlatDecell;
-        SlopeTakeoverAmount = Stats.SlopeTakeoverAmount;
-        StartGravity = Stats.Gravity;
+        StartAccell = Tools.stats.StartAccell;
+        AccellOverSpeed = Tools.stats.AccellOverSpeed;
+        AccellShiftOverSpeed = Tools.stats.AccellShiftOverSpeed;
+        TangentialDrag = Tools.stats.TangentialDrag;
+        TangentialDragShiftSpeed = Tools.stats.TangentialDragShiftSpeed;
+        TurnSpeed = Tools.stats.TurnSpeed;
+        SlowedTurnSpeed = Tools.stats.SlowedTurnSpeed;
+        TurnRateOverAngle = Tools.stats.TurnRateOverAngle;
+        TangDragOverAngle = Tools.stats.TangDragOverAngle;
+        TangDragOverSpeed = Tools.stats.TangDragOverSpeed;
+        StartTopSpeed = Tools.stats.StartTopSpeed;
+        StartMaxSpeed = Tools.stats.StartMaxSpeed;
+        StartMaxFallingSpeed = Tools.stats.StartMaxFallingSpeed;
+        StartJumpPower = Tools.stats.StartJumpPower;
+        MoveDecell = Tools.stats.MoveDecell;
+        naturalAirDecell = Tools.stats.naturalAirDecell;
+        AirDecell = Tools.stats.AirDecell;
+        GroundStickingDistance = Tools.stats.GroundStickingDistance;
+        GroundStickingPower = Tools.stats.GroundStickingPower;
+        SlopeEffectLimit = Tools.stats.SlopeEffectLimit;
+        StandOnSlopeLimit = Tools.stats.StandOnSlopeLimit;
+        SlopePower = Tools.stats.SlopePower;
+        SlopeRunningAngleLimit = Tools.stats.SlopeRunningAngleLimit;
+        SlopeSpeedLimit = Tools.stats.SlopeSpeedLimit;
+        UphillMultiplier = Tools.stats.UphillMultiplier;
+        DownhillMultiplier = Tools.stats.DownhillMultiplier;
+        StartDownhillMultiplier = Tools.stats.StartDownhillMultiplier;
+        SlopePowerOverSpeed = Tools.stats.SlopePowerOverSpeed;
+        AirControlAmmount = Tools.stats.AirControlAmmount;
+        AirSkiddingForce = Tools.stats.AirSkiddingForce;
+        StopAirMovementIfNoInput = Tools.stats.StopAirMovementIfNoInput;
+        RollingLandingBoost = Tools.stats.RollingLandingBoost;
+        RollingDownhillBoost = Tools.stats.RollingDownhillBoost;
+        RollingUphillBoost = Tools.stats.RollingUphillBoost;
+        RollingStartSpeed = Tools.stats.RollingStartSpeed;
+        RollingTurningDecreace = Tools.stats.RollingTurningDecreace;
+        RollingFlatDecell = Tools.stats.RollingFlatDecell;
+        SlopeTakeoverAmount = Tools.stats.SlopeTakeoverAmount;
+        UpHillOverTime = Tools.stats.UpHillOverTime;
+        StartGravity = Tools.stats.Gravity;
 
 
-        StickingLerps = Stats.StickingLerps;
-        StickingNormalLimit = Stats.StickingNormalLimit;
-        StickCastAhead = Stats.StickCastAhead;
-        negativeGHoverHeight = Stats.negativeGHoverHeight;
-        RayToGroundDistance = Stats.RayToGroundDistance;
-        RaytoGroundSpeedRatio = Stats.RaytoGroundSpeedRatio;
-        RaytoGroundSpeedMax = Stats.RaytoGroundSpeedMax;
-        RayToGroundRotDistance = Stats.RayToGroundRotDistance;
-        RaytoGroundRotSpeedMax = Stats.RaytoGroundRotSpeedMax;
-        RotationResetThreshold = Stats.RotationResetThreshold;
+        StickingLerps = Tools.stats.StickingLerps;
+        StickingNormalLimit = Tools.stats.StickingNormalLimit;
+        StickCastAhead = Tools.stats.StickCastAhead;
+        negativeGHoverHeight = Tools.stats.negativeGHoverHeight;
+        RayToGroundDistance = Tools.stats.RayToGroundDistance;
+        RaytoGroundSpeedRatio = Tools.stats.RaytoGroundSpeedRatio;
+        RaytoGroundSpeedMax = Tools.stats.RaytoGroundSpeedMax;
+        RayToGroundRotDistance = Tools.stats.RayToGroundRotDistance;
+        RaytoGroundRotSpeedMax = Tools.stats.RaytoGroundRotSpeedMax;
+        RotationResetThreshold = Tools.stats.RotationResetThreshold;
 
-        Playermask = Stats.Playermask;
+        Playermask = Tools.stats.Playermask;
 
         //Sets all changeable core values to how they are set to start in the editor.
         MoveAccell = StartAccell;

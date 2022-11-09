@@ -62,7 +62,6 @@ public class ActionManager : MonoBehaviour {
     PlayerBhysics Phys;
     CameraControl Cam;
     PlayerBinput Input;
-    CharacterStats Stats;
 
     void Start()
     {
@@ -75,7 +74,6 @@ public class ActionManager : MonoBehaviour {
         {
             Phys = GetComponent<PlayerBhysics>();
             Input = GetComponent<PlayerBinput>();
-            Stats = GetComponent<CharacterStats>();
             Cam = GetComponent<CameraControl>();
             //newInput = new PlayerNewInput();
         }

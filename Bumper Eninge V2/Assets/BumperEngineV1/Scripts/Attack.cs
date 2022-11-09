@@ -9,7 +9,6 @@ public class Attack : MonoBehaviour
 	PlayerBhysics Player;
 	Objects_Interaction obj_Int;
 	ActionManager Actions;
-	CharacterStats Stats;
 	CharacterTools Tools;
 
 	GameObject JumpBall;
@@ -29,7 +28,6 @@ public class Attack : MonoBehaviour
 		Tools = GetComponent<CharacterTools>();
 		AssignTools();
 
-		Stats = GetComponent<CharacterStats>();
 		AssignStats();
 	}
 
@@ -86,7 +84,7 @@ public class Attack : MonoBehaviour
 					
 
 
-					Player.HomingDelay = Stats.HomingSuccessDelay;
+					Player.HomingDelay = Tools.stats.HomingSuccessDelay;
 				}
 
 
@@ -101,8 +99,7 @@ public class Attack : MonoBehaviour
 					newSpeed.y = HomingBouncingPower * 1.8f;
 					Player.rb.velocity = newSpeed;
 
-					if (Stats != null)
-						Player.HomingDelay = Stats.HomingSuccessDelay;
+					Player.HomingDelay = Tools.stats.HomingSuccessDelay;
 
 					JumpBall.SetActive(false);
 					if (Actions.Action08 != null)
@@ -188,7 +185,7 @@ public class Attack : MonoBehaviour
 							Player.rb.velocity = newSpeed;
 							
 							
-							Player.HomingDelay = Stats.HomingSuccessDelay;
+							Player.HomingDelay = Tools.stats.HomingSuccessDelay;
 						}
 
 
@@ -203,8 +200,7 @@ public class Attack : MonoBehaviour
 							newSpeed.y = HomingBouncingPower * 1.8f;
 							Player.rb.velocity = newSpeed;
 
-							if (Stats != null)
-								Player.HomingDelay = Stats.HomingSuccessDelay;
+							Player.HomingDelay = Tools.stats.HomingSuccessDelay;
 
 							JumpBall.SetActive(false);
 							if (Actions.Action08 != null)
@@ -247,11 +243,11 @@ public class Attack : MonoBehaviour
 
 	private void AssignStats()
 	{
-		BouncingPower = Stats.BouncingPower;
-		HomingBouncingPower = Stats.HomingBouncingPower;
-		EnemyHomingStoppingPowerWhenAdditive = Stats.EnemyHomingStoppingPowerWhenAdditive;
-		StopOnHomingAttackHit = Stats.StopOnHomingAttackHit;
-		StopOnHit = Stats.StopOnHit;
+		BouncingPower = Tools.stats.BouncingPower;
+		HomingBouncingPower = Tools.stats.HomingBouncingPower;
+		EnemyHomingStoppingPowerWhenAdditive = Tools.stats.EnemyHomingStoppingPowerWhenAdditive;
+		StopOnHomingAttackHit = Tools.stats.StopOnHomingAttackHit;
+		StopOnHit = Tools.stats.StopOnHit;
 
 	}
 

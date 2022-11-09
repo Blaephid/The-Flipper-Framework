@@ -18,12 +18,18 @@ EditorBuildSettings:
     path: Assets/BumperEngineV1/Scenes/LoadingScreen.unity
     guid: 5222abf34946d874fb2350750e29d16d
   - enabled: 1
+    path: Assets/BumperEngineV1/Scenes/TutorialLevel.unity
+    guid: 7faaf512d4c50f04bba6977a3a7836c9
+  - enabled: 1
+    path: Assets/Other/Altitude Limit/AltitudeLimit.unity
+    guid: 4dad4fe5727c41f48b780de27f3d2039
+  - enabled: 0
     path: Assets/BumperEngineV1/Scenes/IntroZone.unity
     guid: bee65b02b1bee5c47b3603413cd07c9a
-  - enabled: 1
+  - enabled: 0
     path: Assets/BumperEngineV1/Scenes/DemoZone.unity
     guid: d99041847c98ee242aee707d8fa07b20
-  - enabled: 1
+  - enabled: 0
     path: Assets/BumperEngineV1/Scenes/BlushCanyonZone.unity
     guid: dd96de45543fdb046a9546e18155640e
   - enabled: 1

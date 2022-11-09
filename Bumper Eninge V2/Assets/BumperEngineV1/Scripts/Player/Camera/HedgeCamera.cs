@@ -71,6 +71,7 @@ public class HedgeCamera : MonoBehaviour
     float rotSpeed = 0;
 
     public bool Locked { get; set; }
+    public bool MasterLocked { get; set; }
     public LayerMask CollidableLayers;
     float heighttolook;
     float lookTimer;
@@ -86,6 +87,7 @@ public class HedgeCamera : MonoBehaviour
     float InitialMoveSpeed;
     float newX;
     float neoX;
+    float lockTimer;
 
     //Effects
     float lookAtCount = 0;
@@ -132,10 +134,10 @@ public class HedgeCamera : MonoBehaviour
         //LookTimer
         if (lookTimer < 0)
         {
-            Debug.Log("Looking towards");
-            Debug.Log(lookAtDir);
-            Debug.Log(LockedRotationSpeed);
-            Debug.Log(heighttolook);
+           // Debug.Log("Looking towards");
+           // Debug.Log(lookAtDir);
+           // Debug.Log(LockedRotationSpeed);
+           // Debug.Log(heighttolook);
             RotateDirection(lookAtDir, LockedRotationSpeed, heighttolook);
             lookTimer += Time.deltaTime;
         }
@@ -271,11 +273,30 @@ public class HedgeCamera : MonoBehaviour
 
     void CamereApplyEffects()
     {
+
         lookTimer += Time.deltaTime;
         if (lookTimer < 0)
         {
             LookAt(lookAtDir);
         }
+
+        if (Locked && lockTimer > 0)
+        {
+            lockTimer -= Time.deltaTime;
+            if (lockTimer < 0)
+            {
+                Locked = false;
+            }
+        }
+
+        else
+            lockTimer = 0;
+
+        if (MasterLocked)
+        {
+            Locked = true;
+        }
+
     }
 
     void LookAt(Vector3 dir)
@@ -396,7 +417,7 @@ public class HedgeCamera : MonoBehaviour
     public void RotateDirection(Vector3 dir, float speed, float height)
     {
         float dot = Vector3.Dot(dir, transform.right);
-        Debug.Log("RotateDirection");
+        //Debug.Log("RotateDirection");
         x += (dot * speed) * (Time.deltaTime * 100);
         y = Mathf.Lerp(y, height, Time.deltaTime * 5);
 
@@ -409,7 +430,7 @@ public class HedgeCamera : MonoBehaviour
         {
             //Debug.Log(Actions.Action);
             //If not grinding or wall running
-            if (Actions.Action != 5 || Skip)
+            if (Actions.Action != 50 || Skip)
             {
                 //Debug.Log("Follow Directions" );
 
@@ -425,7 +446,7 @@ public class HedgeCamera : MonoBehaviour
     {
         if (!Locked)
         {
-            if (Actions.Action != 5)
+            if (Actions.Action != 50)
             {
                 //Debug.Log("Follow Directions height");
                 if(Player.Grounded)
@@ -448,6 +469,12 @@ public class HedgeCamera : MonoBehaviour
             angle -= 360F;
 
         return Mathf.Clamp(angle, min, max);
+    }
+
+    public void lockCamFor(float time)
+    {
+        Locked = true;
+        lockTimer = time;
     }
 
     //Set camera and overloads (function with the same name are different options)

@@ -27,7 +27,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 17082088799462267}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 18.592474, y: -0.137, z: -1.78}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
@@ -61,10 +61,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22a7cb834d30f084b942fd3d7267986a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hintText: 
-  hintDuration: 0
-  MaxDistance: 0
-  MinDistance: 0
+  hintText: This is a hint ring. It will provide you with hints on touch.
+  hintDuration: 5
+  MaxDistance: 100
+  MinDistance: 5
   Mesh: {fileID: 5308424990372173581}
   OrbitDots:
   - {fileID: 6063000899945048010}

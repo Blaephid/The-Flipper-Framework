@@ -5,7 +5,6 @@ using UnityEngine;
 public class Action09_SpinKick : MonoBehaviour
 {
     CharacterTools Tools;
-    CharacterStats stats;
 
     ActionManager Actions;
     PlayerBhysics Player;
@@ -42,7 +41,6 @@ public class Action09_SpinKick : MonoBehaviour
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            stats = GetComponent<CharacterStats>();
             AssignStats();
         }
         
@@ -121,9 +119,9 @@ public class Action09_SpinKick : MonoBehaviour
 
     private void AssignStats()
     {
-        KickDuration = stats.KickDuration;
-        kickDamage = stats.kickDamage;
-        kickForce = stats.kickForce;
+        KickDuration = Tools.stats.SlideDuration;
+        kickDamage = Tools.stats.slideDamage;
+        kickForce = Tools.stats.SlideForce;
     }
 
     private void AssignTools()

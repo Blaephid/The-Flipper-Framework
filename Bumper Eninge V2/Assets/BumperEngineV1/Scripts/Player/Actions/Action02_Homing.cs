@@ -9,7 +9,6 @@ public class Action02_Homing : MonoBehaviour
     Animator CharacterAnimator;
     HomingAttackControl HomingControl;
     PlayerBhysics Player;
-    CharacterStats Stats;
     CharacterTools Tools;
 
     GameObject JumpBall;
@@ -47,7 +46,6 @@ public class Action02_Homing : MonoBehaviour
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            Stats = GetComponent<CharacterStats>();
             AssignStats();          
         }
     }
@@ -55,21 +53,15 @@ public class Action02_Homing : MonoBehaviour
 
     public void InitialEvents()
     {
-        Stats = GetComponent<CharacterStats>();
-        if (Stats != null)
-        {
-            AssignStats();
-        }
+        AssignStats();
+        
 
         HomingTrailScript.emitTime = AirDashDuration;
         HomingTrailScript.emit = true;
 
         
-
         JumpBall.SetActive(false);
         
-
-
 
         if (Action.Action02Control.HasTarget)
         {
@@ -198,11 +190,11 @@ public class Action02_Homing : MonoBehaviour
     }
     private void AssignStats()
     {
-        isAdditive = Stats.isAdditive;
-        HomingAttackSpeed = Stats.HomingAttackSpeed;
-        AirDashSpeed = Stats.AirDashSpeed;
-        HomingTimerLimit = Stats.HomingTimerLimit;
-        AirDashDuration = Stats.AirDashDuration;
+        isAdditive = Tools.stats.isAdditive;
+        HomingAttackSpeed = Tools.stats.HomingAttackSpeed;
+        AirDashSpeed = Tools.stats.AirDashSpeed;
+        HomingTimerLimit = Tools.stats.HomingTimerLimit;
+        AirDashDuration = Tools.stats.AirDashDuration;
     }
 
 }

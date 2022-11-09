@@ -4,7 +4,6 @@ using System.Collections;
 public class Action11_AirDash : MonoBehaviour
 {
     CharacterTools Tools;
-    CharacterStats Stats;
 
     ActionManager Action;
     VolumeTrailRenderer HomingTrailScript;
@@ -35,7 +34,6 @@ public class Action11_AirDash : MonoBehaviour
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            Stats = GetComponent<CharacterStats>();
             AssignStats();
         }
 
@@ -149,9 +147,9 @@ public class Action11_AirDash : MonoBehaviour
 
     private void AssignStats()
     {
-        isAdditive = Stats.isAdditive;
-        AirDashSpeed = Stats.AirDashSpeed;
-        AirDashDuration = Stats.AirDashDuration;
+        isAdditive = Tools.stats.isAdditive;
+        AirDashSpeed = Tools.stats.AirDashSpeed;
+        AirDashDuration = Tools.stats.AirDashDuration;
     }
 
     private void AssignTools()

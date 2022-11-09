@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eb7a79ff1af44844acaaa91f003f9c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Distance: 1000
+  Distance: 1500
   TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
     type: 3}
   Enemy: {fileID: 1000010720554734, guid: 69122227f361a3d4aae3617e55c68c01, type: 3}

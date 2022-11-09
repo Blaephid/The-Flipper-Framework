@@ -5,7 +5,6 @@ using TMPro;
 
 public class Objects_Interaction : MonoBehaviour {
 
-    public CharacterStats Stats;
     CharacterTools Tools;
 
     [Header("For Rings, Springs and so on")]
@@ -60,7 +59,6 @@ public class Objects_Interaction : MonoBehaviour {
             Tools = GetComponent<CharacterTools>();
             AssignTools();
 
-            Stats = GetComponent<CharacterStats>();
             AssignStats();
         }
 
@@ -292,8 +290,8 @@ public class Objects_Interaction : MonoBehaviour {
 
             Player.GravityAffects = true;
 
-            if (Stats != null && (Actions.Action == 2 || Actions.PreviousAction == 2))
-                Player.HomingDelay = Stats.HomingSuccessDelay;
+            if (Actions.Action == 2 || Actions.PreviousAction == 2)
+                Player.HomingDelay = Tools.stats.HomingSuccessDelay;
 
             JumpBall.SetActive(false);
 			if (Actions.Action08 != null) {
@@ -318,6 +316,7 @@ public class Objects_Interaction : MonoBehaviour {
 
                 if (col.GetComponent<AudioSource>()) { col.GetComponent<AudioSource>().Play(); }
                 CharacterAnimator.SetInteger("Action", 0);
+                CharacterAnimator.SetBool("Grounded", false);
 
                 if (Actions.Action02 != null) {
 				    Actions.Action02.HomingAvailable = true;
@@ -341,16 +340,13 @@ public class Objects_Interaction : MonoBehaviour {
 
                 transform.position = spring.BounceCenter.position;
 
-
-
-
             }
         }
 
 		if (col.tag == "Bumper")
 		{
-            if (Stats != null && (Actions.Action == 2 || Actions.PreviousAction == 2))
-                Player.HomingDelay = Stats.HomingSuccessDelay;
+            if (Actions.Action == 2 || Actions.PreviousAction == 2)
+                Player.HomingDelay = Tools.stats.HomingSuccessDelay;
 
             JumpBall.SetActive(false);
 			if (Actions.Action08 != null) {
@@ -358,8 +354,6 @@ public class Objects_Interaction : MonoBehaviour {
 					Actions.Action08.DropEffect.Stop ();
 				}
 			}
-
-
 			
 		}
 
@@ -380,8 +374,7 @@ public class Objects_Interaction : MonoBehaviour {
 					Actions.Action02.HomingAvailable = true;
 				}
 
-                if (Stats != null)
-                    Player.HomingDelay = Stats.HomingSuccessDelay;
+                Player.HomingDelay = Tools.stats.HomingSuccessDelay;
             }
 		}
 
@@ -486,9 +479,9 @@ public class Objects_Interaction : MonoBehaviour {
 
     private void AssignStats()
     {
-        HomingBouncingPower = Stats.HomingBouncingPower;
-        EnemyDamageShakeAmmount = Stats.EnemyDamageShakeAmmount;
-        EnemyHitShakeAmmount = Stats.EnemyHitShakeAmmount;
+        HomingBouncingPower = Tools.stats.HomingBouncingPower;
+        EnemyDamageShakeAmmount = Tools.stats.EnemyDamageShakeAmmount;
+        EnemyHitShakeAmmount = Tools.stats.EnemyHitShakeAmmount;
     }
 
     private void AssignTools()
