@@ -6,7 +6,6 @@ public class HomingTarget : MonoBehaviour {
 
     public Transform center;
     public Vector3 offset = Vector3.up;
-    bool added = false;
 
     private void Start()
     {

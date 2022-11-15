@@ -44,9 +44,21 @@ public class SonicEffectsControl : MonoBehaviour {
 		}
 
 	}
-    public void DoSpindash(int amm, float speed, float charge)
+
+    public ParticleSystem GetSpinDashDust()
     {
-        SpinDashDust.startSpeed = speed;
+        return SpinDashDust;
+    }
+
+    public void DoSpindash(int amm, float speed, float charge, ParticleSystem spinDashDust, float maxCharge)
+    {
+
+        float energyCharge = charge * 0.15f;
+        if (energyCharge > 55f)
+            energyCharge = 55f;
+
+        ParticleSystem.MainModule ma = spinDashDust.main;
+        ma.startSpeed = speed;
         SpinDashDust.Emit(amm);
         
         if (!SpinDashEnergy.isPlaying)
@@ -56,7 +68,14 @@ public class SonicEffectsControl : MonoBehaviour {
             charge = 0;
         }
         var emission = SpinDashEnergy.emission;
-        emission.rateOverTime = charge;
+        emission.rateOverTime = energyCharge;
+
+        ma = SpinDashEnergy.main;
+
+        if(charge > maxCharge - 0.3f)
+            ma.startColor = new Color(0.2f, 0.13f, 0.13f, 1);
+        else
+            ma.startColor = new Color(1f, 1f, 1f, 1);
     }
 
     public void EndSpinDash()

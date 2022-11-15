@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Action11_AirDash : MonoBehaviour
+public class Action11_JumpDash : MonoBehaviour
 {
     CharacterTools Tools;
 
@@ -10,6 +10,7 @@ public class Action11_AirDash : MonoBehaviour
     Animator CharacterAnimator;
     Action02_Homing Action02;
     PlayerBhysics Player;
+    PlayerBinput Inp;
 
     [HideInInspector] public bool isAdditive;
     [HideInInspector] public float AirDashSpeed;
@@ -25,6 +26,9 @@ public class Action11_AirDash : MonoBehaviour
 
 
     public float skinRotationSpeed;
+
+    Vector3 Direction;
+
 
 
     void Awake()
@@ -43,41 +47,61 @@ public class Action11_AirDash : MonoBehaviour
 
     public void InitialEvents()
     {
-
-        if (Action02.HomingAvailable)
+        if(!Action.lockJumpDash)
         {
-
-            HomingTrailScript.emitTime = AirDashDuration + 0.5f;
-            HomingTrailScript.emit = true;
-
-            JumpBall.SetActive(false);
-            Action.SpecialPressed = false;
-            Action.HomingPressed = false;
-
-            Timer = 0;
-            Action02.HomingAvailable = false;
-
-            XZmag = Player.HorizontalSpeedMagnitude;
-
-            AirDashParticle();
-
-            if (XZmag < AirDashSpeed)
+            if (Action02.HomingAvailable)
             {
-                Aspeed = AirDashSpeed;
+
+                HomingTrailScript.emitTime = AirDashDuration + 0.5f;
+                HomingTrailScript.emit = true;
+
+                JumpBall.SetActive(false);
+                Action.SpecialPressed = false;
+                Action.HomingPressed = false;
+
+                Timer = 0;
+                Action02.HomingAvailable = false;
+
+                XZmag = Player.HorizontalSpeedMagnitude;
+
+                AirDashParticle();
+
+                if (XZmag < AirDashSpeed)
+                {
+                    Aspeed = AirDashSpeed;
+                }
+                else
+                {
+                    Aspeed = XZmag;
+                }
+
+
+                Vector3 inputDirection = Player.MoveInput.normalized;
+
+                Vector3 lateralVelocity = new Vector3(Player.rb.velocity.x, 0.0f, Player.rb.velocity.z);
+
+                float deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
+                float turnRate = Player.TurnRateOverAngle.Evaluate(deviationFromInput);
+
+                Quaternion lateralToInput = Mathf.Approximately(lateralVelocity.sqrMagnitude, 0.0f)
+                                            ? Quaternion.identity
+                                            : Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
+                
+
+                Direction = CharacterAnimator.transform.forward;
+                Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 4f, 0f);
+
+
+
+
+
             }
             else
             {
-                Aspeed = XZmag;
+                //Action.ChangeAction(Action.PreviousAction);
             }
-
-        
-
-
         }
-        else
-        {
-            Action.ChangeAction(Action.PreviousAction);
-        }
+
     }
 
     void Update()
@@ -104,21 +128,38 @@ public class Action11_AirDash : MonoBehaviour
 
         Timer += Time.deltaTime;
 
-        if (Player.RawInput != Vector3.zero)
+        if (Player.MoveInput != Vector3.zero)
         {
-            Vector3 Direction = (transform.TransformDirection(Player.RawInput).normalized + (Player.rb.velocity).normalized * 2);
-            Direction.y = Player.Gravity.y * 0.2f;
-            Player.rb.velocity = Direction.normalized * Aspeed;
+            if(Timer > 0.03)
+            {
+                Vector3 inputDirection = Player.MoveInput.normalized;
+
+                Vector3 lateralVelocity = new Vector3(Player.rb.velocity.x, 0.0f, Player.rb.velocity.z);
+
+                float deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
+                float turnRate = Player.TurnRateOverAngle.Evaluate(deviationFromInput);
+
+                Quaternion lateralToInput = Mathf.Approximately(lateralVelocity.sqrMagnitude, 0.0f)
+                                            ? Quaternion.identity
+                                            : Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
+                
+
+                Direction = CharacterAnimator.transform.forward;
+                Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 6 * Time.deltaTime, 0f);
+            }           
+
+            Direction.y = Player.fallGravity.y * 0.17f;
+          
         }
         else
         {
-            Vector3 Direction = (transform.TransformDirection(Player.PreviousRawInput).normalized + (Player.rb.velocity).normalized * 2);
-            Direction.y = Player.Gravity.y * 0.2f;
-            Player.rb.velocity = Direction.normalized * Aspeed;
+            //Direction = (transform.TransformDirection(Player.PreviousRawInput).normalized + (Player.rb.velocity).normalized * 2);
+            Direction.y = Player.fallGravity.y * 0.19f;
+
         }
+        Player.rb.velocity = Direction.normalized * Aspeed;
 
-
-        //End homing attck if on air for too long
+        //End homing attck if in air for too long
         if (Timer > AirDashDuration)
         {
             JumpBall.SetActive(true);
@@ -147,7 +188,7 @@ public class Action11_AirDash : MonoBehaviour
 
     private void AssignStats()
     {
-        isAdditive = Tools.stats.isAdditive;
+        isAdditive = Tools.coreStats.isAdditive;
         AirDashSpeed = Tools.stats.AirDashSpeed;
         AirDashDuration = Tools.stats.AirDashDuration;
     }
@@ -158,6 +199,7 @@ public class Action11_AirDash : MonoBehaviour
         Player = GetComponent<PlayerBhysics>();
         Action = GetComponent<ActionManager>();
         Action02 = GetComponent<Action02_Homing>();
+        Inp = GetComponent<PlayerBinput>();
 
 
         CharacterAnimator = Tools.CharacterAnimator;

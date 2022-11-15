@@ -173,7 +173,8 @@ public static GUIContent combineMapText = new GUIContent("Combined Map", "Detail
 
 	MaterialEditor m_MaterialEditor;
 	WorkflowMode m_WorkflowMode = WorkflowMode.Specular;
-	ColorPickerHDRConfig m_ColorPickerHDRConfig = new ColorPickerHDRConfig(0f, 99f, 1/99f, 3f);
+        [Obsolete]
+        ColorPickerHDRConfig m_ColorPickerHDRConfig = new ColorPickerHDRConfig(0f, 99f, 1/99f, 3f);
 
 	bool m_FirstTimeApply = true;
 
@@ -287,8 +288,11 @@ public static GUIContent combineMapText = new GUIContent("Combined Map", "Detail
 
 	}
 
-	public override void OnGUI (MaterialEditor materialEditor, MaterialProperty[] props)
-	{
+        [Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
+        {
 		FindProperties (props); // MaterialProperties can be animated so we do not cache them but fetch them every event to ensure animated values are updated correctly
 		m_MaterialEditor = materialEditor;
 		Material material = materialEditor.target as Material;
@@ -304,7 +308,8 @@ public static GUIContent combineMapText = new GUIContent("Combined Map", "Detail
 		}
 	}
 
-	public void ShaderPropertiesGUI (Material material)
+        [Obsolete]
+        public void ShaderPropertiesGUI (Material material)
 	{
 		Color guicontentColor = GUI.contentColor;
 		Color guibackgroundColor = GUI.backgroundColor;
@@ -1011,7 +1016,8 @@ GUILayout.Space(-16);
 		}
 	}
 
-	void DoEmissionArea(Material material)
+        [Obsolete]
+        void DoEmissionArea(Material material)
 	{
 		float brightness = emissionColorForRendering.colorValue.maxColorComponent;
 		bool showHelpBox = !HasValidEmissiveKeyword(material);

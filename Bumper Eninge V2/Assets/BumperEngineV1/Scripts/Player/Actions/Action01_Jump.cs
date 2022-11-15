@@ -14,6 +14,7 @@ public class Action01_Jump : MonoBehaviour
     ActionManager Actions;
     HomingAttackControl homingControl;
     CameraControl Cam;
+    quickstepManager stepManager;
 
     SonicSoundsControl sounds;
     Animator CharacterAnimator;
@@ -49,17 +50,6 @@ public class Action01_Jump : MonoBehaviour
     float doubleJumpDuration;
 
 
-    [Header("QuickStepping")]
-    [HideInInspector] public bool QuickStepping;
-    bool canStep;
-    float airStepSpeed;
-    [HideInInspector] public bool StepRight;
-    float StepCounter = 0f;
-    [HideInInspector] public float StepDistance = 50f;
-    [HideInInspector] public float DistanceToStep;
-    RaycastHit stepHit;
-    LayerMask StepPlayermask;
-
     float jumpSlopeSpeed;
 
     [Header("Detecting Wall Run")]
@@ -75,6 +65,9 @@ public class Action01_Jump : MonoBehaviour
     private RaycastHit frontWallDetect;
     private bool wallFront;
 
+    [HideInInspector] public float timeJumping;
+    bool cancelled;
+
 
 
 
@@ -89,62 +82,83 @@ public class Action01_Jump : MonoBehaviour
         }
     }
 
-    public void InitialEvents(Vector3 normaltoJump)
+
+    private void OnEnable()
     {
 
-        Jumping = true;
-        Counter = 0;
-        jumpSlopeSpeed = 0;
-        //Debug.Log(jumpCount);
+    }
 
-        //If performing a grounded jump. JumpCount may be changed externally to allow for this.
-        if (Player.Grounded || jumpCount == -1)
+    public void InitialEvents(Vector3 normaltoJump, bool Grounded = false)
+    {
+        if(!Actions.lockDoubleJump)
         {
 
-            //Sets jump stats for this specific jump.
-            JumpSpeed = StartJumpSpeed * jumpSpeedModifier;
-            JumpDuration = StartJumpDuration * jumpDurationModifier;
-            SlopedJumpDuration = StartSlopedJumpDuration * jumpDurationModifier;
+            cancelled = false;
+            Jumping = true;
+            Counter = 0;
+            jumpSlopeSpeed = 0;
+            timeJumping = 0f;
+            //Debug.Log(jumpCount);
 
-            //Number of jumps set to zero, allowing for double jumps.
-            jumpCount = 0;
+            if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
+                normaltoJump = Vector3.up;
 
-            //Sets jump direction
-            InitialNormal = normaltoJump;
+           
 
-            Player.TimeOnGround = 0;
-
-            //SnapOutOfGround to make sure you do jump
-            transform.position += (InitialNormal * 0.3f);
-
-            //Jump higher depending on the speed and the slope you're in
-            if (Player.rb.velocity.y > 0 && normaltoJump.y > 0)
+            //If performing a grounded jump. JumpCount may be changed externally to allow for this.
+            if (Grounded || jumpCount == -1)
             {
-                jumpSlopeSpeed = Player.rb.velocity.y * JumpSlopeConversion;
+
+                //Sets jump stats for this specific jump.
+                JumpSpeed = StartJumpSpeed * jumpSpeedModifier;
+                JumpDuration = StartJumpDuration * jumpDurationModifier;
+                SlopedJumpDuration = StartSlopedJumpDuration * jumpDurationModifier;
+
+                //Number of jumps set to zero, allowing for double jumps.
+                jumpCount = 0;
+
+                //Sets jump direction
+                InitialNormal = normaltoJump;
+
+                Player.TimeOnGround = 0;
+
+                //SnapOutOfGround to make sure you do jump
+                transform.position += (InitialNormal * 0.3f);
+
+                //Jump higher depending on the speed and the slope you're in
+                if (Player.rb.velocity.y > 0 && normaltoJump.y > 0)
+                {
+                    jumpSlopeSpeed = Player.rb.velocity.y * JumpSlopeConversion;
+                }
+
             }
 
+            else
+            {       
+
+                //Increases jump count
+                if (jumpCount == 0)
+                    jumpCount = 1;
+
+                //Sets jump direction
+                InitialNormal = normaltoJump;
+
+                //Sets jump stats for this specific jump.
+                JumpSpeed = doubleJumpSpeed * jumpSpeedModifier;
+                JumpDuration = doubleJumpDuration * jumpDurationModifier;
+                SlopedJumpDuration = doubleJumpDuration * jumpDurationModifier;
+
+                JumpAgain();
+            }
+
+            //SetAnims
+            CharacterAnimator.SetInteger("Action", 1);
+            JumpBall.SetActive(true);
+
+            //Sound
+            sounds.JumpSound();
         }
-
-        else
-        {
-            JumpAgain();
-
-            //Increases jump count
-            if (jumpCount == 0)
-                jumpCount = 1;
-
-            //Sets jump stats for this specific jump.
-            JumpSpeed = doubleJumpSpeed * jumpSpeedModifier;
-            JumpDuration = doubleJumpDuration * jumpDurationModifier;
-            SlopedJumpDuration = JumpDuration;
-        }
-
-        //SetAnims
-        CharacterAnimator.SetInteger("Action", 1);
-        JumpBall.SetActive(true);
-
-        //Sound
-        sounds.JumpSound();
+        
     }
 
     void Update()
@@ -231,7 +245,6 @@ public class Action01_Jump : MonoBehaviour
                 //Do a double jump
                 if (jumpCount == 1 && canDoubleJump)
                 {
-                    //Debug.Log("Do a double jump");
                     InitialEvents(Vector3.up);
                     Actions.ChangeAction(1);
                 }
@@ -316,44 +329,36 @@ public class Action01_Jump : MonoBehaviour
             }
 
             //Enable Quickstep right or left
-            if (Actions.RightStepPressed && !QuickStepping)
+            if (Actions.RightStepPressed && !stepManager.enabled)
             {
-                Actions.RightStepPressed = false;
-                Actions.LeftStepPressed = false;
-
-                if (Player.HorizontalSpeedMagnitude > 10f)
+                if (Player.HorizontalSpeedMagnitude > 15f)
                 {
-                    QuickStepping = true;
-                    canStep = true;
-                    StepRight = true;
-                    DistanceToStep = StepDistance;
-
+                    stepManager.initialEvents(true);
+                    stepManager.enabled = true;
                 }
+                    
             }
 
-            else if (Actions.LeftStepPressed && !QuickStepping)
+            else if (Actions.LeftStepPressed && !stepManager.enabled)
             {
-                Actions.RightStepPressed = false;
-                Actions.LeftStepPressed = false;
 
-                if (Player.HorizontalSpeedMagnitude > 10f)
+                if (Player.HorizontalSpeedMagnitude > 15f)
                 {
-                    QuickStepping = true;
-                    canStep = true;
-                    StepRight = false;
-                    DistanceToStep = StepDistance;
 
+                    stepManager.initialEvents(false);
+                    stepManager.enabled = true;
                 }
+                  
             }
         }
 
     }
 
-
     void FixedUpdate()
     {
         //Jump action
-        Counter += Time.deltaTime;
+        Counter += Time.fixedDeltaTime;
+        timeJumping += Time.fixedDeltaTime;
 
         //if (!Actions.JumpPressed && Counter < JumpDuration && Counter > 0.1f && Jumping)
         if (!Actions.JumpPressed && Counter > 0.1f && Jumping)
@@ -364,7 +369,7 @@ public class Action01_Jump : MonoBehaviour
         }
 
         //Add Jump Speed
-        if (Counter < JumpDuration)
+        if (Counter < JumpDuration && Jumping)
         {
             Player.isRolling = false;
             if (Counter < SlopedJumpDuration)
@@ -381,8 +386,9 @@ public class Action01_Jump : MonoBehaviour
         }
 
         //Cancel Jump
-        if (Player.rb.velocity.y > 0 && !Actions.JumpPressed && Counter > 0.1)
+        if (!cancelled && Player.rb.velocity.y > 0 && !Jumping && Counter > 0.1)
         {
+            cancelled = true;
             //jumpCount = 1;
             Vector3 Velocity = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
             Velocity.y = Velocity.y - StopYSpeedOnRelease;
@@ -392,8 +398,9 @@ public class Action01_Jump : MonoBehaviour
         //End Action
         if (Player.Grounded && Counter > SlopedJumpDuration)
         {
+
             jumpCount = 0;
-            QuickStepping = false;
+
 
             Actions.JumpPressed = false;
             JumpBall.SetActive(false);
@@ -403,68 +410,6 @@ public class Action01_Jump : MonoBehaviour
             //JumpBall.SetActive(false);
         }
 
-        //Implementing Quickstep
-        if (QuickStepping)
-        {
-            //If the step has a distance to go.
-            if (DistanceToStep > 0)
-            {        
-                if (StepRight)
-                {
-                    //Finds position to head towards.
-                    Vector3 positionTo = transform.position + (CharacterAnimator.transform.right * DistanceToStep);
-                    float ToTravel = airStepSpeed * Time.deltaTime;
-
-                    if (DistanceToStep - ToTravel <= 0)
-                    {
-                        ToTravel = DistanceToStep;
-                        StepCounter = 0.4f;
-                    }
-
-                    DistanceToStep -= ToTravel;
-
-                    //Detects if wall is in the way both from high and low.
-                    if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.35f, transform.position.z), CharacterAnimator.transform.right * 1, out hit, 1.5f, StepPlayermask) && canStep)
-                        if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z), CharacterAnimator.transform.right * 1, out hit, .8f, StepPlayermask))
-                            transform.position = Vector3.MoveTowards(transform.position, positionTo, ToTravel);
-                        else
-                            canStep = false;
-
-                }
-                // !(Physics.Raycast(transform.position, CharacterAnimator.transform.right * -1, out hit, 4f, StepPlayermask)
-                else if (!StepRight)
-                {
-                    //Finds position to head towards.
-                    Vector3 positionTo = transform.position + (-CharacterAnimator.transform.right * DistanceToStep);
-                    float ToTravel = airStepSpeed * Time.deltaTime;
-
-                    if (DistanceToStep - ToTravel <= 0)
-                    {
-                        ToTravel = DistanceToStep;
-                        StepCounter = 0.3f;
-                    }
-
-                    DistanceToStep -= ToTravel;
-
-                    //Detects if wall is in the way both from high and low.
-                    if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.35f, transform.position.z), CharacterAnimator.transform.right * -1, out hit, 1.5f, StepPlayermask) && canStep)
-                        if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z), CharacterAnimator.transform.right * -1, out hit, .8f, StepPlayermask))
-                            transform.position = Vector3.MoveTowards(transform.position, positionTo, ToTravel);
-                        else
-                            canStep = false;
-                }    
-            }
-
-            //If not, quickstep ends.
-            else
-            {
-                StepCounter -= Time.deltaTime;
-                if (StepCounter <= 0)
-                {
-                    QuickStepping = false;
-                }
-            }
-        }
 
     }
 
@@ -477,7 +422,7 @@ public class Action01_Jump : MonoBehaviour
         //SnapOutOfGround to make sure you do jump
         transform.position += (InitialNormal * 0.3f);
 
-        Player.rb.velocity = new Vector3(Player.rb.velocity.x * 0.92f, Player.rb.velocity.y * 0.1f, Player.rb.velocity.z * 0.92f);
+        Player.rb.velocity = new Vector3(Player.rb.velocity.x * 0.92f, Mathf.Clamp(Player.rb.velocity.y * 0.1f, 0.1f, 5), Player.rb.velocity.z * 0.92f);
 
         GameObject JumpDashParticleClone = Instantiate(Tools.JumpDashParticle, Tools.FeetPoint.position, Quaternion.identity) as GameObject;
 
@@ -494,21 +439,18 @@ public class Action01_Jump : MonoBehaviour
         StartJumpDuration = Tools.stats.StartJumpDuration;
         StartJumpSpeed = Tools.stats.StartJumpSpeed;
         StartSlopedJumpDuration = Tools.stats.StartSlopedJumpDuration;
-        JumpSlopeConversion = Tools.stats.JumpSlopeConversion;
-        RollingLandingBoost = Tools.stats.JumpRollingLandingBoost;
-        StopYSpeedOnRelease = Tools.stats.StopYSpeedOnRelease;
+        JumpSlopeConversion = Tools.coreStats.JumpSlopeConversion;
+        RollingLandingBoost = Tools.coreStats.JumpRollingLandingBoost;
+        StopYSpeedOnRelease = Tools.coreStats.StopYSpeedOnRelease;
 
         canDoubleJump = Tools.stats.canDoubleJump;
         canTripleJump = Tools.stats.canTripleJump;
         doubleJumpDuration = Tools.stats.doubleJumpDuration;
         doubleJumpSpeed = Tools.stats.doubleJumpSpeed;
 
-        airStepSpeed = Tools.stats.AirStepSpeed;
-        StepDistance = Tools.stats.AirStepDistance;
-        StepPlayermask = Tools.stats.StepLayerMask;
 
-        wallLayerMask = Tools.stats.wallLayerMask;
-        WallCheckDistance = Tools.stats.WallCheckDistance;
+        wallLayerMask = Tools.coreStats.wallLayerMask;
+        WallCheckDistance = Tools.coreStats.WallCheckDistance;
     }
 
     //Responsible for assigning objects and components from the tools script.
@@ -519,6 +461,7 @@ public class Action01_Jump : MonoBehaviour
         Cam = GetComponent<CameraControl>();
         homingControl = GetComponent<HomingAttackControl>();
         WallRun = Actions.Action12;
+        stepManager = GetComponent<quickstepManager>();
 
         CharacterAnimator = Tools.CharacterAnimator;
         sounds = Tools.SoundControl;

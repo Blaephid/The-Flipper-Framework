@@ -11,6 +11,10 @@ public class Spring_Proprieties : MonoBehaviour {
     public bool LockControl = false;
     public float LockTime = 60;
 
+    public Vector3 lockGravity = new Vector3(0f, -1.5f, 0f);
+    public bool lockAirMoves = true;
+    public float lockAirMovesTime = 30f;
+
 
     void Start()
     {

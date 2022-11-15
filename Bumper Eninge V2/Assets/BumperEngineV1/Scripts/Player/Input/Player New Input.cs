@@ -143,6 +143,24 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""KillBind"",
+                    ""type"": ""Button"",
+                    ""id"": ""a583bc34-1310-4e7c-a19a-6871a044e276"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpinChargePressed"",
+                    ""type"": ""Button"",
+                    ""id"": ""b5a2c673-34a7-4de0-805b-06900520bba4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -380,7 +398,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""c5497da9-8f7c-489b-a4ff-e7939ee5dda1"",
-                    ""path"": ""<Mouse>/middleButton"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -402,7 +420,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""25093f7f-b28b-49a3-b505-43f494e78358"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""path"": ""<Mouse>/middleButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -446,7 +464,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0d863c82-b9e5-4670-b5e4-e087f8807c7a"",
-                    ""path"": ""<Mouse>/middleButton"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -530,6 +548,28 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""action"": ""MoveMouse"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c595eaf9-a57e-4940-9046-2f0644858083"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""KillBind"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68fe8a1c-63a9-4426-b0c7-7d7faf3c0f68"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpinChargePressed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -551,6 +591,8 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
         m_CharacterActions_Homing = m_CharacterActions.FindAction("Homing", throwIfNotFound: true);
         m_CharacterActions_Move = m_CharacterActions.FindAction("Move", throwIfNotFound: true);
         m_CharacterActions_MoveMouse = m_CharacterActions.FindAction("MoveMouse", throwIfNotFound: true);
+        m_CharacterActions_KillBind = m_CharacterActions.FindAction("KillBind", throwIfNotFound: true);
+        m_CharacterActions_SpinChargePressed = m_CharacterActions.FindAction("SpinChargePressed", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -623,6 +665,8 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_CharacterActions_Homing;
     private readonly InputAction m_CharacterActions_Move;
     private readonly InputAction m_CharacterActions_MoveMouse;
+    private readonly InputAction m_CharacterActions_KillBind;
+    private readonly InputAction m_CharacterActions_SpinChargePressed;
     public struct CharacterActionsActions
     {
         private @PlayerNewInput m_Wrapper;
@@ -640,6 +684,8 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
         public InputAction @Homing => m_Wrapper.m_CharacterActions_Homing;
         public InputAction @Move => m_Wrapper.m_CharacterActions_Move;
         public InputAction @MoveMouse => m_Wrapper.m_CharacterActions_MoveMouse;
+        public InputAction @KillBind => m_Wrapper.m_CharacterActions_KillBind;
+        public InputAction @SpinChargePressed => m_Wrapper.m_CharacterActions_SpinChargePressed;
         public InputActionMap Get() { return m_Wrapper.m_CharacterActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -688,6 +734,12 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 @MoveMouse.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveMouse;
                 @MoveMouse.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveMouse;
                 @MoveMouse.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveMouse;
+                @KillBind.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnKillBind;
+                @KillBind.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnKillBind;
+                @KillBind.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnKillBind;
+                @SpinChargePressed.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnSpinChargePressed;
+                @SpinChargePressed.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnSpinChargePressed;
+                @SpinChargePressed.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnSpinChargePressed;
             }
             m_Wrapper.m_CharacterActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -731,6 +783,12 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 @MoveMouse.started += instance.OnMoveMouse;
                 @MoveMouse.performed += instance.OnMoveMouse;
                 @MoveMouse.canceled += instance.OnMoveMouse;
+                @KillBind.started += instance.OnKillBind;
+                @KillBind.performed += instance.OnKillBind;
+                @KillBind.canceled += instance.OnKillBind;
+                @SpinChargePressed.started += instance.OnSpinChargePressed;
+                @SpinChargePressed.performed += instance.OnSpinChargePressed;
+                @SpinChargePressed.canceled += instance.OnSpinChargePressed;
             }
         }
     }
@@ -750,5 +808,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
         void OnHoming(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnMoveMouse(InputAction.CallbackContext context);
+        void OnKillBind(InputAction.CallbackContext context);
+        void OnSpinChargePressed(InputAction.CallbackContext context);
     }
 }

@@ -19,7 +19,7 @@ namespace SplineMesh
         CharacterTools Tools;
         ActionManager Actions;
         HedgeCamera Cam;
-        public Transform pulley { get; set; }
+        public Transform ZipHandle { get; set; }
         public Rigidbody ZipBody { get; set; }
 
         [HideInInspector] public bool isZipLine;
@@ -134,7 +134,7 @@ namespace SplineMesh
             }
             else
             {
-
+                ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false;
                 Skin.transform.localPosition = Skin.transform.localPosition + SkinOffsetPosZip;
                // CameraTarget.parent = null;
 
@@ -254,9 +254,11 @@ namespace SplineMesh
 
             //Set Animation Angle
             Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
-            Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-            CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
-
+            if(VelocityMod != Vector3.zero)
+            {
+                Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
+                CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+            }
 
 
             // Actions Go Here
@@ -282,7 +284,7 @@ namespace SplineMesh
                         ZipBody.isKinematic = true;
                         Player.GroundNormal = new Vector3(0f, 1f, 0f);
 
-                        StartCoroutine(Rail_int.JumpFromPulley(pulley));
+                        StartCoroutine(Rail_int.JumpFromZipLine(ZipHandle, 1));
 
                     }
 
@@ -416,14 +418,25 @@ namespace SplineMesh
                 }
                 else
                 {
+                    float rotatePoint = 0;
+                    if(Actions.RightStepPressed)
+                    {
+                        Actions.LeftStepPressed = false;
+                        rotatePoint = 1;
+                    }
+                    else if (Actions.LeftStepPressed)
+                    {
+                        Actions.RightStepPressed = false;
+                        rotatePoint = -1;
+                    }
 
                     if (!backwards)
-                        PulleyRotate = Mathf.MoveTowards(PulleyRotate, Actions.moveX, 3.5f * Time.deltaTime);
+                        PulleyRotate = Mathf.MoveTowards(PulleyRotate, rotatePoint, 3.5f * Time.deltaTime);
                     else
-                        PulleyRotate = Mathf.MoveTowards(PulleyRotate, -Actions.moveX, 3.5f * Time.deltaTime);
+                        PulleyRotate = Mathf.MoveTowards(PulleyRotate, rotatePoint, 3.5f * Time.deltaTime);
 
-                    pulley.rotation = sample.Rotation;
-                    pulley.eulerAngles = new Vector3(pulley.eulerAngles.x, pulley.eulerAngles.y, pulley.eulerAngles.z + PulleyRotate * 70f);
+                    ZipHandle.rotation = sample.Rotation;
+                    ZipHandle.eulerAngles = new Vector3(ZipHandle.eulerAngles.x, ZipHandle.eulerAngles.y, ZipHandle.eulerAngles.z + PulleyRotate * 70f);
 
                     transform.rotation = sample.Rotation;
                     transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + PulleyRotate * 70f);
@@ -437,7 +450,7 @@ namespace SplineMesh
 
 
 
-                    pulley.transform.position = sample.location + RailTransform.position;
+                    ZipHandle.transform.position = sample.location + RailTransform.position;
 
 
                 }
@@ -510,8 +523,8 @@ namespace SplineMesh
 
                     if (isZipLine)
                     {
-                        pulley.GetComponent<CapsuleCollider>().enabled = false;
-                        if(backwards)
+                        StartCoroutine(Rail_int.JumpFromZipLine(ZipHandle, 0.5f));
+                        if (backwards)
                         {
                             Player.rb.velocity = ZipBody.velocity;
                         }
@@ -533,6 +546,11 @@ namespace SplineMesh
 
                 }
             }
+
+        }
+
+        void LoseRail()
+        {
 
         }
         void SlopePhys()
@@ -618,22 +636,22 @@ namespace SplineMesh
 
         void AssignStats()
         {
-            MinStartSpeed = Tools.stats.MinStartSpeed;
-            PushFowardmaxSpeed = Tools.stats.RailPushFowardmaxSpeed;
-            PushFowardIncrements = Tools.stats.RailPushFowardIncrements;
-            PushFowardDelay = Tools.stats.RailPushFowardDelay;
-            SlopePower = Tools.stats.SlopePower;
-            UpHillMultiplier = Tools.stats.RailUpHillMultiplier;
-            DownHillMultiplier = Tools.stats.RailDownHillMultiplier;
-            UpHillMultiplierCrouching = Tools.stats.RailUpHillMultiplierCrouching;
-            DownHillMultiplierCrouching = Tools.stats.RailDownHillMultiplierCrouching;
-            DragVal = Tools.stats.RailDragVal;
-            PlayerBrakePower = Tools.stats.RailPlayerBrakePower;
+            MinStartSpeed = Tools.coreStats.MinStartSpeed;
+            PushFowardmaxSpeed = Tools.coreStats.RailPushFowardmaxSpeed;
+            PushFowardIncrements = Tools.coreStats.RailPushFowardIncrements;
+            PushFowardDelay = Tools.coreStats.RailPushFowardDelay;
+            SlopePower = Tools.coreStats.SlopePower;
+            UpHillMultiplier = Tools.coreStats.RailUpHillMultiplier;
+            DownHillMultiplier = Tools.coreStats.RailDownHillMultiplier;
+            UpHillMultiplierCrouching = Tools.coreStats.RailUpHillMultiplierCrouching;
+            DownHillMultiplierCrouching = Tools.coreStats.RailDownHillMultiplierCrouching;
+            DragVal = Tools.coreStats.RailDragVal;
+            PlayerBrakePower = Tools.coreStats.RailPlayerBrakePower;
 
-            SkinOffsetPosRail = Tools.stats.SkinOffsetPosRail;
-            SkinOffsetPosZip = Tools.stats.SkinOffsetPosZip;
-            OffsetRail = Tools.stats.OffsetRail;
-            OffsetZip = Tools.stats.OffsetZip;
+            SkinOffsetPosRail = Tools.coreStats.SkinOffsetPosRail;
+            SkinOffsetPosZip = Tools.coreStats.SkinOffsetPosZip;
+            OffsetRail = Tools.coreStats.OffsetRail;
+            OffsetZip = Tools.coreStats.OffsetZip;
 
         }
 

@@ -126,7 +126,7 @@ namespace SplineMesh
 
         void FixedUpdate()
         {
-            Input.LockInputForAWhile(0f, true);
+            Input.LockInputForAWhile(1f, true);
             PathMove();
         }
 
@@ -275,7 +275,7 @@ namespace SplineMesh
             //Deactivates any cinemachine that might be attached.
             if (Path_Int.currentCam != null)
             {
-                Path_Int.currentCam.DeactivateCam();
+                Path_Int.currentCam.DeactivateCam(30);
                 Path_Int.currentCam = null;
             }
 

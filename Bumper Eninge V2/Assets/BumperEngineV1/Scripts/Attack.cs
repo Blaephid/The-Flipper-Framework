@@ -231,7 +231,7 @@ public class Attack : MonoBehaviour
 			}
 		}
 
-		Debug.Log(Player.rb.velocity);
+		//Debug.Log(Player.rb.velocity);
 	}
 
 	private IEnumerator ResetTriggerBool()
@@ -243,11 +243,11 @@ public class Attack : MonoBehaviour
 
 	private void AssignStats()
 	{
-		BouncingPower = Tools.stats.BouncingPower;
-		HomingBouncingPower = Tools.stats.HomingBouncingPower;
-		EnemyHomingStoppingPowerWhenAdditive = Tools.stats.EnemyHomingStoppingPowerWhenAdditive;
-		StopOnHomingAttackHit = Tools.stats.StopOnHomingAttackHit;
-		StopOnHit = Tools.stats.StopOnHit;
+		BouncingPower = Tools.coreStats.BouncingPower;
+		HomingBouncingPower = Tools.coreStats.HomingBouncingPower;
+		EnemyHomingStoppingPowerWhenAdditive = Tools.coreStats.EnemyHomingStoppingPowerWhenAdditive;
+		StopOnHomingAttackHit = Tools.coreStats.StopOnHomingAttackHit;
+		StopOnHit = Tools.coreStats.StopOnHit;
 
 	}
 

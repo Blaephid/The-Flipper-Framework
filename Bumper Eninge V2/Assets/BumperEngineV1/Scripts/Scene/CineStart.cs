@@ -11,7 +11,7 @@ public class CineStart : MonoBehaviour
     public bool wallRunAction = false;
 
     public bool Active = true;
-    public GameObject camera;
+    public GameObject attachedCam;
     private Vector3 camPosit;
     private Quaternion camRotit;
 
@@ -23,93 +23,113 @@ public class CineStart : MonoBehaviour
     public CinemachineVirtualCamera virCam;
     CinemachineVirtualCamera hedgeCam;
 
-    Transform Player;
+    GameObject Player;
+    ActionManager Actions;
 
-    public bool enabled = true;
+    public bool isEnabled = true;
     public bool onExit = true;
+    public bool setBehind = true;
+
+    bool isActive = false;
 
     // Start is called before the first frame update
 
     void Awake()
     {
-        camPosit = camera.transform.position;
-        camRotit = camera.transform.rotation;
-        camera.SetActive(false);
+        camPosit = attachedCam.transform.position;
+        camRotit = attachedCam.transform.rotation;
+        attachedCam.SetActive(false);
     }
 
-  
 
-    void OnTriggerEnter(Collider col)
+    private void OnTriggerEnter(Collider other)
     {
-        if (col.tag == "Player" && enabled)
+        if (other.tag == "Player" && isEnabled)
         {
 
-            Player = col.GetComponent<PlayerCollider>().getPlayer();
-            ActionManager Actions = Player.GetComponent<ActionManager>();
-
-
-            if((Actions.Action == 0 && RegularAction) || (Actions.Action == 1 && JumpAction) || (Actions.Action == 5 && RailAction) || (Actions.Action == 12 && wallRunAction))
+            Player = other.GetComponent<PlayerCollider>().player;
+            Actions = Player.GetComponent<ActionManager>();
+        }
+    }
+    private void OnTriggerStay(Collider col)
+    {
+        if (col.tag == "Player" && isEnabled)
+        {
+            if(!isActive && Player != null)
             {
-                if (hedgeCam == null)
+                if ((Actions.Action == 0 && RegularAction) || (Actions.Action == 1 && JumpAction) || (Actions.Action == 5 && RailAction) || (Actions.Action == 12 && wallRunAction))
                 {
+                    isActive = true;
                     hedgeCam = Player.GetComponent<CameraControl>().virtCam;
+                    
+
+                    ActivateCam(5f);
+
+                    if (lookPlayer)
+                    {
+                        virCam.LookAt = Player.transform;
+                    }
+
+                    if (followPlayer)
+                    {
+                        virCam.Follow = Player.transform;
+                    }
+
+                    if (disableMove)
+                    {
+                        Player.GetComponent<ActionManager>().actionDisable();
+                    }
+
                 }
-
-                ActivateCam();
-
-                if (lookPlayer)
+            }
+            else
+            {
+                if(!(Actions.Action == 0 && RegularAction) && !(Actions.Action == 1 && JumpAction) && !(Actions.Action == 5 && RailAction) && !(Actions.Action == 12 && wallRunAction))
                 {
-                    virCam.LookAt = Player;
+                    DeactivateCam(0);
                 }
-
-                if (followPlayer)
-                {
-                    virCam.Follow = Player;
-                }
-
-                if (disableMove)
-                {
-                    Player.GetComponent<ActionManager>().actionDisable();
-                }
-
             }
 
-            
-            
         }
-        
     }
 
     void OnTriggerExit(Collider col)
     {
-        if (col.tag == "Player" && onExit)
+        if(isActive)
         {
-            DeactivateCam();
-
-            if (disableMove)
+            if (col.tag == "Player" && onExit)
             {
-                Player.GetComponent<ActionManager>().actionEnable();
+                DeactivateCam(15);
+
             }
         }
     }
 
-    public void ActivateCam()
+    public void ActivateCam(float disableFor)
     {
-        if (Active)
-        {
-            hedgeCam.gameObject.SetActive(false);
-            camera.SetActive(true);
-            Player.GetComponent<PlayerBinput>().LockInputForAWhile(20f, true);
-        }
-        
+      
+        attachedCam.SetActive(true);
+        hedgeCam.gameObject.SetActive(false);
+        Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
+            
     }
 
-    public void DeactivateCam()
+    public void DeactivateCam(float disableFor)
     {
-        camera.transform.position = camPosit;
-        camera.transform.rotation = camRotit;
-        camera.SetActive(false);
+        if (disableMove)
+        {
+            Player.GetComponent<ActionManager>().actionEnable();
+        }
+        if(setBehind)
+        {
+            Player.GetComponent<CameraControl>().Cam.setBehind();
+        }
+
+        isActive = false;
+        attachedCam.transform.position = camPosit;
+        attachedCam.transform.rotation = camRotit;
         hedgeCam.gameObject.SetActive(true);
-        Player.GetComponent<PlayerBinput>().LockInputForAWhile(20f, true);
+        attachedCam.SetActive(false);
+        Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
     }
 }

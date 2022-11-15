@@ -158,13 +158,14 @@ public class Objects_Interaction : MonoBehaviour {
 
             if(!col.GetComponent<SpeedPadData>().path)
             {
+                SpeedPadData pad = col.GetComponent<SpeedPadData>();
 
                 Actions.Action02.HomingAvailable = true;
 
                 transform.rotation = Quaternion.identity;
                 //ResetPlayerRotation
  
-                if (col.GetComponent<SpeedPadData>().LockToDirection)
+                if (pad.LockToDirection)
                 {
   
                     StartCoroutine(applyForce(col.transform.forward * col.GetComponent<SpeedPadData>().Speed, col.transform.position));
@@ -179,20 +180,32 @@ public class Objects_Interaction : MonoBehaviour {
                     }
                 }
 
-                
-
-                if (col.GetComponent<SpeedPadData>().isDashRing)
+               
+                if (pad.isDashRing)
                 {
+                    Actions.Action00.cancelCoyote();
                     Actions.ChangeAction(0);
                     CharacterAnimator.SetBool("Grounded", false);
                     CharacterAnimator.SetInteger("Action", 0);
+
+                    if (pad.lockAirMoves)
+                    {
+                        StopCoroutine(Actions.lockAirMoves(pad.lockAirMovesTime));
+                        StartCoroutine(Actions.lockAirMoves(pad.lockAirMovesTime));
+                    }
+
+                    if (pad.lockGravity != Vector3.zero)
+                    {
+                        StartCoroutine(lockGravity(pad.lockGravity));
+                    }
+
                 }
 
-                if (col.GetComponent<SpeedPadData>().LockControl)
+                if (pad.LockControl)
                 {
-                    Inp.LockInputForAWhile(col.GetComponent<SpeedPadData>().LockControlTime, true);
+                    Inp.LockInputForAWhile(pad.LockControlTime, true);
                 }
-                if (col.GetComponent<SpeedPadData>().AffectCamera)
+                if (pad.AffectCamera)
                 {
                     Vector3 dir = col.transform.forward;
                     Cam.SetCamera(dir, 2.5f, 20, 5f, 1);
@@ -287,7 +300,7 @@ public class Objects_Interaction : MonoBehaviour {
 
         if (col.tag == "Spring")
         {
-
+            Actions.Action00.cancelCoyote();
             Player.GravityAffects = true;
 
             if (Actions.Action == 2 || Actions.PreviousAction == 2)
@@ -309,6 +322,17 @@ public class Objects_Interaction : MonoBehaviour {
                 if (spring.LockControl)
                 {
                     Inp.LockInputForAWhile(spring.LockTime, false);
+                }
+
+                if(spring.lockAirMoves)
+                {
+                    StopCoroutine(Actions.lockAirMoves(spring.lockAirMovesTime));
+                    StartCoroutine(Actions.lockAirMoves(spring.lockAirMovesTime));
+                }
+
+                if(spring.lockGravity != Vector3.zero)
+                {
+                    StartCoroutine(lockGravity(spring.lockGravity));
                 }
 
                 Actions.ChangeAction(0);
@@ -425,6 +449,23 @@ public class Objects_Interaction : MonoBehaviour {
 			
 	}
 
+    private IEnumerator lockGravity(Vector3 newGrav)
+    {
+        Debug.Log("Locked");
+
+        Player.fallGravity = newGrav;
+        yield return new WaitForSeconds(0.2f);
+        while (true)
+        {
+            yield return new WaitForFixedUpdate();
+            if (Player.Grounded)
+                break;
+        }
+            
+        Debug.Log("FRREEED");
+        Player.fallGravity = Player.StartFallGravity;
+    }
+
     private IEnumerator applyForce(Vector3 force, Vector3 position)
     {
         for(int i = 0; i < 3; i++)
@@ -479,9 +520,9 @@ public class Objects_Interaction : MonoBehaviour {
 
     private void AssignStats()
     {
-        HomingBouncingPower = Tools.stats.HomingBouncingPower;
-        EnemyDamageShakeAmmount = Tools.stats.EnemyDamageShakeAmmount;
-        EnemyHitShakeAmmount = Tools.stats.EnemyHitShakeAmmount;
+        HomingBouncingPower = Tools.coreStats.HomingBouncingPower;
+        EnemyDamageShakeAmmount = Tools.coreStats.EnemyDamageShakeAmmount;
+        EnemyHitShakeAmmount = Tools.coreStats.EnemyHitShakeAmmount;
     }
 
     private void AssignTools()

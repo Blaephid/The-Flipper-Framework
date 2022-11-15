@@ -6,7 +6,9 @@ using UnityEngine.UI;
 public class CharacterTools : MonoBehaviour
 {
     [Header("Stats")]
-    public CharacterStatsObj stats;
+    public SurfaceStatsCharacter stats;
+    public CoreStatsCharacter coreStats;
+    public CameraStats camStats;
 
     [Header("Key Objects")]
     public GameObject JumpBall;

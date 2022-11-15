@@ -9,6 +9,7 @@ public class Action00_Regular : MonoBehaviour {
 	PlayerBinput Input;
     ActionManager Actions;
 	CameraControl Cam;
+	quickstepManager quickstepManager;
     public SonicSoundsControl sounds;
 	public GameObject characterCapsule;
 	public GameObject rollingCapsule;
@@ -28,18 +29,12 @@ public class Action00_Regular : MonoBehaviour {
     public bool hasSked;
 	[HideInInspector] bool CanDashDuringFall;
 
-	[HideInInspector] public bool QuickStepping;
-	bool canStep;
-	float quickStepSpeed;
-	float airStepSpeed;
-	float StepCounter = 0f;
-	float StepDistance = 10f;
-	[HideInInspector] public float airStepDistance = 10f;
-	[HideInInspector] public bool StepRight;
-	[HideInInspector] public float DistanceToStep;
 	RaycastHit hit;
-	LayerMask StepPlayermask;
-	
+
+	AnimationCurve CoyoteTimeBySpeed;
+	bool coyoteInEffect = false;
+	Vector3 coyoteRememberDir;
+	bool inCoyote = false;
 
 	//Used to prevent rolling sound from constantly playing.
 	[HideInInspector] public bool Rolling = false;
@@ -54,11 +49,18 @@ public class Action00_Regular : MonoBehaviour {
         JumpAction = GetComponent<Action01_Jump>();
 		Cam = GetComponent<CameraControl>();
 		Tools = GetComponent<CharacterTools>();
+		quickstepManager = GetComponent<quickstepManager>();
+		quickstepManager.enabled = false;
     }
 
     private void Start()
     {
 		AssignStats();
+    }
+
+    private void OnDisable()
+    {
+		cancelCoyote();
     }
 
     void FixedUpdate()
@@ -101,7 +103,11 @@ public class Action00_Regular : MonoBehaviour {
 
         //Set Homing attack to true
 		if (Player.Grounded) 
-		{ 
+		{
+			inCoyote = false;
+			coyoteInEffect = true;
+			coyoteRememberDir = Player.GroundNormal;
+
 			if (Actions.Action02 != null) {
 			Actions.Action02.HomingAvailable = true;
 			}
@@ -111,88 +117,25 @@ public class Action00_Regular : MonoBehaviour {
 			}
 				
 		}
-
-		if (QuickStepping)
+		else if(!inCoyote)
         {
+			StartCoroutine(CoyoteTime());
+        }
 
-			if (DistanceToStep > 0)
-			{
-				float stepSpeed;
-				if (Player.Grounded)
-					stepSpeed = quickStepSpeed;
-				else
-					stepSpeed = airStepSpeed; 
-
-				//Debug.Log(stepSpeed);
-
-				if (StepRight)
-				{
-					Vector3 positionTo = transform.position + (CharacterAnimator.transform.right * DistanceToStep);
-					float ToTravel = stepSpeed * Time.deltaTime;
-
-					if (DistanceToStep - ToTravel <= 0)
-					{
-						ToTravel = DistanceToStep;
-						StepCounter = 0.4f;
-					}
-
-					DistanceToStep -= ToTravel;
-
-					if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.35f, transform.position.z), CharacterAnimator.transform.right * 1, out hit, 1.5f, StepPlayermask) && canStep)
-						if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z), CharacterAnimator.transform.right * 1, out hit, .8f, StepPlayermask))
-							transform.position = Vector3.MoveTowards(transform.position, positionTo, ToTravel);
-					else
-						canStep = false;
-				}
-
-				// !(Physics.Raycast(transform.position, CharacterAnimator.transform.right * -1, out hit, 4f, StepPlayermask)
-				else if (!StepRight)
-				{
-					Vector3 positionTo = transform.position + (-CharacterAnimator.transform.right * DistanceToStep);
-					float ToTravel = stepSpeed * Time.deltaTime;
-
-					if (DistanceToStep - ToTravel <= 0)
-					{
-						ToTravel = DistanceToStep;
-						StepCounter = 0.3f;
-					}
-
-					DistanceToStep -= ToTravel;
-
-					if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.35f, transform.position.z), CharacterAnimator.transform.right * -1, out hit, 1.5f, StepPlayermask) && canStep)
-						if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z), CharacterAnimator.transform.right * -1, out hit, .8f, StepPlayermask))
-							transform.position = Vector3.MoveTowards(transform.position, positionTo, ToTravel);
-					else
-						canStep = false;
-				}
-				
-			}
-
-			else
-			{
-				StepCounter -= Time.deltaTime;
-				if (StepCounter <= 0)
-				{
-					QuickStepping = false;
-				}
-			}
-
-
-		}
+		
 
     }
 
     void Update()
     {
 		//Jump
-		if (Actions.JumpPressed && Player.Grounded)
+		if (Actions.JumpPressed && (Player.Grounded || coyoteInEffect))
 		{
-			if (Player.SpeedMagnitude < 90)
-				Player.rb.velocity *= 0.9f;
+			
+			if(Player.Grounded)
+				JumpAction.InitialEvents(Player.GroundNormal, true);
 			else
-				Player.rb.velocity *= 0.85f;
-
-			JumpAction.InitialEvents(Player.GroundNormal);
+				JumpAction.InitialEvents(coyoteRememberDir, true);
 			Actions.ChangeAction(1);
 		}
 		
@@ -218,7 +161,7 @@ public class Action00_Regular : MonoBehaviour {
         CharacterAnimator.SetBool("isRolling", Player.isRolling);
 
 		//Do Spindash
-		if (Actions.RollPressed && Player.Grounded && Player.GroundNormal.y > MaximumSlope && Player.HorizontalSpeedMagnitude < MaximumSpeed) 
+		if (Actions.spinChargePressed && Player.Grounded && Player.GroundNormal.y > MaximumSlope && Player.HorizontalSpeedMagnitude < MaximumSpeed) 
 		{ 
 			Actions.ChangeAction(3);
 			Actions.Action03.InitialEvents(); 
@@ -280,7 +223,7 @@ public class Action00_Regular : MonoBehaviour {
             Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
 			if(VelocityMod != Vector3.zero)
             {
-				Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.Gravity.normalized);
+				Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.fallGravity.normalized);
 				CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 			}
    
@@ -311,38 +254,22 @@ public class Action00_Regular : MonoBehaviour {
 		}
 
 		//Enable Quickstep right or left
-		if (Actions.RightStepPressed && !QuickStepping)
+		if (Actions.RightStepPressed && !quickstepManager.enabled)
         {
-			Actions.RightStepPressed = false;
-			Actions.LeftStepPressed = false;
+			if (Player.HorizontalSpeedMagnitude > 15f)
+			{
 
-			if (Player.HorizontalSpeedMagnitude > 40f)
-            {
-				QuickStepping = true;
-				canStep = true;
-				StepRight = true;
-				if (Player.Grounded)
-					DistanceToStep = StepDistance;
-				else
-					DistanceToStep = airStepDistance;
-
-			}
+				quickstepManager.initialEvents(true);
+				quickstepManager.enabled = true;
+			}			
 		}
 
-		else if (Actions.LeftStepPressed && !QuickStepping)
+		else if (Actions.LeftStepPressed && !quickstepManager.enabled)
 		{
-			Actions.RightStepPressed = false;
-			Actions.LeftStepPressed = false;
-
-			if (Player.HorizontalSpeedMagnitude > 40f)
+			if (Player.HorizontalSpeedMagnitude > 15f)
 			{
-				QuickStepping = true;
-				canStep = true;
-				StepRight = false;
-				if (Player.Grounded)
-					DistanceToStep = StepDistance;
-				else
-					DistanceToStep = airStepDistance;
+				quickstepManager.initialEvents(false);
+				quickstepManager.enabled = true;
 			}
 		}
 
@@ -379,7 +306,7 @@ public class Action00_Regular : MonoBehaviour {
 			}
 
 			//Do a Double Jump
-			else if (Actions.JumpPressed && Actions.Action01.canDoubleJump)
+			else if (Actions.JumpPressed && Actions.Action01.canDoubleJump && !coyoteInEffect)
 			{
 				//Debug.Log("Do a double jump");
 				Actions.Action01.jumpCount = 0;
@@ -427,26 +354,37 @@ public class Action00_Regular : MonoBehaviour {
 		//Do a Spin Kick
 		else if (Actions.SpecialPressed && Player.Grounded)
 		{
-			Actions.Action09.InitialEvents();
-			Actions.ChangeAction(9);
 		}
 
 	}
 
+	IEnumerator CoyoteTime()
+    {
+		inCoyote = true;
+		coyoteInEffect = true;
+		float waitFor = CoyoteTimeBySpeed.Evaluate(Player.HorizontalSpeedMagnitude / 100);
+		yield return new WaitForSeconds(waitFor);
+		if(!Player.Grounded)
+			coyoteInEffect = false;
+    }
+
+	public void cancelCoyote()
+    {
+		inCoyote = false;
+		coyoteInEffect = false;
+		StopCoroutine(CoyoteTime());
+	}
+
 	private void AssignStats()
     {
+		CoyoteTimeBySpeed = Tools.coreStats.CoyoteTimeOverSpeed;
 		SpeedToStopAt = Tools.stats.SpeedToStopAt;
-		MaximumSlope = Tools.stats.MaximumSlope;
-		MaximumSpeed = Tools.stats.MaximumSpeed;
+		MaximumSlope = Tools.coreStats.MaximumSlope;
+		MaximumSpeed = Tools.coreStats.MaximumSpeed;
 		SkiddingIntensity = Tools.stats.SkiddingIntensity;
 		SkiddingStartPoint = Tools.stats.SkiddingStartPoint;
-		CanDashDuringFall = Tools.stats.CanDashDuringFall;
+		CanDashDuringFall = Tools.coreStats.CanDashDuringFall;
 
-		quickStepSpeed = Tools.stats.StepSpeed;
-		airStepSpeed = Tools.stats.AirStepSpeed;
-		StepDistance = Tools.stats.StepDistance;
-		airStepDistance = Tools.stats.AirStepDistance;
-		StepPlayermask = Tools.stats.StepLayerMask;
     }
 
 }

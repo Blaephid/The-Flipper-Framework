@@ -27,6 +27,10 @@ public class Action06_Bounce : MonoBehaviour {
 	float BounceUpMaxSpeed;
 	float BounceConsecutiveFactor;
 	float BounceHaltFactor;
+	float BounceCoolDown;
+
+	float memoriseSpeed;
+	float nextSpeed;
     
 
     Vector3 direction;
@@ -50,28 +54,33 @@ public class Action06_Bounce : MonoBehaviour {
 
     public void InitialEvents()
     {
+		if(!Action.lockBounce)
+        {
+			HasBounced = false;
+			memoriseSpeed = Player.HorizontalSpeedMagnitude;
+			nextSpeed = memoriseSpeed;
 
-		HasBounced = false;
+			////Debug.Log ("BounceDrop");
+			sounds.BounceStartSound();
+			BounceAvailable = false;
+			Player.rb.velocity = new Vector3(Player.rb.velocity.x * BounceHaltFactor, 0f, Player.rb.velocity.z * BounceHaltFactor);
+			Player.AddVelocity(new Vector3(0, -DropSpeed, 0));
 
-		////Debug.Log ("BounceDrop");
-		sounds.BounceStartSound();
-		BounceAvailable = false;
-		Player.rb.velocity = new Vector3(Player.rb.velocity.x * BounceHaltFactor, 0f, Player.rb.velocity.z * BounceHaltFactor);
-		Player.AddVelocity (new Vector3 (0, -DropSpeed, 0));
+			HomingTrailScript.emitTime = -1f;
+			HomingTrailScript.emit = true;
 
-		HomingTrailScript.emitTime = -1f;
-		HomingTrailScript.emit = true;
-
-		//Set Animator Parameters
-		CharacterAnimator.SetInteger ("Action", 1);
-		CharacterAnimator.SetBool ("isRolling", false);
-		jumpBall.SetActive(true);
+			//Set Animator Parameters
+			CharacterAnimator.SetInteger("Action", 1);
+			CharacterAnimator.SetBool("isRolling", false);
+			jumpBall.SetActive(true);
+		}
     }
 
    		
 	private void Bounce(Vector3 normal)
 	{
 		Action.BouncePressed = false;
+		Player.Grounded = false;
 		Action.Action02.HomingAvailable = true;
 
 		HasBounced = true;
@@ -85,7 +94,23 @@ public class Action06_Bounce : MonoBehaviour {
 
 		HomingTrailScript.emit = true;
 
-		Player.rb.velocity = new Vector3 (Player.rb.velocity.x, CurrentBounceAmount, Player.rb.velocity.z);
+		Vector3 newVec;
+
+		
+		if(Player.HorizontalSpeedMagnitude < 20)
+        {
+			newVec = CharacterAnimator.transform.forward;
+			newVec *= 20;
+		}
+		else if (nextSpeed > Player.HorizontalSpeedMagnitude)
+		{
+			newVec = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z).normalized;
+			newVec *= nextSpeed;
+		}
+		else
+			newVec = Player.rb.velocity;
+
+		Player.rb.velocity = new Vector3 (newVec.x, CurrentBounceAmount, newVec.z);
 		Player.AddVelocity (Player.GroundNormal);
 
 		sounds.BounceImpactSound ();
@@ -122,8 +147,10 @@ public class Action06_Bounce : MonoBehaviour {
     void FixedUpdate()
     {
         bool raycasthit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.95f) + Player.negativeGHoverHeight, Player.Playermask);
-		bool StompHit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.9f), Player.Playermask);
 		bool groundhit = Player.Grounded || raycasthit;
+
+		if (nextSpeed > memoriseSpeed / 2)
+			nextSpeed /= 1.001f;
 
 
         //End Action
@@ -131,13 +158,13 @@ public class Action06_Bounce : MonoBehaviour {
 			
 			HasBounced = false;
 
-			////Debug.Log ("BackToIdleJump");
-
+			StartCoroutine(Action.lockBounceOnly(BounceCoolDown));
 			Action.ChangeAction (0);
 		} 
 
-		else if (groundhit && !HasBounced) 
+		else if ((groundhit && !HasBounced) || (!groundhit && Player.rb.velocity.y == 0 && !HasBounced)) 
 		{
+			
 			if (Action.SkidPressed)
             {
 				Stomp();
@@ -145,39 +172,24 @@ public class Action06_Bounce : MonoBehaviour {
 
 			else
 			{
-				if (!raycasthit)
+				if (Player.Grounded)
 				{
 					//Debug.Log("Ground Bounce " + Player.GroundNormal);
 					Bounce(Player.GroundNormal);
 				}
-				else
+				else if (raycasthit)
 				{
 					//Debug.Log("RaycastHitBounce " + hit.normal);
 					//transform.position = hit.point;
 					Bounce(hit.normal);
 				}
+				else
+                {
+					
+					Bounce(Vector3.up);
+				}
 			}
 		}
-
-		else if(!groundhit && Player.rb.velocity.y == 0 && !HasBounced)
-				Player.rb.velocity = new Vector3(Player.rb.velocity.x, -DropSpeed, Player.rb.velocity.z);
-
-        //Stomp
-        //else if (StompHit && !HasBounced && Action.SkidPressed)
-        //{
-        //    Player.p_rigidbody.velocity = Vector3.zero;
-        //    CharacterAnimator.SetInteger("Action", 6);
-
-        //    Action.BouncePressed = false;
-        //    Action.Action02.HomingAvailable = true;
-
-        //    Input.LockInputForAWhile(20, false);
-
-        //    HomingTrailScript.emitTime = 0;
-        //    HomingTrailScript.emit = true;
-
-        //    Action.ChangeAction(0);
-        //}
 
     }
     
@@ -188,8 +200,9 @@ public class Action06_Bounce : MonoBehaviour {
 		{
 			BounceUpSpeeds.Add(Tools.stats.BounceUpSpeeds[i]);
 		}
-		BounceUpMaxSpeed = Tools.stats.BounceUpMaxSpeed;
-		BounceConsecutiveFactor = Tools.stats.BounceConsecutiveFactor;
+		BounceUpMaxSpeed = Tools.coreStats.BounceUpMaxSpeed;
+		BounceCoolDown = Tools.stats.BounceCoolDown;
+		BounceConsecutiveFactor = Tools.coreStats.BounceConsecutiveFactor;
 		BounceHaltFactor = Tools.stats.BounceHaltFactor;
 
 	}

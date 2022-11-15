@@ -17,8 +17,10 @@ public class drawShotDirection : MonoBehaviour
     public float Force;
     public Transform ShotCenter;
 
-    public Vector3 Gravity = new Vector3(0, -1.5f, 0);
-    public float PlayerDecell = 1.05f;
+    public Vector3 lockGravity = Vector3.zero;
+    public Vector3 FallGravity = new Vector3(0, -1.5f, 0);
+    public Vector3 UpGravity = new Vector3(0, -1.7f, 0);
+    public float PlayerDecell = 1.005f;
     
     
 
@@ -32,9 +34,7 @@ public class drawShotDirection : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         if (DebugForce)
-        {
-
-            
+        { 
 
             if (LineLength > 0)
             {
@@ -43,12 +43,14 @@ public class drawShotDirection : MonoBehaviour
                 if (isSpring)
                 {
                     Force = spring.SpringForce;
-                    DebugTrajectoryPoints = PreviewTrajectory(ShotCenter.position, transform.up * Force, Gravity, LineLength, PlayerDecell);
+                    lockGravity = spring.lockGravity;
+                    DebugTrajectoryPoints = PreviewTrajectory(ShotCenter.position, transform.up * Force, FallGravity, UpGravity, lockGravity, LineLength, PlayerDecell);
                 }
                 else
                 {
                     Force = speedPad.Speed;
-                    DebugTrajectoryPoints = PreviewTrajectory(ShotCenter.position, transform.forward * Force, Gravity, LineLength, PlayerDecell);
+                    lockGravity = speedPad.lockGravity;
+                    DebugTrajectoryPoints = PreviewTrajectory(ShotCenter.position, transform.forward * Force, FallGravity, UpGravity, lockGravity, LineLength, PlayerDecell) ;
                 }
                 
 
@@ -62,10 +64,16 @@ public class drawShotDirection : MonoBehaviour
 
     }
 
-    static Vector3[] PreviewTrajectory(Vector3 position, Vector3 velocity, Vector3 gravity, float time, float decell)
+    static Vector3[] PreviewTrajectory(Vector3 position, Vector3 velocity, Vector3 fallGravity, Vector3 upGravity, Vector3 lockGravity, float time, float decell)
     {
         float timeStep = Time.fixedDeltaTime;
         int iterations = Mathf.CeilToInt(time / timeStep);
+
+        if(lockGravity != null)
+        {
+            fallGravity = lockGravity;
+        }
+
         if (iterations < 2)
         {
             Debug.LogError("PreviewTrajectory (Vector3, Vector3, Vector3, float, float): Unable to preview trajectory shorter than Time.fixedDeltaTime * 2");
@@ -77,13 +85,36 @@ public class drawShotDirection : MonoBehaviour
         path[0] = pos;
         for (int i = 1; i < iterations; i++)
         {
-            if(new Vector3 (vel.x, 0f, vel.x).sqrMagnitude > 196)
-                 vel = new Vector3(vel.x / decell, vel.y, vel.z / decell);
-            //vel = vel + (gravity * timeStep);
-            vel = vel + gravity;
+            //    if(new Vector3 (vel.x, 0f, vel.x).sqrMagnitude > 196)
+            //         vel = new Vector3(vel.x / decell, vel.y, vel.z / decell);
+
+            vel = new Vector3(vel.x / decell, vel.y, vel.z / decell);
+            vel = vel + ApplyGravity((int)vel.y, fallGravity, upGravity);
             pos = pos + (vel * timeStep);
             path[i] = pos;
         }
         return path;
     }
+
+    static Vector3 ApplyGravity(int vertSpeed, Vector3 fallGravity, Vector3 upGravity)
+    {
+        if (vertSpeed < 5)
+        {
+            return fallGravity;
+        }
+        else
+        {
+            int gravMod;
+            if (vertSpeed > 70)
+                gravMod = vertSpeed / 15;
+            else
+                gravMod = vertSpeed / 12;
+            float applyMod = 1 + (gravMod * 0.1f);
+
+            Vector3 newGrav = new Vector3(0f, upGravity.y * applyMod, 0f);
+
+            return newGrav;
+        }
+    }
+
 }

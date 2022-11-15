@@ -12,39 +12,36 @@ public class HedgeCamera : MonoBehaviour
     public Transform Skin;
     public ActionManager Actions;
 
-    Transform CameraTrans;
-    public bool UseAutoRotation;
-    public bool UseCurve;
-    public float AutoXRotationSpeed;
-    public AnimationCurve AutoXRotationCurve;
-    public bool LockHeight;
-    public float LockHeightSpeed;
-    public bool MoveHeightBasedOnSpeed;
-    public float HeightToLock;
-    public float HeightFollowSpeed;
-    public float FallSpeedThreshold;
+    bool UseAutoRotation;
+    bool UseCurve;
+    float AutoXRotationSpeed;
+    AnimationCurve AutoXRotationCurve;
+    [HideInInspector] public bool LockHeight;
+    float LockHeightSpeed;
+    bool MoveHeightBasedOnSpeed;
+    float HeightToLock;
+    float HeightFollowSpeed;
+    float FallSpeedThreshold;
     bool facingDown = false;
 
-    public float CameraMaxDistance = -11;
-    public float CameraYOffset = 3;
-    public float AngleThreshold;
+    [HideInInspector] public float CameraMaxDistance = -11;
+    float AngleThreshold;
 
-    public float CameraRotationSpeed = 100;
-    public float CameraVerticalRotationSpeed = 10;
-    public float CameraNormalRotationSpeed = 2;
-    public float CameraMoveSpeed = 100;
+    float CameraRotationSpeed = 100;
+    float CameraVerticalRotationSpeed = 10;
+    float CameraMoveSpeed = 100;
 
-    public float InputXSpeed = 1;
-    public float InputYSpeed = 0.5f;
-    public float InputSensi = 1f;
-    public float InputMouseSensi = 1.1f;
-    public float stationaryCamIncrease = 1.2f;
+    float InputXSpeed = 1;
+    float InputYSpeed = 0.5f;
+    [HideInInspector] public  float InputSensi = 1f;
+    [HideInInspector] public  float InputMouseSensi = 0.7f;
+    float stationaryCamIncrease = 1.2f;
 
-    public float yMinLimit = -20f;
-    public float yMaxLimit = 80f;
+    float yMinLimit = -20f;
+    float yMaxLimit = 80f;
 
     [HideInInspector] public float StartLockCam;
-    public float LockCamAtHighSpeed = 130;
+    [HideInInspector] public float LockCamAtHighSpeed = 130;
 
     //The countdown prevents constant jittering when alternating between the lock cam speed
     bool CanGoBehind = false;
@@ -53,17 +50,14 @@ public class HedgeCamera : MonoBehaviour
 
     float x = 0.0f;
     [HideInInspector] public float y = 20.0f;
-    float z = 0.0f;
-    Vector3 LerpedNormal;
 
-    float AutoX;
     float CurveX;
 
     Quaternion LerpedRot;
     Vector3 LerpedPos;
 
-    public float MoveLerpingSpeed;
-    public float RotationLerpingSpeed;
+    float MoveLerpingSpeed;
+    float RotationLerpingSpeed;
 
     public Transform PlayerPosLerped;
 
@@ -72,7 +66,7 @@ public class HedgeCamera : MonoBehaviour
 
     public bool Locked { get; set; }
     public bool MasterLocked { get; set; }
-    public LayerMask CollidableLayers;
+    LayerMask CollidableLayers;
     float heighttolook;
     float lookTimer;
     float lookspeed;
@@ -90,12 +84,11 @@ public class HedgeCamera : MonoBehaviour
     float lockTimer;
 
     //Effects
-    float lookAtCount = 0;
     Vector3 lookAtDir;
 
     [Header("ShakeEffects")]
     public static float Shakeforce;
-    public float ShakeDampen;
+    float ShakeDampen;
 
     public float InvertedX { get; set; }
     public float InvertedY { get; set; }
@@ -111,6 +104,7 @@ public class HedgeCamera : MonoBehaviour
         InitialMoveSpeed = moveSpeed;
         InitialRotationSpeed = rotSpeed;
         StartLockCam = LockCamAtHighSpeed;
+        setStats();
 
         //Deals with cursor 
         Cursor.visible = false;
@@ -195,7 +189,7 @@ public class HedgeCamera : MonoBehaviour
             PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, Quaternion.LookRotation(Vector3.forward), Time.deltaTime * CameraVerticalRotationSpeed);
             RotateDirection(lookAtDir, Mathf.RoundToInt(LockedRotationSpeed), heighttolook);
         }
-        z = 0;
+       
     }
 
     IEnumerator SetGoBehind()
@@ -220,11 +214,11 @@ public class HedgeCamera : MonoBehaviour
                 //x += (((Input.GetAxis("Horizontal")) * NormalMod) * AutoXRotationSpeed) * Time.deltaTime;
                 //;
                 //y -= 0;
-                //z = 0;
+               
                 x += ((Actions.moveCamX * NormalMod) * AutoXRotationSpeed) * Time.deltaTime;
                 
                 y -= 0;
-                z = 0;
+             
             }
             else
             {
@@ -234,7 +228,7 @@ public class HedgeCamera : MonoBehaviour
                 x += ((Actions.moveCamX * CurveX) * AutoXRotationSpeed) * Time.deltaTime;
                 
                 y -= 0;
-                z = 0;
+               
             }
 
         }
@@ -430,7 +424,7 @@ public class HedgeCamera : MonoBehaviour
         {
             //Debug.Log(Actions.Action);
             //If not grinding or wall running
-            if (Actions.Action != 50 || Skip)
+            if (Actions.Action != 5 || Skip)
             {
                 //Debug.Log("Follow Directions" );
 
@@ -442,11 +436,18 @@ public class HedgeCamera : MonoBehaviour
             
         }
     }
+
+    public void setBehind()
+    {
+        x = 0;
+        y = 2;
+    }
+
     public void FollowDirection(float height, float speed)
     {
         if (!Locked)
         {
-            if (Actions.Action != 50)
+            if (Actions.Action != 5)
             {
                 //Debug.Log("Follow Directions height");
                 if(Player.Grounded)
@@ -508,12 +509,10 @@ public class HedgeCamera : MonoBehaviour
         rotSpeed = lagSet * 0.1f;
 
     }
-    public void SetCamera(Vector3 dir, float duration)
+    public void SetCamera(Vector3 dir, bool instant)
     {
-
-        lookAtDir = dir;
-        lookTimer = -duration;
-        LockedRotationSpeed = InitialLockedRotationSpeed;
+        float dot = Vector3.Angle(dir, transform.forward);
+        x += dot;
 
     }
     public void SetCamera(float lagSet)
@@ -537,13 +536,15 @@ public class HedgeCamera : MonoBehaviour
     {
 
         PlayerPosLerped.position = Target.position;
+        Quaternion newrot = Player.transform.rotation;
+        PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, newrot, Time.deltaTime * CameraVerticalRotationSpeed);
 
-        if (!Actions.Action05.isZipLine)
-        {
-            Quaternion newrot = Player.transform.rotation;
-            PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, newrot, Time.deltaTime * CameraVerticalRotationSpeed);
+        //if (!Actions.Action05.isZipLine)
+        //{
+        //    Quaternion newrot = Player.transform.rotation;
+        //    PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, newrot, Time.deltaTime * CameraVerticalRotationSpeed);
 
-        }
+        //}
 
     }
 
@@ -554,6 +555,46 @@ public class HedgeCamera : MonoBehaviour
         HeightFollowSpeed *= 4f;
         yield return new WaitForSeconds(.8f);
         HeightFollowSpeed = initialFollow;
+    }
+
+    void setStats()
+    {
+        UseAutoRotation = Tools.camStats.UseAutoRotation;
+        UseCurve = Tools.camStats.UseCurve;
+        AutoXRotationSpeed = Tools.camStats.AutoXRotationSpeed;
+        AutoXRotationCurve = Tools.camStats.AutoXRotationCurve;
+        LockHeight = Tools.camStats.LockHeight;
+        LockHeightSpeed = Tools.camStats.LockHeightSpeed;
+        MoveHeightBasedOnSpeed = Tools.camStats.MoveHeightBasedOnSpeed;
+        HeightToLock = Tools.camStats.HeightToLock;
+        HeightFollowSpeed = Tools.camStats.HeightFollowSpeed;
+        FallSpeedThreshold = Tools.camStats.FallSpeedThreshold;
+
+        CameraMaxDistance = Tools.camStats.CameraMaxDistance;
+        AngleThreshold = Tools.camStats.AngleThreshold;
+
+        CameraRotationSpeed = Tools.camStats.CameraRotationSpeed;
+        CameraVerticalRotationSpeed = Tools.camStats.CameraVerticalRotationSpeed;
+        CameraMoveSpeed = Tools.camStats.CameraMoveSpeed;
+
+        InputXSpeed = Tools.camStats.InputXSpeed;
+        InputYSpeed = Tools.camStats.InputYSpeed;
+        InputSensi = Tools.camStats.InputSensi;
+        InputMouseSensi = Tools.camStats.InputMouseSensi;
+        stationaryCamIncrease = Tools.camStats.stationaryCamIncrease;
+
+        yMinLimit = Tools.camStats.yMinLimit;
+        yMaxLimit = Tools.camStats.yMaxLimit;
+
+        LockCamAtHighSpeed = Tools.camStats.LockCamAtHighSpeed;
+
+        MoveLerpingSpeed = Tools.camStats.MoveLerpingSpeed;
+        RotationLerpingSpeed = Tools.camStats.RotationLerpingSpeed;
+
+        LockedRotationSpeed = Tools.camStats.LockedRotationSpeed;
+        ShakeDampen = Tools.camStats.ShakeDampen;
+
+        CollidableLayers = Tools.camStats.CollidableLayers;
     }
 
 }

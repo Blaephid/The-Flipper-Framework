@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33381923070687492}
   - component: {fileID: 23523748978493810}
   - component: {fileID: 114298200381955534}
+  - component: {fileID: 6256206368870015520}
   m_Layer: 0
   m_Name: '[RingSpawner] - Eternal'
   m_TagString: Untagged
@@ -98,7 +99,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Distance: 400
+  autoRespawn: 1
   RespawnTime: 20
+  respawnOnDeath: 1
   Ring: {fileID: 1000013484563888, guid: e1e8c7cdca478bc4794b004ed1591681, type: 3}
   TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
     type: 3}
+--- !u!114 &6256206368870015520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543253352267630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StopRender: 1
+  Des: 0

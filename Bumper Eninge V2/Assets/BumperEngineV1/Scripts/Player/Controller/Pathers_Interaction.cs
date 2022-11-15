@@ -98,18 +98,26 @@ public class Pathers_Interaction : MonoBehaviour
         
         if (col.gameObject.CompareTag("Rail"))
         {
-            AttachToRail(col);           
+           // AttachToRail(col, false, col.collider);           
         }
     }
 
-    public void AttachToRail(Collision col)
+    public void AttachToRail(Collision col, bool trigger, Collider colli)
     {
+
         //Debug.Log("HitRail");
-        if (col.gameObject.GetComponentInParent<Spline>())
+        if (colli.gameObject.GetComponentInParent<Spline>())
         {
             //Debug.Log("Rail!");
-            RailSpline = col.gameObject.GetComponentInParent<Spline>();
-            Transform ColPos = GetCollisionPoint(col);
+            RailSpline = colli.gameObject.GetComponentInParent<Spline>();
+            Transform ColPos;
+            if (trigger)
+            {
+                ColPos = transform;
+            }
+            else
+                ColPos = GetCollisionPoint(col);
+
             float Range = GetClosestPos(ColPos);
 
             if (!Actions.Action05.OnRail && !Actions.Action04Control.isDead)
@@ -124,6 +132,40 @@ public class Pathers_Interaction : MonoBehaviour
 
     public void OnTriggerEnter(Collider col)
     {
+
+        if (col.gameObject.CompareTag("Rail"))
+        {
+            if(col.GetComponent<CapsuleCollider>().radius == 4)
+            {
+                if(Player.SpeedMagnitude > 120 || Mathf.Abs(Player.rb.velocity.y) > 30)
+                {
+                    AttachToRail(null, true, col);
+                }
+            }
+            else if (col.GetComponent<CapsuleCollider>().radius == 3)
+            {
+                if (Player.SpeedMagnitude > 80 || Mathf.Abs(Player.rb.velocity.y) > 20)
+                {
+                    AttachToRail(null, true, col);
+                }
+            }
+            else if (col.GetComponent<CapsuleCollider>().radius == 2)
+            {
+                if (Player.SpeedMagnitude > 40 || Mathf.Abs(Player.rb.velocity.y) > 10)
+                {
+                    AttachToRail(null, true, col);
+                }
+            }
+            else
+            {
+                if (col.GetComponent<CapsuleCollider>().radius == 1)
+                {
+                    AttachToRail(null, true, col);
+                }
+            }
+        }
+
+
         if (col.gameObject.CompareTag("ZipLine"))
         {
   
@@ -137,10 +179,13 @@ public class Pathers_Interaction : MonoBehaviour
 
                     //Snaps player to the pulley
                     Rigidbody zipbody = col.GetComponent<Rigidbody>();
-                    Actions.Action05.pulley = col.transform;
+                    Actions.Action05.ZipHandle = col.transform;
                     Actions.Action05.ZipBody = zipbody;
                     zipbody.isKinematic = false;
                     float Range = GetClosestPos(col.transform);
+
+                    GameObject target = col.transform.GetComponent<PulleyObject>().homingtgt;
+                    target.SetActive(false);
 
                     //Sets the player to the rail grind action, and sets their position and what spline to follow.
                     Actions.Action05.InitialEvents(Range, RailSpline.transform, true);
@@ -217,7 +262,7 @@ public class Pathers_Interaction : MonoBehaviour
                     if (col.gameObject.GetComponent<CineStart>())
                     {
                         currentCam = col.gameObject.GetComponent<CineStart>();
-                        currentCam.ActivateCam();
+                        currentCam.ActivateCam(0f);
                     }
 
                     CurentPathTrigger = col.GetComponent<Collider>();
@@ -279,16 +324,17 @@ public class Pathers_Interaction : MonoBehaviour
 
     //Called when leaving a pulley to prevent player attaching to it immediately.
 
-    public IEnumerator JumpFromPulley(Transform pulley)
+    public IEnumerator JumpFromZipLine(Transform zipHandle, float time)
     {
-        pulley.GetComponent<CapsuleCollider>().enabled = false;
-        GameObject target = pulley.GetComponentInChildren<HomingTarget>().gameObject;
+        zipHandle.GetComponent<CapsuleCollider>().enabled = false;
+        GameObject target = zipHandle.transform.GetComponent<PulleyObject>().homingtgt;
         target.SetActive(false);
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(time);
 
-        pulley.GetComponent<CapsuleCollider>().enabled = true;
+        zipHandle.GetComponent<CapsuleCollider>().enabled = true;
         target.SetActive(true);
+        zipHandle.GetComponentInChildren<MeshCollider>().enabled = true;
 
     }
 

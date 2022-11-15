@@ -5563,7 +5563,6 @@ GameObject:
   - component: {fileID: 114930033002771750}
   - component: {fileID: 114394647838053544}
   - component: {fileID: 6634573134749074193}
-  - component: {fileID: 8932264056473165931}
   - component: {fileID: 4314005691558026853}
   - component: {fileID: 1508866748744117450}
   - component: {fileID: 6755438600529197151}
@@ -5574,6 +5573,7 @@ GameObject:
   - component: {fileID: 5448501015510275567}
   - component: {fileID: 4805882791603181136}
   - component: {fileID: 1194653453269117575}
+  - component: {fileID: 8704419147606607401}
   m_Layer: 8
   m_Name: Player_Sonic
   m_TagString: Player
@@ -5632,6 +5632,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 48acf3fada3825a4c8ee0df96ccd47de, type: 2}
+  coreStats: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee, type: 2}
+  camStats: {fileID: 11400000, guid: ba202d2693251114c953112101121bfc, type: 2}
   JumpBall: {fileID: 8950381718385962081}
   characterCapsule: {fileID: 1605683383104138}
   crouchCapsule: {fileID: 1794423812473573934}
@@ -5745,6 +5747,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+  TurnRateOverSpeed:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   TangDragOverAngle:
     serializedVersion: 2
     m_Curve:
@@ -5856,8 +5864,8 @@ MonoBehaviour:
   AirSkiddingForce: 30
   StopAirMovementIfNoInput: 1
   GravityAffects: 1
-  StartGravity: {x: 0, y: 0, z: 0}
-  Gravity: {x: 0, y: -2, z: 0}
+  StartFallGravity: {x: 0, y: 0, z: 0}
+  fallGravity: {x: 0, y: 0, z: 0}
   GroundOffset: 0.12
   CollisionPoint: {fileID: 4695150684650470}
   CollisionSphere: {fileID: 135154396464815898}
@@ -6117,6 +6125,38 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 292a2e7e-9e7d-4eff-a838-972dd25ccb9b
     m_ActionName: CharacterActions/MoveMouse[/Mouse/delta]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114870394340389206}
+        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+        m_MethodName: killBind
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a583bc34-1310-4e7c-a19a-6871a044e276
+    m_ActionName: CharacterActions/New action
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114870394340389206}
+        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+        m_MethodName: spinCharge
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: b5a2c673-34a7-4de0-805b-06900520bba4
+    m_ActionName: CharacterActions/New action
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: CharacterActions
@@ -6226,6 +6266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 795317e0a409ba3499067f99a8f5ed0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Action: 0
   Action00: {fileID: 114654845169286778}
   Action01: {fileID: 114873388628942606}
   Action02: {fileID: 114022693185401694}
@@ -6238,10 +6279,13 @@ MonoBehaviour:
   Action07: {fileID: 114394647838053544}
   Action07Control: {fileID: 114930033002771750}
   Action08: {fileID: 6634573134749074193}
-  Action09: {fileID: 8932264056473165931}
   Action10: {fileID: 4314005691558026853}
   Action11: {fileID: 1508866748744117450}
   Action12: {fileID: 1384100291284439512}
+  lockBounce: 0
+  lockHoming: 0
+  lockJumpDash: 0
+  lockDoubleJump: 0
   moveX: 0
   moveY: 0
   moveCamX: 0
@@ -6257,6 +6301,8 @@ MonoBehaviour:
   InteractPressed: 0
   CamResetPressed: 0
   HomingPressed: 0
+  spinChargePressed: 0
+  killBindPressed: 0
   isPaused: 0
 --- !u!114 &114654845169286778
 MonoBehaviour:
@@ -6281,10 +6327,6 @@ MonoBehaviour:
   SkiddingStartPoint: 5
   SkiddingIntensity: -1.5
   hasSked: 0
-  QuickStepping: 0
-  airStepDistance: 10
-  StepRight: 0
-  DistanceToStep: 0
   Rolling: 0
   rollCounter: 0
 --- !u!114 &114873388628942606
@@ -6311,10 +6353,7 @@ MonoBehaviour:
   SlopedJumpDuration: 0.09
   JumpSpeed: 10
   canDoubleJump: 1
-  QuickStepping: 0
-  StepRight: 0
-  StepDistance: 50
-  DistanceToStep: 0
+  timeJumping: 0
 --- !u!114 &114300969380773912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6493,19 +6532,6 @@ MonoBehaviour:
   MinimunCharge: 20
   MaximunCharge: 400
   ReleaseShakeAmmount: 0
---- !u!114 &8932264056473165931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1979695856965714}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78ecef4dd0e79be419fd9d2f5d3edc43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  KickCollider: {fileID: 5947195017612099183}
 --- !u!114 &4314005691558026853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6643,6 +6669,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da02b53e7cffa2549856b2800d6d0816, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tools: {fileID: 2061662532465713779}
   basePlayer: {fileID: 1979695856965714}
   ResumeTransform: {fileID: 4809842342266818}
   LampDone: {fileID: 2100000, guid: 5f7f3e6963ab3814aa7d229a0a196ee2, type: 2}
@@ -6712,6 +6739,18 @@ MonoBehaviour:
   EnemyHomingStoppingPowerWhenAdditive: 0
   StopOnHomingAttackHit: 0
   StopOnHit: 0
+--- !u!114 &8704419147606607401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979695856965714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742759d400539c3448b8dfd5dab6c287, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4686023653366926
 GameObject:
   m_ObjectHideFlags: 0
@@ -18051,7 +18090,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7771024, y: 1}
+    m_SensorSize: {x: 1.7781155, y: 1}
   m_Transitions:
     m_BlendHint: 1
     m_InheritPosition: 0
@@ -18936,8 +18975,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
-  m_LocalRotation: {x: 0.0022392466, y: -0.99343365, z: 0.11267142, w: 0.01974363}
-  m_LocalPosition: {x: -2463.823, y: 171.23213, z: 215.42212}
+  m_LocalRotation: {x: -0.041879464, y: 0.10989423, z: -0.35363552, w: 0.9279608}
+  m_LocalPosition: {x: -675.8451, y: 52.46378, z: 91.95685}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19034,73 +19073,15 @@ MonoBehaviour:
   Player: {fileID: 114945863342939534}
   Skin: {fileID: 6420733220765619769}
   Actions: {fileID: 114870394340389206}
-  UseAutoRotation: 0
-  UseCurve: 1
-  AutoXRotationSpeed: 1
-  AutoXRotationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.0009960085
-      value: -0.0014165347
-      inSlope: 0.15091139
-      outSlope: 0.15091139
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.005
-      value: 1
-      inSlope: 0.0068920357
-      outSlope: 0.0068920357
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0.2
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
   LockHeight: 1
-  LockHeightSpeed: 0.8
-  MoveHeightBasedOnSpeed: 1
-  HeightToLock: 15
-  HeightFollowSpeed: 6
-  FallSpeedThreshold: -90
   CameraMaxDistance: -13
-  CameraYOffset: 3.7
-  AngleThreshold: 0.3
-  CameraRotationSpeed: 100
-  CameraVerticalRotationSpeed: 12
-  CameraNormalRotationSpeed: 200
-  CameraMoveSpeed: 100
-  InputXSpeed: 70
-  InputYSpeed: 55
   InputSensi: 1
   InputMouseSensi: 0.08
-  stationaryCamIncrease: 1.4
-  yMinLimit: -100
-  yMaxLimit: 100
   StartLockCam: 0
-  LockCamAtHighSpeed: 50
+  LockCamAtHighSpeed: 45
   y: 20
-  MoveLerpingSpeed: 4
-  RotationLerpingSpeed: 8
   PlayerPosLerped: {fileID: 4591767841459208}
-  CollidableLayers:
-    serializedVersion: 2
-    m_Bits: 1
   LockedRotationSpeed: 6
-  ShakeDampen: 10
 --- !u!114 &1617007407978008853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32436,8 +32417,8 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
+        key0: {r: 0, g: 0, b: 0, a: 1}
+        key1: {r: 0, g: 0, b: 0, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -32891,13 +32872,13 @@ ParticleSystem:
     attachRibbonsToTransform: 0
     colorOverLifetime:
       serializedVersion: 2
-      minMaxState: 1
+      minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 0, g: 0.86442053, b: 0.9433962, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
+        key1: {r: 0, g: 0.86504173, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -33070,13 +33051,13 @@ ParticleSystem:
         m_NumAlphaKeys: 2
   CustomDataModule:
     enabled: 0
-    mode0: 0
+    mode0: 2
     vectorComponentCount0: 4
     color0:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 0, g: 0, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -33655,8 +33636,8 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 626252c3998b0764fbfdc4500fd82d1b, type: 2}
-  - {fileID: 2100000, guid: 626252c3998b0764fbfdc4500fd82d1b, type: 2}
+  - {fileID: 2100000, guid: 58885ae997f3b4c4790631ba8fb51e59, type: 2}
+  - {fileID: 2100000, guid: 58885ae997f3b4c4790631ba8fb51e59, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -33698,7 +33679,7 @@ ParticleSystemRenderer:
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
   m_VertexStreams: 00010304
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
@@ -41477,7 +41458,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8119505022725950134
 RectTransform:
   m_ObjectHideFlags: 0

@@ -360,7 +360,7 @@ public class Action12_WallRunning : MonoBehaviour
 
             StartCoroutine(loseWall());
 
-            Debug.Log("Lost the Wall");
+            //Debug.Log("Lost the Wall");
             Debug.DrawRay(transform.position, -CharacterAnimator.transform.right * WallCheckDistance * 1.6f, Color.red, 20f);
 
         }
@@ -634,7 +634,7 @@ public class Action12_WallRunning : MonoBehaviour
 
         if (SwitchToJump == 2)
         {
-            jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.8f);
+            jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.95f);
             //Debug.Log(jumpAngle);
             if (wallOnRight)
                 Player.rb.AddForce(transform.right * 2f);
@@ -643,7 +643,7 @@ public class Action12_WallRunning : MonoBehaviour
         }
         else
         {
-            jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.6f);
+            jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.7f); ;
             //Debug.Log(jumpAngle);
             Player.rb.AddForce(-transform.forward * 2f);
         }
@@ -698,10 +698,10 @@ public class Action12_WallRunning : MonoBehaviour
     //Reponsible for assigning stats from the stats script.
     void AssignStats()
     {
-        WallCheckDistance = Tools.stats.WallCheckDistance;
-        minHeight = Tools.stats.minHeight;
-        wallLayerMask = Tools.stats.wallLayerMask;
-        wallDuration = Tools.stats.wallDuration;
+        WallCheckDistance = Tools.coreStats.WallCheckDistance;
+        minHeight = Tools.coreStats.minHeight;
+        wallLayerMask = Tools.coreStats.wallLayerMask;
+        wallDuration = Tools.coreStats.wallDuration;
 
         scrapeModi = Tools.stats.scrapeModi;
         climbModi = Tools.stats.climbModi;

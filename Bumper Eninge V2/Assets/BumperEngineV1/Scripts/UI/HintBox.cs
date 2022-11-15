@@ -40,7 +40,7 @@ public class HintBox : MonoBehaviour
     IEnumerator DisplayText (string text, float[] duration, string[] fullText)
     {
         bool turnPage = false;
-        Debug.Log(text);
+        //Debug.Log(text);
 
         IsShowing = true;
         BoxAnimator.SetBool("Active", true);

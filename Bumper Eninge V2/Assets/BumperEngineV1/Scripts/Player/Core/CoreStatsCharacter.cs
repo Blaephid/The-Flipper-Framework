@@ -3,44 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Character X Stats")]
-public class CharacterStatsObj : ScriptableObject
+public class CoreStatsCharacter : ScriptableObject
 {
     public string Title;
 
     [Header("Core movement")]
 
-    [Header("Movement Values")]
-
-    public float StartAccell = 0.16f;
+    [Header("Acceleration Values")]
 
     public AnimationCurve AccellOverSpeed;
     public float AccellShiftOverSpeed = 1;
 
-    public float TangentialDrag = 7.5f;
+    [Header("Turning values")]
     public float TangentialDragShiftSpeed = 1;
-
-    public float TurnSpeed = 70f;
-    public float SlowedTurnSpeed = 200f;
-
+    [Tooltip("This decides how fast the turn will be based on the angle of input.")]
     public AnimationCurve TurnRateOverAngle;
-    public AnimationCurve TurnRateOverAngleSlowed;
+    [HideInInspector]public AnimationCurve TurnRateOverAngleSlowed;
+    public AnimationCurve TurnRateOverSpeed;
     public AnimationCurve TangDragOverAngle;
     public AnimationCurve TangDragOverSpeed;
 
-    public float StartTopSpeed = 90f;
-    public float StartMaxSpeed = 170f;
-    public float StartMaxFallingSpeed = -400f;
-    public float StartJumpPower = 1.2f;
-
-    public float MoveDecell = 1.05f;
+    [Header("Deceleration Values")]
+    public AnimationCurve DecellBySpeed;
+    public float DecellShiftOverSpeed = 1;
     public float naturalAirDecell = 1.002f;
-    public float AirDecell = 1.25f;
 
+    [Header ("Stick to ground")]
     public float GroundStickingDistance = 0.15f;
     public float GroundStickingPower = -1.45f;
 
 
-    [Header ("Turning - PlayerBInput")]
+    [Header ("Special Turning - PlayerBInput")]
     public AnimationCurve InputLerpingRateOverSpeed;
     public bool UtopiaTurning = true;
     public AnimationCurve UtopiaInputLerpingRateOverSpeed;
@@ -54,9 +47,12 @@ public class CharacterStatsObj : ScriptableObject
     public float SlopeRunningAngleLimit = 0.5f;
     public float SlopeSpeedLimit = 110;
 
+    [Tooltip("This is multiplied with the force of a slope when going uphill to determine the force against.")]
     public float UphillMultiplier = 0.55f;
+    [Tooltip("This is multiplied with the force of a slope when going downhill to determine the force for.")]
     public float DownhillMultiplier = 0.5f;
     public float StartDownhillMultiplier = -1.8f; 
+    [Tooltip("This determines how much force is gained from the slope depending on the current speed. ")]
     public AnimationCurve SlopePowerOverSpeed;
     public AnimationCurve UpHillOverTime;
 
@@ -79,10 +75,8 @@ public class CharacterStatsObj : ScriptableObject
     public LayerMask Playermask;
 
     [Header("AirMovementExtras")]
-    public float AirControlAmmount = 0.8f;
-    public float AirSkiddingForce = 6;
     public bool StopAirMovementIfNoInput = true;
-    public Vector3 Gravity = new Vector3 (0f, -1.5f, 0);
+    public Vector3 UpGravity = new Vector3(0f, -1.7f, 0);
 
 
     [Header("Rolling Values")]
@@ -95,32 +89,13 @@ public class CharacterStatsObj : ScriptableObject
     public float RollingFlatDecell = 1.004f;
     public float SlopeTakeoverAmount = 0.995f; // This is the normalized slope angle that the player has to be in order to register the land as "flat"
 
-    [Header("Skid & Stop")]
-    public float SpeedToStopAt = 16;
-
-    public float SkiddingStartPoint = 5;
-    public float SkiddingIntensity = -4;
-
     [Header("Jump")]
-    public float StartJumpDuration = 0.2f;
-    public float StartSlopedJumpDuration = 0.2f;
-    public float StartJumpSpeed = 4;
+    public AnimationCurve CoyoteTimeOverSpeed;
     public float JumpSlopeConversion = 0.03f;
     public float StopYSpeedOnRelease = 2;
     public float JumpRollingLandingBoost;
 
-    [Header("Adittional Jumps")]
-    public bool canDoubleJump = true;
-    public bool canTripleJump = false;
-
-    public float doubleJumpSpeed = 4.5f;
-    public float doubleJumpDuration = 0.14f;
-
     [Header("QuickStep")]
-    public float StepSpeed = 50f;
-    public float StepDistance = 8f;
-    public float AirStepSpeed = 45f;
-    public float AirStepDistance = 7f;
     public LayerMask StepLayerMask;
 
     [Header ("Homing Search")]
@@ -134,49 +109,23 @@ public class CharacterStatsObj : ScriptableObject
 
     [Header ("Homing")]
 
-    public float HomingAttackSpeed = 70;
-    public float HomingTimerLimit = 1;
-    public float HomingSuccessDelay = 0.4f;
-    //public float FacingAmount;
     public bool CanDashDuringFall = true;
 
-    [Header ("Air Dash")]
+    [Header ("Jump Dash")]
     public bool isAdditive = true;
-    public float AirDashSpeed = 60;
-    public float AirDashDuration = 0.4f;
 
-    [Header("Spin Dash")]
+    [Header("Spin Charge")]
     public float MaximumSpeed = 25; //The max amount of speed you can be at to perform a Spin Dash
     public float MaximumSlope = 0.9f; //The highest slope you can be on to Spin Dash
-    public float SpinDashChargingSpeed = 1.08f;
-    public float MinimunCharge = 20;
-    public float MaximunCharge = 100;
-    public float SpinDashStillForce = 1.05f;
 
 
     [Header("Bounce")]
-    public float DropSpeed = 100;
-    public float BounceMaxSpeed = 140;
-    public List<float> BounceUpSpeeds;
     public float BounceUpMaxSpeed = 75;
     public float BounceConsecutiveFactor = 1.05f;
-    public float BounceHaltFactor = 0.85f;
 
-    [Header("Light Dash Search")]
-    public float LightDashTargetSearchDistance = 60;
+    [Header("Ring Road Search")]
+    public float RingTargetSearchDistance = 60;
     public float LightDashIconScale = 0;
-
-    [Header("Light Dash")]
-    //[SerializeField] float DashingTimerLimit;
-    public float DashSpeed = 100;
-    public float EndingSpeedFactor = 1.2f;
-    public float MinimumEndingSpeed = 60;
-
-
-    [Header("Drop Dash")]
-    public float DropDashChargingSpeed = 1.2f;
-    public float DropMinimunCharge = 40;
-    public float DropMaximunCharge = 150;
 
 
     [Header("Interact with Enemies")]
@@ -190,16 +139,24 @@ public class CharacterStatsObj : ScriptableObject
     public float EnemyHitShakeAmmount = 1.2f;
 
 
+    [Header("Bonk")]
+    public LayerMask BonkOnWalls;
+    public float BonkUpwardsForce = 20;
+    public float BonkBackwardsForce = 15f;
+    public float BonkControlLock = 10f;
+    public float BonkControlLockAir = 40f;
+
     [Header("Hurt")]
     public float KnockbackUpwardsForce = 30;
     public bool ResetSpeedOnHit = false;
+    public LayerMask RecoilFrom;
     public float KnockbackForce = 40;
-
-    public int InvincibilityTime = 90;
-    public int MaxRingLoss = 20;
     public float RingReleaseSpeed = 550;
     public float RingArcSpeed = 20;
     public float FlickerSpeed = 3f;
+    public float HurtControlLock = 10f;
+    public float HurtControlLockAir = 40f;
+
 
     [Header("Rails")]
     public float MinStartSpeed = 20f;
@@ -220,19 +177,10 @@ public class CharacterStatsObj : ScriptableObject
     public float OffsetRail = 2.05f;
     public float OffsetZip = -5f;
 
-    [Header("Slide")]
-    public float SlideDuration = 0.7f;
-    public float SlideForce = 2000f;
-    public float slideDamage = 1f;
-
     [Header("Wall Rules")]
     public float WallCheckDistance = 1.2f;
     public float minHeight = 2;
     public LayerMask wallLayerMask;
     public float wallDuration = 0;
-
-    [Header("Wall Effects")]
-    public float scrapeModi = 1f;
-    public float climbModi = 1f;
 
 }

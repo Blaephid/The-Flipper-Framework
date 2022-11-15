@@ -53,58 +53,60 @@ public class Action02_Homing : MonoBehaviour
 
     public void InitialEvents()
     {
-        AssignStats();
-        
-
-        HomingTrailScript.emitTime = AirDashDuration;
-        HomingTrailScript.emit = true;
-
-        
-        JumpBall.SetActive(false);
-        
-
-        if (Action.Action02Control.HasTarget)
+        if(!Action.lockHoming)
         {
-            Target = HomingControl.TargetObject.transform;
-            TargetDirection = (Target.transform.position - Player.playerPos).normalized;
-        }
-        else
-        {
-            TargetDirection = Player.rb.velocity.normalized;
-        }
 
-        Timer = 0;
-        HomingAvailable = false;
-
-        XZmag = Player.HorizontalSpeedMagnitude;
+            AssignStats();
 
 
+            HomingTrailScript.emitTime = AirDashDuration;
+            HomingTrailScript.emit = true;
 
-        
-        //Action.actionDisable();
-            
-        //Vector3 TgyXY = HomingControl.TargetObject.transform.position.normalized;
-        //TgyXY.y = 0;
-        //float facingAmmount = Vector3.Dot(Player.PreviousRawInput.normalized, TgyXY);
 
-        direction = Target.position - transform.position;
-        newRotation = Vector3.RotateTowards(transform.forward, direction, 5f, 0.0f);
+            JumpBall.SetActive(false);
 
-        // //Debug.Log(facingAmmount);
-        // if (facingAmmount < FacingAmount) { IsAirDash = true; }
 
-        if (XZmag * 0.7f < HomingAttackSpeed)
-        {
-            Speed = HomingAttackSpeed;
-            StoredSpeed = Speed;
-        }
-        else
-        {
-            Speed = XZmag * 0.7f;
-            StoredSpeed = XZmag;
-        }
+            if (Action.Action02Control.HasTarget)
+            {
+                Target = HomingControl.TargetObject.transform;
+                TargetDirection = (Target.transform.position - Player.playerPos).normalized;
+            }
+            else
+            {
+                TargetDirection = Player.rb.velocity.normalized;
+            }
 
-        
+            Timer = 0;
+            HomingAvailable = false;
+
+            XZmag = Player.HorizontalSpeedMagnitude;
+
+
+
+
+            //Action.actionDisable();
+
+            //Vector3 TgyXY = HomingControl.TargetObject.transform.position.normalized;
+            //TgyXY.y = 0;
+            //float facingAmmount = Vector3.Dot(Player.PreviousRawInput.normalized, TgyXY);
+
+            direction = Target.position - transform.position;
+            newRotation = Vector3.RotateTowards(transform.forward, direction, 5f, 0.0f);
+
+            // //Debug.Log(facingAmmount);
+            // if (facingAmmount < FacingAmount) { IsAirDash = true; }
+
+            if (XZmag * 0.7f < HomingAttackSpeed)
+            {
+                Speed = HomingAttackSpeed;
+                StoredSpeed = Speed;
+            }
+            else
+            {
+                Speed = XZmag * 0.7f;
+                StoredSpeed = XZmag;
+            }
+        }    
 
     }
 
@@ -190,7 +192,7 @@ public class Action02_Homing : MonoBehaviour
     }
     private void AssignStats()
     {
-        isAdditive = Tools.stats.isAdditive;
+        isAdditive = Tools.coreStats.isAdditive;
         HomingAttackSpeed = Tools.stats.HomingAttackSpeed;
         AirDashSpeed = Tools.stats.AirDashSpeed;
         HomingTimerLimit = Tools.stats.HomingTimerLimit;

@@ -1,12 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class RingSpawnerEternal : MonoBehaviour {
 
     public float Distance;
     Transform Player;
 
+    public bool autoRespawn = true;
     public float RespawnTime;
+
+    public bool respawnOnDeath;
   
 
     public GameObject Ring;
@@ -20,7 +24,21 @@ public class RingSpawnerEternal : MonoBehaviour {
     {
         HasSpawned = false;
         Player = GameObject.FindWithTag("Player").transform;
-        GetComponent<MeshRenderer>().enabled = false;
+        //GetComponent<MeshRenderer>().enabled = false;
+
+    }
+
+    private void OnEnable()
+    {
+        
+         LevelProgressControl.onReset += ReturnOnDeath;
+        
+    }
+    private void OnDisable()
+    {
+        
+        LevelProgressControl.onReset -= ReturnOnDeath;
+        
     }
 
     void LateUpdate()
@@ -38,11 +56,26 @@ public class RingSpawnerEternal : MonoBehaviour {
 			{
 				HasSpawned = true;
 				//Debug.Log ("ShouldSpawn");
-				StartCoroutine(SpawnInNormal(RespawnTime));
+                if(autoRespawn)
+				    StartCoroutine(SpawnInNormal(RespawnTime));
 			}
-
             
         }
+    }
+
+    void ReturnOnDeath(object sender, EventArgs e)
+    {
+        //Debug.Log("Player fucking DIED");
+        if(respawnOnDeath)
+        {
+            if (RingClone == null)
+            {
+                StopCoroutine(SpawnInNormal(0f));
+
+                firstTime = true;
+                HasSpawned = false;
+            }
+        }     
     }
 
     private IEnumerator SpawnInNormal(float RespawnIn)

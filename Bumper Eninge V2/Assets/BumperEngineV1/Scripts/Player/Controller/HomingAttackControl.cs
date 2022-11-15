@@ -8,6 +8,7 @@ public class HomingAttackControl : MonoBehaviour
 
     public bool HasTarget { get; set; }
     [HideInInspector] public GameObject TargetObject;
+    GameObject previousTarget;
     
     ActionManager Actions;
     PlayerBhysics player;
@@ -20,6 +21,7 @@ public class HomingAttackControl : MonoBehaviour
     LayerMask BlockingLayers;
     float FieldOfView;
     float facingAmount;
+    float distance;
 
     AudioSource IconSound;
     GameObject AlreadyPlayed;
@@ -41,7 +43,6 @@ public class HomingAttackControl : MonoBehaviour
     int HomingCount;
     public bool HomingAvailable { get; set; }
 
-    bool firstime = false;
 
     void Awake()
     {
@@ -62,7 +63,7 @@ public class HomingAttackControl : MonoBehaviour
         //TgtDebug = tgt;
 
         Icon.parent = null;
-        StartCoroutine(ScanForTargets(.12f));
+        StartCoroutine(ScanForTargets(.10f));
     }
 
 
@@ -116,8 +117,12 @@ public class HomingAttackControl : MonoBehaviour
             while (!player.Grounded && Actions.Action != 5)
             {
                 UpdateHomingTargets();
-                yield return new WaitForSeconds(secondsBetweenChecks);
+                if (!HasTarget)
+                    yield return new WaitForSeconds(secondsBetweenChecks);
+                else;
+                    yield return new WaitForSeconds(secondsBetweenChecks * 1.5f);
             }
+            previousTarget = null;
             HasTarget = false;
             yield return new WaitForSeconds(.1f);
         }
@@ -132,7 +137,7 @@ public class HomingAttackControl : MonoBehaviour
         HasTarget = false;
         TargetObject = null;
         TargetObject = GetClosestTarget(TargetLayer, TargetSearchDistance, FieldOfView);
-
+        previousTarget = TargetObject;
 
     }
 
@@ -140,49 +145,71 @@ public class HomingAttackControl : MonoBehaviour
     {
         ///First we use a spherecast to get every object with the given layer in range. Then we go through the
         ///available targets from the spherecast to find which is the closest to Sonic.
-        RaycastHit[] TargetsInRange = Physics.SphereCastAll(transform.position, Radius, transform.forward, Radius, layer);
+
         GameObject closestTarget = null;
-        float distance = 0f;
-        //Debug.Log(TargetsInRange.Length);
+        distance = 0f;
 
-        foreach (RaycastHit t in TargetsInRange)
+        RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, 8f, Camera.main.transform.forward, Radius * 1.5f, layer);
+        foreach (RaycastHit t in NewTargetsInRange)
         {
-
-            //Debug.Log(t.transform.gameObject);
             if (t.collider.gameObject.GetComponent<HomingTarget>())
             {
-                Transform target = t.collider.gameObject.transform;
 
-                Vector3 Direction = CharacterAnimator.transform.position - target.position;
-                //Vector3 forward = CharacterAnimator.transform.TransformDirection(Vector3.forward);
-                //Debug.Log(Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized));
-                bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < facingAmount; //Make sure Sonic is facing the target enough
-                //Facing = true;
-                float TargetDistance = (Direction.sqrMagnitude / Radius) / Radius;
-                //float TargetDistance = t.distance;
-                Vector3 screenPoint = Camera.main.WorldToViewportPoint(target.position); //Get the target's screen position
-                bool onScreen = screenPoint.z > 0.3f && screenPoint.x > 0.1 && screenPoint.x < 0.9f && screenPoint.y > 0.2f && screenPoint.y < 1f; //Make sure the target is on screen
+                Transform target = t.collider.transform;
+                closestTarget = checkTarget(target, Radius, closestTarget, 1.5f);
+            }
+        }
+      
+        if(closestTarget == null)
+        {
+            Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, Radius, layer);
+            foreach (Collider t in TargetsInRange)
+            {
 
-                //Debug.Log(TargetDistance);
-                //Debug.Log(distance);
-                //Debug.Log(Facing);
-                //Debug.Log(onScreen);
-
-
-                if ((TargetDistance < distance || distance == 0f) && Facing && onScreen)
+                if (t.gameObject.GetComponent<HomingTarget>())
                 {
-                    if (!Physics.Linecast(transform.position, target.position, BlockingLayers))
-                    {
-                        HasTarget = true;
-                        closestTarget = t.collider.gameObject;
-                        //Debug.Log(closestTarget);
-                        distance = TargetDistance;
-                    }
+ 
+                    Transform target = t.gameObject.transform;
+                    closestTarget = checkTarget(target, Radius, closestTarget, 1);
                 }
+
             }
 
+            if (previousTarget != null)
+            {
+   
+                closestTarget = checkTarget(previousTarget.transform, Radius, closestTarget, 1.3f);
+            }
         }
+        
         return closestTarget;
+    }
+
+    GameObject checkTarget(Transform target, float Radius, GameObject closest, float maxDisMod)
+    {
+        Vector3 Direction = CharacterAnimator.transform.position - target.position;
+        float TargetDistance = (Direction.sqrMagnitude / Radius) / Radius;
+
+        if(TargetDistance < maxDisMod * Radius)
+        {
+            bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < facingAmount; //Make sure Sonic is facing the target enough
+
+            Vector3 screenPoint = Camera.main.WorldToViewportPoint(target.position); //Get the target's screen position
+            bool onScreen = screenPoint.z > 0.3f && screenPoint.x > 0.08 && screenPoint.x < 0.92f && screenPoint.y > 0f && screenPoint.y < 0.95f; //Make sure the target is on screen
+
+            if ((TargetDistance < distance || distance == 0f) && Facing && onScreen)
+            {
+                if (!Physics.Linecast(transform.position, target.position, BlockingLayers))
+                {
+                    HasTarget = true;
+                    //Debug.Log(closestTarget);
+                    distance = TargetDistance;
+                    return target.gameObject;
+                }
+            }
+        }
+        
+        return closest;
     }
 
     private void AssignTools()
@@ -204,14 +231,14 @@ public class HomingAttackControl : MonoBehaviour
 
     private void AssignStats()
     {
-        TargetSearchDistance = tools.stats.TargetSearchDistance;
-        TargetLayer = tools.stats.TargetLayer;
-        BlockingLayers = tools.stats.BlockingLayers;
-        FieldOfView = tools.stats.FieldOfView;
-        facingAmount = tools.stats.FacingAmount;
+        TargetSearchDistance = tools.coreStats.TargetSearchDistance;
+        TargetLayer = tools.coreStats.TargetLayer;
+        BlockingLayers = tools.coreStats.BlockingLayers;
+        FieldOfView = tools.coreStats.FieldOfView;
+        facingAmount = tools.coreStats.FacingAmount;
 
-        IconScale = tools.stats.IconScale;
-        IconDistanceScaling = tools.stats.IconDistanceScaling;
+        IconScale = tools.coreStats.IconScale;
+        IconDistanceScaling = tools.coreStats.IconDistanceScaling;
     }
 
 

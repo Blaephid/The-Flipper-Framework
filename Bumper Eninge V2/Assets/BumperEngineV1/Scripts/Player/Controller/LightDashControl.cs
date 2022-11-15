@@ -4,7 +4,6 @@ using System.Collections;
 public class LightDashControl : MonoBehaviour {
 
     CharacterTools Tools;
-
     public bool HasTarget { get; set; }
     public static GameObject TargetObject { get; set; }
     ActionManager Actions;
@@ -56,7 +55,11 @@ public class LightDashControl : MonoBehaviour {
         UpdateHomingTargets();
         //Prevent Homing attack spamming
 
-        TargetObject = GetClosestTarget(Targets, TargetSearchDistance);
+        if(Actions.Action != 7)
+            TargetObject = GetClosestTarget(Targets, TargetSearchDistance);
+        else
+            TargetObject = GetClosestTarget(Targets, TargetSearchDistance * 1.4f);
+
 
     }
 
@@ -98,8 +101,8 @@ public class LightDashControl : MonoBehaviour {
 
     void AssignStats()
     {
-        TargetSearchDistance = Tools.stats.LightDashTargetSearchDistance;
-        IconScale = Tools.stats.LightDashIconScale;
+        TargetSearchDistance = Tools.coreStats.RingTargetSearchDistance;
+        IconScale = Tools.coreStats.LightDashIconScale;
     }
 
     void AssignTools()

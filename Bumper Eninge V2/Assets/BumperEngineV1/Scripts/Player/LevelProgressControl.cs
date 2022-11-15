@@ -1,16 +1,23 @@
 ﻿using UnityEngine;
+using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class LevelProgressControl : MonoBehaviour {
 
+    public static event EventHandler onReset;
+
+
+    public CharacterTools tools;
     public Vector3 ResumePosition { get; set; }
     public Quaternion ResumeRotation { get; set; }
+    Vector3 ResumeFace;
     public GameObject basePlayer;
     public Transform ResumeTransform;
     ActionManager Actions;
     PlayerBhysics Player;
     CameraControl Cam;
+    PlayerBinput Inp;
     public GameObject CurrentCheckPoint { get; set; }
 
     public Material LampDone;
@@ -22,13 +29,17 @@ public class LevelProgressControl : MonoBehaviour {
     bool readyForNextStage = false;
     float readyCount = 0;
 
-    bool firstime = false;
 
     void Start () {
 
         Cam = basePlayer.GetComponent<CameraControl>();
         Actions = basePlayer.GetComponent<ActionManager>();
         Player = basePlayer.GetComponent<PlayerBhysics>();
+        Inp = basePlayer.GetComponent<PlayerBinput>();
+
+        ResumePosition = transform.position;
+        ResumeRotation = transform.rotation;
+        ResumeFace = transform.forward;
 
     }
 
@@ -58,36 +69,60 @@ public class LevelProgressControl : MonoBehaviour {
 
     void LateUpdate()
     {
-        if (!firstime)
-        {
-            ResumePosition = transform.position;
-            ResumeRotation = transform.rotation;
-            firstime = true;
-        }
+        //if (!firstime)
+        //{
+        //    ResumePosition = transform.position;
+        //    ResumeRotation = transform.rotation;
+        //    ResumeFace = transform.forward;
+        //    firstime = true;
+        //}
     }
 
+    
     public void ResetToCheckPoint()
     {
         //Debug.Log("Reset");
 
-		Objects_Interaction.RingAmount = 0;
+       
+        Inp.LockInputForAWhile(20, true);
+        StartCoroutine(Actions.lockAirMoves(20));
+        Actions.ChangeAction(0);
 
-		if (Monitors_Interactions.HasShield) 
+        tools.HomingTrailScript.emitTime = 0;
+        tools.HomingTrailScript.emit = false;
+
+        if (Monitors_Interactions.HasShield) 
 		{
 			Monitors_Interactions.HasShield = false;
 		}
 
         transform.position = ResumePosition;
-        transform.rotation = ResumeRotation;
+        //transform.rotation = ResumeRotation;
+        transform.forward = ResumeFace; ;
+        tools.CharacterAnimator.transform.forward = ResumeFace;
+
+        Player.rb.velocity = tools.CharacterAnimator.transform.forward * 2;
         Actions.Action04.deadCounter = 0;
-        var dir = -ResumeTransform.forward;
-        dir.y = 0.2f;
-        //Cam.Cam.SetCamera(-9);
+
+        //Cam.Cam.SetCamera(ResumeFace, true);
+        //Cam.Cam.FollowDirection(2000, 14, 1000, 0);
+        Cam.Cam.setBehind();
+
     }
+
+    public void RespawnObjects()
+    {
+        //Debug.Log("Call the event");
+        //Debug.Log(onReset.get);
+        if(onReset != null)
+            onReset(this, EventArgs.Empty);
+    }
+
     public void SetCheckPoint(Transform position)
     {
         ResumePosition = position.position;
-        ResumeRotation = position.rotation;
+        //ResumeRotation = position.rotation;
+        ResumeFace = position.forward;
         ResumeTransform = position;
     }
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class EnemySpawnerEternal : MonoBehaviour {
 
@@ -8,11 +9,13 @@ public class EnemySpawnerEternal : MonoBehaviour {
 
     public float RespawnTime;
     float counter;
+    public bool respawnOnDeath = true;
 
     public GameObject Enemy;
     public bool HasSpawned { get; set; }
     public GameObject TeleportSparkle;
 
+    GameObject EnemyClone = null;
 
     void Start()
     {
@@ -27,7 +30,7 @@ public class EnemySpawnerEternal : MonoBehaviour {
         counter += Time.deltaTime;
         if (Vector3.Distance(Player.position, transform.position) < Distance)
         {
-            if (!HasSpawned)
+            if (!HasSpawned && EnemyClone == null)
             {
                 if (counter > RespawnTime)
                 {
@@ -41,8 +44,8 @@ public class EnemySpawnerEternal : MonoBehaviour {
     {
         HasSpawned = true;
         Instantiate(TeleportSparkle, transform.position, transform.rotation);
-        GameObject em = (GameObject)Instantiate(Enemy, transform.position, transform.rotation);
-        em.GetComponent<EnemyHealth>().SpawnReference = this;
+        EnemyClone = (GameObject)Instantiate(Enemy, transform.position, transform.rotation);
+        EnemyClone.GetComponent<EnemyHealth>().SpawnReference = this;
         //HomingAttackControl.UpdateHomingTargets();
     }
 
@@ -50,5 +53,30 @@ public class EnemySpawnerEternal : MonoBehaviour {
     {
         HasSpawned = false;
         counter = 0;
+    }
+
+    private void OnEnable()
+    {
+
+        LevelProgressControl.onReset += ReturnOnDeath;
+
+    }
+    private void OnDisable()
+    {
+
+        LevelProgressControl.onReset -= ReturnOnDeath;
+
+    }
+
+    void ReturnOnDeath(object sender, EventArgs e)
+    {
+        //Debug.Log("Player fucking DIED");
+        if (respawnOnDeath)
+        {
+            Destroy(EnemyClone);
+            EnemyClone = null;
+            HasSpawned = false;
+            counter = RespawnTime - 1f;
+        }
     }
 }

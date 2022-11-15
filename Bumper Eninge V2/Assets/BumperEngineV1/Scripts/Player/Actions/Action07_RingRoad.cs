@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Action07_LightDash : MonoBehaviour {
+public class Action07_RingRoad : MonoBehaviour {
 
 	CharacterTools Tools;
 
@@ -12,6 +12,7 @@ public class Action07_LightDash : MonoBehaviour {
 	GameObject HomingTrailContainer;
 	public GameObject HomingTrail;
 	PlayerBhysics Player;
+	PlayerBinput Inp;
 
 	GameObject JumpBall;
 	
@@ -79,6 +80,8 @@ public class Action07_LightDash : MonoBehaviour {
     {
 		//Timer += 1;
 
+		Inp.LockInputForAWhile(1f, true);
+
 		//CharacterAnimator.SetInteger("Action", 1);
 		if (Action.Action07Control.HasTarget) 
 		{
@@ -122,6 +125,7 @@ public class Action07_LightDash : MonoBehaviour {
     {
 		Player = GetComponent<PlayerBhysics>();
 		Action = GetComponent<ActionManager>();
+		Inp = GetComponent<PlayerBinput>();
 
 		HomingTrailContainer = Tools.HomingTrailContainer;
 		CharacterAnimator = Tools.CharacterAnimator;

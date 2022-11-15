@@ -25,6 +25,10 @@ public class HurtControl : MonoBehaviour
     float flickerCount;
     float FlickerSpeed;
 
+    LayerMask bonkWall;
+    GameObject WallToBonk;
+    Vector3 previDir;
+
     SkinnedMeshRenderer[] SonicSkins;
 
     GameObject MovingRing;
@@ -53,6 +57,7 @@ public class HurtControl : MonoBehaviour
         InitialDir = transform.forward;
         counter = InvencibilityTime;
         releaseDirection = new GameObject();
+        previDir = transform.forward;
         this.enabled = true;
     }
 
@@ -79,6 +84,11 @@ public class HurtControl : MonoBehaviour
             RingLoss();
         }
 
+        if(Actions.killBindPressed)
+        {
+            isDead = true;
+        }
+
         //IsDead things
         if(isDead == true)
         {
@@ -90,7 +100,28 @@ public class HurtControl : MonoBehaviour
             alpha.a = 0;
             FadeOutImage.color = Color.Lerp(FadeOutImage.color, alpha, 0.5f);
         }
-	}
+
+        Bonk();
+
+    }
+
+    void Bonk()
+    {
+        if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 70) || (Actions.Action == 1 && Player.HorizontalSpeedMagnitude > 60) || (Actions.Action == 11 && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == 12 && Player.HorizontalSpeedMagnitude > 40))
+        {
+            if(Physics.Raycast(transform.position, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, bonkWall))
+            {
+                
+                if (Vector3.Dot(CharacterAnimator.transform.forward, tempHit.normal) < -0.9f)
+                {
+                    WallToBonk = tempHit.collider.gameObject;
+                    previDir = CharacterAnimator.transform.forward;
+                    return;
+                }
+            }
+        }
+        WallToBonk = null;
+    }
 
     void Death()
     {
@@ -103,27 +134,33 @@ public class HurtControl : MonoBehaviour
         deadCounter += 1;
         //Debug.Log("DeathGroup");
 
-        if (deadCounter > 60)
+        if (deadCounter > 70)
         {
             Color alpha = Color.black;
             alpha.a = 1;
-            FadeOutImage.color = Color.Lerp(FadeOutImage.color, alpha, 0.5f);
+            FadeOutImage.color = Color.Lerp(FadeOutImage.color, alpha, 0.51f);
         }
-        if(deadCounter  > 150)
+        if(deadCounter == 120)
         {
+            Level.RespawnObjects();
+        }
+        else if(deadCounter  == 170)
+        {
+            CharacterAnimator.SetBool("Dead", false);
+
             if (Level.CurrentCheckPoint)
             {
-                Cam.Cam.SetCamera(Level.CurrentCheckPoint.transform.forward, 2,10,10);
+                //Cam.Cam.SetCamera(Level.CurrentCheckPoint.transform.forward, 2,10,10);
             }
             else
             {
-                Cam.Cam.SetCamera(InitialDir, 5);
+                //Cam.Cam.SetCamera(InitialDir, 5);
             }
+
             Inp.enabled = true;
             Level.ResetToCheckPoint();
             //Debug.Log("CallingReset");
             isDead = false;
-            CharacterAnimator.SetBool("Dead", false);
             deadCounter = 0;
             counter = 0;
         }
@@ -208,13 +245,49 @@ public class HurtControl : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.gameObject == WallToBonk)
+        {
+
+            if(!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 2), previDir, 10f, bonkWall))
+            {
+                transform.position = transform.position + (CharacterAnimator.transform.up * 2);
+            }
+            else if(!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 2), previDir, 10f, bonkWall))
+            {
+                transform.position = transform.position + (-CharacterAnimator.transform.up * 2);
+            }
+            else
+            {
+                StartCoroutine(giveChanceToWallClimb());
+            }
+        }
+    }
+
+    IEnumerator giveChanceToWallClimb()
+    {
+        for(int i =0; i < 14; i++)
+        {
+            yield return new WaitForFixedUpdate();
+        }
+       
+        if(Actions.Action != 12)
+        {
+            Actions.Action04.InitialEvents(true);
+            Actions.ChangeAction(4);
+        }
+
+    }
+
     private void AssignStats()
     {
         InvencibilityTime = Tools.stats.InvincibilityTime;
         MaxRingLoss = Tools.stats.MaxRingLoss;
-        RingReleaseSpeed = Tools.stats.RingReleaseSpeed;
-        RingArcSpeed = Tools.stats.RingArcSpeed;
-        FlickerSpeed = Tools.stats.FlickerSpeed;
+        RingReleaseSpeed = Tools.coreStats.RingReleaseSpeed;
+        RingArcSpeed = Tools.coreStats.RingArcSpeed;
+        FlickerSpeed = Tools.coreStats.FlickerSpeed;
+        bonkWall = Tools.coreStats.BonkOnWalls;
     }
 
     private void AssignTools()

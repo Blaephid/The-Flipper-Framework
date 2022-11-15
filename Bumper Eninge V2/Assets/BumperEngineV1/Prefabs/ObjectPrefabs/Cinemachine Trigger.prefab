@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 6276180953601210685}
   - component: {fileID: 6276180953601210686}
   - component: {fileID: 6276180953601210682}
+  - component: {fileID: 7599741142528488214}
   m_Layer: 0
   m_Name: Cinemachine Trigger
   m_TagString: Untagged
@@ -124,7 +125,7 @@ Transform:
   m_GameObject: {fileID: 6276180953601210687}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 43.858494, y: 6.97, z: 63.178795}
-  m_LocalScale: {x: 13.078841, y: 12.516813, z: 13.510227}
+  m_LocalScale: {x: 55.103775, y: 46.55283, z: 65.138214}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6276180955197928733}
@@ -159,7 +160,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 08dd538322dc34846bf69636c13b4c42, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -206,8 +207,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f92537ab1025b7740af8066810e49070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 6276180955197928734}
-  followPlayer: 0
+  RegularAction: 1
+  JumpAction: 1
+  RailAction: 1
+  wallRunAction: 1
+  Active: 1
+  attachedCam: {fileID: 6276180955197928734}
+  lookPlayer: 1
+  followPlayer: 1
+  disableMove: 1
+  virCam: {fileID: 6276180955197928732}
+  isEnabled: 1
+  onExit: 1
+--- !u!114 &7599741142528488214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6276180953601210687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StopRender: 1
+  Des: 0
 --- !u!1 &6276180955197928734
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,15 +257,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6276180955197928734}
-  m_LocalRotation: {x: -0, y: -0, z: -0.3561068, w: 0.9344453}
-  m_LocalPosition: {x: -0.59800005, y: 1.015, z: 0.5840003}
+  m_LocalRotation: {x: -0.041879464, y: 0.10989423, z: -0.35363552, w: 0.9279608}
+  m_LocalPosition: {x: -0.338, y: 0.611, z: -0.6739999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6276180953404390348}
   m_Father: {fileID: 6276180953601210683}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -41.723}
+  m_LocalEulerAnglesHint: {x: 0, y: 13.508, z: -41.723}
 --- !u!114 &6276180955197928732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,7 +282,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 20
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}

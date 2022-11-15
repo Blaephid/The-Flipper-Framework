@@ -27,6 +27,9 @@ public class wallRunningControl : MonoBehaviour
     LayerMask wallLayerMask;
     float CheckModifier;
 
+    [HideInInspector] public float checkSpeed;
+    Vector3 saveVec;
+
     private RaycastHit leftWallDetect;
     private bool wallLeft;
     private RaycastHit rightWallDetect;
@@ -79,18 +82,24 @@ public class wallRunningControl : MonoBehaviour
 
         else canCheck = false;
         
+
+        if (Player.Grounded)
+        {
+            bannedWall = null;
+        }
+        
+   
+    }
+    private void FixedUpdate()
+    {
         //If able, check for wall run. Player must be in air, pressing skid, and able to.
         if (Actions.SkidPressed)
         {
             if (canCheck)
                 checkWallRun();
         }
-
-        if (Player.Grounded)
-        {
-            bannedWall = null;
-        }
-   
+        checkSpeed = Player.HorizontalSpeedMagnitude;
+        saveVec = Player.rb.velocity;
     }
 
 
@@ -106,7 +115,7 @@ public class wallRunningControl : MonoBehaviour
             CheckForWall();
 
             //If detecting a wall in front with a near horizontal normal
-            if (wallFront && frontWallDetect.normal.y <= 0.3 && frontWallDetect.normal.y >= -0.2 && Player.HorizontalSpeedMagnitude > 20f)
+            if (wallFront && frontWallDetect.normal.y <= 0.3 && frontWallDetect.normal.y >= -0.2 && checkSpeed > 20f)
             {
                 //If facing the wall enough
                 if (Vector3.Dot(CharacterAnimator.transform.forward, frontWallDetect.normal) < -0.85f)
@@ -122,7 +131,7 @@ public class wallRunningControl : MonoBehaviour
             //If detecting a wall to the side
 
             //If detecting a wall on left with correct angle.
-            else if (wallLeft && DistanceToStep < StepDistance / 2  && leftWallDetect.normal.y <= 0.4 && Player.HorizontalSpeedMagnitude > 28f &&
+            else if (wallLeft && DistanceToStep < StepDistance / 2  && leftWallDetect.normal.y <= 0.4 && checkSpeed > 28f &&
                 leftWallDetect.normal.y >= -0.4 && !(DistanceToStep > 0 && StepRight))
             {
                 //Enter a wallrun with wall on left.
@@ -131,7 +140,7 @@ public class wallRunningControl : MonoBehaviour
             }
 
             //If detecting a wall on right with correct angle.
-            else if (wallRight && DistanceToStep < StepDistance / 2 && rightWallDetect.normal.y <= 0.4 && Player.HorizontalSpeedMagnitude > 28f &&
+            else if (wallRight && DistanceToStep < StepDistance / 2 && rightWallDetect.normal.y <= 0.4 && checkSpeed > 28f &&
                 rightWallDetect.normal.y >= -0.4 && !(DistanceToStep > 0 && !StepRight))
             {
                 //Enter a wallrun with wall on right.
@@ -219,12 +228,34 @@ public class wallRunningControl : MonoBehaviour
 
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.gameObject.layer == 0)
+        {
+            StartCoroutine(buffering());
+        }
+    }
+
+    IEnumerator buffering()
+    {
+        Vector3 theVec = saveVec;
+        float theSpeed = checkSpeed;
+
+        for (int i = 0; i < 12; i++)
+        {
+            yield return new WaitForFixedUpdate();
+            saveVec = theVec;
+            checkSpeed = theSpeed;
+        }
+    }
+
+
     //Reponsible for assigning stats from the stats script.
     private void AssignStats()
     {
 
-        wallLayerMask = Tools.stats.wallLayerMask;
-        WallCheckDistance = Tools.stats.WallCheckDistance;
+        wallLayerMask = Tools.coreStats.wallLayerMask;
+        WallCheckDistance = Tools.coreStats.WallCheckDistance;
     }
 
     //Responsible for assigning objects and components from the tools script.

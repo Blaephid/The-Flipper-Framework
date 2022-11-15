@@ -105,15 +105,15 @@ public class PlayerBinput : MonoBehaviour {
                 Player.RawInput = transformedInput;
                 moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * currentInputSpeed);
             }
-            else if (!onPath)
-            {
-                //Debug.Log ("InputNull");
-                Vector3 transformedInput = Quaternion.FromToRotation(cam.up, Player.GroundNormal) * (cam.rotation * moveInp);
-                transformedInput = transform.InverseTransformDirection(transformedInput);
-                transformedInput.y = 0.0f;
-                Player.RawInput = transformedInput;
-                moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * (UtopiaLerpingSpeed * UtopiaIntensity));
-            }
+            //else if (!onPath)
+            //{
+            //    //Debug.Log ("InputNull");
+            //    Vector3 transformedInput = Quaternion.FromToRotation(cam.up, Player.GroundNormal) * (cam.rotation * moveInp);
+            //    transformedInput = transform.InverseTransformDirection(transformedInput);
+            //    transformedInput.y = 0.0f;
+            //    Player.RawInput = transformedInput;
+            //    moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * (UtopiaLerpingSpeed * UtopiaIntensity));
+            //}
 
             if (moveInp.x < 0.01 && moveInp.z < 0.01 && moveInp.x > -0.01 && moveInp.z > -0.01)
             {
@@ -151,7 +151,7 @@ public class PlayerBinput : MonoBehaviour {
 
         if (LockCam)
         {
-            Cam.Cam.FollowDirection(3, 14, -10,0);
+            Cam.Cam.FollowDirection(3, 14, -10,0, true);
         }
 
         //if (Actions.Action != 0)
@@ -178,11 +178,11 @@ public class PlayerBinput : MonoBehaviour {
 
     private void AssignStats()
     {
-        InputLerpingRateOverSpeed = Tools.stats.InputLerpingRateOverSpeed;
-        UtopiaTurning = Tools.stats.UtopiaTurning;
-        UtopiaInputLerpingRateOverSpeed = Tools.stats.UtopiaInputLerpingRateOverSpeed;
-        UtopiaIntensity = Tools.stats.UtopiaIntensity;
-        UtopiaInitialInputLerpSpeed = Tools.stats.UtopiaInitialInputLerpSpeed;
+        InputLerpingRateOverSpeed = Tools.coreStats.InputLerpingRateOverSpeed;
+        UtopiaTurning = Tools.coreStats.UtopiaTurning;
+        UtopiaInputLerpingRateOverSpeed = Tools.coreStats.UtopiaInputLerpingRateOverSpeed;
+        UtopiaIntensity = Tools.coreStats.UtopiaIntensity;
+        UtopiaInitialInputLerpSpeed = Tools.coreStats.UtopiaInitialInputLerpSpeed;
 
     }
 }

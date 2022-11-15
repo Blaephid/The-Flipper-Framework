@@ -37,6 +37,7 @@ namespace SplineMesh
         private Spline spline = null;
         private bool toUpdate = true;
 
+        [Header ("Placement")]
         public bool justStart = true;
         public bool onEnd;
         public GameObject prefab = null;
@@ -51,6 +52,13 @@ namespace SplineMesh
         public int randomSeed = 0;
         [Space]
         public bool alingwithterrain = false;
+
+        [Header("Placed Object Rules")]
+        public bool isRings;
+        public float spawnDistance = 400;
+        public bool respawnAuto;
+        public float respawnTime = 15;
+        public bool respawnOnDeath;
 
         private void OnEnable()
         {
@@ -161,6 +169,15 @@ namespace SplineMesh
             binormal *= localOffset;
             binormal += sample.Rotation * Offset3d;
             go.transform.position += binormal;
+
+            if(isRings)
+            {
+                RingSpawnerEternal goRing = go.GetComponent<RingSpawnerEternal>();
+                goRing.autoRespawn = respawnAuto;
+                goRing.Distance = spawnDistance;
+                goRing.RespawnTime = respawnTime;
+                goRing.respawnOnDeath = respawnOnDeath;
+            }
 
             if (alingwithterrain) GroundAlign(go.transform);
         }

@@ -47,14 +47,14 @@ public class Action08_DropDash : MonoBehaviour
         }
     }
 
-    public void InitialEvents()
+    public void InitialEvents(float newCharge = 15)
     {
         ////Debug.Log ("startDropDash");
         CharacterAnimator.SetInteger("Action", 1);
         CharacterAnimator.SetBool("Grounded", false);
 
         sounds.SpinDashSound();
-        charge = 15f;
+        charge =  newCharge;
         Charging = true;
     }
 
@@ -146,8 +146,8 @@ public class Action08_DropDash : MonoBehaviour
         StartCoroutine(airDash());
 
         Release();
-        if (GetComponent<Action11_AirDash>() != null)
-            GetComponent<Action11_AirDash>().AirDashParticle();
+        if (GetComponent<Action11_JumpDash>() != null)
+            GetComponent<Action11_JumpDash>().AirDashParticle();
         Charging = false;
     }
 

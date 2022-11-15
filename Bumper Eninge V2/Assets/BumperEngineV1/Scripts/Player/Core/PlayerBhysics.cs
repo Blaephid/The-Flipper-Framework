@@ -16,8 +16,10 @@ public class PlayerBhysics : MonoBehaviour
 
     [HideInInspector] public AnimationCurve AccellOverSpeed;
     [HideInInspector] public float AccellShiftOverSpeed;
+    float DecellShiftOverSpeed;
 
     [HideInInspector] public float MoveDecell = 1.3f;
+    AnimationCurve DecellBySpeed;
     [HideInInspector] public float AirDecell = 1.05f;
     [HideInInspector] public float naturalAirDecell = 1.01f;
 
@@ -28,6 +30,7 @@ public class PlayerBhysics : MonoBehaviour
     [HideInInspector] public float SlowedTurnSpeed = 500f;
 
     [HideInInspector] public AnimationCurve TurnRateOverAngle;
+    [HideInInspector] public AnimationCurve TurnRateOverSpeed;
     [HideInInspector] public AnimationCurve TangDragOverAngle;
     [HideInInspector] public AnimationCurve TangDragOverSpeed;
 
@@ -49,6 +52,7 @@ public class PlayerBhysics : MonoBehaviour
     [HideInInspector] public float SlopeRunningAngleLimit = 0.5f;
     [HideInInspector] public float SlopeSpeedLimit = 10;
 
+    float generalHillMultiplier = 1;
     [HideInInspector] public float UphillMultiplier = 0.5f;
     [HideInInspector] public float DownhillMultiplier = 2;
     [HideInInspector] public float StartDownhillMultiplier = -7;
@@ -71,8 +75,9 @@ public class PlayerBhysics : MonoBehaviour
     public Rigidbody rb { get; set; }
 
     [HideInInspector] public bool GravityAffects = true;
-    [HideInInspector] public Vector3 StartGravity;
-    [HideInInspector] public Vector3 Gravity;
+    [HideInInspector] public Vector3 StartFallGravity;
+    [HideInInspector] public Vector3 fallGravity;
+    Vector3 UpGravity;
     public Vector3 MoveInput { get; set; }
 
 
@@ -109,6 +114,10 @@ public class PlayerBhysics : MonoBehaviour
     //Cache
 
     public float curvePosAcell { get; set; }
+
+    float curvePosDecell = 1f;
+
+    float curvePosTurn;
     public float curvePosTang { get; set; }
     public float curvePosSlope { get; set; }
     public float b_normalSpeed { get; set; }
@@ -235,8 +244,16 @@ public class PlayerBhysics : MonoBehaviour
 
         SpeedMagnitude = rb.velocity.magnitude;
         //Debug.Log(transform.rotation);
-        Vector3 releVec = transform.rotation * rb.velocity;
-        HorizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
+        if(!Grounded)
+        {
+            HorizontalSpeedMagnitude = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
+        }
+        else
+        {
+            //Vector3 releVec = Tools.CharacterAnimator.transform.rotation * rb.velocity;
+            Vector3 releVec = Vector3.ProjectOnPlane(rb.velocity, Tools.CharacterAnimator.transform.up);
+            HorizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
+        }
         playerPos = transform.position;
     }
 
@@ -261,6 +278,7 @@ public class PlayerBhysics : MonoBehaviour
 
         //Set Curve thingies
         curvePosAcell = Mathf.Lerp(curvePosAcell, AccellOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * AccellShiftOverSpeed);
+        curvePosDecell = Mathf.Lerp(curvePosDecell, DecellBySpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * DecellShiftOverSpeed);
         curvePosTang = Mathf.Lerp(curvePosTang, TangDragOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * TangentialDragShiftSpeed);
         curvePosSlope = Mathf.Lerp(curvePosSlope, SlopePowerOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * SlopePowerShiftSpeed);
 
@@ -334,152 +352,148 @@ public class PlayerBhysics : MonoBehaviour
 
     Vector3 HandleGroundControl(float deltaTime, Vector3 input)
     {
-        //By Damizean
-
-        // We assume input is already in the Player's local frame...
-        // Fetch velocity in the Player's local frame, decompose into lateral and vertical
-        // components.
-
-        Vector3 velocity = rb.velocity;
-        Vector3 localVelocity = transform.InverseTransformDirection(velocity);
-
-        Vector3 lateralVelocity = new Vector3(localVelocity.x, 0.0f, localVelocity.z);
-        Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
-
-        // If there is some input...
-
-        if (input.sqrMagnitude != 0.0f)
+        if(Action.Action != 11 || Action.Action != 11 || Action.Action != 12)
         {
-            // Normalize to get input direction.
+            //By Damizean
 
-            Vector3 inputDirection = input.normalized;
-            float inputMagnitude = input.magnitude;
+            // We assume input is already in the Player's local frame...
+            // Fetch velocity in the Player's local frame, decompose into lateral and vertical
+            // components.
 
-            // Step 1) Determine angle and rotation between current lateral velocity and desired direction.
-            //         Prevent invalid rotations if no lateral velocity component exists.
+            Vector3 velocity = rb.velocity;
+            Vector3 localVelocity = transform.InverseTransformDirection(velocity);
 
-            float deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
-            Quaternion lateralToInput = Mathf.Approximately(lateralVelocity.sqrMagnitude, 0.0f)
-                                        ? Quaternion.identity
-                                        : Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
+            Vector3 lateralVelocity = new Vector3(localVelocity.x, 0.0f, localVelocity.z);
+            Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
-            // Step 2) Let the user retain some component of the velocity if it's trying to move in
-            //         nearby directions from the current one. This should improve controlability.
+            // If there is some input...
 
-            float turnRate = 0f;
-
-            if (Action.SkidPressed && Action.Action == 0)
+            if (input.sqrMagnitude != 0.0f)
             {
-                turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
-                lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity,
-                                                        Mathf.Deg2Rad * SlowedTurnSpeed * Time.deltaTime, 0.0f);
+                // Normalize to get input direction.
+
+                Vector3 inputDirection = input.normalized;
+                float inputMagnitude = input.magnitude;
+
+                // Step 1) Determine angle and rotation between current lateral velocity and desired direction.
+                //         Prevent invalid rotations if no lateral velocity component exists.
+
+                float deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
+                Quaternion lateralToInput = Mathf.Approximately(lateralVelocity.sqrMagnitude, 0.0f)
+                                            ? Quaternion.identity
+                                            : Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
+
+                // Step 2) Let the user retain some component of the velocity if it's trying to move in
+                //         nearby directions from the current one. This should improve controlability.
+
+                float turnRate = 0f;
+
+                //if (Action.SkidPressed && Action.Action == 0)
+                //{
+                //    turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
+                //    lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity,
+                //                                            Mathf.Deg2Rad * SlowedTurnSpeed * Time.deltaTime, 0.0f);
+                //}
+                if (true)
+                {
+                    turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
+                    turnRate *= TurnRateOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed);
+                    //lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, Mathf.Deg2Rad * TurnSpeed * turnRate * Time.deltaTime, 0.0f);
+                    lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, TurnSpeed * turnRate * Time.deltaTime, 0.0f);
+                }
+
+
+                // Step 3) Further lateral velocity into normal (in the input direction) and tangential
+                //         components. Note: normalSpeed is the magnitude of normalVelocity, with the added
+                //         bonus that it's signed. If positive, the speed goes towards the same
+                //         direction than the input :)
+
+                var normalDot = Vector3.Dot(lateralVelocity.normalized, inputDirection.normalized);
+
+                if (Mathf.Abs(normalDot) <= 0.6f && normalDot > -0.6f)
+                {
+                    inputDirection = Vector3.Slerp(lateralVelocity.normalized, inputDirection, 0.075f);
+                }
+
+                float normalSpeed = Vector3.Dot(lateralVelocity, inputDirection);
+                Vector3 normalVelocity = inputDirection * normalSpeed;
+                Vector3 tangentVelocity = lateralVelocity - normalVelocity;
+                float tangentSpeed = tangentVelocity.magnitude;
+
+                // Step 4) Apply user control in this direction.
+
+                if (normalSpeed < TopSpeed)
+                {
+
+
+                    // Accelerate towards the input direction.
+                    normalSpeed += (isRolling ? 0 : MoveAccell) * deltaTime * inputMagnitude;
+
+                    normalSpeed = Mathf.Min(normalSpeed, TopSpeed);
+
+                    // Rebuild back the normal velocity with the correct modulus.
+
+                    normalVelocity = inputDirection * normalSpeed;
+                }
+
+                // Step 5) Dampen tangential components.
+
+                float dragRate = TangDragOverAngle.Evaluate(deviationFromInput)
+                                * TangDragOverSpeed.Evaluate((tangentSpeed * tangentSpeed) / (MaxSpeed * MaxSpeed));
+
+                tangentVelocity = Vector3.MoveTowards(tangentVelocity, Vector3.zero, TangentialDrag * dragRate * deltaTime);
+
+                lateralVelocity = normalVelocity + tangentVelocity;
+
+                //Export nescessary variables
+
+                b_normalSpeed = normalSpeed;
+                b_normalVelocity = normalVelocity;
+                b_tangentVelocity = tangentVelocity;
+
             }
-            else
+
+            // Otherwise, apply some damping as to decelerate Sonic.
+            if (Grounded)
             {
-                turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
-                lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity,
-                                                        Mathf.Deg2Rad * TurnSpeed * turnRate * Time.deltaTime, 0.0f);
+                float DecellAmount = 1;
+                if (isRolling && GroundNormal.y > SlopeTakeoverAmount)
+                {
+                    DecellAmount = RollingFlatDecell * curvePosDecell;
+                    if (input.sqrMagnitude == 0)
+                        DecellAmount *= MoveDecell;
+                }
+
+                else if (input.sqrMagnitude == 0)
+                {
+                    DecellAmount = MoveDecell * curvePosDecell;
+                }
+                lateralVelocity /= DecellAmount;
             }
 
 
-            // Step 3) Further lateral velocity into normal (in the input direction) and tangential
-            //         components. Note: normalSpeed is the magnitude of normalVelocity, with the added
-            //         bonus that it's signed. If positive, the speed goes towards the same
-            //         direction than the input :)
+            // Compose local velocity back and compute velocity back into the Global frame.
 
-            var normalDot = Vector3.Dot(lateralVelocity.normalized, inputDirection.normalized);
+            localVelocity = lateralVelocity + verticalVelocity;
 
-            if (Mathf.Abs(normalDot) <= 0.6f && normalDot > -0.6f)
-            {
-                inputDirection = Vector3.Slerp(lateralVelocity.normalized, inputDirection, 0.075f);
-            }
+            //new line for the stick to ground from GREEDY
 
-            float normalSpeed = Vector3.Dot(lateralVelocity, inputDirection);
-            Vector3 normalVelocity = inputDirection * normalSpeed;
-            Vector3 tangentVelocity = lateralVelocity - normalVelocity;
-            float tangentSpeed = tangentVelocity.magnitude;
 
-            // Step 4) Apply user control in this direction.
+            velocity = transform.TransformDirection(localVelocity);
 
-            if (normalSpeed < TopSpeed)
-            {
-                // Accelerate towards the input direction.
-                normalSpeed += (isRolling ? 0 : MoveAccell) * deltaTime * inputMagnitude;
+            if (Grounded)
+                velocity = StickToGround(velocity);
 
-                normalSpeed = Mathf.Min(normalSpeed, TopSpeed);
-
-                // Rebuild back the normal velocity with the correct modulus.
-
-                normalVelocity = inputDirection * normalSpeed;
-            }
-
-            // Step 5) Dampen tangential components.
-
-            float dragRate = TangDragOverAngle.Evaluate(deviationFromInput)
-                            * TangDragOverSpeed.Evaluate((tangentSpeed * tangentSpeed) / (MaxSpeed * MaxSpeed));
-
-            tangentVelocity = Vector3.MoveTowards(tangentVelocity, Vector3.zero,
-                                                    TangentialDrag * dragRate * deltaTime);
-
-            /*
-            float tangentDrag = ;
-
-            if (!isRolling)
-            {
-                tangentVelocity = Vector3.MoveTowards(tangentVelocity, Vector3.zero,
-                    TangentialDrag * tangentDrag * deltaTime * inputMagnitude);
-            }
-            else
-            {
-                tangentVelocity = Vector3.MoveTowards(tangentVelocity, Vector3.zero,
-                    TangentialDrag * RollingTurningDecreace * tangentDrag * deltaTime * inputMagnitude);
-
-            }*/
-
-            // Recompose lateral velocity from both components.
-
-            lateralVelocity = normalVelocity + tangentVelocity;
-
-            //Export nescessary variables
-
-            b_normalSpeed = normalSpeed;
-            b_normalVelocity = normalVelocity;
-            b_tangentVelocity = tangentVelocity;
-
+            return velocity;
         }
-
-        // Otherwise, apply some damping as to decelerate Sonic.
-
-        if (input.sqrMagnitude == 0 && !isRolling && Grounded)
-        {
-            lateralVelocity /= MoveDecell;
-        }
-        if (isRolling && GroundNormal.y > SlopeTakeoverAmount)
-        {
-            lateralVelocity /= RollingFlatDecell;
-        }
-
-        // Compose local velocity back and compute velocity back into the Global frame.
-
-        localVelocity = lateralVelocity + verticalVelocity;
-
-        //new line for the stick to ground from GREEDY
-
-
-        velocity = transform.TransformDirection(localVelocity);
-
-        if(Grounded)
-            velocity = StickToGround(velocity);
-
-        return velocity;
-
+        return rb.velocity;
 
     }
 
     void GroundMovement()
     {
         //Stop Rolling
-        if (rb.velocity.sqrMagnitude < 20)
+        if (HorizontalSpeedMagnitude < 3)
         {
             isRolling = false;
         }
@@ -499,7 +513,7 @@ public class PlayerBhysics : MonoBehaviour
     void SlopePlysics()
     {
         //ApplyLandingSpeed
-        if (WasOnAir && Grounded)
+        if (WasOnAir)
         {
             Vector3 Addsped;
 
@@ -526,15 +540,11 @@ public class PlayerBhysics : MonoBehaviour
             transform.rotation = Quaternion.identity;
             AddVelocity(GroundNormal * 3);
         }
-        else
-        {
-            //Sticking to ground power
-            //StickToGround(GroundStickingPower);
-        }
+    
 
 
         //Apply slope power
-        if (Grounded && GroundNormal.y < SlopeEffectLimit)
+        if (GroundNormal.y < SlopeEffectLimit)
         {
 
             if (timeUpHill < 0)
@@ -546,13 +556,13 @@ public class PlayerBhysics : MonoBehaviour
                 //Debug.Log(p_rigidbody.velocity.y);
                 if (!isRolling)
                 {
-                    Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * UphillMultiplier, 0);
+                    Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * UphillMultiplier * generalHillMultiplier, 0);
                     force *= UpHillOverTime.Evaluate(timeUpHill);
                     AddVelocity(force);
                 }
                 else
                 {
-                    Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * UphillMultiplier, 0) * RollingUphillBoost;
+                    Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * UphillMultiplier * generalHillMultiplier, 0) * RollingUphillBoost;
                     force *= UpHillOverTime.Evaluate(timeUpHill);
                     AddVelocity(force);
                 }
@@ -565,12 +575,12 @@ public class PlayerBhysics : MonoBehaviour
                 {
                     if (!isRolling)
                     {
-                        Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * DownhillMultiplier, 0);
+                        Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * DownhillMultiplier * generalHillMultiplier, 0);
                         AddVelocity(force);
                     }
                     else
                     {
-                        Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * DownhillMultiplier, 0) * RollingDownhillBoost;
+                        Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * DownhillMultiplier * generalHillMultiplier, 0) * RollingDownhillBoost;
                         AddVelocity(force);
                     }
 
@@ -594,7 +604,7 @@ public class PlayerBhysics : MonoBehaviour
         {
             Debug.Log("Before: " + result + "speed " + result.magnitude);
         }
-        if (Grounded && TimeOnGround > 0.1f && SpeedMagnitude > 1)
+        if (TimeOnGround > 0.1f && SpeedMagnitude > 1)
         {
             float DirectionDot = Vector3.Dot(rb.velocity.normalized, hit.normal);
             Vector3 normal = hit.normal;
@@ -697,42 +707,65 @@ public class PlayerBhysics : MonoBehaviour
         {
             setVelocity = HandleGroundControl(1, (MoveInput * AirSkiddingForce) * MoveAccell);
         }
+        else if (MoveInput.sqrMagnitude > 0.1f)
+        {
+            float airMod = 1;
+            float airMoveMod = 1;
+            if(HorizontalSpeedMagnitude < 13)
+            {
+                airMod += 2f;
+                airMoveMod += 3f;
+            }
+            if(Action.Action == 1)
+            {
+                //Debug.Log(Action.Action01.timeJumping);
+                if (Action.Action01.timeJumping < 0.5)
+                {
+                    airMod += 1f;
+                    airMoveMod += 2f;
+                }
+                    
+            }
+            else if(Action.Action == 6)
+            {
+                airMod += 1f;
+                airMoveMod += 1f;
+            }
+            setVelocity = HandleGroundControl(AirControlAmmount * airMod, MoveInput * MoveAccell * airMoveMod);
+        }
         else
         {
-            if(HorizontalSpeedMagnitude > 14)
+            setVelocity = HandleGroundControl(AirControlAmmount, MoveInput * MoveAccell);
+
+            if (MoveInput == Vector3.zero && StopAirMovementIfNoInput)
             {
-                setVelocity = HandleGroundControl(AirControlAmmount, MoveInput);
+                Vector3 ReducedSpeed = setVelocity;
+                ReducedSpeed.x = ReducedSpeed.x / AirDecell;
+                ReducedSpeed.z = ReducedSpeed.z / AirDecell;
+                //setVelocity = ReducedSpeed;
             }
-            else
-                setVelocity = HandleGroundControl(AirControlAmmount * 1.3f, MoveInput);
+
         }
         //Get out of roll
         isRolling = false;
 
-        if (MoveInput == Vector3.zero && StopAirMovementIfNoInput && rb.velocity.sqrMagnitude < 100)
-        {
-            Vector3 ReducedSpeed = setVelocity;
-            ReducedSpeed.x = ReducedSpeed.x / AirDecell;
-            ReducedSpeed.z = ReducedSpeed.z / AirDecell;
-            setVelocity = ReducedSpeed;
-        }
 
         if (HorizontalSpeedMagnitude > 14)
         {
             Vector3 ReducedSpeed = setVelocity;
             ReducedSpeed.x = ReducedSpeed.x / naturalAirDecell;
             ReducedSpeed.z = ReducedSpeed.z / naturalAirDecell;
-            setVelocity = ReducedSpeed;
+            //setVelocity = ReducedSpeed;
         }
 
         //Get set for landing
         WasOnAir = true;
 
-        
+
 
         //Apply Gravity
         if (GravityAffects)
-            setVelocity += Gravity;
+            setVelocity += Gravity((int)setVelocity.y);
 
         //Max Falling Speed
         if (rb.velocity.y < MaxFallingSpeed)
@@ -742,6 +775,28 @@ public class PlayerBhysics : MonoBehaviour
 
         rb.velocity = setVelocity;
 
+
+    }
+    Vector3 Gravity(int vertSpeed)
+    {
+
+        if (vertSpeed < 5)
+        {
+            return fallGravity;
+        }
+        else
+        {
+            int gravMod;
+            if (vertSpeed > 70)
+                gravMod = vertSpeed / 15;
+            else
+                gravMod = vertSpeed / 12;
+            float applyMod = 1 + (gravMod * 0.1f);
+
+            Vector3 newGrav = new Vector3(0f, UpGravity.y * applyMod, 0f);
+
+            return newGrav;
+        }
 
     }
 
@@ -818,59 +873,64 @@ public class PlayerBhysics : MonoBehaviour
     private void AssignStats()
     {
         StartAccell = Tools.stats.StartAccell;
-        AccellOverSpeed = Tools.stats.AccellOverSpeed;
-        AccellShiftOverSpeed = Tools.stats.AccellShiftOverSpeed;
+        AccellOverSpeed = Tools.coreStats.AccellOverSpeed;
+        AccellShiftOverSpeed = Tools.coreStats.AccellShiftOverSpeed;
         TangentialDrag = Tools.stats.TangentialDrag;
-        TangentialDragShiftSpeed = Tools.stats.TangentialDragShiftSpeed;
+        TangentialDragShiftSpeed = Tools.coreStats.TangentialDragShiftSpeed;
         TurnSpeed = Tools.stats.TurnSpeed;
         SlowedTurnSpeed = Tools.stats.SlowedTurnSpeed;
-        TurnRateOverAngle = Tools.stats.TurnRateOverAngle;
-        TangDragOverAngle = Tools.stats.TangDragOverAngle;
-        TangDragOverSpeed = Tools.stats.TangDragOverSpeed;
+        TurnRateOverAngle = Tools.coreStats.TurnRateOverAngle;
+        TurnRateOverSpeed = Tools.coreStats.TurnRateOverSpeed;
+        TangDragOverAngle = Tools.coreStats.TangDragOverAngle;
+        TangDragOverSpeed = Tools.coreStats.TangDragOverSpeed;
         StartTopSpeed = Tools.stats.StartTopSpeed;
         StartMaxSpeed = Tools.stats.StartMaxSpeed;
         StartMaxFallingSpeed = Tools.stats.StartMaxFallingSpeed;
         StartJumpPower = Tools.stats.StartJumpPower;
         MoveDecell = Tools.stats.MoveDecell;
-        naturalAirDecell = Tools.stats.naturalAirDecell;
+        DecellBySpeed = Tools.coreStats.DecellBySpeed;
+        DecellShiftOverSpeed = Tools.coreStats.DecellShiftOverSpeed;
+        naturalAirDecell = Tools.coreStats.naturalAirDecell;
         AirDecell = Tools.stats.AirDecell;
-        GroundStickingDistance = Tools.stats.GroundStickingDistance;
-        GroundStickingPower = Tools.stats.GroundStickingPower;
-        SlopeEffectLimit = Tools.stats.SlopeEffectLimit;
-        StandOnSlopeLimit = Tools.stats.StandOnSlopeLimit;
-        SlopePower = Tools.stats.SlopePower;
-        SlopeRunningAngleLimit = Tools.stats.SlopeRunningAngleLimit;
-        SlopeSpeedLimit = Tools.stats.SlopeSpeedLimit;
-        UphillMultiplier = Tools.stats.UphillMultiplier;
-        DownhillMultiplier = Tools.stats.DownhillMultiplier;
-        StartDownhillMultiplier = Tools.stats.StartDownhillMultiplier;
-        SlopePowerOverSpeed = Tools.stats.SlopePowerOverSpeed;
+        GroundStickingDistance = Tools.coreStats.GroundStickingDistance;
+        GroundStickingPower = Tools.coreStats.GroundStickingPower;
+        SlopeEffectLimit = Tools.coreStats.SlopeEffectLimit;
+        StandOnSlopeLimit = Tools.coreStats.StandOnSlopeLimit;
+        SlopePower = Tools.coreStats.SlopePower;
+        SlopeRunningAngleLimit = Tools.coreStats.SlopeRunningAngleLimit;
+        SlopeSpeedLimit = Tools.coreStats.SlopeSpeedLimit;
+        generalHillMultiplier = Tools.stats.generalHillMultiplier;
+        UphillMultiplier = Tools.coreStats.UphillMultiplier;
+        DownhillMultiplier = Tools.coreStats.DownhillMultiplier;
+        StartDownhillMultiplier = Tools.coreStats.StartDownhillMultiplier;
+        SlopePowerOverSpeed = Tools.coreStats.SlopePowerOverSpeed;
         AirControlAmmount = Tools.stats.AirControlAmmount;
         AirSkiddingForce = Tools.stats.AirSkiddingForce;
-        StopAirMovementIfNoInput = Tools.stats.StopAirMovementIfNoInput;
-        RollingLandingBoost = Tools.stats.RollingLandingBoost;
-        RollingDownhillBoost = Tools.stats.RollingDownhillBoost;
-        RollingUphillBoost = Tools.stats.RollingUphillBoost;
-        RollingStartSpeed = Tools.stats.RollingStartSpeed;
-        RollingTurningDecreace = Tools.stats.RollingTurningDecreace;
-        RollingFlatDecell = Tools.stats.RollingFlatDecell;
-        SlopeTakeoverAmount = Tools.stats.SlopeTakeoverAmount;
-        UpHillOverTime = Tools.stats.UpHillOverTime;
-        StartGravity = Tools.stats.Gravity;
+        StopAirMovementIfNoInput = Tools.coreStats.StopAirMovementIfNoInput;
+        RollingLandingBoost = Tools.coreStats.RollingLandingBoost;
+        RollingDownhillBoost = Tools.coreStats.RollingDownhillBoost;
+        RollingUphillBoost = Tools.coreStats.RollingUphillBoost;
+        RollingStartSpeed = Tools.coreStats.RollingStartSpeed;
+        RollingTurningDecreace = Tools.coreStats.RollingTurningDecreace;
+        RollingFlatDecell = Tools.coreStats.RollingFlatDecell;
+        SlopeTakeoverAmount = Tools.coreStats.SlopeTakeoverAmount;
+        UpHillOverTime = Tools.coreStats.UpHillOverTime;
+        StartFallGravity = Tools.stats.fallGravity;
+        UpGravity = Tools.coreStats.UpGravity;
 
 
-        StickingLerps = Tools.stats.StickingLerps;
-        StickingNormalLimit = Tools.stats.StickingNormalLimit;
-        StickCastAhead = Tools.stats.StickCastAhead;
-        negativeGHoverHeight = Tools.stats.negativeGHoverHeight;
-        RayToGroundDistance = Tools.stats.RayToGroundDistance;
-        RaytoGroundSpeedRatio = Tools.stats.RaytoGroundSpeedRatio;
-        RaytoGroundSpeedMax = Tools.stats.RaytoGroundSpeedMax;
-        RayToGroundRotDistance = Tools.stats.RayToGroundRotDistance;
-        RaytoGroundRotSpeedMax = Tools.stats.RaytoGroundRotSpeedMax;
-        RotationResetThreshold = Tools.stats.RotationResetThreshold;
+        StickingLerps = Tools.coreStats.StickingLerps;
+        StickingNormalLimit = Tools.coreStats.StickingNormalLimit;
+        StickCastAhead = Tools.coreStats.StickCastAhead;
+        negativeGHoverHeight = Tools.coreStats.negativeGHoverHeight;
+        RayToGroundDistance = Tools.coreStats.RayToGroundDistance;
+        RaytoGroundSpeedRatio = Tools.coreStats.RaytoGroundSpeedRatio;
+        RaytoGroundSpeedMax = Tools.coreStats.RaytoGroundSpeedMax;
+        RayToGroundRotDistance = Tools.coreStats.RayToGroundRotDistance;
+        RaytoGroundRotSpeedMax = Tools.coreStats.RaytoGroundRotSpeedMax;
+        RotationResetThreshold = Tools.coreStats.RotationResetThreshold;
 
-        Playermask = Tools.stats.Playermask;
+        Playermask = Tools.coreStats.Playermask;
 
         //Sets all changeable core values to how they are set to start in the editor.
         MoveAccell = StartAccell;
@@ -878,7 +938,7 @@ public class PlayerBhysics : MonoBehaviour
         MaxSpeed = StartMaxSpeed;
         MaxFallingSpeed = StartMaxFallingSpeed;
         m_JumpPower = StartJumpPower;
-        Gravity = StartGravity;
+        fallGravity = StartFallGravity;
 
 
     }

@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class ActionManager : MonoBehaviour {
 
 
-    public int Action { get; set; }
+    public int Action;
 	public int PreviousAction { get; set; }
 
     //Action Scrips, Always leave them in the correct order;
@@ -15,20 +15,24 @@ public class ActionManager : MonoBehaviour {
     public Action00_Regular Action00;
     public Action01_Jump Action01;
     public Action02_Homing Action02;
-    public Action03_SpinDash Action03;
+    public Action03_SpinCharge Action03;
     public HomingAttackControl Action02Control;
     public Action04_Hurt Action04;
     public HurtControl Action04Control;
     public Action05_Rail Action05;
 	public Action06_Bounce Action06;
-	public Action07_LightDash Action07;
+	public Action07_RingRoad Action07;
 	public LightDashControl Action07Control;
 	public Action08_DropDash Action08;
-    public Action09_SpinKick Action09;
     public MoveAlongPath Action10;
-    public Action11_AirDash Action11;
+    public Action11_JumpDash Action11;
     public Action12_WallRunning Action12;
 
+
+    [HideInInspector] public bool lockBounce;
+    [HideInInspector] public bool lockHoming;
+    [HideInInspector] public bool lockJumpDash;
+    [HideInInspector] public bool lockDoubleJump;
 
     //NewInput system
     public PlayerNewInput newInput;
@@ -53,6 +57,8 @@ public class ActionManager : MonoBehaviour {
     [HideInInspector] public bool InteractPressed;
     [HideInInspector] public bool CamResetPressed;
     [HideInInspector] public bool HomingPressed;
+    [HideInInspector] public bool spinChargePressed;
+    [HideInInspector] public bool killBindPressed;
 
     [HideInInspector] public bool isPaused;
     bool usingMouse;
@@ -95,6 +101,7 @@ public class ActionManager : MonoBehaviour {
 
     public void CamInput(InputAction.CallbackContext ctx)
     {
+        Debug.Log("No mouse input");
         CurrentCamMovement = ctx.ReadValue<Vector2>();
         moveCamX = CurrentCamMovement.x * camSensi;
         moveCamY = CurrentCamMovement.y * camSensi;
@@ -102,6 +109,7 @@ public class ActionManager : MonoBehaviour {
 
     public void CamMouseInput(InputAction.CallbackContext ctx)
     {
+        //Debug.Log("Use Mouse");
         CurrentCamMovement = ctx.ReadValue<Vector2>();
         moveCamX = CurrentCamMovement.x * mouseSensi;
         moveCamY = CurrentCamMovement.y * mouseSensi;
@@ -184,17 +192,38 @@ public class ActionManager : MonoBehaviour {
         if (ctx.performed)
         {
             SkidPressed = ctx.ReadValueAsButton();
-            if (Phys.Grounded && Action == 0)
-            {
-                Input.UtopiaTurning = false;
-                Cam.Cam.LockCamAtHighSpeed = 130f;
-            }
+
         }
         else if (ctx.canceled)
         {
             SkidPressed = ctx.ReadValueAsButton();
-            Input.UtopiaTurning = true;
-            Cam.Cam.LockCamAtHighSpeed = Cam.Cam.StartLockCam;
+        }
+    }
+
+    public void spinCharge(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            if(Phys.Grounded)
+                spinChargePressed = ctx.ReadValueAsButton();
+
+        }
+        else if (ctx.canceled)
+        {
+            spinChargePressed = ctx.ReadValueAsButton();
+        }
+    }
+
+    public void killBind(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            killBindPressed = ctx.ReadValueAsButton();
+
+        }
+        else if (ctx.canceled)
+        {
+            killBindPressed = ctx.ReadValueAsButton();
         }
     }
 
@@ -252,10 +281,6 @@ public class ActionManager : MonoBehaviour {
 		if (Action08 != null) {
 			Action08.enabled = false;
 		}
-        if (Action09 != null)
-        {
-            Action09.enabled = false;
-        }
         if (Action10 != null)
         {
             Action10.enabled = false;
@@ -275,65 +300,88 @@ public class ActionManager : MonoBehaviour {
     public void ChangeAction(int ActionToChange)
     {
 
-		PreviousAction = Action;
+        //Put an case for all your actions here
+        switch (ActionToChange)
+        {
+            case -1:
+                changePossible(ActionToChange);
+                break;
+            case 0:
+                changePossible(ActionToChange);
+                Action00.enabled = true;
+                break;
+            case 1:
+                if(!lockDoubleJump)
+                {
+                    changePossible(ActionToChange);
+                    Action01.enabled = true;
+                }
+                break;
+            case 2:
+                if (!lockHoming)
+                {
+                    changePossible(ActionToChange);
+                    Action02.enabled = true;
+                }
+                break;
+            case 3:
+                changePossible(ActionToChange);
+                Action03.enabled = true;
+                break;
+            case 4:
+                changePossible(ActionToChange);
+                Action04.enabled = true;
+                break;
+            case 5:
+                changePossible(ActionToChange);
+                Action05.enabled = true;
+				break;
+			case 6:
+                if(!lockBounce)
+                {
+                    changePossible(ActionToChange);
+                    Action06.enabled = true;
+                }
+                break;
+			case 7:
+                changePossible(ActionToChange);
+                Action07.enabled = true;
+				break;
+			case 8:
+                changePossible(ActionToChange);
+                Action08.enabled = true;
+                break;
+            case 10:
+                changePossible(ActionToChange);
+                Action10.enabled = true;
+                break;
+            case 11:
+                if (!lockJumpDash)
+                {
+                    changePossible(ActionToChange);
+                    Action11.enabled = true;
+                }
+                break;
+            case 12:
+                changePossible(ActionToChange);
+                Action12.enabled = true;
+                break;
+
+        }
+
+    }
+
+    private void changePossible(int newAction)
+    {
+        PreviousAction = Action;
         if (PreviousAction == 2)
         {
             Phys.GravityAffects = true;
             actionEnable();
         }
 
-        Action = ActionToChange;
+        Action= newAction;
         DeactivateAllActions();
-
-        
-
-        //Put an case for all your actions here
-        switch (ActionToChange)
-        {
-            case -1:
-                break;
-            case 0:
-                Action00.enabled = true;
-                break;
-            case 1:
-                Action01.enabled = true;
-                break;
-            case 2:
-                Action02.enabled = true;
-                break;
-            case 3:
-                Action03.enabled = true;
-                break;
-            case 4:
-                Action04.enabled = true;
-                break;
-            case 5:
-                Action05.enabled = true;
-				break;
-			case 6:
-				Action06.enabled = true;
-                break;
-			case 7:
-				Action07.enabled = true;
-				break;
-			case 8:
-				Action08.enabled = true;
-                break;
-            case 9:
-                Action09.enabled = true;
-                break;
-            case 10:
-                Action10.enabled = true;
-                break;
-            case 11:
-                Action11.enabled = true;
-                break;
-            case 12:
-                Action12.enabled = true;
-                break;
-
-        }
-
     }
 
     private void OnEnable()
@@ -363,6 +411,39 @@ public class ActionManager : MonoBehaviour {
 
     }
 
-    
+    public IEnumerator lockAirMoves(float time)
+    {
+        lockBounce = true;
+        lockJumpDash = true;
+        lockHoming = true;
+        lockDoubleJump = true;
+
+        for(int s = 0; s < time; s++)
+        {
+            yield return new WaitForFixedUpdate();
+            if (Phys.Grounded)
+                break;
+        }
+
+        lockBounce = false;
+        lockJumpDash = false;
+        lockHoming = false;
+        lockDoubleJump = false;
+
+    }
+
+    public IEnumerator lockBounceOnly(float time)
+    {
+        lockBounce = true;
+        
+        for (int v = 0; v < time; v++)
+        {
+            yield return new WaitForFixedUpdate();
+            if (Phys.Grounded && v > 5)
+                break;
+        }
+      
+        lockBounce = false;
+    }
 
 }
