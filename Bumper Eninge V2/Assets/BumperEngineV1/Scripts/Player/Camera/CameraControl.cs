@@ -23,7 +23,10 @@ public class CameraControl : MonoBehaviour {
                 if (col.GetComponent<CameraTriggerData>().Type == TriggerType.LockToDirection)
                 {
                     Vector3 dir = col.transform.forward;
-                    Cam.SetCamera(dir, 2f, col.GetComponent<CameraTriggerData>().CameraAltitude, col.GetComponent<CameraTriggerData>().FaceSpeed);
+                    if(col.GetComponent<CameraTriggerData>().changeAltitude)
+                        Cam.SetCamera(dir, 2f, col.GetComponent<CameraTriggerData>().CameraAltitude, col.GetComponent<CameraTriggerData>().FaceSpeed);
+                    else
+                        Cam.SetCameraNoHeight(dir, 2f, col.GetComponent<CameraTriggerData>().FaceSpeed);
                     Cam.MasterLocked = true;
                     if (col.GetComponent<CameraTriggerData>().changeDistance)
                     {
@@ -43,7 +46,10 @@ public class CameraControl : MonoBehaviour {
                 else if (col.GetComponent<CameraTriggerData>().Type == TriggerType.SetFreeAndLookTowards)
                 {
                     Vector3 dir = col.transform.forward;
-                    Cam.SetCamera(dir, 2.5f, col.GetComponent<CameraTriggerData>().CameraAltitude, col.GetComponent<CameraTriggerData>().FaceSpeed);
+                    if (col.GetComponent<CameraTriggerData>().changeAltitude)
+                        Cam.SetCamera(dir, 2.5f, col.GetComponent<CameraTriggerData>().CameraAltitude, col.GetComponent<CameraTriggerData>().FaceSpeed);
+                    else
+                        Cam.SetCameraNoHeight(dir, 2.5f, col.GetComponent<CameraTriggerData>().FaceSpeed);
                     if (!col.GetComponent<CameraTriggerData>().changeDistance)
                     {
                         Cam.CameraMaxDistance = InitialDistance;

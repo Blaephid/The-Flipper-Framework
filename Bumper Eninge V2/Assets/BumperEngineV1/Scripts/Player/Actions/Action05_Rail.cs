@@ -503,55 +503,58 @@ namespace SplineMesh
             else
             {
 
-                //Check if the Spline is loop and resets position
-                if (Rail_int.RailSpline.IsLoop)
-                {
-                    if (!backwards)
-                    {
-                        range = range - Rail_int.RailSpline.Length;
-                        RailGrind();
-                    }
-                    else
-                    {
-                        range = range + Rail_int.RailSpline.Length;
-                        RailGrind();
-                    }
-                }
-                else
-                {
-                    Input.LockInputForAWhile(15f, true);
-
-                    if (isZipLine)
-                    {
-                        StartCoroutine(Rail_int.JumpFromZipLine(ZipHandle, 0.5f));
-                        if (backwards)
-                        {
-                            Player.rb.velocity = ZipBody.velocity;
-                        }
-                        else
-                        {
-                            Player.rb.velocity = ZipBody.velocity;
-                        }
-
-                        CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
-                    }
-                    
-
-                    OnRail = false;
-                    Actions.SpecialPressed = false;
-                    Actions.HomingPressed = false;
-                    isZipLine = false;
-                    ZipBody = null;
-
-
-                }
+                LoseRail();
             }
 
         }
 
         void LoseRail()
         {
+            //Check if the Spline is loop and resets position
+            if (Rail_int.RailSpline.IsLoop)
+            {
+                if (!backwards)
+                {
+                    range = range - Rail_int.RailSpline.Length;
+                    RailGrind();
+                }
+                else
+                {
+                    range = range + Rail_int.RailSpline.Length;
+                    RailGrind();
+                }
+            }
+            else
+            {
+                Input.LockInputForAWhile(15f, true);
 
+                if (isZipLine)
+                {
+                    ZipHandle.GetComponent<CapsuleCollider>().enabled = false;
+                    GameObject target = ZipHandle.transform.GetComponent<PulleyObject>().homingtgt;
+                    target.SetActive(false);
+
+                    if (backwards)
+                    {
+                        Player.rb.velocity = ZipBody.velocity;
+                    }
+                    else
+                    {
+                        Player.rb.velocity = ZipBody.velocity;
+                    }
+
+                    CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
+                }
+
+
+                OnRail = false;
+                Actions.SpecialPressed = false;
+                Actions.HomingPressed = false;
+                isZipLine = false;
+                ZipBody = null;
+
+
+            }
         }
         void SlopePhys()
         {

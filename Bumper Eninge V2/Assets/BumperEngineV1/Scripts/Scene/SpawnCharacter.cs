@@ -13,6 +13,7 @@ public class SpawnCharacter : MonoBehaviour {
 		}
 		GameObject Player = Instantiate (PlayerObject);
 		Player.transform.position = transform.position;
+		Player.transform.forward = transform.forward;
 		if (GameObject.Find ("CharacterSelector") != null) {
 			Destroy (GameObject.Find ("CharacterSelector"));
 		}

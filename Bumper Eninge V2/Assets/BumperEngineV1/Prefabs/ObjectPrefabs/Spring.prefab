@@ -89,6 +89,9 @@ MonoBehaviour:
   BounceCenter: {fileID: 4000012565524866}
   LockControl: 0
   LockTime: 30
+  lockGravity: {x: 0, y: -1.5, z: 0}
+  lockAirMoves: 1
+  lockAirMovesTime: 30
 --- !u!114 &2764135833240677428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,7 +112,9 @@ MonoBehaviour:
   speedPad: {fileID: 0}
   Force: 100
   ShotCenter: {fileID: 4000012565524866}
-  Gravity: {x: 0, y: -1.5, z: 0}
+  lockGravity: {x: 0, y: -1.5, z: 0}
+  FallGravity: {x: 0, y: -1.5, z: 0}
+  UpGravity: {x: 0, y: -1.45, z: 0}
   PlayerDecell: 1.002
 --- !u!82 &82000010920544288
 AudioSource:

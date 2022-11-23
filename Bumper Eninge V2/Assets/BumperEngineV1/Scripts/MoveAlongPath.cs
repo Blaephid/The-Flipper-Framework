@@ -275,7 +275,7 @@ namespace SplineMesh
             //Deactivates any cinemachine that might be attached.
             if (Path_Int.currentCam != null)
             {
-                Path_Int.currentCam.DeactivateCam(30);
+                Path_Int.currentCam.DeactivateCam(18);
                 Path_Int.currentCam = null;
             }
 

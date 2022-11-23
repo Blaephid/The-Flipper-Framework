@@ -89,7 +89,7 @@ public class Action11_JumpDash : MonoBehaviour
                 
 
                 Direction = CharacterAnimator.transform.forward;
-                Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 4f, 0f);
+                //Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 40f, 0f);
 
 
 
@@ -115,8 +115,11 @@ public class Action11_JumpDash : MonoBehaviour
 
         //Set Animation Angle
         Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
-        Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-        CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+        if(VelocityMod != Vector3.zero)
+        {
+            Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
+            CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+        }    
 
 
 

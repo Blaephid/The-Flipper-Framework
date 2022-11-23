@@ -127,7 +127,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Move"",
+                    ""name"": ""MoveCam"",
                     ""type"": ""PassThrough"",
                     ""id"": ""e3aeaf97-de8e-4711-9b49-53d70a1bd978"",
                     ""expectedControlType"": ""Vector2"",
@@ -310,7 +310,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b3cc9dc9-c695-48db-927c-460f8c419a19"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""path"": ""<Keyboard>/c"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -442,7 +442,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""72bcd7bd-2d9c-4b3e-9605-3b9ece1d690d"",
-                    ""path"": ""<Keyboard>/x"",
+                    ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -479,7 +479,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": ""StickDeadzone"",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveCam"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -490,7 +490,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveCam"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -501,7 +501,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveCam"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -512,7 +512,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveCam"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -523,7 +523,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveCam"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -534,7 +534,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveCam"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -589,7 +589,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
         m_CharacterActions_Power = m_CharacterActions.FindAction("Power", throwIfNotFound: true);
         m_CharacterActions_Interact = m_CharacterActions.FindAction("Interact", throwIfNotFound: true);
         m_CharacterActions_Homing = m_CharacterActions.FindAction("Homing", throwIfNotFound: true);
-        m_CharacterActions_Move = m_CharacterActions.FindAction("Move", throwIfNotFound: true);
+        m_CharacterActions_MoveCam = m_CharacterActions.FindAction("MoveCam", throwIfNotFound: true);
         m_CharacterActions_MoveMouse = m_CharacterActions.FindAction("MoveMouse", throwIfNotFound: true);
         m_CharacterActions_KillBind = m_CharacterActions.FindAction("KillBind", throwIfNotFound: true);
         m_CharacterActions_SpinChargePressed = m_CharacterActions.FindAction("SpinChargePressed", throwIfNotFound: true);
@@ -663,7 +663,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_CharacterActions_Power;
     private readonly InputAction m_CharacterActions_Interact;
     private readonly InputAction m_CharacterActions_Homing;
-    private readonly InputAction m_CharacterActions_Move;
+    private readonly InputAction m_CharacterActions_MoveCam;
     private readonly InputAction m_CharacterActions_MoveMouse;
     private readonly InputAction m_CharacterActions_KillBind;
     private readonly InputAction m_CharacterActions_SpinChargePressed;
@@ -682,7 +682,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
         public InputAction @Power => m_Wrapper.m_CharacterActions_Power;
         public InputAction @Interact => m_Wrapper.m_CharacterActions_Interact;
         public InputAction @Homing => m_Wrapper.m_CharacterActions_Homing;
-        public InputAction @Move => m_Wrapper.m_CharacterActions_Move;
+        public InputAction @MoveCam => m_Wrapper.m_CharacterActions_MoveCam;
         public InputAction @MoveMouse => m_Wrapper.m_CharacterActions_MoveMouse;
         public InputAction @KillBind => m_Wrapper.m_CharacterActions_KillBind;
         public InputAction @SpinChargePressed => m_Wrapper.m_CharacterActions_SpinChargePressed;
@@ -728,9 +728,9 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 @Homing.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnHoming;
                 @Homing.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnHoming;
                 @Homing.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnHoming;
-                @Move.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMove;
-                @Move.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMove;
-                @Move.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMove;
+                @MoveCam.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveCam;
+                @MoveCam.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveCam;
+                @MoveCam.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveCam;
                 @MoveMouse.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveMouse;
                 @MoveMouse.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveMouse;
                 @MoveMouse.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMoveMouse;
@@ -777,9 +777,9 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 @Homing.started += instance.OnHoming;
                 @Homing.performed += instance.OnHoming;
                 @Homing.canceled += instance.OnHoming;
-                @Move.started += instance.OnMove;
-                @Move.performed += instance.OnMove;
-                @Move.canceled += instance.OnMove;
+                @MoveCam.started += instance.OnMoveCam;
+                @MoveCam.performed += instance.OnMoveCam;
+                @MoveCam.canceled += instance.OnMoveCam;
                 @MoveMouse.started += instance.OnMoveMouse;
                 @MoveMouse.performed += instance.OnMoveMouse;
                 @MoveMouse.canceled += instance.OnMoveMouse;
@@ -806,7 +806,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
         void OnPower(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnHoming(InputAction.CallbackContext context);
-        void OnMove(InputAction.CallbackContext context);
+        void OnMoveCam(InputAction.CallbackContext context);
         void OnMoveMouse(InputAction.CallbackContext context);
         void OnKillBind(InputAction.CallbackContext context);
         void OnSpinChargePressed(InputAction.CallbackContext context);

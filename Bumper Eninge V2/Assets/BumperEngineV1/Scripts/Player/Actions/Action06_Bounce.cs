@@ -162,7 +162,7 @@ public class Action06_Bounce : MonoBehaviour {
 			Action.ChangeAction (0);
 		} 
 
-		else if ((groundhit && !HasBounced) || (!groundhit && Player.rb.velocity.y == 0 && !HasBounced)) 
+		else if ((groundhit && !HasBounced) || (!groundhit && Player.rb.velocity.y > DropSpeed * 0.4f && !HasBounced)) 
 		{
 			
 			if (Action.SkidPressed)
@@ -190,6 +190,10 @@ public class Action06_Bounce : MonoBehaviour {
 				}
 			}
 		}
+		else if(!HasBounced && Player.rb.velocity.y > DropSpeed * 0.8f)
+        {
+			Player.rb.velocity = new Vector3(Player.rb.velocity.x, -DropSpeed, Player.rb.velocity.z);
+        }
 
     }
     

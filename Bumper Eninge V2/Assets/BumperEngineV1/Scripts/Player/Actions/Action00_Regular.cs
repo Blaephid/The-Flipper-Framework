@@ -9,7 +9,7 @@ public class Action00_Regular : MonoBehaviour {
 	PlayerBinput Input;
     ActionManager Actions;
 	CameraControl Cam;
-	quickstepManager quickstepManager;
+	quickstepHandler quickstepManager;
     public SonicSoundsControl sounds;
 	public GameObject characterCapsule;
 	public GameObject rollingCapsule;
@@ -25,6 +25,7 @@ public class Action00_Regular : MonoBehaviour {
 
 	[HideInInspector] public float SkiddingStartPoint;
 	[HideInInspector] public float SkiddingIntensity;
+	float AirSkiddingIntensity;
 
     public bool hasSked;
 	[HideInInspector] bool CanDashDuringFall;
@@ -49,7 +50,7 @@ public class Action00_Regular : MonoBehaviour {
         JumpAction = GetComponent<Action01_Jump>();
 		Cam = GetComponent<CameraControl>();
 		Tools = GetComponent<CharacterTools>();
-		quickstepManager = GetComponent<quickstepManager>();
+		quickstepManager = GetComponent<quickstepHandler>();
 		quickstepManager.enabled = false;
     }
 
@@ -75,10 +76,15 @@ public class Action00_Regular : MonoBehaviour {
 		}
 
         //Skidding
-		if((Player.b_normalSpeed < -SkiddingStartPoint) && Player.Grounded)
+		if(Player.b_normalSpeed < -SkiddingStartPoint)
 		{
+			float thisSkid = 0f;
+			if (Player.Grounded)
+				thisSkid = SkiddingIntensity;
+			else
+				thisSkid = AirSkiddingIntensity;
 
-			if (Player.SpeedMagnitude >= -SkiddingIntensity) Player.AddVelocity(Player.rb.velocity.normalized * SkiddingIntensity * (Player.isRolling ? 0.5f : 1));
+			if (Player.SpeedMagnitude >= -thisSkid) Player.AddVelocity(Player.rb.velocity.normalized * thisSkid * (Player.isRolling ? 0.5f : 1));
 			
 			if (!hasSked && Player.Grounded && !Player.isRolling)
 			{
@@ -382,6 +388,7 @@ public class Action00_Regular : MonoBehaviour {
 		MaximumSlope = Tools.coreStats.MaximumSlope;
 		MaximumSpeed = Tools.coreStats.MaximumSpeed;
 		SkiddingIntensity = Tools.stats.SkiddingIntensity;
+		AirSkiddingIntensity = Tools.stats.AirSkiddingForce;
 		SkiddingStartPoint = Tools.stats.SkiddingStartPoint;
 		CanDashDuringFall = Tools.coreStats.CanDashDuringFall;
 

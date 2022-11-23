@@ -14,7 +14,7 @@ public class Action01_Jump : MonoBehaviour
     ActionManager Actions;
     HomingAttackControl homingControl;
     CameraControl Cam;
-    quickstepManager stepManager;
+    quickstepHandler stepManager;
 
     SonicSoundsControl sounds;
     Animator CharacterAnimator;
@@ -37,6 +37,9 @@ public class Action01_Jump : MonoBehaviour
     [HideInInspector] public float JumpDuration;
     [HideInInspector] public float SlopedJumpDuration;
     [HideInInspector] public float JumpSpeed;
+
+    [HideInInspector] public float SkiddingStartPoint;
+    float AirSkiddingIntensity;
 
     float jumpSpeedModifier = 1f;
     float jumpDurationModifier = 1f;
@@ -410,6 +413,20 @@ public class Action01_Jump : MonoBehaviour
             //JumpBall.SetActive(false);
         }
 
+        //Skidding
+        if ((Player.b_normalSpeed < -SkiddingStartPoint) && !Player.Grounded)
+        {
+            if (Player.SpeedMagnitude >= -AirSkiddingIntensity) Player.AddVelocity(Player.rb.velocity.normalized * AirSkiddingIntensity * (Player.isRolling ? 0.5f : 1));
+
+  
+            if (Player.SpeedMagnitude < 4)
+            {
+                Player.isRolling = false;
+                Player.b_normalSpeed = 0;
+
+            }
+        }
+
 
     }
 
@@ -451,6 +468,9 @@ public class Action01_Jump : MonoBehaviour
 
         wallLayerMask = Tools.coreStats.wallLayerMask;
         WallCheckDistance = Tools.coreStats.WallCheckDistance;
+
+        SkiddingStartPoint = Tools.stats.SkiddingStartPoint;
+        AirSkiddingIntensity = Tools.stats.AirSkiddingForce;
     }
 
     //Responsible for assigning objects and components from the tools script.
@@ -461,7 +481,7 @@ public class Action01_Jump : MonoBehaviour
         Cam = GetComponent<CameraControl>();
         homingControl = GetComponent<HomingAttackControl>();
         WallRun = Actions.Action12;
-        stepManager = GetComponent<quickstepManager>();
+        stepManager = GetComponent<quickstepHandler>();
 
         CharacterAnimator = Tools.CharacterAnimator;
         sounds = Tools.SoundControl;

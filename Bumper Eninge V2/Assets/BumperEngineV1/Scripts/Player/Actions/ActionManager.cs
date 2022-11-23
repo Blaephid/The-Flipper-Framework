@@ -61,13 +61,14 @@ public class ActionManager : MonoBehaviour {
     [HideInInspector] public bool killBindPressed;
 
     [HideInInspector] public bool isPaused;
-    bool usingMouse;
+    [HideInInspector] public bool usingMouse;
 
     //Etc
 
     PlayerBhysics Phys;
     CameraControl Cam;
     PlayerBinput Input;
+    CharacterTools Tools;
 
     void Start()
     {
@@ -81,13 +82,13 @@ public class ActionManager : MonoBehaviour {
             Phys = GetComponent<PlayerBhysics>();
             Input = GetComponent<PlayerBinput>();
             Cam = GetComponent<CameraControl>();
-            //newInput = new PlayerNewInput();
+            Tools = GetComponent<CharacterTools>();
         }
 
         //Managing Inputs
 
-        mouseSensi = Cam.Cam.InputMouseSensi;
-        camSensi = Cam.Cam.InputSensi;
+        mouseSensi = Tools.camStats.InputMouseSensi;
+        camSensi = Tools.camStats.InputSensi;
 
 
     }
@@ -101,7 +102,8 @@ public class ActionManager : MonoBehaviour {
 
     public void CamInput(InputAction.CallbackContext ctx)
     {
-        Debug.Log("No mouse input");
+        //Debug.Log("No mouse input");
+        usingMouse = false;
         CurrentCamMovement = ctx.ReadValue<Vector2>();
         moveCamX = CurrentCamMovement.x * camSensi;
         moveCamY = CurrentCamMovement.y * camSensi;
@@ -109,9 +111,11 @@ public class ActionManager : MonoBehaviour {
 
     public void CamMouseInput(InputAction.CallbackContext ctx)
     {
+        usingMouse = true;
         //Debug.Log("Use Mouse");
         CurrentCamMovement = ctx.ReadValue<Vector2>();
         moveCamX = CurrentCamMovement.x * mouseSensi;
+        
         moveCamY = CurrentCamMovement.y * mouseSensi;
     }
 

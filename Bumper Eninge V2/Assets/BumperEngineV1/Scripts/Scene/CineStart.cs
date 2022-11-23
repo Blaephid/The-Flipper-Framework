@@ -29,6 +29,7 @@ public class CineStart : MonoBehaviour
     public bool isEnabled = true;
     public bool onExit = true;
     public bool setBehind = true;
+    public float lockTime = 5f;
 
     bool isActive = false;
 
@@ -99,7 +100,7 @@ public class CineStart : MonoBehaviour
         {
             if (col.tag == "Player" && onExit)
             {
-                DeactivateCam(15);
+                DeactivateCam(lockTime);
 
             }
         }

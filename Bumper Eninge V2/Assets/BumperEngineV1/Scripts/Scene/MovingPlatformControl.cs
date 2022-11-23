@@ -17,11 +17,10 @@ public class MovingPlatformControl : MonoBehaviour {
 
     Vector3 InitialPosition;
 
-    Rigidbody p_rigidbody;
 
     void Start()
     {
-        p_rigidbody = GetComponent<Rigidbody>();
+
         InitialPosition = transform.position;
     }
 

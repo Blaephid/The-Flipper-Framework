@@ -388,12 +388,7 @@ public class PlayerBhysics : MonoBehaviour
 
                 float turnRate = 0f;
 
-                //if (Action.SkidPressed && Action.Action == 0)
-                //{
-                //    turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
-                //    lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity,
-                //                                            Mathf.Deg2Rad * SlowedTurnSpeed * Time.deltaTime, 0.0f);
-                //}
+          
                 if (true)
                 {
                     turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
@@ -707,6 +702,7 @@ public class PlayerBhysics : MonoBehaviour
         {
             setVelocity = HandleGroundControl(1, (MoveInput * AirSkiddingForce) * MoveAccell);
         }
+
         else if (MoveInput.sqrMagnitude > 0.1f)
         {
             float airMod = 1;

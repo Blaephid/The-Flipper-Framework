@@ -185,36 +185,22 @@ public class Action12_WallRunning : MonoBehaviour
         dropShadow.SetActive(false);
 
         //Set the climbing speed based on player's speed
-        ClimbingSpeed = Player.HorizontalSpeedMagnitude * 0.5f;
+        ClimbingSpeed = Player.HorizontalSpeedMagnitude * 0.6f;
         ClimbingSpeed *= climbModi;
         RunningSpeed = 0f;
 
         //If moving up, increases climbing speed
-        if (OriginalVelocity.y > 0)
-        {
-            Cam.Cam.SetCamera(-wallHit.normal, 2f, -30, 0.001f, 30);
-            Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 3f;
+       
+        Cam.Cam.SetCamera(-wallHit.normal, 2f, -30, 0.001f, 30);
+        Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 3f;
+ 
+        scrapingSpeed = 5f;
+        upwards = true;
 
-            ClimbingSpeed += OriginalVelocity.y * 0.4f;
-            scrapingSpeed = 5f;
-            upwards = true;
-        }
-        //If falling, sets the player to scrape down first before climbing.
-        else
-        {
-            Cam.Cam.SetCamera(-wallHit.normal, 2f, 20, 0.002f, 30);
-            Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 3f;
-
-            //Debug.Log("Begin Scraping");
-            scrapingSpeed = OriginalVelocity.y * 0.9f;
-            upwards = false;
-        }
 
         //Sets min and max climbing speed
-        if (ClimbingSpeed < 30f)
-            ClimbingSpeed = 30f;
-        else if (ClimbingSpeed > 130f)
-            ClimbingSpeed = 150f;
+        ClimbingSpeed = 8f * (int)(ClimbingSpeed / 8);
+        ClimbingSpeed = Mathf.Clamp(ClimbingSpeed, 40, 180);
 
         climbWallDistance = frontDistance;
 
@@ -390,7 +376,7 @@ public class Action12_WallRunning : MonoBehaviour
         {
 
             //After being on the wall for too long.
-            if (ClimbingSpeed < -100f)
+            if (ClimbingSpeed < -20f)
             {
                 CharacterAnimator.SetInteger("Action", 0);
                 //Debug.Log("Out of Speed");
@@ -408,10 +394,6 @@ public class Action12_WallRunning : MonoBehaviour
 
             else
             {
-                //Debug.Log(ClimbingSpeed);
-
-                //Ready the player velocity
-                //Vector3 newVec = Player.p_rigidbody.velocity;
                 Vector3 newVec = new Vector3(0f, ClimbingSpeed, 0f);
                 newVec += (CharacterAnimator.transform.forward * 20f);
                 Player.rb.velocity = newVec;
@@ -427,20 +409,10 @@ public class Action12_WallRunning : MonoBehaviour
             else if (Counter > 0.4)
                 ClimbingSpeed -= 1.2f;
             else
-                ClimbingSpeed -= .7f;
+                ClimbingSpeed -= 0.7f;
 
 
-
-            //Apply camera or animation based on direction
-            if (ClimbingSpeed > 10f)
-            {
-                //Debug.Log("Change Cam");
-                //Cam.Cam.FollowDirection(-Cam.Cam.y, Cam.Cam.HeightFollowSpeed);
-                //Cam.Cam.FollowDirection(50f, 30f, -20f, 20f);#
-
-            }
-
-            else if (ClimbingSpeed < 0f)
+            if (ClimbingSpeed < 0f)
             {
                 Cam.Cam.FollowDirection(10f, 5f);
 
@@ -450,7 +422,6 @@ public class Action12_WallRunning : MonoBehaviour
                 else if (ClimbingSpeed < -1f)
                     ClimbingSpeed += .6f;
             }
-
 
 
             //If the wall stops being very steep
@@ -547,7 +518,7 @@ public class Action12_WallRunning : MonoBehaviour
         previLoc = transform.position;
 
         //Set direction facing
-        CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, CharacterAnimator.transform.up);
+        CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallNormal, 0.15f));
 
         //Decide speed to slide down wall.
         if (scrapingSpeed > 10 && scrapingSpeed < 20)

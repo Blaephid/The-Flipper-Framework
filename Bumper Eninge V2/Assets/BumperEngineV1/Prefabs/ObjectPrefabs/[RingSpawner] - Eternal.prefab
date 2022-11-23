@@ -98,13 +98,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86cfcf1e9af6fb741a6a49f05e887ece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Distance: 400
-  autoRespawn: 1
+  Distance: 200
+  autoRespawn: 0
   RespawnTime: 20
   respawnOnDeath: 1
   Ring: {fileID: 1000013484563888, guid: e1e8c7cdca478bc4794b004ed1591681, type: 3}
   TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
     type: 3}
+  FollowThis: {fileID: 0}
+  followOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &6256206368870015520
 MonoBehaviour:
   m_ObjectHideFlags: 0

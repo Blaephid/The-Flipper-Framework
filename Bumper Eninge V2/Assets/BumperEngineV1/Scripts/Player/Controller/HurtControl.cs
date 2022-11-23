@@ -107,7 +107,7 @@ public class HurtControl : MonoBehaviour
 
     void Bonk()
     {
-        if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 70) || (Actions.Action == 1 && Player.HorizontalSpeedMagnitude > 60) || (Actions.Action == 11 && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == 12 && Player.HorizontalSpeedMagnitude > 40))
+        if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 60) || (Actions.Action == 1 && Player.HorizontalSpeedMagnitude > 50) || (Actions.Action == 11 && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == 12 && Player.HorizontalSpeedMagnitude > 40))
         {
             if(Physics.Raycast(transform.position, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, bonkWall))
             {
@@ -125,7 +125,10 @@ public class HurtControl : MonoBehaviour
 
     void Death()
     {
-		JumpBall.SetActive (false);
+
+        Objects_Interaction.RingAmount = 0;
+
+        JumpBall.SetActive (false);
 
 
         Inp.enabled = false;
@@ -249,14 +252,13 @@ public class HurtControl : MonoBehaviour
     {
         if(collision.collider.gameObject == WallToBonk)
         {
-
-            if(!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 2), previDir, 10f, bonkWall))
-            {
-                transform.position = transform.position + (CharacterAnimator.transform.up * 2);
+            if(!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
+            { 
+                transform.position = transform.position + (CharacterAnimator.transform.up * 1.5f);
             }
-            else if(!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 2), previDir, 10f, bonkWall))
+            else if(!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
             {
-                transform.position = transform.position + (-CharacterAnimator.transform.up * 2);
+                transform.position = transform.position + (-CharacterAnimator.transform.up * 1.5f);
             }
             else
             {
@@ -267,17 +269,28 @@ public class HurtControl : MonoBehaviour
 
     IEnumerator giveChanceToWallClimb()
     {
-        for(int i =0; i < 14; i++)
+        Vector3 newDir = CharacterAnimator.transform.forward;
+        if (Actions.Action != 12)
         {
-            yield return new WaitForFixedUpdate();
+
+            for (int i = 0; i < 4; i++)
+            {
+                yield return new WaitForFixedUpdate();
+                Player.rb.velocity = Vector3.zero;
+                CharacterAnimator.transform.forward = newDir;
+            }
+
+            if (Actions.Action != 12)
+            {
+                Actions.Action04.InitialEvents(true);
+                Actions.ChangeAction(4);
+            }
         }
-       
-        if(Actions.Action != 12)
+        else if(Actions.Action12.RunningSpeed > 0)
         {
             Actions.Action04.InitialEvents(true);
             Actions.ChangeAction(4);
         }
-
     }
 
     private void AssignStats()

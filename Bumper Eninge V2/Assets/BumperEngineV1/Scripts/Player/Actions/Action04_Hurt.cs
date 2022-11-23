@@ -76,7 +76,6 @@ public class Action04_Hurt : MonoBehaviour {
         }
 
         Inp.LockInputForAWhile(lockedForGround * 0.85f, false);
-        Debug.Log(lockedForAir);
 
     }
 
@@ -89,7 +88,6 @@ public class Action04_Hurt : MonoBehaviour {
         {
             if (!Actions.Action04Control.isDead)
             {
-                Debug.Log("Back in action");
 
                 Actions.Action02Control.HomingAvailable = true;
                 Actions.Action01.jumpCount = 0;

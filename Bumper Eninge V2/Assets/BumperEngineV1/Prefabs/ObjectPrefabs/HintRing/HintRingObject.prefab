@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 17082088799462264}
   - component: {fileID: 17082088799462271}
   - component: {fileID: 7174832093982625814}
+  - component: {fileID: 2371102843174468556}
   m_Layer: 0
   m_Name: HintRingObject
   m_TagString: HintRing
@@ -61,8 +62,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22a7cb834d30f084b942fd3d7267986a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hintText: This is a hint ring. It will provide you with hints on touch.
-  hintDuration: 5
+  hintText: []
+  hintDuration: []
   MaxDistance: 100
   MinDistance: 5
   Mesh: {fileID: 5308424990372173581}
@@ -229,6 +230,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Distance: 50
   RotationSpeed: 10
+--- !u!65 &2371102843174468556
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17082088799462267}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &923770816484162583
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class HintRingActor : MonoBehaviour
 {
     HintBox _hintbox;
     public string[] hintText;
+    public string[] hintTextGamePad;
     public float[] hintDuration;
 
     public float MaxDistance;

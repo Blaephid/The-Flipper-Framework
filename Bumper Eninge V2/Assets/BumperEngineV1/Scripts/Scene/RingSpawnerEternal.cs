@@ -20,6 +20,9 @@ public class RingSpawnerEternal : MonoBehaviour {
 
     bool firstTime = true;
 
+    public Transform FollowThis;
+    public Vector3 followOffset;
+
     void Start()
     {
         HasSpawned = false;
@@ -59,6 +62,13 @@ public class RingSpawnerEternal : MonoBehaviour {
                 if(autoRespawn)
 				    StartCoroutine(SpawnInNormal(RespawnTime));
 			}
+
+            else if(FollowThis != null && RingClone != null)
+            {
+                RingClone.transform.position = FollowThis.position + followOffset;
+                RingClone.transform.up = FollowThis.up;
+
+            }
             
         }
     }
@@ -83,9 +93,19 @@ public class RingSpawnerEternal : MonoBehaviour {
 		//Debug.Log ("SpawnRing");
 		yield return new WaitForSeconds (RespawnIn);
 		HasSpawned = false;
-        Instantiate(TeleportSparkle, transform.position, transform.rotation);
-		RingClone = (GameObject)Instantiate(Ring, transform.position, transform.rotation);
-		GameObject.FindObjectOfType<LightDashControl>().UpdateHomingTargets();
+        if(FollowThis != null)
+        {
+            Instantiate(TeleportSparkle, FollowThis.transform.position + followOffset, transform.rotation);
+            RingClone = (GameObject)Instantiate(Ring, FollowThis.transform.position + followOffset, transform.rotation);
+            GameObject.FindObjectOfType<LightDashControl>().UpdateHomingTargets();
+        }
+        else
+        {
+            Instantiate(TeleportSparkle, transform.position, transform.rotation);
+            RingClone = (GameObject)Instantiate(Ring, transform.position, transform.rotation);
+            GameObject.FindObjectOfType<LightDashControl>().UpdateHomingTargets();
+        }
+
     }
 		
 }

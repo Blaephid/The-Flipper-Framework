@@ -33,8 +33,7 @@ public class HedgeCamera : MonoBehaviour
 
     float InputXSpeed = 1;
     float InputYSpeed = 0.5f;
-    [HideInInspector] public  float InputSensi = 1f;
-    [HideInInspector] public  float InputMouseSensi = 0.7f;
+
     float stationaryCamIncrease = 1.2f;
 
     float yMinLimit = -20f;
@@ -171,7 +170,7 @@ public class HedgeCamera : MonoBehaviour
             }
 
             //Debug.Log(Actions.moveCamX);
-            
+
             if (Player.SpeedMagnitude > 10)
             {
                 x += (Actions.moveCamX * ((InputXSpeed)) * InvertedX) * Time.deltaTime;
@@ -498,6 +497,14 @@ public class HedgeCamera : MonoBehaviour
         LockedRotationSpeed = speed;
 
     }
+    public void SetCameraNoHeight(Vector3 dir, float duration, float speed)
+    {
+        lookAtDir = dir;
+        lookTimer = -duration;
+        heighttolook = y;
+        LockedRotationSpeed = speed;
+    }
+
     public void SetCamera(Vector3 dir, float duration, float heightSet, float speed, float lagSet)
     {
 
@@ -579,8 +586,6 @@ public class HedgeCamera : MonoBehaviour
 
         InputXSpeed = Tools.camStats.InputXSpeed;
         InputYSpeed = Tools.camStats.InputYSpeed;
-        InputSensi = Tools.camStats.InputSensi;
-        InputMouseSensi = Tools.camStats.InputMouseSensi;
         stationaryCamIncrease = Tools.camStats.stationaryCamIncrease;
 
         yMinLimit = Tools.camStats.yMinLimit;

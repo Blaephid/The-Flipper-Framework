@@ -241,7 +241,7 @@ public class wallRunningControl : MonoBehaviour
         Vector3 theVec = saveVec;
         float theSpeed = checkSpeed;
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 8; i++)
         {
             yield return new WaitForFixedUpdate();
             saveVec = theVec;

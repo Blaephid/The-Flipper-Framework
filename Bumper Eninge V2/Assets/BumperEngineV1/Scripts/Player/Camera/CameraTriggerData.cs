@@ -12,6 +12,7 @@ public class CameraTriggerData : MonoBehaviour {
     public float FaceSpeed = 1f;
     public float CameraAltitude;
     public float ChangeDistance;
+    public bool changeAltitude;
     public bool changeDistance = false;
 	public bool ReleaseOnExit = false;
 

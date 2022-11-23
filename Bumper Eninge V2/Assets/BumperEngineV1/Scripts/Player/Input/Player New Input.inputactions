@@ -105,7 +105,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Move",
+                    "name": "MoveCam",
                     "type": "PassThrough",
                     "id": "e3aeaf97-de8e-4711-9b49-53d70a1bd978",
                     "expectedControlType": "Vector2",
@@ -288,7 +288,7 @@
                 {
                     "name": "",
                     "id": "b3cc9dc9-c695-48db-927c-460f8c419a19",
-                    "path": "<Keyboard>/f",
+                    "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -420,7 +420,7 @@
                 {
                     "name": "",
                     "id": "72bcd7bd-2d9c-4b3e-9605-3b9ece1d690d",
-                    "path": "<Keyboard>/x",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -457,7 +457,7 @@
                     "interactions": "",
                     "processors": "StickDeadzone",
                     "groups": "",
-                    "action": "Move",
+                    "action": "MoveCam",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -468,7 +468,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "MoveCam",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -479,7 +479,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "MoveCam",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -490,7 +490,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "MoveCam",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -501,7 +501,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "MoveCam",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -512,7 +512,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "MoveCam",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },

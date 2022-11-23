@@ -200,6 +200,11 @@ public class Objects_Interaction : MonoBehaviour {
                     }
 
                 }
+                else
+                {
+                    transform.up = col.transform.up;
+                    CharacterAnimator.transform.forward = col.transform.forward;
+                }
 
                 if (pad.LockControl)
                 {
@@ -406,9 +411,19 @@ public class Objects_Interaction : MonoBehaviour {
         if (col.tag == "HintRing")
         {
             HintRingActor hintRing = col.GetComponent<HintRingActor>();
-            if (!HintBox.IsShowing)
+            //if (!HintBox.IsShowing)
+            //{
+            //    HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration);
+            //    hintRing.hintSound.Play();
+            //}
+
+            if (col.gameObject != HintBox.currentHint)
             {
-                HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration);
+                HintBox.currentHint = col.gameObject;
+                if(Actions.usingMouse)
+                    HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
+                else
+                    HintBox.ShowHint(hintRing.hintTextGamePad, hintRing.hintDuration, col.gameObject);
                 hintRing.hintSound.Play();
             }
 
@@ -451,7 +466,6 @@ public class Objects_Interaction : MonoBehaviour {
 
     private IEnumerator lockGravity(Vector3 newGrav)
     {
-        Debug.Log("Locked");
 
         Player.fallGravity = newGrav;
         yield return new WaitForSeconds(0.2f);
@@ -461,8 +475,7 @@ public class Objects_Interaction : MonoBehaviour {
             if (Player.Grounded)
                 break;
         }
-            
-        Debug.Log("FRREEED");
+
         Player.fallGravity = Player.StartFallGravity;
     }
 

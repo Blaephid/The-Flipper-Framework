@@ -6352,6 +6352,7 @@ MonoBehaviour:
   JumpDuration: 0.11
   SlopedJumpDuration: 0.09
   JumpSpeed: 10
+  SkiddingStartPoint: 0
   canDoubleJump: 1
   timeJumping: 0
 --- !u!114 &114300969380773912
@@ -6582,6 +6583,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinRotationSpeed: 0
   bannedWall: {fileID: 0}
+  checkSpeed: 0
 --- !u!114 &1384100291284439512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18976,7 +18978,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
   m_LocalRotation: {x: -0.041879464, y: 0.10989423, z: -0.35363552, w: 0.9279608}
-  m_LocalPosition: {x: -675.8451, y: 52.46378, z: 91.95685}
+  m_LocalPosition: {x: -3223.5542, y: 273.36377, z: 591.5074}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19075,8 +19077,6 @@ MonoBehaviour:
   Actions: {fileID: 114870394340389206}
   LockHeight: 1
   CameraMaxDistance: -13
-  InputSensi: 1
-  InputMouseSensi: 0.08
   StartLockCam: 0
   LockCamAtHighSpeed: 45
   y: 20
@@ -36038,8 +36038,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -135}
-  m_SizeDelta: {x: -380, y: -330}
+  m_AnchoredPosition: {x: 0, y: -115}
+  m_SizeDelta: {x: -200, y: -290}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7282556348054889851
 MonoBehaviour:
@@ -41034,8 +41034,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.7953, y: -2.3707}
-  m_SizeDelta: {x: 405.1357, y: 105.9474}
+  m_AnchoredPosition: {x: 0.1974, y: 0.0211}
+  m_SizeDelta: {x: 583.3231, y: 144.2158}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1546295951867108335
 CanvasRenderer:

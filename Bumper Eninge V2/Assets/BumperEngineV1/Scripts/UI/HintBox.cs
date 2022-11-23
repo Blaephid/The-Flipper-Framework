@@ -10,6 +10,8 @@ public class HintBox : MonoBehaviour
     public float TextDelay;
     public int FadeSpread;
     public Animator BoxAnimator;
+
+    [HideInInspector] public GameObject currentHint;
     public bool IsShowing { get; protected set; }
     int page = 0;
 
@@ -25,8 +27,10 @@ public class HintBox : MonoBehaviour
         hintText.color = initialColor;
         gameObject.SetActive(false);
     }
-    public void ShowHint (string[] hint, float[] duration)
+    public void ShowHint (string[] hint, float[] duration, GameObject hintRing)
     {
+        StopCoroutine(DisplayText(hint[0], duration[0], hint, duration, hintRing));
+        hintText.text = "";
         page = 0;
         gameObject.SetActive(true);
         if (hintText == null)
@@ -34,10 +38,10 @@ public class HintBox : MonoBehaviour
             Debug.LogError("No text asset was assigned to the hint box.");
             return;
         }
-        StartCoroutine(DisplayText(hint[0], duration, hint));
+        StartCoroutine(DisplayText(hint[0], duration[0], hint, duration, hintRing));
     }
 
-    IEnumerator DisplayText (string text, float[] duration, string[] fullText)
+    IEnumerator DisplayText (string text, float duration, string[] fullText, float[] fullDur, GameObject hintRing)
     {
         bool turnPage = false;
         //Debug.Log(text);
@@ -77,7 +81,7 @@ public class HintBox : MonoBehaviour
                     if (startChar == Length)
                     {
                         hintText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
-                        yield return new WaitForSeconds(duration[page]);
+                        yield return new WaitForSeconds(duration);
                         page += 1;
 
                         if(page < fullText.Length)
@@ -104,7 +108,12 @@ public class HintBox : MonoBehaviour
         if(turnPage)
         {
             gameObject.SetActive(true);
-            StartCoroutine(DisplayText(fullText[page], duration, fullText));
+            StartCoroutine(DisplayText(fullText[page], fullDur[page], fullText, fullDur, hintRing));
+        }
+        else
+        {
+            hintRing.SetActive(false);
+            hintRing.SetActive(true);
         }
     }
 }
