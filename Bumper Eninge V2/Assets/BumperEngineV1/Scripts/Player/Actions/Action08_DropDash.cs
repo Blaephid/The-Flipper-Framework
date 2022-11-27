@@ -138,6 +138,8 @@ public class Action08_DropDash : MonoBehaviour
 
     void AirRelease()
     {
+        
+
         Actions.JumpPressed = false;
         Actions.SpecialPressed = false;
         Actions.HomingPressed = false;
@@ -167,6 +169,9 @@ public class Action08_DropDash : MonoBehaviour
 
     void Release()
     {
+
+        if (Actions.eventMan != null) Actions.eventMan.dropChargesPerformed += 1;
+
         JumpBall.SetActive(false);
 
         DropDashAvailable = false;

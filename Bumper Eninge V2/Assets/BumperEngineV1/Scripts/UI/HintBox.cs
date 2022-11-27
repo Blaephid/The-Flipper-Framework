@@ -14,6 +14,7 @@ public class HintBox : MonoBehaviour
     [HideInInspector] public GameObject currentHint;
     public bool IsShowing { get; protected set; }
     int page = 0;
+    bool turnPage;
 
     private void Awake()
     {
@@ -29,9 +30,11 @@ public class HintBox : MonoBehaviour
     }
     public void ShowHint (string[] hint, float[] duration, GameObject hintRing)
     {
-        StopCoroutine(DisplayText(hint[0], duration[0], hint, duration, hintRing));
+        gameObject.SetActive(false);
+        StopCoroutine("DisplayText");
         hintText.text = "";
         page = 0;
+        turnPage = false;
         gameObject.SetActive(true);
         if (hintText == null)
         {
@@ -43,7 +46,7 @@ public class HintBox : MonoBehaviour
 
     IEnumerator DisplayText (string text, float duration, string[] fullText, float[] fullDur, GameObject hintRing)
     {
-        bool turnPage = false;
+        turnPage = false;
         //Debug.Log(text);
 
         IsShowing = true;
@@ -113,7 +116,9 @@ public class HintBox : MonoBehaviour
         else
         {
             hintRing.SetActive(false);
+            currentHint = null;
             hintRing.SetActive(true);
         }
+
     }
 }

@@ -742,6 +742,7 @@ PlayerSettings:
     ErrorHub: 0
     Game_Performance: 0
     Hub: 0
+    Legacy Analytics: 1
     Purchasing: 0
     UNet: 0
     Unity_Ads: 0
@@ -758,11 +759,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 2
-  cloudProjectId: 
+  cloudProjectId: 4f655593-1c12-4af1-8bd2-10087987618d
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: BumperEngine2
+  organizationId: blaephid
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 1
   playerDataPath: 

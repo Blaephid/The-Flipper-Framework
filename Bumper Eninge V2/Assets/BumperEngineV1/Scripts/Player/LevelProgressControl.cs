@@ -124,6 +124,8 @@ public class LevelProgressControl : MonoBehaviour {
         //ResumeRotation = position.rotation;
         ResumeFace = position.forward;
         ResumeTransform = position;
+
+        if (Actions.eventMan != null) Actions.eventMan.AddDeathsPerCP();
     }
 
     public void OnTriggerEnter(Collider col)
@@ -151,6 +153,11 @@ public class LevelProgressControl : MonoBehaviour {
         }
         if (col.tag == "GoalRing")
         {
+            if (Actions.eventMan != null)
+            { 
+                Actions.eventMan.LogEvents();
+            }
+
             readyForNextStage = true;
 			Objects_Interaction.RingAmount = 0;
 

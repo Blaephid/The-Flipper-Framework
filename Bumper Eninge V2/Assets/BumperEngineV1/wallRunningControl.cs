@@ -121,6 +121,7 @@ public class wallRunningControl : MonoBehaviour
                 if (Vector3.Dot(CharacterAnimator.transform.forward, frontWallDetect.normal) < -0.85f)
                 {
                     //Enter wall run as a climb
+                    if (Actions.eventMan != null) Actions.eventMan.wallClimbsPerformed += 1;
 
                     WallRun.InitialEvents(true, frontWallDetect, false, WallCheckDistance * CheckModifier);
                     Actions.ChangeAction(12);
@@ -136,6 +137,7 @@ public class wallRunningControl : MonoBehaviour
             {
                 //Enter a wallrun with wall on left.
                 WallRun.InitialEvents(false, leftWallDetect, false);
+                if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
                 Actions.ChangeAction(12);
             }
 
@@ -145,6 +147,7 @@ public class wallRunningControl : MonoBehaviour
             {
                 //Enter a wallrun with wall on right.
                 WallRun.InitialEvents(false, rightWallDetect, true);
+                if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
                 Actions.ChangeAction(12);
             }
         }

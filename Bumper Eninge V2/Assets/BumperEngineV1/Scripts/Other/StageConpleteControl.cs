@@ -22,6 +22,8 @@ public class StageConpleteControl : MonoBehaviour {
             Anim.SetInteger("Action", 1);
             if(counter > End + 2.3f)
             {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
                 SceneManager.LoadScene(LevelToGoNext);
             }
         }

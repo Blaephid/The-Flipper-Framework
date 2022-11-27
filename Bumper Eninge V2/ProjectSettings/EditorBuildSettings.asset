@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Custom User ID example.unity
+    guid: ca8d24c6dd452824d9f0e81eb36e4662
+  - enabled: 1
     path: Assets/BumperEngineV1/Scenes/LogoScreen.unity
     guid: 85c65dc7ca75cc2458be3aba0575d574
   - enabled: 1

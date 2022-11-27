@@ -5,6 +5,9 @@ using UnityEngine.InputSystem;
 
 public class ActionManager : MonoBehaviour {
 
+    public bool trackingEvents;
+    public levelEventHandler eventMan;
+
 
     public int Action;
 	public int PreviousAction { get; set; }
@@ -77,6 +80,9 @@ public class ActionManager : MonoBehaviour {
 
     void Awake()
     {
+        eventMan = FindObjectOfType<levelEventHandler>();
+
+
         if (Phys == null)
         {
             Phys = GetComponent<PlayerBhysics>();
@@ -324,6 +330,7 @@ public class ActionManager : MonoBehaviour {
             case 2:
                 if (!lockHoming)
                 {
+                    if (eventMan != null) eventMan.homingAttacksPerformed += 1;
                     changePossible(ActionToChange);
                     Action02.enabled = true;
                 }
@@ -337,6 +344,7 @@ public class ActionManager : MonoBehaviour {
                 Action04.enabled = true;
                 break;
             case 5:
+                if (eventMan != null) eventMan.RailsGrinded += 1;
                 changePossible(ActionToChange);
                 Action05.enabled = true;
 				break;
@@ -344,10 +352,12 @@ public class ActionManager : MonoBehaviour {
                 if(!lockBounce)
                 {
                     changePossible(ActionToChange);
+                    if (eventMan != null) eventMan.BouncesPerformed += 1;
                     Action06.enabled = true;
                 }
                 break;
 			case 7:
+                if (eventMan != null) eventMan.ringRoadsPerformed += 1;
                 changePossible(ActionToChange);
                 Action07.enabled = true;
 				break;
@@ -362,6 +372,7 @@ public class ActionManager : MonoBehaviour {
             case 11:
                 if (!lockJumpDash)
                 {
+                    if (eventMan != null) eventMan.jumpDashesPerformed += 1;
                     changePossible(ActionToChange);
                     Action11.enabled = true;
                 }

@@ -196,7 +196,7 @@ namespace SplineMesh
             }
             else
             {
-                Debug.Log("No surface found for " + obj.name,this);
+                //Debug.Log("No surface found for " + obj.name,this);
             }
         }
     }

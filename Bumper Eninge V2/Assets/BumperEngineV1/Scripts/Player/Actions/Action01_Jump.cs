@@ -112,6 +112,8 @@ public class Action01_Jump : MonoBehaviour
             if (Grounded || jumpCount == -1)
             {
 
+                if (Actions.eventMan != null) Actions.eventMan.JumpsPerformed += 1;
+
                 //Sets jump stats for this specific jump.
                 JumpSpeed = StartJumpSpeed * jumpSpeedModifier;
                 JumpDuration = StartJumpDuration * jumpDurationModifier;
@@ -137,7 +139,9 @@ public class Action01_Jump : MonoBehaviour
             }
 
             else
-            {       
+            {
+
+                if (Actions.eventMan != null) Actions.eventMan.DoubleJumpsPerformed += 1;
 
                 //Increases jump count
                 if (jumpCount == 0)

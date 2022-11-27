@@ -39,7 +39,9 @@ public class quickstepHandler : MonoBehaviour
 
     public void initialEvents(bool right)
     {
-		if(right)
+		if (Actions.eventMan != null) Actions.eventMan.quickstepsPerformed += 1;
+
+		if (right)
         {
 
 			Actions.RightStepPressed = false;

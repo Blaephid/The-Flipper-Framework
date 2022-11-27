@@ -178,7 +178,7 @@ public class Action00_Regular : MonoBehaviour {
 		{
 			if (!Rolling)
 			{
-
+				if (Actions.eventMan != null) Actions.eventMan.RollsPerformed += 1;
 				sounds.SpinningSound();
 				rollingCapsule.SetActive(true);
 				characterCapsule.SetActive(false);

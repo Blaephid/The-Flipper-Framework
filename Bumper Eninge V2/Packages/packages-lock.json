@@ -10,6 +10,15 @@
       },
       "hash": "4f4d96806c01057bff3da4396fb20bc508dc1a3a"
     },
+    "com.unity.analytics": {
+      "version": "3.6.12",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.cinemachine": {
       "version": "2.8.4",
       "depth": 0,

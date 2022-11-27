@@ -166,6 +166,8 @@ public class HurtControl : MonoBehaviour
             isDead = false;
             deadCounter = 0;
             counter = 0;
+
+            if (Actions.eventMan != null) Actions.eventMan.Death();
         }
     }
 

@@ -420,11 +420,25 @@ public class Objects_Interaction : MonoBehaviour {
             if (col.gameObject != HintBox.currentHint)
             {
                 HintBox.currentHint = col.gameObject;
-                if(Actions.usingMouse)
+
+                if (Actions.usingMouse)
                     HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
                 else
                     HintBox.ShowHint(hintRing.hintTextGamePad, hintRing.hintDuration, col.gameObject);
                 hintRing.hintSound.Play();
+
+
+                if (Actions.eventMan != null)
+                {
+                    foreach (GameObject HR in Actions.eventMan.hintRings)
+                    {
+                        if (col.gameObject == HR)
+                            return;
+                    }
+                    Actions.eventMan.hintRings.Add(col.gameObject);
+                    Actions.eventMan.hintRingsHit += 1;
+                }
+
             }
 
         }

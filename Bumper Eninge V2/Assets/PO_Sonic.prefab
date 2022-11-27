@@ -6266,6 +6266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 795317e0a409ba3499067f99a8f5ed0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackingEvents: 0
+  eventMan: {fileID: 0}
   Action: 0
   Action00: {fileID: 114654845169286778}
   Action01: {fileID: 114873388628942606}
@@ -6304,6 +6306,7 @@ MonoBehaviour:
   spinChargePressed: 0
   killBindPressed: 0
   isPaused: 0
+  usingMouse: 0
 --- !u!114 &114654845169286778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6750,7 +6753,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1979695856965714}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 742759d400539c3448b8dfd5dab6c287, type: 3}
+  m_Script: {fileID: 11500000, guid: d900770bff08f5047b6885e331fec8f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4686023653366926
@@ -18092,7 +18095,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7781155, y: 1}
+    m_SensorSize: {x: 1.7774869, y: 1}
   m_Transitions:
     m_BlendHint: 1
     m_InheritPosition: 0
@@ -36054,9 +36057,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hintText: {fileID: 4168508894794686874}
-  TextDelay: 0.01
+  TextDelay: 0.006
   FadeSpread: 5
   BoxAnimator: {fileID: 8293263248948855508}
+  currentHint: {fileID: 0}
 --- !u!95 &8293263248948855508
 Animator:
   serializedVersion: 4

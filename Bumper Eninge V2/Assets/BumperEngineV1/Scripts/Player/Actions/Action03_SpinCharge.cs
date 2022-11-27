@@ -130,6 +130,8 @@ public class Action03_SpinCharge : MonoBehaviour
 
     void Release()
     {
+        if (Actions.eventMan != null) Actions.eventMan.SpinChargesPeformed += 1;
+
         effects.EndSpinDash();
         HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
         if (charge < MinimunCharge || Actions.JumpPressed)
