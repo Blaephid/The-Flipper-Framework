@@ -2069,6 +2069,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1810374959312665362, guid: f2dd680a0b7d1694aaf57db043bf6d1b,
+        type: 3}
+      propertyPath: m_UnityAnalytics
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1810374959312665362, guid: f2dd680a0b7d1694aaf57db043bf6d1b,
+        type: 3}
+      propertyPath: ActivelyTrackingEvents
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1810374959312665363, guid: f2dd680a0b7d1694aaf57db043bf6d1b,
         type: 3}
       propertyPath: m_RootOrder
@@ -2128,6 +2138,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Analytics Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429423966725688201, guid: f2dd680a0b7d1694aaf57db043bf6d1b,
+        type: 3}
+      propertyPath: ActivelySendingEvents
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f2dd680a0b7d1694aaf57db043bf6d1b, type: 3}

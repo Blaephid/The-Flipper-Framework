@@ -6,6 +6,9 @@ using Abertay.Analytics;
 
 public class levelEventHandler : MonoBehaviour
 {
+    public bool ActivelySendingEvents = false;
+
+
     public AnalyticsManager analyMan;
     Scene scene;
 
@@ -44,6 +47,9 @@ public class levelEventHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!ActivelySendingEvents)
+            this.gameObject.SetActive(false);
+
         scene = SceneManager.GetActiveScene();
 
         if (scene.name != curScene)
@@ -57,77 +63,81 @@ public class levelEventHandler : MonoBehaviour
 
     public void LogEvents()
     {
-        string levelEvent = "";
-        if(scene.name == "TutorialLevel")
+        if(ActivelySendingEvents)
         {
-            levelEvent = "Tutorial Complete";
-        }
-        else if (scene.name == "AltitudeLimit")
-        {
-            levelEvent = "Altitude Limit Complete";
-        }
-
-        if(levelEvent != "")
-        {
-
-            Dictionary<string, object> parameters =
-                new Dictionary<string, object>()
-                {
-                    { "Total Deaths", Deaths }
-                };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-
-            parameters = new Dictionary<string, object>(){{ "DeathsPerCheckpoint", deathsPerCheckPoint }};
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Time to beat", timeInLevel } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            if (levelEvent == "Tutorial Complete")
+            string levelEvent = "";
+            if (scene.name == "TutorialLevel")
             {
-                parameters = new Dictionary<string, object>() { { "HintRingsHit", hintRingsHit } };
+                levelEvent = "Tutorial_Complete";
+            }
+            else if (scene.name == "AltitudeLimit")
+            {
+                levelEvent = "Altitude_Limit_Complete";
+            }
+
+            if (levelEvent != "")
+            {
+
+                Dictionary<string, object> parameters =
+                    new Dictionary<string, object>()
+                    {
+                    { "Total_Deaths", Deaths }
+                    };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+
+                parameters = new Dictionary<string, object>() { { "DeathsPerCheckpoint", deathsPerCheckPoint } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "Time_to_beat", timeInLevel } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                if (levelEvent == "Tutorial_Complete")
+                {
+                    parameters = new Dictionary<string, object>() { { "HintRingsHit", hintRingsHit } };
+                    AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+                }
+
+                parameters = new Dictionary<string, object>() { { "Jumps_Performed", JumpsPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "DoubleJumps_Performed", DoubleJumpsPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "Rolls_Performed", RollsPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "SpinCharges_Performed", SpinChargesPeformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "Quicksteps_Performed", quickstepsPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "DropCharges_Performed", dropChargesPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "JumpDashes_Performed", jumpDashesPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "HomingAttacks_Performed", homingAttacksPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "WallRuns_Performed", wallRunsPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "WallClimbs_Performed", wallClimbsPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "RingRoads_Performed", ringRoadsPerformed } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                parameters = new Dictionary<string, object>() { { "Rails_Grinded", RailsGrinded } };
                 AnalyticsManager.SendCustomEvent(levelEvent, parameters);
             }
 
-            parameters = new Dictionary<string, object>() { { "Jumps Performed", JumpsPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Double Jumps Performed", DoubleJumpsPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Rolls Performed", RollsPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Spin Charges Performed", SpinChargesPeformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Quick step Performed", quickstepsPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Drop Charges Performed", dropChargesPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Jump Dashes Performed", jumpDashesPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Homing Attacks Performed", homingAttacksPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Wall Runs Performed", wallRunsPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Wall Climbs Performed", wallClimbsPerformed } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Ring Roads Performed", ringRoadsPerformed} };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-            parameters = new Dictionary<string, object>() { { "Rails Grinded", RailsGrinded } };
-            AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+            ResetTrackers();
         }
-
-        ResetTrackers();
+        
     }
 
     public void Death()
