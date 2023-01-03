@@ -11,6 +11,8 @@ public class PlayerBinput : MonoBehaviour {
 
     public Vector3 moveAcc { get; set; }
     private Vector3 move;
+    public Vector3 inputPreCamera;
+    public Vector3 trueMoveInput;
     // the world-relative desired move direction, calculated from the camForward and user input.
 
     private Transform cam; // A reference to the main camera in the scenes transform
@@ -93,6 +95,7 @@ public class PlayerBinput : MonoBehaviour {
 
             float currentInputSpeed = (!UtopiaTurning) ? InputLerpSpeed : UtopiaLerpingSpeed;
 
+            inputPreCamera = moveInp;
             //Make movement relative to camera
 
             if (moveInp != Vector3.zero && !onPath)
@@ -115,12 +118,13 @@ public class PlayerBinput : MonoBehaviour {
             //    moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * (UtopiaLerpingSpeed * UtopiaIntensity));
             //}
 
-            if (moveInp.x < 0.01 && moveInp.z < 0.01 && moveInp.x > -0.01 && moveInp.z > -0.01)
+            if (moveInp.x < 0.02 && moveInp.z < 0.02 && moveInp.x > -0.02 && moveInp.z > -0.02)
             {
                 moveInp = Vector3.zero;
             }
 
             move = moveInp;
+            trueMoveInput = move;
         }
 
         //Lock Input Funcion
@@ -137,13 +141,14 @@ public class PlayerBinput : MonoBehaviour {
     void FixedUpdate()
     {
 
-        Debug.DrawRay(transform.position, move, Color.cyan);
+        Debug.DrawRay(transform.position, trueMoveInput * 5, Color.cyan);
         Player.MoveInput = move;
 
     }
 
-    void LockedInputFunction(Vector2 oldMove)
+    void LockedInputFunction(Vector3 oldMove)
     {
+        trueMoveInput = move;
         move = Vector3.zero;
         LockedCounter += 1;
         Player.MoveDecell = 1;

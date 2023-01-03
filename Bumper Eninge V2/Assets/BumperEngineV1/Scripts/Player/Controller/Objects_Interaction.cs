@@ -167,8 +167,14 @@ public class Objects_Interaction : MonoBehaviour {
  
                 if (pad.LockToDirection)
                 {
-  
-                    StartCoroutine(applyForce(col.transform.forward * col.GetComponent<SpeedPadData>().Speed, col.transform.position));
+                    float speed = col.GetComponent<SpeedPadData>().Speed;
+                    if (speed < Player.HorizontalSpeedMagnitude)
+                        speed = Player.HorizontalSpeedMagnitude;
+
+                    if(!pad.isDashRing)
+                        StartCoroutine(applyForce(col.transform.forward * speed, col.transform.position, 1));
+                    else
+                        StartCoroutine(applyForce(col.transform.forward * col.GetComponent<SpeedPadData>().Speed, col.transform.position));
                 }
                 else
                 {
@@ -183,6 +189,7 @@ public class Objects_Interaction : MonoBehaviour {
                
                 if (pad.isDashRing)
                 {
+                    
                     Actions.Action00.cancelCoyote();
                     Actions.ChangeAction(0);
                     CharacterAnimator.SetBool("Grounded", false);
@@ -209,6 +216,11 @@ public class Objects_Interaction : MonoBehaviour {
                 if (pad.LockControl)
                 {
                     Inp.LockInputForAWhile(pad.LockControlTime, true);
+                    if(pad.setInputForwards)
+                    {
+                        Actions.moveX = 0;
+                        Actions.moveY = 1;
+                    }
                 }
                 if (pad.AffectCamera)
                 {
@@ -229,7 +241,14 @@ public class Objects_Interaction : MonoBehaviour {
             
             
         }
-        if (col.tag == "MovingRing")
+        else if (col.tag == "Ring Road")
+        {
+            //Actions.Action07Control.UpdateHomingTargets();
+            Instantiate(RingCollectParticle, col.transform.position, Quaternion.identity);
+            Destroy(col.gameObject);
+            StartCoroutine(IncreaseRing());
+        }
+        else if (col.tag == "MovingRing")
         {
             if (col.GetComponent<MovingRing>() != null)
             {
@@ -493,9 +512,10 @@ public class Objects_Interaction : MonoBehaviour {
         Player.fallGravity = Player.StartFallGravity;
     }
 
-    private IEnumerator applyForce(Vector3 force, Vector3 position)
+    private IEnumerator applyForce(Vector3 force, Vector3 position, int frames = 3)
     {
-        for(int i = 0; i < 3; i++)
+        
+        for(int i = 0; i < frames; i++)
         {
             transform.position = position;
             Player.rb.velocity = Vector3.zero;

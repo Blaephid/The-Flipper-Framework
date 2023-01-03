@@ -20,6 +20,7 @@ public class LevelProgressControl : MonoBehaviour {
     PlayerBinput Inp;
     public GameObject CurrentCheckPoint { get; set; }
 
+    Transform characterTransform;
     public Material LampDone;
     public int LevelToGoNext = 0;
     public string NextLevelNameLeft;
@@ -36,10 +37,10 @@ public class LevelProgressControl : MonoBehaviour {
         Actions = basePlayer.GetComponent<ActionManager>();
         Player = basePlayer.GetComponent<PlayerBhysics>();
         Inp = basePlayer.GetComponent<PlayerBinput>();
-
-        ResumePosition = transform.position;
-        ResumeRotation = transform.rotation;
-        ResumeFace = transform.forward;
+        characterTransform = tools.CharacterAnimator.transform;
+        ResumePosition = characterTransform.position;
+        ResumeRotation = characterTransform.rotation;
+        ResumeFace = characterTransform.forward;
 
     }
 
@@ -98,10 +99,10 @@ public class LevelProgressControl : MonoBehaviour {
 
         transform.position = ResumePosition;
         //transform.rotation = ResumeRotation;
-        transform.forward = ResumeFace; ;
-        tools.CharacterAnimator.transform.forward = ResumeFace;
+        characterTransform.forward = ResumeFace;
+      
 
-        Player.rb.velocity = tools.CharacterAnimator.transform.forward * 2;
+        Player.rb.velocity = characterTransform.forward * 2;
         Actions.Action04.deadCounter = 0;
 
         //Cam.Cam.SetCamera(ResumeFace, true);
@@ -137,6 +138,11 @@ public class LevelProgressControl : MonoBehaviour {
                 //Set Object
                 if (!col.GetComponent<CheckPointData>().IsOn)
                 {
+                    if(Actions.eventMan != null)
+                    {
+                        Actions.eventMan.LogEvents(false, col.GetComponent<CheckPointData>().checkPointName);
+                    }
+
                     col.GetComponent<CheckPointData>().IsOn = true;
                     col.GetComponent<AudioSource>().Play();
                     foreach (Animator anim in col.GetComponent<CheckPointData>().Animators)
@@ -155,7 +161,7 @@ public class LevelProgressControl : MonoBehaviour {
         {
             if (Actions.eventMan != null)
             { 
-                Actions.eventMan.LogEvents();
+                Actions.eventMan.LogEvents(true);
             }
 
             readyForNextStage = true;

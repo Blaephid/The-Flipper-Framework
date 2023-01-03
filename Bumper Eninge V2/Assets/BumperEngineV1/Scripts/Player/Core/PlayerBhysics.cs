@@ -499,6 +499,7 @@ public class PlayerBhysics : MonoBehaviour
         // Call Ground Control
         //Debug.Log(MoveInput);
         //Debug.Log(curvePosAcell);
+        //Debug.Log(MoveInput);
         Vector3 setVelocity = HandleGroundControl(1, MoveInput * curvePosAcell);
         rb.velocity = setVelocity;
 

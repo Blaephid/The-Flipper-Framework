@@ -7,6 +7,7 @@ using System.Collections;
 [ExecuteInEditMode]
 public class CheckPointData : MonoBehaviour
 {
+    public string checkPointName = "CheckPoint__X";
 
     public bool IsOn { get; set; }
     public float CheckpointDistance = 15;

@@ -33,7 +33,7 @@ public class Pathers_Interaction : MonoBehaviour
     float CurrentDist, dist;
 
     //Upreel
-    PulleyActor currentUpreel;
+    [HideInInspector] public PulleyActor currentUpreel;
     Transform HandGripPoint;
     [HideInInspector] public Transform feetPoint;
 
@@ -48,7 +48,7 @@ public class Pathers_Interaction : MonoBehaviour
     }
 
 
-    private void Update()
+    private void FixedUpdate()
     {
 
         //Updates if the player is currently on an Upreel

@@ -117,6 +117,8 @@ public class CoreStatsCharacter : ScriptableObject
     [Header("Spin Charge")]
     public float MaximumSpeed = 25; //The max amount of speed you can be at to perform a Spin Dash
     public float MaximumSlope = 0.9f; //The highest slope you can be on to Spin Dash
+    public AnimationCurve SpeedLossByTime;
+    public AnimationCurve ForceGainByAngle;
 
 
     [Header("Bounce")]
@@ -125,7 +127,8 @@ public class CoreStatsCharacter : ScriptableObject
 
     [Header("Ring Road Search")]
     public float RingTargetSearchDistance = 60;
-    public float LightDashIconScale = 0;
+    public float RingRoadIconScale = 0;
+    public LayerMask RingRoadLayer;
 
 
     [Header("Interact with Enemies")]

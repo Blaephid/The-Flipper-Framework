@@ -5,29 +5,44 @@ using Cinemachine;
 
 public class CineStart : MonoBehaviour
 {
+    [Header ("Major settings.")]
+    public bool endCine = false;
+    public bool Active = true;
+    public bool isEnabled = true;
+    public bool onExit = true;
+    public float timeDelay = 0;
+    public bool startAtCameraPoint;
+    public Vector3 startOffset;
+
+    [Header("Attached Elements")]
+    public CinemachineVirtualCamera virCam;
+    public GameObject attachedCam;
+
+    [Header("Works with these actions")]
     public bool RegularAction = true;
     public bool JumpAction = false;
     public bool RailAction = false;
     public bool wallRunAction = false;
+    public bool RingRoadAction = false;
 
-    public bool Active = true;
-    public GameObject attachedCam;
+    
+    
     private Vector3 camPosit;
     private Quaternion camRotit;
 
+    [Header("Effects on/with Player")]
     public bool lookPlayer;
     public bool followPlayer;
 
     public bool disableMove;
 
-    public CinemachineVirtualCamera virCam;
+    
     CinemachineVirtualCamera hedgeCam;
 
     GameObject Player;
     ActionManager Actions;
 
-    public bool isEnabled = true;
-    public bool onExit = true;
+    [Header("On Cancel")]
     public bool setBehind = true;
     public float lockTime = 5f;
 
@@ -47,18 +62,22 @@ public class CineStart : MonoBehaviour
     {
         if (other.tag == "Player" && isEnabled)
         {
-
-            Player = other.GetComponent<PlayerCollider>().player;
-            Actions = Player.GetComponent<ActionManager>();
+            if (!endCine)
+            {
+                Player = other.GetComponent<PlayerCollider>().player;
+                Actions = Player.GetComponent<ActionManager>();
+            }
+            else
+                DeactivateCam(lockTime);
         }
     }
     private void OnTriggerStay(Collider col)
     {
-        if (col.tag == "Player" && isEnabled)
+        if (col.tag == "Player" && isEnabled && !endCine)
         {
             if(!isActive && Player != null)
             {
-                if ((Actions.Action == 0 && RegularAction) || (Actions.Action == 1 && JumpAction) || (Actions.Action == 5 && RailAction) || (Actions.Action == 12 && wallRunAction))
+                if ((Actions.Action == 0 && RegularAction) || (Actions.Action == 1 && JumpAction) || (Actions.Action == 5 && RailAction) || (Actions.Action == 12 && wallRunAction) || (Actions.Action == 7 && RingRoadAction))
                 {
                     isActive = true;
                     hedgeCam = Player.GetComponent<CameraControl>().virtCam;
@@ -85,7 +104,7 @@ public class CineStart : MonoBehaviour
             }
             else
             {
-                if(!(Actions.Action == 0 && RegularAction) && !(Actions.Action == 1 && JumpAction) && !(Actions.Action == 5 && RailAction) && !(Actions.Action == 12 && wallRunAction))
+                if(!(Actions.Action == 0 && RegularAction) && !(Actions.Action == 1 && JumpAction) && !(Actions.Action == 5 && RailAction) && !(Actions.Action == 12 && wallRunAction) && !(Actions.Action == 7 && RingRoadAction) && onExit)
                 {
                     DeactivateCam(0);
                 }
@@ -109,10 +128,32 @@ public class CineStart : MonoBehaviour
     public void ActivateCam(float disableFor)
     {
       
+        if(startAtCameraPoint)
+        {
+            attachedCam.transform.position = Player.GetComponent<CameraControl>().Cam.transform.position;
+            attachedCam.transform.rotation = Player.GetComponent<CameraControl>().Cam.transform.rotation;
+        }
+
+        attachedCam.transform.position += startOffset;
+
         attachedCam.SetActive(true);
         hedgeCam.gameObject.SetActive(false);
-        Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
+        if(lockTime > 0)
+            Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
+
+        if(timeDelay != 0)
+        {
+            StartCoroutine(TimeLimit());
+        }
             
+    }
+
+    IEnumerator TimeLimit()
+    {
+        isEnabled = false;
+        yield return new WaitForSeconds(timeDelay);
+        DeactivateCam(lockTime);
+        isEnabled = true;
     }
 
     public void DeactivateCam(float disableFor)
@@ -131,6 +172,7 @@ public class CineStart : MonoBehaviour
         attachedCam.transform.rotation = camRotit;
         hedgeCam.gameObject.SetActive(true);
         attachedCam.SetActive(false);
-        Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
+        if(lockTime > 0)
+            Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
     }
 }

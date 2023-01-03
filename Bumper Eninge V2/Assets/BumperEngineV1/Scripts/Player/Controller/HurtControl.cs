@@ -17,6 +17,7 @@ public class HurtControl : MonoBehaviour
     SonicSoundsControl Sounds;
     GameObject JumpBall;
     Animator CharacterAnimator;
+    Transform faceHitCollider;
 
     [HideInInspector] public int InvencibilityTime;
     int counter;
@@ -107,12 +108,14 @@ public class HurtControl : MonoBehaviour
 
     void Bonk()
     {
-        if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 60) || (Actions.Action == 1 && Player.HorizontalSpeedMagnitude > 50) || (Actions.Action == 11 && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == 12 && Player.HorizontalSpeedMagnitude > 40))
+        faceHitCollider.forward = CharacterAnimator.transform.forward;
+
+        if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 50) || (Actions.Action == 1 && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == 11 && Player.HorizontalSpeedMagnitude > 30) || (Actions.Action == 12 && Actions.Action12.RunningSpeed > 5))
         {
-            if(Physics.Raycast(transform.position, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, bonkWall))
+            if(Physics.SphereCast(transform.position, 0.3f, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, bonkWall))
             {
                 
-                if (Vector3.Dot(CharacterAnimator.transform.forward, tempHit.normal) < -0.9f)
+                if (Vector3.Dot(CharacterAnimator.transform.forward, tempHit.normal) < -0.7f)
                 {
                     WallToBonk = tempHit.collider.gameObject;
                     previDir = CharacterAnimator.transform.forward;
@@ -248,17 +251,18 @@ public class HurtControl : MonoBehaviour
             Sounds.DieSound();
             isDead = true;
         }
-    }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.collider.gameObject == WallToBonk)
+        //Debug.Log(Player.HorizontalSpeedMagnitude);
+        //Debug.Log(WallToBonk);
+        if (col.gameObject == WallToBonk)
         {
-            if(!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
-            { 
+            
+            Debug.Log("Attempt Bonk");
+            if (!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
+            {
                 transform.position = transform.position + (CharacterAnimator.transform.up * 1.5f);
             }
-            else if(!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
+            else if (!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
             {
                 transform.position = transform.position + (-CharacterAnimator.transform.up * 1.5f);
             }
@@ -274,14 +278,16 @@ public class HurtControl : MonoBehaviour
         Vector3 newDir = CharacterAnimator.transform.forward;
         if (Actions.Action != 12)
         {
-
-            for (int i = 0; i < 4; i++)
+            if(!Player.Grounded)
             {
-                yield return new WaitForFixedUpdate();
-                Player.rb.velocity = Vector3.zero;
-                CharacterAnimator.transform.forward = newDir;
+                for (int i = 0; i < 3; i++)
+                {
+                    yield return new WaitForFixedUpdate();
+                    Player.rb.velocity = Vector3.zero;
+                    CharacterAnimator.transform.forward = newDir;
+                }
             }
-
+            
             if (Actions.Action != 12)
             {
                 Actions.Action04.InitialEvents(true);
@@ -314,6 +320,7 @@ public class HurtControl : MonoBehaviour
         Cam = GetComponent<CameraControl>();
         Inp = GetComponent<PlayerBinput>();
 
+        faceHitCollider = Tools.faceHit.transform;
         JumpBall = Tools.JumpBall;
         Sounds = Tools.SoundControl;
         CharacterAnimator = Tools.CharacterAnimator;

@@ -49,7 +49,7 @@ MonoBehaviour:
   SpinDashChargingSpeed: 1
   MinimunCharge: 20
   MaximunCharge: 100
-  SpinDashStillForce: 1.05
+  SpinDashStillForce: 0.025
   DropSpeed: 100
   BounceMaxSpeed: 140
   BounceUpSpeeds:
@@ -60,13 +60,13 @@ MonoBehaviour:
   - 42
   BounceHaltFactor: 0.7
   BounceCoolDown: 12
-  DashSpeed: 120
-  EndingSpeedFactor: 1.2
-  MinimumEndingSpeed: 60
+  DashSpeed: 80
+  EndingSpeedFactor: 1.23
+  MinimumEndingSpeed: 50
   DropDashChargingSpeed: 1.1
   DropMinimunCharge: 40
   DropMaximunCharge: 150
   InvincibilityTime: 90
   MaxRingLoss: 20
-  scrapeModi: 1
+  scrapeModi: 0.6
   climbModi: 1

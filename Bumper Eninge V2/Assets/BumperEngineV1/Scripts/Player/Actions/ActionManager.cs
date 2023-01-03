@@ -25,8 +25,8 @@ public class ActionManager : MonoBehaviour {
     public Action05_Rail Action05;
 	public Action06_Bounce Action06;
 	public Action07_RingRoad Action07;
-	public LightDashControl Action07Control;
-	public Action08_DropDash Action08;
+	public RingRoadControl Action07Control;
+	public Action08_DropCharge Action08;
     public MoveAlongPath Action10;
     public Action11_JumpDash Action11;
     public Action12_WallRunning Action12;
@@ -55,7 +55,7 @@ public class ActionManager : MonoBehaviour {
     [HideInInspector] public bool SpecialPressed;
     [HideInInspector] public bool LeftStepPressed;
     [HideInInspector] public bool RightStepPressed;
-    [HideInInspector] public bool SkidPressed;
+    //[HideInInspector] public bool SkidPressed;
     [HideInInspector] public bool BouncePressed;
     [HideInInspector] public bool InteractPressed;
     [HideInInspector] public bool CamResetPressed;
@@ -102,8 +102,18 @@ public class ActionManager : MonoBehaviour {
     public void MoveInput(InputAction.CallbackContext ctx)
     {
         Vector2 CurrentMovement = ctx.ReadValue<Vector2>();
+        usingMouse = false;
         moveX = CurrentMovement.x;
         moveY = CurrentMovement.y;
+    }
+
+    public void MoveInputKeyboard(InputAction.CallbackContext ctx)
+    {
+        Vector2 CurrentMovement = ctx.ReadValue<Vector2>();
+        moveX = CurrentMovement.x;
+        moveY = CurrentMovement.y;
+        usingMouse = true;
+        //Debug.Log(CurrentMovement);
     }
 
     public void CamInput(InputAction.CallbackContext ctx)
@@ -201,12 +211,12 @@ public class ActionManager : MonoBehaviour {
     {
         if (ctx.performed)
         {
-            SkidPressed = ctx.ReadValueAsButton();
+           // SkidPressed = ctx.ReadValueAsButton();
 
         }
         else if (ctx.canceled)
         {
-            SkidPressed = ctx.ReadValueAsButton();
+           // SkidPressed = ctx.ReadValueAsButton();
         }
     }
 
@@ -454,7 +464,7 @@ public class ActionManager : MonoBehaviour {
         for (int v = 0; v < time; v++)
         {
             yield return new WaitForFixedUpdate();
-            if (Phys.Grounded && v > 5)
+            if (Phys.Grounded)
                 break;
         }
       

@@ -53,10 +53,13 @@ public class Action04_Hurt : MonoBehaviour {
         {
             Vector3 newSpeed = -CharacterAnimator.transform.forward * BonkBackForce;
             newSpeed.y = BonkUpForce;
+            if (Player.Grounded)
+                newSpeed.y *= 2;
             Player.rb.velocity = newSpeed;
 
             lockedForAir = BonkLockAir;
             lockedForGround = BonkLock;
+            sounds.PainVoicePlay();
         }
         else if (!ResetSpeedOnHit && !Physics.Raycast(transform.position, CharacterAnimator.transform.forward, 6, RecoilFrom))
         {

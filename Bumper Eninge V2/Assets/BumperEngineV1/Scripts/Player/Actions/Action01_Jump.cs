@@ -91,11 +91,11 @@ public class Action01_Jump : MonoBehaviour
 
     }
 
-    public void InitialEvents(Vector3 normaltoJump, bool Grounded = false)
+    public void InitialEvents(Vector3 normaltoJump, bool Grounded = false, float verticalSpeed = 0)
     {
         if(!Actions.lockDoubleJump)
         {
-
+            Actions.RollPressed = false;
             cancelled = false;
             Jumping = true;
             Counter = 0;
@@ -111,6 +111,9 @@ public class Action01_Jump : MonoBehaviour
             //If performing a grounded jump. JumpCount may be changed externally to allow for this.
             if (Grounded || jumpCount == -1)
             {
+                if (verticalSpeed < 0)
+                    verticalSpeed = 0;
+                Player.rb.velocity = new Vector3(Player.rb.velocity.x * 0.92f, verticalSpeed, Player.rb.velocity.z * 0.92f);
 
                 if (Actions.eventMan != null) Actions.eventMan.JumpsPerformed += 1;
 
@@ -282,20 +285,10 @@ public class Action01_Jump : MonoBehaviour
             if (Actions.CamResetPressed)
             {
                 if (Actions.moveX == 0 && Actions.moveY == 0 && Player.b_normalSpeed < 5f)
-                    Cam.Cam.FollowDirection(6, 14f, -10, 0);
+                    Cam.Cam.FollowDirection(10, 14f, -10, 0);
             }
 
-            //Do a LightDash Attack
-            if (Actions.InteractPressed)
-            {
-                if(Actions.Action07Control.HasTarget)
-                {
-                    Actions.CamResetPressed = false;
-                    JumpBall.SetActive(false);
-                    Actions.ChangeAction(7);
-                    Actions.Action07.InitialEvents();
-                }
-            }
+         
 
             //Do a DropDash 
 
@@ -443,7 +436,14 @@ public class Action01_Jump : MonoBehaviour
         //SnapOutOfGround to make sure you do jump
         transform.position += (InitialNormal * 0.3f);
 
-        Player.rb.velocity = new Vector3(Player.rb.velocity.x * 0.92f, Mathf.Clamp(Player.rb.velocity.y * 0.1f, 0.1f, 5), Player.rb.velocity.z * 0.92f);
+        Vector3 newVec;
+
+        if (Player.rb.velocity.y > 10)
+            newVec = new Vector3(Player.rb.velocity.x * 0.92f, Player.rb.velocity.y, Player.rb.velocity.z * 0.92f);
+        else;
+            newVec = new Vector3(Player.rb.velocity.x * 0.92f, Mathf.Clamp(Player.rb.velocity.y * 0.1f, 0.1f, 5), Player.rb.velocity.z * 0.92f);
+
+        Player.rb.velocity = newVec;
 
         GameObject JumpDashParticleClone = Instantiate(Tools.JumpDashParticle, Tools.FeetPoint.position, Quaternion.identity) as GameObject;
 

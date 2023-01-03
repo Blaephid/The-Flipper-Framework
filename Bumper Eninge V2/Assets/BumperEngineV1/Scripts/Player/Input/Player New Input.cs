@@ -28,6 +28,15 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
             ""id"": ""f1b0d390-548c-40f2-b41b-86886bebf97b"",
             ""actions"": [
                 {
+                    ""name"": ""MovementKeyboard"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""1e62ca3a-5262-431d-91c9-06b03b50652d"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Movement"",
                     ""type"": ""PassThrough"",
                     ""id"": ""8529a1de-9bd1-4518-ad3b-cfe8981821d7"",
@@ -174,61 +183,6 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""2D Vector"",
-                    ""id"": ""fb5cbc24-8601-4a65-a9c2-4db3c76ffd7d"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""76367a0f-590c-4d53-8f28-38b7a7223b42"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""00170574-7924-46c3-bcf3-143e7ee9e936"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""5886dc75-636e-4627-9a71-d2e2b43a2562"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""00971f9f-84a4-4b88-bb6e-8bf164cec730"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
                 },
                 {
                     ""name"": """",
@@ -570,6 +524,72 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                     ""action"": ""SpinChargePressed"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aa8183c3-ca21-4f14-8493-c0ded5f814c3"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpinChargePressed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""fb5cbc24-8601-4a65-a9c2-4db3c76ffd7d"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementKeyboard"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""76367a0f-590c-4d53-8f28-38b7a7223b42"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementKeyboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""00170574-7924-46c3-bcf3-143e7ee9e936"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementKeyboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""5886dc75-636e-4627-9a71-d2e2b43a2562"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementKeyboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""00971f9f-84a4-4b88-bb6e-8bf164cec730"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementKeyboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -578,6 +598,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
 }");
         // CharacterActions
         m_CharacterActions = asset.FindActionMap("CharacterActions", throwIfNotFound: true);
+        m_CharacterActions_MovementKeyboard = m_CharacterActions.FindAction("MovementKeyboard", throwIfNotFound: true);
         m_CharacterActions_Movement = m_CharacterActions.FindAction("Movement", throwIfNotFound: true);
         m_CharacterActions_Roll = m_CharacterActions.FindAction("Roll", throwIfNotFound: true);
         m_CharacterActions_RightStep = m_CharacterActions.FindAction("Right Step", throwIfNotFound: true);
@@ -652,6 +673,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
     // CharacterActions
     private readonly InputActionMap m_CharacterActions;
     private ICharacterActionsActions m_CharacterActionsActionsCallbackInterface;
+    private readonly InputAction m_CharacterActions_MovementKeyboard;
     private readonly InputAction m_CharacterActions_Movement;
     private readonly InputAction m_CharacterActions_Roll;
     private readonly InputAction m_CharacterActions_RightStep;
@@ -671,6 +693,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
     {
         private @PlayerNewInput m_Wrapper;
         public CharacterActionsActions(@PlayerNewInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @MovementKeyboard => m_Wrapper.m_CharacterActions_MovementKeyboard;
         public InputAction @Movement => m_Wrapper.m_CharacterActions_Movement;
         public InputAction @Roll => m_Wrapper.m_CharacterActions_Roll;
         public InputAction @RightStep => m_Wrapper.m_CharacterActions_RightStep;
@@ -695,6 +718,9 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_CharacterActionsActionsCallbackInterface != null)
             {
+                @MovementKeyboard.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMovementKeyboard;
+                @MovementKeyboard.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMovementKeyboard;
+                @MovementKeyboard.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMovementKeyboard;
                 @Movement.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMovement;
                 @Movement.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMovement;
                 @Movement.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMovement;
@@ -744,6 +770,9 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
             m_Wrapper.m_CharacterActionsActionsCallbackInterface = instance;
             if (instance != null)
             {
+                @MovementKeyboard.started += instance.OnMovementKeyboard;
+                @MovementKeyboard.performed += instance.OnMovementKeyboard;
+                @MovementKeyboard.canceled += instance.OnMovementKeyboard;
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
@@ -795,6 +824,7 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
     public CharacterActionsActions @CharacterActions => new CharacterActionsActions(this);
     public interface ICharacterActionsActions
     {
+        void OnMovementKeyboard(InputAction.CallbackContext context);
         void OnMovement(InputAction.CallbackContext context);
         void OnRoll(InputAction.CallbackContext context);
         void OnRightStep(InputAction.CallbackContext context);

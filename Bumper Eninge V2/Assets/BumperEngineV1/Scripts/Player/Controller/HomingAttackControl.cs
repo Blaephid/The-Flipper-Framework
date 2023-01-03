@@ -136,19 +136,19 @@ public class HomingAttackControl : MonoBehaviour
     {
         HasTarget = false;
         TargetObject = null;
-        TargetObject = GetClosestTarget(TargetLayer, TargetSearchDistance, FieldOfView);
+        TargetObject = GetClosestTarget(TargetLayer, TargetSearchDistance);
         previousTarget = TargetObject;
 
     }
 
-    public GameObject GetClosestTarget(LayerMask layer, float Radius, float FOV)
+    public GameObject GetClosestTarget(LayerMask layer, float Radius)
     {
         ///First we use a spherecast to get every object with the given layer in range. Then we go through the
         ///available targets from the spherecast to find which is the closest to Sonic.
 
         GameObject closestTarget = null;
         distance = 0f;
-
+        int checkLimit = 0;
         RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, 8f, Camera.main.transform.forward, Radius * 1.5f, layer);
         foreach (RaycastHit t in NewTargetsInRange)
         {
@@ -158,9 +158,14 @@ public class HomingAttackControl : MonoBehaviour
                 Transform target = t.collider.transform;
                 closestTarget = checkTarget(target, Radius, closestTarget, 1.5f);
             }
+
+            checkLimit++;
+            if (checkLimit > 3)
+                break;
         }
-      
-        if(closestTarget == null)
+
+        checkLimit = 0;
+        if (closestTarget == null)
         {
             Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, Radius, layer);
             foreach (Collider t in TargetsInRange)
@@ -172,6 +177,10 @@ public class HomingAttackControl : MonoBehaviour
                     Transform target = t.gameObject.transform;
                     closestTarget = checkTarget(target, Radius, closestTarget, 1);
                 }
+
+                checkLimit++;
+                if (checkLimit > 3)
+                    break;
 
             }
 

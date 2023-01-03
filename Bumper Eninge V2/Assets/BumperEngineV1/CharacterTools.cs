@@ -15,6 +15,7 @@ public class CharacterTools : MonoBehaviour
     public GameObject characterCapsule;
     public GameObject crouchCapsule;
     public GameObject pullItems;
+    public GameObject faceHit;
     public GameObject SpinDashBall;
 
 

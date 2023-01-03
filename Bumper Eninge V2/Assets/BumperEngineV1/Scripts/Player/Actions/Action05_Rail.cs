@@ -192,10 +192,15 @@ namespace SplineMesh
             if (dotdir > 0)
             {
                 backwards = false;
+
+                if (isZipLine && range > Rail_int.RailSpline.Length - 5)
+                    backwards = true;
             }
             else
             {
                 backwards = true;
+                if (isZipLine && range < 5)
+                    backwards = false;
             }
 
 
@@ -299,7 +304,7 @@ namespace SplineMesh
 
                     //Player.transform.eulerAngles = new Vector3(0,1,0);
                     Actions.Action01.jumpCount = -1;
-                    Actions.Action01.InitialEvents(sample.up);
+                    Actions.Action01.InitialEvents(sample.up, true, Player.rb.velocity.y);
                     Actions.ChangeAction(1);
 
                     if (Actions.Action02 != null)
@@ -343,7 +348,7 @@ namespace SplineMesh
                 //If above a certain speed, the player breaks depending it they're presseing the skid button.
                 if (Time.timeScale != 0 && !isZipLine)
                 {
-                    isBraking = Actions.SkidPressed;
+                    //isBraking = Actions.SkidPressed;
 
                 }
                 else

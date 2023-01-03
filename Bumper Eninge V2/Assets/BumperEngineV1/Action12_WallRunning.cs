@@ -8,8 +8,9 @@ public class Action12_WallRunning : MonoBehaviour
 
     [Header("Basic Resources")]
     Animator CharacterAnimator;
+    Transform characterTransform;
     PlayerBhysics Player;
-    PlayerBinput Input;
+    PlayerBinput Inp;
     ActionManager Actions;
     SonicSoundsControl sounds;
     HomingAttackControl homingControl;
@@ -32,7 +33,6 @@ public class Action12_WallRunning : MonoBehaviour
     RaycastHit wallToClimb;
     [HideInInspector] public float ClimbingSpeed;
     float climbWallDistance;
-    bool upwards;
     float scrapingSpeed;
     bool SwitchToGround;
     float SwitchToJump = 0;
@@ -44,6 +44,7 @@ public class Action12_WallRunning : MonoBehaviour
     bool wallOnRight;
 
     [Header("Wall Rules")]
+    bool holdingWall;
     float WallCheckDistance;
     float minHeight;
     LayerMask wallLayerMask;
@@ -138,7 +139,7 @@ public class Action12_WallRunning : MonoBehaviour
     private void FixedUpdate()
     {
         //Cancel action by letting go of skid after .5 seconds
-        if ((!Actions.SkidPressed && Counter > 0.9f && (Climbing || Running)) || Player.Grounded)
+        if ((!holdingWall && Counter > 0.9f && (Climbing || Running)) || Player.Grounded)
         {
             ExitWall(true);
         }
@@ -171,6 +172,31 @@ public class Action12_WallRunning : MonoBehaviour
 
     }
 
+    bool inputtingToWall(Vector3 wallDirection)
+    {
+        Vector3 transformedInput;
+        transformedInput = (CharacterAnimator.transform.rotation * Inp.inputPreCamera);
+        transformedInput = transform.InverseTransformDirection(transformedInput);
+        transformedInput.y = 0.0f;
+        //Debug.DrawRay(transform.position, transformedInput * 10, Color.red);
+
+        if (Inp.trueMoveInput.sqrMagnitude > 0.4f)
+        {
+            //Debug.Log(Vector3.Dot(wallDirection, Inp.trueMoveInput));
+            if(Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized) > 0.05f)
+            {
+                return true;
+            }
+            else
+            {
+                if(Vector3.Dot(wallDirection.normalized, transformedInput.normalized) > 0.05f)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     ///
     /// Setup on wall
@@ -185,22 +211,21 @@ public class Action12_WallRunning : MonoBehaviour
         dropShadow.SetActive(false);
 
         //Set the climbing speed based on player's speed
-        ClimbingSpeed = Player.HorizontalSpeedMagnitude * 0.6f;
+        ClimbingSpeed = Player.HorizontalSpeedMagnitude * 0.8f;
         ClimbingSpeed *= climbModi;
         RunningSpeed = 0f;
 
         //If moving up, increases climbing speed
        
-        Cam.Cam.SetCamera(-wallHit.normal, 2f, -30, 0.001f, 30);
-        Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 3f;
+        //Cam.Cam.SetCamera(-wallHit.normal, 2f, -30, 0.001f, 30);
+       // Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 3f;
  
         scrapingSpeed = 5f;
-        upwards = true;
 
 
         //Sets min and max climbing speed
         ClimbingSpeed = 8f * (int)(ClimbingSpeed / 8);
-        ClimbingSpeed = Mathf.Clamp(ClimbingSpeed, 40, 180);
+        ClimbingSpeed = Mathf.Clamp(ClimbingSpeed, 48, 176);
 
         climbWallDistance = frontDistance;
 
@@ -213,7 +238,7 @@ public class Action12_WallRunning : MonoBehaviour
     void RunningSetup(RaycastHit wallHit, bool wallRight)
     {
         Vector3 wallDirection = wallHit.point - transform.position;
-        Player.rb.AddForce(wallDirection * 20f);
+        Player.rb.AddForce(wallDirection * 10f);
 
         transform.position = wallHit.point + (wallHit.normal * distanceFromWall);
 
@@ -232,13 +257,28 @@ public class Action12_WallRunning : MonoBehaviour
         if (wallRight)
         {
             wallOnRight = true;
-            CharacterAnimator.transform.right = wallDirection.normalized;
+            //CharacterAnimator.transform.right = wallDirection.normalized;
+
+            Vector3 wallForward = Vector3.Cross(wallHit.normal, transform.up);
+            if ((CharacterAnimator.transform.forward - wallForward).sqrMagnitude > (CharacterAnimator.transform.forward - -wallForward).sqrMagnitude)
+                wallForward = -wallForward;
+
+            //Set direction facing
+            CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
+            characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
         }
         //If running with the wall on the left
         else
         {
             wallOnRight = false;
-            CharacterAnimator.transform.right = -wallDirection.normalized;
+            //CharacterAnimator.transform.right = wallDirection.normalized;
+            Vector3 wallForward = Vector3.Cross(wallHit.normal, transform.up);
+            if ((CharacterAnimator.transform.forward - wallForward).sqrMagnitude > (CharacterAnimator.transform.forward - -wallForward).sqrMagnitude)
+                wallForward = -wallForward;
+
+            //Set direction facing
+            CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
+            characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
         }
 
         //Camera
@@ -258,7 +298,7 @@ public class Action12_WallRunning : MonoBehaviour
     void ClimbingInteraction()
     {
         //Prevents normal movement in input and physics
-        Input.LockInputForAWhile(0f, false);
+        Inp.LockInputForAWhile(0f, false);
 
         //Updates the status of the wall being climbed.
         if (Counter < 0.3f)
@@ -266,11 +306,11 @@ public class Action12_WallRunning : MonoBehaviour
         else
             wall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, 3f, wallLayerMask);
 
-
         //If they reach the top of the wall
         if (!wall)
         {
             Debug.Log("Lost Wall");
+            Debug.DrawRay(new Vector3(transform.position.x, transform.position.y -0.3f, transform.position.z), CharacterAnimator.transform.forward * climbWallDistance * 1.3f, Color.red, 20f);
             CharacterAnimator.SetInteger("Action", 0);
             CharacterAnimator.SetBool("Grounded", false);
 
@@ -282,6 +322,7 @@ public class Action12_WallRunning : MonoBehaviour
         }
         else
         {
+            holdingWall = inputtingToWall(wallToClimb.point - transform.position);
             //Esnures the player faces the wall
             CharacterAnimator.transform.rotation = Quaternion.LookRotation(-wallToClimb.normal, CharacterAnimator.transform.up);
             currentWall = wallToClimb.collider.gameObject;
@@ -305,7 +346,7 @@ public class Action12_WallRunning : MonoBehaviour
     void RunningInteraction()
     {
         //Prevents normal movement in input and physics
-        Input.LockInputForAWhile(0f, false);
+        Inp.LockInputForAWhile(0f, false);
         
         //Detect current wall
         if (wallOnRight)
@@ -346,18 +387,27 @@ public class Action12_WallRunning : MonoBehaviour
 
             StartCoroutine(loseWall());
 
-            //Debug.Log("Lost the Wall");
-            Debug.DrawRay(transform.position, -CharacterAnimator.transform.right * WallCheckDistance * 1.6f, Color.red, 20f);
+            Debug.Log("Lost the Wall");
+            if(wallOnRight)
+                Debug.DrawRay(transform.position, CharacterAnimator.transform.right * WallCheckDistance * 2f, Color.blue, 20f);
+            else
+                Debug.DrawRay(transform.position, -CharacterAnimator.transform.right * WallCheckDistance * 2f, Color.blue, 20f);
 
         }
         else
+        {
+            Cam.Cam.FollowDirection(15, 14f, 0, 0);
+            holdingWall = inputtingToWall(wallToRun.point - transform.position);
             currentWall = wallToRun.collider.gameObject;
+        }
+            
 
         //If jumping off wall
         if (Actions.JumpPressed)
         {
             wall = false;
             transform.position = new Vector3(wallToRun.point.x + wallToRun.normal.x * 2.5f, wallToRun.point.y + wallToRun.normal.y * 1.5f, wallToRun.point.z + wallToRun.normal.z * 2.5f);
+            CharacterAnimator.transform.forward = Vector3.Lerp(CharacterAnimator.transform.forward, wallToRun.normal, 0.3f);
 
             //This bool causes the jump physics to be done next frame, making things much smoother. 2 Represents jumping from a wallrun
             SwitchToJump = 2;
@@ -372,11 +422,11 @@ public class Action12_WallRunning : MonoBehaviour
     void ClimbingPhysics()
     {
         //After a short pause / when climbing
-        if (Counter > 0.3f && upwards)
+        if (Counter > 0.15f)
         {
 
             //After being on the wall for too long.
-            if (ClimbingSpeed < -20f)
+            if (ClimbingSpeed < -5f)
             {
                 CharacterAnimator.SetInteger("Action", 0);
                 //Debug.Log("Out of Speed");
@@ -401,27 +451,27 @@ public class Action12_WallRunning : MonoBehaviour
 
             //Adds a changing deceleration
             if (Counter > 1.2)
-                ClimbingSpeed -= 1.8f + (Counter / 1.5f);
+                ClimbingSpeed -= 2.5f;
             else if (Counter > 0.9)
-                ClimbingSpeed -= 2.3f;
+                ClimbingSpeed -= 2.0f;
             else if (Counter > 0.7)
-                ClimbingSpeed -= 1.7f;
+                ClimbingSpeed -= 1.5f;
             else if (Counter > 0.4)
-                ClimbingSpeed -= 1.2f;
+                ClimbingSpeed -= 1.0f;
             else
-                ClimbingSpeed -= 0.7f;
+                ClimbingSpeed -= 0.5f;
 
 
-            if (ClimbingSpeed < 0f)
-            {
-                Cam.Cam.FollowDirection(10f, 5f);
+            //if (ClimbingSpeed < 0f)
+            //{
+            //    //Cam.Cam.FollowDirection(10f, 6f);
 
-                //Decreases climbing speed decrease if climbing down.
-                if (ClimbingSpeed < -40f)
-                    ClimbingSpeed += 1.2f;
-                else if (ClimbingSpeed < -1f)
-                    ClimbingSpeed += .6f;
-            }
+            //    //Decreases climbing speed decrease if climbing down.
+            //    if (ClimbingSpeed < -40f)
+            //        ClimbingSpeed += 1.2f;
+            //    else if (ClimbingSpeed < -1f)
+            //        ClimbingSpeed += .6f;
+            //}
 
 
             //If the wall stops being very steep
@@ -441,44 +491,18 @@ public class Action12_WallRunning : MonoBehaviour
 
         }
 
-        //If scraping down the wall
-        else if (Counter > 0.3f)
-        {
-            Vector3 newVec = new Vector3(0f, scrapingSpeed, 0f);
-            newVec += (CharacterAnimator.transform.forward * 8f);
-
-            //Decreases scraping Speed
-            scrapingSpeed *= 0.8f * scrapeModi;
-            if (ClimbingSpeed > 30f)
-                ClimbingSpeed -= 0.2f;
-
-            //After scraping enough, switch to climbing upwards
-            if (scrapingSpeed > -8f)
-            {
-                Cam.Cam.SetCamera(CharacterAnimator.transform.forward, 2f, -20, 0.5f);
-                Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 3f;
-                upwards = true;
-            }
-
-            else
-                //Sets velocity
-                Player.rb.velocity = newVec;
-
-            //Debug.Log("Scraping Speed is " + scrapingSpeed);
-        }
-
         //Adds a little delay before the climb, to attatch to wall more and add a flow
         else
         {
             Vector3 newVec = new Vector3(0f, scrapingSpeed, 0f);
             if (CharacterAnimator.transform.rotation == Quaternion.LookRotation(-wallToClimb.normal, Vector3.up))
                 newVec += (-wallToClimb.normal * 45f);
-            else
-                newVec = (wallToClimb.normal * 4f);
+            //else
+            //    newVec = (wallToClimb.normal * 4f);
 
             //Decreases scraping Speed
             scrapingSpeed *= 0.95f * scrapeModi;
-            ClimbingSpeed -= 0.1f;
+            //ClimbingSpeed -= 0.1f;
 
 
             //Sets velocity
@@ -518,24 +542,26 @@ public class Action12_WallRunning : MonoBehaviour
         previLoc = transform.position;
 
         //Set direction facing
-        CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallNormal, 0.15f));
+        CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
+        characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallNormal, 0.2f));
+
 
         //Decide speed to slide down wall.
         if (scrapingSpeed > 10 && scrapingSpeed < 20)
         {
-            scrapingSpeed *= (1.011f * scrapeModi);
+            scrapingSpeed *= (1.001f * scrapeModi);
         }
         else if (scrapingSpeed > 29)
         {
-            scrapingSpeed *= (1.018f * scrapeModi);
+            scrapingSpeed *= (1.0015f * scrapeModi);
         }
         else if (scrapingSpeed > 2)
         {
-            scrapingSpeed += (Time.deltaTime * 10f * scrapeModi);
+            scrapingSpeed += (1.0018f * scrapeModi);
         }
         else
         {
-            scrapingSpeed += (Time.deltaTime * 5f * scrapeModi);
+            scrapingSpeed += (1.002f * scrapeModi);
         }
 
         //Apply scraping speed
@@ -593,6 +619,8 @@ public class Action12_WallRunning : MonoBehaviour
         Player.GravityAffects = true;
         Cam.Cam.LockHeight = true;
         camTarget.position = constantTarget.position;
+        CharacterAnimator.transform.up = Vector3.up;
+        characterTransform.rotation = Quaternion.identity;
 
         if (immediately && Actions.Action != 1)
             Actions.ChangeAction(0);
@@ -605,6 +633,7 @@ public class Action12_WallRunning : MonoBehaviour
 
         if (SwitchToJump == 2)
         {
+            
             jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.95f);
             //Debug.Log(jumpAngle);
             if (wallOnRight)
@@ -636,7 +665,7 @@ public class Action12_WallRunning : MonoBehaviour
         Player.rb.velocity = CharacterAnimator.transform.up * jumpSpeed;
 
         ExitWall(false);
-        Input.LockInputForAWhile(25f, false);
+        Inp.LockInputForAWhile(25f, false);
 
         while (true)
         {
@@ -684,10 +713,11 @@ public class Action12_WallRunning : MonoBehaviour
         Player = GetComponent<PlayerBhysics>();
         Actions = GetComponent<ActionManager>();
         Cam = GetComponent<CameraControl>();
-        Input = GetComponent<PlayerBinput>();
+        Inp = GetComponent<PlayerBinput>();
         Control = GetComponent<wallRunningControl>();
 
         CharacterAnimator = Tools.CharacterAnimator;
+        characterTransform = Tools.PlayerSkinTransform;
         sounds = Tools.SoundControl;
         JumpBall = Tools.JumpBall;
         dropShadow = Tools.dropShadow;

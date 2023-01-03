@@ -95,8 +95,11 @@ public class SonicSoundsControl : MonoBehaviour {
     }
     public void SpinningSound()
     {
-        Source2.clip = Spin;
-        Source2.Play();
+        if(!(Source2.clip == SpinDashRelease && Source2.isPlaying))
+        {
+            Source2.clip = Spin;
+            Source2.Play();
+        }
     }
     public void SpinDashSound()
     {

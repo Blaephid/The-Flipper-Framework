@@ -35,6 +35,7 @@ public class Action00_Regular : MonoBehaviour {
 	AnimationCurve CoyoteTimeBySpeed;
 	bool coyoteInEffect = false;
 	Vector3 coyoteRememberDir;
+	float coyoteRememberSpeed;
 	bool inCoyote = false;
 
 	//Used to prevent rolling sound from constantly playing.
@@ -61,7 +62,7 @@ public class Action00_Regular : MonoBehaviour {
 
     private void OnDisable()
     {
-		cancelCoyote();
+		//cancelCoyote();
     }
 
     void FixedUpdate()
@@ -113,6 +114,7 @@ public class Action00_Regular : MonoBehaviour {
 			inCoyote = false;
 			coyoteInEffect = true;
 			coyoteRememberDir = Player.GroundNormal;
+			coyoteRememberSpeed = Player.rb.velocity.y;
 
 			if (Actions.Action02 != null) {
 			Actions.Action02.HomingAvailable = true;
@@ -139,9 +141,10 @@ public class Action00_Regular : MonoBehaviour {
 		{
 			
 			if(Player.Grounded)
-				JumpAction.InitialEvents(Player.GroundNormal, true);
+				JumpAction.InitialEvents(Player.GroundNormal, true, Player.rb.velocity.y);
 			else
-				JumpAction.InitialEvents(coyoteRememberDir, true);
+				JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
+
 			Actions.ChangeAction(1);
 		}
 		
@@ -182,7 +185,7 @@ public class Action00_Regular : MonoBehaviour {
 				sounds.SpinningSound();
 				rollingCapsule.SetActive(true);
 				characterCapsule.SetActive(false);
-				rollCounter = 0f;
+				//rollCounter = 0f;
 			}
 			Player.isRolling = true;
 			Rolling = true;
@@ -196,7 +199,7 @@ public class Action00_Regular : MonoBehaviour {
 				characterCapsule.SetActive(true);
 				rollingCapsule.SetActive(false);
 				Rolling = false;
-				rollCounter = 0.6f;
+				rollCounter = 0f;
 			}
 			Player.isRolling = false;
 
@@ -262,7 +265,7 @@ public class Action00_Regular : MonoBehaviour {
 		//Enable Quickstep right or left
 		if (Actions.RightStepPressed && !quickstepManager.enabled)
         {
-			if (Player.HorizontalSpeedMagnitude > 15f)
+			if (Player.HorizontalSpeedMagnitude > 10f)
 			{
 
 				quickstepManager.initialEvents(true);
@@ -272,7 +275,7 @@ public class Action00_Regular : MonoBehaviour {
 
 		else if (Actions.LeftStepPressed && !quickstepManager.enabled)
 		{
-			if (Player.HorizontalSpeedMagnitude > 15f)
+			if (Player.HorizontalSpeedMagnitude > 10f)
 			{
 				quickstepManager.initialEvents(false);
 				quickstepManager.enabled = true;
@@ -281,7 +284,7 @@ public class Action00_Regular : MonoBehaviour {
 
 
 		//The actions the player can take while the air		
-		if (!Player.Grounded)
+		if (!Player.Grounded && !coyoteInEffect)
 		{
 			//Do a homing attack
 			if (Actions.Action02.HomingAvailable && Actions.Action02Control.HasTarget && Actions.HomingPressed)
@@ -312,8 +315,9 @@ public class Action00_Regular : MonoBehaviour {
 			}
 
 			//Do a Double Jump
-			else if (Actions.JumpPressed && Actions.Action01.canDoubleJump && !coyoteInEffect)
+			else if (Actions.JumpPressed && Actions.Action01.canDoubleJump)
 			{
+				
 				//Debug.Log("Do a double jump");
 				Actions.Action01.jumpCount = 0;
 				Actions.Action01.InitialEvents(Vector3.up);
@@ -348,14 +352,7 @@ public class Action00_Regular : MonoBehaviour {
 			}
 		}
 
-		//Do a LightDash Attack
-		if (Actions.InteractPressed && Actions.Action07Control.HasTarget)
-		{
-			Debug.Log("LightDash");
-			Actions.CamResetPressed = false;
-			Actions.ChangeAction (7);
-			Actions.Action07.InitialEvents ();
-		}
+		
 
 		//Do a Spin Kick
 		else if (Actions.SpecialPressed && Player.Grounded)
@@ -369,9 +366,10 @@ public class Action00_Regular : MonoBehaviour {
 		inCoyote = true;
 		coyoteInEffect = true;
 		float waitFor = CoyoteTimeBySpeed.Evaluate(Player.HorizontalSpeedMagnitude / 100);
+
 		yield return new WaitForSeconds(waitFor);
-		if(!Player.Grounded)
-			coyoteInEffect = false;
+		
+		coyoteInEffect = false;
     }
 
 	public void cancelCoyote()

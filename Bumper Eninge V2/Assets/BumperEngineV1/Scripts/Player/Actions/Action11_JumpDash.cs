@@ -75,19 +75,6 @@ public class Action11_JumpDash : MonoBehaviour
                     Aspeed = XZmag;
                 }
 
-
-                Vector3 inputDirection = Player.MoveInput.normalized;
-
-                Vector3 lateralVelocity = new Vector3(Player.rb.velocity.x, 0.0f, Player.rb.velocity.z);
-
-                float deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
-                float turnRate = Player.TurnRateOverAngle.Evaluate(deviationFromInput);
-
-                Quaternion lateralToInput = Mathf.Approximately(lateralVelocity.sqrMagnitude, 0.0f)
-                                            ? Quaternion.identity
-                                            : Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
-                
-
                 Direction = CharacterAnimator.transform.forward;
                 //Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 40f, 0f);
 
@@ -131,27 +118,20 @@ public class Action11_JumpDash : MonoBehaviour
 
         Timer += Time.deltaTime;
 
-        if (Player.MoveInput != Vector3.zero)
+        if (Inp.inputPreCamera != Vector3.zero)
         {
             if(Timer > 0.03)
             {
-                Vector3 inputDirection = Player.MoveInput.normalized;
-
-                Vector3 lateralVelocity = new Vector3(Player.rb.velocity.x, 0.0f, Player.rb.velocity.z);
-
-                float deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
-                float turnRate = Player.TurnRateOverAngle.Evaluate(deviationFromInput);
-
-                Quaternion lateralToInput = Mathf.Approximately(lateralVelocity.sqrMagnitude, 0.0f)
-                                            ? Quaternion.identity
-                                            : Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
+                
+                Vector3 inputDirection = new Vector3(0, 0, Inp.inputPreCamera.z);
+                Debug.Log(Inp.inputPreCamera);
                 
 
-                Direction = CharacterAnimator.transform.forward;
-                Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 6 * Time.deltaTime, 0f);
+                //Direction = CharacterAnimator.transform.forward;
+                Direction = Vector3.RotateTowards(Direction, CharacterAnimator.transform.right, Mathf.Clamp(Inp.inputPreCamera.x * 4, -2.5f, 2.5f) * Time.deltaTime, 0f);
             }           
 
-            Direction.y = Player.fallGravity.y * 0.17f;
+            Direction.y = Player.fallGravity.y * 0.18f;
           
         }
         else

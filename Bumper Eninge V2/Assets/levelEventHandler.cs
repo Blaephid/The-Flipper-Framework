@@ -20,6 +20,8 @@ public class levelEventHandler : MonoBehaviour
     public List<GameObject> hintRings;
     public int Deaths;
 
+    float timeBetween;
+    public float thisTime;
     public int JumpsPerformed;
     public int RollsPerformed;
     public int DoubleJumpsPerformed;
@@ -34,6 +36,21 @@ public class levelEventHandler : MonoBehaviour
     public int RailsGrinded;
     public int ringRoadsPerformed;
 
+    public int TotDeaths;
+
+    public int TotJumpsPerformed;
+    public int TotRollsPerformed;
+    public int TotDoubleJumpsPerformed;
+    public int TotSpinChargesPeformed;
+    public int TotquickstepsPerformed;
+    public int TotBouncesPerformed;
+    public int TotdropChargesPerformed;
+    public int TotjumpDashesPerformed;
+    public int TothomingAttacksPerformed;
+    public int TotwallRunsPerformed;
+    public int TotwallClimbsPerformed;
+    public int TotRailsGrinded;
+    public int TotringRoadsPerformed;
     public List<int> deathsPerCheckPoint;
     public int currentDeathsPerCP;
     
@@ -58,45 +75,57 @@ public class levelEventHandler : MonoBehaviour
             curScene = scene.name;
         }
 
-        timeInLevel += Time.deltaTime;
+        timeBetween += Time.deltaTime;
     }
 
-    public void LogEvents()
+    public void LogEvents(bool levelEnd, string levelEvent = "")
     {
         if(ActivelySendingEvents)
         {
-            string levelEvent = "";
-            if (scene.name == "TutorialLevel")
+            if(levelEnd)
             {
-                levelEvent = "Tutorial_Complete";
-            }
-            else if (scene.name == "AltitudeLimit")
-            {
-                levelEvent = "Altitude_Limit_Complete";
-            }
+                if (scene.name == "TutorialLevel")
+                {
+                    levelEvent = "Tutorial_Complete";
+                }
+                else if (scene.name == "AltitudeLimit")
+                {
+                    levelEvent = "Altitude_Limit_Complete";
+                }
+            }           
 
             if (levelEvent != "")
             {
+                increaseTotals();
 
-                Dictionary<string, object> parameters =
-                    new Dictionary<string, object>()
-                    {
-                    { "Total_Deaths", Deaths }
-                    };
-                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+                Dictionary<string, object> parameters;
 
-
-                parameters = new Dictionary<string, object>() { { "DeathsPerCheckpoint", deathsPerCheckPoint } };
-                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-                parameters = new Dictionary<string, object>() { { "Time_to_beat", timeInLevel } };
-                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
-
-                if (levelEvent == "Tutorial_Complete")
+                if(levelEnd)
                 {
-                    parameters = new Dictionary<string, object>() { { "HintRingsHit", hintRingsHit } };
+
+                    replaceTrackers();
+
+                    parameters = new Dictionary<string, object>() { { "DeathsPerCheckpoint", deathsPerCheckPoint } };
+                    AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                    parameters = new Dictionary<string, object>() { { "Time_to_beat", timeInLevel } };
+                    AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                    if (levelEvent == "Tutorial_Complete")
+                    {
+                        parameters = new Dictionary<string, object>() { { "HintRingsHit", hintRingsHit } };
+                        AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+                    }
+                }
+
+                else
+                {
+                    parameters = new Dictionary<string, object>() { { "Time_between_Checks", timeBetween } };
                     AnalyticsManager.SendCustomEvent(levelEvent, parameters);
                 }
+
+                parameters = new Dictionary<string, object>() { { "Deaths", Deaths } };
+                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
 
                 parameters = new Dictionary<string, object>() { { "Jumps_Performed", JumpsPerformed } };
                 AnalyticsManager.SendCustomEvent(levelEvent, parameters);
@@ -135,7 +164,10 @@ public class levelEventHandler : MonoBehaviour
                 AnalyticsManager.SendCustomEvent(levelEvent, parameters);
             }
 
+            
             ResetTrackers();
+
+            if (levelEnd) resetTotalTrackers();
         }
         
     }
@@ -152,11 +184,71 @@ public class levelEventHandler : MonoBehaviour
         currentDeathsPerCP = 0;
     }
 
-    public void ResetTrackers()
+    void increaseTotals()
+    {
+        timeInLevel += timeBetween;
+        TotDeaths += Deaths;
+        TotJumpsPerformed += JumpsPerformed;
+        TotRollsPerformed += RollsPerformed;
+        TotDoubleJumpsPerformed += DoubleJumpsPerformed;
+        TotSpinChargesPeformed += SpinChargesPeformed;
+        TotquickstepsPerformed += quickstepsPerformed;
+        TotdropChargesPerformed += dropChargesPerformed;
+        TotjumpDashesPerformed += jumpDashesPerformed;
+        TothomingAttacksPerformed += homingAttacksPerformed;
+        TotwallClimbsPerformed += wallClimbsPerformed;
+        TotwallRunsPerformed += wallRunsPerformed;
+        TotRailsGrinded += RailsGrinded;
+        TotringRoadsPerformed += ringRoadsPerformed;
+
+    }
+
+    void replaceTrackers()
+    {
+        Deaths = TotDeaths;
+        JumpsPerformed = TotJumpsPerformed;
+        RollsPerformed = TotRollsPerformed;
+        DoubleJumpsPerformed = TotDoubleJumpsPerformed;
+        SpinChargesPeformed = TotSpinChargesPeformed;
+        quickstepsPerformed = TotquickstepsPerformed;
+        dropChargesPerformed = TotdropChargesPerformed;
+        jumpDashesPerformed = TotjumpDashesPerformed;
+        homingAttacksPerformed = TothomingAttacksPerformed;
+        wallClimbsPerformed = TotwallClimbsPerformed;
+        wallRunsPerformed = TotwallRunsPerformed;
+        RailsGrinded = TotRailsGrinded;
+        ringRoadsPerformed = TotringRoadsPerformed;
+
+    }
+
+
+    public void resetTotalTrackers()
     {
         timeInLevel = 0;
         hintRingsHit = 0;
         Deaths = 0;
+
+        TotJumpsPerformed = 0;
+        TotRollsPerformed = 0;
+        TotDoubleJumpsPerformed = 0;
+        TotSpinChargesPeformed = 0;
+        TotquickstepsPerformed = 0;
+        TotdropChargesPerformed = 0;
+        TotjumpDashesPerformed = 0;
+        TothomingAttacksPerformed = 0;
+        TotwallRunsPerformed = 0;
+        TotwallClimbsPerformed = 0;
+        TotRailsGrinded = 0;
+        TotringRoadsPerformed = 0;
+
+        deathsPerCheckPoint.Clear();
+        currentDeathsPerCP = 0;
+    }
+
+    public void ResetTrackers()
+    {
+        Deaths = 0;
+        timeBetween = 0;
 
         JumpsPerformed = 0;
         RollsPerformed = 0;
@@ -171,7 +263,5 @@ public class levelEventHandler : MonoBehaviour
         RailsGrinded = 0;
         ringRoadsPerformed = 0;
 
-        deathsPerCheckPoint.Clear();
-        currentDeathsPerCP = 0;
     }
 }

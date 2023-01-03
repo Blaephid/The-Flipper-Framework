@@ -18,6 +18,7 @@ public class SpeedPadData : MonoBehaviour
     public bool ResetRotation = true;
     public bool AffectCamera = true;
     public Spline path;
+    public bool setInputForwards;
 
 }
 

@@ -14,6 +14,7 @@ public class Action07_RingRoad : MonoBehaviour {
 	PlayerBhysics Player;
 	PlayerBinput Inp;
 
+
 	GameObject JumpBall;
 	
     public float skinRotationSpeed = 1;
@@ -55,7 +56,7 @@ public class Action07_RingRoad : MonoBehaviour {
 			
 		if (Action.Action07Control.HasTarget && Target != null)
 		{
-			Target = LightDashControl.TargetObject.transform;
+			Target = Action.Action07Control.TargetObject.transform;
 		}
 			
 	}
@@ -71,28 +72,33 @@ public class Action07_RingRoad : MonoBehaviour {
 
 		//Set Animation Angle
 		Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
-		Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-		CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+		if (VelocityMod != Vector3.zero)
+		{
+			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
+			CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+		}
+	
 
 	}
 
     void FixedUpdate()
     {
+		
 		//Timer += 1;
 
 		Inp.LockInputForAWhile(1f, true);
 
 		//CharacterAnimator.SetInteger("Action", 1);
-		if (Action.Action07Control.HasTarget) 
+		if (Action.Action07Control.TargetObject  != null) 
 		{
-			Target = LightDashControl.TargetObject.transform;
+			Target = Action.Action07Control.TargetObject.transform;
 			direction = Target.position - transform.position;
 			Player.rb.velocity = direction.normalized * DashSpeed;
 
-			GetComponent<CameraControl>().Cam.FollowDirection(2, 14f, -10,0);
+			GetComponent<CameraControl>().Cam.FollowDirection(4, 14f, -10,0);
 		}
-		//End homing attck if on air for too long
-		if (!Action.Action07Control.HasTarget)
+
+		else
 		{
 			float EndingSpeedResult = 0;
 			////Debug.Log (InitialVelocityMagnitude);

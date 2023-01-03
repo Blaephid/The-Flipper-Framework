@@ -205,7 +205,7 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 1
     - serializedVersion: 3
-      time: 0.16157259
+      time: 0.19142641
       value: -0.0009829272
       inSlope: 0.022542754
       outSlope: 0.022542754
@@ -214,8 +214,26 @@ MonoBehaviour:
       inWeight: 0.8263136
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.8
-      value: 1.0013041
+      time: 0.38522387
+      value: 0.15871315
+      inSlope: 0.7293063
+      outSlope: 0.7293063
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.46485794
+      value: 0.12568764
+      inSlope: -0.023259591
+      outSlope: -0.023259591
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.46213272
+    - serializedVersion: 3
+      time: 0.79476583
+      value: 0.5028606
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -223,13 +241,13 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
+      time: 0.9947658
+      value: 0.50155646
+      inSlope: 0.0036733367
+      outSlope: 0.0036733367
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.9915078
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -247,8 +265,17 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.46155268
     - serializedVersion: 3
-      time: 0.13791138
-      value: 0.9503908
+      time: 0.03957746
+      value: 4.892557
+      inSlope: -8.060095
+      outSlope: -8.060095
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.08367783
+      value: 0.84022236
       inSlope: 0.006761905
       outSlope: 0.006761905
       tangentMode: 0
@@ -258,8 +285,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0.9
       value: 0.75
-      inSlope: -0.2629495
-      outSlope: -0.2629495
+      inSlope: -0.110522985
+      outSlope: -0.110522985
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -400,14 +427,14 @@ MonoBehaviour:
     m_RotationOrder: 4
   UtopiaIntensity: 180
   UtopiaInitialInputLerpSpeed: 10
-  SlopeEffectLimit: 0.9
+  SlopeEffectLimit: 0.85
   StandOnSlopeLimit: 0.8
-  SlopePower: -1.5
-  SlopeRunningAngleLimit: 0.5
+  SlopePower: -1.4
+  SlopeRunningAngleLimit: 0.4
   SlopeSpeedLimit: 110
   UphillMultiplier: 0.6
   DownhillMultiplier: 0.5
-  StartDownhillMultiplier: -1.8
+  StartDownhillMultiplier: -1.7
   SlopePowerOverSpeed:
     serializedVersion: 2
     m_Curve:
@@ -454,8 +481,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.6708069
-      value: 0.9930725
+      time: 1.1545639
+      value: 0.99627686
       inSlope: 0.08583242
       outSlope: 0.08583242
       tangentMode: 0
@@ -463,17 +490,17 @@ MonoBehaviour:
       inWeight: 0.38432837
       outWeight: 0
     - serializedVersion: 3
-      time: 1.9999809
-      value: 1.485193
-      inSlope: 0.14320901
-      outSlope: 0.14320901
+      time: 3.2279782
+      value: 1.2090323
+      inSlope: 0.05310603
+      outSlope: 0.05310603
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.24094588
-      outWeight: 0.29123962
+      outWeight: 0.15733339
     - serializedVersion: 3
-      time: 9.972819
-      value: 2.0164518
+      time: 9.970589
+      value: 1.4004413
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -509,8 +536,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0.13208008
+      time: -0.055567384
+      value: 0.17466688
       inSlope: 0.020998187
       outSlope: 0.020998187
       tangentMode: 0
@@ -518,8 +545,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 1
     - serializedVersion: 3
-      time: 0.17226174
-      value: 0.5039319
+      time: 0.05459109
+      value: 0.27913892
       inSlope: 0.11625686
       outSlope: 0.11625686
       tangentMode: 0
@@ -527,8 +554,8 @@ MonoBehaviour:
       inWeight: 0.6097365
       outWeight: 0.8034213
     - serializedVersion: 3
-      time: 0.3285334
-      value: 0.5253792
+      time: 0.2259537
+      value: 0.28955412
       inSlope: 0.00007561424
       outSlope: 0.00007561424
       tangentMode: 0
@@ -536,8 +563,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.45208052
     - serializedVersion: 3
-      time: 1.1373773
-      value: 0.6771713
+      time: 1.0347975
+      value: 0.44134623
       inSlope: 0.046384305
       outSlope: 0.046384305
       tangentMode: 0
@@ -545,8 +572,8 @@ MonoBehaviour:
       inWeight: 1
       outWeight: 1
     - serializedVersion: 3
-      time: 1.6401281
-      value: 0.79562485
+      time: 1.5375484
+      value: 0.5597998
       inSlope: 0.06541628
       outSlope: 0.06541628
       tangentMode: 0
@@ -554,8 +581,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 1
     - serializedVersion: 3
-      time: 2.0217695
-      value: 0.8012805
+      time: 1.9191898
+      value: 0.56545544
       inSlope: 0.007892168
       outSlope: 0.007892168
       tangentMode: 0
@@ -571,7 +598,7 @@ MonoBehaviour:
   StepLayerMask:
     serializedVersion: 2
     m_Bits: 12289
-  TargetSearchDistance: 40
+  TargetSearchDistance: 44
   TargetLayer:
     serializedVersion: 2
     m_Bits: 131072
@@ -581,15 +608,84 @@ MonoBehaviour:
   FieldOfView: 0.2
   IconScale: 1.5
   IconDistanceScaling: 0.2
-  FacingAmount: 0.6
+  FacingAmount: 0.91
   CanDashDuringFall: 1
   isAdditive: 1
-  MaximumSpeed: 20
-  MaximumSlope: 0.85
+  MaximumSpeed: 120
+  MaximumSlope: 0.8
+  SpeedLossByTime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0074626864
+      value: 0.2639012
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ForceGainByAngle:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -1.010315
+      value: 1.3019104
+      inSlope: -0.023843944
+      outSlope: -0.023843944
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.13983905
+    - serializedVersion: 3
+      time: -0.013602474
+      value: 0.97951126
+      inSlope: -0.21849114
+      outSlope: -0.21849114
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.39215928
+    - serializedVersion: 3
+      time: 0.9
+      value: 0.9
+      inSlope: 0.017258594
+      outSlope: 0.017258594
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 1
+      value: 0.9
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   BounceUpMaxSpeed: 75
   BounceConsecutiveFactor: 1.05
-  RingTargetSearchDistance: 60
-  LightDashIconScale: 0
+  RingTargetSearchDistance: 8
+  RingRoadIconScale: 0
+  RingRoadLayer:
+    serializedVersion: 2
+    m_Bits: 262144
   BouncingPower: 45
   HomingBouncingPower: 45
   EnemyHomingStoppingPowerWhenAdditive: 40
@@ -600,7 +696,7 @@ MonoBehaviour:
   BonkOnWalls:
     serializedVersion: 2
     m_Bits: 1
-  BonkUpwardsForce: 12
+  BonkUpwardsForce: 16
   BonkBackwardsForce: 18
   BonkControlLock: 30
   BonkControlLockAir: 60
@@ -628,10 +724,10 @@ MonoBehaviour:
   RailPlayerBrakePower: 0.7
   SkinOffsetPosRail: {x: 0, y: -0.4, z: 0}
   SkinOffsetPosZip: {x: 0, y: -0.4, z: 0}
-  OffsetRail: 2.05
+  OffsetRail: 1.85
   OffsetZip: -5
   WallCheckDistance: 1.2
-  minHeight: 2
+  minHeight: 8
   wallLayerMask:
     serializedVersion: 2
     m_Bits: 1

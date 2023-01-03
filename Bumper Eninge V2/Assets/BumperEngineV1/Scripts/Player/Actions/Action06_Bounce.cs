@@ -40,6 +40,7 @@ public class Action06_Bounce : MonoBehaviour {
     {
 		OriginalBounceFactor = BounceConsecutiveFactor;
 
+
 		if (Player == null)
         {
 			Tools = GetComponent<CharacterTools>();
@@ -56,6 +57,7 @@ public class Action06_Bounce : MonoBehaviour {
     {
 		if(!Action.lockBounce)
         {
+	
 			HasBounced = false;
 			memoriseSpeed = Player.HorizontalSpeedMagnitude;
 			nextSpeed = memoriseSpeed;
@@ -144,13 +146,16 @@ public class Action06_Bounce : MonoBehaviour {
 		Action.ChangeAction(0);
 	}
 
+
     void FixedUpdate()
     {
-        bool raycasthit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.95f) + Player.negativeGHoverHeight, Player.Playermask);
+
+		bool raycasthit = Physics.SphereCast(transform.position, 0.5f, -transform.up, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.75f) + Player.negativeGHoverHeight, Player.Playermask);
+        //bool raycasthit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.95f) + Player.negativeGHoverHeight, Player.Playermask);
 		bool groundhit = Player.Grounded || raycasthit;
 
 		if (nextSpeed > memoriseSpeed / 2)
-			nextSpeed /= 1.001f;
+			nextSpeed /= 1.0005f;
 
 
         //End Action
@@ -158,19 +163,24 @@ public class Action06_Bounce : MonoBehaviour {
 			
 			HasBounced = false;
 
-			StartCoroutine(Action.lockBounceOnly(BounceCoolDown));
+			float coolDown = BounceCoolDown;
+			coolDown -= 0.75f * (int)(Player.HorizontalSpeedMagnitude / 15);
+			coolDown = Mathf.Clamp(coolDown, 5, 15);
+
+			Debug.Log(coolDown);
+			StartCoroutine(Action.lockBounceOnly(coolDown));
 			Action.ChangeAction (0);
 		} 
 
 		else if ((groundhit && !HasBounced) || (!groundhit && Player.rb.velocity.y > DropSpeed * 0.4f && !HasBounced)) 
 		{
 			
-			if (Action.SkidPressed)
-            {
-				Stomp();
-			}
+			//if (Action.SkidPressed)
+   //         {
+			//	Stomp();
+			//}
 
-			else
+			if(true)
 			{
 				if (Player.Grounded)
 				{

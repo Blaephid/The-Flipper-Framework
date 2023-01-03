@@ -389,7 +389,7 @@ public class HedgeCamera : MonoBehaviour
     {
         if (Actions.moveCamX >= 0.1 || Actions.moveCamX <= -0.1)
         {
-            afterMoveDelay = 0.4f;
+            afterMoveDelay = 0.3f;
         }
         else if (afterMoveDelay > 0)
             afterMoveDelay -= Time.deltaTime;

@@ -3505,7 +3505,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.64, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2745638396109536827}
   m_Father: {fileID: 5227808175180613460}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5638,6 +5639,7 @@ MonoBehaviour:
   characterCapsule: {fileID: 1605683383104138}
   crouchCapsule: {fileID: 1794423812473573934}
   pullItems: {fileID: 5511731744889478320}
+  faceHit: {fileID: 1734021237647397774}
   SpinDashBall: {fileID: 6401681417729965595}
   shield: {fileID: 1118500399814704}
   homingIcons: {fileID: 1118507794600760}
@@ -6157,6 +6159,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: b5a2c673-34a7-4de0-805b-06900520bba4
     m_ActionName: CharacterActions/New action
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114870394340389206}
+        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+        m_MethodName: MoveInputKeyboard
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 1e62ca3a-5262-431d-91c9-06b03b50652d
+    m_ActionName: CharacterActions/MovementKeyboard[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: CharacterActions
@@ -6174,6 +6192,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514900622d8654843bb4ebdbc2468f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputPreCamera: {x: 0, y: 0, z: 0}
+  trueMoveInput: {x: 0, y: 0, z: 0}
   InputLerpingRateOverSpeed:
     serializedVersion: 2
     m_Curve:
@@ -6298,7 +6318,6 @@ MonoBehaviour:
   SpecialPressed: 0
   LeftStepPressed: 0
   RightStepPressed: 0
-  SkidPressed: 0
   BouncePressed: 0
   InteractPressed: 0
   CamResetPressed: 0
@@ -6344,7 +6363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1313590d96251e46aaef7e509eb58d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinRotationSpeed: 8
+  skinRotationSpeed: 4
   jumpCount: 0
   StartJumpDuration: 0.2
   StartSlopedJumpDuration: 0.2
@@ -6408,7 +6427,7 @@ MonoBehaviour:
   MinimunCharge: 20
   MaximunCharge: 150
   SpinDashStillForce: 2000
-  ReleaseShakeAmmount: 0
+  ReleaseShakeAmmount: 1
 --- !u!114 &114016931776330826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6455,6 +6474,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentCam: {fileID: 0}
   DistanceIncrements: 0.05
+  currentUpreel: {fileID: 0}
   feetPoint: {fileID: 8412749811221693294}
 --- !u!114 &114433309075840560
 MonoBehaviour:
@@ -6497,7 +6517,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1979695856965714}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4cb7380e161bb143a468b4c54776ce5, type: 3}
+  m_Script: {fileID: 11500000, guid: 7da38614258ea5d49bfeeaa31bf99fff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Targets: []
@@ -18639,6 +18659,52 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!1 &1734021237647397774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2745638396109536827}
+  - component: {fileID: 2073363148858434723}
+  m_Layer: 8
+  m_Name: FaceHit
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2745638396109536827
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734021237647397774}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.67, z: 1.18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4089204406196930}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &2073363148858434723
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734021237647397774}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.8
+  m_Height: 2.21
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1745414025729946303
 GameObject:
   m_ObjectHideFlags: 0
@@ -18981,7 +19047,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
   m_LocalRotation: {x: -0.041879464, y: 0.10989423, z: -0.35363552, w: 0.9279608}
-  m_LocalPosition: {x: -3223.5542, y: 273.36377, z: 591.5074}
+  m_LocalPosition: {x: -2449.9048, y: 145.5938, z: 2944.8782}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -33640,7 +33706,7 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 58885ae997f3b4c4790631ba8fb51e59, type: 2}
-  - {fileID: 2100000, guid: 58885ae997f3b4c4790631ba8fb51e59, type: 2}
+  - {fileID: 2100000, guid: 8873bc167d4a19f4fbda2cbf8ae2bd86, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -36057,8 +36123,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hintText: {fileID: 4168508894794686874}
-  TextDelay: 0.006
-  FadeSpread: 5
+  TextDelay: 0.0008
+  FadeSpread: 4
   BoxAnimator: {fileID: 8293263248948855508}
   currentHint: {fileID: 0}
 --- !u!95 &8293263248948855508
@@ -41036,9 +41102,9 @@ RectTransform:
   m_Father: {fileID: 2898383001104422707}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.1974, y: 0.0211}
+  m_AnchorMin: {x: 0.52, y: 0.5}
+  m_AnchorMax: {x: 0.48, y: 0.5}
+  m_AnchoredPosition: {x: 0.1973877, y: 0.0211}
   m_SizeDelta: {x: 583.3231, y: 144.2158}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1546295951867108335

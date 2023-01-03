@@ -22,11 +22,15 @@ public class Action03_SpinCharge : MonoBehaviour
     SkinnedMeshRenderer SpinDashBall;
     Transform PlayerSkinTransform;
 
-
+    float time = 0;
     [HideInInspector] public float SpinDashChargingSpeed = 0.3f;
     [HideInInspector] public float MinimunCharge = 10;
     [HideInInspector] public float MaximunCharge = 100;
     [HideInInspector] public float SpinDashStillForce = 20f;
+    AnimationCurve SpeedLossByTime;
+    AnimationCurve ForceGainByAngle;
+
+    bool tapped = false;
     float charge;
 
     Quaternion CharRot;
@@ -50,13 +54,16 @@ public class Action03_SpinCharge : MonoBehaviour
     public void InitialEvents()
     {
         sounds.SpinDashSound();
-        charge = 0;
+        charge = 20;
+        time = 0;
         pressedCurrently = true;
+        tapped = true;
     }
 
     void FixedUpdate()
     {
         charge += SpinDashChargingSpeed;
+        time += Time.deltaTime;
 
         //Lock camera on behind
         //Cam.Cam.FollowDirection(3, 14f, -10, 0);
@@ -67,7 +74,9 @@ public class Action03_SpinCharge : MonoBehaviour
         effects.DoSpindash(1, SpinDashChargedEffectAmm * charge, charge,
         effects.GetSpinDashDust(), MaximunCharge);
 
-        Player.rb.velocity /= SpinDashStillForce;
+        Player.MoveInput *= 0.4f;
+        float stillForce = (SpinDashStillForce * SpeedLossByTime.Evaluate(time)) + 1;
+        Player.rb.velocity /= stillForce;
 
         //Counter to exit after not pressing button for a bit;
         
@@ -85,6 +94,7 @@ public class Action03_SpinCharge : MonoBehaviour
         {
             if (!pressedCurrently)
             {
+                tapped = false;
                 charge += (SpinDashChargingSpeed * 2.5f);
             }
 
@@ -116,8 +126,11 @@ public class Action03_SpinCharge : MonoBehaviour
 
     IEnumerator delayRelease()
     {
+        int waitFor = 14;
+        if (tapped)
+            waitFor = 8;
 
-        for (int s = 0; s < 18; s++)
+        for (int s = 0; s < waitFor; s++)
         {
             yield return new WaitForFixedUpdate();
             if(pressedCurrently)
@@ -143,12 +156,22 @@ public class Action03_SpinCharge : MonoBehaviour
         {
             
             sounds.SpinDashReleaseSound();
-            Player.rb.velocity = charge * (PlayerSkinTransform.forward);
+
+            Vector3 newForce = charge * (PlayerSkinTransform.forward);
+            float dif = Vector3.Dot(newForce.normalized, Player.rb.velocity.normalized);
+            
+            newForce *= ForceGainByAngle.Evaluate(dif);
+
+            Player.rb.velocity += newForce;
             //Player.MoveInput = new Vector3 (-1, 0, 0);
 
-            Actions.Action00.rollCounter = 0.2f;
+            CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player.rb.velocity.x + Player.rb.velocity.z) / 2));
+            CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
+
+            
             Actions.Action00.Rolling = true;
             Player.isRolling = true;
+            Actions.Action00.rollCounter = 0.3f;
 
             Actions.ChangeAction(0);
         }
@@ -160,7 +183,7 @@ public class Action03_SpinCharge : MonoBehaviour
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 0);
         CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
-        CharacterAnimator.SetFloat("GroundSpeed", 0);
+        //CharacterAnimator.SetFloat("GroundSpeed", 0);
         CharacterAnimator.SetBool("Grounded", true);
         CharacterAnimator.SetFloat("NormalSpeed", 0);
         BallAnimator.SetFloat("SpinCharge", charge);
@@ -172,13 +195,14 @@ public class Action03_SpinCharge : MonoBehaviour
 
         //Rotation
 
-        if (Player.RawInput.sqrMagnitude < 0.2f)
+        if (Player.RawInput.sqrMagnitude > 0.1f)
         {
+            
             CharRot = Quaternion.LookRotation(Player.MainCamera.transform.forward - Player.GroundNormal * Vector3.Dot(Player.MainCamera.transform.forward, Player.GroundNormal), Vector3.up);
         }
         else if (Player.rb.velocity != Vector3.zero)
         {
-            CharRot = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
+            //CharRot = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
         }
         CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * Actions.Action00.skinRotationSpeed);
 
@@ -206,6 +230,8 @@ public class Action03_SpinCharge : MonoBehaviour
         MinimunCharge = Tools.stats.MinimunCharge;
         MaximunCharge = Tools.stats.MaximunCharge;
         SpinDashStillForce = Tools.stats.SpinDashStillForce;
+        SpeedLossByTime = Tools.coreStats.SpeedLossByTime;
+        ForceGainByAngle = Tools.coreStats.ForceGainByAngle;
     }
     private void AssignTools()
     {
