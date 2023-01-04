@@ -60,12 +60,10 @@ public class quickstepHandler : MonoBehaviour
 			else
             {
 				DistanceToStep = Tools.stats.AirStepDistance;
-				DistanceToStep = Tools.stats.AirStepSpeed;
+				quickStepSpeed = Tools.stats.AirStepSpeed;
 				air = true;
 			}
-				
-
-			
+						
 		}
 		else
         {
@@ -85,7 +83,7 @@ public class quickstepHandler : MonoBehaviour
 			else
 			{
 				DistanceToStep = Tools.stats.AirStepDistance;
-				DistanceToStep = Tools.stats.AirStepSpeed;
+				quickStepSpeed = Tools.stats.AirStepSpeed;
 				air = true;
 			}
 
@@ -104,6 +102,8 @@ public class quickstepHandler : MonoBehaviour
 	
 		if (DistanceToStep > 0)
 		{
+			Debug.Log(DistanceToStep);
+
 			float stepSpeed = quickStepSpeed;
 
 			//Debug.Log(stepSpeed);
@@ -162,9 +162,9 @@ public class quickstepHandler : MonoBehaviour
 	IEnumerator CoolDown()
     {
 		if (Player.Grounded)
-			yield return new WaitForSeconds(0.06f);
+			yield return new WaitForSeconds(0.05f);
 		else
-			yield return new WaitForSeconds(0.25f);
+			yield return new WaitForSeconds(0.20f);
 
 		this.enabled = false;
     }

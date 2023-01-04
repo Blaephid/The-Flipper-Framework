@@ -160,8 +160,9 @@ public class LevelProgressControl : MonoBehaviour {
         if (col.tag == "GoalRing")
         {
             if (Actions.eventMan != null)
-            { 
-                Actions.eventMan.LogEvents(true);
+            {
+                StartCoroutine(Actions.eventMan.logEndEvents());
+         
             }
 
             readyForNextStage = true;
@@ -171,11 +172,23 @@ public class LevelProgressControl : MonoBehaviour {
 			{
 				Monitors_Interactions.HasShield = false;
 			}
-			SceneManager.LoadScene("StageCompleteScreen");
-		//	StageConpleteControl.LevelToGoNext = SceneManager.GetActiveScene ().buildIndex + 1;
-            col.GetComponent<AudioSource>().clip = GoalRingTouchingSound;
-            col.GetComponent<AudioSource>().loop = false;
-            col.GetComponent<AudioSource>().Play();
+
+            StartCoroutine(endLevel(col));
+			
         }
+    }
+
+    IEnumerator endLevel(Collider col)
+    {
+        for(int i = 0; i == 2; i++)
+        {
+            yield return new WaitForFixedUpdate();
+        }
+  
+        SceneManager.LoadScene("StageCompleteScreen");
+        //	StageConpleteControl.LevelToGoNext = SceneManager.GetActiveScene ().buildIndex + 1;
+        col.GetComponent<AudioSource>().clip = GoalRingTouchingSound;
+        col.GetComponent<AudioSource>().loop = false;
+        col.GetComponent<AudioSource>().Play();
     }
 }

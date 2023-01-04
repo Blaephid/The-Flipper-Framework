@@ -53,12 +53,12 @@ public class levelEventHandler : MonoBehaviour
     public int TotringRoadsPerformed;
     public List<int> deathsPerCheckPoint;
     public int currentDeathsPerCP;
-    
+
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -78,7 +78,14 @@ public class levelEventHandler : MonoBehaviour
         timeBetween += Time.deltaTime;
     }
 
-    public void LogEvents(bool levelEnd, string levelEvent = "")
+    public IEnumerator logEndEvents()
+    {
+        LogEvents(false, "END");
+        yield return new WaitForFixedUpdate();
+        LogEvents(true, "");
+    }
+
+    public void LogEvents(bool levelEnd, string checkPoint = "", string levelEvent = "")
     {
         if(ActivelySendingEvents)
         {
@@ -92,7 +99,11 @@ public class levelEventHandler : MonoBehaviour
                 {
                     levelEvent = "Altitude_Limit_Complete";
                 }
-            }           
+            }   
+            else if (checkPoint != "")
+            {
+                levelEvent = "Checkpoint_Reached";
+            }
 
             if (levelEvent != "")
             {
@@ -108,7 +119,10 @@ public class levelEventHandler : MonoBehaviour
                     parameters = new Dictionary<string, object>() { { "DeathsPerCheckpoint", deathsPerCheckPoint } };
                     AnalyticsManager.SendCustomEvent(levelEvent, parameters);
 
-                    parameters = new Dictionary<string, object>() { { "Time_to_beat", timeInLevel } };
+                    parameters = new Dictionary<string, object>() { { "Time_to_Beat", timeInLevel } };
+                    AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                    parameters = new Dictionary<string, object>() { { "Total_Deaths", Deaths } };
                     AnalyticsManager.SendCustomEvent(levelEvent, parameters);
 
                     if (levelEvent == "Tutorial_Complete")
@@ -118,14 +132,19 @@ public class levelEventHandler : MonoBehaviour
                     }
                 }
 
-                else
+                else if (checkPoint != "")
                 {
-                    parameters = new Dictionary<string, object>() { { "Time_between_Checks", timeBetween } };
+                    parameters = new Dictionary<string, object>() { { "Checkpoint_Designation", checkPoint } };
+                    AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                    parameters = new Dictionary<string, object>() { { "Time_Between_Checks", timeBetween } };
+                    AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+
+                    parameters = new Dictionary<string, object>() { { "Deaths", Deaths } };
                     AnalyticsManager.SendCustomEvent(levelEvent, parameters);
                 }
 
-                parameters = new Dictionary<string, object>() { { "Deaths", Deaths } };
-                AnalyticsManager.SendCustomEvent(levelEvent, parameters);
+                
 
                 parameters = new Dictionary<string, object>() { { "Jumps_Performed", JumpsPerformed } };
                 AnalyticsManager.SendCustomEvent(levelEvent, parameters);

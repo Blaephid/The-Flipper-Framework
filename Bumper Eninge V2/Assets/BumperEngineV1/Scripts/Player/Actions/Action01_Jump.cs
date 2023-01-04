@@ -23,6 +23,7 @@ public class Action01_Jump : MonoBehaviour
 
     public Vector3 InitialNormal { get; set; }
     public float Counter { get; set; }
+    public float ControlCounter;
     [HideInInspector] public int jumpCount;
     bool Jumping;
 
@@ -55,18 +56,6 @@ public class Action01_Jump : MonoBehaviour
 
     float jumpSlopeSpeed;
 
-    [Header("Detecting Wall Run")]
-    Action12_WallRunning WallRun;
-    float WallCheckDistance;
-    LayerMask wallLayerMask;
-    float CheckModifier;
-
-    private RaycastHit leftWallDetect;
-    private bool wallLeft;
-    private RaycastHit rightWallDetect;
-    private bool wallRight;
-    private RaycastHit frontWallDetect;
-    private bool wallFront;
 
     [HideInInspector] public float timeJumping;
     bool cancelled;
@@ -91,7 +80,7 @@ public class Action01_Jump : MonoBehaviour
 
     }
 
-    public void InitialEvents(Vector3 normaltoJump, bool Grounded = false, float verticalSpeed = 0)
+    public void InitialEvents(Vector3 normaltoJump, bool Grounded = false, float verticalSpeed = 0, float controlDelay = 0)
     {
         if(!Actions.lockDoubleJump)
         {
@@ -99,6 +88,7 @@ public class Action01_Jump : MonoBehaviour
             cancelled = false;
             Jumping = true;
             Counter = 0;
+            ControlCounter = controlDelay;
             jumpSlopeSpeed = 0;
             timeJumping = 0f;
             //Debug.Log(jumpCount);
@@ -333,6 +323,7 @@ public class Action01_Jump : MonoBehaviour
             {
                 if (Player.HorizontalSpeedMagnitude > 15f)
                 {
+                    Debug.Log("Step in Jump");
                     stepManager.initialEvents(true);
                     stepManager.enabled = true;
                 }
@@ -358,6 +349,7 @@ public class Action01_Jump : MonoBehaviour
     {
         //Jump action
         Counter += Time.fixedDeltaTime;
+        ControlCounter += Time.fixedDeltaTime;
         timeJumping += Time.fixedDeltaTime;
 
         //if (!Actions.JumpPressed && Counter < JumpDuration && Counter > 0.1f && Jumping)
@@ -470,8 +462,6 @@ public class Action01_Jump : MonoBehaviour
         doubleJumpSpeed = Tools.stats.doubleJumpSpeed;
 
 
-        wallLayerMask = Tools.coreStats.wallLayerMask;
-        WallCheckDistance = Tools.coreStats.WallCheckDistance;
 
         SkiddingStartPoint = Tools.stats.SkiddingStartPoint;
         AirSkiddingIntensity = Tools.stats.AirSkiddingForce;
@@ -484,7 +474,7 @@ public class Action01_Jump : MonoBehaviour
         Actions = GetComponent<ActionManager>();
         Cam = GetComponent<CameraControl>();
         homingControl = GetComponent<HomingAttackControl>();
-        WallRun = Actions.Action12;
+
         stepManager = GetComponent<quickstepHandler>();
 
         CharacterAnimator = Tools.CharacterAnimator;

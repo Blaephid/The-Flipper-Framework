@@ -257,7 +257,7 @@ public class HurtControl : MonoBehaviour
         if (col.gameObject == WallToBonk)
         {
             
-            Debug.Log("Attempt Bonk");
+            //Debug.Log("Attempt Bonk");
             if (!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
             {
                 transform.position = transform.position + (CharacterAnimator.transform.up * 1.5f);

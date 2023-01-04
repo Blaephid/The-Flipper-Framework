@@ -39,8 +39,8 @@ MonoBehaviour:
   doubleJumpDuration: 0.14
   StepSpeed: 55
   StepDistance: 8
-  AirStepSpeed: 45
-  AirStepDistance: 7
+  AirStepSpeed: 47
+  AirStepDistance: 6
   HomingAttackSpeed: 60
   HomingTimerLimit: 1
   HomingSuccessDelay: 0.3

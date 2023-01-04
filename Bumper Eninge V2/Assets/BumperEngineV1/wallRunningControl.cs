@@ -128,7 +128,7 @@ public class wallRunningControl : MonoBehaviour
         //Debug.Log(Vector3.Dot(CharacterAnimator.transform.forward, frontWallDetect.normal));
         if (Vector3.Dot(CharacterAnimator.transform.forward, frontWallDetect.normal) < -0.95f)
         {
-            Debug.Log("Trigger Wall Climb");
+            //Debug.Log("Trigger Wall Climb");
 
             //Enter wall run as a climb
             if (Actions.eventMan != null) Actions.eventMan.wallClimbsPerformed += 1;
@@ -144,7 +144,7 @@ public class wallRunningControl : MonoBehaviour
         float dis = Vector3.Distance(transform.position, leftWallDetect.point);
         if (Physics.Raycast(transform.position, Inp.trueMoveInput, dis + 0.1f, wallLayerMask))
         {
-            Debug.Log("Trigger Wall Left");
+            //Debug.Log("Trigger Wall Left");
             //Enter a wallrun with wall on left.
             WallRun.InitialEvents(false, leftWallDetect, false);
             if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
@@ -158,7 +158,7 @@ public class wallRunningControl : MonoBehaviour
         float dis = Vector3.Distance(transform.position, rightWallDetect.point);
         if (Physics.Raycast(transform.position, Inp.trueMoveInput, dis + 0.1f, wallLayerMask))
         {
-            Debug.Log("Trigger Wall Right");
+            //Debug.Log("Trigger Wall Right");
             //Enter a wallrun with wall on right.
             WallRun.InitialEvents(false, rightWallDetect, true);
             if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;

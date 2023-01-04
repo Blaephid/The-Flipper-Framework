@@ -292,7 +292,7 @@ public class Objects_Interaction : MonoBehaviour {
                 attack.AttackThing(col, "SpinDash");
                 
             }
-            if (CharacterAnimator.GetInteger("Action") == 1)
+            if (CharacterAnimator.GetInteger("Action") == 1 || CharacterAnimator.GetInteger("Action") == 11)
             {
                 attack.AttackThing(col, "SpinJump");
 

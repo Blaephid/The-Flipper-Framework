@@ -708,7 +708,7 @@ public class PlayerBhysics : MonoBehaviour
         {
             float airMod = 1;
             float airMoveMod = 1;
-            if(HorizontalSpeedMagnitude < 13)
+            if(HorizontalSpeedMagnitude < 15)
             {
                 airMod += 2f;
                 airMoveMod += 3f;
@@ -716,18 +716,26 @@ public class PlayerBhysics : MonoBehaviour
             if(Action.Action == 1)
             {
                 //Debug.Log(Action.Action01.timeJumping);
-                if (Action.Action01.timeJumping < 0.5)
+                if (Action.Action01.ControlCounter < 0.5)
                 {
                     airMod += 1f;
                     airMoveMod += 2f;
+                }
+                else if(Action.Action01.ControlCounter > 5)
+                {
+                    airMod -= 1f;
+                    airMoveMod -= 4f;
                 }
                     
             }
             else if(Action.Action == 6)
             {
                 airMod += 1f;
-                airMoveMod += 1f;
+                airMoveMod += 2.5f;
             }
+            airMoveMod = Mathf.Clamp(airMoveMod, 0.8f, 10);
+            airMod = Mathf.Clamp(airMod, 0.8f, 10);
+
             setVelocity = HandleGroundControl(AirControlAmmount * airMod, MoveInput * MoveAccell * airMoveMod);
         }
         else

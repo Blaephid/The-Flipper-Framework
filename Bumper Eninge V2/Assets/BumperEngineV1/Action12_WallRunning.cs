@@ -132,8 +132,11 @@ public class Action12_WallRunning : MonoBehaviour
                 ClimbingInteraction();
             }
         }
-        
-        
+
+        Debug.Log(characterTransform.eulerAngles);
+
+
+
     }
 
     private void FixedUpdate()
@@ -141,7 +144,10 @@ public class Action12_WallRunning : MonoBehaviour
         //Cancel action by letting go of skid after .5 seconds
         if ((!holdingWall && Counter > 0.9f && (Climbing || Running)) || Player.Grounded)
         {
-            ExitWall(true);
+            if (Running && !Player.Grounded)
+                StartCoroutine(loseWall());
+            else
+                ExitWall(true);
         }
 
         else if(wall)
@@ -322,9 +328,11 @@ public class Action12_WallRunning : MonoBehaviour
         }
         else
         {
+            
             holdingWall = inputtingToWall(wallToClimb.point - transform.position);
             //Esnures the player faces the wall
             CharacterAnimator.transform.rotation = Quaternion.LookRotation(-wallToClimb.normal, CharacterAnimator.transform.up);
+            previDir = CharacterAnimator.transform.forward;
             currentWall = wallToClimb.collider.gameObject;
         }
 
@@ -387,7 +395,7 @@ public class Action12_WallRunning : MonoBehaviour
 
             StartCoroutine(loseWall());
 
-            Debug.Log("Lost the Wall");
+            //Debug.Log("Lost the Wall");
             if(wallOnRight)
                 Debug.DrawRay(transform.position, CharacterAnimator.transform.right * WallCheckDistance * 2f, Color.blue, 20f);
             else
@@ -406,8 +414,8 @@ public class Action12_WallRunning : MonoBehaviour
         if (Actions.JumpPressed)
         {
             wall = false;
-            transform.position = new Vector3(wallToRun.point.x + wallToRun.normal.x * 2.5f, wallToRun.point.y + wallToRun.normal.y * 1.5f, wallToRun.point.z + wallToRun.normal.z * 2.5f);
-            CharacterAnimator.transform.forward = Vector3.Lerp(CharacterAnimator.transform.forward, wallToRun.normal, 0.3f);
+            transform.position = new Vector3(wallToRun.point.x + wallToRun.normal.x * 0.9f, wallToRun.point.y + wallToRun.normal.y * 0.5f, wallToRun.point.z + wallToRun.normal.z * 0.9f);
+            //CharacterAnimator.transform.forward = Vector3.Lerp(CharacterAnimator.transform.forward, wallToRun.normal, 0.3f);
 
             //This bool causes the jump physics to be done next frame, making things much smoother. 2 Represents jumping from a wallrun
             SwitchToJump = 2;
@@ -601,9 +609,12 @@ public class Action12_WallRunning : MonoBehaviour
 
     IEnumerator loseWall()
     {
-        Vector3 newVec = previDir * RunningSpeed;
-        yield return new WaitForFixedUpdate();
+        Debug.Log("loseWall");
 
+        Vector3 newVec = previDir * RunningSpeed;
+        yield return null;
+
+        CharacterAnimator.transform.forward = newVec.normalized;
         Player.rb.velocity = newVec;
         ExitWall(true);
     }
@@ -619,8 +630,13 @@ public class Action12_WallRunning : MonoBehaviour
         Player.GravityAffects = true;
         Cam.Cam.LockHeight = true;
         camTarget.position = constantTarget.position;
-        CharacterAnimator.transform.up = Vector3.up;
-        characterTransform.rotation = Quaternion.identity;
+        CharacterAnimator.transform.rotation = Quaternion.identity;
+        CharacterAnimator.transform.forward = previDir;
+        //characterTransform.up = CharacterAnimator.transform.up;
+       
+        characterTransform.localEulerAngles = Vector3.zero;
+
+       
 
         if (immediately && Actions.Action != 1)
             Actions.ChangeAction(0);
@@ -633,13 +649,39 @@ public class Action12_WallRunning : MonoBehaviour
 
         if (SwitchToJump == 2)
         {
+
+            jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.8f);
+
+            Vector3 wallNormal = wallToRun.normal;
+            Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
+
+
+            if ((CharacterAnimator.transform.forward - wallForward).sqrMagnitude > (CharacterAnimator.transform.forward - -wallForward).sqrMagnitude)
+                wallForward = -wallForward;
+
             
-            jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.95f);
+            Vector3 newVec = wallForward;
+            
+
             //Debug.Log(jumpAngle);
             if (wallOnRight)
-                Player.rb.AddForce(transform.right * 2f);
+            {
+                newVec = Vector3.Lerp(newVec, -CharacterAnimator.transform.right, 0.25f);
+                CharacterAnimator.transform.forward = Vector3.Lerp(newVec, -CharacterAnimator.transform.right, 0.1f);
+                newVec *= RunningSpeed;
+                //newVec += (-CharacterAnimator.transform.right * 0.3f);
+            }
             else
-                Player.rb.AddForce(-transform.right * 2f);
+            {
+                newVec = Vector3.Lerp(newVec, CharacterAnimator.transform.right, 0.25f);
+                CharacterAnimator.transform.forward = Vector3.Lerp(newVec, CharacterAnimator.transform.right, 0.1f);
+                newVec *= RunningSpeed;
+                //newVec += (CharacterAnimator.transform.right * 0.3f);
+            }
+
+            //CharacterAnimator.transform.forward = newVec.normalized;
+            Player.rb.velocity = newVec;
+
         }
         else
         {
@@ -652,7 +694,7 @@ public class Action12_WallRunning : MonoBehaviour
         ExitWall(false);
 
         Actions.Action01.jumpCount = -1;
-        Actions.Action01.InitialEvents(jumpAngle);
+        Actions.Action01.InitialEvents(jumpAngle, false, 0, 5);
         Actions.ChangeAction(1);
         Debug.Log("Start jump");
     }
