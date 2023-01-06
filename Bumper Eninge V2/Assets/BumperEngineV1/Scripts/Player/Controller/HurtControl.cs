@@ -18,6 +18,7 @@ public class HurtControl : MonoBehaviour
     GameObject JumpBall;
     Animator CharacterAnimator;
     Transform faceHitCollider;
+    float faceHitSize;
 
     [HideInInspector] public int InvencibilityTime;
     int counter;
@@ -45,6 +46,7 @@ public class HurtControl : MonoBehaviour
 
     [HideInInspector] public Image FadeOutImage;
     Vector3 InitialDir;
+    float previousSpeed;
 
 	void Awake () 
     {
@@ -108,7 +110,7 @@ public class HurtControl : MonoBehaviour
 
     void Bonk()
     {
-        faceHitCollider.forward = CharacterAnimator.transform.forward;
+        faceHitCollider.transform.forward = CharacterAnimator.transform.forward;
 
         if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 50) || (Actions.Action == 1 && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == 11 && Player.HorizontalSpeedMagnitude > 30) || (Actions.Action == 12 && Actions.Action12.RunningSpeed > 5))
         {
@@ -124,6 +126,7 @@ public class HurtControl : MonoBehaviour
             }
         }
         WallToBonk = null;
+        previousSpeed = Player.rb.velocity.sqrMagnitude;
     }
 
     void Death()
@@ -256,7 +259,7 @@ public class HurtControl : MonoBehaviour
         //Debug.Log(WallToBonk);
         if (col.gameObject == WallToBonk)
         {
-            
+           
             //Debug.Log("Attempt Bonk");
             if (!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
             {
@@ -266,10 +269,12 @@ public class HurtControl : MonoBehaviour
             {
                 transform.position = transform.position + (-CharacterAnimator.transform.up * 1.5f);
             }
-            else
+            else if (previousSpeed / 1.6f > Player.rb.velocity.sqrMagnitude || !Player.Grounded)
             {
                 StartCoroutine(giveChanceToWallClimb());
             }
+            
+            
         }
     }
 

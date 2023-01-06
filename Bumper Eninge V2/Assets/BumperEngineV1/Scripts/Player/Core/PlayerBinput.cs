@@ -96,6 +96,7 @@ public class PlayerBinput : MonoBehaviour {
             float currentInputSpeed = (!UtopiaTurning) ? InputLerpSpeed : UtopiaLerpingSpeed;
 
             inputPreCamera = moveInp;
+            trueMoveInput = GetTrueInput(moveInp);
             //Make movement relative to camera
 
             if (moveInp != Vector3.zero && !onPath)
@@ -108,15 +109,7 @@ public class PlayerBinput : MonoBehaviour {
                 Player.RawInput = transformedInput;
                 moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * currentInputSpeed);
             }
-            //else if (!onPath)
-            //{
-            //    //Debug.Log ("InputNull");
-            //    Vector3 transformedInput = Quaternion.FromToRotation(cam.up, Player.GroundNormal) * (cam.rotation * moveInp);
-            //    transformedInput = transform.InverseTransformDirection(transformedInput);
-            //    transformedInput.y = 0.0f;
-            //    Player.RawInput = transformedInput;
-            //    moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * (UtopiaLerpingSpeed * UtopiaIntensity));
-            //}
+     
 
             if (moveInp.x < 0.02 && moveInp.z < 0.02 && moveInp.x > -0.02 && moveInp.z > -0.02)
             {
@@ -124,7 +117,7 @@ public class PlayerBinput : MonoBehaviour {
             }
 
             move = moveInp;
-            trueMoveInput = move;
+            
         }
 
         //Lock Input Funcion
@@ -138,9 +131,23 @@ public class PlayerBinput : MonoBehaviour {
         InputExporter.y = moveInp.y;
     }
 
+    public Vector3 GetTrueInput(Vector3 inputDirection)
+    {
+        if(inputDirection.sqrMagnitude > 0.3f)
+        {
+            float _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                              Cam.Cam.transform.eulerAngles.y;
+
+            //The direction the player is inputting to move
+            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            return targetDirection;
+        }
+        return inputDirection;
+    }
+
     void FixedUpdate()
     {
-
+        Debug.DrawRay(transform.position, transform.forward * 5, Color.yellow);
         Debug.DrawRay(transform.position, trueMoveInput * 5, Color.cyan);
         Player.MoveInput = move;
 
@@ -148,7 +155,7 @@ public class PlayerBinput : MonoBehaviour {
 
     void LockedInputFunction(Vector3 oldMove)
     {
-        trueMoveInput = move;
+        
         move = Vector3.zero;
         LockedCounter += 1;
         Player.MoveDecell = 1;

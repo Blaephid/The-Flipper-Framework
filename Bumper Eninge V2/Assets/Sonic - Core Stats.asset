@@ -611,7 +611,7 @@ MonoBehaviour:
   FacingAmount: 0.91
   CanDashDuringFall: 1
   isAdditive: 1
-  MaximumSpeed: 120
+  MaximumSpeed: 200
   MaximumSlope: 0.8
   SpeedLossByTime:
     serializedVersion: 2
