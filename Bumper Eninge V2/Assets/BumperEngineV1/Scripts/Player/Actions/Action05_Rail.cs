@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace SplineMesh
 {
-    [RequireComponent(typeof(Spline))]
+    //[RequireComponent(typeof(Spline))]
     public class Action05_Rail : MonoBehaviour
     {
         PlayerBhysics Player;
@@ -12,7 +12,7 @@ namespace SplineMesh
         Animator CharacterAnimator;
         SonicSoundsControl Sounds;
         Quaternion CharRot;
-        Pathers_Interaction Rail_int;
+        [HideInInspector] public Pathers_Interaction Rail_int;
 
         GameObject jumpBall;
 
@@ -26,17 +26,15 @@ namespace SplineMesh
 
         [Header("Skin Rail Params")]
 
-        Transform Skin;
-        Transform CameraTarget;
-        Transform ConstantTarget;
-        Vector3 OGSkinLocPos;
-
         public float skinRotationSpeed;
-        Vector3 SkinOffsetPosRail = new Vector3(0, -0.4f, 0);
-        Vector3 SkinOffsetPosZip = new Vector3(0, -0.4f, 0);
         float OffsetRail = 2.05f;
         float OffsetZip = -2.05f;
 
+        public LayerMask railMask;
+        [HideInInspector] public float railmaxSpeed;
+        float railTopSpeed;
+        float decaySpeedLow;
+        float decaySpeedHigh;
         float MinStartSpeed = 60f;
         float PushFowardmaxSpeed = 80f;
         float PushFowardIncrements = 15f;
@@ -48,17 +46,23 @@ namespace SplineMesh
         float DownHillMultiplierCrouching = 0.6f;
         float DragVal = 0.0001f;
         float PlayerBrakePower = 0.95f;
+        float HopDelay;
+        float hopDistance = 12;
+        float decayTime;
+        AnimationCurve accelBySpeed;
+        float decaySpeed;
 
         float curvePosSlope { get; set; }
 
         // Setting up Values
         float timer = 0f;
         float PulleyRotate;
-        private float range = 0f;
+        [HideInInspector] public float range = 0f;
         Transform RailTransform;
         public bool OnRail { get; set; }
+        public AddOnRail ConnectedRails;
         [HideInInspector] public float PlayerSpeed;
-        bool backwards;
+        [HideInInspector] public bool backwards;
         int RailSound = 1;
         bool RailContactSound, isBraking, isSwitching;
         CurveSample sample;
@@ -66,11 +70,25 @@ namespace SplineMesh
         //float rotYFix;
         //Quaternion rot;
         Quaternion InitialRot;
+        Vector3 setOffSet;
 
         //Camera testing
         public float TargetDistance = 10;
         public float CameraLerp = 10;
 
+
+        //Stepping
+        bool canInput = true;
+        bool canHop = false;
+        float distanceToStep;
+        float stepSpeed = 3.5f;
+        bool steppingRight;
+
+        bool faceRight = true;
+
+        //Boosters
+        [HideInInspector] public bool Boosted;
+        [HideInInspector] public float boostTime;
 
         private void Awake()
         {
@@ -83,39 +101,58 @@ namespace SplineMesh
             }
 
             RailContactSound = false;
-            OGSkinLocPos = Skin.transform.localPosition;
+            //OGSkinLocPos = Skin.transform.localPosition;
 
+        }
+
+        IEnumerator DelayCollision()
+        {
+            yield return new WaitForSeconds(0.1f);
+            Physics.IgnoreLayerCollision(8, 23, false);
         }
 
         private void OnDisable()
         {
-            //CameraTarget.parent = ConstantTarget.parent;
-            //CameraTarget.position = ConstantTarget.position;
 
             Player.GravityAffects = true;
-            //Player.p_rigidbody.useGravity = true;
 
             OnRail = false;
             isZipLine = false;
             ZipBody = null;
             isBraking = false;
             RailContactSound = false;
-            Physics.IgnoreLayerCollision(8, 23, false);
+            StartCoroutine(DelayCollision());
             ////////Sounds.RailSoundStop();
+            ///
 
-            if (Skin != null)
-            {
-                Skin.transform.localPosition = OGSkinLocPos;
-                Skin.localRotation = Quaternion.identity;
-            }
+            Actions.RollPressed = false;
+            Actions.SpecialPressed = false;
+            Actions.BouncePressed = false;
+
+            transform.rotation = Quaternion.identity;
+
+            if(Player.rb.velocity != Vector3.zero)
+                CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
+
+            //if (Skin != null)
+            //{
+            //    Skin.transform.localPosition = OGSkinLocPos;
+            //    Skin.localRotation = Quaternion.identity;
+            //}
 
         }
 
-        public void InitialEvents(float Range, Transform RailPos, bool isZip)
+        public void InitialEvents(float Range, Transform RailPos, bool isZip, Vector3 thisOffset, AddOnRail addOn)
         {
-            //ignore further railcollisions
-            Physics.IgnoreLayerCollision(8, 23, true);
+            StartCoroutine(allowHop());
 
+            //ignore further railcollisions
+            Physics.IgnoreLayerCollision(this.gameObject.layer, 23, true);
+
+            canInput = true;
+            setOffSet = -thisOffset;
+
+            ConnectedRails = addOn;
             jumpBall.SetActive(false);
             Actions.JumpPressed = false;
 
@@ -123,22 +160,30 @@ namespace SplineMesh
             timer = PushFowardDelay;
             RailContactSound = false;
 
+            Boosted = false;
+            boostTime = 0;
+
             Player.GravityAffects = false;
             // Player.p_rigidbody.useGravity = false;
 
             //Animations and Skin Changes
             //CharacterAnimator.SetTrigger("GenericT");
+
             if (!isZipLine)
             {
-                Skin.transform.localPosition = Skin.transform.localPosition + SkinOffsetPosRail;
+                CharacterAnimator.SetBool("GrindRight", faceRight);
+                CharacterAnimator.SetInteger("Action", 10);
+                
+
             }
             else
             {
                 ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false;
-                Skin.transform.localPosition = Skin.transform.localPosition + SkinOffsetPosZip;
-               // CameraTarget.parent = null;
+                CharacterAnimator.SetInteger("Action", 9);
 
             }
+
+            CharacterAnimator.SetTrigger("HitRail");
 
             //fix for camera jumping
             //rotYFix = transform.rotation.eulerAngles.y;
@@ -153,7 +198,12 @@ namespace SplineMesh
             range = Range;
             RailTransform = RailPos;
             OnRail = true;
-            PlayerSpeed = Player.rb.velocity.magnitude;
+
+            if(distanceToStep <= 0)
+                PlayerSpeed = Player.SpeedMagnitude;
+
+       
+
             CurveSample sample = Rail_int.RailSpline.GetSampleAtDistance(range);
             float dotdir = Vector3.Dot(Player.rb.velocity.normalized, sample.tangent);
             Crouching = false;
@@ -167,24 +217,32 @@ namespace SplineMesh
 
 
             // Check if was Homingattack
-            if (Actions.Action == 2)
+            if (Actions.Action == ActionManager.States.Homing)
             {
                 PlayerSpeed = Actions.Action02.LateSpeed;
                 dotdir = Vector3.Dot(Actions.Action02.TargetDirection.normalized, sample.tangent);
-                //Debug.Log(dotdir);
+            }
+            else if (Actions.Action == ActionManager.States.DropCharge)
+            {
+                //dotdir = Vector3.Dot(Player.rb.velocity.normalized, sample.tangent);
+
+                float charge = Actions.Action08.externalDash();
+
+
+                PlayerSpeed = Mathf.Clamp(charge, PlayerSpeed + (charge / 6), 160);
             }
 
             //Cam.CamLagSet(4);
             ////////Cam.OverrideTarget.position = Skin.position;
 
             // make sure that Player wont have a shitty Speed...
-            if (dotdir > 0.85f || dotdir < -.85f)
+            if ((dotdir > 0.85f || dotdir < -.85f) && distanceToStep > 0)
             {
                 PlayerSpeed = Mathf.Abs(PlayerSpeed * 1);
             }
             else if (dotdir < 0.5 && dotdir > -.5f)
             {
-                PlayerSpeed = Mathf.Abs(PlayerSpeed * 0.5f);
+                PlayerSpeed = Mathf.Abs(PlayerSpeed * 0.8f);
             }
             PlayerSpeed = Mathf.Max(PlayerSpeed, MinStartSpeed);
 
@@ -209,15 +267,18 @@ namespace SplineMesh
         }
 
 
-
+        IEnumerator allowHop()
+        {
+            canHop = false;
+            yield return new WaitForSeconds(HopDelay);
+            canHop = true;
+        }
         void FixedUpdate()
         {
-            //Debug.Log(OnRail);
-
 
             if (OnRail)
             {
-
+                CharacterAnimator.SetBool("GrindRight", faceRight);
                 RailGrind();
             }
             else
@@ -229,7 +290,7 @@ namespace SplineMesh
                 CharacterAnimator.SetInteger("Action", 0);
                 CharacterAnimator.SetBool("Grounded", Player.Grounded);
 
-                Actions.ChangeAction(0);
+                Actions.ChangeAction(ActionManager.States.Regular);
                 if (Actions.Action02 != null)
                 {
                     Actions.Action02.HomingAvailable = true;
@@ -243,156 +304,118 @@ namespace SplineMesh
             SoundControl();
             //CameraFocus();
             //Set Animator Parameters
-            if (!isZipLine)
-            {
-                CharacterAnimator.SetInteger("Action", 1);
-
-            }
-            else
-            {
-                CharacterAnimator.SetInteger("Action", 0);
-
-            }
-            CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
-            CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
+            //CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+            CharacterAnimator.SetFloat("GroundSpeed", PlayerSpeed / Player.MaxSpeed);
             CharacterAnimator.SetBool("Grounded", false);
 
-            //Set Animation Angle
-            Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
-            if(VelocityMod != Vector3.zero)
-            {
-                Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-                CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
-            }
-
-
             // Actions Go Here
-            if (!Actions.isPaused)
+            if (!Actions.isPaused && canInput)
             {
-                timer += Time.deltaTime;
-
-                if (Actions.JumpPressed)
-                {
-                   //Cam.CamLagSet(0.8f, 0f);
-
-                    Vector3 jumpCorrectedOffset = (Skin.up * 3f); //Quaternion.LookRotation(Player.p_rigidbody.velocity, transform.up) * (transform.forward * 3.5f);
-
-
-                    if (isZipLine)
-                    {
-                        if (!backwards)
-                            Player.rb.velocity = sample.tangent * PlayerSpeed;
-                        else
-                            Player.rb.velocity = -sample.tangent * PlayerSpeed;
-
-                        jumpCorrectedOffset = -jumpCorrectedOffset;
-                        ZipBody.isKinematic = true;
-                        Player.GroundNormal = new Vector3(0f, 1f, 0f);
-
-                        StartCoroutine(Rail_int.JumpFromZipLine(ZipHandle, 1));
-
-                    }
-
-                    Player.transform.position += jumpCorrectedOffset;
-
-                    OnRail = false;
-
-                    isZipLine = false;
-
-
-                    //Player.transform.rotation = InitialRot;
-
-                    //Player.transform.eulerAngles = new Vector3(0,1,0);
-                    Actions.Action01.jumpCount = -1;
-                    Actions.Action01.InitialEvents(sample.up, true, Player.rb.velocity.y);
-                    Actions.ChangeAction(1);
-
-                    if (Actions.Action02 != null)
-                    {
-                        Actions.Action02.HomingAvailable = true;
-                    }
-
-                }
-
-
-                if (Actions.RollPressed && !isZipLine)
-                {
-                    //Crouch
-                    Crouching = true;
-                    CharacterAnimator.SetBool("isRolling", true);
-                }
-                else
-                {
-                    Crouching = false;
-                    CharacterAnimator.SetBool("isRolling", false);
-                }
-
-                if (Actions.SpecialPressed && !isZipLine)
-                {
-                    //ChangeSide
-
-                    if (timer > PushFowardDelay)
-                    {
-                        //Sounds.RailSoundStop();
-                        isSwitching = true;
-                        if (PlayerSpeed < PushFowardmaxSpeed)
-                        {
-                            PlayerSpeed += PushFowardIncrements;
-                        }
-                        CharacterAnimator.SetTrigger("GenericT3");
-                        timer = 0f;
-                    }
-                }
-                isSwitching = (timer < PushFowardDelay);
-
-                //If above a certain speed, the player breaks depending it they're presseing the skid button.
-                if (Time.timeScale != 0 && !isZipLine)
-                {
-                    //isBraking = Actions.SkidPressed;
-
-                }
-                else
-                {
-                    isBraking = false;
-                }
-
-                if (isZipLine)
-                {
-                    if (Actions.moveX > 0)
-                    {
-
-                    }
-                }
-
+                InputHandling();
 
             }
         }
 
+        void InputHandling()
+        {
+            timer += Time.deltaTime;
+
+            if (Actions.JumpPressed)
+            {
+                //Cam.CamLagSet(0.8f, 0f);
+
+                Vector3 jumpCorrectedOffset = (CharacterAnimator.transform.up * 1.5f); //Quaternion.LookRotation(Player.p_rigidbody.velocity, transform.up) * (transform.forward * 3.5f);
+
+
+                if (isZipLine)
+                {
+                    if (!backwards)
+                        Player.rb.velocity = sample.tangent * PlayerSpeed;
+                    else
+                        Player.rb.velocity = -sample.tangent * PlayerSpeed;
+
+                    jumpCorrectedOffset = -jumpCorrectedOffset;
+                    ZipBody.isKinematic = true;
+                    Player.GroundNormal = new Vector3(0f, 1f, 0f);
+
+                    StartCoroutine(Rail_int.JumpFromZipLine(ZipHandle, 1));
+
+                }
+
+                transform.position += jumpCorrectedOffset;
+
+                OnRail = false;
+
+                isZipLine = false;
+
+
+                //Player.transform.rotation = InitialRot;
+
+                //Player.transform.eulerAngles = new Vector3(0,1,0);
+                Actions.Action01.jumpCount = -1;
+                Actions.Action01.InitialEvents(sample.up, true, Player.rb.velocity.y);
+                Actions.ChangeAction(ActionManager.States.Jump);
+
+                if (Actions.Action02 != null)
+                {
+                    Actions.Action02.HomingAvailable = true;
+                }
+
+            }
+
+
+            if (Actions.RollPressed && !isZipLine)
+            {
+                //Crouch
+                Crouching = true;
+                CharacterAnimator.SetBool("isRolling", true);
+            }
+            else
+            {
+                Crouching = false;
+                CharacterAnimator.SetBool("isRolling", false);
+            }
+
+            if (Actions.SpecialPressed && !isZipLine)
+            {
+                //ChangeSide
+
+                if (timer > PushFowardDelay)
+                {
+                    //Sounds.RailSoundStop();
+                    isSwitching = true;
+                    if (PlayerSpeed < PushFowardmaxSpeed)
+                    {
+                        PlayerSpeed += PushFowardIncrements + accelBySpeed.Evaluate(PlayerSpeed / PushFowardmaxSpeed);
+                    }
+                    faceRight = !faceRight;
+                    timer = 0f;
+                    Actions.SpecialPressed = false;
+                }
+            }
+            isSwitching = (timer < PushFowardDelay);
+
+            //If above a certain speed, the player breaks depending it they're presseing the skid button.
+            if (Time.timeScale != 0 && !isZipLine)
+            {
+                isBraking = Actions.BouncePressed;
+
+            }
+            else
+            {
+                isBraking = false;
+            }
+
+        }
 
         public void RailGrind()
         {
+
             //Increase the Amount of distance trought the Spline by DeltaTime
             float ammount = (Time.deltaTime * PlayerSpeed);
-
-            ////Check for Low Speed to change direction so player dont get stuck
-            //if (PlayerSpeed < 11)
-            //{
-            //    PlayerSpeed -= 0.2f;
-
-            //    if(PlayerSpeed < 7)
-            //    {
-            //        if (Player.rb.velocity.normalized.y >= 0.1f)
-            //        {
-            //            backwards = !backwards;
-            //            PlayerSpeed = 12;
-            //            ammount = (Time.deltaTime * PlayerSpeed);
-            //        }
-
-            //    }
-
-            //}
-
             // Increase/Decrease Range depending on direction
+
+            SlopePhys();
 
             if (!backwards)
             {
@@ -414,17 +437,35 @@ namespace SplineMesh
                 //Set player Position and rotation on Rail
                 if (!isZipLine)
                 {
-                    Quaternion rot = (Quaternion.FromToRotation(Skin.transform.up, sample.Rotation * Vector3.up) * Skin.rotation);
-                    Skin.rotation = rot;
-                    transform.position = (sample.location) + RailTransform.position + ((sample.Rotation * transform.up * OffsetRail));
+                    if (backwards)
+                    {
+                        CharacterAnimator.transform.rotation = Quaternion.LookRotation(-sample.tangent, sample.up);
+                    }
+                    else
+                    {
+                        CharacterAnimator.transform.rotation = Quaternion.LookRotation(sample.tangent, sample.up);
+                    }
 
-                   // Cam.FollowDirection(0.8f, 14, -5, 0.1f, true);
+                    Vector3 binormal = Vector3.zero;
+
+                    if (setOffSet != Vector3.zero)
+                    {
+                        //binormal = sample.tangent;
+                        //binormal = Quaternion.LookRotation(Vector3.right, Vector3.up) * binormal;
+                        binormal += sample.Rotation * -setOffSet;
+                    }
+                    transform.position = (sample.location + RailTransform.position + (sample.up * OffsetRail)) + binormal;
+
+                    if (canHop)
+                    {
+                        railHopping();
+                    }
 
                 }
                 else
                 {
                     float rotatePoint = 0;
-                    if(Actions.RightStepPressed)
+                    if (Actions.RightStepPressed)
                     {
                         Actions.LeftStepPressed = false;
                         rotatePoint = 1;
@@ -436,18 +477,23 @@ namespace SplineMesh
                     }
 
                     if (!backwards)
+                    {
                         PulleyRotate = Mathf.MoveTowards(PulleyRotate, rotatePoint, 3.5f * Time.deltaTime);
+                        CharacterAnimator.transform.rotation = Quaternion.LookRotation(sample.tangent, sample.up);
+                    }
                     else
+                    { 
                         PulleyRotate = Mathf.MoveTowards(PulleyRotate, rotatePoint, 3.5f * Time.deltaTime);
+                        CharacterAnimator.transform.rotation = Quaternion.LookRotation(-sample.tangent, sample.up);
+                    }
 
                     ZipHandle.rotation = sample.Rotation;
                     ZipHandle.eulerAngles = new Vector3(ZipHandle.eulerAngles.x, ZipHandle.eulerAngles.y, ZipHandle.eulerAngles.z + PulleyRotate * 70f);
 
-                    transform.rotation = sample.Rotation;
-                    transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + PulleyRotate * 70f);
+                    CharacterAnimator.transform.eulerAngles = new Vector3(CharacterAnimator.transform.eulerAngles.x, CharacterAnimator.transform.eulerAngles.y, CharacterAnimator.transform.eulerAngles.z + PulleyRotate * 70f);
 
 
-                    transform.position = sample.location + RailTransform.position + (transform.up * OffsetZip);
+                    
 
                    // Cam.FollowDirection(0.8f, 14, -5, 0.1f, true);
                     //CameraTarget.position = sample.location + RailTransform.position;
@@ -455,17 +501,13 @@ namespace SplineMesh
 
 
 
-                    ZipHandle.transform.position = sample.location + RailTransform.position;
+                    ZipHandle.transform.position = (sample.location + RailTransform.position) + setOffSet;
+                    transform.position = ZipHandle.transform.position + (ZipHandle.transform.up * OffsetZip);
 
 
                 }
 
-                //Add Physics
-                SlopePhys();
-
                 if (isBraking && PlayerSpeed > MinStartSpeed) PlayerSpeed *= PlayerBrakePower;
-
-                //Debug.DrawRay(transform.position, sample.tangent * 10f,Color.black);
 
                 //Set Player Speed correctly so that it becomes smooth grinding
                 if (!backwards)
@@ -507,14 +549,124 @@ namespace SplineMesh
             }
             else
             {
+                if(!backwards)
+                    sample = Rail_int.RailSpline.GetSampleAtDistance(Rail_int.RailSpline.Length - 1);
+                else
+                    sample = Rail_int.RailSpline.GetSampleAtDistance(0);
 
                 LoseRail();
             }
 
         }
 
+        void railHopping()
+        {
+            if(canInput)
+            {
+                //Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
+                if (Actions.RightStepPressed)
+                {
+                    Vector3 Direction = CharacterAnimator.transform.position - Cam.transform.position;
+                    bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < -0.5f;
+                    if (Facing)
+                    {
+                        Actions.RightStepPressed = false;
+                        Actions.LeftStepPressed = true;
+                    }
+                }
+                else if (Actions.LeftStepPressed)
+                {
+                    Vector3 Direction = CharacterAnimator.transform.position - Cam.transform.position;
+                    bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < -0.5f;
+                    if (Facing)
+                    {
+                        Actions.RightStepPressed = true;
+                        Actions.LeftStepPressed = false;
+                    }
+                }
+
+                Debug.DrawRay(transform.position - (sample.up * 2) + (CharacterAnimator.transform.right * 3), CharacterAnimator.transform.right * 10, Color.red);
+                Debug.DrawRay(transform.position - (sample.up * 2) + (CharacterAnimator.transform.right * 3), -CharacterAnimator.transform.right * 10, Color.red);
+
+                if (Actions.RightStepPressed)
+                {
+                  
+                    distanceToStep = hopDistance;
+                    canInput = false;
+                    steppingRight = true;
+                    Actions.RightStepPressed = false;
+                    performStep();
+                    return;
+
+                }
+                else if (Actions.LeftStepPressed)
+                {
+                    
+
+                    distanceToStep = hopDistance;
+                    canInput = false;
+                    steppingRight = false;
+                    Actions.LeftStepPressed = false;
+                    performStep();
+                    return;
+                }
+            }
+ 
+            performStep();
+        }
+
+        void performStep()
+        {
+            if (distanceToStep > 0)
+            {
+                float move = stepSpeed;
+
+                if (steppingRight)
+                    move = -move;
+                if(backwards)
+                    move = -move;
+
+                move = Mathf.Clamp(move, -distanceToStep, distanceToStep);
+
+                setOffSet.Set(setOffSet.x + move, setOffSet.y, setOffSet.z);
+               
+                if(move < 0)
+                    if(Physics.BoxCast(CharacterAnimator.transform.position,new Vector3(1.3f, 3f, 1.3f), -CharacterAnimator.transform.right, Quaternion.identity, 4, Tools.coreStats.StepLayerMask))
+                    {
+                        Actions.ChangeAction(ActionManager.States.Regular);
+                        CharacterAnimator.SetInteger("Action", 0);
+                    }
+                else
+                    if (Physics.BoxCast(CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), CharacterAnimator.transform.right, Quaternion.identity, 4, Tools.coreStats.StepLayerMask))
+                    {
+                        Actions.ChangeAction(ActionManager.States.Regular);
+                        CharacterAnimator.SetInteger("Action", 0);
+                    }
+
+                distanceToStep -= stepSpeed;
+
+                if (distanceToStep < 6)
+                {
+                    Physics.IgnoreLayerCollision(8, 23, false);
+
+                    if (distanceToStep <= 0)
+                    {
+                        Actions.ChangeAction(ActionManager.States.Regular);
+                        OnRail = false;
+                        CharacterAnimator.SetInteger("Action", 0);
+                    }
+
+                }
+            }
+        }
+
         void LoseRail()
         {
+            distanceToStep = 0;
+            Physics.IgnoreLayerCollision(8, 23, true);
+
+            Debug.Log("The Rail Is Over");
+
             //Check if the Spline is loop and resets position
             if (Rail_int.RailSpline.IsLoop)
             {
@@ -529,9 +681,51 @@ namespace SplineMesh
                     RailGrind();
                 }
             }
+            else if (ConnectedRails != null && ((!backwards && ConnectedRails.nextRail != null && ConnectedRails.nextRail.isActiveAndEnabled) || (backwards && ConnectedRails.PrevRail != null && ConnectedRails.PrevRail.isActiveAndEnabled)))
+            {
+                if (!backwards && ConnectedRails.nextRail != null)
+                {
+                    Debug.Log("On to Next Rail With = " +range);
+                    //Debug.Log("Set by " + ConnectedRails.nextRail);
+
+                    range = range - Rail_int.RailSpline.Length;
+                    range = 0;
+
+                    ConnectedRails.Announce();
+
+                    ConnectedRails = ConnectedRails.nextRail;
+                    setOffSet.Set(-ConnectedRails.GetComponent<ExampleSower>().Offset3d.x, 0, 0);
+
+                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<Spline>();
+                    RailTransform = Rail_int.RailSpline.transform.parent;
+
+                    Debug.Log("Then With = " + range);
+                }
+                else if (backwards && ConnectedRails.PrevRail != null)
+                {
+
+                    Debug.Log("Back To Previous Rail");
+
+                    AddOnRail temp = ConnectedRails;
+                    ConnectedRails = ConnectedRails.PrevRail;
+                    setOffSet.Set(-ConnectedRails.GetComponent<ExampleSower>().Offset3d.x, 0, 0);
+
+                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<Spline>();
+                    RailTransform = Rail_int.RailSpline.transform.parent;
+
+                    range = range + Rail_int.RailSpline.Length;
+                    range = Rail_int.RailSpline.Length; 
+
+                }
+
+               
+                //RailGrind();
+            }
             else
             {
-                Input.LockInputForAWhile(15f, true);
+                Input.LockInputForAWhile(10f, true);
+
+                Debug.Log("Rail Just Gone");
 
                 if (isZipLine)
                 {
@@ -550,19 +744,44 @@ namespace SplineMesh
 
                     CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
                 }
+                else
+                {
 
+                    if (backwards)
+                        Player.rb.velocity = -sample.tangent * PlayerSpeed;
+                    else
+                        Player.rb.velocity = sample.tangent * PlayerSpeed;
+
+                    CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
+                }
+
+                Actions.LeftStepPressed = false;
+                Actions.RightStepPressed = false;
 
                 OnRail = false;
-                Actions.SpecialPressed = false;
-                Actions.HomingPressed = false;
-                isZipLine = false;
-                ZipBody = null;
-
-
             }
         }
         void SlopePhys()
         {
+
+            if(Boosted)
+            {
+                if (PlayerSpeed > 60)
+                {
+                    boostTime -= Time.fixedDeltaTime;
+                    if (boostTime < 0)
+                    {
+                        PlayerSpeed -= decaySpeed;
+                        if (boostTime < -decayTime)
+                        { 
+                            Boosted = false;
+                            boostTime = 0;
+                        }
+                    }
+                }
+                else
+                    Boosted = false;
+            }
 
             //slope curve from Bhys
             curvePosSlope = Player.curvePosSlope;
@@ -584,6 +803,7 @@ namespace SplineMesh
                 //Debug.Log( "Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
                 force = (AbsYPow * force) + (DragVal * PlayerSpeed);
                 //Debug.Log(force);
+                force = Mathf.Clamp(force, -0.3f, 0.3f);
                 PlayerSpeed += force;
 
                 //Enforce max Speed
@@ -612,6 +832,17 @@ namespace SplineMesh
                     PlayerSpeed = Player.MaxSpeed;
                 }
             }
+            else
+            {
+                //Decay
+                if (PlayerSpeed > railmaxSpeed)
+                    PlayerSpeed -= decaySpeedHigh;
+
+                else if (PlayerSpeed > railTopSpeed)
+                    PlayerSpeed -= decaySpeedLow;
+            }
+
+            
 
         }
 
@@ -644,6 +875,10 @@ namespace SplineMesh
 
         void AssignStats()
         {
+            railTopSpeed = Tools.coreStats.railTopSpeed;
+            railmaxSpeed = Tools.coreStats.railMaxSpeed;
+            decaySpeedHigh = Tools.coreStats.railDecaySpeedHigh;
+            decaySpeedLow = Tools.coreStats.railDecaySpeedLow;
             MinStartSpeed = Tools.coreStats.MinStartSpeed;
             PushFowardmaxSpeed = Tools.coreStats.RailPushFowardmaxSpeed;
             PushFowardIncrements = Tools.coreStats.RailPushFowardIncrements;
@@ -655,11 +890,15 @@ namespace SplineMesh
             DownHillMultiplierCrouching = Tools.coreStats.RailDownHillMultiplierCrouching;
             DragVal = Tools.coreStats.RailDragVal;
             PlayerBrakePower = Tools.coreStats.RailPlayerBrakePower;
+            HopDelay = Tools.coreStats.hopDelay;
+            stepSpeed = Tools.coreStats.hopSpeed;
+            hopDistance = Tools.coreStats.hopDistance;
+            accelBySpeed = Tools.coreStats.railAccelBySpeed;
 
-            SkinOffsetPosRail = Tools.coreStats.SkinOffsetPosRail;
-            SkinOffsetPosZip = Tools.coreStats.SkinOffsetPosZip;
             OffsetRail = Tools.coreStats.OffsetRail;
             OffsetZip = Tools.coreStats.OffsetZip;
+            decaySpeed = Tools.coreStats.railBoostDecaySpeed;
+            decayTime = Tools.coreStats.railBoostDecayTime;
 
         }
 
@@ -673,9 +912,7 @@ namespace SplineMesh
 
             CharacterAnimator = Tools.CharacterAnimator;
             Sounds = Tools.SoundControl;
-            Skin = Tools.mainSkin;
-            CameraTarget = Tools.cameraTarget;
-            ConstantTarget = Tools.constantTarget;
+
             jumpBall = Tools.JumpBall;
         }
 

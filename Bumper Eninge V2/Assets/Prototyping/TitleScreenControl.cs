@@ -15,6 +15,8 @@ public class TitleScreenControl : MonoBehaviour {
     bool End = false;
     float counter;
 
+    public string sceneTo = "CharacterSelect";
+
 
     void Start()
     {
@@ -32,7 +34,7 @@ public class TitleScreenControl : MonoBehaviour {
                 BlackFade.color = Color.Lerp(BlackFade.color, Color.black, Time.deltaTime * 8);
                 if(counter > EndStageAt + 1.5f)
                 {
-                    SceneManager.LoadScene("CharacterSelect");
+                    SceneManager.LoadScene(sceneTo);
                 }
             }
         }

@@ -16,7 +16,7 @@ public class Action06_Bounce : MonoBehaviour {
 
 	[HideInInspector] public bool BounceAvailable;
 	private bool HasBounced;
-	private float OriginalBounceFactor;
+
 	private float CurrentBounceAmount;
 	[HideInInspector] public int BounceCount;
 
@@ -31,15 +31,14 @@ public class Action06_Bounce : MonoBehaviour {
 
 	float memoriseSpeed;
 	float nextSpeed;
-    
+
+	float hitHeight;
 
     Vector3 direction;
     RaycastHit hit;
 
     void Awake()
     {
-		OriginalBounceFactor = BounceConsecutiveFactor;
-
 
 		if (Player == null)
         {
@@ -62,7 +61,7 @@ public class Action06_Bounce : MonoBehaviour {
 			memoriseSpeed = Player.HorizontalSpeedMagnitude;
 			nextSpeed = memoriseSpeed;
 
-			////Debug.Log ("BounceDrop");
+
 			sounds.BounceStartSound();
 			BounceAvailable = false;
 			Player.rb.velocity = new Vector3(Player.rb.velocity.x * BounceHaltFactor, 0f, Player.rb.velocity.z * BounceHaltFactor);
@@ -81,6 +80,9 @@ public class Action06_Bounce : MonoBehaviour {
    		
 	private void Bounce(Vector3 normal)
 	{
+
+		hitHeight = transform.position.y;
+
 		Action.BouncePressed = false;
 		Player.Grounded = false;
 		Action.Action02.HomingAvailable = true;
@@ -167,7 +169,7 @@ public class Action06_Bounce : MonoBehaviour {
 			coolDown -= 0.75f * (int)(Player.HorizontalSpeedMagnitude / 15);
 			coolDown = Mathf.Clamp(coolDown, 5, 15);
 
-			Debug.Log(coolDown);
+			//Debug.Log(coolDown);
 			StartCoroutine(Action.lockBounceOnly(coolDown));
 			Action.ChangeAction (0);
 		} 
@@ -200,7 +202,7 @@ public class Action06_Bounce : MonoBehaviour {
 				}
 			}
 		}
-		else if(!HasBounced && Player.rb.velocity.y > DropSpeed * 0.8f)
+		else if(Player.rb.velocity.y > DropSpeed * 0.8f)
         {
 			Player.rb.velocity = new Vector3(Player.rb.velocity.x, -DropSpeed, Player.rb.velocity.z);
         }

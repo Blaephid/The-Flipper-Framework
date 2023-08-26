@@ -12,7 +12,7 @@ public class Action00_Regular : MonoBehaviour {
 	quickstepHandler quickstepManager;
     public SonicSoundsControl sounds;
 	public GameObject characterCapsule;
-	public GameObject rollingCapsule;
+	GameObject rollingCapsule;
 
     public float skinRotationSpeed;
     Action01_Jump JumpAction;
@@ -24,10 +24,8 @@ public class Action00_Regular : MonoBehaviour {
 	[HideInInspector] public float SpeedToStopAt;
 
 	[HideInInspector] public float SkiddingStartPoint;
-	[HideInInspector] public float SkiddingIntensity;
-	float AirSkiddingIntensity;
 
-    public bool hasSked;
+
 	[HideInInspector] bool CanDashDuringFall;
 
 	RaycastHit hit;
@@ -72,43 +70,18 @@ public class Action00_Regular : MonoBehaviour {
 		{
 			Player.b_normalSpeed = 0;
 			Player.rb.velocity *= 0.90f;
-			hasSked = false;
+			Actions.skid.hasSked = false;
 
 		}
 
-        //Skidding
-		if(Player.b_normalSpeed < -SkiddingStartPoint)
-		{
-			float thisSkid = 0f;
-			if (Player.Grounded)
-				thisSkid = SkiddingIntensity;
-			else
-				thisSkid = AirSkiddingIntensity;
+		//Skidding
 
-			if (Player.SpeedMagnitude >= -thisSkid) Player.AddVelocity(Player.rb.velocity.normalized * thisSkid * (Player.isRolling ? 0.5f : 1));
-			
-			if (!hasSked && Player.Grounded && !Player.isRolling)
-			{
-				sounds.SkiddingSound();
-				hasSked = true;
-				
-
-			}
-			if(Player.SpeedMagnitude < 4)
-			{
-				Player.isRolling = false;
-				Player.b_normalSpeed = 0;
-				hasSked = false;
-				
-			}
-		}
+		if (Player.Grounded)
+			Actions.skid.RegularSkid();
 		else
-		{
-			hasSked = false;
-			
-		}
+			Actions.skid.jumpSkid();
 
-        //Set Homing attack to true
+		//Set Homing attack to true
 		if (Player.Grounded) 
 		{
 			inCoyote = false;
@@ -145,7 +118,7 @@ public class Action00_Regular : MonoBehaviour {
 			else
 				JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
 
-			Actions.ChangeAction(1);
+			Actions.ChangeAction(ActionManager.States.Jump);
 		}
 		
 
@@ -172,36 +145,22 @@ public class Action00_Regular : MonoBehaviour {
 		//Do Spindash
 		if (Actions.spinChargePressed && Player.Grounded && Player.GroundNormal.y > MaximumSlope && Player.HorizontalSpeedMagnitude < MaximumSpeed) 
 		{ 
-			Actions.ChangeAction(3);
+			Actions.ChangeAction(ActionManager.States.SpinCharge);
 			Actions.Action03.InitialEvents(); 
 		}
 
 		//Play Rolling Sound
-		else if (Actions.RollPressed && Player.Grounded && (Player.rb.velocity.sqrMagnitude > Player.RollingStartSpeed)) 
+		//if (Actions.RollPressed && Player.Grounded && (Player.HorizontalSpeedMagnitude > Player.RollingStartSpeed)) 
+		if (Actions.RollPressed && Player.Grounded)
 		{
-			if (!Rolling)
-			{
-				if (Actions.eventMan != null) Actions.eventMan.RollsPerformed += 1;
-				sounds.SpinningSound();
-				rollingCapsule.SetActive(true);
-				characterCapsule.SetActive(false);
-				//rollCounter = 0f;
-			}
-			Player.isRolling = true;
-			Rolling = true;
+			Curl();
 			 
 		}
 
-        else if (!Actions.RollPressed && rollCounter > minRollTime)
+
+        if ((!Actions.RollPressed && rollCounter > minRollTime) | !Player.Grounded)
         {
-			if (Rolling)
-            {
-				characterCapsule.SetActive(true);
-				rollingCapsule.SetActive(false);
-				Rolling = false;
-				rollCounter = 0f;
-			}
-			Player.isRolling = false;
+			unCurl();
 
 		}
 
@@ -238,39 +197,66 @@ public class Action00_Regular : MonoBehaviour {
    
         }
 
+		handleInputs();
+
+
+	}
+
+	public void Curl()
+    {
+		if (!Rolling)
+		{
+			if (Actions.eventMan != null) Actions.eventMan.RollsPerformed += 1;
+			sounds.SpinningSound();
+			rollingCapsule.SetActive(true);
+			characterCapsule.SetActive(false);
+			//rollCounter = 0f;
+		}
+		Player.isRolling = true;
+		Rolling = true;
+	}
+
+	void unCurl()
+    {
+		CapsuleCollider col = rollingCapsule.GetComponent<CapsuleCollider>();
+		Debug.DrawRay(col.transform.position + col.center, CharacterAnimator.transform.up * 4, Color.green, 10f);
+
+
+		if (!Physics.Raycast(col.transform.position + col.center, CharacterAnimator.transform.up, 4))
+		{
+			characterCapsule.SetActive(true);
+			rollingCapsule.SetActive(false);
+			rollCounter = 0f;
+			Rolling = false;
+			Player.isRolling = false;
+
+		}
+
+	}
+
+	void handleInputs()
+    {
 		/////Quickstepping
 		///
 		//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
 		if (Actions.RightStepPressed)
-        {
-			Vector3 Direction = CharacterAnimator.transform.position - Cam.Cam.transform.position;
-			bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < 0f;
-			if (Facing)
-            {
-				Actions.RightStepPressed = false;
-				Actions.LeftStepPressed = true;
-            }
+		{
+			quickstepManager.pressRight();
 		}
 		else if (Actions.LeftStepPressed)
 		{
-			Vector3 Direction = CharacterAnimator.transform.position - Cam.Cam.transform.position;
-			bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < 0f;
-			if (Facing)
-			{
-				Actions.RightStepPressed = true;
-				Actions.LeftStepPressed = false;
-			}
+			quickstepManager.pressLeft();
 		}
 
 		//Enable Quickstep right or left
 		if (Actions.RightStepPressed && !quickstepManager.enabled)
-        {
+		{
 			if (Player.HorizontalSpeedMagnitude > 10f)
 			{
 
 				quickstepManager.initialEvents(true);
 				quickstepManager.enabled = true;
-			}			
+			}
 		}
 
 		else if (Actions.LeftStepPressed && !quickstepManager.enabled)
@@ -296,7 +282,7 @@ public class Action00_Regular : MonoBehaviour {
 					if (Actions.Action02Control.HomingAvailable)
 					{
 						sounds.HomingAttackSound();
-						Actions.ChangeAction(2);
+						Actions.ChangeAction(ActionManager.States.Homing);
 						Actions.Action02.InitialEvents();
 					}
 				}
@@ -309,7 +295,7 @@ public class Action00_Regular : MonoBehaviour {
 				if (!Actions.Action02Control.HasTarget && CanDashDuringFall)
 				{
 					sounds.AirDashSound();
-					Actions.ChangeAction(11);
+					Actions.ChangeAction(ActionManager.States.JumpDash);
 					Actions.Action11.InitialEvents();
 				}
 			}
@@ -317,11 +303,11 @@ public class Action00_Regular : MonoBehaviour {
 			//Do a Double Jump
 			else if (Actions.JumpPressed && Actions.Action01.canDoubleJump)
 			{
-				
+
 				//Debug.Log("Do a double jump");
 				Actions.Action01.jumpCount = 0;
 				Actions.Action01.InitialEvents(Vector3.up);
-				Actions.ChangeAction(1);
+				Actions.ChangeAction(ActionManager.States.Jump);
 			}
 
 
@@ -329,7 +315,7 @@ public class Action00_Regular : MonoBehaviour {
 			if (Actions.BouncePressed && Player.rb.velocity.y < 35f)
 			{
 				Actions.Action06.InitialEvents();
-				Actions.ChangeAction(6);
+				Actions.ChangeAction(ActionManager.States.Bounce);
 				//Actions.Action06.ShouldStomp = false;
 
 			}
@@ -341,7 +327,7 @@ public class Action00_Regular : MonoBehaviour {
 				if (!Player.Grounded && Actions.RollPressed && Actions.Action08 != null && Player.rb.velocity.y < 20f)
 				{
 					//Actions.Action08.DropDashAvailable = false;
-					Actions.ChangeAction(8);
+					Actions.ChangeAction(ActionManager.States.DropCharge);
 					Actions.Action08.InitialEvents();
 				}
 
@@ -351,14 +337,6 @@ public class Action00_Regular : MonoBehaviour {
 				}
 			}
 		}
-
-		
-
-		//Do a Spin Kick
-		else if (Actions.SpecialPressed && Player.Grounded)
-		{
-		}
-
 	}
 
 	IEnumerator CoyoteTime()
@@ -385,10 +363,9 @@ public class Action00_Regular : MonoBehaviour {
 		SpeedToStopAt = Tools.stats.SpeedToStopAt;
 		MaximumSlope = Tools.coreStats.MaximumSlope;
 		MaximumSpeed = Tools.coreStats.MaximumSpeed;
-		SkiddingIntensity = Tools.stats.SkiddingIntensity;
-		AirSkiddingIntensity = Tools.stats.AirSkiddingForce;
 		SkiddingStartPoint = Tools.stats.SkiddingStartPoint;
 		CanDashDuringFall = Tools.coreStats.CanDashDuringFall;
+		rollingCapsule = Tools.crouchCapsule;
 
     }
 

@@ -9,8 +9,8 @@ public class ActionManager : MonoBehaviour {
     public levelEventHandler eventMan;
 
 
-    public int Action;
-	public int PreviousAction { get; set; }
+    public States Action;
+	public States PreviousAction { get; set; }
 
     //Action Scrips, Always leave them in the correct order;
     [Header("Actions")]
@@ -30,6 +30,8 @@ public class ActionManager : MonoBehaviour {
     public MoveAlongPath Action10;
     public Action11_JumpDash Action11;
     public Action12_WallRunning Action12;
+    public Action13_Hovering Action13;
+    public SkidHandler skid;
 
 
     [HideInInspector] public bool lockBounce;
@@ -75,7 +77,24 @@ public class ActionManager : MonoBehaviour {
 
     void Start()
     {
-        ChangeAction(0);
+        ChangeAction(ActionManager.States.Regular);
+    }
+
+    public enum States
+    {
+        Regular,
+        Jump,
+        Homing,
+        SpinCharge,
+        Hurt,
+        Rail,
+        Bounce,
+        RingRoad,
+        DropCharge,
+        Path,
+        JumpDash,
+        WallRunning,
+        Hovering
     }
 
     void Awake()
@@ -313,31 +332,35 @@ public class ActionManager : MonoBehaviour {
         {
             Action12.enabled = false;
         }
+        if(Action13 != null)
+        {
+            Action13.enabled = false;
+        }
 
     }
 
     //Call this function to change the action
-    public void ChangeAction(int ActionToChange)
+    public void ChangeAction(States ActionToChange)
     {
 
         //Put an case for all your actions here
         switch (ActionToChange)
         {
-            case -1:
-                changePossible(ActionToChange);
-                break;
-            case 0:
+            //case -1:
+            //    changePossible(ActionToChange);
+            //    break;
+            case States.Regular:
                 changePossible(ActionToChange);
                 Action00.enabled = true;
                 break;
-            case 1:
+            case States.Jump:
                 if(!lockDoubleJump)
                 {
                     changePossible(ActionToChange);
                     Action01.enabled = true;
                 }
                 break;
-            case 2:
+            case States.Homing:
                 if (!lockHoming)
                 {
                     if (eventMan != null) eventMan.homingAttacksPerformed += 1;
@@ -345,20 +368,20 @@ public class ActionManager : MonoBehaviour {
                     Action02.enabled = true;
                 }
                 break;
-            case 3:
+            case States.SpinCharge:
                 changePossible(ActionToChange);
                 Action03.enabled = true;
                 break;
-            case 4:
+            case States.Hurt:
                 changePossible(ActionToChange);
                 Action04.enabled = true;
                 break;
-            case 5:
+            case States.Rail:
                 if (eventMan != null) eventMan.RailsGrinded += 1;
                 changePossible(ActionToChange);
                 Action05.enabled = true;
 				break;
-			case 6:
+			case States.Bounce:
                 if(!lockBounce)
                 {
                     changePossible(ActionToChange);
@@ -366,20 +389,20 @@ public class ActionManager : MonoBehaviour {
                     Action06.enabled = true;
                 }
                 break;
-			case 7:
+			case States.RingRoad:
                 if (eventMan != null) eventMan.ringRoadsPerformed += 1;
                 changePossible(ActionToChange);
                 Action07.enabled = true;
 				break;
-			case 8:
+			case States.DropCharge:
                 changePossible(ActionToChange);
                 Action08.enabled = true;
                 break;
-            case 10:
+            case States.Path:
                 changePossible(ActionToChange);
                 Action10.enabled = true;
                 break;
-            case 11:
+            case States.JumpDash:
                 if (!lockJumpDash)
                 {
                     if (eventMan != null) eventMan.jumpDashesPerformed += 1;
@@ -387,22 +410,29 @@ public class ActionManager : MonoBehaviour {
                     Action11.enabled = true;
                 }
                 break;
-            case 12:
+            case States.WallRunning:
                 changePossible(ActionToChange);
                 Action12.enabled = true;
+                break;
+            case States.Hovering:
+                changePossible(ActionToChange);
+                Action13.enabled = true;
                 break;
 
         }
 
     }
 
-    private void changePossible(int newAction)
+    private void changePossible(States newAction)
     {
         PreviousAction = Action;
-        if (PreviousAction == 2)
+
+        switch(PreviousAction)
         {
-            Phys.GravityAffects = true;
-            actionEnable();
+            case States.Homing:
+                Phys.GravityAffects = true;
+                actionEnable();
+                break;
         }
 
         Action= newAction;
@@ -469,6 +499,11 @@ public class ActionManager : MonoBehaviour {
         }
       
         lockBounce = false;
+    }
+
+    private void FixedUpdate()
+    {
+        //Debug.Log("Action == " +Action);
     }
 
 }

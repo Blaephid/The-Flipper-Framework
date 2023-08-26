@@ -23,6 +23,7 @@ public class CameraStats : ScriptableObject
 
     public float CameraRotationSpeed = 100;
     public float CameraVerticalRotationSpeed = 12;
+    public AnimationCurve vertFollowSpeedByAngle;
     public float CameraMoveSpeed = 100;
 
     public float InputXSpeed = 70;

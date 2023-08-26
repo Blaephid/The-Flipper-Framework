@@ -117,6 +117,7 @@ Transform:
   m_Children:
   - {fileID: 4000013981200658}
   - {fileID: 3885937149502337261}
+  - {fileID: 7786040367226423988}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -146,19 +147,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Path: 0
+  onRail: 0
+  rail: {fileID: 0}
+  isDashRing: 1
+  path: {fileID: 0}
   Speed: 80
   LockToDirection: 1
-  LockControl: 1
-  LockControlTime: 40
   ChangeCameraDirection: 1
   Snap: 1
-  isDashRing: 1
+  AffectCamera: 1
+  ResetRotation: 1
+  setInputForwards: 0
+  positionToLockTo: {fileID: 7786040367226423988}
+  LockControl: 1
+  LockControlTime: 40
   lockGravity: {x: 0, y: -1.45, z: 0}
   lockAirMoves: 1
   lockAirMovesTime: 20
-  ResetRotation: 1
-  AffectCamera: 1
-  path: {fileID: 0}
 --- !u!114 &8349486046636627964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,6 +285,37 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!1 &693495288869660913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7786040367226423988}
+  m_Layer: 0
+  m_Name: LockPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7786040367226423988
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693495288869660913}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000013130497754}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2568351612008521427
 GameObject:
   m_ObjectHideFlags: 0

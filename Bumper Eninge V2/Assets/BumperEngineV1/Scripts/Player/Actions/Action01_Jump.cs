@@ -25,7 +25,7 @@ public class Action01_Jump : MonoBehaviour
     public float Counter { get; set; }
     public float ControlCounter;
     [HideInInspector] public int jumpCount;
-    bool Jumping;
+    [HideInInspector] public bool Jumping;
 
     [Header("Core Stats")]
     [HideInInspector] public float StartJumpDuration;
@@ -39,8 +39,6 @@ public class Action01_Jump : MonoBehaviour
     [HideInInspector] public float SlopedJumpDuration;
     [HideInInspector] public float JumpSpeed;
 
-    [HideInInspector] public float SkiddingStartPoint;
-    float AirSkiddingIntensity;
 
     float jumpSpeedModifier = 1f;
     float jumpDurationModifier = 1f;
@@ -74,13 +72,7 @@ public class Action01_Jump : MonoBehaviour
         }
     }
 
-
-    private void OnEnable()
-    {
-
-    }
-
-    public void InitialEvents(Vector3 normaltoJump, bool Grounded = false, float verticalSpeed = 0, float controlDelay = 0)
+    public void InitialEvents(Vector3 normaltoJump, bool Grounded = false, float verticalSpeed = 0, float controlDelay = 0, float minJumpSpeed = 0)
     {
         if(!Actions.lockDoubleJump)
         {
@@ -96,18 +88,19 @@ public class Action01_Jump : MonoBehaviour
             if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
                 normaltoJump = Vector3.up;
 
-           
+            if (verticalSpeed < 0)
+                verticalSpeed = 0;
+            Player.rb.velocity = new Vector3(Player.rb.velocity.x * 0.92f, verticalSpeed, Player.rb.velocity.z * 0.92f);
 
             //If performing a grounded jump. JumpCount may be changed externally to allow for this.
-            if (Grounded || jumpCount == -1)
+            //if (Grounded || jumpCount == -1)
+            if (Grounded)
             {
-                if (verticalSpeed < 0)
-                    verticalSpeed = 0;
-                Player.rb.velocity = new Vector3(Player.rb.velocity.x * 0.92f, verticalSpeed, Player.rb.velocity.z * 0.92f);
 
                 if (Actions.eventMan != null) Actions.eventMan.JumpsPerformed += 1;
 
                 //Sets jump stats for this specific jump.
+
                 JumpSpeed = StartJumpSpeed * jumpSpeedModifier;
                 JumpDuration = StartJumpDuration * jumpDurationModifier;
                 SlopedJumpDuration = StartSlopedJumpDuration * jumpDurationModifier;
@@ -153,7 +146,7 @@ public class Action01_Jump : MonoBehaviour
 
             //SetAnims
             CharacterAnimator.SetInteger("Action", 1);
-            JumpBall.SetActive(true);
+            
 
             //Sound
             sounds.JumpSound();
@@ -168,7 +161,7 @@ public class Action01_Jump : MonoBehaviour
         //Debug.Log(JumpSpeed);
 
         //Set Animator Parameters
-        if (Actions.Action == 1)
+        if (Actions.Action == ActionManager.States.Jump)
         {
             CharacterAnimator.SetInteger("Action", 1);
         }
@@ -214,7 +207,7 @@ public class Action01_Jump : MonoBehaviour
                         if (Actions.Action02Control.HomingAvailable)
                         {
                             sounds.HomingAttackSound();
-                            Actions.ChangeAction(2);
+                            Actions.ChangeAction(ActionManager.States.Homing);
                             Actions.Action02.InitialEvents();
                         }
                     }
@@ -231,13 +224,13 @@ public class Action01_Jump : MonoBehaviour
                     if (!Actions.Action02Control.HasTarget)
                     {
                         sounds.AirDashSound();
-                        JumpBall.SetActive(false);
-                        Actions.ChangeAction(11);
+                        Actions.ChangeAction(ActionManager.States.JumpDash);
                         Actions.Action11.InitialEvents();
                     }
                 }
             }
-          
+
+
 
             //Handle additional jumps. Can only be done if jump is over but jump button pressed.
             if (!Jumping && Actions.JumpPressed)
@@ -245,8 +238,9 @@ public class Action01_Jump : MonoBehaviour
                 //Do a double jump
                 if (jumpCount == 1 && canDoubleJump)
                 {
+                    
                     InitialEvents(Vector3.up);
-                    Actions.ChangeAction(1);
+                    Actions.ChangeAction(ActionManager.States.Jump);
                 }
 
                 //Do a triple jump
@@ -254,7 +248,7 @@ public class Action01_Jump : MonoBehaviour
                 {
                     //Debug.Log("Do a triple jump");
                     InitialEvents(Vector3.up);
-                    Actions.ChangeAction(1);
+                    Actions.ChangeAction(ActionManager.States.Jump);
                 }
             }
             
@@ -265,7 +259,7 @@ public class Action01_Jump : MonoBehaviour
                 if(Actions.Action06.BounceAvailable && Player.rb.velocity.y < 35f)
                 {
                     Actions.Action06.InitialEvents();
-                    Actions.ChangeAction(6);
+                    Actions.ChangeAction(ActionManager.States.Bounce);
                     //	Actions.Action06.ShouldStomp = false;
                 }
 
@@ -287,7 +281,7 @@ public class Action01_Jump : MonoBehaviour
                 if (Player.rb.velocity.y < 10f && Actions.Action08 != null)
                 {
                     //Debug.Log("Enter DropDash");
-                    Actions.ChangeAction(8);
+                    Actions.ChangeAction(ActionManager.States.DropCharge);
 
                     Actions.Action08.InitialEvents();
                 }
@@ -299,23 +293,11 @@ public class Action01_Jump : MonoBehaviour
             //Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
             if (Actions.RightStepPressed)
             {
-                Vector3 Direction = CharacterAnimator.transform.position - Cam.Cam.transform.position;
-                bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < 0f;
-                if (Facing)
-                {
-                    Actions.RightStepPressed = false;
-                    Actions.LeftStepPressed = true;
-                }
+                stepManager.pressRight();
             }
             else if (Actions.LeftStepPressed)
             {
-                Vector3 Direction = CharacterAnimator.transform.position - Cam.Cam.transform.position;
-                bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < 0f;
-                if (Facing)
-                {
-                    Actions.RightStepPressed = true;
-                    Actions.LeftStepPressed = false;
-                }
+                stepManager.pressLeft();
             }
 
             //Enable Quickstep right or left
@@ -359,9 +341,15 @@ public class Action01_Jump : MonoBehaviour
             Counter = JumpDuration;
             Jumping = false;
         }
-
+        else if (Counter > JumpDuration && Jumping && Actions.JumpPressed)
+        {
+            jumpCount++;
+            Counter = JumpDuration;
+            Jumping = false;
+            Actions.JumpPressed = false;
+        }
         //Add Jump Speed
-        if (Counter < JumpDuration && Jumping)
+        else if (Counter < JumpDuration && Jumping)
         {
             Player.isRolling = false;
             if (Counter < SlopedJumpDuration)
@@ -376,6 +364,8 @@ public class Action01_Jump : MonoBehaviour
             //Extra speed
             Player.AddVelocity(new Vector3(0, 1, 0) * (jumpSlopeSpeed));
         }
+        
+
 
         //Cancel Jump
         if (!cancelled && Player.rb.velocity.y > 0 && !Jumping && Counter > 0.1)
@@ -397,24 +387,13 @@ public class Action01_Jump : MonoBehaviour
             Actions.JumpPressed = false;
             JumpBall.SetActive(false);
 
-            Actions.ChangeAction(0);
+            Actions.ChangeAction(ActionManager.States.Regular);
             Actions.Action06.BounceCount = 0;
             //JumpBall.SetActive(false);
         }
 
         //Skidding
-        if ((Player.b_normalSpeed < -SkiddingStartPoint) && !Player.Grounded)
-        {
-            if (Player.SpeedMagnitude >= -AirSkiddingIntensity) Player.AddVelocity(Player.rb.velocity.normalized * AirSkiddingIntensity * (Player.isRolling ? 0.5f : 1));
-
-  
-            if (Player.SpeedMagnitude < 4)
-            {
-                Player.isRolling = false;
-                Player.b_normalSpeed = 0;
-
-            }
-        }
+        Actions.skid.jumpSkid();
 
 
     }
@@ -432,14 +411,14 @@ public class Action01_Jump : MonoBehaviour
 
         if (Player.rb.velocity.y > 10)
             newVec = new Vector3(Player.rb.velocity.x * 0.92f, Player.rb.velocity.y, Player.rb.velocity.z * 0.92f);
-        else;
+        else
             newVec = new Vector3(Player.rb.velocity.x * 0.92f, Mathf.Clamp(Player.rb.velocity.y * 0.1f, 0.1f, 5), Player.rb.velocity.z * 0.92f);
 
         Player.rb.velocity = newVec;
 
         GameObject JumpDashParticleClone = Instantiate(Tools.JumpDashParticle, Tools.FeetPoint.position, Quaternion.identity) as GameObject;
 
-        JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
+        //JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
 
         JumpDashParticleClone.transform.position = Tools.FeetPoint.position;
         JumpDashParticleClone.transform.rotation = Quaternion.LookRotation(Vector3.up);
@@ -462,9 +441,6 @@ public class Action01_Jump : MonoBehaviour
         doubleJumpSpeed = Tools.stats.doubleJumpSpeed;
 
 
-
-        SkiddingStartPoint = Tools.stats.SkiddingStartPoint;
-        AirSkiddingIntensity = Tools.stats.AirSkiddingForce;
     }
 
     //Responsible for assigning objects and components from the tools script.
@@ -480,5 +456,16 @@ public class Action01_Jump : MonoBehaviour
         CharacterAnimator = Tools.CharacterAnimator;
         sounds = Tools.SoundControl;
         JumpBall = Tools.JumpBall;
+    }
+
+
+    private void OnDisable()
+    {
+        JumpBall.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        JumpBall.SetActive(true);
     }
 }

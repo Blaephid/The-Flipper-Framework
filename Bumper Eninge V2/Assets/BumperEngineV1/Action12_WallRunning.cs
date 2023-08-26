@@ -133,7 +133,7 @@ public class Action12_WallRunning : MonoBehaviour
             }
         }
 
-        Debug.Log(characterTransform.eulerAngles);
+        //Debug.Log(characterTransform.eulerAngles);
 
 
 
@@ -236,7 +236,7 @@ public class Action12_WallRunning : MonoBehaviour
         climbWallDistance = frontDistance;
 
         //Set animations
-        CharacterAnimator.SetInteger("Action", 0);
+        CharacterAnimator.SetInteger("Action", 1);
         //CharacterAnimator.SetBool("Grounded", true);
         CharacterAnimator.transform.rotation = Quaternion.LookRotation(-wallToClimb.normal, CharacterAnimator.transform.up);
     }
@@ -252,8 +252,8 @@ public class Action12_WallRunning : MonoBehaviour
         Climbing = false;
         wallToRun = wallHit;
 
-        CharacterAnimator.SetInteger("Action", 0);
-        CharacterAnimator.SetBool("Grounded", true);
+        CharacterAnimator.SetInteger("Action", 14);
+        //CharacterAnimator.SetBool("Grounded", true);
 
         ClimbingSpeed = 0f;
         RunningSpeed = Player.HorizontalSpeedMagnitude;
@@ -271,7 +271,7 @@ public class Action12_WallRunning : MonoBehaviour
 
             //Set direction facing
             CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
-            characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
+            //characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
         }
         //If running with the wall on the left
         else
@@ -284,12 +284,12 @@ public class Action12_WallRunning : MonoBehaviour
 
             //Set direction facing
             CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
-            characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
+            //characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
         }
 
         //Camera
-        Vector3 newCamPos = camTarget.position + (wallHit.normal.normalized * 1.1f);
-        newCamPos.y += 2f;
+        Vector3 newCamPos = camTarget.position + (wallHit.normal.normalized * 1.8f);
+        newCamPos.y += 3f;
         camTarget.position = newCamPos;
         Cam.Cam.SetCamera(CharacterAnimator.transform.forward, 2f, 0, 0.001f, 30);
         Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 2f;
@@ -341,7 +341,7 @@ public class Action12_WallRunning : MonoBehaviour
         {
             wall = false;
 
-            transform.position = new Vector3(wallToClimb.point.x + wallToClimb.normal.x * 2.5f, wallToClimb.point.y + wallToClimb.normal.y * 1.5f, wallToClimb.point.z + wallToClimb.normal.z * 2.5f);
+            transform.position = wallToClimb.point + (wallToClimb.normal * 4f);
 
             //This bool causes the jump physics to be done next frame, making things much smoother. 1 Represents jumping from a wallrun
             SwitchToJump = 1;
@@ -355,7 +355,10 @@ public class Action12_WallRunning : MonoBehaviour
     {
         //Prevents normal movement in input and physics
         Inp.LockInputForAWhile(0f, false);
-        
+
+        CharacterAnimator.SetFloat("GroundSpeed", RunningSpeed);
+        CharacterAnimator.SetBool("WallRight", wallOnRight);
+
         //Detect current wall
         if (wallOnRight)
         {
@@ -434,7 +437,7 @@ public class Action12_WallRunning : MonoBehaviour
         {
 
             //After being on the wall for too long.
-            if (ClimbingSpeed < -5f)
+            if (ClimbingSpeed < -5f || Physics.Raycast(transform.position, CharacterAnimator.transform.up, 5, wallLayerMask))
             {
                 CharacterAnimator.SetInteger("Action", 0);
                 //Debug.Log("Out of Speed");
@@ -551,7 +554,7 @@ public class Action12_WallRunning : MonoBehaviour
 
         //Set direction facing
         CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
-        characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallNormal, 0.2f));
+        //characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallNormal, 0.2f));
 
 
         //Decide speed to slide down wall.
@@ -631,21 +634,22 @@ public class Action12_WallRunning : MonoBehaviour
         Cam.Cam.LockHeight = true;
         camTarget.position = constantTarget.position;
         CharacterAnimator.transform.rotation = Quaternion.identity;
-        CharacterAnimator.transform.forward = previDir;
+        if(previDir != Vector3.zero)
+            CharacterAnimator.transform.forward = previDir;
         //characterTransform.up = CharacterAnimator.transform.up;
        
         characterTransform.localEulerAngles = Vector3.zero;
 
        
 
-        if (immediately && Actions.Action != 1)
-            Actions.ChangeAction(0);
+        if (immediately && Actions.Action != ActionManager.States.Jump)
+            Actions.ChangeAction(ActionManager.States.Regular);
     }
 
     void JumpfromWall()
     {
         Vector3 jumpAngle;
-        
+        Vector3 faceDir;
 
         if (SwitchToJump == 2)
         {
@@ -667,14 +671,14 @@ public class Action12_WallRunning : MonoBehaviour
             if (wallOnRight)
             {
                 newVec = Vector3.Lerp(newVec, -CharacterAnimator.transform.right, 0.25f);
-                CharacterAnimator.transform.forward = Vector3.Lerp(newVec, -CharacterAnimator.transform.right, 0.1f);
+                faceDir = Vector3.Lerp(newVec, -CharacterAnimator.transform.right, 0.1f);
                 newVec *= RunningSpeed;
                 //newVec += (-CharacterAnimator.transform.right * 0.3f);
             }
             else
             {
                 newVec = Vector3.Lerp(newVec, CharacterAnimator.transform.right, 0.25f);
-                CharacterAnimator.transform.forward = Vector3.Lerp(newVec, CharacterAnimator.transform.right, 0.1f);
+                faceDir = Vector3.Lerp(newVec, CharacterAnimator.transform.right, 0.1f);
                 newVec *= RunningSpeed;
                 //newVec += (CharacterAnimator.transform.right * 0.3f);
             }
@@ -685,18 +689,25 @@ public class Action12_WallRunning : MonoBehaviour
         }
         else
         {
-            jumpAngle = Vector3.Lerp(wallToRun.normal, transform.up, 0.7f); ;
-            //Debug.Log(jumpAngle);
-            Player.rb.AddForce(-transform.forward * 2f);
+            Debug.Log(Vector3.Dot(wallToClimb.normal, Inp.trueMoveInput));
+            Debug.Log(ClimbingSpeed);
+
+            jumpAngle = Vector3.Lerp(wallToClimb.normal, transform.up, 0.6f);
+            faceDir = wallToClimb.normal;
+
+            Debug.DrawRay(transform.position, faceDir, Color.red, 20);
+
+            Player.rb.velocity = faceDir * 4f;
         }
 
         SwitchToJump = 0;
         ExitWall(false);
 
-        Actions.Action01.jumpCount = -1;
-        Actions.Action01.InitialEvents(jumpAngle, false, 0, 5);
-        Actions.ChangeAction(1);
-        Debug.Log("Start jump");
+        CharacterAnimator.transform.forward = faceDir;
+
+        //Actions.Action01.jumpCount = -1;
+        Actions.Action01.InitialEvents(jumpAngle, true, 0, Mathf.Clamp(ClimbingSpeed, 5, ClimbingSpeed));
+        Actions.ChangeAction(ActionManager.States.Jump);
     }
 
     IEnumerator JumpOverWall(Quaternion originalRotation, float jumpOverCounter = 0)
@@ -720,15 +731,15 @@ public class Action12_WallRunning : MonoBehaviour
                 Player.rb.velocity += CharacterAnimator.transform.forward * 8;
                 if (Actions.RollPressed)
                 {
-                    Actions.ChangeAction(8);
+                    Actions.ChangeAction(ActionManager.States.DropCharge);
                     Actions.Action08.InitialEvents();
                     break;
                 }
 
                 else
                 {
-                    if (Actions.Action != 1)
-                        Actions.ChangeAction(0);
+                    if (Actions.Action != ActionManager.States.Jump)
+                        Actions.ChangeAction(ActionManager.States.Regular);
                     break;
                 }
             }

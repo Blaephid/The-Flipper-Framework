@@ -14,9 +14,9 @@ public class HomingAttackControl : MonoBehaviour
     PlayerBhysics player;
 
     bool scanning = true;
-    bool inAir = false;
 
     float TargetSearchDistance = 10;
+    float faceRange = 66;
     LayerMask TargetLayer;
     LayerMask BlockingLayers;
     float FieldOfView;
@@ -75,7 +75,7 @@ public class HomingAttackControl : MonoBehaviour
 
         HomingCount += 1;
 
-        if (Actions.Action == 2)
+        if (Actions.Action == ActionManager.States.Homing)
         {
             HomingAvailable = false;
             HomingCount = 0;
@@ -114,13 +114,16 @@ public class HomingAttackControl : MonoBehaviour
         while (scanning)
         {
 
-            while (!player.Grounded && Actions.Action != 5)
+            while (!player.Grounded && Actions.Action != ActionManager.States.Rail)
             {
                 UpdateHomingTargets();
                 if (!HasTarget)
                     yield return new WaitForSeconds(secondsBetweenChecks);
-                else;
-                    yield return new WaitForSeconds(secondsBetweenChecks * 1.5f);
+                else
+                {
+                    //Debug.Log(Vector3.Distance(transform.position, TargetObject.transform.position));
+                    yield return new WaitForSeconds(secondsBetweenChecks * 1.5f);                  
+                }
             }
             previousTarget = null;
             HasTarget = false;
@@ -149,7 +152,7 @@ public class HomingAttackControl : MonoBehaviour
         GameObject closestTarget = null;
         distance = 0f;
         int checkLimit = 0;
-        RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, 8f, Camera.main.transform.forward, Radius * 1.5f, layer);
+        RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, 10f, Camera.main.transform.forward, faceRange, layer);
         foreach (RaycastHit t in NewTargetsInRange)
         {
             if (t.collider.gameObject.GetComponent<HomingTarget>())
@@ -241,6 +244,7 @@ public class HomingAttackControl : MonoBehaviour
     private void AssignStats()
     {
         TargetSearchDistance = tools.coreStats.TargetSearchDistance;
+        faceRange = tools.coreStats.faceRange;
         TargetLayer = tools.coreStats.TargetLayer;
         BlockingLayers = tools.coreStats.BlockingLayers;
         FieldOfView = tools.coreStats.FieldOfView;

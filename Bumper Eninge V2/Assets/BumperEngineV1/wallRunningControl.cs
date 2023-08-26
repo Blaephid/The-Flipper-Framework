@@ -22,7 +22,6 @@ public class wallRunningControl : MonoBehaviour
     [HideInInspector] public GameObject bannedWall;
 
     [Header("Detecting Wall Run")]
-    bool canCheck = false;
     Action12_WallRunning WallRun;
     float WallCheckDistance;
     LayerMask wallLayerMask;
@@ -38,10 +37,6 @@ public class wallRunningControl : MonoBehaviour
     private RaycastHit frontWallDetect;
     private bool wallFront;
 
-    [Header ("Quickstepping")]
-    bool StepRight;
-    float StepDistance = 50f;
-    float DistanceToStep;
 
 
     // Start is called before the first frame update
@@ -75,7 +70,7 @@ public class wallRunningControl : MonoBehaviour
             saveVec = Player.rb.velocity;
 
             //If High enough above ground and not at an odd rotation
-            if (enoughAboveGround() && (Actions.Action == 0 || Actions.Action == 11 || (Actions.Action == 1 && GetComponent<Pathers_Interaction>().currentUpreel == null)))
+            if (enoughAboveGround() && (Actions.Action == ActionManager.States.Regular || Actions.Action == ActionManager.States.JumpDash || (Actions.Action == ActionManager.States.Jump && GetComponent<Pathers_Interaction>().currentUpreel == null)))
             {
                 
                 if(Inp.trueMoveInput.sqrMagnitude > 0.8f)
@@ -132,9 +127,8 @@ public class wallRunningControl : MonoBehaviour
 
             //Enter wall run as a climb
             if (Actions.eventMan != null) Actions.eventMan.wallClimbsPerformed += 1;
-            Debug.Log(WallCheckDistance);
             WallRun.InitialEvents(true, frontWallDetect, false, WallCheckDistance * CheckModifier);
-            Actions.ChangeAction(12);        
+            Actions.ChangeAction(ActionManager.States.WallRunning);        
 
         }
     }
@@ -148,7 +142,7 @@ public class wallRunningControl : MonoBehaviour
             //Enter a wallrun with wall on left.
             WallRun.InitialEvents(false, leftWallDetect, false);
             if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
-            Actions.ChangeAction(12);
+            Actions.ChangeAction(ActionManager.States.WallRunning);
             
         }
     }
@@ -162,7 +156,7 @@ public class wallRunningControl : MonoBehaviour
             //Enter a wallrun with wall on right.
             WallRun.InitialEvents(false, rightWallDetect, true);
             if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
-            Actions.ChangeAction(12);
+            Actions.ChangeAction(ActionManager.States.WallRunning);
             
         }
     }

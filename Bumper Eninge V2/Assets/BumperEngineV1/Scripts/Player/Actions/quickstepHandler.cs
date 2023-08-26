@@ -7,11 +7,10 @@ public class quickstepHandler : MonoBehaviour
 	PlayerBhysics Player;
 	CharacterTools Tools;
 	ActionManager Actions;
+	CameraControl Cam;
+	ActionManager.States startAction;
 
 	Animator CharacterAnimator;
-
-
-	bool QuickStepping;
 
 	float DistanceToStep;
 	float quickStepSpeed;
@@ -23,6 +22,7 @@ public class quickstepHandler : MonoBehaviour
 	bool canStep;
 	bool air;
 
+	float timeTrack;
 
     private void Awake()
     {
@@ -30,16 +30,42 @@ public class quickstepHandler : MonoBehaviour
 		Tools = GetComponent<CharacterTools>();
 		Actions = GetComponent<ActionManager>();
 		CharacterAnimator = Tools.CharacterAnimator;
+		Cam = Tools.GetComponent<CameraControl>();
 
 		StepPlayermask = Tools.coreStats.StepLayerMask;
 
 		this.enabled = false;
 	}
 
+	public void pressRight()
+    {
+		Vector3 Direction = CharacterAnimator.transform.position - Cam.Cam.transform.position;
+		bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < 0f;
+		if (Facing)
+		{
+			Actions.RightStepPressed = false;
+			Actions.LeftStepPressed = true;
+		}
+	}
+
+	public void pressLeft()
+    {
+		Vector3 Direction = CharacterAnimator.transform.position - Cam.Cam.transform.position;
+		bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < 0f;
+		if (Facing)
+		{
+			Actions.RightStepPressed = true;
+			Actions.LeftStepPressed = false;
+		}
+	}
 
     public void initialEvents(bool right)
     {
+		startAction = Actions.Action;
+
 		if (Actions.eventMan != null) Actions.eventMan.quickstepsPerformed += 1;
+
+		timeTrack = 0;
 
 		if (right)
         {
@@ -47,8 +73,7 @@ public class quickstepHandler : MonoBehaviour
 			Actions.RightStepPressed = false;
 			Actions.LeftStepPressed = false;
 
-			
-			QuickStepping = true;
+
 			canStep = true;
 			StepRight = true;
 			if (Player.Grounded)
@@ -71,7 +96,6 @@ public class quickstepHandler : MonoBehaviour
 			Actions.LeftStepPressed = false;
 
 			
-			QuickStepping = true;
 			canStep = true;
 			StepRight = false;
 			if (Player.Grounded)
@@ -86,8 +110,6 @@ public class quickstepHandler : MonoBehaviour
 				quickStepSpeed = Tools.stats.AirStepSpeed;
 				air = true;
 			}
-
-
 		}
 
 	}
@@ -95,14 +117,20 @@ public class quickstepHandler : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+
+		timeTrack = Time.fixedDeltaTime;
+
 		if (air && Player.Grounded)
 			this.enabled = false;
 		else if (!air && !Player.Grounded)
 			air = true;
+
+		if (startAction != Actions.Action)
+			DistanceToStep = 0;
 	
 		if (DistanceToStep > 0)
 		{
-			Debug.Log(DistanceToStep);
+			//Debug.Log(DistanceToStep);
 
 			float stepSpeed = quickStepSpeed;
 

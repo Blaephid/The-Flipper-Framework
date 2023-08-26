@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/BumperEngineV1/Scenes/LogoScreen.unity
     guid: 85c65dc7ca75cc2458be3aba0575d574
   - enabled: 1
+    path: Assets/BumperEngineV1/Scenes/Disclaimers.unity
+    guid: 9179ab516b2b5644fbb965b0dbe073c5
+  - enabled: 1
     path: Assets/BumperEngineV1/Scenes/CharacterSelect.unity
     guid: f23c4b0dbb9199d48a80bc4592f77b29
   - enabled: 1
@@ -38,4 +41,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/BumperEngineV1/Scenes/StageCompleteScreen.unity
     guid: da2531454c9a98440b8ce517b9b69a51
+  - enabled: 1
+    path: Assets/Rail Station.unity
+    guid: 5c21fb4782ca18b4782f864a62430e1e
   m_configObjects: {}

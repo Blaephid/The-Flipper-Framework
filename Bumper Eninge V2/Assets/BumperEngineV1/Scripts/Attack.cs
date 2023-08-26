@@ -43,7 +43,7 @@ public class Attack : MonoBehaviour
 				Vector3 newSpeed = new Vector3(1, 0, 1);
 
 				//From a Jump
-				if ((Actions.Action == 1 || Actions.Action == 0) && CanHitAgain)
+				if ((Actions.Action == ActionManager.States.Jump || Actions.Action == ActionManager.States.Regular) && CanHitAgain)
 				{
 
 					StartCoroutine(ResetTriggerBool());
@@ -58,7 +58,7 @@ public class Attack : MonoBehaviour
 				}
 
 				//From a Homing Attack
-				else if ((Actions.Action == 2 || Actions.PreviousAction == 2) && CanHitAgain)
+				else if ((Actions.Action == ActionManager.States.Homing || Actions.PreviousAction == ActionManager.States.Homing) && CanHitAgain)
 				{
 					StartCoroutine(ResetTriggerBool());
 
@@ -89,7 +89,7 @@ public class Attack : MonoBehaviour
 
 
 				//From a Bounce
-				else if (Actions.Action == 6 && CanHitAgain)
+				else if (Actions.Action == ActionManager.States.Bounce && CanHitAgain)
 				{
 					StartCoroutine(ResetTriggerBool());
 
@@ -146,7 +146,7 @@ public class Attack : MonoBehaviour
 						Vector3 newSpeed = new Vector3(1, 0, 1);
 
 						//From a Jump
-						if ((Actions.Action == 1 || Actions.Action == 0) && CanHitAgain)
+						if ((Actions.Action == ActionManager.States.Jump || Actions.Action == ActionManager.States.Regular) && CanHitAgain)
 						{
 
 							StartCoroutine(ResetTriggerBool());
@@ -162,7 +162,7 @@ public class Attack : MonoBehaviour
 						}
 
 						//From a Homing Attack
-						else if ((Actions.Action == 2 || Actions.PreviousAction == 2) && CanHitAgain)
+						else if ((Actions.Action == ActionManager.States.Homing || Actions.PreviousAction == ActionManager.States.Homing) && CanHitAgain)
 						{
 							StartCoroutine(ResetTriggerBool());
 
@@ -190,7 +190,7 @@ public class Attack : MonoBehaviour
 
 
 						//From a Bounce
-						else if (Actions.Action == 6 && CanHitAgain)
+						else if (Actions.Action == ActionManager.States.Bounce && CanHitAgain)
 						{
 							StartCoroutine(ResetTriggerBool());
 							

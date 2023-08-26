@@ -77,6 +77,7 @@ public class CoreStatsCharacter : ScriptableObject
     [Header("AirMovementExtras")]
     public bool StopAirMovementIfNoInput = true;
     public Vector3 UpGravity = new Vector3(0f, -1.7f, 0);
+    public float keepNormalForThis = 0.083f;
 
 
     [Header("Rolling Values")]
@@ -89,6 +90,11 @@ public class CoreStatsCharacter : ScriptableObject
     public float RollingFlatDecell = 1.004f;
     public float SlopeTakeoverAmount = 0.995f; // This is the normalized slope angle that the player has to be in order to register the land as "flat"
 
+    [Header("Pull Items")]
+    public AnimationCurve radiusBySpeed;
+    public LayerMask ringMask;
+    public float basePullSpeed;
+
     [Header("Jump")]
     public AnimationCurve CoyoteTimeOverSpeed;
     public float JumpSlopeConversion = 0.03f;
@@ -100,6 +106,7 @@ public class CoreStatsCharacter : ScriptableObject
 
     [Header ("Homing Search")]
     public float TargetSearchDistance = 30;
+    public float faceRange = 66;
     public LayerMask TargetLayer;
     public LayerMask BlockingLayers;
     public float FieldOfView = 0.2f;
@@ -117,8 +124,12 @@ public class CoreStatsCharacter : ScriptableObject
     [Header("Spin Charge")]
     public float MaximumSpeed = 25; //The max amount of speed you can be at to perform a Spin Dash
     public float MaximumSlope = 0.9f; //The highest slope you can be on to Spin Dash
+    public float ReleaseShakeAmmount;
     public AnimationCurve SpeedLossByTime;
     public AnimationCurve ForceGainByAngle;
+    public AnimationCurve gainBySpeed;
+    public float spinSkidStartPoint;
+    public float spinSkidIntesity;
 
 
     [Header("Bounce")]
@@ -162,6 +173,10 @@ public class CoreStatsCharacter : ScriptableObject
 
 
     [Header("Rails")]
+    public float railMaxSpeed = 125f;
+    public float railTopSpeed = 80;
+    public float railDecaySpeedHigh = 0.4f;
+    public float railDecaySpeedLow = 0.2f;
     public float MinStartSpeed = 20f;
     public float RailPushFowardmaxSpeed = 100f;
     public float RailPushFowardIncrements = 5f;
@@ -173,12 +188,19 @@ public class CoreStatsCharacter : ScriptableObject
     public float RailDownHillMultiplierCrouching = 0.8f;
     public float RailDragVal = 0.0001f;
     public float RailPlayerBrakePower = 0.7f;
+    public float hopDelay = 0.5f;
+    public float hopSpeed = 3f;
+    public float hopDistance = 12;
+    public AnimationCurve railAccelBySpeed;
+    public float railBoostDecaySpeed = 0.02f;
+    public float railBoostDecayTime = 0.1f;
 
     [Header("Position on Rails")]
-    public Vector3 SkinOffsetPosRail = new Vector3(0, -0.4f, 0);
-    public Vector3 SkinOffsetPosZip = new Vector3(0, -0.4f, 0);
+    //public Vector3 SkinOffsetPosRail = new Vector3(0, -0.4f, 0);
+    //public Vector3 SkinOffsetPosZip = new Vector3(0, -0.4f, 0);
     public float OffsetRail = 2.05f;
     public float OffsetZip = -5f;
+    public float OffsetUpreel = 1.5f;
 
     [Header("Wall Rules")]
     public float WallCheckDistance = 1.2f;

@@ -106,7 +106,7 @@ public class drawShotDirection : MonoBehaviour
         {
             int gravMod;
             if (vertSpeed > 70)
-                gravMod = vertSpeed / 15;
+                gravMod = vertSpeed / 18;
             else
                 gravMod = vertSpeed / 12;
             float applyMod = 1 + (gravMod * 0.1f);

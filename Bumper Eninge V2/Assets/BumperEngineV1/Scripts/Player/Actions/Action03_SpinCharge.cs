@@ -4,13 +4,17 @@ using System.Collections;
 public class Action03_SpinCharge : MonoBehaviour
 {
     CharacterTools Tools;
+    PlayerBinput Inp;
 
     Animator CharacterAnimator;
     Animator BallAnimator;
     CameraControl Cam;
     public float BallAnimationSpeedMultiplier;
+    GameObject lowerCapsule;
+    GameObject characterCapsule;
 
     ActionManager Actions;
+    quickstepHandler quickstepManager;
 
     PlayerBhysics Player;
     SonicSoundsControl sounds;
@@ -29,6 +33,7 @@ public class Action03_SpinCharge : MonoBehaviour
     [HideInInspector] public float SpinDashStillForce = 20f;
     AnimationCurve SpeedLossByTime;
     AnimationCurve ForceGainByAngle;
+    AnimationCurve gainBySpeed;
 
     bool tapped = false;
     float charge;
@@ -38,7 +43,7 @@ public class Action03_SpinCharge : MonoBehaviour
     bool pressedCurrently = true;
 
 
-    public float ReleaseShakeAmmount;
+    float ReleaseShakeAmmount;
 
     private void Awake()
     {
@@ -48,6 +53,9 @@ public class Action03_SpinCharge : MonoBehaviour
             AssignTools();
 
             AssignStats();
+
+            quickstepManager = GetComponent<quickstepHandler>();
+            quickstepManager.enabled = false;
         }
     }
 
@@ -58,6 +66,9 @@ public class Action03_SpinCharge : MonoBehaviour
         time = 0;
         pressedCurrently = true;
         tapped = true;
+
+        lowerCapsule.SetActive(true);
+        characterCapsule.SetActive(false);
     }
 
     void FixedUpdate()
@@ -67,8 +78,8 @@ public class Action03_SpinCharge : MonoBehaviour
 
         //Lock camera on behind
         //Cam.Cam.FollowDirection(3, 14f, -10, 0);
-
-       
+        Inp.LockCam = false;
+        Cam.Cam.lookTimer = 0;
 
 
         effects.DoSpindash(1, SpinDashChargedEffectAmm * charge, charge,
@@ -107,22 +118,70 @@ public class Action03_SpinCharge : MonoBehaviour
             charge = MaximunCharge;
         }
 
+        startFall();
+
+        Actions.skid.spinSkid();
+
+        handleInput();
+    }
+
+    void startFall()
+    {
         //Stop if not grounded
-        if (!Player.Grounded) 
+        if (!Player.Grounded)
         {
+            Actions.SpecialPressed = false;
             effects.EndSpinDash();
             if (Actions.RollPressed)
             {
                 Actions.Action08.InitialEvents(charge);
-                Actions.ChangeAction(8);
+                Actions.ChangeAction(ActionManager.States.DropCharge);
             }
             else
             {
-                Actions.ChangeAction(0);
+                Actions.ChangeAction(ActionManager.States.Regular);
             }
-           
+
         }
     }
+
+    void handleInput()
+    {
+        /////Quickstepping
+        ///
+        //Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
+        if (Actions.RightStepPressed)
+        {
+            quickstepManager.pressRight();
+        }
+        else if (Actions.LeftStepPressed)
+        {
+            quickstepManager.pressLeft();
+        }
+
+        //Enable Quickstep right or left
+        if (Actions.RightStepPressed && !quickstepManager.enabled)
+        {
+            if (Player.HorizontalSpeedMagnitude > 10f)
+            {
+
+                quickstepManager.initialEvents(true);
+                quickstepManager.enabled = true;
+            }
+        }
+
+        else if (Actions.LeftStepPressed && !quickstepManager.enabled)
+        {
+            if (Player.HorizontalSpeedMagnitude > 10f)
+            {
+                quickstepManager.initialEvents(false);
+                quickstepManager.enabled = true;
+            }
+        }
+    }
+
+   
+
 
     IEnumerator delayRelease()
     {
@@ -150,7 +209,7 @@ public class Action03_SpinCharge : MonoBehaviour
         if (charge < MinimunCharge || Actions.JumpPressed)
         {
             sounds.Source2.Stop();
-            Actions.ChangeAction(0);
+            Actions.ChangeAction(ActionManager.States.Regular);
         }
         else
         {
@@ -159,11 +218,12 @@ public class Action03_SpinCharge : MonoBehaviour
 
             Vector3 newForce = charge * (PlayerSkinTransform.forward);
             float dif = Vector3.Dot(newForce.normalized, Player.rb.velocity.normalized);
-            
-            newForce *= ForceGainByAngle.Evaluate(dif);
+
+            if(Player.HorizontalSpeedMagnitude > 20)
+                newForce *= ForceGainByAngle.Evaluate(dif);
+            newForce *= gainBySpeed.Evaluate(Player.HorizontalSpeedMagnitude / Player.MaxSpeed);
 
             Player.rb.velocity += newForce;
-            //Player.MoveInput = new Vector3 (-1, 0, 0);
 
             CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player.rb.velocity.x + Player.rb.velocity.z) / 2));
             CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
@@ -173,7 +233,9 @@ public class Action03_SpinCharge : MonoBehaviour
             Player.isRolling = true;
             Actions.Action00.rollCounter = 0.3f;
 
-            Actions.ChangeAction(0);
+            Inp.LockInputForAWhile(0, false);
+
+            Actions.ChangeAction(ActionManager.States.Regular);
         }
 
     }
@@ -198,7 +260,7 @@ public class Action03_SpinCharge : MonoBehaviour
         if (Player.RawInput.sqrMagnitude > 0.1f)
         {
             
-            CharRot = Quaternion.LookRotation(Player.MainCamera.transform.forward - Player.GroundNormal * Vector3.Dot(Player.MainCamera.transform.forward, Player.GroundNormal), Vector3.up);
+            CharRot = Quaternion.LookRotation(Player.MainCamera.transform.forward - Player.GroundNormal * Vector3.Dot(Player.MainCamera.transform.forward, Player.GroundNormal), transform.up);
         }
         else if (Player.rb.velocity != Vector3.zero)
         {
@@ -232,12 +294,15 @@ public class Action03_SpinCharge : MonoBehaviour
         SpinDashStillForce = Tools.stats.SpinDashStillForce;
         SpeedLossByTime = Tools.coreStats.SpeedLossByTime;
         ForceGainByAngle = Tools.coreStats.ForceGainByAngle;
+        gainBySpeed = Tools.coreStats.gainBySpeed;
+        ReleaseShakeAmmount = Tools.coreStats.ReleaseShakeAmmount;
     }
     private void AssignTools()
     {
         Player = GetComponent<PlayerBhysics>();
         Actions = GetComponent<ActionManager>();
         Cam = GetComponent<CameraControl>();
+        Inp = GetComponent<PlayerBinput>();
 
         CharacterAnimator = Tools.CharacterAnimator;
         BallAnimator = Tools.BallAnimator;
@@ -247,5 +312,7 @@ public class Action03_SpinCharge : MonoBehaviour
         PlayerSkin = Tools.PlayerSkin;
         PlayerSkinTransform = Tools.PlayerSkinTransform;
         SpinDashBall = Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
+        lowerCapsule = Tools.crouchCapsule;
+        characterCapsule = Tools.characterCapsule;
     }
 }

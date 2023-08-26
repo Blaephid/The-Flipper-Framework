@@ -5,7 +5,7 @@ using Cinemachine;
 using SplineMesh;
 
 
-[RequireComponent(typeof(Spline))]
+//[RequireComponent(typeof(Spline))]
 public class Pathers_Interaction : MonoBehaviour
 {
     CharacterTools Tools;
@@ -36,6 +36,9 @@ public class Pathers_Interaction : MonoBehaviour
     [HideInInspector] public PulleyActor currentUpreel;
     Transform HandGripPoint;
     [HideInInspector] public Transform feetPoint;
+    float OffsetUpreel = 1.5f;
+
+    bool onceThisFrame = false;
 
     void Awake()
     {
@@ -43,41 +46,57 @@ public class Pathers_Interaction : MonoBehaviour
         {
             Tools = GetComponent<CharacterTools>();
             AssignTools();
+
+            OffsetUpreel = Tools.coreStats.OffsetUpreel;
         }
 
     }
 
 
-    private void FixedUpdate()
+    private void Update()
     {
 
         //Updates if the player is currently on an Upreel
         if (currentUpreel != null)
         {
+            onUpreel();
+        }
+
+    }
+
+    void onUpreel()
+    {
+        
+
+
+        //If the upreel is finished
+        if (!currentUpreel.Moving)
+        {
+            Input.LockInputForAWhile(20f, false);
+
+            currentUpreel = null;
+            Actions.Action02.HomingAvailable = true;
+
+            //CharacterAnimator.transform.rotation = Quaternion.LookRotation(-currentUpreel.transform.forward, transform.up);
+            CharacterAnimator.SetInteger("Action", 0);
+
+            //Bounces player up to get them above the wall
+            StartCoroutine(exitPulley());
+
+        }
+        else
+        {
             //Deactives player control and freezes movemnt to keep them in line with the upreel.
 
             Player.rb.velocity = Vector3.zero;
-            Input.LockInputForAWhile(0f, true);
+            Input.LockInputForAWhile(0f, false);
 
             //Moves the player to the position of the Upreel
             Vector3 HandPos = transform.position - HandGripPoint.position;
+            HandPos += (currentUpreel.transform.forward * OffsetUpreel);
             transform.position = currentUpreel.HandleGripPos.position + HandPos;
-            transform.forward = -currentUpreel.transform.forward;
-
-            //If the upreel is finished
-            if (!currentUpreel.Moving)
-            {
-                Input.LockInputForAWhile(20f, true);
-
-                currentUpreel = null;
-                Actions.Action02.HomingAvailable = true;
-
-                //Bounces player up to get them above the wall
-                StartCoroutine(exitPulley());
-
-            }
+            CharacterAnimator.transform.rotation = Quaternion.LookRotation(-currentUpreel.transform.forward, currentUpreel.transform.up);
         }
-
     }
 
     IEnumerator exitPulley()
@@ -105,10 +124,10 @@ public class Pathers_Interaction : MonoBehaviour
     public void AttachToRail(Collision col, bool trigger, Collider colli)
     {
 
-        //Debug.Log("HitRail");
+        
         if (colli.gameObject.GetComponentInParent<Spline>())
         {
-            //Debug.Log("Rail!");
+
             RailSpline = colli.gameObject.GetComponentInParent<Spline>();
             Transform ColPos;
             if (trigger)
@@ -118,13 +137,31 @@ public class Pathers_Interaction : MonoBehaviour
             else
                 ColPos = GetCollisionPoint(col);
 
-            float Range = GetClosestPos(ColPos);
+            float Range = GetClosestPos(ColPos.position, RailSpline);
 
-            if (!Actions.Action05.OnRail && !Actions.Action04Control.isDead)
+            Vector3 offSet = Vector3.zero;
+
+            if(colli.gameObject.GetComponentInParent<ExampleSower>())
+            {
+                offSet.x = colli.gameObject.GetComponentInParent<ExampleSower>().Offset3d.x;
+            }
+
+            AddOnRail addOn = null;
+
+            if(colli.gameObject.GetComponentInParent<AddOnRail>())
+            {
+                if(colli.gameObject.GetComponentInParent<AddOnRail>() != null)
+                {
+                    addOn = colli.gameObject.GetComponentInParent<AddOnRail>();
+ 
+                }
+            }
+
+            if (!Actions.Action04Control.isDead)
             {
                 //Sets the player to the rail grind action, and sets their position and what spline to follow.
-                Actions.Action05.InitialEvents(Range, RailSpline.transform, false);
-                Actions.ChangeAction(5);
+                Actions.Action05.InitialEvents(Range, RailSpline.transform.parent, false, offSet, addOn);
+                Actions.ChangeAction(ActionManager.States.Rail);
             }
         }
     }
@@ -133,8 +170,10 @@ public class Pathers_Interaction : MonoBehaviour
     public void OnTriggerEnter(Collider col)
     {
 
-        if (col.gameObject.CompareTag("Rail"))
+        if (col.gameObject.CompareTag("Rail") && !Actions.Action05.OnRail)
         {
+            Debug.Log("Hit Rail");
+
             if(col.GetComponent<CapsuleCollider>().radius == 4)
             {
                 if(Player.SpeedMagnitude > 120 || Mathf.Abs(Player.rb.velocity.y) > 30)
@@ -182,14 +221,14 @@ public class Pathers_Interaction : MonoBehaviour
                     Actions.Action05.ZipHandle = col.transform;
                     Actions.Action05.ZipBody = zipbody;
                     zipbody.isKinematic = false;
-                    float Range = GetClosestPos(col.transform);
+                    float Range = GetClosestPos(col.transform.position, RailSpline);
 
                     GameObject target = col.transform.GetComponent<PulleyObject>().homingtgt;
                     target.SetActive(false);
 
                     //Sets the player to the rail grind action, and sets their position and what spline to follow.
-                    Actions.Action05.InitialEvents(Range, RailSpline.transform, true);
-                    Actions.ChangeAction(5);
+                    Actions.Action05.InitialEvents(Range, RailSpline.transform, true, Vector3.zero, null);
+                    Actions.ChangeAction(ActionManager.States.Rail);
                 }
             }
         }
@@ -200,88 +239,98 @@ public class Pathers_Interaction : MonoBehaviour
             //Activates the upreel to start retracting. See PulleyActor class for more.
             //Sets currentUpreel. See Update() above for more.
             currentUpreel = col.gameObject.GetComponentInParent<PulleyActor>();
+
+            CharacterAnimator.SetInteger("Action", 9);
+            CharacterAnimator.SetTrigger("HitRail");
+
             currentUpreel.RetractPulley();
-            Actions.ChangeAction(0);
+            Actions.ChangeAction(ActionManager.States.Regular);
         }
 
         //Automatic Paths
         if (col.gameObject.CompareTag("PathTrigger"))
         {
 
-            //If the player is already on a path, then hitting this trigger will end it.
-            if (Actions.Action == 10)
-            {
-                //See MoveAlongPath for more
-                Actions.Action10.ExitPath();
-           
-                return;
-                
-            }
-
-            
-            //If the player is entering a trigger to start a path.
-            if (Actions.Action != 10 && col.gameObject.name != "End")
-            {
-                float speedGo = 0f;
-
-                //If the path is being started by a path speed pad
-                if (col.gameObject.GetComponent<SpeedPadData>())
-                {
-                    RailSpline = col.gameObject.GetComponent<SpeedPadData>().path;
-                    col.GetComponent<AudioSource>().Play();
-                    speedGo = col.gameObject.GetComponent<SpeedPadData>().Speed;
-                }
-
-                //If the path is being started by a normal trigger
-                else if (col.gameObject.GetComponentInParent<Spline>() && col.gameObject.CompareTag("PathTrigger"))
-                    RailSpline = col.gameObject.GetComponentInParent<Spline>();
-
-                else
-                    RailSpline = null;
-
-                //If the player has been given a path to follow. This cuts out speed pads that don't have attached paths.
-                if (RailSpline != null)
-                {
-
-                    
-                    //noDelay, the coroutine and otherCol. enabled are used to prevent the player colliding with the trigger multiple times for all of their attached colliders
-                    
-
-                    //Sets the player to start at the start and move forwards
-                    bool back = false;
-                    float range = 0f;
-
-                    //If entering an Exit trigger, the player will be set to move backwards and start at the end.
-                    if (col.gameObject.name == "Exit")
-                    {
-                        back = true;
-                        range = RailSpline.Length - 1f;
-                    }
-
-                    //If the paths has a set camera angle.
-                    if (col.gameObject.GetComponent<CineStart>())
-                    {
-                        currentCam = col.gameObject.GetComponent<CineStart>();
-                        currentCam.ActivateCam(0f);
-                    }
-
-                    CurentPathTrigger = col.GetComponent<Collider>();
-
-
-
-                    //Physics.IgnoreCollision(CurentPathTrigger, playerCol, true);
-
-
-                    //Starts the player moving along the path using the path follow action
-                    Actions.Action10.InitialEvents(range, RailSpline.transform, back, speedGo);
-                    Actions.ChangeAction(10);
-
-                   
-                } 
-            }
+            if(!onceThisFrame)
+                StartCoroutine(SetOnPath(col));
             
         }
 
+    }
+
+    IEnumerator SetOnPath(Collider col)
+    {
+        onceThisFrame = true;
+
+        //If the player is already on a path, then hitting this trigger will end it.
+        if (Actions.Action == ActionManager.States.Path)
+        {
+            //See MoveAlongPath for more
+            Actions.Action10.ExitPath();
+
+        }
+
+        else if (Actions.Action != ActionManager.States.Path && col.gameObject.name != "End")
+        {
+            float speedGo = 0f;
+
+            //If the path is being started by a path speed pad
+            if (col.gameObject.GetComponent<SpeedPadData>())
+            {
+                RailSpline = col.gameObject.GetComponent<SpeedPadData>().path;
+                col.GetComponent<AudioSource>().Play();
+                speedGo = col.gameObject.GetComponent<SpeedPadData>().Speed;
+            }
+
+            //If the path is being started by a normal trigger
+            else if (col.gameObject.GetComponentInParent<Spline>() && col.gameObject.CompareTag("PathTrigger"))
+                RailSpline = col.gameObject.GetComponentInParent<Spline>();
+
+            else
+                RailSpline = null;
+
+            //If the player has been given a path to follow. This cuts out speed pads that don't have attached paths.
+            if (RailSpline != null)
+            {
+
+
+                //noDelay, the coroutine and otherCol. enabled are used to prevent the player colliding with the trigger multiple times for all of their attached colliders
+
+
+                //Sets the player to start at the start and move forwards
+                bool back = false;
+                float range = 0f;
+
+                //If entering an Exit trigger, the player will be set to move backwards and start at the end.
+                if (col.gameObject.name == "Exit")
+                {
+                    back = true;
+                    range = RailSpline.Length - 1f;
+                }
+
+                //If the paths has a set camera angle.
+                if (col.gameObject.GetComponent<CineStart>())
+                {
+                    currentCam = col.gameObject.GetComponent<CineStart>();
+                    currentCam.ActivateCam(0f);
+                }
+
+                CurentPathTrigger = col.GetComponent<Collider>();
+
+
+
+                //Physics.IgnoreCollision(CurentPathTrigger, playerCol, true);
+
+
+                //Starts the player moving along the path using the path follow action
+                Actions.Action10.InitialEvents(range, RailSpline.transform, back, speedGo);
+                Actions.ChangeAction(ActionManager.States.Path);
+
+
+            }
+        }
+        yield return new WaitForEndOfFrame();
+        onceThisFrame = false;
     }
 
 
@@ -303,15 +352,15 @@ public class Pathers_Interaction : MonoBehaviour
     }
 
 
-    float GetClosestPos(Transform ColPos)
+    public float GetClosestPos(Vector3 ColPos, Spline thisSpline)
     {
         //spline.nodes.Count - 1
 
         //Debug.Log(ColPos.position);
         CurrentDist = 9999999f;
-        for (float n = 0; n < RailSpline.Length; n += 3)
+        for (float n = 0; n < thisSpline.Length; n += 3)
         {
-            dist = ((RailSpline.GetSampleAtDistance(n).location + RailSpline.transform.position) - ColPos.position).sqrMagnitude;
+            dist = ((thisSpline.GetSampleAtDistance(n).location + thisSpline.transform.position) - ColPos).sqrMagnitude;
             if (dist < CurrentDist)
             {
                 CurrentDist = dist;

@@ -45,7 +45,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.2943707, y: 1.0865812, z: 0.5324702}
+  m_Size: {x: 2.18, y: 1.91, z: 0.5324702}
   m_Center: {x: 0.00865829, y: -1.1168761, z: 0.2337649}
 --- !u!1 &4833960984893145618
 GameObject:
@@ -275,8 +275,8 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: -0.840711, y: 291.20157, z: 415.57562}
-  - {x: 0.30386102, y: 262.05746, z: 415.57562}
+  - {x: 718.01154, y: 219.21156, z: 646.7107}
+  - {x: 718.01154, y: 190.06747, z: 645.56616}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1

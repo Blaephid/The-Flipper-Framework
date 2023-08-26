@@ -75,19 +75,17 @@ public class Objects_Interaction : MonoBehaviour {
 
     void UpdateSpeed()
     {
-        if (Actions.Action == 0)
+        if (Actions.Action == ActionManager.States.Regular)
         {
-            DisplaySpeed = Player.SpeedMagnitude;
-        }
-        else if (Actions.Action == 1 || Actions.Action == 6)
-        {
+            //DisplaySpeed = Player.SpeedMagnitude;
             DisplaySpeed = Player.HorizontalSpeedMagnitude;
         }
-        else if(Actions.Action == 5 )
+        
+        else if(Actions.Action == ActionManager.States.Rail)
         {
             DisplaySpeed = Actions.Action05.PlayerSpeed;
         }
-        else if (Actions.Action == 12)
+        else if (Actions.Action == ActionManager.States.WallRunning)
         {
             if (Actions.Action12.RunningSpeed > Actions.Action12.ClimbingSpeed)
             DisplaySpeed = Actions.Action12.RunningSpeed;
@@ -95,9 +93,13 @@ public class Objects_Interaction : MonoBehaviour {
                 DisplaySpeed = Actions.Action12.ClimbingSpeed;
 
         }
-        else if (Actions.Action == 10)
+        else if (Actions.Action == ActionManager.States.Path)
         {
 
+        }
+        else
+        {
+             DisplaySpeed = Player.HorizontalSpeedMagnitude;           
         }
 
         if (SpeedCounter != null && Player.SpeedMagnitude > 10f) SpeedCounter.text = DisplaySpeed.ToString("F0");
@@ -141,14 +143,67 @@ public class Objects_Interaction : MonoBehaviour {
 
     }
 
+    IEnumerator setRailSpeed(float speed, bool set, float addSpeed, bool backwards)
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            yield return new WaitForFixedUpdate();
+
+            if(set)
+            {
+                if (Actions.Action05.PlayerSpeed < speed)
+                {
+                    Actions.Action05.PlayerSpeed = speed;
+                    Actions.Action05.Boosted = true;
+                    Actions.Action05.boostTime = 0.7f;
+                    
+                }
+                if (backwards)
+                    Actions.Action05.backwards = true;
+                else
+                    Actions.Action05.backwards = false;
+            }
+            else if (Actions.Action == ActionManager.States.Rail)
+            {
+
+                Actions.Action05.PlayerSpeed += addSpeed / 2;
+                Actions.Action05.Boosted = true;
+                Actions.Action05.boostTime = 0.7f;
+                if (backwards)
+                    Actions.Action05.backwards = true;
+                else
+                    Actions.Action05.backwards = false;
+
+                i = 3;
+                
+            }
+        }
+
+    }
+
     public void OnTriggerEnter(Collider col)
     {
         //Speed Pads Collision
         if(col.tag == "SpeedPad")
         {
+            SpeedPadData pad = col.GetComponent<SpeedPadData>();
+
             col.GetComponent<AudioSource>().Play();
 
+            if (pad.onRail)
+             {
 
+                if (Actions.Action != ActionManager.States.Rail)
+                {
+                    transform.position = col.GetComponent<SpeedPadData>().positionToLockTo.position;
+                }
+                else
+                {
+                    StartCoroutine(setRailSpeed(pad.Speed, pad.setSpeed, pad.addSpeed, pad.railBackwards));
+                }        
+                return;
+            }
+                     
             JumpBall.SetActive(false);
 			if (Actions.Action08 != null) {
 				if (Actions.Action08.DropEffect.isPlaying == true) {
@@ -158,13 +213,19 @@ public class Objects_Interaction : MonoBehaviour {
 
             if(!col.GetComponent<SpeedPadData>().path)
             {
-                SpeedPadData pad = col.GetComponent<SpeedPadData>();
-
+                
                 Actions.Action02.HomingAvailable = true;
 
                 transform.rotation = Quaternion.identity;
                 //ResetPlayerRotation
- 
+
+                Vector3 lockpos;
+                if (col.GetComponent<SpeedPadData>().positionToLockTo != null)
+                    lockpos = col.GetComponent<SpeedPadData>().positionToLockTo.position;
+                else
+                    lockpos = col.transform.position;
+
+
                 if (pad.LockToDirection)
                 {
                     float speed = col.GetComponent<SpeedPadData>().Speed;
@@ -172,9 +233,9 @@ public class Objects_Interaction : MonoBehaviour {
                         speed = Player.HorizontalSpeedMagnitude;
 
                     if(!pad.isDashRing)
-                        StartCoroutine(applyForce(col.transform.forward * speed, col.transform.position, 1));
+                        StartCoroutine(applyForce(col.transform.forward * speed, lockpos, 1));
                     else
-                        StartCoroutine(applyForce(col.transform.forward * col.GetComponent<SpeedPadData>().Speed, col.transform.position));
+                        StartCoroutine(applyForce(col.transform.forward * col.GetComponent<SpeedPadData>().Speed, lockpos));
                 }
                 else
                 {
@@ -182,16 +243,16 @@ public class Objects_Interaction : MonoBehaviour {
 
                     if (col.GetComponent<SpeedPadData>().Snap)
                     {
-                        transform.position = col.transform.position;
+                        transform.position = lockpos;
                     }
                 }
 
                
                 if (pad.isDashRing)
                 {
-                    
+                                  
                     Actions.Action00.cancelCoyote();
-                    Actions.ChangeAction(0);
+                    Actions.ChangeAction(ActionManager.States.Regular);
                     CharacterAnimator.SetBool("Grounded", false);
                     CharacterAnimator.SetInteger("Action", 0);
 
@@ -205,6 +266,8 @@ public class Objects_Interaction : MonoBehaviour {
                     {
                         StartCoroutine(lockGravity(pad.lockGravity));
                     }
+                    
+                    
 
                 }
                 else
@@ -287,7 +350,7 @@ public class Objects_Interaction : MonoBehaviour {
         {
             HedgeCamera.Shakeforce = EnemyHitShakeAmmount;
             //If 1, destroy, if not, take damage.
-            if (Actions.Action == 3)
+            if (Actions.Action == ActionManager.States.SpinCharge)
             {
                 attack.AttackThing(col, "SpinDash");
                 
@@ -300,7 +363,7 @@ public class Objects_Interaction : MonoBehaviour {
             }
 
 
-            else if(Actions.Action != 3)
+            else if(Actions.Action != ActionManager.States.SpinCharge)
             {
                 DamagePlayer();
             }
@@ -327,7 +390,7 @@ public class Objects_Interaction : MonoBehaviour {
             Actions.Action00.cancelCoyote();
             Player.GravityAffects = true;
 
-            if (Actions.Action == 2 || Actions.PreviousAction == 2)
+            if (Actions.Action == ActionManager.States.Homing || Actions.PreviousAction == ActionManager.States.Homing)
                 Player.HomingDelay = Tools.stats.HomingSuccessDelay;
 
             JumpBall.SetActive(false);
@@ -359,7 +422,7 @@ public class Objects_Interaction : MonoBehaviour {
                     StartCoroutine(lockGravity(spring.lockGravity));
                 }
 
-                Actions.ChangeAction(0);
+                Actions.ChangeAction(ActionManager.States.Regular);
                 
 
                 if (col.GetComponent<AudioSource>()) { col.GetComponent<AudioSource>().Play(); }
@@ -391,9 +454,9 @@ public class Objects_Interaction : MonoBehaviour {
             }
         }
 
-		if (col.tag == "Bumper")
+		else if (col.tag == "Bumper")
 		{
-            if (Actions.Action == 2 || Actions.PreviousAction == 2)
+            if (Actions.Action == ActionManager.States.Homing || Actions.PreviousAction == ActionManager.States.Homing)
                 Player.HomingDelay = Tools.stats.HomingSuccessDelay;
 
             JumpBall.SetActive(false);
@@ -406,14 +469,14 @@ public class Objects_Interaction : MonoBehaviour {
 		}
 
 		//CancelHoming
-		if (col.tag == "CancelHoming") 
+		else if (col.tag == "CancelHoming") 
 		{
-			if (Actions.Action == 2 || Actions.PreviousAction == 2)
+			if (Actions.Action == ActionManager.States.Homing || Actions.PreviousAction == ActionManager.States.Homing)
             {
 
 				Vector3 newSpeed = new Vector3(1, 0, 1);
 
-				Actions.ChangeAction (0);
+				Actions.ChangeAction (ActionManager.States.Regular);
 				newSpeed = new Vector3(0, HomingBouncingPower, 0);
 				////Debug.Log (newSpeed);
 				Player.rb.velocity = newSpeed;
@@ -426,8 +489,24 @@ public class Objects_Interaction : MonoBehaviour {
             }
 		}
 
+        else if(col.tag == "Wind")
+        {
+            if(col.GetComponent<updraft>())
+            {
+                if (Actions.Action == ActionManager.States.Hovering)
+                {
+                    Actions.Action13.updateHover(col.GetComponent<updraft>());
+                }
+                else
+                {
+                    Actions.Action13.InitialEvents(col.GetComponent<updraft>());
+                    Actions.ChangeAction(ActionManager.States.Hovering);
+                }
+            }
+                                
+        }
 
-        if (col.tag == "HintRing")
+        else if (col.tag == "HintRing")
         {
             HintRingActor hintRing = col.GetComponent<HintRingActor>();
             //if (!HintBox.IsShowing)
@@ -462,6 +541,14 @@ public class Objects_Interaction : MonoBehaviour {
 
         }
 
+    }
+
+    private void OnTriggerExit(Collider col)
+    {
+        if (col.tag == "Wind")
+        {
+            Actions.Action13.inWind = false;
+        }
     }
 
     public void OnTriggerStay(Collider col)
@@ -521,14 +608,15 @@ public class Objects_Interaction : MonoBehaviour {
             Player.rb.velocity = Vector3.zero;
             yield return new WaitForFixedUpdate();
         }
-    
+
+        Actions.ChangeAction(ActionManager.States.Regular);
         transform.position = position;
         Player.rb.velocity = force;
 
     }
     public void DamagePlayer()
     {
-        if (!Actions.Action04Control.IsHurt && Actions.Action != 4)
+        if (!Actions.Action04Control.IsHurt && Actions.Action != ActionManager.States.Hurt)
         {
 
             if (!Monitors_Interactions.HasShield)
@@ -538,7 +626,7 @@ public class Objects_Interaction : MonoBehaviour {
                     //LoseRings
                     Sounds.RingLossSound();
                     Actions.Action04Control.GetHurt();
-                    Actions.ChangeAction(4);
+                    Actions.ChangeAction(ActionManager.States.Hurt);
                     Actions.Action04.InitialEvents();
                 }
                 if (RingAmount <= 0)
@@ -548,7 +636,7 @@ public class Objects_Interaction : MonoBehaviour {
                     {
                         Sounds.DieSound();
                         Actions.Action04Control.isDead = true;
-                        Actions.ChangeAction(4);
+                        Actions.ChangeAction(ActionManager.States.Hurt);
                         Actions.Action04.InitialEvents();
                     }
                 }
@@ -558,7 +646,7 @@ public class Objects_Interaction : MonoBehaviour {
                 //Lose Shield
                 Sounds.SpikedSound();
                 Monitors_Interactions.HasShield = false;
-                Actions.ChangeAction(4);
+                Actions.ChangeAction(ActionManager.States.Hurt);
                 Actions.Action04.InitialEvents();
             }
         }

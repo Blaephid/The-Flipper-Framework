@@ -29,7 +29,7 @@ public class Action08_DropCharge : MonoBehaviour
     [HideInInspector] public float MaximunCharge = 100;
     bool Charging = true;
 
-    float charge;
+    [HideInInspector] public float charge;
     bool isSpinDashing;
     Vector3 RawPrevInput;
     Quaternion CharRot;
@@ -132,7 +132,7 @@ public class Action08_DropCharge : MonoBehaviour
 
             Actions.JumpPressed = false;
             JumpBall.SetActive(false);
-            Actions.ChangeAction(0);
+            Actions.ChangeAction(ActionManager.States.Regular);
             //Actions.ChangeAction(0);
         }
 
@@ -149,10 +149,10 @@ public class Action08_DropCharge : MonoBehaviour
         {
             DropEffect.Stop();
         }
-        if (Actions.Action == 8)
+        if (Actions.Action == ActionManager.States.DropCharge)
         {
             JumpBall.SetActive(true);
-            Actions.ChangeAction(1);
+            Actions.ChangeAction(ActionManager.States.Jump);
         }
     }
 
@@ -184,7 +184,7 @@ public class Action08_DropCharge : MonoBehaviour
         yield return new WaitForSeconds(time);
         Player.GravityAffects = true;
         JumpBall.SetActive(false);
-        Actions.ChangeAction(1);
+        Actions.ChangeAction(ActionManager.States.Jump);
 
     }
 
@@ -196,9 +196,45 @@ public class Action08_DropCharge : MonoBehaviour
         JumpBall.SetActive(false);
 
         DropDashAvailable = false;
-        //Actions.RollPressed = false;
-        Player.isRolling = true;
-        Actions.Action00.rollCounter = 0.45f;
+
+        //Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
+
+        //if (newForward.magnitude < 0.1f)
+        //{
+        //    newForward = CharacterAnimator.transform.forward;
+        //}
+
+        //CharRot = Quaternion.LookRotation(newForward, transform.up);
+        //CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * 200);
+
+        
+        if (charge < MinimunCharge)
+        {
+            charge = MinimunCharge;
+        }
+
+        Launch(charge);
+
+
+        if (DropEffect.isPlaying == true)
+        {
+            DropEffect.Stop();
+        }
+
+
+    }
+
+    public float externalDash()
+    {
+        HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
+        sounds.SpinDashReleaseSound();
+        return charge;
+    }
+
+    void Launch(float charge)
+    {
+        HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
+        sounds.SpinDashReleaseSound();
 
         Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
 
@@ -210,50 +246,40 @@ public class Action08_DropCharge : MonoBehaviour
         CharRot = Quaternion.LookRotation(newForward, transform.up);
         CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * 200);
 
-        
-        if (charge < MinimunCharge)
-        {
-            //sounds.Source2.Stop();
-            charge = MinimunCharge;
-        }
+        Vector3 newVec = charge * newForward.normalized;
 
+        Actions.Action00.Curl();
         Player.isRolling = true;
-       
-        ////Debug.Log (charge);
-
-        StartCoroutine(delayForce(charge));
+        Actions.Action00.rollCounter = -0.025f;
 
 
-        if (DropEffect.isPlaying == true)
+        //Debug.Log("Launch the Drop Charge with " +charge);
+
+        Vector3 releVec = Tools.CharacterAnimator.transform.InverseTransformDirection(newVec);
+        float HorizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
+
+        if (HorizontalSpeedMagnitude > Player.HorizontalSpeedMagnitude)
         {
-            DropEffect.Stop();
+            Player.rb.velocity = newVec;
+
+            Cam.Cam.FollowHeightDirection(18, 25f);
         }
-
-
+        else
+        {
+            Player.rb.velocity = newVec.normalized * (HorizontalSpeedMagnitude + (charge* 0.3f));
+            Player.rb.velocity += newVec * 0.3f;
+            Cam.Cam.FollowHeightDirection(20, 15f);
+        }
     }
 
     IEnumerator delayForce(float charge)
     {
-        for (int i = 0; i > 2; i++)
+        for (int i = 0; i > 1; i++)
         {
             yield return new WaitForFixedUpdate();
         }
 
-        HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
-        sounds.SpinDashReleaseSound();
-
-        Vector3 newVec = charge * (CharacterAnimator.transform.forward);
-
-        if (new Vector3(newVec.x, 0f, newVec.z).magnitude > Player.HorizontalSpeedMagnitude)
-        {
-            Player.rb.velocity = newVec;
-            Cam.Cam.FollowDirection(18, 25f);
-        }
-        else
-        {
-            Player.rb.velocity += newVec * 0.3f;
-            Cam.Cam.FollowDirection(20, 15f);
-        }
+        Launch(charge);
     }
 
 
@@ -280,8 +306,11 @@ public class Action08_DropCharge : MonoBehaviour
         if (!Player.Grounded)
         {
             Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
-            Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-            CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * 200);
+            if(VelocityMod != Vector3.zero)
+            {
+                Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
+                CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * 200);
+            }
         }
         //GetComponent<CameraControl>().Cam.FollowDirection(2, 14f, -10,0);
 
@@ -298,6 +327,11 @@ public class Action08_DropCharge : MonoBehaviour
 
         */
         //SpinDashBall.SetActive(true);
+    }
+
+    private void OnDisable()
+    {
+        DropEffect.Stop();
     }
 
     public void ResetSpinDashVariables()

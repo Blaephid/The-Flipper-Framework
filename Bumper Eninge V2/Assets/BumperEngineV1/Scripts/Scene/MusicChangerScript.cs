@@ -9,6 +9,7 @@ public class MusicChangerScript : MonoBehaviour {
 	[SerializeField] private AudioSource Source;
 	[SerializeField] private bool Toggle;
 	[SerializeField] private bool ShouldHappenOnlyOnce;
+	[SerializeField] private float startPoint = 0;
 
 	public void OnTriggerEnter(Collider col)
 	{
@@ -19,6 +20,7 @@ public class MusicChangerScript : MonoBehaviour {
 				Toggle = !Toggle;
 				OriginalTrack = Source.clip;
 				Source.clip = SongToSwapInto;
+				Source.time = startPoint;
 				Source.Play ();
 				SongToSwapInto = OriginalTrack;
 			}

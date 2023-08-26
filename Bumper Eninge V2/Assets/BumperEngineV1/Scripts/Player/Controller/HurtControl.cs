@@ -89,6 +89,8 @@ public class HurtControl : MonoBehaviour
 
         if(Actions.killBindPressed)
         {
+            if(Actions.Action != ActionManager.States.Hurt)
+                CharacterAnimator.SetTrigger("Damaged");
             isDead = true;
         }
 
@@ -112,7 +114,8 @@ public class HurtControl : MonoBehaviour
     {
         faceHitCollider.transform.forward = CharacterAnimator.transform.forward;
 
-        if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 50) || (Actions.Action == 1 && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == 11 && Player.HorizontalSpeedMagnitude > 30) || (Actions.Action == 12 && Actions.Action12.RunningSpeed > 5))
+        if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 50) || (Actions.Action == ActionManager.States.Jump && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == ActionManager.States.JumpDash
+            && Player.HorizontalSpeedMagnitude > 30) || (Actions.Action == ActionManager.States.WallRunning && Actions.Action12.RunningSpeed > 5))
         {
             if(Physics.SphereCast(transform.position, 0.3f, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, bonkWall))
             {
@@ -138,7 +141,7 @@ public class HurtControl : MonoBehaviour
 
 
         Inp.enabled = false;
-        Actions.ChangeAction(4);
+        Actions.ChangeAction(ActionManager.States.Hurt);
         Player.MoveInput = Vector3.zero;
         deadCounter += 1;
         //Debug.Log("DeathGroup");
@@ -281,7 +284,7 @@ public class HurtControl : MonoBehaviour
     IEnumerator giveChanceToWallClimb()
     {
         Vector3 newDir = CharacterAnimator.transform.forward;
-        if (Actions.Action != 12)
+        if (Actions.Action != ActionManager.States.WallRunning)
         {
             if(!Player.Grounded)
             {
@@ -293,16 +296,16 @@ public class HurtControl : MonoBehaviour
                 }
             }
             
-            if (Actions.Action != 12)
+            if (Actions.Action != ActionManager.States.WallRunning)
             {
                 Actions.Action04.InitialEvents(true);
-                Actions.ChangeAction(4);
+                Actions.ChangeAction(ActionManager.States.Hurt);
             }
         }
         else if(Actions.Action12.RunningSpeed > 0)
         {
             Actions.Action04.InitialEvents(true);
-            Actions.ChangeAction(4);
+            Actions.ChangeAction(ActionManager.States.Hurt);
         }
     }
 

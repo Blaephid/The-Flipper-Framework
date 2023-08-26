@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace SplineMesh
 {
-    [RequireComponent(typeof(Spline))]
+    //[RequireComponent(typeof(Spline))]
     public class MoveAlongPath : MonoBehaviour
     {
         CharacterTools Tools;
@@ -32,7 +32,6 @@ namespace SplineMesh
     
 
         // Setting up Values
-        float timer = 0f;
         private float range = 0f;
         Transform PathTransform;
         [HideInInspector] public float PlayerSpeed;

@@ -19,7 +19,6 @@ public class RingRoadControl : MonoBehaviour {
     LayerMask layer;
     Transform MainCamera;
 
-    bool firstime = false;
 
     void Awake()
     {
@@ -41,7 +40,7 @@ public class RingRoadControl : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        if(Actions.Action == 7)
+        if(Actions.Action == ActionManager.States.RingRoad)
         {
             Collider[] TargetsInRange = GetCloseTargets(TargetSearchDistance);
 
@@ -60,7 +59,7 @@ public class RingRoadControl : MonoBehaviour {
             yield return new WaitForFixedUpdate();
            
 
-            if (Actions.Action == 1 || Actions.Action == 0)
+            if (Actions.Action == ActionManager.States.Jump || Actions.Action == ActionManager.States.Regular)
             {
                 Collider[] TargetsInRange = GetCloseTargets(TargetSearchDistance * 1.45f);
 
@@ -83,11 +82,11 @@ public class RingRoadControl : MonoBehaviour {
     void performRR()
     {
         //Do a LightDash Attack
-        if (Actions.Action != 7 && Actions.InteractPressed && TargetObject != null)
+        if (Actions.Action != ActionManager.States.RingRoad && Actions.InteractPressed && TargetObject != null)
         {
             //Debug.Log("LightDash");
             Actions.CamResetPressed = false;
-            Actions.ChangeAction(7);
+            Actions.ChangeAction(ActionManager.States.RingRoad);
             Actions.Action07.InitialEvents();
         }
     }

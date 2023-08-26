@@ -60,7 +60,67 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   CameraRotationSpeed: 100
-  CameraVerticalRotationSpeed: 12
+  CameraVerticalRotationSpeed: 11
+  vertFollowSpeedByAngle:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.011224547
+      value: 1.3010539
+      inSlope: 0.018602315
+      outSlope: 0.018602315
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.44536728
+    - serializedVersion: 3
+      time: 0.16027454
+      value: 1.2229573
+      inSlope: -1.2998843
+      outSlope: -1.2998843
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.268877
+      value: 1.0686951
+      inSlope: -0.7718603
+      outSlope: -0.7718603
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0.59741086
+    - serializedVersion: 3
+      time: 0.44902062
+      value: 0.98619914
+      inSlope: -0.42252564
+      outSlope: -0.42252564
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.45577127
+      outWeight: 0.43958735
+    - serializedVersion: 3
+      time: 0.5220119
+      value: 0.6146825
+      inSlope: -1.3295356
+      outSlope: -1.3295356
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.25511637
+      outWeight: 0.6196643
+    - serializedVersion: 3
+      time: 0.9999506
+      value: 0.41846848
+      inSlope: 0.044062342
+      outSlope: 0.044062342
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.42972305
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   CameraMoveSpeed: 100
   InputXSpeed: 70
   InputYSpeed: 55

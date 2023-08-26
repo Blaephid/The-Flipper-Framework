@@ -4,89 +4,74 @@ using UnityEngine;
 
 public class PullItems : MonoBehaviour
 {
-    public CapsuleCollider Collider;
-    public Transform transform;
-    public Transform Player;
-    public Animator CharacterAnimator;
-    [SerializeField] PlayerBhysics playerphys;
-    public float StartSize;
+    CharacterTools tools;
+
+    Animator CharacterAnimator;
+    PlayerBhysics player;
+
+    AnimationCurve radiusBySpeed;
+    LayerMask ringMask;
+    float basePullSpeed;
 
     GameObject currentMonitor;
 
+    List<Transform> allRings = new List<Transform>();
+
     public void Start()
     {
-        SetSize(0);
+        player = GetComponent<PlayerBhysics>();
+        tools = GetComponent<CharacterTools>();
+
+        CharacterAnimator = tools.CharacterAnimator;
+        radiusBySpeed = tools.coreStats.radiusBySpeed;
+        ringMask = tools.coreStats.ringMask;
+        basePullSpeed = tools.coreStats.basePullSpeed;
+
+
         
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        //The parent should automatically assign itself ot the player's location
+        AddToList();
+        pullRings();
 
+    }
 
-        if (currentMonitor != null)
+    public void AddToList()
+    {
+
+        Collider[] rings = Physics.OverlapSphere(transform.position, radiusBySpeed.Evaluate(player.HorizontalSpeedMagnitude / player.MaxSpeed), ringMask, QueryTriggerInteraction.Collide);
+        foreach (Collider r in rings)
         {
-            if (CharacterAnimator.GetInteger("Action") == 1)
+            allRings.Add(r.transform.parent);
+            Destroy(r);
+        }
+    }
+
+    public void pullRings()
+    {
+        if(allRings.Count > 0)
+        {
+
+            for(int i = 0; i < allRings.Count; i++)
             {
-                currentMonitor.GetComponent<BoxCollider>().enabled = false;
+                Transform r = allRings[i];
+                if(!r)
+                {
+                    allRings.RemoveAt(i);
+                    i--;
+                }
+                   
+                else
+                {
+                    r.position = Vector3.MoveTowards(r.position, transform.position, Time.deltaTime * basePullSpeed * player.HorizontalSpeedMagnitude);
+                }
+
+            
             }
-
-            else
-            {
-                currentMonitor.GetComponent<BoxCollider>().enabled = true;
-            }
         }
 
-
-    }
-
-    public void SetSize (float f)
-    {
-        if (f == 0)
-        {
-            Collider.radius = StartSize;
-            Collider.height = StartSize *2;
-        }
-        else if (f == -1)
-        {
-            Collider.radius = .1f;
-            Collider.height = .1f;
-        }
-        else if (f != 0)
-        {
-            Collider.radius = f;
-            Collider.height = StartSize * 1.5f;
-        }
-
-    }
-
-    // Update is called once per frame
-    private void OnTriggerEnter(Collider col)
-    {
-        if (col.tag == "Ring")
-        {
-            PulledByPlayer ring = col.GetComponent<PulledByPlayer>();
-            Destroy(ring.boxcol);
-
-            ring.Player = this.gameObject.transform;
-            ring.PulledSpeed = playerphys.SpeedMagnitude / 2;
-            ring.Pulled = true;
-
-        }
-
-        if(col.tag == "Monitor")
-        {
-            currentMonitor = col.gameObject;
-        }
-    }
-
-    private void OnTriggerExit(Collider col)
-    {
-        if (col.gameObject == currentMonitor)
-        {
-            currentMonitor.GetComponent<BoxCollider>().enabled = true;
-            currentMonitor = null;
-        }
     }
 
 

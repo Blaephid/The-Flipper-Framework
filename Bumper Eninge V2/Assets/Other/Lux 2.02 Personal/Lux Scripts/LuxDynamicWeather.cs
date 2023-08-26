@@ -77,7 +77,7 @@ public float SnowMelt = 0.0f;
 
 [Header("Snow")]
 	[Space(4)]
-	[ColorUsageAttribute(false/*no alpha*/,true,0f,2f,0.125f,3f)] public Color SnowColor = Color.white;
+	[ColorUsageAttribute(false,true)] public Color SnowColor = Color.white;
 	public Color SnowSpecularColor = new Color (0.2f,0.2f,0.2f,1.0f);
 	public Color SnowScatterColor;
 	[Range(0.0f, 1.0f)]

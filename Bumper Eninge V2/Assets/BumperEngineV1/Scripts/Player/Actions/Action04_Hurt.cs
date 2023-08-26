@@ -47,9 +47,11 @@ public class Action04_Hurt : MonoBehaviour {
     public void InitialEvents(bool bonk = false)
     {
         Tools.JumpBall.SetActive(false);
+        CharacterAnimator.SetInteger("Action", 4);
+        CharacterAnimator.SetTrigger("Damaged");
 
         //Change Velocity
-        if(bonk)
+        if (bonk)
         {
             Vector3 newSpeed = -CharacterAnimator.transform.forward * BonkBackForce;
             newSpeed.y = BonkUpForce;
@@ -96,7 +98,7 @@ public class Action04_Hurt : MonoBehaviour {
                 Actions.Action01.jumpCount = 0;
 
                 CharacterAnimator.SetInteger("Action", 0);
-                Actions.ChangeAction(0);
+                Actions.ChangeAction(ActionManager.States.Regular);
                 //Debug.Log("What");
                 counter = 0;
             }
@@ -108,6 +110,7 @@ public class Action04_Hurt : MonoBehaviour {
     {
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 4);
+        
 
         //Dead
         if (Actions.Action04Control.isDead)

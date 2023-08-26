@@ -3,7 +3,7 @@ using System.Collections;
 
 public enum TriggerType
 {
-    LockToDirection, SetFree, SetFreeAndLookTowards
+    LockToDirection, SetFree, SetFreeAndLookTowards, Reverse, ReverseAndLockControl, justEffect
 }
 
 public class CameraTriggerData : MonoBehaviour {

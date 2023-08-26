@@ -36,6 +36,7 @@ Transform:
   m_Children:
   - {fileID: 4444276740884730}
   - {fileID: 5290740349256836575}
+  - {fileID: 2877206393422667866}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -170,16 +171,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Path: 1
+  onRail: 0
+  rail: {fileID: 0}
+  isDashRing: 0
+  path: {fileID: 0}
   Speed: 100
   LockToDirection: 1
-  LockControl: 1
-  LockControlTime: 50
   ChangeCameraDirection: 1
   Snap: 1
-  isDashRing: 0
-  ResetRotation: 1
   AffectCamera: 1
-  path: {fileID: 0}
+  ResetRotation: 1
+  setInputForwards: 0
+  positionToLockTo: {fileID: 2877206393422667866}
+  LockControl: 1
+  LockControlTime: 50
+  lockGravity: {x: 0, y: -1.5, z: 0}
+  lockAirMoves: 0
+  lockAirMovesTime: 30
 --- !u!114 &6464676511089374715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,13 +200,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f92537ab1025b7740af8066810e49070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 9107472879686778304}
+  endCine: 0
+  Active: 1
+  isEnabled: 1
+  onExit: 0
+  timeDelay: 0
+  startAtCameraPoint: 0
+  startOffset: {x: 0, y: 0, z: 0}
+  virCam: {fileID: 3679072135301013185}
+  attachedCam: {fileID: 9107472879686778304}
+  RegularAction: 1
+  JumpAction: 0
+  RailAction: 0
+  wallRunAction: 0
+  RingRoadAction: 0
   lookPlayer: 0
   followPlayer: 0
   disableMove: 0
-  virCam: {fileID: 3679072135301013185}
-  enabled: 1
-  onExit: 0
+  setBehind: 1
+  lockTime: 5
 --- !u!205 &205000011634412510
 LODGroup:
   m_ObjectHideFlags: 0
@@ -339,6 +359,37 @@ MonoBehaviour:
   scrollSpeed: 10
   Mat: {fileID: 2100000, guid: 7f5030af0fdb0f742b172c2ca50e5143, type: 2}
   ScrollVector: {x: 0, y: -1}
+--- !u!1 &3174784962313538673
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2877206393422667866}
+  m_Layer: 0
+  m_Name: LockPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2877206393422667866
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3174784962313538673}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000011037360016}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7278913871085821371
 GameObject:
   m_ObjectHideFlags: 0

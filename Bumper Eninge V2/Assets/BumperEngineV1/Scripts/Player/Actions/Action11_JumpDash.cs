@@ -11,6 +11,7 @@ public class Action11_JumpDash : MonoBehaviour
     Action02_Homing Action02;
     PlayerBhysics Player;
     PlayerBinput Inp;
+    CameraControl Cam;
 
     [HideInInspector] public bool isAdditive;
     [HideInInspector] public float AirDashSpeed;
@@ -79,9 +80,6 @@ public class Action11_JumpDash : MonoBehaviour
                 //Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 40f, 0f);
 
 
-
-
-
             }
             else
             {
@@ -123,46 +121,60 @@ public class Action11_JumpDash : MonoBehaviour
             if(Timer > 0.03)
             {
                 
-                Vector3 inputDirection = new Vector3(0, 0, Inp.inputPreCamera.z);
-                Debug.Log(Inp.inputPreCamera);
-                
+                Vector3 FaceDir = CharacterAnimator.transform.position - Cam.Cam.transform.position;
+                bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, FaceDir.normalized) < 0f;
+                if (Facing)
+                {
+                    Inp.inputPreCamera.x = -Inp.inputPreCamera.x;
+                }
+
 
                 //Direction = CharacterAnimator.transform.forward;
-                Direction = Vector3.RotateTowards(Direction, CharacterAnimator.transform.right, Mathf.Clamp(Inp.inputPreCamera.x * 4, -2.5f, 2.5f) * Time.deltaTime, 0f);
+                Direction = Vector3.RotateTowards(new Vector3 (Direction.x, 0, Direction.z), CharacterAnimator.transform.right, Mathf.Clamp(Inp.inputPreCamera.x * 4, -2.5f, 2.5f) * Time.deltaTime, 0f);
             }           
 
-            Direction.y = Player.fallGravity.y * 0.18f;
+            //Direction.y = Player.fallGravity.y * 0.1f;
           
         }
         else
         {
             //Direction = (transform.TransformDirection(Player.PreviousRawInput).normalized + (Player.rb.velocity).normalized * 2);
-            Direction.y = Player.fallGravity.y * 0.19f;
+            //Direction.y = Player.fallGravity.y * 0.1f;
 
         }
-        Player.rb.velocity = Direction.normalized * Aspeed;
+
+        Vector3 newVec = Direction.normalized * Aspeed;
+        if(Player.rb.velocity.y < 0)
+            newVec.y = Player.fallGravity.y * 0.5f;
+
+        Player.rb.velocity = newVec;
 
         //End homing attck if in air for too long
         if (Timer > AirDashDuration)
         {
             JumpBall.SetActive(true);
-            Action.ChangeAction(1);
+            Action.ChangeAction(ActionManager.States.Jump);
         }
         else if (Player.Grounded)
         {
             CharacterAnimator.SetInteger("Action", 0);
             CharacterAnimator.SetBool("Grounded", Player.Grounded);
-            Action.ChangeAction(0);
+            Action.ChangeAction(ActionManager.States.Regular);
         }
     }
 
     public void AirDashParticle()
     {
         GameObject JumpDashParticleClone = Instantiate(JumpDashParticle, HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
+        //if (Player.SpeedMagnitude > 60)
+        //    JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = Player.SpeedMagnitude / 60f;
+        //else
+        //    JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
+
         if (Player.SpeedMagnitude > 60)
-            JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = Player.SpeedMagnitude / 60f;
-        else
-            JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
+            JumpDashParticleClone.transform.localScale = new Vector3(Player.SpeedMagnitude / 60f, Player.SpeedMagnitude / 60f, Player.SpeedMagnitude / 60f);
+        //else
+        //    JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
 
         JumpDashParticleClone.transform.position = HomingTrailContainer.transform.position;
         JumpDashParticleClone.transform.rotation = HomingTrailContainer.transform.rotation;
@@ -183,6 +195,7 @@ public class Action11_JumpDash : MonoBehaviour
         Action = GetComponent<ActionManager>();
         Action02 = GetComponent<Action02_Homing>();
         Inp = GetComponent<PlayerBinput>();
+        Cam = GetComponent<CameraControl>();
 
 
         CharacterAnimator = Tools.CharacterAnimator;

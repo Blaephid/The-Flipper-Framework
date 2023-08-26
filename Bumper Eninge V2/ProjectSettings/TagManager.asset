@@ -29,6 +29,7 @@ TagManager:
   - PathTrigger
   - Attack
   - Ring Road
+  - Wind
   layers:
   - Default
   - TransparentFX
@@ -49,8 +50,8 @@ TagManager:
   - PostProcessGlobal
   - Homing Target
   - Ring Road Target
-  - 
-  - 
+  - Rings
+  - ItemPull
   - 
   - 
   - Rail

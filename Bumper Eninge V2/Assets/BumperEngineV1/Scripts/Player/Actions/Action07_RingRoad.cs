@@ -101,14 +101,13 @@ public class Action07_RingRoad : MonoBehaviour {
 		else
 		{
 			float EndingSpeedResult = 0;
-			////Debug.Log (InitialVelocityMagnitude);
+
 			EndingSpeedResult = Mathf.Max (MinimumEndingSpeed, InitialVelocityMagnitude);
-			////Debug.Log (InitialVelocityMagnitude);
-			////Debug.Log (EndingSpeedResult);
+
 			Player.rb.velocity = Vector3.zero;
 			Player.rb.velocity = direction.normalized*EndingSpeedResult*EndingSpeedFactor;
 		
-			GetComponent<CameraControl>().Cam.SetCamera(direction.normalized, 2.5f, 20, 5f,10);
+			//GetComponent<CameraControl>().Cam.SetCamera(direction.normalized, 2.5f, 20, 5f,10);
 
 			for(int i = HomingTrailContainer.transform.childCount-1; i>=0; i--)
 				Destroy(HomingTrailContainer.transform.GetChild(i).gameObject);

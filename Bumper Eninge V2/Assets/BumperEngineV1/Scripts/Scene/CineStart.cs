@@ -64,7 +64,7 @@ public class CineStart : MonoBehaviour
         {
             if (!endCine)
             {
-                Player = other.GetComponent<PlayerCollider>().player;
+                Player = other.GetComponentInParent<PlayerBhysics>().gameObject;
                 Actions = Player.GetComponent<ActionManager>();
             }
             else
@@ -77,7 +77,8 @@ public class CineStart : MonoBehaviour
         {
             if(!isActive && Player != null)
             {
-                if ((Actions.Action == 0 && RegularAction) || (Actions.Action == 1 && JumpAction) || (Actions.Action == 5 && RailAction) || (Actions.Action == 12 && wallRunAction) || (Actions.Action == 7 && RingRoadAction))
+                if ((Actions.Action == 0 && RegularAction) || (Actions.Action == ActionManager.States.Jump && JumpAction) 
+                    || (Actions.Action == ActionManager.States.Rail && RailAction) || (Actions.Action == ActionManager.States.WallRunning && wallRunAction) || (Actions.Action == ActionManager.States.RingRoad && RingRoadAction))
                 {
                     isActive = true;
                     hedgeCam = Player.GetComponent<CameraControl>().virtCam;
@@ -104,7 +105,9 @@ public class CineStart : MonoBehaviour
             }
             else
             {
-                if(!(Actions.Action == 0 && RegularAction) && !(Actions.Action == 1 && JumpAction) && !(Actions.Action == 5 && RailAction) && !(Actions.Action == 12 && wallRunAction) && !(Actions.Action == 7 && RingRoadAction) && onExit)
+                if(!(
+                    Actions.Action == ActionManager.States.Regular && RegularAction) && !(Actions.Action == ActionManager.States.Jump && JumpAction) && 
+                    !(Actions.Action == ActionManager.States.Rail && RailAction) && !(Actions.Action == ActionManager.States.WallRunning && wallRunAction) && !(Actions.Action == ActionManager.States.RingRoad && RingRoadAction) && onExit)
                 {
                     DeactivateCam(0);
                 }

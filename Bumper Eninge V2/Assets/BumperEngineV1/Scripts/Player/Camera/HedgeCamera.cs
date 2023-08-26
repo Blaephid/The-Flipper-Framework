@@ -26,9 +26,11 @@ public class HedgeCamera : MonoBehaviour
 
     [HideInInspector] public float CameraMaxDistance = -11;
     float AngleThreshold;
+    bool camOnAngle;
 
     float CameraRotationSpeed = 100;
     float CameraVerticalRotationSpeed = 10;
+    AnimationCurve vertFollowSpeedByAngle;
     float CameraMoveSpeed = 100;
 
     float InputXSpeed = 1;
@@ -64,10 +66,11 @@ public class HedgeCamera : MonoBehaviour
     float rotSpeed = 0;
 
     public bool Locked { get; set; }
+    public bool canMove;
     public bool MasterLocked { get; set; }
     LayerMask CollidableLayers;
     float heighttolook;
-    float lookTimer;
+    [HideInInspector] public float lookTimer;
     float lookspeed;
     float afterMoveDelay;
 
@@ -76,11 +79,9 @@ public class HedgeCamera : MonoBehaviour
     //Cached variables
     Quaternion rotation;
     float InitialLockedRotationSpeed;
-    float InitialRotationSpeed;
-    float InitialMoveSpeed;
-    float newX;
-    float neoX;
+
     float lockTimer;
+    public bool Reversed;
 
     //Effects
     Vector3 lookAtDir;
@@ -99,9 +100,9 @@ public class HedgeCamera : MonoBehaviour
     void Start()
     {
         Locked = false;
+        canMove = true;
         InitialLockedRotationSpeed = LockedRotationSpeed;
-        InitialMoveSpeed = moveSpeed;
-        InitialRotationSpeed = rotSpeed;
+      
         StartLockCam = LockCamAtHighSpeed;
         setStats();
 
@@ -136,50 +137,58 @@ public class HedgeCamera : MonoBehaviour
         }
 
         //Copy and Lerp the player's Pos
-        if (!Locked)
+        //if (!Locked)
+        if(true)
         {
 
-            if (Player.GroundNormal.y < AngleThreshold && Player.Grounded || Player.b_normalSpeed > LockCamAtHighSpeed)
-            {
 
-                AboveSpeedLock = true;
+            if (Player.GroundNormal.y < AngleThreshold || camOnAngle)
+            {
+                camOnAngle = true;
                 CanGoBehind = true;
-                
-                
+                AboveSpeedLock = true;
+
+                Debug.Log(transform.up.y);
+
+                if (transform.up.y > 0.99f)
+                    camOnAngle = false;
+            }
+            else if (Player.b_normalSpeed > LockCamAtHighSpeed * 0.5f)
+            {
+                CanGoBehind = true;
+                AboveSpeedLock = true;
             }
 
             else
             {
-               
                 if (!checkforBehind && AboveSpeedLock)
                 {
                     StartCoroutine(SetGoBehind());
                 }
 
                 AboveSpeedLock = false;
+                CanGoBehind = false;
 
-                PlayerPosLerped.position = Target.position;
-                Quaternion newrot = Player.transform.rotation;
-                newrot.eulerAngles = new Vector3(0, newrot.eulerAngles.y, 0);
-                PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, newrot, Time.deltaTime * CameraVerticalRotationSpeed);
             }
+
 
             if (CanGoBehind)
-            {
-                GoBehind();
-            }
+                GoBehindHeight();
+
 
             //Debug.Log(Actions.moveCamX);
-
-            if (Player.SpeedMagnitude > 10)
+            if (canMove)
             {
-                x += (Actions.moveCamX * ((InputXSpeed)) * InvertedX) * Time.deltaTime;
-                y -= (Actions.moveCamY * ((InputYSpeed)) * InvertedY) * Time.deltaTime;
-            }
-            else
-            {
-                x += (Actions.moveCamX * ((InputXSpeed)) * InvertedX) * Time.deltaTime * stationaryCamIncrease;
-                y -= (Actions.moveCamY * ((InputYSpeed)) * InvertedY) * Time.deltaTime * stationaryCamIncrease;
+                if (Player.SpeedMagnitude > 10)
+                {
+                    x += (Actions.moveCamX * ((InputXSpeed)) * InvertedX) * Time.deltaTime;
+                    y -= (Actions.moveCamY * ((InputYSpeed)) * InvertedY) * Time.deltaTime;
+                }
+                else
+                {
+                    x += (Actions.moveCamX * ((InputXSpeed)) * InvertedX) * Time.deltaTime * stationaryCamIncrease;
+                    y -= (Actions.moveCamY * ((InputYSpeed)) * InvertedY) * Time.deltaTime * stationaryCamIncrease;
+                }
             }
             
         }
@@ -191,29 +200,20 @@ public class HedgeCamera : MonoBehaviour
        
     }
 
-    IEnumerator SetGoBehind()
-    {
-        checkforBehind = true;
-        yield return new WaitForSeconds(.5f);
-        if (!AboveSpeedLock)
-            CanGoBehind = false;
-        checkforBehind = false;
-
-    }
-
 
     void CameraRotation()
     {
-        if (UseAutoRotation && !Locked)
+        if (UseAutoRotation && canMove)
         {
 
             if (!UseCurve)
             {
-                float NormalMod = Mathf.Abs(Player.b_normalSpeed - Player.MaxSpeed);
+                //float NormalMod = Mathf.Abs(Player.b_normalSpeed - Player.MaxSpeed);
+                float NormalMod = Mathf.Abs(Player.HorizontalSpeedMagnitude - Player.MaxSpeed);
                 //x += (((Input.GetAxis("Horizontal")) * NormalMod) * AutoXRotationSpeed) * Time.deltaTime;
                 //;
                 //y -= 0;
-               
+
                 x += ((Actions.moveCamX * NormalMod) * AutoXRotationSpeed) * Time.deltaTime;
                 
                 y -= 0;
@@ -320,11 +320,12 @@ public class HedgeCamera : MonoBehaviour
         if (LockHeight && Player.Grounded && Player.SpeedMagnitude >= 10)
         {
             ////Debug.Log ("Lock");
-            FollowDirection(HeightToLock, LockHeightSpeed);
+            FollowHeightDirection(HeightToLock, LockHeightSpeed);
         }
 
         //Face down
-        if (MoveHeightBasedOnSpeed && !Player.Grounded && y < FallSpeedThreshold && (Actions.Action == 1 || Actions.Action == 0 || Actions.Action == 8))
+        if (MoveHeightBasedOnSpeed && !Player.Grounded && y < FallSpeedThreshold && (Actions.Action == ActionManager.States.Jump
+            || Actions.Action == ActionManager.States.Regular || Actions.Action == ActionManager.States.DropCharge))
         {
             if (!facingDown)
             {
@@ -336,7 +337,7 @@ public class HedgeCamera : MonoBehaviour
             }
 
             if (facingDown)
-                FollowDirection(-y, HeightFollowSpeed * 0.3f);
+                FollowHeightDirection(-y, HeightFollowSpeed * 0.3f);
 
         }
         else if (y > FallSpeedThreshold && !Player.Grounded && LockHeight && Actions.moveCamY <= 0.5)
@@ -349,15 +350,15 @@ public class HedgeCamera : MonoBehaviour
 
             ////Sets the camera height to move towards set height at varying speeds
             if (Player.HorizontalSpeedMagnitude > 140)
-                FollowDirection(HeightToLock, HeightFollowSpeed * 3f);
+                FollowHeightDirection(HeightToLock, HeightFollowSpeed * 3f);
             else if (Player.HorizontalSpeedMagnitude > 100)
-                FollowDirection(HeightToLock, HeightFollowSpeed * 2.5f);
+                FollowHeightDirection(HeightToLock, HeightFollowSpeed * 2.5f);
             else if (Player.HorizontalSpeedMagnitude > 60)
-                FollowDirection(HeightToLock, HeightFollowSpeed * 2f);
+                FollowHeightDirection(HeightToLock, HeightFollowSpeed * 2f);
             else if (Player.HorizontalSpeedMagnitude > 30)
-                FollowDirection(HeightToLock, HeightFollowSpeed * 1.6f);
+                FollowHeightDirection(HeightToLock, HeightFollowSpeed * 1.6f);
             else if (Player.HorizontalSpeedMagnitude > 10)
-                FollowDirection(HeightToLock, HeightFollowSpeed);
+                FollowHeightDirection(HeightToLock, HeightFollowSpeed);
         }
         else if (facingDown)
         {
@@ -400,7 +401,7 @@ public class HedgeCamera : MonoBehaviour
             FollowDirection(3, 14, -10, 0);
         }
 
-        if (Player.HorizontalSpeedMagnitude > 30f && Actions.Action == 12)
+        if (Player.HorizontalSpeedMagnitude > 30f && Actions.Action == ActionManager.States.WallRunning)
         {
             //Debug.Log("Move camera behind");
             FollowDirection(2, 14, -10, 0.5f);
@@ -419,20 +420,28 @@ public class HedgeCamera : MonoBehaviour
     //Constnaly moves camera to behind player
     public void FollowDirection(float speed, float height, float distance, float Yspeed, bool Skip = false)
     {
-        if (!Locked || Skip)
+        if(Reversed)
         {
-            //Debug.Log(Actions.Action);
-            //If not grinding or wall running
-            if (Actions.Action != 5 || Skip)
-            {
-                //Debug.Log("Follow Directions" );
+            FollowDirectionBehind(speed, height, distance, Yspeed, Skip);
+        }
 
-                float dot = Vector3.Dot(Skin.forward, transform.right);
-                x += (dot * speed) * (Time.deltaTime * 100);
+        else if (!Locked || Skip)
+        {
+            float dot = Vector3.Dot(Skin.forward, transform.right);
+            x += (dot * speed) * (Time.deltaTime * 100);
 
-                y = Mathf.Lerp(y, height, Time.deltaTime * Yspeed);
-            }
-            
+            y = Mathf.Lerp(y, height, Time.deltaTime * Yspeed);                    
+        }
+    }
+
+    public void FollowDirectionBehind(float speed, float height, float distance, float Yspeed, bool Skip = false)
+    {
+        if (true)
+        {
+            float dot = Vector3.Dot(-Skin.forward, transform.right);
+            x += (dot * speed) * (Time.deltaTime * 100);
+
+            y = Mathf.Lerp(y, height, Time.deltaTime * Yspeed);
         }
     }
 
@@ -442,11 +451,11 @@ public class HedgeCamera : MonoBehaviour
         y = 2;
     }
 
-    public void FollowDirection(float height, float speed)
+    public void FollowHeightDirection(float height, float speed)
     {
         if (!Locked)
         {
-            if (Actions.Action != 5)
+            if (Actions.Action != ActionManager.States.Rail)
             {
                 //Debug.Log("Follow Directions height");
                 if(Player.Grounded)
@@ -516,6 +525,12 @@ public class HedgeCamera : MonoBehaviour
         rotSpeed = lagSet * 0.1f;
 
     }
+
+    public void SetCameraNoLook(float heightSet)
+    {
+        heighttolook = heightSet;
+    }
+
     public void SetCamera(Vector3 dir, bool instant)
     {
         float dot = Vector3.Angle(dir, transform.forward);
@@ -538,13 +553,25 @@ public class HedgeCamera : MonoBehaviour
 
     }
 
+    IEnumerator SetGoBehind()
+    {
+        checkforBehind = true;
+        yield return new WaitForSeconds(.5f);
+        if (!AboveSpeedLock)
+            CanGoBehind = false;
+        checkforBehind = false;
 
-    public void GoBehind()
+    }
+
+    public void GoBehindHeight()
     {
 
         PlayerPosLerped.position = Target.position;
         Quaternion newrot = Player.transform.rotation;
-        PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, newrot, Time.deltaTime * CameraVerticalRotationSpeed);
+        //Debug.Log(Quaternion.Angle(PlayerPosLerped.rotation, newrot) / 18);
+
+        float heightMod = vertFollowSpeedByAngle.Evaluate(Quaternion.Angle(PlayerPosLerped.rotation, newrot) / 18);
+        PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, newrot, Time.deltaTime * CameraVerticalRotationSpeed * heightMod);
 
         //if (!Actions.Action05.isZipLine)
         //{
@@ -582,6 +609,7 @@ public class HedgeCamera : MonoBehaviour
 
         CameraRotationSpeed = Tools.camStats.CameraRotationSpeed;
         CameraVerticalRotationSpeed = Tools.camStats.CameraVerticalRotationSpeed;
+        vertFollowSpeedByAngle = Tools.camStats.vertFollowSpeedByAngle;
         CameraMoveSpeed = Tools.camStats.CameraMoveSpeed;
 
         InputXSpeed = Tools.camStats.InputXSpeed;

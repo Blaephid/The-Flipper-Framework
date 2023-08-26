@@ -82,12 +82,10 @@ public class LevelProgressControl : MonoBehaviour {
     
     public void ResetToCheckPoint()
     {
-        //Debug.Log("Reset");
-
        
         Inp.LockInputForAWhile(20, true);
         StartCoroutine(Actions.lockAirMoves(20));
-        Actions.ChangeAction(0);
+        Actions.ChangeAction(ActionManager.States.Regular);
 
         tools.HomingTrailScript.emitTime = 0;
         tools.HomingTrailScript.emit = false;
@@ -105,8 +103,7 @@ public class LevelProgressControl : MonoBehaviour {
         Player.rb.velocity = characterTransform.forward * 2;
         Actions.Action04.deadCounter = 0;
 
-        //Cam.Cam.SetCamera(ResumeFace, true);
-        //Cam.Cam.FollowDirection(2000, 14, 1000, 0);
+        Cam.Cam.Reversed = false;
         Cam.Cam.setBehind();
 
     }
@@ -115,8 +112,15 @@ public class LevelProgressControl : MonoBehaviour {
     {
         //Debug.Log("Call the event");
         //Debug.Log(onReset.get);
+
+   
+
         if(onReset != null)
-            onReset(this, EventArgs.Empty);
+        {
+            Debug.LogWarning("Has begun respawning");
+            onReset.Invoke(this, EventArgs.Empty);
+        }
+            
     }
 
     public void SetCheckPoint(Transform position)

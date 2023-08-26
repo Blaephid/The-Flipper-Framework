@@ -4,7 +4,7 @@ using TMPro;
 
 public class PlayerBhysics : MonoBehaviour
 {
-    ActionManager Action;
+    [HideInInspector] public ActionManager Action;
     CharacterTools Tools;
 
     static public PlayerBhysics MasterPlayer;
@@ -66,6 +66,7 @@ public class PlayerBhysics : MonoBehaviour
     [HideInInspector] public float AirControlAmmount = 2;
     [HideInInspector] public float AirSkiddingForce = 10;
     [HideInInspector] public bool StopAirMovementIfNoInput = false;
+    float keepNormalForThis = 0.083f;
 
 
     public bool Grounded { get; set; }
@@ -84,12 +85,11 @@ public class PlayerBhysics : MonoBehaviour
     [Header("Other Values")]
 
     public float GroundOffset;
-    RaycastHit hit;
+    [HideInInspector] public RaycastHit groundHit;
     public Transform CollisionPoint;
     public Collider CollisionSphere;
     public Collider CollisionCapsule;
-    public PullItems CollisionItemPull;
-    private float SpeedforItemPull; //Only activates the item pull after being at a seed for a set time.
+    public PullItems itemPull;
 
     public Transform MainCamera;
     public Transform Colliders;
@@ -174,8 +174,7 @@ public class PlayerBhysics : MonoBehaviour
         PreviousInput = transform.forward;
         Action = GetComponent<ActionManager>();
         Tools = GetComponent<CharacterTools>();
-        AssignStats();
-        
+        AssignStats();      
 
     }
 
@@ -197,64 +196,32 @@ public class PlayerBhysics : MonoBehaviour
         }
 
 
-        //Activates item pull collider
-        if (HorizontalSpeedMagnitude > 60f)
-        {
-            if (SpeedforItemPull == 0f)
-            {
-                SpeedforItemPull = 60f;
-                //Debug.Log("Speed Reached");
-            }
-        }
-
-
-        //Decrease Time to activate ItemPull
-        if (SpeedforItemPull > 1f)
-        {
-            SpeedforItemPull -= 1f;
-        }
-
-        //Activates ItemPull depending on the player's speed;
-        if (SpeedforItemPull == 1f)
-        {
-            if (Action.Action == 7 || Action.Action == 5)
-            {
-                CollisionItemPull.SetSize(-1f);
-            }
-
-            else if (HorizontalSpeedMagnitude >= 120f)
-                CollisionItemPull.SetSize(10);
-
-            else if (HorizontalSpeedMagnitude >= 60f)
-                CollisionItemPull.SetSize(6);
-
-            else if (HorizontalSpeedMagnitude < 60f)
-            {
-                //Debug.Log("Stop Pulling");
-                CollisionItemPull.SetSize(0);
-                SpeedforItemPull = 0;
-            }
-        }
-
         //Debug.Log(MoveInput);
     }
 
     void Update()
     {
-
         SpeedMagnitude = rb.velocity.magnitude;
-        //Debug.Log(transform.rotation);
-        if(!Grounded)
-        {
-            HorizontalSpeedMagnitude = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
-        }
-        else
-        {
-            //Vector3 releVec = Tools.CharacterAnimator.transform.rotation * rb.velocity;
-            Vector3 releVec = Vector3.ProjectOnPlane(rb.velocity, Tools.CharacterAnimator.transform.up);
-            HorizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
-        }
+  
+    
+        Vector3 releVec = getRelevantVec(rb.velocity);
+        HorizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
         playerPos = transform.position;
+    }
+
+    public Vector3 getRelevantVec(Vector3 vec)
+    {
+        return transform.InverseTransformDirection(vec);
+        //if (!Grounded)
+        //{
+        //    return transform.InverseTransformDirection(vec);
+        //    //Vector3 releVec = transform.InverseTransformDirection(rb.velocity.normalized);
+        //}
+        //else
+        //{
+        //    return transform.InverseTransformDirection(vec);
+        //    return Vector3.ProjectOnPlane(vec, groundHit.normal);
+        //}
     }
 
 
@@ -282,8 +249,6 @@ public class PlayerBhysics : MonoBehaviour
         curvePosTang = Mathf.Lerp(curvePosTang, TangDragOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * TangentialDragShiftSpeed);
         curvePosSlope = Mathf.Lerp(curvePosSlope, SlopePowerOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * SlopePowerShiftSpeed);
 
-
-
         // Do it for X and Z
         if (HorizontalSpeedMagnitude > MaxSpeed)
         {
@@ -295,16 +260,16 @@ public class PlayerBhysics : MonoBehaviour
         }
 
         //Do it for Y
-        if (Mathf.Abs(rb.velocity.y) > MaxFallingSpeed)
-        {
-            Vector3 ReducedSpeed = rb.velocity;
-            float keepX = rb.velocity.x;
-            float keepZ = rb.velocity.z;
-            ReducedSpeed = Vector3.ClampMagnitude(ReducedSpeed, MaxSpeed);
-            ReducedSpeed.x = keepX;
-            ReducedSpeed.z = keepZ;
-            rb.velocity = ReducedSpeed;
-        }
+        //if (Mathf.Abs(rb.velocity.y) > MaxFallingSpeed)
+        //{
+        //    Vector3 ReducedSpeed = rb.velocity;
+        //    float keepX = rb.velocity.x;
+        //    float keepZ = rb.velocity.z;
+        //    ReducedSpeed = Vector3.ClampMagnitude(ReducedSpeed, MaxSpeed);
+        //    ReducedSpeed.x = keepX;
+        //    ReducedSpeed.z = keepZ;
+        //    rb.velocity = ReducedSpeed;
+        //}
 
         //Rotate Colliders     
         if (EnableDebug)
@@ -312,11 +277,14 @@ public class PlayerBhysics : MonoBehaviour
             Debug.DrawRay(transform.position + (transform.up * 2) + transform.right, -transform.up * (2f + RayToGroundRotDistancecor), Color.red);
         }
 
-        if ((Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hitRot, 2f + RayToGroundRotDistancecor, Playermask)))
+        //if ((Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hitRot, 2f + RayToGroundRotDistancecor, Playermask)))
+        if(Grounded)
         {
             //GroundNormal = hit.normal;
-            GroundNormal = hitRot.normal;
-            transform.rotation = Quaternion.FromToRotation(transform.up, GroundNormal) * transform.rotation;
+            GroundNormal = groundHit.normal;
+            //transform.rotation = Quaternion.FromToRotation(transform.up, GroundNormal) * transform.rotation;
+            transform.up = GroundNormal;
+            //transform.rotation = Quaternion.FromToRotation(transform.up, GroundNormal);
 
 
             KeepNormal = GroundNormal;
@@ -327,15 +295,19 @@ public class PlayerBhysics : MonoBehaviour
             //Keep the rotation after exiting the ground for a while, to avoid collision issues.
 
             KeepNormalCounter += Time.deltaTime;
-            if (KeepNormalCounter < 0.083f)
+            if (KeepNormalCounter < keepNormalForThis)
             {
-                transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal) * transform.rotation;
+                //transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal) * transform.rotation;
+                transform.up = KeepNormal;
+                //transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal);
             }
             else
             {
+                //transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.25f, 0);
                 if (transform.up.y < RotationResetThreshold)
                 {
-                    transform.rotation = Quaternion.identity;
+                    //transform.rotation = Quaternion.identity;
+                    transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.2f, 0);
                     if (EnableDebug)
                     {
                         Debug.Log("reset");
@@ -352,8 +324,9 @@ public class PlayerBhysics : MonoBehaviour
 
     Vector3 HandleGroundControl(float deltaTime, Vector3 input)
     {
-        if(Action.Action != 11 || Action.Action != 11 || Action.Action != 12)
+        if(Action.Action != ActionManager.States.JumpDash && Action.Action != ActionManager.States.WallRunning)
         {
+
             //By Damizean
 
             // We assume input is already in the Player's local frame...
@@ -370,6 +343,7 @@ public class PlayerBhysics : MonoBehaviour
 
             if (input.sqrMagnitude != 0.0f)
             {
+
                 // Normalize to get input direction.
 
                 Vector3 inputDirection = input.normalized;
@@ -385,17 +359,12 @@ public class PlayerBhysics : MonoBehaviour
 
                 // Step 2) Let the user retain some component of the velocity if it's trying to move in
                 //         nearby directions from the current one. This should improve controlability.
-
-                float turnRate = 0f;
-
-          
-                if (true)
-                {
-                    turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
-                    turnRate *= TurnRateOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed);
-                    //lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, Mathf.Deg2Rad * TurnSpeed * turnRate * Time.deltaTime, 0.0f);
-                    lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, TurnSpeed * turnRate * Time.deltaTime, 0.0f);
-                }
+              
+                float turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
+                turnRate *= TurnRateOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed);
+                //lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, Mathf.Deg2Rad * TurnSpeed * turnRate * Time.deltaTime, 0.0f);
+                lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, TurnSpeed * turnRate * Time.deltaTime, 0.0f);
+                
 
 
                 // Step 3) Further lateral velocity into normal (in the input direction) and tangential
@@ -405,10 +374,10 @@ public class PlayerBhysics : MonoBehaviour
 
                 var normalDot = Vector3.Dot(lateralVelocity.normalized, inputDirection.normalized);
 
-                if (Mathf.Abs(normalDot) <= 0.6f && normalDot > -0.6f)
-                {
-                    inputDirection = Vector3.Slerp(lateralVelocity.normalized, inputDirection, 0.075f);
-                }
+                //if (Mathf.Abs(normalDot) <= 0.6f && normalDot > -0.6f)
+                //{
+                //    inputDirection = Vector3.Slerp(lateralVelocity.normalized, inputDirection, 0.005f);
+                //}
 
                 float normalSpeed = Vector3.Dot(lateralVelocity, inputDirection);
                 Vector3 normalVelocity = inputDirection * normalSpeed;
@@ -452,7 +421,7 @@ public class PlayerBhysics : MonoBehaviour
             if (Grounded)
             {
                 float DecellAmount = 1;
-                if (isRolling && GroundNormal.y > SlopeTakeoverAmount)
+                if (isRolling && GroundNormal.y > SlopeTakeoverAmount && HorizontalSpeedMagnitude > 10)
                 {
                     DecellAmount = RollingFlatDecell * curvePosDecell;
                     if (input.sqrMagnitude == 0)
@@ -488,18 +457,16 @@ public class PlayerBhysics : MonoBehaviour
     void GroundMovement()
     {
         //Stop Rolling
-        if (HorizontalSpeedMagnitude < 3)
-        {
-            isRolling = false;
-        }
+        //if (HorizontalSpeedMagnitude < 3)
+        //{
+        //    isRolling = false;
+        //}
 
         //Slope Physics
         SlopePlysics();
 
         // Call Ground Control
-        //Debug.Log(MoveInput);
-        //Debug.Log(curvePosAcell);
-        //Debug.Log(MoveInput);
+
         Vector3 setVelocity = HandleGroundControl(1, MoveInput * curvePosAcell);
         rb.velocity = setVelocity;
 
@@ -602,14 +569,14 @@ public class PlayerBhysics : MonoBehaviour
         }
         if (TimeOnGround > 0.1f && SpeedMagnitude > 1)
         {
-            float DirectionDot = Vector3.Dot(rb.velocity.normalized, hit.normal);
-            Vector3 normal = hit.normal;
-            Vector3 Raycasterpos = rb.position + (hit.normal * -0.12f);
+            float DirectionDot = Vector3.Dot(rb.velocity.normalized, groundHit.normal);
+            Vector3 normal = groundHit.normal;
+            Vector3 Raycasterpos = rb.position + (groundHit.normal * -0.12f);
 
             if (EnableDebug)
             {
-                Debug.Log("Speed: " + SpeedMagnitude + "\n Direction DOT: " + DirectionDot + " \n Velocity Normal:" + rb.velocity.normalized + " \n  Ground normal : " + hit.normal);
-                Debug.DrawRay(hit.point + (transform.right * 0.2F), hit.normal * 3, Color.yellow, 1);
+                Debug.Log("Speed: " + SpeedMagnitude + "\n Direction DOT: " + DirectionDot + " \n Velocity Normal:" + rb.velocity.normalized + " \n  Ground normal : " + groundHit.normal);
+                Debug.DrawRay(groundHit.point + (transform.right * 0.2F), groundHit.normal * 3, Color.yellow, 1);
             }
 
             //If the Raycast Hits something, it adds it's normal to the ground normal making an inbetween value the interpolates the direction;
@@ -623,10 +590,10 @@ public class PlayerBhysics : MonoBehaviour
                     normal = hitSticking.normal.normalized;
                     Vector3 Dir = Align(Velocity, normal.normalized);
                     result = Vector3.Lerp(Velocity, Dir, StickingLerps.x);
-                    transform.position = hit.point + normal * negativeGHoverHeight;
+                    transform.position = groundHit.point + normal * negativeGHoverHeight;
                     if (EnableDebug)
                     {
-                        Debug.DrawRay(hit.point, normal * 3, Color.red, 1);
+                        Debug.DrawRay(groundHit.point, normal * 3, Color.red, 1);
                         Debug.DrawRay(transform.position, Dir.normalized * 3, Color.yellow, 1);
                         Debug.DrawRay(transform.position + transform.right, Dir.normalized * 3, Color.cyan + Color.black, 1);
                     }
@@ -638,20 +605,20 @@ public class PlayerBhysics : MonoBehaviour
                 {
                     Vector3 Dir = Align(Velocity, normal.normalized);
                     float lerp = StickingLerps.y;
-                    if (Physics.Raycast(Raycasterpos + (rb.velocity * StickCastAhead * Time.deltaTime), -hit.normal, out hitSticking, 2.5f, Playermask))
+                    if (Physics.Raycast(Raycasterpos + (rb.velocity * StickCastAhead * Time.deltaTime), -groundHit.normal, out hitSticking, 2.5f, Playermask))
                     {
                         float dist = hitSticking.distance;
                         if (EnableDebug)
                         {
                             Debug.Log("PlacedDown" + dist);
-                            Debug.DrawRay(Raycasterpos + (rb.velocity * StickCastAhead * Time.deltaTime), -hit.normal * 3, Color.cyan, 2);
+                            Debug.DrawRay(Raycasterpos + (rb.velocity * StickCastAhead * Time.deltaTime), -groundHit.normal * 3, Color.cyan, 2);
                         }
                         if (dist > 1.5f)
                         {
                             if (EnableDebug) Debug.Log("ForceDown");
                             lerp = 5;
-                            result += (-hit.normal * 10);
-                            transform.position = hit.point + normal * negativeGHoverHeight;
+                            result += (-groundHit.normal * 10);
+                            transform.position = groundHit.point + normal * negativeGHoverHeight;
                         }
                     }
 
@@ -660,7 +627,7 @@ public class PlayerBhysics : MonoBehaviour
                     if (EnableDebug)
                     {
                         Debug.Log("Lerp " + lerp + " Result " + result);
-                        Debug.DrawRay(hit.point, normal * 3, Color.green, 0.6f);
+                        Debug.DrawRay(groundHit.point, normal * 3, Color.green, 0.6f);
                         Debug.DrawRay(transform.position, result.normalized * 3, Color.grey, 0.6f);
                         Debug.DrawRay(transform.position + transform.right, result.normalized * 3, Color.cyan + Color.black, 0.6f);
                     }
@@ -668,7 +635,7 @@ public class PlayerBhysics : MonoBehaviour
 
             }
 
-            result += (-hit.normal * 2); // traction addition
+            result += (-groundHit.normal * 2); // traction addition
         }
         if (EnableDebug)
         {
@@ -699,12 +666,13 @@ public class PlayerBhysics : MonoBehaviour
         Vector3 setVelocity;
         //AddSpeed
         //Air Skidding  
-        if (b_normalSpeed < 0 && (Action.Action == 0 || Action.Action == 1))
-        {
-            setVelocity = HandleGroundControl(1, (MoveInput * AirSkiddingForce) * MoveAccell);
-        }
+        //if (b_normalSpeed < 0 && (Action.Action  == ActionManager.States.Regular || Action.Action == ActionManager.States.Jump || Action.Action == ActionManager.States.Hovering))
+        //{
+        //    Debug.Log(MoveInput * AirSkiddingForce * MoveAccell);
+        //    setVelocity = HandleGroundControl(1, (MoveInput * AirSkiddingForce) * MoveAccell);
+        //}
 
-        else if (MoveInput.sqrMagnitude > 0.1f)
+        if (MoveInput.sqrMagnitude > 0.1f)
         {
             float airMod = 1;
             float airMoveMod = 1;
@@ -713,7 +681,7 @@ public class PlayerBhysics : MonoBehaviour
                 airMod += 2f;
                 airMoveMod += 3f;
             }
-            if(Action.Action == 1)
+            if(Action.Action == ActionManager.States.Jump)
             {
                 //Debug.Log(Action.Action01.timeJumping);
                 if (Action.Action01.ControlCounter < 0.5)
@@ -728,7 +696,7 @@ public class PlayerBhysics : MonoBehaviour
                 }
                     
             }
-            else if(Action.Action == 6)
+            else if(Action.Action == ActionManager.States.Bounce)
             {
                 airMod += 1f;
                 airMoveMod += 2.5f;
@@ -772,6 +740,9 @@ public class PlayerBhysics : MonoBehaviour
         if (GravityAffects)
             setVelocity += Gravity((int)setVelocity.y);
 
+        if(setVelocity.y > rb.velocity.y)
+            Debug.Log("Gravity is = " +Gravity((int)setVelocity.y).y);
+
         //Max Falling Speed
         if (rb.velocity.y < MaxFallingSpeed)
         {
@@ -785,7 +756,7 @@ public class PlayerBhysics : MonoBehaviour
     Vector3 Gravity(int vertSpeed)
     {
 
-        if (vertSpeed < 5)
+        if (vertSpeed < 0)
         {
             return fallGravity;
         }
@@ -793,9 +764,9 @@ public class PlayerBhysics : MonoBehaviour
         {
             int gravMod;
             if (vertSpeed > 70)
-                gravMod = vertSpeed / 15;
-            else
                 gravMod = vertSpeed / 12;
+            else
+                gravMod = vertSpeed / 8;
             float applyMod = 1 + (gravMod * 0.1f);
 
             Vector3 newGrav = new Vector3(0f, UpGravity.y * applyMod, 0f);
@@ -826,13 +797,13 @@ public class PlayerBhysics : MonoBehaviour
         }
         //Debug.Log(GravityAffects);
 
-        if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hit, 2f + RayToGroundDistancecor, Playermask) && Action.Action != 6)
+        if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out groundHit, 2f + RayToGroundDistancecor, Playermask) && Action.Action != ActionManager.States.Bounce)
         {
-            GroundNormal = hit.normal;
+            GroundNormal = groundHit.normal;
             Grounded = true;
             GroundMovement();
         }
-        else if (Action.Action != 6 && Action.Action != 12 && Action.Action != 5)
+        else if (Action.Action != ActionManager.States.Bounce && Action.Action != ActionManager.States.WallRunning && Action.Action != ActionManager.States.Rail)
         {
             Grounded = false;
             GroundNormal = Vector3.zero;
@@ -922,6 +893,7 @@ public class PlayerBhysics : MonoBehaviour
         UpHillOverTime = Tools.coreStats.UpHillOverTime;
         StartFallGravity = Tools.stats.fallGravity;
         UpGravity = Tools.coreStats.UpGravity;
+        keepNormalForThis = Tools.coreStats.keepNormalForThis;
 
 
         StickingLerps = Tools.coreStats.StickingLerps;

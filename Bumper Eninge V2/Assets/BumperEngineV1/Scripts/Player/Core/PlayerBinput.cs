@@ -35,7 +35,7 @@ public class PlayerBinput : MonoBehaviour {
     float LockedTime;
     Vector3 LockedInput;
     float LockedCounter = 0;
-    bool LockCam { get; set; }
+    [HideInInspector] public bool LockCam { get; set; }
     public bool onPath { get; set; }
     public float prevDecel { get; set; }
 	private bool HittingWall;
@@ -96,8 +96,11 @@ public class PlayerBinput : MonoBehaviour {
             float currentInputSpeed = (!UtopiaTurning) ? InputLerpSpeed : UtopiaLerpingSpeed;
 
             inputPreCamera = moveInp;
-            trueMoveInput = GetTrueInput(moveInp);
+
             //Make movement relative to camera
+            trueMoveInput = GetTrueInput(moveInp);
+
+            
 
             if (moveInp != Vector3.zero && !onPath)
             {
@@ -148,7 +151,10 @@ public class PlayerBinput : MonoBehaviour {
     void FixedUpdate()
     {
         Debug.DrawRay(transform.position, transform.forward * 5, Color.yellow);
-        Debug.DrawRay(transform.position, trueMoveInput * 5, Color.cyan);
+        //Debug.DrawRay(transform.position, trueMoveInput * 5, Color.cyan);
+        Vector3 releVec = Player.getRelevantVec(Player.rb.velocity);
+        Debug.DrawRay(transform.position, new Vector3(releVec.x, 0f, releVec.z).normalized * 5, Color.blue);
+        Debug.DrawRay(transform.position, Player.rb.velocity.normalized * 5, Color.red);
         Player.MoveInput = move;
 
     }
