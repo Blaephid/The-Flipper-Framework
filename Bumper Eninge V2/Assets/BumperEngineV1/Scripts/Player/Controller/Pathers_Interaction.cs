@@ -64,11 +64,14 @@ public class Pathers_Interaction : MonoBehaviour
 
     }
 
+    private void FixedUpdate()
+    {
+
+    }
+
     void onUpreel()
     {
         
-
-
         //If the upreel is finished
         if (!currentUpreel.Moving)
         {
@@ -250,12 +253,19 @@ public class Pathers_Interaction : MonoBehaviour
         //Automatic Paths
         if (col.gameObject.CompareTag("PathTrigger"))
         {
-
             if(!onceThisFrame)
-                StartCoroutine(SetOnPath(col));
-            
+                StartCoroutine(SetOnPath(col));           
         }
 
+    }
+
+    private void OnTriggerExit(Collider col)
+    {
+        //Automatic Paths
+        if (col.gameObject.CompareTag("PathTrigger"))
+        {
+            onceThisFrame = false;
+        }
     }
 
     IEnumerator SetOnPath(Collider col)
@@ -263,39 +273,36 @@ public class Pathers_Interaction : MonoBehaviour
         onceThisFrame = true;
 
         //If the player is already on a path, then hitting this trigger will end it.
-        if (Actions.Action == ActionManager.States.Path)
+        if (Actions.Action == ActionManager.States.Path || col.gameObject.name == "End")
         {
             //See MoveAlongPath for more
             Actions.Action10.ExitPath();
 
         }
 
-        else if (Actions.Action != ActionManager.States.Path && col.gameObject.name != "End")
+        else
         {
             float speedGo = 0f;
 
             //If the path is being started by a path speed pad
             if (col.gameObject.GetComponent<SpeedPadData>())
             {
+                Debug.Log("Enter Path Spline from Pad");
                 RailSpline = col.gameObject.GetComponent<SpeedPadData>().path;
-                col.GetComponent<AudioSource>().Play();
-                speedGo = col.gameObject.GetComponent<SpeedPadData>().Speed;
+                //col.GetComponent<AudioSource>().Play();
+                speedGo = Mathf.Max(col.gameObject.GetComponent<SpeedPadData>().Speed, Player.HorizontalSpeedMagnitude);
             }
 
             //If the path is being started by a normal trigger
             else if (col.gameObject.GetComponentInParent<Spline>() && col.gameObject.CompareTag("PathTrigger"))
                 RailSpline = col.gameObject.GetComponentInParent<Spline>();
-
             else
                 RailSpline = null;
 
             //If the player has been given a path to follow. This cuts out speed pads that don't have attached paths.
             if (RailSpline != null)
             {
-
-
                 //noDelay, the coroutine and otherCol. enabled are used to prevent the player colliding with the trigger multiple times for all of their attached colliders
-
 
                 //Sets the player to start at the start and move forwards
                 bool back = false;
@@ -317,20 +324,16 @@ public class Pathers_Interaction : MonoBehaviour
 
                 CurentPathTrigger = col.GetComponent<Collider>();
 
-
-
                 //Physics.IgnoreCollision(CurentPathTrigger, playerCol, true);
 
 
                 //Starts the player moving along the path using the path follow action
                 Actions.Action10.InitialEvents(range, RailSpline.transform, back, speedGo);
                 Actions.ChangeAction(ActionManager.States.Path);
-
-
             }
         }
         yield return new WaitForEndOfFrame();
-        onceThisFrame = false;
+        
     }
 
 

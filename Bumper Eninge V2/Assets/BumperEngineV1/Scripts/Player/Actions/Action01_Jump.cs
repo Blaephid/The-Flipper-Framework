@@ -278,13 +278,9 @@ public class Action01_Jump : MonoBehaviour
 
             if (Actions.RollPressed)
             {
-                if (Player.rb.velocity.y < 10f && Actions.Action08 != null)
-                {
-                    //Debug.Log("Enter DropDash");
-                    Actions.ChangeAction(ActionManager.States.DropCharge);
 
-                    Actions.Action08.InitialEvents();
-                }
+                Actions.Action08.TryDropCharge();
+                
                 
             }
 

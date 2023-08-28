@@ -51,6 +51,8 @@ namespace SplineMesh
         [HideInInspector] public float OriginalRayToGroundRot;
         [HideInInspector] public float OriginalRayToGround;
 
+        [HideInInspector] public Collider patherStarter;
+
         private void Awake()
         {
             if (Player == null)
@@ -80,8 +82,6 @@ namespace SplineMesh
 
             //Disable colliders to prevent jankiness
             //Path_Int.playerCol.enabled = false;
-
-            
 
 
             Skin.transform.localPosition = Skin.transform.localPosition;
@@ -156,6 +156,8 @@ namespace SplineMesh
             //Increase the Amount of distance through the Spline by DeltaTime
             float ammount = (Time.deltaTime * PlayerSpeed);
 
+            Player.alignWithGround();
+
             //Slowly increases player speed.
             if (PlayerSpeed < Player.TopSpeed || PlayerSpeed < PathTopSpeed)
             {
@@ -208,12 +210,26 @@ namespace SplineMesh
                 sample = Path_Int.RailSpline.GetSampleAtDistance(range);
 
                 //Set player Position and rotation on Path
-                Quaternion rot = (Quaternion.FromToRotation(Skin.transform.up, sample.Rotation * Vector3.up) * Skin.rotation);
-                Skin.rotation = rot;
-                CharacterAnimator.transform.rotation = rot;
+                //Quaternion rot = (Quaternion.FromToRotation(Skin.transform.up, sample.Rotation * Vector3.up) * Skin.rotation);
+                //Skin.rotation = rot;
+                //CharacterAnimator.transform.rotation = rot;
 
-                Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
-                transform.position = ((sample.location) + PathTransform.position) + FootPos;
+
+                if ((Physics.Raycast(sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + Player.RayToGroundRotDistancecor, Player.Playermask)))
+                {
+                    //Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
+                    //transform.position = (hitRot.point + PathTransform.position) + FootPos;
+
+                    Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
+                    transform.position = ((sample.location) + PathTransform.position) + FootPos;
+                }
+                else
+                {
+                    Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
+                    transform.position = ((sample.location) + PathTransform.position) + FootPos;
+                }
+
+            
 
                 //Moves the player to the position of the Upreel
                 //Vector3 HandPos = transform.position - HandGripPoint.position;
@@ -240,7 +256,6 @@ namespace SplineMesh
             }
             else
             {
-
                 //Check if the Spline is loop and resets position
                 if (Path_Int.RailSpline.IsLoop)
                 {
@@ -255,16 +270,40 @@ namespace SplineMesh
                         PathMove();
                     }
                 }
+                else
+                {
+                    ExitPath();
+                }
             }
 
         }
 
         public void ExitPath()
         {
-            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity);
+            Debug.Log("Exiting Path");
+
+            Player.alignWithGround();
+
+            //Set Player Speed correctly for smoothness
+            if (!backwards)
+            {
+                sample = Path_Int.RailSpline.GetSampleAtDistance(Path_Int.RailSpline.Length);
+                Player.rb.velocity = sample.tangent * (PlayerSpeed);
+
+            }
+            else
+            {
+                sample = Path_Int.RailSpline.GetSampleAtDistance(0);
+                Player.rb.velocity = -sample.tangent * (PlayerSpeed);
+
+            }
+
+            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Player.groundHit.normal);
 
             Player.RayToGroundDistancecor = OriginalRayToGround;
             Player.RayToGroundRotDistancecor = OriginalRayToGroundRot;
+
+            Player.GetComponent<CameraControl>().Cam.setBehind();
             Input.LockInputForAWhile(30f, true);
 
             //Reenables Colliders
@@ -278,7 +317,7 @@ namespace SplineMesh
                 Path_Int.currentCam = null;
             }
 
-            Actions.ChangeAction(0);
+            Actions.ChangeAction(ActionManager.States.Regular);
         }
 
         void AssignStats()

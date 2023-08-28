@@ -324,11 +324,9 @@ public class Action00_Regular : MonoBehaviour {
 			if (Actions.Action08 != null)
 			{
 
-				if (!Player.Grounded && Actions.RollPressed && Actions.Action08 != null && Player.rb.velocity.y < 20f)
+				if (!Player.Grounded && Actions.RollPressed)
 				{
-					//Actions.Action08.DropDashAvailable = false;
-					Actions.ChangeAction(ActionManager.States.DropCharge);
-					Actions.Action08.InitialEvents();
+					Actions.Action08.TryDropCharge();
 				}
 
 				if (Player.Grounded && Actions.Action08.DropEffect.isPlaying)

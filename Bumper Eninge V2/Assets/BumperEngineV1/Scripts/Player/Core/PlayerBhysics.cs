@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using TMPro;
+using System.Collections.Generic;
 
 public class PlayerBhysics : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class PlayerBhysics : MonoBehaviour
     [HideInInspector] public float TangentialDragShiftSpeed;
 
     [HideInInspector] public float TurnSpeed = 16f;
-    [HideInInspector] public float SlowedTurnSpeed = 500f;
+    [HideInInspector] public float increasedTurnSpeed = 500f;
 
     [HideInInspector] public AnimationCurve TurnRateOverAngle;
     [HideInInspector] public AnimationCurve TurnRateOverSpeed;
@@ -50,7 +51,7 @@ public class PlayerBhysics : MonoBehaviour
     [HideInInspector] public float StandOnSlopeLimit = 0.8f;
     [HideInInspector] public float SlopePower = 0.5f;
     [HideInInspector] public float SlopeRunningAngleLimit = 0.5f;
-    [HideInInspector] public float SlopeSpeedLimit = 10;
+    AnimationCurve SlopeSpeedLimit;
 
     float generalHillMultiplier = 1;
     [HideInInspector] public float UphillMultiplier = 0.5f;
@@ -174,7 +175,8 @@ public class PlayerBhysics : MonoBehaviour
         PreviousInput = transform.forward;
         Action = GetComponent<ActionManager>();
         Tools = GetComponent<CharacterTools>();
-        AssignStats();      
+        AssignStats();
+
 
     }
 
@@ -188,7 +190,9 @@ public class PlayerBhysics : MonoBehaviour
 
         TimeOnGround += Time.deltaTime;
         if (!Grounded) TimeOnGround = 0;
-        GeneralPhysics();
+
+        if(Action.Action != ActionManager.States.Path)
+            GeneralPhysics();
 
         if (HomingDelay > 0)
         {
@@ -277,18 +281,34 @@ public class PlayerBhysics : MonoBehaviour
             Debug.DrawRay(transform.position + (transform.up * 2) + transform.right, -transform.up * (2f + RayToGroundRotDistancecor), Color.red);
         }
 
-        //if ((Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hitRot, 2f + RayToGroundRotDistancecor, Playermask)))
-        if(Grounded)
-        {
-            //GroundNormal = hit.normal;
-            GroundNormal = groundHit.normal;
-            //transform.rotation = Quaternion.FromToRotation(transform.up, GroundNormal) * transform.rotation;
-            transform.up = GroundNormal;
-            //transform.rotation = Quaternion.FromToRotation(transform.up, GroundNormal);
+        alignWithGround();
 
+        CheckForGround();
+    }
+
+    public void alignWithGround()
+    {
+        
+
+        if ((Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hitRot, 2f + RayToGroundRotDistancecor, Playermask)))
+        //if (Grounded)
+        {
+
+            
+            //Vector3 floor = KeepNormal;
+            //if (floor.sqrMagnitude != 1)
+            //    floor = Vector3.up;
+
+           //if(Physics.Raycast(transform.position + (transform.up * 2), -floor, out hitRot, 2f + RayToGroundRotDistancecor, Playermask))
+           //{
+            GroundNormal = groundHit.normal;
 
             KeepNormal = GroundNormal;
+
+            transform.rotation = Quaternion.FromToRotation(transform.up, GroundNormal) * transform.rotation;
             KeepNormalCounter = 0;
+           //}
+                  
         }
         else
         {
@@ -297,17 +317,19 @@ public class PlayerBhysics : MonoBehaviour
             KeepNormalCounter += Time.deltaTime;
             if (KeepNormalCounter < keepNormalForThis)
             {
-                //transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal) * transform.rotation;
-                transform.up = KeepNormal;
-                //transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal);
+                transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal) * transform.rotation;
+
             }
             else
             {
                 //transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.25f, 0);
+
+
                 if (transform.up.y < RotationResetThreshold)
                 {
                     //transform.rotation = Quaternion.identity;
-                    transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.2f, 0);
+                    //transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.2f, 0);
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.identity, 0.25f);
                     if (EnableDebug)
                     {
                         Debug.Log("reset");
@@ -319,7 +341,6 @@ public class PlayerBhysics : MonoBehaviour
                 }
             }
         }
-        CheckForGround();
     }
 
     Vector3 HandleGroundControl(float deltaTime, Vector3 input)
@@ -363,7 +384,11 @@ public class PlayerBhysics : MonoBehaviour
                 float turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
                 turnRate *= TurnRateOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed);
                 //lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, Mathf.Deg2Rad * TurnSpeed * turnRate * Time.deltaTime, 0.0f);
-                lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, TurnSpeed * turnRate * Time.deltaTime, 0.0f);
+
+                if (Action.Action == ActionManager.States.SpinCharge)
+                    lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, increasedTurnSpeed * turnRate * Time.deltaTime, 0.0f);
+                else
+                    lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, TurnSpeed * turnRate * Time.deltaTime, 0.0f);
                 
 
 
@@ -498,10 +523,15 @@ public class PlayerBhysics : MonoBehaviour
         }
 
         //Get out of slope if speed is too low
-        if (rb.velocity.sqrMagnitude < SlopeSpeedLimit && SlopeRunningAngleLimit > GroundNormal.y)
+        if (HorizontalSpeedMagnitude < SlopeSpeedLimit.Evaluate(GroundNormal.y))
         {
-            transform.rotation = Quaternion.identity;
-            AddVelocity(GroundNormal * 3);
+            if(SlopeRunningAngleLimit > GroundNormal.y)
+            {
+                //transform.rotation = Quaternion.identity;
+                Grounded = false;
+                AddVelocity(GroundNormal * 1.5f);
+            }
+
         }
     
 
@@ -797,7 +827,7 @@ public class PlayerBhysics : MonoBehaviour
         }
         //Debug.Log(GravityAffects);
 
-        if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out groundHit, 2f + RayToGroundDistancecor, Playermask) && Action.Action != ActionManager.States.Bounce)
+        if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out groundHit, 2f + RayToGroundDistancecor, Playermask))
         {
             GroundNormal = groundHit.normal;
             Grounded = true;
@@ -854,7 +884,7 @@ public class PlayerBhysics : MonoBehaviour
         TangentialDrag = Tools.stats.TangentialDrag;
         TangentialDragShiftSpeed = Tools.coreStats.TangentialDragShiftSpeed;
         TurnSpeed = Tools.stats.TurnSpeed;
-        SlowedTurnSpeed = Tools.stats.SlowedTurnSpeed;
+        increasedTurnSpeed = Tools.stats.increasedTurnSpeed;
         TurnRateOverAngle = Tools.coreStats.TurnRateOverAngle;
         TurnRateOverSpeed = Tools.coreStats.TurnRateOverSpeed;
         TangDragOverAngle = Tools.coreStats.TangDragOverAngle;

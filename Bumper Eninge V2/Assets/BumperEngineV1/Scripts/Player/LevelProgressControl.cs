@@ -104,7 +104,7 @@ public class LevelProgressControl : MonoBehaviour {
         Actions.Action04.deadCounter = 0;
 
         Cam.Cam.Reversed = false;
-        Cam.Cam.setBehind();
+        Cam.Cam.setBehindWithHeight();
 
     }
 

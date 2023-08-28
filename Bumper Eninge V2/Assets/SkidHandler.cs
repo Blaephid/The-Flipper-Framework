@@ -96,7 +96,7 @@ public class SkidHandler : MonoBehaviour
 		if (Player.b_normalSpeed < -SpinSkiddingStartPoint)
 		{
 			Vector3 releVec = Player.getRelevantVec(Player.rb.velocity);
-			if (Player.SpeedMagnitude >= -SpinSkiddingIntensity) Player.AddVelocity(new Vector3(releVec.x, 0f, releVec.z).normalized * SpinSkiddingIntensity * (Player.isRolling ? 0.5f : 1));
+			if (Player.HorizontalSpeedMagnitude >= -SpinSkiddingIntensity) Player.AddVelocity(Player.rb.velocity.normalized * SpinSkiddingIntensity * (Player.isRolling ? 0.5f : 1));
 
 
 			if (Player.SpeedMagnitude < 4)

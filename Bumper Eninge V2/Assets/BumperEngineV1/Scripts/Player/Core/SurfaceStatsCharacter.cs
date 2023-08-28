@@ -18,7 +18,7 @@ public class SurfaceStatsCharacter : ScriptableObject
     public float TangentialDrag = 7.5f;
 
     public float TurnSpeed = 70f;
-    [HideInInspector]public float SlowedTurnSpeed = 200f;
+    public float increasedTurnSpeed = 200f;
 
 
     public float StartTopSpeed = 90f;

@@ -170,14 +170,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Path: 1
   onRail: 0
-  rail: {fileID: 0}
+  railBackwards: 0
   isDashRing: 0
   path: {fileID: 0}
+  setSpeed: 1
+  addSpeed: 15
   Speed: 100
   LockToDirection: 1
-  ChangeCameraDirection: 1
   Snap: 1
   AffectCamera: 1
   ResetRotation: 1

@@ -16,7 +16,7 @@ MonoBehaviour:
   StartAccell: 0.14
   TangentialDrag: 2
   TurnSpeed: 6
-  SlowedTurnSpeed: 120
+  increasedTurnSpeed: 12
   StartTopSpeed: 70
   StartMaxSpeed: 160
   StartMaxFallingSpeed: -350

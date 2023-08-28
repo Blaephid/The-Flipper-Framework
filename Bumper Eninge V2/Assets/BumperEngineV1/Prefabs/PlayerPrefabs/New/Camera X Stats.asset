@@ -55,7 +55,7 @@ MonoBehaviour:
   HeightFollowSpeed: 6
   FallSpeedThreshold: -80
   CameraMaxDistance: -13
-  AngleThreshold: 0.3
+  AngleThreshold: 0.7
   CollidableLayers:
     serializedVersion: 2
     m_Bits: 1

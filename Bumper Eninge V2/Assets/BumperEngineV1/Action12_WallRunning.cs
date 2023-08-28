@@ -731,8 +731,7 @@ public class Action12_WallRunning : MonoBehaviour
                 Player.rb.velocity += CharacterAnimator.transform.forward * 8;
                 if (Actions.RollPressed)
                 {
-                    Actions.ChangeAction(ActionManager.States.DropCharge);
-                    Actions.Action08.InitialEvents();
+                    Actions.Action08.TryDropCharge();
                     break;
                 }
 

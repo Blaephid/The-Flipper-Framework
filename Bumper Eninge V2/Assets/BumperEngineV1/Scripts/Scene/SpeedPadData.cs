@@ -5,7 +5,6 @@ using SplineMesh;
 public class SpeedPadData : MonoBehaviour
 {
     [Header ("Type")]
-    public bool Path;
     public bool onRail;
     public bool railBackwards;
     public bool isDashRing;

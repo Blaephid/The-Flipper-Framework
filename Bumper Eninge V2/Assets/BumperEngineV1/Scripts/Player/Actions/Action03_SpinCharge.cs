@@ -134,8 +134,7 @@ public class Action03_SpinCharge : MonoBehaviour
             effects.EndSpinDash();
             if (Actions.RollPressed)
             {
-                Actions.Action08.InitialEvents(charge);
-                Actions.ChangeAction(ActionManager.States.DropCharge);
+                Actions.Action08.TryDropCharge();
             }
             else
             {

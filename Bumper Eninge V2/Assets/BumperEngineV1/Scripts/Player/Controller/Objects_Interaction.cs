@@ -95,7 +95,7 @@ public class Objects_Interaction : MonoBehaviour {
         }
         else if (Actions.Action == ActionManager.States.Path)
         {
-
+            DisplaySpeed = Actions.Action10.PlayerSpeed;
         }
         else
         {
@@ -190,6 +190,15 @@ public class Objects_Interaction : MonoBehaviour {
 
             col.GetComponent<AudioSource>().Play();
 
+            JumpBall.SetActive(false);
+            if (Actions.Action08 != null)
+            {
+                if (Actions.Action08.DropEffect.isPlaying == true)
+                {
+                    Actions.Action08.DropEffect.Stop();
+                }
+            }
+
             if (pad.onRail)
              {
 
@@ -203,15 +212,9 @@ public class Objects_Interaction : MonoBehaviour {
                 }        
                 return;
             }
-                     
-            JumpBall.SetActive(false);
-			if (Actions.Action08 != null) {
-				if (Actions.Action08.DropEffect.isPlaying == true) {
-					Actions.Action08.DropEffect.Stop ();
-				}
-			}
+                             
 
-            if(!col.GetComponent<SpeedPadData>().path)
+            else if(!col.GetComponent<SpeedPadData>().path)
             {
                 
                 Actions.Action02.HomingAvailable = true;

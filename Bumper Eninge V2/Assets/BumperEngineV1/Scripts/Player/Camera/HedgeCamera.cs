@@ -148,7 +148,7 @@ public class HedgeCamera : MonoBehaviour
                 CanGoBehind = true;
                 AboveSpeedLock = true;
 
-                Debug.Log(transform.up.y);
+               
 
                 if (transform.up.y > 0.99f)
                     camOnAngle = false;
@@ -170,7 +170,6 @@ public class HedgeCamera : MonoBehaviour
                 CanGoBehind = false;
 
             }
-
 
             if (CanGoBehind)
                 GoBehindHeight();
@@ -428,7 +427,8 @@ public class HedgeCamera : MonoBehaviour
         else if (!Locked || Skip)
         {
             float dot = Vector3.Dot(Skin.forward, transform.right);
-            x += (dot * speed) * (Time.deltaTime * 100);
+           x += (dot * speed) * (Time.deltaTime * 100);
+           // x = Mathf.MoveTowards(x, Skin.eulerAngles.y, (dot * speed) * (Time.deltaTime * 60));
 
             y = Mathf.Lerp(y, height, Time.deltaTime * Yspeed);                    
         }
@@ -441,14 +441,23 @@ public class HedgeCamera : MonoBehaviour
             float dot = Vector3.Dot(-Skin.forward, transform.right);
             x += (dot * speed) * (Time.deltaTime * 100);
 
+            //Quaternion inverse = Quaternion.LookRotation(-Skin.forward, Skin.up);
+            //x = Mathf.MoveTowards(x, inverse.eulerAngles.y, (dot * speed) * (Time.deltaTime * 60));
+
             y = Mathf.Lerp(y, height, Time.deltaTime * Yspeed);
         }
     }
 
     public void setBehind()
     {
-        x = 0;
-        y = 2;
+        x = Skin.eulerAngles.y;     
+
+    }
+
+    public void setBehindWithHeight()
+    {
+        x = Skin.eulerAngles.y;
+        y = 14;
     }
 
     public void FollowHeightDirection(float height, float speed)

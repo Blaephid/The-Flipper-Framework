@@ -45,7 +45,7 @@ public class CoreStatsCharacter : ScriptableObject
     public float StandOnSlopeLimit = 0.8f;
     public float SlopePower = -1.5f;
     public float SlopeRunningAngleLimit = 0.5f;
-    public float SlopeSpeedLimit = 110;
+    public AnimationCurve SlopeSpeedLimit;
 
     [Tooltip("This is multiplied with the force of a slope when going uphill to determine the force against.")]
     public float UphillMultiplier = 0.55f;

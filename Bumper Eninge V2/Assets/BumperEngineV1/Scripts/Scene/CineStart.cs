@@ -77,7 +77,7 @@ public class CineStart : MonoBehaviour
         {
             if(!isActive && Player != null)
             {
-                if ((Actions.Action == 0 && RegularAction) || (Actions.Action == ActionManager.States.Jump && JumpAction) 
+                if ( Actions.Action == ActionManager.States.Path || (Actions.Action == ActionManager.States.Regular && RegularAction) || (Actions.Action == ActionManager.States.Jump && JumpAction) 
                     || (Actions.Action == ActionManager.States.Rail && RailAction) || (Actions.Action == ActionManager.States.WallRunning && wallRunAction) || (Actions.Action == ActionManager.States.RingRoad && RingRoadAction))
                 {
                     isActive = true;
@@ -140,6 +140,7 @@ public class CineStart : MonoBehaviour
         attachedCam.transform.position += startOffset;
 
         attachedCam.SetActive(true);
+        hedgeCam = Player.GetComponent<CameraControl>().virtCam;
         hedgeCam.gameObject.SetActive(false);
         if(lockTime > 0)
             Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
