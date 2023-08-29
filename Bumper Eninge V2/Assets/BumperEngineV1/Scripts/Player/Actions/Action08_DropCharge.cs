@@ -128,7 +128,7 @@ public class Action08_DropCharge : MonoBehaviour
             }
         }
 
-        if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 0.5f, Player.Playermask))
+        if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player.Playermask))
         {
 
             if (!Actions.JumpPressed)
@@ -253,7 +253,6 @@ public class Action08_DropCharge : MonoBehaviour
         Vector3 releVec = Player.getRelevantVec(newVec);
         float newSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
 
-        Debug.Log("New = " + newSpeedMagnitude + " - Before = " + Player.HorizontalSpeedMagnitude);
         Debug.DrawRay(transform.position, newVec.normalized * 30, Color.red * 2, 20f);
 
         if (newSpeedMagnitude > Player.HorizontalSpeedMagnitude)
@@ -264,9 +263,7 @@ public class Action08_DropCharge : MonoBehaviour
         }
         else
         {
-            Debug.Log("Before is more than New");
             Player.rb.velocity = newVec.normalized * (Player.HorizontalSpeedMagnitude + (charge* 0.45f));
-            //Player.rb.velocity += newVec * 0.3f;
             Cam.Cam.FollowHeightDirection(20, 15f);
         }
     }
@@ -275,7 +272,6 @@ public class Action08_DropCharge : MonoBehaviour
     {
         for (int i = 1; i <= delay; i++)
         {
-            Debug.Log(i);
             yield return new WaitForFixedUpdate();
         }
 
@@ -302,7 +298,7 @@ public class Action08_DropCharge : MonoBehaviour
         //Rotation
 
         //Set Animation Angle
-        if (!Player.Grounded)
+        //if (!Player.Grounded)
         {
             Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
             if(VelocityMod != Vector3.zero)

@@ -102,7 +102,7 @@ public class HedgeCamera : MonoBehaviour
         Locked = false;
         canMove = true;
         InitialLockedRotationSpeed = LockedRotationSpeed;
-      
+
         StartLockCam = LockCamAtHighSpeed;
         setStats();
 
@@ -128,54 +128,61 @@ public class HedgeCamera : MonoBehaviour
         //LookTimer
         if (lookTimer < 0)
         {
-           // Debug.Log("Looking towards");
-           // Debug.Log(lookAtDir);
-           // Debug.Log(LockedRotationSpeed);
-           // Debug.Log(heighttolook);
             RotateDirection(lookAtDir, LockedRotationSpeed, heighttolook);
             lookTimer += Time.deltaTime;
         }
 
         //Copy and Lerp the player's Pos
         //if (!Locked)
-        if(true)
+        if (true)
         {
-
-
+            
             if (Player.GroundNormal.y < AngleThreshold || camOnAngle)
-            {
-                camOnAngle = true;
+            {                             
                 CanGoBehind = true;
                 AboveSpeedLock = true;
 
-               
-
-                if (transform.up.y > 0.99f)
+                if (Vector3.Dot(PlayerPosLerped.up, Vector3.up) > 0.999)
                     camOnAngle = false;
+                else
+                    camOnAngle = true;
             }
-            else if (Player.b_normalSpeed > LockCamAtHighSpeed * 0.5f)
+            //else if (Player.b_normalSpeed > LockCamAtHighSpeed * 0.5f)
+            //{
+            //    CanGoBehind = true;
+            //    AboveSpeedLock = true;
+            //}
+            else if (!Player.Grounded)
             {
                 CanGoBehind = true;
                 AboveSpeedLock = true;
-            }
 
+                if (Vector3.Dot(PlayerPosLerped.up, Vector3.up) > 0.999)
+                    camOnAngle = false;
+                else
+                    camOnAngle = true;
+            }
             else
             {
+                AboveSpeedLock = false;
+                CanGoBehind = false;
+
+                if (Vector3.Dot(PlayerPosLerped.up, Vector3.up) > 0.999)
+                    camOnAngle = false;
+                else
+                    camOnAngle = true;
+
                 if (!checkforBehind && AboveSpeedLock)
                 {
                     StartCoroutine(SetGoBehind());
                 }
 
-                AboveSpeedLock = false;
-                CanGoBehind = false;
-
             }
 
             if (CanGoBehind)
-                GoBehindHeight();
+                FollowPlayerTransform();
 
 
-            //Debug.Log(Actions.moveCamX);
             if (canMove)
             {
                 if (Player.SpeedMagnitude > 10)
@@ -189,14 +196,14 @@ public class HedgeCamera : MonoBehaviour
                     y -= (Actions.moveCamY * ((InputYSpeed)) * InvertedY) * Time.deltaTime * stationaryCamIncrease;
                 }
             }
-            
+
         }
         else
         {
             PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, Quaternion.LookRotation(Vector3.forward), Time.deltaTime * CameraVerticalRotationSpeed);
             RotateDirection(lookAtDir, Mathf.RoundToInt(LockedRotationSpeed), heighttolook);
         }
-       
+
     }
 
 
@@ -214,9 +221,9 @@ public class HedgeCamera : MonoBehaviour
                 //y -= 0;
 
                 x += ((Actions.moveCamX * NormalMod) * AutoXRotationSpeed) * Time.deltaTime;
-                
+
                 y -= 0;
-             
+
             }
             else
             {
@@ -224,9 +231,9 @@ public class HedgeCamera : MonoBehaviour
                 CurveX = AutoXRotationCurve.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
                 CurveX = CurveX * 100;
                 x += ((Actions.moveCamX * CurveX) * AutoXRotationSpeed) * Time.deltaTime;
-                
+
                 y -= 0;
-               
+
             }
 
         }
@@ -299,23 +306,7 @@ public class HedgeCamera : MonoBehaviour
     void CameraSet()
     {
         float y = Player.rb.velocity.y;
-        //bool GoingTowardsCamera = false;
-        /*
-		if (Vector3.Dot (transform.forward, Player.rigidbody.velocity) < -10) {
-			GoingTowardsCamera = true;
 
-			////Debug.Log ("TowardsCamera");
-
-		} else 
-		{
-			GoingTowardsCamera = false;
-			////Debug.Log ("AwayFromCamera");
-		}
-
-		if (Player.Grounded && GoingTowardsCamera && Player.SpeedMagnitude <= -10)
-		{
-			FollowDirection(yMaxLimit,LockHeightSpeed/10);
-		}*/
         if (LockHeight && Player.Grounded && Player.SpeedMagnitude >= 10)
         {
             ////Debug.Log ("Lock");
@@ -371,6 +362,7 @@ public class HedgeCamera : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, LerpedPos + HitNormal, Time.deltaTime * moveSpeed);
         transform.rotation = Quaternion.Lerp(transform.rotation, LerpedRot, Time.deltaTime * rotSpeed);
 
+
         //transform.position = LerpedPos + HitNormal;
         //transform.rotation = LerpedRot;
 
@@ -419,7 +411,7 @@ public class HedgeCamera : MonoBehaviour
     //Constnaly moves camera to behind player
     public void FollowDirection(float speed, float height, float distance, float Yspeed, bool Skip = false)
     {
-        if(Reversed)
+        if (Reversed)
         {
             FollowDirectionBehind(speed, height, distance, Yspeed, Skip);
         }
@@ -427,10 +419,10 @@ public class HedgeCamera : MonoBehaviour
         else if (!Locked || Skip)
         {
             float dot = Vector3.Dot(Skin.forward, transform.right);
-           x += (dot * speed) * (Time.deltaTime * 100);
-           // x = Mathf.MoveTowards(x, Skin.eulerAngles.y, (dot * speed) * (Time.deltaTime * 60));
+            x += (dot * speed) * (Time.deltaTime * 100);
+            // x = Mathf.MoveTowards(x, Skin.eulerAngles.y, (dot * speed) * (Time.deltaTime * 60));
 
-            y = Mathf.Lerp(y, height, Time.deltaTime * Yspeed);                    
+            y = Mathf.Lerp(y, height, Time.deltaTime * Yspeed);
         }
     }
 
@@ -450,7 +442,7 @@ public class HedgeCamera : MonoBehaviour
 
     public void setBehind()
     {
-        x = Skin.eulerAngles.y;     
+        x = Skin.eulerAngles.y;
 
     }
 
@@ -466,8 +458,7 @@ public class HedgeCamera : MonoBehaviour
         {
             if (Actions.Action != ActionManager.States.Rail)
             {
-                //Debug.Log("Follow Directions height");
-                if(Player.Grounded)
+                if (Player.Grounded)
                 {
                     y = Mathf.Lerp(y, height, Time.deltaTime * speed);
                 }
@@ -475,7 +466,7 @@ public class HedgeCamera : MonoBehaviour
                 {
                     y = Mathf.Lerp(y, height, Time.deltaTime * (speed / 6));
                 }
-            } 
+            }
         }
     }
 
@@ -572,22 +563,37 @@ public class HedgeCamera : MonoBehaviour
 
     }
 
-    public void GoBehindHeight()
+    public void FollowPlayerTransform()
     {
 
         PlayerPosLerped.position = Target.position;
-        Quaternion newrot = Player.transform.rotation;
-        //Debug.Log(Quaternion.Angle(PlayerPosLerped.rotation, newrot) / 18);
+        Quaternion targetRot = Player.transform.rotation;
+        Quaternion newRot = PlayerPosLerped.rotation;
 
-        float heightMod = vertFollowSpeedByAngle.Evaluate(Quaternion.Angle(PlayerPosLerped.rotation, newrot) / 18);
-        PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, newrot, Time.deltaTime * CameraVerticalRotationSpeed * heightMod);
+        float heightMod = vertFollowSpeedByAngle.Evaluate(Quaternion.Angle(newRot, targetRot) / 18);
 
-        //if (!Actions.Action05.isZipLine)
-        //{
-        //    Quaternion newrot = Player.transform.rotation;
-        //    PlayerPosLerped.rotation = Quaternion.Lerp(PlayerPosLerped.rotation, newrot, Time.deltaTime * CameraVerticalRotationSpeed);
+        newRot = Quaternion.Slerp(newRot, targetRot, Time.deltaTime * CameraVerticalRotationSpeed * heightMod);
 
-        //}
+        if (!Player.Grounded)
+        {
+            //transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+            //newRot = Quaternion.Euler(0, Time.deltaTime * CameraVerticalRotationSpeed * heightMod, 0);
+        }
+
+
+        PlayerPosLerped.rotation = newRot;
+
+        if (PlayerPosLerped.rotation != new Quaternion(0, 0, 0, -1))
+        {
+            if (Player.Grounded)
+                Debug.Log("Grounded with+ " + PlayerPosLerped.rotation);
+            else
+                Debug.Log("Air with- " + PlayerPosLerped.rotation);
+
+            Debug.Log("Target is= " + targetRot);
+
+        }
+
 
     }
 

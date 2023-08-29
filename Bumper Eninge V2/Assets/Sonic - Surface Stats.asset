@@ -27,16 +27,18 @@ MonoBehaviour:
   AirControlAmmount: 1.3
   AirSkiddingForce: -2.5
   fallGravity: {x: 0, y: -1.5, z: 0}
-  SpeedToStopAt: 16
+  SpeedToStopAt: 10
   SkiddingStartPoint: 5
   SkiddingIntensity: -4
   StartJumpDuration: 0.2
   StartSlopedJumpDuration: 0.2
   StartJumpSpeed: 4.2
+  speedLossOnJump: 0.985
   canDoubleJump: 1
   canTripleJump: 0
   doubleJumpSpeed: 4.5
   doubleJumpDuration: 0.14
+  speedLossOnDoubleJump: 0.98
   StepSpeed: 55
   StepDistance: 8
   AirStepSpeed: 47

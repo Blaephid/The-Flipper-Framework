@@ -290,24 +290,16 @@ public class PlayerBhysics : MonoBehaviour
     {
         
 
-        if ((Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hitRot, 2f + RayToGroundRotDistancecor, Playermask)))
-        //if (Grounded)
+        //if ((Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hitRot, 2f + RayToGroundRotDistancecor, Playermask)))
+        if (Grounded)
         {
-
-            
-            //Vector3 floor = KeepNormal;
-            //if (floor.sqrMagnitude != 1)
-            //    floor = Vector3.up;
-
-           //if(Physics.Raycast(transform.position + (transform.up * 2), -floor, out hitRot, 2f + RayToGroundRotDistancecor, Playermask))
-           //{
             GroundNormal = groundHit.normal;
 
             KeepNormal = GroundNormal;
 
             transform.rotation = Quaternion.FromToRotation(transform.up, GroundNormal) * transform.rotation;
+
             KeepNormalCounter = 0;
-           //}
                   
         }
         else
@@ -316,20 +308,19 @@ public class PlayerBhysics : MonoBehaviour
 
             KeepNormalCounter += Time.deltaTime;
             if (KeepNormalCounter < keepNormalForThis)
+            //if (KeepNormalCounter < 1)
             {
                 transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal) * transform.rotation;
 
             }
             else
             {
-                //transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.25f, 0);
-
-
+                //transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
                 if (transform.up.y < RotationResetThreshold)
                 {
                     //transform.rotation = Quaternion.identity;
-                    //transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.2f, 0);
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.identity, 0.25f);
+                    transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.2f, 0);
+                    //transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.identity, 0.25f);
                     if (EnableDebug)
                     {
                         Debug.Log("reset");
@@ -770,8 +761,8 @@ public class PlayerBhysics : MonoBehaviour
         if (GravityAffects)
             setVelocity += Gravity((int)setVelocity.y);
 
-        if(setVelocity.y > rb.velocity.y)
-            Debug.Log("Gravity is = " +Gravity((int)setVelocity.y).y);
+        //if(setVelocity.y > rb.velocity.y)
+        //    Debug.Log("Gravity is = " +Gravity((int)setVelocity.y).y);
 
         //Max Falling Speed
         if (rb.velocity.y < MaxFallingSpeed)

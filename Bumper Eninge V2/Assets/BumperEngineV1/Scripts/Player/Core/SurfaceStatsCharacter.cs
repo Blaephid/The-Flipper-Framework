@@ -60,13 +60,15 @@ public class SurfaceStatsCharacter : ScriptableObject
     public float StartJumpDuration = 0.2f;
     public float StartSlopedJumpDuration = 0.2f;
     public float StartJumpSpeed = 4;
+    public float speedLossOnJump = 0.985f;
 
     [Header("Adittional Jumps")]
     public bool canDoubleJump = true;
     public bool canTripleJump = false;
 
     public float doubleJumpSpeed = 4.5f;
-    public float doubleJumpDuration = 0.14f;
+    public float doubleJumpDuration = 0.14f;  
+    public float speedLossOnDoubleJump = 0.978f;
 
     [Header("QuickStep")]
     public float StepSpeed = 50f;

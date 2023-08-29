@@ -38,6 +38,8 @@ public class Action01_Jump : MonoBehaviour
     [HideInInspector] public float JumpDuration;
     [HideInInspector] public float SlopedJumpDuration;
     [HideInInspector] public float JumpSpeed;
+    float speedLossOnJump;
+    float speedLossOnDoubleJump;
 
 
     float jumpSpeedModifier = 1f;
@@ -90,12 +92,12 @@ public class Action01_Jump : MonoBehaviour
 
             if (verticalSpeed < 0)
                 verticalSpeed = 0;
-            Player.rb.velocity = new Vector3(Player.rb.velocity.x * 0.92f, verticalSpeed, Player.rb.velocity.z * 0.92f);
 
             //If performing a grounded jump. JumpCount may be changed externally to allow for this.
             //if (Grounded || jumpCount == -1)
             if (Grounded)
             {
+                Player.rb.velocity = new Vector3(Player.rb.velocity.x * speedLossOnJump, verticalSpeed, Player.rb.velocity.z * speedLossOnJump);
 
                 if (Actions.eventMan != null) Actions.eventMan.JumpsPerformed += 1;
 
@@ -156,9 +158,6 @@ public class Action01_Jump : MonoBehaviour
 
     void Update()
     {
-        //Debug.Log(jumpCount);
-        //Debug.Log("Jumping is " + Jumping);
-        //Debug.Log(JumpSpeed);
 
         //Set Animator Parameters
         if (Actions.Action == ActionManager.States.Jump)
@@ -278,10 +277,8 @@ public class Action01_Jump : MonoBehaviour
 
             if (Actions.RollPressed)
             {
-
                 Actions.Action08.TryDropCharge();
-                
-                
+                          
             }
 
             /////Enalbing Quickstepping
@@ -406,9 +403,9 @@ public class Action01_Jump : MonoBehaviour
         Vector3 newVec;
 
         if (Player.rb.velocity.y > 10)
-            newVec = new Vector3(Player.rb.velocity.x * 0.92f, Player.rb.velocity.y, Player.rb.velocity.z * 0.92f);
+            newVec = new Vector3(Player.rb.velocity.x * speedLossOnDoubleJump, Player.rb.velocity.y, Player.rb.velocity.z * speedLossOnDoubleJump);
         else
-            newVec = new Vector3(Player.rb.velocity.x * 0.92f, Mathf.Clamp(Player.rb.velocity.y * 0.1f, 0.1f, 5), Player.rb.velocity.z * 0.92f);
+            newVec = new Vector3(Player.rb.velocity.x * speedLossOnDoubleJump, Mathf.Clamp(Player.rb.velocity.y * 0.1f, 0.1f, 5), Player.rb.velocity.z * speedLossOnDoubleJump);
 
         Player.rb.velocity = newVec;
 
@@ -435,6 +432,9 @@ public class Action01_Jump : MonoBehaviour
         canTripleJump = Tools.stats.canTripleJump;
         doubleJumpDuration = Tools.stats.doubleJumpDuration;
         doubleJumpSpeed = Tools.stats.doubleJumpSpeed;
+
+        speedLossOnDoubleJump = Tools.stats.speedLossOnDoubleJump;
+        speedLossOnJump = Tools.stats.speedLossOnJump;
 
 
     }

@@ -191,7 +191,8 @@ public class Action00_Regular : MonoBehaviour {
             Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
 			if(VelocityMod != Vector3.zero)
             {
-				Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.fallGravity.normalized);
+				//Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.fallGravity.normalized);
+				Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
 				CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 			}
    

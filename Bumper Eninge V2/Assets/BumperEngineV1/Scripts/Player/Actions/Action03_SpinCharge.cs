@@ -205,14 +205,13 @@ public class Action03_SpinCharge : MonoBehaviour
 
         effects.EndSpinDash();
         HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
-        if (charge < MinimunCharge || Actions.JumpPressed)
+        if (charge < MinimunCharge)
         {
             sounds.Source2.Stop();
             Actions.ChangeAction(ActionManager.States.Regular);
         }
         else
-        {
-            
+        {            
             sounds.SpinDashReleaseSound();
 
             Vector3 newForce = charge * (PlayerSkinTransform.forward);
