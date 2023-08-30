@@ -220,7 +220,6 @@ public class Action00_Regular : MonoBehaviour {
 	void unCurl()
     {
 		CapsuleCollider col = rollingCapsule.GetComponent<CapsuleCollider>();
-		Debug.DrawRay(col.transform.position + col.center, CharacterAnimator.transform.up * 4, Color.green, 10f);
 
 
 		if (!Physics.Raycast(col.transform.position + col.center, CharacterAnimator.transform.up, 4))

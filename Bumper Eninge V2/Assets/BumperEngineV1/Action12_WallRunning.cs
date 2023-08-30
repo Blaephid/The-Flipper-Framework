@@ -612,8 +612,6 @@ public class Action12_WallRunning : MonoBehaviour
 
     IEnumerator loseWall()
     {
-        Debug.Log("loseWall");
-
         Vector3 newVec = previDir * RunningSpeed;
         yield return null;
 
