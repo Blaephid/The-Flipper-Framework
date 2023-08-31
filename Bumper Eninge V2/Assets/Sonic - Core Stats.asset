@@ -1001,7 +1001,7 @@ MonoBehaviour:
   OffsetZip: -6.8
   OffsetUpreel: 0.2
   WallCheckDistance: 1.2
-  minHeight: 8
+  minHeight: 5
   wallLayerMask:
     serializedVersion: 2
     m_Bits: 1

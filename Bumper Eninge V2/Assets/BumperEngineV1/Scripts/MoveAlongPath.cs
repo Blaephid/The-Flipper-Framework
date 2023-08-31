@@ -280,7 +280,7 @@ namespace SplineMesh
 
         public void ExitPath()
         {
-            Debug.Log("Exiting Path");
+            
 
             Player.alignWithGround();
 

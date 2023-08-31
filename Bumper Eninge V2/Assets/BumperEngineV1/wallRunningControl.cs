@@ -11,8 +11,7 @@ public class wallRunningControl : MonoBehaviour
     PlayerBhysics Player;
     PlayerBinput Inp;
     ActionManager Actions;
-    HomingAttackControl homingControl;
-    CameraControl Cam;
+
 
     SonicSoundsControl sounds;
     Animator CharacterAnimator;
@@ -296,8 +295,6 @@ public class wallRunningControl : MonoBehaviour
     {
         Player = GetComponent<PlayerBhysics>();
         Actions = GetComponent<ActionManager>();
-        Cam = GetComponent<CameraControl>();
-        homingControl = GetComponent<HomingAttackControl>();
         WallRun = Actions.Action12;
         JumpAction = Actions.Action01;
         RegularAction = Actions.Action00;

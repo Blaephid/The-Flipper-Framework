@@ -524,7 +524,7 @@ public class Action12_WallRunning : MonoBehaviour
     void FromWallToGround()
     {
         Player.GravityAffects = true;
-        Debug.Log("Switching to ground running");
+        
 
         //Set rotation to put feet on ground.
         Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), -CharacterAnimator.transform.up, out wallToClimb, climbWallDistance, wallLayerMask);

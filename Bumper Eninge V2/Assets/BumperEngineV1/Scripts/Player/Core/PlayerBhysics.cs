@@ -7,6 +7,7 @@ public class PlayerBhysics : MonoBehaviour
 {
     [HideInInspector] public ActionManager Action;
     CharacterTools Tools;
+    Transform mainSkin;
 
     static public PlayerBhysics MasterPlayer;
 
@@ -176,6 +177,7 @@ public class PlayerBhysics : MonoBehaviour
         Action = GetComponent<ActionManager>();
         Tools = GetComponent<CharacterTools>();
         AssignStats();
+        mainSkin = Tools.mainSkin;
 
 
     }
@@ -298,6 +300,8 @@ public class PlayerBhysics : MonoBehaviour
             KeepNormal = GroundNormal;
 
             transform.rotation = Quaternion.FromToRotation(transform.up, GroundNormal) * transform.rotation;
+            //transform.rotation = Quaternion.LookRotation(Vector3.forward, GroundNormal);
+            //transform.up = GroundNormal;
 
             KeepNormalCounter = 0;
                   
@@ -315,20 +319,22 @@ public class PlayerBhysics : MonoBehaviour
             }
             else
             {
-                //transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
-                if (transform.up.y < RotationResetThreshold)
+                //if (transform.up.y < RotationResetThreshold)
+                if (KeepNormal.y < RotationResetThreshold)
                 {
-                    //transform.rotation = Quaternion.identity;
-                    transform.up = Vector3.RotateTowards(transform.up, Vector3.up, 0.2f, 0);
-                    //transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.identity, 0.25f);
-                    if (EnableDebug)
-                    {
-                        Debug.Log("reset");
-                    }
+                    if(mainSkin.right.y >= -mainSkin.right.y)
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.FromToRotation(transform.up, mainSkin.right) * transform.rotation, 10f);
+                    else
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.FromToRotation(transform.up, -mainSkin.right) * transform.rotation, 10f);
+
+                    if (Vector3.Dot(transform.up, Vector3.up) > 0.99)
+                        KeepNormal = Vector3.up;
+
                 }
                 else
                 {
-                    transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+ 
+                    transform.rotation = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
                 }
             }
         }
@@ -601,7 +607,6 @@ public class PlayerBhysics : MonoBehaviour
             }
 
             //If the Raycast Hits something, it adds it's normal to the ground normal making an inbetween value the interpolates the direction;
-            Debug.DrawRay(Raycasterpos, rb.velocity * StickCastAhead * Time.deltaTime, Color.black, 1);
             if (Physics.Raycast(Raycasterpos, rb.velocity.normalized, out hitSticking, SpeedMagnitude * StickCastAhead * Time.deltaTime, Playermask))
             {
                 if (EnableDebug) Debug.Log("AvoidingGroundCollision");
@@ -844,7 +849,6 @@ public class PlayerBhysics : MonoBehaviour
         Vector3 Prevnormal = GroundNormal;
         foreach (ContactPoint contact in col.contacts)
         {
-            Debug.DrawRay(contact.point, contact.normal, Color.white);
 
             //Set Middle Point
             Vector3 pointSum = Vector3.zero;

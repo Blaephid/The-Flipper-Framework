@@ -128,7 +128,7 @@ public class Action08_DropCharge : MonoBehaviour
             }
         }
 
-        if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player.Playermask))
+        if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player.Playermask) || Vector3.Dot(Player.GroundNormal, Vector3.up) > 0.99)
         {
 
             if (!Actions.JumpPressed)
