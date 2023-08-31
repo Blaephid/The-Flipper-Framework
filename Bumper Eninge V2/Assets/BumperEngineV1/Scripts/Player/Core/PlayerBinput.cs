@@ -31,7 +31,7 @@ public class PlayerBinput : MonoBehaviour {
     float InitialInputMag;
     float InitialLerpedInput;
 
-    bool LockInput { get; set; }
+    public bool LockInput { get; set; }
     float LockedTime;
     Vector3 LockedInput;
     float LockedCounter = 0;
@@ -190,7 +190,11 @@ public class PlayerBinput : MonoBehaviour {
 
     public void LockInputForAWhile(float duration, bool lockCam)
     {
-        LockedTime = duration;
+        if (LockInput)
+            LockedTime = Mathf.Max(duration, LockedTime);
+        else
+            LockedTime = duration;
+
         LockedCounter = 0;
         LockInput = true;
         LockCam = lockCam;

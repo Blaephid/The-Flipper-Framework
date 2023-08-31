@@ -142,7 +142,7 @@ public class CineStart : MonoBehaviour
         attachedCam.SetActive(true);
         hedgeCam = Player.GetComponent<CameraControl>().virtCam;
         hedgeCam.gameObject.SetActive(false);
-        if(lockTime > 0)
+        if(disableFor > 0)
             Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
 
         if(timeDelay != 0)
@@ -176,7 +176,7 @@ public class CineStart : MonoBehaviour
         attachedCam.transform.rotation = camRotit;
         hedgeCam.gameObject.SetActive(true);
         attachedCam.SetActive(false);
-        if(lockTime > 0)
+        if(disableFor > 0)
             Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
     }
 }

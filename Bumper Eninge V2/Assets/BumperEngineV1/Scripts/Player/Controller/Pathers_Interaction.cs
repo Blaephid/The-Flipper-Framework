@@ -175,7 +175,6 @@ public class Pathers_Interaction : MonoBehaviour
 
         if (col.gameObject.CompareTag("Rail") && !Actions.Action05.OnRail)
         {
-            Debug.Log("Hit Rail");
 
             if(col.GetComponent<CapsuleCollider>().radius == 4)
             {

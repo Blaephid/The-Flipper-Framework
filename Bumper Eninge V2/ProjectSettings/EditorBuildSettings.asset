@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/BumperEngineV1/Analytics/Custom User ID example.unity
+    path: Assets/BumperEngineV1/Other/Analytics/Custom User ID example.unity
     guid: ca8d24c6dd452824d9f0e81eb36e4662
   - enabled: 1
     path: Assets/BumperEngineV1/Scenes/LogoScreen.unity
@@ -42,6 +42,6 @@ EditorBuildSettings:
     path: Assets/BumperEngineV1/Scenes/StageCompleteScreen.unity
     guid: da2531454c9a98440b8ce517b9b69a51
   - enabled: 1
-    path: Assets/Rail Station.unity
+    path: Assets/Rail Station/Rail Station.unity
     guid: 5c21fb4782ca18b4782f864a62430e1e
   m_configObjects: {}

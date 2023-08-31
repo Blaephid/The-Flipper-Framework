@@ -156,12 +156,11 @@ public class Objects_Interaction : MonoBehaviour {
                     Actions.Action05.PlayerSpeed = speed;
                     Actions.Action05.Boosted = true;
                     Actions.Action05.boostTime = 0.7f;
-                    
+
                 }
-                if (backwards)
-                    Actions.Action05.backwards = true;
                 else
-                    Actions.Action05.backwards = false;
+                    set = false;
+
             }
             else if (Actions.Action == ActionManager.States.Rail)
             {
@@ -169,14 +168,15 @@ public class Objects_Interaction : MonoBehaviour {
                 Actions.Action05.PlayerSpeed += addSpeed / 2;
                 Actions.Action05.Boosted = true;
                 Actions.Action05.boostTime = 0.7f;
-                if (backwards)
-                    Actions.Action05.backwards = true;
-                else
-                    Actions.Action05.backwards = false;
 
                 i = 3;
                 
             }
+
+            if (backwards)
+                Actions.Action05.backwards = true;
+            else
+                Actions.Action05.backwards = false;
         }
 
     }

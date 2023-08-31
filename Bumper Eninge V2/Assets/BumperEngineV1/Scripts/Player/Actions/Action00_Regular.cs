@@ -84,10 +84,7 @@ public class Action00_Regular : MonoBehaviour {
 		//Set Homing attack to true
 		if (Player.Grounded) 
 		{
-			inCoyote = false;
-			coyoteInEffect = true;
-			coyoteRememberDir = Player.GroundNormal;
-			coyoteRememberSpeed = Player.rb.velocity.y;
+			readyCoyote();
 
 			if (Actions.Action02 != null) {
 			Actions.Action02.HomingAvailable = true;
@@ -106,6 +103,17 @@ public class Action00_Regular : MonoBehaviour {
 		
 
     }
+
+	public void readyCoyote()
+    {
+		inCoyote = false;
+		coyoteInEffect = true;
+		if (Player.Grounded)
+			coyoteRememberDir = Player.GroundNormal;
+		else
+			coyoteRememberDir = transform.up;
+		coyoteRememberSpeed = Player.rb.velocity.y;
+	}
 
     void Update()
     {

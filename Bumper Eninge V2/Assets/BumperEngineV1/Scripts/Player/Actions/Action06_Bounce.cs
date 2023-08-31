@@ -161,16 +161,15 @@ public class Action06_Bounce : MonoBehaviour {
 
 
         //End Action
-        if (!raycasthit && HasBounced && Player.rb.velocity.y > 5f) { 
+        if (!raycasthit && HasBounced && Player.rb.velocity.y > 4f) { 
 			
 			HasBounced = false;
 
 			float coolDown = BounceCoolDown;
-			coolDown -= 0.75f * (int)(Player.HorizontalSpeedMagnitude / 15);
-			coolDown = Mathf.Clamp(coolDown, 5, 15);
+			//coolDown -= 0.75f * (int)(Player.HorizontalSpeedMagnitude / 20);
+			//coolDown = Mathf.Clamp(coolDown, 3, 6);
 
-			//Debug.Log(coolDown);
-			StartCoroutine(Action.lockBounceOnly(coolDown));
+			//StartCoroutine(Action.lockBounceOnly(coolDown));
 			Action.ChangeAction (0);
 		} 
 

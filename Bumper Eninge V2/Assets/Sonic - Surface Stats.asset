@@ -17,10 +17,10 @@ MonoBehaviour:
   TangentialDrag: 2
   TurnSpeed: 6
   increasedTurnSpeed: 12
-  StartTopSpeed: 70
+  StartTopSpeed: 85
   StartMaxSpeed: 160
   StartMaxFallingSpeed: -350
-  StartJumpPower: 1.2
+  StartJumpPower: 1.22
   MoveDecell: 1.05
   AirDecell: 1.25
   generalHillMultiplier: 1
@@ -61,7 +61,7 @@ MonoBehaviour:
   - 41
   - 42
   BounceHaltFactor: 0.7
-  BounceCoolDown: 12
+  BounceCoolDown: 8
   DashSpeed: 80
   EndingSpeedFactor: 1.23
   MinimumEndingSpeed: 50

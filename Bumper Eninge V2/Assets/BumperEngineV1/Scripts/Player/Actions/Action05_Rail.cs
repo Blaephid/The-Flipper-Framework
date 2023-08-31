@@ -284,9 +284,8 @@ namespace SplineMesh
             else
             {
 
-                //Cam.CamLagSet(0.8f, 0f);
 
-                //Change Into Action 0
+                Actions.Action00.readyCoyote();
                 CharacterAnimator.SetInteger("Action", 0);
                 CharacterAnimator.SetBool("Grounded", Player.Grounded);
 
@@ -723,7 +722,7 @@ namespace SplineMesh
             }
             else
             {
-                Input.LockInputForAWhile(10f, true);
+                Input.LockInputForAWhile(5f, false);
 
                 Debug.Log("Rail Just Gone");
 
@@ -742,7 +741,12 @@ namespace SplineMesh
                         Player.rb.velocity = ZipBody.velocity;
                     }
 
-                    CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
+                    Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+                    if (VelocityMod != Vector3.zero)
+                    {
+                        CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
+                    }
+                
                 }
                 else
                 {
@@ -752,7 +756,11 @@ namespace SplineMesh
                     else
                         Player.rb.velocity = sample.tangent * PlayerSpeed;
 
-                    CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
+                    Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+                    if (VelocityMod != Vector3.zero)
+                    {
+                        CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
+                    }
                 }
 
                 Actions.LeftStepPressed = false;
@@ -763,7 +771,6 @@ namespace SplineMesh
         }
         void SlopePhys()
         {
-
             if(Boosted)
             {
                 if (PlayerSpeed > 60)
