@@ -230,6 +230,17 @@ public partial class @PlayerNewInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""ec575803-1867-4ccd-b25c-9d9486b50e84"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Right Step"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""b7f3da4d-cbb5-45fe-a50f-b9e44c0772f8"",
                     ""path"": ""<SwitchProControllerHID>/leftShoulder"",
                     ""interactions"": """",
