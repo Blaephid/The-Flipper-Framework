@@ -318,7 +318,7 @@ public class Pathers_Interaction : MonoBehaviour
                 if (col.gameObject.GetComponent<CineStart>())
                 {
                     currentCam = col.gameObject.GetComponent<CineStart>();
-                    currentCam.ActivateCam(0f);
+                    currentCam.ActivateCam(8f);
                 }
 
                 CurentPathTrigger = col.GetComponent<Collider>();

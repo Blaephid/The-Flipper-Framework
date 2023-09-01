@@ -66,7 +66,7 @@ public class ActionManager : MonoBehaviour {
     [HideInInspector] public bool killBindPressed;
 
     [HideInInspector] public bool isPaused;
-    [HideInInspector] public bool usingMouse;
+    [HideInInspector] public bool usingMouse = false;
 
     //Etc
 

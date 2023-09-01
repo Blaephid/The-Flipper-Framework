@@ -9,7 +9,7 @@ public class Action13_Hovering : MonoBehaviour
     ActionManager Actions;
     Animator CharacterAnimator;
     Transform playerSkin;
-
+    SonicSoundsControl sounds;
 
     float floatSpeed = 15;
     public AnimationCurve forceFromSource;
@@ -42,6 +42,8 @@ public class Action13_Hovering : MonoBehaviour
         Actions = GetComponent<ActionManager>();
         CharacterAnimator = Tools.CharacterAnimator;
         playerSkin = Tools.PlayerSkinTransform;
+
+        sounds = Tools.SoundControl;
     }
 
     private void AssignStats()
@@ -68,7 +70,26 @@ public class Action13_Hovering : MonoBehaviour
     private void Update()
     {
         CharacterAnimator.SetInteger("Action", 13);
+
+        //Do a homing attack
+        if (Actions.Action02.HomingAvailable && Actions.Action02Control.HasTarget && Actions.HomingPressed)
+        {
+
+            //Do a homing attack
+            if (Actions.Action02 != null && player.HomingDelay <= 0)
+            {
+                if (Actions.Action02Control.HomingAvailable)
+                {
+                    sounds.HomingAttackSound();
+                    Actions.ChangeAction(ActionManager.States.Homing);
+                    Actions.Action02.InitialEvents();
+                }
+            }
+
+        }
     }
+
+   
 
     private void FixedUpdate()
     {

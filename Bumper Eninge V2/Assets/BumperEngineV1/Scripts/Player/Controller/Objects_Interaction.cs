@@ -2,6 +2,12 @@
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using UnityEngine.InputSystem.DualShock;
+using UnityEngine.InputSystem.XInput;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Switch;
+using UnityEngine.InputSystem.XR;
+
 
 public class Objects_Interaction : MonoBehaviour {
 
@@ -521,12 +527,42 @@ public class Objects_Interaction : MonoBehaviour {
             if (col.gameObject != HintBox.currentHint)
             {
                 HintBox.currentHint = col.gameObject;
+                hintRing.hintSound.Play();
+
 
                 if (Actions.usingMouse)
                     HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
                 else
-                    HintBox.ShowHint(hintRing.hintTextGamePad, hintRing.hintDuration, col.gameObject);
-                hintRing.hintSound.Play();
+                {
+                    Gamepad input = Gamepad.current;
+                    Debug.Log(input);
+
+                    switch (input)
+                    {
+                        case (null):
+                            HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
+                            break;
+                        case (SwitchProControllerHID):
+                            HintBox.ShowHint(hintRing.hintTextGamePad, hintRing.hintDuration, col.gameObject);
+                            break;
+                        case (DualSenseGamepadHID):
+                            HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
+                            break;
+                        case (DualShock3GamepadHID):
+                            HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
+                            break;
+                        case (DualShock4GamepadHID):
+                            HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
+                            break;
+                        case (DualShockGamepad):
+                            HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
+                            break;
+                        case (XInputController):
+                            HintBox.ShowHint(hintRing.hintTextXbox, hintRing.hintDuration, col.gameObject);
+                            break;
+
+                    }
+                }
 
 
                 if (Actions.eventMan != null)

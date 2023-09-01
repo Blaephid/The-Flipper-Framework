@@ -56,6 +56,7 @@ namespace SplineMesh
         Vector3 startPos;
 
         bool firstSet = true;
+        Vector3 useOffset;
 
 
         private void Start()
@@ -68,6 +69,7 @@ namespace SplineMesh
 
             range = GetClosestPos(transform.position, RailSpline);
             sample = RailSpline.GetSampleAtDistance(range);
+            useOffset = setOffSet;
 
             setPos(sample, gameObject);
             alignCars();
@@ -222,7 +224,7 @@ namespace SplineMesh
                     range = range - RailSpline.Length;
                     AddOnRail temp = ConnectedRails;
                     ConnectedRails = ConnectedRails.nextRail;
-                    setOffSet = new Vector3(-ConnectedRails.GetComponent<ExampleSower>().Offset3d.x, 0, 0);
+                    useOffset = new Vector3(-ConnectedRails.GetComponent<ExampleSower>().Offset3d.x, 0, 0);
 
                     RailSpline = ConnectedRails.GetComponentInParent<Spline>();
                     RailTransform = RailSpline.transform.parent;
@@ -231,7 +233,7 @@ namespace SplineMesh
                 {
                     AddOnRail temp = ConnectedRails;
                     ConnectedRails = ConnectedRails.PrevRail;
-                    setOffSet = new Vector3(-ConnectedRails.GetComponent<ExampleSower>().Offset3d.x, 0, 0);
+                    useOffset = new Vector3(-ConnectedRails.GetComponent<ExampleSower>().Offset3d.x, 0, 0);
 
                     RailSpline = ConnectedRails.GetComponentInParent<Spline>();
                     RailTransform = RailSpline.transform.parent;
@@ -260,9 +262,9 @@ namespace SplineMesh
 
             Vector3 binormal = Vector3.zero;
 
-            if (setOffSet != Vector3.zero)
+            if (useOffset != Vector3.zero)
             {
-                binormal += sample.Rotation * -setOffSet;
+                binormal += sample.Rotation * -useOffset;
             }
 
             thisObj.transform.position = (thisSample.location + RailTransform.position + (thisSample.up * OffsetRail)) + binormal;
@@ -376,6 +378,8 @@ namespace SplineMesh
 
             currentSpeed = 0;
             RailSpline = startSpline;
+            useOffset = setOffSet;
+            ConnectedRails = startingConnectedRails;
 
             range = GetClosestPos(startPos, RailSpline);
             sample = RailSpline.GetSampleAtDistance(range);
