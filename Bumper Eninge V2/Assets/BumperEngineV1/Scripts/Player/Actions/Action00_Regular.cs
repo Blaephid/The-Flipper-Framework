@@ -116,19 +116,7 @@ public class Action00_Regular : MonoBehaviour {
 	}
 
     void Update()
-    {
-		//Jump
-		if (Actions.JumpPressed && (Player.Grounded || coyoteInEffect))
-		{
-			
-			if(Player.Grounded)
-				JumpAction.InitialEvents(Player.GroundNormal, true, Player.rb.velocity.y);
-			else
-				JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
-
-			Actions.ChangeAction(ActionManager.States.Jump);
-		}
-		
+    {	
 
         //Set Animator Parameters
         if (Player.Grounded) { CharacterAnimator.SetInteger("Action", 0); }
@@ -139,49 +127,16 @@ public class Action00_Regular : MonoBehaviour {
         CharacterAnimator.SetBool("Grounded", Player.Grounded);
         CharacterAnimator.SetFloat("NormalSpeed", Player.b_normalSpeed + SkiddingStartPoint);
 
-		//Set Camera to back
-		if (Actions.CamResetPressed) 
-		{
-			if ( Actions.moveX == 0 && Actions.moveY == 0 && Player.b_normalSpeed < 5f)
-				Cam.Cam.FollowDirection(6, 14f, -10, 0);
-		}
-
-        //Check if rolling
-        if (Player.Grounded && Player.isRolling) { CharacterAnimator.SetInteger("Action", 1); }
-        CharacterAnimator.SetBool("isRolling", Player.isRolling);
-
-		//Do Spindash
-		if (Actions.spinChargePressed && Player.Grounded && Player.GroundNormal.y > MaximumSlope && Player.HorizontalSpeedMagnitude < MaximumSpeed) 
-		{ 
-			Actions.ChangeAction(ActionManager.States.SpinCharge);
-			Actions.Action03.InitialEvents(); 
-		}
-
-		//Play Rolling Sound
-		//if (Actions.RollPressed && Player.Grounded && (Player.HorizontalSpeedMagnitude > Player.RollingStartSpeed)) 
-		if (Actions.RollPressed && Player.Grounded)
-		{
-			Curl();
-			 
-		}
-
-
-        if ((!Actions.RollPressed && rollCounter > minRollTime) | !Player.Grounded)
-        {
-			unCurl();
-
-		}
-
-		if(Rolling)
-			rollCounter += Time.deltaTime;
-
 		//Set Character Animations and position1
 		CharacterAnimator.transform.parent = null;
         
         //Set Skin Rotation
         if (Player.Grounded)
-		{ 
+		{
+			Vector3 releVec = Player.getRelevantVec(Player.rb.velocity);
 			Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
+			Debug.DrawRay(transform.position, newForward.normalized * 5, Color.yellow);
+			//newForward = releVec - transform.up * Vector3.Dot(releVec, transform.up);
 
             if (newForward.magnitude < 0.1f)
             {
@@ -196,18 +151,22 @@ public class Action00_Regular : MonoBehaviour {
         }
         else
         {
-            Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
-			if(VelocityMod != Vector3.zero)
+			Vector3 releVec = Player.getRelevantVec(Player.rb.velocity);
+			Vector3 VelocityMod = new Vector3(releVec.x, 0, releVec.z);
+			//VelocityMod = Player.rb.velocity;
+
+			Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
+			Debug.DrawRay(transform.position, newForward.normalized * 5, Color.yellow);
+			if (VelocityMod != Vector3.zero)
             {
 				//Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.fallGravity.normalized);
-				Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
+				Quaternion CharRot = Quaternion.LookRotation(newForward, transform.up);
 				CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 			}
    
         }
 
 		handleInputs();
-
 
 	}
 
@@ -244,6 +203,55 @@ public class Action00_Regular : MonoBehaviour {
 
 	void handleInputs()
     {
+
+		//Jump
+		if (Actions.JumpPressed && (Player.Grounded || coyoteInEffect))
+		{
+
+			if (Player.Grounded)
+				JumpAction.InitialEvents(Player.GroundNormal, true, Player.rb.velocity.y);
+			else
+				JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
+
+			Actions.ChangeAction(ActionManager.States.Jump);
+		}
+
+		//Set Camera to back
+		if (Actions.CamResetPressed)
+		{
+			if (Actions.moveX == 0 && Actions.moveY == 0 && Player.b_normalSpeed < 5f)
+				Cam.Cam.FollowDirection(6, 14f, -10, 0);
+		}
+
+		//Check if rolling
+		if (Player.Grounded && Player.isRolling) { CharacterAnimator.SetInteger("Action", 1); }
+		CharacterAnimator.SetBool("isRolling", Player.isRolling);
+
+		//Do Spindash
+		if (Actions.spinChargePressed && Player.Grounded && Player.GroundNormal.y > MaximumSlope && Player.HorizontalSpeedMagnitude < MaximumSpeed)
+		{
+			Actions.ChangeAction(ActionManager.States.SpinCharge);
+			Actions.Action03.InitialEvents();
+		}
+
+		//Play Rolling Sound
+		//if (Actions.RollPressed && Player.Grounded && (Player.HorizontalSpeedMagnitude > Player.RollingStartSpeed)) 
+		if (Actions.RollPressed && Player.Grounded)
+		{
+			Curl();
+
+		}
+
+
+		if ((!Actions.RollPressed && rollCounter > minRollTime) | !Player.Grounded)
+		{
+			unCurl();
+
+		}
+
+		if (Rolling)
+			rollCounter += Time.deltaTime;
+
 		/////Quickstepping
 		///
 		//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)

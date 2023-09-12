@@ -724,8 +724,6 @@ namespace SplineMesh
             {
                 Input.LockInputForAWhile(5f, false);
 
-                Debug.Log("Rail Just Gone");
-
                 if (isZipLine)
                 {
                     ZipHandle.GetComponent<CapsuleCollider>().enabled = false;

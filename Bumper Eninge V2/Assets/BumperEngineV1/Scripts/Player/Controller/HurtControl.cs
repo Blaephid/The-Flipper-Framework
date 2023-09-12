@@ -112,7 +112,7 @@ public class HurtControl : MonoBehaviour
 
     void Bonk()
     {
-        faceHitCollider.transform.forward = CharacterAnimator.transform.forward;
+        faceHitCollider.transform.rotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, transform.up); ;
 
         if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 50) || (Actions.Action == ActionManager.States.Jump && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == ActionManager.States.JumpDash
             && Player.HorizontalSpeedMagnitude > 30) || (Actions.Action == ActionManager.States.WallRunning && Actions.Action12.RunningSpeed > 5))

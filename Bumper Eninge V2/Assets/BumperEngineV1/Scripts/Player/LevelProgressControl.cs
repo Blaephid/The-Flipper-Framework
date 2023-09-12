@@ -110,10 +110,6 @@ public class LevelProgressControl : MonoBehaviour {
 
     public void RespawnObjects()
     {
-        //Debug.Log("Call the event");
-        //Debug.Log(onReset.get);
-
-   
 
         if(onReset != null)
         {

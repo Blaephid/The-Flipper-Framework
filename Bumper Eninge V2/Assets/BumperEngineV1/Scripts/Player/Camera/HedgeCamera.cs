@@ -105,6 +105,8 @@ public class HedgeCamera : MonoBehaviour
         StartLockCam = LockCamAtHighSpeed;
         setStats();
 
+        PlayerPosLerped.rotation = Player.transform.rotation;
+
         //Deals with cursor 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -181,7 +183,6 @@ public class HedgeCamera : MonoBehaviour
             if (CanGoBehind)
             {
                 FollowPlayerTransform();
-                //FollowPlayerTransformVectors();
             }
 
             //Debug.Log(PlayerPosLerped.localEulerAngles);
@@ -571,16 +572,11 @@ public class HedgeCamera : MonoBehaviour
         Quaternion targetRot = Quaternion.LookRotation(transform.forward, Player.transform.up);
         targetRot = Player.transform.rotation;
         Quaternion newRot = PlayerPosLerped.rotation;
-        //newRot = PlayerPosLerped.rotation * Player.transform.rotation;
-        //newRot = Quaternion.LookRotation(transform.forward, PlayerPosLerped.up);
-
-        //Debug.Log(PlayerPosLerped.localEulerAngles);
 
         float heightMod = vertFollowSpeedByAngle.Evaluate(Quaternion.Angle(newRot, targetRot) / 18);
 
         if (!Player.Grounded)
         {
-
             newRot = Quaternion.Slerp(newRot, targetRot, Time.deltaTime * CameraVerticalRotationSpeed * heightMod);
 
         }
@@ -592,56 +588,8 @@ public class HedgeCamera : MonoBehaviour
 
         PlayerPosLerped.rotation = newRot;
 
-        //if (PlayerPosLerped.rotation != new Quaternion(0, 0, 0, -1))
-        //{
-        //    if (Player.Grounded)
-        //        Debug.Log("Grounded with+ " + PlayerPosLerped.rotation);
-        //    else
-        //        Debug.Log("Air with- " + PlayerPosLerped.rotation);
-
-        //    Debug.Log("Target is= " + targetRot);
-
-        //}
-
-
     }
 
-    public void FollowPlayerTransformVectors()
-    {
-
-        PlayerPosLerped.position = Target.position;
-        Vector3 targetRot = Player.transform.rotation.eulerAngles;
-        Vector3 newRot = PlayerPosLerped.rotation.eulerAngles;
-
-        float heightMod = vertFollowSpeedByAngle.Evaluate(Vector3.Angle(newRot, targetRot) / 18);
-
-        if (!Player.Grounded)
-        {
-
-            newRot = Vector3.Slerp(newRot, targetRot, Time.deltaTime * CameraVerticalRotationSpeed * heightMod);
-
-        }
-        else
-        {
-            newRot = Vector3.Slerp(newRot, targetRot, Time.deltaTime * CameraVerticalRotationSpeed * heightMod);
-        }
-
-
-        PlayerPosLerped.rotation = Quaternion.Euler(newRot);
-
-        if (PlayerPosLerped.rotation != new Quaternion(0, 0, 0, -1))
-        {
-            if (Player.Grounded)
-                Debug.Log("Grounded with+ " + PlayerPosLerped.rotation.eulerAngles);
-            else
-                Debug.Log("Air with- " + PlayerPosLerped.rotation.eulerAngles);
-
-            Debug.Log("Target is= " + targetRot);
-
-        }
-
-
-    }
 
     IEnumerator fromDowntoForward()
     {

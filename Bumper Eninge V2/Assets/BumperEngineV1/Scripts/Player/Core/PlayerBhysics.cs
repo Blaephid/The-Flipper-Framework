@@ -13,61 +13,61 @@ public class PlayerBhysics : MonoBehaviour
 
     [Header("Movement Values")]
 
-    [HideInInspector] public float StartAccell = 0.5f;
-    [HideInInspector] public float MoveAccell;
+    float StartAccell = 0.5f;
+    float MoveAccell;
 
-    [HideInInspector] public AnimationCurve AccellOverSpeed;
-    [HideInInspector] public float AccellShiftOverSpeed;
+    AnimationCurve AccellOverSpeed;
+    float AccellShiftOverSpeed;
     float DecellShiftOverSpeed;
 
     [HideInInspector] public float MoveDecell = 1.3f;
     AnimationCurve DecellBySpeed;
-    [HideInInspector] public float AirDecell = 1.05f;
-    [HideInInspector] public float naturalAirDecell = 1.01f;
+    float AirDecell = 1.05f;
+    float naturalAirDecell = 1.01f;
 
-    [HideInInspector] public float TangentialDrag;
-    [HideInInspector] public float TangentialDragShiftSpeed;
+    float TangentialDrag;
+    float TangentialDragShiftSpeed;
 
-    [HideInInspector] public float TurnSpeed = 16f;
-    [HideInInspector] public float increasedTurnSpeed = 500f;
+    float TurnSpeed = 16f;
+    float increasedTurnSpeed = 500f;
 
-    [HideInInspector] public AnimationCurve TurnRateOverAngle;
-    [HideInInspector] public AnimationCurve TurnRateOverSpeed;
-    [HideInInspector] public AnimationCurve TangDragOverAngle;
-    [HideInInspector] public AnimationCurve TangDragOverSpeed;
+    AnimationCurve TurnRateOverAngle;
+    AnimationCurve TurnRateOverSpeed;
+    AnimationCurve TangDragOverAngle;
+    AnimationCurve TangDragOverSpeed;
 
-    [HideInInspector] public float StartTopSpeed = 65f;
+    float StartTopSpeed = 65f;
     [HideInInspector] public float TopSpeed;
-    [HideInInspector] public float StartMaxSpeed = 230f;
+    float StartMaxSpeed = 230f;
     [HideInInspector] public float MaxSpeed;
-    [HideInInspector] public float StartMaxFallingSpeed = -500f;
-    [HideInInspector] public float MaxFallingSpeed;
-    [HideInInspector] public float StartJumpPower = 2;
-    [HideInInspector] public float m_JumpPower;
+    float StartMaxFallingSpeed = -500f;
+    float MaxFallingSpeed;
+    float StartJumpPower = 2;
+    float m_JumpPower;
 
-    [HideInInspector] public float GroundStickingDistance = 1;
-    [HideInInspector] public float GroundStickingPower = -1;
+    float GroundStickingDistance = 1;
+    float GroundStickingPower = -1;
 
-    [HideInInspector] public float SlopeEffectLimit = 0.9f;
-    [HideInInspector] public float StandOnSlopeLimit = 0.8f;
-    [HideInInspector] public float SlopePower = 0.5f;
-    [HideInInspector] public float SlopeRunningAngleLimit = 0.5f;
+    float SlopeEffectLimit = 0.9f;
+    float StandOnSlopeLimit = 0.8f;
+    float SlopePower = 0.5f;
+    float SlopeRunningAngleLimit = 0.5f;
     AnimationCurve SlopeSpeedLimit;
 
     float generalHillMultiplier = 1;
-    [HideInInspector] public float UphillMultiplier = 0.5f;
-    [HideInInspector] public float DownhillMultiplier = 2;
-    [HideInInspector] public float StartDownhillMultiplier = -7;
+    float UphillMultiplier = 0.5f;
+    float DownhillMultiplier = 2;
+    float StartDownhillMultiplier = -7;
 
-    [HideInInspector] public AnimationCurve SlopePowerOverSpeed;
-    [HideInInspector] public AnimationCurve UpHillOverTime;
-    [HideInInspector] public float SlopePowerShiftSpeed;
-    [HideInInspector] public float LandingConversionFactor = 2;
+    AnimationCurve SlopePowerOverSpeed;
+    AnimationCurve UpHillOverTime;
+    float SlopePowerShiftSpeed;
+    float LandingConversionFactor = 2;
 
     [Header("AirMovementExtras")]
-    [HideInInspector] public float AirControlAmmount = 2;
-    [HideInInspector] public float AirSkiddingForce = 10;
-    [HideInInspector] public bool StopAirMovementIfNoInput = false;
+    float AirControlAmmount = 2;
+    //float AirSkiddingForce = 10;g
+    bool StopAirMovementIfNoInput = false;
     float keepNormalForThis = 0.083f;
 
 
@@ -312,17 +312,21 @@ public class PlayerBhysics : MonoBehaviour
 
             KeepNormalCounter += Time.deltaTime;
             if (KeepNormalCounter < keepNormalForThis)
-            //if (KeepNormalCounter < 1)
+            //if (KeepNormalCounter < 1f)
             {
                 transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal) * transform.rotation;
 
             }
             else
             {
+                Debug.Log(KeepNormal.y);
+
                 //if (transform.up.y < RotationResetThreshold)
                 if (KeepNormal.y < RotationResetThreshold)
                 {
-                    if(mainSkin.right.y >= -mainSkin.right.y)
+                    KeepNormal = Vector3.up;
+
+                    if (mainSkin.right.y >= -mainSkin.right.y)
                         transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.FromToRotation(transform.up, mainSkin.right) * transform.rotation, 10f);
                     else
                         transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.FromToRotation(transform.up, -mainSkin.right) * transform.rotation, 10f);
@@ -333,8 +337,8 @@ public class PlayerBhysics : MonoBehaviour
                 }
                 else
                 {
- 
-                    transform.rotation = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
+                    Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
                 }
             }
         }
@@ -906,7 +910,7 @@ public class PlayerBhysics : MonoBehaviour
         StartDownhillMultiplier = Tools.coreStats.StartDownhillMultiplier;
         SlopePowerOverSpeed = Tools.coreStats.SlopePowerOverSpeed;
         AirControlAmmount = Tools.stats.AirControlAmmount;
-        AirSkiddingForce = Tools.stats.AirSkiddingForce;
+        //AirSkiddingForce = Tools.stats.AirSkiddingForce;
         StopAirMovementIfNoInput = Tools.coreStats.StopAirMovementIfNoInput;
         RollingLandingBoost = Tools.coreStats.RollingLandingBoost;
         RollingDownhillBoost = Tools.coreStats.RollingDownhillBoost;
@@ -941,6 +945,8 @@ public class PlayerBhysics : MonoBehaviour
         MaxFallingSpeed = StartMaxFallingSpeed;
         m_JumpPower = StartJumpPower;
         fallGravity = StartFallGravity;
+
+        KeepNormal = Vector3.up;
 
 
     }

@@ -80,7 +80,6 @@ public class SkidHandler : MonoBehaviour
 
 		if ((Player.b_normalSpeed < -RegularSkiddingStartPoint) && !Player.Grounded && !Inp.LockInput)
 		{
-			Debug.Log("Air Skid With " +Inp.LockInput);
 
 			Vector3 releVec = Player.getRelevantVec(Player.rb.velocity);
 			if (Player.SpeedMagnitude >= -AirSkiddingIntensity) Player.AddVelocity(new Vector3(releVec.x, 0f, releVec.z).normalized * AirSkiddingIntensity * (Player.isRolling ? 0.5f : 1));

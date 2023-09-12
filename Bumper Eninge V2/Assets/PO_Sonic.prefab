@@ -5668,188 +5668,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Action: {fileID: 0}
-  StartAccell: 0.4
-  MoveAccell: 0.4
-  AccellOverSpeed:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.00352947
-      value: 1.882613
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.30501488
-      value: 0.99890876
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  AccellShiftOverSpeed: 1
   MoveDecell: 1.025
-  AirDecell: 1.01
-  naturalAirDecell: 1.01
-  TangentialDrag: 7.5
-  TangentialDragShiftSpeed: 1
-  TurnSpeed: 100
-  increasedTurnSpeed: 500
-  TurnRateOverAngle:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.9987793
-      inSlope: 0.10207153
-      outSlope: 0.10207153
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.899353
-      value: 0.012840271
-      inSlope: -1.0962759
-      outSlope: -1.0962759
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  TurnRateOverSpeed:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  TangDragOverAngle:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.5003967
-      value: 1.0013041
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  TangDragOverSpeed:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.9987793
-      inSlope: -0.27642146
-      outSlope: -0.27642146
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.9
-      value: 0.75
-      inSlope: -0.27642146
-      outSlope: -0.27642146
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  StartTopSpeed: 65
   TopSpeed: 70
-  StartMaxSpeed: 230
   MaxSpeed: 260
-  StartMaxFallingSpeed: -500
-  MaxFallingSpeed: -500
-  StartJumpPower: 2
-  m_JumpPower: 1.5
-  GroundStickingDistance: 0.1
-  GroundStickingPower: -1.5
-  SlopeEffectLimit: 0.9
-  StandOnSlopeLimit: 0.8
-  SlopePower: -2
-  SlopeRunningAngleLimit: 0.5
-  UphillMultiplier: 0.8
-  DownhillMultiplier: 1.2
-  StartDownhillMultiplier: -7
-  SlopePowerOverSpeed:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: -1.4333338
-      outSlope: -1.4333338
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.98750204
-      value: 0.48749918
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  UpHillOverTime:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  SlopePowerShiftSpeed: 1
-  LandingConversionFactor: 25
-  AirControlAmmount: 2
-  AirSkiddingForce: 30
-  StopAirMovementIfNoInput: 1
   GravityAffects: 1
   StartFallGravity: {x: 0, y: 0, z: 0}
   fallGravity: {x: 0, y: 0, z: 0}
@@ -18229,7 +18050,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7795348, y: 1}
+    m_SensorSize: {x: 1.7779704, y: 1}
   m_Transitions:
     m_BlendHint: 1
     m_InheritPosition: 0
@@ -19113,8 +18934,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
-  m_LocalRotation: {x: -0.041879464, y: 0.10989423, z: -0.35363552, w: 0.9279608}
-  m_LocalPosition: {x: -809.77155, y: 72.49066, z: 97.72308}
+  m_LocalRotation: {x: 0.0000983464, y: -0.9997728, z: 0.0047296314, w: 0.02078511}
+  m_LocalPosition: {x: -67.56401, y: -2.4448438, z: 428.25894}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
