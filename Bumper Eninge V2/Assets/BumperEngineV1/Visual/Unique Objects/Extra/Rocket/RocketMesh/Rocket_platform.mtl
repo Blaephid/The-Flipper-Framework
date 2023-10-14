@@ -1,0 +1,64 @@
+newmtl object_004BFEF4_material_12
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+d 1
+Tr 1
+illum 1
+map_Kd board_ura.png
+newmtl object_004BFEF4_material_13
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+d 1
+Tr 1
+illum 1
+map_Kd boardside.png
+newmtl object_004BFEF4_material_38
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+d 1
+Tr 1
+illum 1
+map_Kd kabe0.png
+newmtl object_004BFEF4_material_52
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+d 1
+Tr 1
+illum 1
+map_Kd rock_burn.png
+newmtl object_004BFEF4_material_53
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+d 1
+Tr 1
+illum 1
+map_Kd rock_hane.png
+newmtl object_004BFEF4_material_54
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+d 1
+Tr 1
+illum 1
+map_Kd rock_panel2.png
+newmtl object_004BFEF4_material_69
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+d 1
+Tr 1
+illum 1
+map_Kd yuka.png
+newmtl object_004BFEF4_material_76
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+d 1
+Tr 1
+illum 1
+map_Kd rock_cover0.png

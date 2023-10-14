@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Fern_01
+  m_Shader: {fileID: 4800000, guid: fec236f05d8c641a680d2d88084a12f7, type: 3}
+  m_ShaderKeywords: EFFECT_HUE_VARIATION GEOM_TYPE_BRANCH LOD_FADE_PERCENTAGE _ALPHATEST_ON
+    _NORMALMAP _SNOW _SPECGLOSSMAP
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2450
+  stringTagMap:
+    RenderType: TransparentCutout
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 3225bbea937794e95b216910cdb44d66, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CombinedMap:
+        m_Texture: {fileID: 2800000, guid: 5191d320c2494475f9c928d9c53678e2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 8afea1cf012844e798afce11d18ab469, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 2800000, guid: e50082d8928b44a8daf782658cc62fea, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BumpScale: 1
+    - _Cull: 0
+    - _CullShadowPass: 0
+    - _Cutoff: 0.401
+    - _DetailNormalMapScale: 1
+    - _DiffuseScatteringBias: 0
+    - _DiffuseScatteringBias2: 0
+    - _DiffuseScatteringContraction: 8
+    - _DiffuseScatteringContraction2: 8
+    - _DiffuseScatteringEnabled: 0
+    - _DoubleSided: 1
+    - _DstBlend: 0
+    - _GlobalSnowAccumulation: 0
+    - _Glossiness: 0.5
+    - _Glossiness2: 0.5
+    - _HeightMapInfluence: 1
+    - _Lighting: 1
+    - _LinearSteps: 20
+    - _Lux_FlowInterval: 1
+    - _Lux_FlowNormalStrength: 1
+    - _Lux_FlowNormalTiling: 2
+    - _Lux_FlowRefraction: 0.02
+    - _Lux_FlowSpeed: 0.05
+    - _Metallic: 0
+    - _MixMappingControl: 0
+    - _Mode: 1
+    - _OcclusionInfluence: 1
+    - _OcclusionStrength: 0.308
+    - _POM_LinearSteps: 20
+    - _Parallax: 0.02
+    - _PuddleMask: 0
+    - _PuddleMaskTiling: 1
+    - _ScatteringPower: 8
+    - _Snow: 1
+    - _SnowDetailStrength: 0.5
+    - _SnowDetailTiling: 2
+    - _SnowMaskTiling: 0.17
+    - _SnowOpacity: 0.56
+    - _SnowSlopeDamp: 2
+    - _SnowTiling: 1
+    - _SrcBlend: 1
+    - _SyncWaterOfMaterials: 0
+    - _TranslucencyStrength: 0.711
+    - _UVSec: 0
+    - _UseCombinedMap: 1
+    - _UseMixMapping: 0
+    - _UsePOM: 0
+    - _WaterSlopeDamp: 1
+    - _Wetness: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color2: {r: 1, g: 1, b: 1, a: 1}
+    - _DiffuseScatteringCol: {r: 0, g: 0, b: 0, a: 0}
+    - _DiffuseScatteringCol2: {r: 0, g: 0, b: 0, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SnowAccumulation: {r: 0, g: 0.71, b: 0, a: 0}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SpecColor2: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _WaterAccumulationCracksPuddles: {r: 0, g: 1.06, b: 0, a: 1.13}
+    - _WaterAccumulationCracksPuddles2: {r: 0, g: 1, b: 0, a: 1}
+    - _WaterColor: {r: 0, g: 0, b: 0, a: 0}
+    - _WaterColor2: {r: 0, g: 0, b: 0, a: 0}

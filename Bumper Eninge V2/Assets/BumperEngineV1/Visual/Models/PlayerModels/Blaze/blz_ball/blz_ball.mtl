@@ -1,0 +1,32 @@
+newmtl blzb_mat_03
+Ka 0.5019608 0.5019608 0.5019608
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka blzb_mat_03.png
+map_Kd blzb_mat_03.png
+map_d blzb_mat_03.png
+newmtl blzb_mat_04
+Ka 0.5019608 0.5019608 0.5019608
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka blzb_mat_04.png
+map_Kd blzb_mat_04.png
+map_d blzb_mat_04.png
+newmtl blzb_mat_06
+Ka 0.5019608 0.5019608 0.5019608
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka blzb_mat_06.png
+map_Kd blzb_mat_06.png
+map_d blzb_mat_06.png
+newmtl blzb_mat_center
+Ka 0.345098 0.282353 0.4078431
+Kd 0.3764706 0.345098 0.3764706
+d 1
+Tr 1
+map_Ka blzb_mat_center.png
+map_Kd blzb_mat_center.png
+map_d blzb_mat_center.png

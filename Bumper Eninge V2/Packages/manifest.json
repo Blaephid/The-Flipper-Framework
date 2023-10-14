@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.abertay.analytics": "https://github.com/Abertay-University-SDI/AbertayAnalytics.git",
     "com.unity.analytics": "3.6.12",
     "com.unity.cinemachine": "2.8.4",
     "com.unity.collab-proxy": "1.15.15",

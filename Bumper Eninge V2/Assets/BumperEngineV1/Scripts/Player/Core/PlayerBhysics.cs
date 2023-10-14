@@ -319,7 +319,7 @@ public class PlayerBhysics : MonoBehaviour
             }
             else
             {
-                Debug.Log(KeepNormal.y);
+                //Debug.Log(KeepNormal.y);
 
                 //if (transform.up.y < RotationResetThreshold)
                 if (KeepNormal.y < RotationResetThreshold)
