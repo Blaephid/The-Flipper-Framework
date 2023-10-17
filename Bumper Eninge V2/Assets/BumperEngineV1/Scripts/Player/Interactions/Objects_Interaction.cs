@@ -21,7 +21,7 @@ public class Objects_Interaction : MonoBehaviour {
     SonicSoundsControl Sounds;
     ActionManager Actions;
     PlayerBinput Inp;
-    Attack attack;
+    CharacterAttackManager attack;
 
     GameObject JumpBall;
     
@@ -705,7 +705,7 @@ public class Objects_Interaction : MonoBehaviour {
         Cam = GetComponent<CameraControl>().Cam;
         Actions = GetComponent<ActionManager>();
         Inp = GetComponent<PlayerBinput>();
-        attack = GetComponent<Attack>();
+        attack = GetComponent<CharacterAttackManager>();
 
         CharacterAnimator = Tools.CharacterAnimator;
         Sounds = Tools.SoundControl;

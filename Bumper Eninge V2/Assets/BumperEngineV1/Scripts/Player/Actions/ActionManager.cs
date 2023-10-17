@@ -27,7 +27,7 @@ public class ActionManager : MonoBehaviour {
 	public Action07_RingRoad Action07;
 	public RingRoadControl Action07Control;
 	public Action08_DropCharge Action08;
-    public MoveAlongPath Action10;
+    public Action10_FollowAutoPath Action10;
     public Action11_JumpDash Action11;
     public Action12_WallRunning Action12;
     public Action13_Hovering Action13;
@@ -339,13 +339,9 @@ public class ActionManager : MonoBehaviour {
     //Call this function to change the action
     public void ChangeAction(States ActionToChange)
     {
-
         //Put an case for all your actions here
         switch (ActionToChange)
         {
-            //case -1:
-            //    changePossible(ActionToChange);
-            //    break;
             case States.Regular:
                 changePossible(ActionToChange);
                 Action00.enabled = true;
@@ -363,6 +359,14 @@ public class ActionManager : MonoBehaviour {
                     if (eventMan != null) eventMan.homingAttacksPerformed += 1;
                     changePossible(ActionToChange);
                     Action02.enabled = true;
+                }
+                break;
+            case States.JumpDash:
+                if (!lockJumpDash)
+                {
+                    if (eventMan != null) eventMan.jumpDashesPerformed += 1;
+                    changePossible(ActionToChange);
+                    Action11.enabled = true;
                 }
                 break;
             case States.SpinCharge:
@@ -398,14 +402,6 @@ public class ActionManager : MonoBehaviour {
             case States.Path:
                 changePossible(ActionToChange);
                 Action10.enabled = true;
-                break;
-            case States.JumpDash:
-                if (!lockJumpDash)
-                {
-                    if (eventMan != null) eventMan.jumpDashesPerformed += 1;
-                    changePossible(ActionToChange);
-                    Action11.enabled = true;
-                }
                 break;
             case States.WallRunning:
                 changePossible(ActionToChange);

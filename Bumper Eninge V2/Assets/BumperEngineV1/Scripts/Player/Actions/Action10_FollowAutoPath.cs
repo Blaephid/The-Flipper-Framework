@@ -5,7 +5,7 @@ using System.Collections;
 namespace SplineMesh
 {
     //[RequireComponent(typeof(Spline))]
-    public class MoveAlongPath : MonoBehaviour
+    public class Action10_FollowAutoPath : MonoBehaviour
     {
         CharacterTools Tools;
 

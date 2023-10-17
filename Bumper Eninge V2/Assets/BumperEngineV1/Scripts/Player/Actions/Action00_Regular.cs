@@ -285,7 +285,7 @@ public class Action00_Regular : MonoBehaviour {
 		if (!Player.Grounded && !coyoteInEffect)
 		{
 			//Do a homing attack
-			if (Actions.Action02.HomingAvailable && Actions.Action02Control.HasTarget && Actions.HomingPressed)
+			if (Actions.Action02Control.HasTarget && Actions.HomingPressed && Actions.Action02.HomingAvailable)
 			{
 
 				//Do a homing attack
@@ -298,9 +298,7 @@ public class Action00_Regular : MonoBehaviour {
 						Actions.Action02.InitialEvents();
 					}
 				}
-
 			}
-
 			//Do an air dash;
 			else if (Actions.Action02.HomingAvailable && Actions.SpecialPressed)
 			{
@@ -316,7 +314,6 @@ public class Action00_Regular : MonoBehaviour {
 			else if (Actions.JumpPressed && Actions.Action01.canDoubleJump)
 			{
 
-				//Debug.Log("Do a double jump");
 				Actions.Action01.jumpCount = 0;
 				Actions.Action01.InitialEvents(Vector3.up);
 				Actions.ChangeAction(ActionManager.States.Jump);
