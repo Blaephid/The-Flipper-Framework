@@ -75,8 +75,6 @@ public class PlayerBinput : MonoBehaviour {
         InputLerpSpeed = InputLerpingRateOverSpeed.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
         UtopiaLerpingSpeed = UtopiaInputLerpingRateOverSpeed.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
 
-
-
         AcquireMoveInput();
 
     }
@@ -93,15 +91,15 @@ public class PlayerBinput : MonoBehaviour {
             InitialInputMag = moveInp.sqrMagnitude;
             InitialLerpedInput = Mathf.Lerp(InitialLerpedInput, InitialInputMag, Time.deltaTime * UtopiaInitialInputLerpSpeed);
 
+            //If Utopia turing is enabled then input is affected.
             float currentInputSpeed = (!UtopiaTurning) ? InputLerpSpeed : UtopiaLerpingSpeed;
 
-            inputPreCamera = moveInp;
 
             //Make movement relative to camera
+            inputPreCamera = moveInp;
             trueMoveInput = GetTrueInput(moveInp);
 
             
-
             if (moveInp != Vector3.zero && !onPath)
             {
                 Vector3 transformedInput;

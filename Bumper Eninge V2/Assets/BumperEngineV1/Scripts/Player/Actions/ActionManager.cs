@@ -45,6 +45,7 @@ public class ActionManager : MonoBehaviour {
     //NewInput inputs stored
     [HideInInspector] public float moveX;
     [HideInInspector] public float moveY;
+    [HideInInspector] public Vector2 moveVec;
 
     Vector2 CurrentCamMovement;
     [HideInInspector] public float moveCamX;
@@ -120,24 +121,22 @@ public class ActionManager : MonoBehaviour {
 
     public void MoveInput(InputAction.CallbackContext ctx)
     {
-        Vector2 CurrentMovement = ctx.ReadValue<Vector2>();
+        moveVec = ctx.ReadValue<Vector2>();
         usingMouse = false;
-        moveX = CurrentMovement.x;
-        moveY = CurrentMovement.y;
+        moveX = moveVec.x;
+        moveY = moveVec.y;
     }
 
     public void MoveInputKeyboard(InputAction.CallbackContext ctx)
     {
-        Vector2 CurrentMovement = ctx.ReadValue<Vector2>();
-        moveX = CurrentMovement.x;
-        moveY = CurrentMovement.y;
+        moveVec = ctx.ReadValue<Vector2>();
+        moveX = moveVec.x;
+        moveY = moveVec.y;
         usingMouse = true;
-        //Debug.Log(CurrentMovement);
     }
 
     public void CamInput(InputAction.CallbackContext ctx)
     {
-        //Debug.Log("No mouse input");
         usingMouse = false;
         CurrentCamMovement = ctx.ReadValue<Vector2>();
         moveCamX = CurrentCamMovement.x * camSensi;
@@ -147,10 +146,8 @@ public class ActionManager : MonoBehaviour {
     public void CamMouseInput(InputAction.CallbackContext ctx)
     {
         usingMouse = true;
-        //Debug.Log("Use Mouse");
         CurrentCamMovement = ctx.ReadValue<Vector2>();
-        moveCamX = CurrentCamMovement.x * mouseSensi;
-        
+        moveCamX = CurrentCamMovement.x * mouseSensi;      
         moveCamY = CurrentCamMovement.y * mouseSensi;
     }
 

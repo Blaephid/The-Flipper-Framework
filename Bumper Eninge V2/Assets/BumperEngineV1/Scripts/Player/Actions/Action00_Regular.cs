@@ -3,30 +3,30 @@ using System.Collections;
 
 public class Action00_Regular : MonoBehaviour {
 
-    public Animator CharacterAnimator;
+    private Animator CharacterAnimator;
 	CharacterTools Tools;
     PlayerBhysics Player;
 	PlayerBinput Input;
     ActionManager Actions;
 	CameraControl Cam;
 	quickstepHandler quickstepManager;
-    public SonicSoundsControl sounds;
-	public GameObject characterCapsule;
+    SonicSoundsControl sounds;
+	GameObject characterCapsule;
 	GameObject rollingCapsule;
 
     public float skinRotationSpeed;
     Action01_Jump JumpAction;
     Quaternion CharRot;
 
-	[HideInInspector] public float MaximumSpeed; //The max amount of speed you can be at to perform a Spin Dash
-	[HideInInspector] public float MaximumSlope; //The highest slope you can be on to Spin Dash
+	float MaximumSpeed; //The max amount of speed you can be at to perform a Spin Dash
+	float MaximumSlope; //The highest slope you can be on to Spin Dash
 
-	[HideInInspector] public float SpeedToStopAt;
+	float SpeedToStopAt;
 
-	[HideInInspector] public float SkiddingStartPoint;
+	float SkiddingStartPoint;
 
 
-	[HideInInspector] bool CanDashDuringFall;
+	bool CanDashDuringFall;
 
 	RaycastHit hit;
 
@@ -43,18 +43,12 @@ public class Action00_Regular : MonoBehaviour {
 
     void Awake()
     {
-        Player = GetComponent<PlayerBhysics>();
-		Input = GetComponent<PlayerBinput>();
-        Actions = GetComponent<ActionManager>();
-        JumpAction = GetComponent<Action01_Jump>();
-		Cam = GetComponent<CameraControl>();
 		Tools = GetComponent<CharacterTools>();
-		quickstepManager = GetComponent<quickstepHandler>();
-		quickstepManager.enabled = false;
     }
 
     private void Start()
     {
+        AssignTools();
 		AssignStats();
     }
 
@@ -219,13 +213,11 @@ public class Action00_Regular : MonoBehaviour {
 		//Set Camera to back
 		if (Actions.CamResetPressed)
 		{
-			if (Actions.moveX == 0 && Actions.moveY == 0 && Player.b_normalSpeed < 5f)
+			if (Actions.moveVec == Vector2.zero && Player.b_normalSpeed < 5f)
 				Cam.Cam.FollowDirection(6, 14f, -10, 0);
 		}
 
-		//Check if rolling
-		if (Player.Grounded && Player.isRolling) { CharacterAnimator.SetInteger("Action", 1); }
-		CharacterAnimator.SetBool("isRolling", Player.isRolling);
+		
 
 		//Do Spindash
 		if (Actions.spinChargePressed && Player.Grounded && Player.GroundNormal.y > MaximumSlope && Player.HorizontalSpeedMagnitude < MaximumSpeed)
@@ -234,19 +226,23 @@ public class Action00_Regular : MonoBehaviour {
 			Actions.Action03.InitialEvents();
 		}
 
-		//Play Rolling Sound
-		//if (Actions.RollPressed && Player.Grounded && (Player.HorizontalSpeedMagnitude > Player.RollingStartSpeed)) 
-		if (Actions.RollPressed && Player.Grounded)
+        //Check if rolling
+        if (Player.Grounded && Player.isRolling) 
+		{ 
+			CharacterAnimator.SetInteger("Action", 1); 
+		}
+        CharacterAnimator.SetBool("isRolling", Player.isRolling);
+
+        //Change to rolling state
+        if (Actions.RollPressed && Player.Grounded)
 		{
 			Curl();
-
 		}
 
-
+		//Exit rolling state
 		if ((!Actions.RollPressed && rollCounter > minRollTime) | !Player.Grounded)
 		{
 			unCurl();
-
 		}
 
 		if (Rolling)
@@ -381,6 +377,20 @@ public class Action00_Regular : MonoBehaviour {
 		CanDashDuringFall = Tools.coreStats.CanDashDuringFall;
 		rollingCapsule = Tools.crouchCapsule;
 
+    }
+
+	private void AssignTools()
+	{
+        Player = GetComponent<PlayerBhysics>();
+        Input = GetComponent<PlayerBinput>();
+        Actions = GetComponent<ActionManager>();
+        JumpAction = GetComponent<Action01_Jump>();
+        Cam = GetComponent<CameraControl>();
+        quickstepManager = GetComponent<quickstepHandler>();
+        sounds = GetComponent<SonicSoundsControl>();
+        quickstepManager.enabled = false;
+        characterCapsule = Tools.characterCapsule;
+        CharacterAnimator = Tools.CharacterAnimator;
     }
 
 }

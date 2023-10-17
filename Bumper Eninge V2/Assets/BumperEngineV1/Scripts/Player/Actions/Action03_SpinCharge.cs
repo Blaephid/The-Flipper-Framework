@@ -258,7 +258,7 @@ public class Action03_SpinCharge : MonoBehaviour
         if (Player.RawInput.sqrMagnitude > 0.1f)
         {
             
-            CharRot = Quaternion.LookRotation(Player.MainCamera.transform.forward - Player.GroundNormal * Vector3.Dot(Player.MainCamera.transform.forward, Player.GroundNormal), transform.up);
+            CharRot = Quaternion.LookRotation(Tools.MainCamera.transform.forward - Player.GroundNormal * Vector3.Dot(Tools.MainCamera.transform.forward, Player.GroundNormal), transform.up);
         }
         else if (Player.rb.velocity != Vector3.zero)
         {

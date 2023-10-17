@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor;
 
 public class Monitors_Interactions : MonoBehaviour {
 
+    CharacterTools tools;
     Objects_Interaction Objects;
     PlayerBhysics Player;
     ActionManager Actions;
@@ -21,7 +23,7 @@ public class Monitors_Interactions : MonoBehaviour {
     bool firstTime = false;
 
     void Start () {
-
+        tools = GetComponent<CharacterTools>();
         Objects = GetComponent<Objects_Interaction>();
         Player = basePlayer.GetComponent<PlayerBhysics>();
         Actions = basePlayer.GetComponent<ActionManager>();
@@ -68,7 +70,7 @@ public class Monitors_Interactions : MonoBehaviour {
     {
         if (col.tag == "Monitor" && col.GetComponent<MonitorData>() != null)
         {
-            if (Actions.Action00.CharacterAnimator.GetInteger("Action") == 1)
+            if (tools.CharacterAnimator.GetInteger("Action") == 1)
             {
                 //Debug.Log("Monitor");
                 TriggerMonitor(col, true);

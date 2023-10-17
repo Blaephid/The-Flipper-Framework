@@ -83,34 +83,24 @@ public class PlayerBhysics : MonoBehaviour
     Vector3 UpGravity;
     public Vector3 MoveInput { get; set; }
 
-
-    [Header("Other Values")]
-
-    public float GroundOffset;
     [HideInInspector] public RaycastHit groundHit;
-    public Transform CollisionPoint;
-    public Collider CollisionSphere;
-    public Collider CollisionCapsule;
-    public PullItems itemPull;
+    Transform CollisionPoint;
 
-    public Transform MainCamera;
-    public Transform Colliders;
-    public SonicSoundsControl sounds;
+    SonicSoundsControl sounds;
     [HideInInspector] public float HomingDelay;
 
 
-    public DebugUI Debui;
 
 
     [Header("Rolling Values")]
 
-    [HideInInspector] public float RollingLandingBoost;
-    [HideInInspector] public float RollingDownhillBoost;
-    [HideInInspector] public float RollingUphillBoost;
-    [HideInInspector] public float RollingStartSpeed;
-    [HideInInspector] public float RollingTurningDecreace;
-    [HideInInspector] public float RollingFlatDecell;
-    [HideInInspector] public float SlopeTakeoverAmount; // This is the normalized slope angle that the player has to be in order to register the land as "flat"
+    float RollingLandingBoost;
+    float RollingDownhillBoost;
+    float RollingUphillBoost;
+    float RollingStartSpeed;
+    float RollingTurningDecreace;
+    float RollingFlatDecell;
+    float SlopeTakeoverAmount; // This is the normalized slope angle that the player has to be in order to register the land as "flat"
     public bool isRolling { get; set; }
 
     //Cache
@@ -128,9 +118,6 @@ public class PlayerBhysics : MonoBehaviour
     public Vector3 playerPos { get; set; }
 
     //Etc
-    [Header("Etc Values")]
-
-    public bool UseSphereToGetNormal;
 
     Vector3 KeepNormal;
     float KeepNormalCounter;
@@ -171,11 +158,8 @@ public class PlayerBhysics : MonoBehaviour
 
     private void Start()
     {
-        MasterPlayer = this;
-        rb = GetComponent<Rigidbody>();
-        PreviousInput = transform.forward;
-        Action = GetComponent<ActionManager>();
         Tools = GetComponent<CharacterTools>();
+        AssignTools();
         AssignStats();
         mainSkin = Tools.mainSkin;
 
@@ -949,5 +933,16 @@ public class PlayerBhysics : MonoBehaviour
         KeepNormal = Vector3.up;
 
 
+    }
+
+    private void AssignTools()
+    {
+        MasterPlayer = this;
+        rb = GetComponent<Rigidbody>();
+        PreviousInput = transform.forward;
+        Action = GetComponent<ActionManager>();
+
+        CollisionPoint = Tools.CollisionPoint;
+        sounds = Tools.SoundControl;
     }
 }

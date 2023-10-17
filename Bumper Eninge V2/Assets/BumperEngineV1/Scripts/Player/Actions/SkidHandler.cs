@@ -62,7 +62,6 @@ public class SkidHandler : MonoBehaviour
 			}
 			if (Player.SpeedMagnitude < 4)
 			{
-				//unCurl();
 				Player.b_normalSpeed = 0;
 				hasSked = false;
 
