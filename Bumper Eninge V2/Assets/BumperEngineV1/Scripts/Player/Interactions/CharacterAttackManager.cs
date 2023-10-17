@@ -57,13 +57,10 @@ public class CharacterAttackManager : MonoBehaviour
 
         else if (AttackType == "SpinJump")
         {
-
-            //Actions.Action01.JumpBall.enabled = false;
             if (col.transform.parent.GetComponent<EnemyHealth>() != null)
             {
                 if (!Player.isRolling)
                 {
-
                     col.transform.parent.GetComponent<EnemyHealth>().DealDamage(damage);
                     airAttack();
                 }
@@ -73,12 +70,13 @@ public class CharacterAttackManager : MonoBehaviour
 
 	private void MonitorAttack(string AttackType)
 	{
-        if (!Player.isRolling)
+        if(AttackType == "SpinJump")
         {
-            airAttack();
-        }
-
-        
+            if (!Player.isRolling)
+            {
+                airAttack();
+            }
+        }   
     }
 
     private void airAttack()

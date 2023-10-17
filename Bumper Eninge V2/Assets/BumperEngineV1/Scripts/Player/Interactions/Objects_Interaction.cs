@@ -358,21 +358,18 @@ public class Objects_Interaction : MonoBehaviour {
         if (col.tag == "Enemy")
         {
             HedgeCamera.Shakeforce = EnemyHitShakeAmmount;
-            //If 1, destroy, if not, take damage.
+        //Either triggers an attack on the enemy or takes damage.
             if (Actions.Action == ActionManager.States.SpinCharge)
             {
-                attack.AttackThing(col, "SpinDash");
+                attack.AttackThing(col, "SpinDash", "Enemy"); ;
                 
             }
+            //If in the rolling or jumpdash animation.
             if (CharacterAnimator.GetInteger("Action") == 1 || CharacterAnimator.GetInteger("Action") == 11)
             {
-                attack.AttackThing(col, "SpinJump");
-
-                
+                attack.AttackThing(col, "SpinJump", "Enemy");
             }
-
-
-            else if(Actions.Action != ActionManager.States.SpinCharge)
+            else
             {
                 DamagePlayer();
             }
