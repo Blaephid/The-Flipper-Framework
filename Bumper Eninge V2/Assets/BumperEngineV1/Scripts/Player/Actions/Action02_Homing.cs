@@ -4,110 +4,129 @@ using System.Collections;
 public class Action02_Homing : MonoBehaviour
 {
 
-    public ActionManager Action;
-    public Animator CharacterAnimator;
+    ActionManager Action;
+    VolumeTrailRenderer HomingTrailScript;
+    Animator CharacterAnimator;
+    HomingAttackControl HomingControl;
     PlayerBhysics Player;
+    CharacterTools Tools;
 
-    public bool isAdditive;
-    public float HomingAttackSpeed;
-    public float AirDashSpeed;
-    public float HomingTimerLimit;
-    public float FacingAmount;
-    public GameObject HomingTrailContainer;
-    public GameObject HomingTrail;
-    public GameObject JumpDashParticle;
+    GameObject JumpBall;
+
+    [HideInInspector] public bool isAdditive;
+    [HideInInspector] public float HomingAttackSpeed;
+    [HideInInspector] public float AirDashSpeed;
+    [HideInInspector] public float AirDashDuration;
+    [HideInInspector] public float HomingTimerLimit;
+    //[HideInInspector] public float FacingAmount;
+
+    float XZmag;
+    public float LateSpeed { get; set; }
+    public Vector3 TargetDirection { get; set; }
+    GameObject HomingTrailContainer;
+    //public GameObject HomingTrail;
     float Timer;
     float Speed;
-    float Aspeed;
+    float StoredSpeed;
     Vector3 direction;
+    Vector3 newRotation;
 
 
     public Transform Target { get; set; }
     public float skinRotationSpeed;
     public bool HomingAvailable { get; set; }
-    public bool IsAirDash { get; set; }
+
 
     void Awake()
     {
         HomingAvailable = true;
-        Player = GetComponent<PlayerBhysics>();
+
+        if (Player == null)
+        {
+            Tools = GetComponent<CharacterTools>();
+            AssignTools();
+
+            AssignStats();          
+        }
     }
+
 
     public void InitialEvents()
     {
-
-        Action.Action01.JumpBall.SetActive(false);
-        if (HomingTrailContainer.transform.childCount < 1)
-        {
-            GameObject HomingTrailClone = Instantiate(HomingTrail, HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
-            HomingTrailClone.transform.parent = HomingTrailContainer.transform;
-
-            GameObject JumpDashParticleClone = Instantiate(JumpDashParticle, HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
-            JumpDashParticleClone.transform.parent = HomingTrailContainer.transform;
-        }
-
-
-        if (Action.Action02Control.HasTarget)
-        {
-            Target = HomingAttackControl.TargetObject.transform;
-        }
-
-        Timer = 0;
-        HomingAvailable = false;
-
-        if (isAdditive)
+        if(!Action.lockHoming)
         {
 
-            // Apply Max Speed Limit
-            float XZmag = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z).magnitude;
+            AssignStats();
 
-            if (XZmag < HomingAttackSpeed)
+
+            HomingTrailScript.emitTime = AirDashDuration;
+            HomingTrailScript.emit = true;
+
+
+            JumpBall.SetActive(false);
+
+
+            if (Action.Action02Control.HasTarget)
             {
-                Speed = HomingAttackSpeed;
+                Target = HomingControl.TargetObject.transform;
+                TargetDirection = (Target.transform.position - Player.playerPos).normalized;
             }
             else
             {
-                Speed = XZmag;
+                TargetDirection = Player.rb.velocity.normalized;
             }
 
-            if (XZmag < AirDashSpeed)
-            {
-                Aspeed = AirDashSpeed;
-            }
-            else
-            {
-                Aspeed = XZmag;
-            }
-        }
-        else
-        {
-            Aspeed = AirDashSpeed;
-            Speed = HomingAttackSpeed;
-        }
+            Timer = 0;
+            HomingAvailable = false;
 
-        //Check if not facing Object
-        if (!IsAirDash)
-        {
-            Vector3 TgyXY = HomingAttackControl.TargetObject.transform.position.normalized;
-            TgyXY.y = 0;
-            float facingAmmount = Vector3.Dot(Player.PreviousRawInput.normalized, TgyXY);
+            XZmag = Player.HorizontalSpeedMagnitude;
+
+
+
+
+            //Action.actionDisable();
+
+            //Vector3 TgyXY = HomingControl.TargetObject.transform.position.normalized;
+            //TgyXY.y = 0;
+            //float facingAmmount = Vector3.Dot(Player.PreviousRawInput.normalized, TgyXY);
+
+            direction = Target.position - transform.position;
+            newRotation = Vector3.RotateTowards(transform.forward, direction, 5f, 0.0f);
+
             // //Debug.Log(facingAmmount);
             // if (facingAmmount < FacingAmount) { IsAirDash = true; }
-        }
+
+            if (XZmag * 0.7f < HomingAttackSpeed)
+            {
+                Speed = HomingAttackSpeed;
+                StoredSpeed = Speed;
+            }
+            else
+            {
+                Speed = XZmag * 0.7f;
+                StoredSpeed = XZmag;
+            }
+        }    
 
     }
 
     void Update()
     {
 
+        //Debug.Log(Player.p_rigidbody.velocity);
+
+
+        //Player.Gravity = new Vector3(0f, 0f, 0f);
+        Player.GravityAffects = false;
+
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 1);
-        CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
-        CharacterAnimator.SetFloat("GroundSpeed", Player.p_rigidbody.velocity.magnitude);
+        CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+        CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player.Grounded);
 
         //Set Animation Angle
-        Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
+        Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
         Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
         CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 
@@ -117,41 +136,37 @@ public class Action02_Homing : MonoBehaviour
 
     void FixedUpdate()
     {
-        Timer += 1;
+        
 
-        CharacterAnimator.SetInteger("Action", 1);
+        Timer += Time.deltaTime;
 
-        if (IsAirDash)
-        {
-            if (Player.RawInput != Vector3.zero)
-            {
-                Player.p_rigidbody.velocity = transform.TransformDirection(Player.RawInput) * Aspeed;
-            }
-            else
-            {
-                // //Debug.Log("prev");
-                Player.p_rigidbody.velocity = transform.TransformDirection(Player.PreviousRawInput) * Aspeed;
-            }
-            Timer = HomingTimerLimit + 10;
-        }
-        else
-        {
-            direction = Target.position - transform.position;
-            Player.p_rigidbody.velocity = direction.normalized * Speed;
-        }
-
-        //Set Player location when close enough, for precision.
-        if (Target != null && Vector3.Distance(Target.position, transform.position) < 5)
-        {
-            transform.position = Target.position;
-            //Debug.Log ("CloseEnough");
-        }
-
-        //End homing attck if on air for too long
-        if (Timer > HomingTimerLimit)
+        //Ends homing attack if in air for too long or target is lost
+        if (Target == null || Timer > HomingTimerLimit)
         {
             Action.ChangeAction(0);
         }
+
+        //direction = Target.position - transform.position;
+        //Player.p_rigidbody.velocity = direction.normalized * Speed;
+
+        //Debug.Log (Player.SpeedMagnitude);
+
+        direction = Target.position - transform.position;
+        newRotation = Vector3.RotateTowards(newRotation, direction, 1f, 0.0f);
+        Player.rb.velocity = newRotation * Speed;
+        
+
+        //Set Player location when close enough, for precision.
+        if (Target != null && Vector3.Distance(Target.transform.position, transform.position) < (Speed * Time.fixedDeltaTime) && Target.gameObject.activeSelf)
+        {
+           transform.position = Target.transform.position;
+        }
+        else
+        {
+           //LateSpeed = Mathf.Max(XZmag, HomingAttackSpeed);
+           LateSpeed = Mathf.Max(XZmag, HomingAttackSpeed);
+        }
+        
     }
 
     public void ResetHomingVariables()
@@ -161,6 +176,27 @@ public class Action02_Homing : MonoBehaviour
         //IsAirDash = false;
     }
 
+    private void AssignTools()
+    {
+        //HomingAttackControl.TargetObject = null;
+        Player = GetComponent<PlayerBhysics>();
+        HomingControl = GetComponent<HomingAttackControl>();
+        Action = GetComponent<ActionManager>();
 
+        CharacterAnimator = Tools.CharacterAnimator;
+        HomingTrailScript = Tools.HomingTrailScript;
+        HomingTrailContainer = Tools.HomingTrailContainer;
+        JumpBall = Tools.JumpBall;
+
+
+    }
+    private void AssignStats()
+    {
+        isAdditive = Tools.coreStats.isAdditive;
+        HomingAttackSpeed = Tools.stats.HomingAttackSpeed;
+        AirDashSpeed = Tools.stats.AirDashSpeed;
+        HomingTimerLimit = Tools.stats.HomingTimerLimit;
+        AirDashDuration = Tools.stats.AirDashDuration;
+    }
 
 }
