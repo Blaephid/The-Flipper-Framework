@@ -1,141 +1,102 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Action07_RingRoad : MonoBehaviour {
+public class Action07_LightDash : MonoBehaviour
+{
 
-	CharacterTools Tools;
-
-
-	Animator CharacterAnimator;
+    [SerializeField] Animator CharacterAnimator;
     Quaternion CharRot;
-	ActionManager Action;
-	GameObject HomingTrailContainer;
-	public GameObject HomingTrail;
-	PlayerBhysics Player;
-	PlayerBinput Inp;
-
-
-	GameObject JumpBall;
-	
+    public ActionManager Action;
+    public GameObject HomingTrailContainer;
+    public GameObject HomingTrail;
+    PlayerBhysics Player;
     public float skinRotationSpeed = 1;
-	public Transform Target { get; set; }
-	private float InitialVelocityMagnitude;
-	float Timer;
-	float Speed;
-	float Aspeed;
+    public Transform Target { get; set; }
+    private float InitialVelocityMagnitude;
+    float Timer;
+    float Speed;
+    float Aspeed;
 
-	//[SerializeField] float DashingTimerLimit;
-	float DashSpeed;
-	float EndingSpeedFactor;
-	float MinimumEndingSpeed;
-	Vector3 direction;
+    //[SerializeField] float DashingTimerLimit;
+    [SerializeField] float DashSpeed;
+    [SerializeField] float EndingSpeedFactor;
+    [SerializeField] float MinimumEndingSpeed;
+    Vector3 direction;
 
-	void Awake()
-	{
-		if (Player == null)
-        {
-			Tools = GetComponent<CharacterTools>();
-			AssignTools();
-
-			AssignStats();
-        }
-	}
-
+    void Awake()
+    {
+        Player = GetComponent<PlayerBhysics>();
+    }
 
     public void InitialEvents()
-	{
-		InitialVelocityMagnitude = Player.rb.velocity.magnitude;
-		Player.rb.velocity = Vector3.zero;
+    {
+        InitialVelocityMagnitude = Player.p_rigidbody.velocity.magnitude;
+        Player.p_rigidbody.velocity = Vector3.zero;
 
-		JumpBall.SetActive(false);
-		if (HomingTrailContainer.transform.childCount < 1) 
-		{
-			GameObject HomingTrailClone = Instantiate (HomingTrail, HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
-			HomingTrailClone.transform.parent = HomingTrailContainer.transform;
-		}
-			
-		if (Action.Action07Control.HasTarget && Target != null)
-		{
-			Target = Action.Action07Control.TargetObject.transform;
-		}
-			
-	}
+        Action.Action01.JumpBall.SetActive(false);
+        if (HomingTrailContainer.transform.childCount < 1)
+        {
+            GameObject HomingTrailClone = Instantiate(HomingTrail, HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
+            HomingTrailClone.transform.parent = HomingTrailContainer.transform;
+        }
 
-	void Update()
-	{
+        if (Action.Action07Control.HasTarget && Target != null)
+        {
+            Target = LightDashControl.TargetObject.transform;
+        }
 
-		//Set Animator Parameters
-		CharacterAnimator.SetInteger("Action", 7);
-		CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
-		CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
-		CharacterAnimator.SetBool("Grounded", Player.Grounded);
+    }
 
-		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
-		if (VelocityMod != Vector3.zero)
-		{
-			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-			CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
-		}
-	
+    void Update()
+    {
 
-	}
+        //Set Animator Parameters
+        CharacterAnimator.SetInteger("Action", 7);
+        CharacterAnimator.SetFloat("YSpeed", Player.p_rigidbody.velocity.y);
+        CharacterAnimator.SetFloat("GroundSpeed", Player.p_rigidbody.velocity.magnitude);
+        CharacterAnimator.SetBool("Grounded", Player.Grounded);
+
+        //Set Animation Angle
+        Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, Player.p_rigidbody.velocity.y, Player.p_rigidbody.velocity.z);
+        Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
+        CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+
+    }
 
     void FixedUpdate()
     {
-		
-		//Timer += 1;
+        //Timer += 1;
 
-		Inp.LockInputForAWhile(1f, true);
+        //CharacterAnimator.SetInteger("Action", 1);
+        if (Action.Action07Control.HasTarget)
+        {
+            Target = LightDashControl.TargetObject.transform;
+            direction = Target.position - transform.position;
+            Player.p_rigidbody.velocity = direction.normalized * DashSpeed;
 
-		//CharacterAnimator.SetInteger("Action", 1);
-		if (Action.Action07Control.TargetObject  != null) 
-		{
-			Target = Action.Action07Control.TargetObject.transform;
-			direction = Target.position - transform.position;
-			Player.rb.velocity = direction.normalized * DashSpeed;
+            GetComponent<CameraControl>().Cam.FollowDirection(2, 14f, -10, 0);
+        }
+        //End homing attck if on air for too long
+        if (!Action.Action07Control.HasTarget)
+        {
+            float EndingSpeedResult = 0;
+            ////Debug.Log (InitialVelocityMagnitude);
+            EndingSpeedResult = Mathf.Max(MinimumEndingSpeed, InitialVelocityMagnitude);
+            ////Debug.Log (InitialVelocityMagnitude);
+            ////Debug.Log (EndingSpeedResult);
+            Player.p_rigidbody.velocity = Vector3.zero;
+            Player.p_rigidbody.velocity = direction.normalized * EndingSpeedResult * EndingSpeedFactor;
 
-			GetComponent<CameraControl>().Cam.FollowDirection(4, 14f, -10,0);
-		}
+            GetComponent<CameraControl>().Cam.SetCamera(direction.normalized, 2.5f, 20, 5f, 10);
 
-		else
-		{
-			float EndingSpeedResult = 0;
+            for (int i = HomingTrailContainer.transform.childCount - 1; i >= 0; i--)
+                Destroy(HomingTrailContainer.transform.GetChild(i).gameObject);
 
-			EndingSpeedResult = Mathf.Max (MinimumEndingSpeed, InitialVelocityMagnitude);
+            GetComponent<PlayerBinput>().LockInputForAWhile(10, true);
 
-			Player.rb.velocity = Vector3.zero;
-			Player.rb.velocity = direction.normalized*EndingSpeedResult*EndingSpeedFactor;
-		
-			//GetComponent<CameraControl>().Cam.SetCamera(direction.normalized, 2.5f, 20, 5f,10);
-
-			for(int i = HomingTrailContainer.transform.childCount-1; i>=0; i--)
-				Destroy(HomingTrailContainer.transform.GetChild(i).gameObject);
-
-			GetComponent<PlayerBinput>().LockInputForAWhile(10, true);
-
-			CharacterAnimator.SetInteger("Action", 0);
-			Action.ChangeAction(0);
-		}
+            CharacterAnimator.SetInteger("Action", 0);
+            Action.ChangeAction(0);
+        }
     }
-
-	private void AssignStats()
-    {
-		DashSpeed = Tools.stats.DashSpeed;
-		EndingSpeedFactor = Tools.stats.EndingSpeedFactor;
-		MinimumEndingSpeed = Tools.stats.MinimumEndingSpeed;
-    }
-
-	private void AssignTools()
-    {
-		Player = GetComponent<PlayerBhysics>();
-		Action = GetComponent<ActionManager>();
-		Inp = GetComponent<PlayerBinput>();
-
-		HomingTrailContainer = Tools.HomingTrailContainer;
-		CharacterAnimator = Tools.CharacterAnimator;
-		JumpBall = Tools.JumpBall;
-		HomingTrail = Tools.HomingTrail;
-	}
 
 }
