@@ -146,14 +146,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Path: 0
   onRail: 0
-  rail: {fileID: 0}
+  railBackwards: 0
   isDashRing: 1
   path: {fileID: 0}
+  setSpeed: 1
+  addSpeed: 15
   Speed: 80
   LockToDirection: 1
-  ChangeCameraDirection: 1
   Snap: 1
   AffectCamera: 1
   ResetRotation: 1
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 3514529406219168338}
   - component: {fileID: 1375498123779447062}
   - component: {fileID: 126034879377962833}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ref_Direction
   m_TagString: Untagged
   m_Icon: {fileID: 0}

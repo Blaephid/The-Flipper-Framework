@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 23523748978493810}
   - component: {fileID: 114298200381955534}
   - component: {fileID: 6256206368870015520}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: '[RingSpawner] - Eternal'
   m_TagString: Untagged
   m_Icon: {fileID: 0}

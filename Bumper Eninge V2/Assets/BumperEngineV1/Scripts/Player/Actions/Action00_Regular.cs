@@ -384,7 +384,7 @@ public class Action00_Regular : MonoBehaviour {
         JumpAction = GetComponent<Action01_Jump>();
         Cam = GetComponent<CameraControl>();
         quickstepManager = GetComponent<quickstepHandler>();
-        sounds = GetComponent<SonicSoundsControl>();
+        sounds = Tools.SoundControl;
         quickstepManager.enabled = false;
         characterCapsule = Tools.characterCapsule;
         CharacterAnimator = Tools.CharacterAnimator;

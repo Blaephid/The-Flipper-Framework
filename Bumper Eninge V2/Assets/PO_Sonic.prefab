@@ -5620,11 +5620,11 @@ MonoBehaviour:
   stats: {fileID: 11400000, guid: 48acf3fada3825a4c8ee0df96ccd47de, type: 2}
   coreStats: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee, type: 2}
   camStats: {fileID: 11400000, guid: ba202d2693251114c953112101121bfc, type: 2}
-  JumpBall: {fileID: 8950381718385962081}
   characterCapsule: {fileID: 1605683383104138}
   crouchCapsule: {fileID: 1794423812473573934}
-  pullItems: {fileID: 0}
   faceHit: {fileID: 2300319031008489792}
+  angleSphere: {fileID: 1402560567278942}
+  JumpBall: {fileID: 8950381718385962081}
   SpinDashBall: {fileID: 6401681417729965595}
   shield: {fileID: 1118500399814704}
   homingIcons: {fileID: 1118507794600760}
@@ -5635,25 +5635,26 @@ MonoBehaviour:
   cameraTarget: {fileID: 5864465826205128439}
   constantTarget: {fileID: 1402049021547905091}
   movingRing: {fileID: 1000010258715224, guid: 5594771c7bfdd2f41abf18862493d3ec, type: 3}
-  CharacterAnimator: {fileID: 3378010807672333325}
-  SoundControl: {fileID: 2033352984286159667}
-  EffectsControl: {fileID: 4087892316188066615}
-  BallAnimator: {fileID: 4990075719817118605}
   PlayerSkin:
   - {fileID: 4563331150787594344}
   DropSpinBall: {fileID: 8351446441402268042}
   mainSkin: {fileID: 6420733220765619769}
   PlayerSkinTransform: {fileID: 2990453842665127441}
-  DirectionReference: {fileID: 1764732933454054073}
-  HomingTrailScript: {fileID: 7441756360900113955}
-  HomingTrailContainer: {fileID: 2811701264705192466}
-  HomingTrail: {fileID: 1638298306650436, guid: f3587a15870c2f446a4df3c71be1fe7a,
-    type: 3}
   HandGripPoint: {fileID: 3378693890348075912}
   FeetPoint: {fileID: 8412749811221693294}
+  DirectionReference: {fileID: 1764732933454054073}
+  CollisionPoint: {fileID: 8412749811221693294}
+  BallAnimator: {fileID: 4990075719817118605}
+  CharacterAnimator: {fileID: 3378010807672333325}
+  SoundControl: {fileID: 2033352984286159667}
+  EffectsControl: {fileID: 4087892316188066615}
   FadeOutImage: {fileID: 114068834119247430}
   DropEffect: {fileID: 339764373253515146}
   JumpDashParticle: {fileID: 1462817469197794, guid: 8a79089659af2b2499f53e81ae2846c0,
+    type: 3}
+  HomingTrailScript: {fileID: 7441756360900113955}
+  HomingTrailContainer: {fileID: 2811701264705192466}
+  HomingTrail: {fileID: 1638298306650436, guid: f3587a15870c2f446a4df3c71be1fe7a,
     type: 3}
 --- !u!114 &114945863342939534
 MonoBehaviour:
@@ -5674,24 +5675,7 @@ MonoBehaviour:
   GravityAffects: 1
   StartFallGravity: {x: 0, y: 0, z: 0}
   fallGravity: {x: 0, y: 0, z: 0}
-  GroundOffset: 0.12
-  CollisionPoint: {fileID: 4695150684650470}
-  CollisionSphere: {fileID: 135154396464815898}
-  CollisionCapsule: {fileID: 136523689393380730}
-  itemPull: {fileID: 0}
-  MainCamera: {fileID: 3481964517662927139}
-  Colliders: {fileID: 0}
-  sounds: {fileID: 2033352984286159667}
   HomingDelay: 0
-  Debui: {fileID: 114032948640437100}
-  RollingLandingBoost: 2.5
-  RollingDownhillBoost: 2.5
-  RollingUphillBoost: 1.5
-  RollingStartSpeed: 1000
-  RollingTurningDecreace: 0.75
-  RollingFlatDecell: 1.005
-  SlopeTakeoverAmount: 0.995
-  UseSphereToGetNormal: 0
   EnableDebug: 0
   RayToGroundDistancecor: 0
   RayToGroundRotDistancecor: 0
@@ -6118,6 +6102,7 @@ MonoBehaviour:
   lockDoubleJump: 0
   moveX: 0
   moveY: 0
+  moveVec: {x: 0, y: 0}
   moveCamX: 0
   moveCamY: 0
   mouseSensi: 0
@@ -6146,14 +6131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6da8dadf30a2c64abf5847208a3b113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CharacterAnimator: {fileID: 3378010807672333325}
-  sounds: {fileID: 2033352984286159667}
-  characterCapsule: {fileID: 1605683383104138}
   skinRotationSpeed: 9
-  MaximumSpeed: 50
-  MaximumSlope: 0.97
-  SpeedToStopAt: 0
-  SkiddingStartPoint: 5
   Rolling: 0
   rollCounter: 0
 --- !u!114 &114873388628942606
@@ -18934,8 +18912,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
-  m_LocalRotation: {x: 0.0000983464, y: -0.9997728, z: 0.0047296314, w: 0.02078511}
-  m_LocalPosition: {x: -67.56401, y: -2.4448438, z: 428.25894}
+  m_LocalRotation: {x: -0.22391766, y: 0.58757335, z: -0.2768991, w: 0.72659856}
+  m_LocalPosition: {x: -84.82, y: 593.89954, z: 1170.506}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -18974,7 +18952,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 10485559
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

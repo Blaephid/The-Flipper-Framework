@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33000013020739134}
   - component: {fileID: 23000013583174122}
   - component: {fileID: 114000013676551784}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: '[EnemySpawner] - Eternal'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29,6 +29,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -523.48035, y: 53.678925, z: 177.98615}
   m_LocalScale: {x: 2.125547, y: 2.1255462, z: 2.1255462}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -52,10 +53,12 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -81,6 +84,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000013676551784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Distance: 1000
   RespawnTime: 1.3
+  respawnOnDeath: 1
   Enemy: {fileID: 1000014174463762, guid: a882f0e1aa7f4d34d9e6ec8bf7291118, type: 3}
   TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
     type: 3}

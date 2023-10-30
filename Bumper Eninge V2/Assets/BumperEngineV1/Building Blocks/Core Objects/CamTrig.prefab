@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33000013415293322}
   - component: {fileID: 23000010425617706}
   - component: {fileID: 114000011838899454}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Direction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,6 +151,7 @@ MonoBehaviour:
   FaceSpeed: 1
   CameraAltitude: 17
   ChangeDistance: -17
+  changeAltitude: 0
   changeDistance: 0
   ReleaseOnExit: 0
 --- !u!65 &65669958600555536
@@ -190,7 +191,7 @@ GameObject:
   - component: {fileID: 114639647001727468}
   - component: {fileID: 23647962910331542}
   - component: {fileID: 33457222903844524}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -288,7 +289,7 @@ GameObject:
   - component: {fileID: 3265427468551729866}
   - component: {fileID: 8092033082434014501}
   - component: {fileID: 3009216541602338576}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Direction (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
