@@ -1,0 +1,159 @@
+fileFormatVersion: 2
+guid: 00fc9198e5f30224aaec38a7e928c800
+ModelImporter:
+  serializedVersion: 21202
+  internalIDToNameTable:
+  - first:
+      74: -132401512145757266
+    second: GT_SonicMeshOBJ|sn_jump_d_arc_loop.dae
+  - first:
+      74: 1798467260686175360
+    second: GT_SonicMeshOBJ|sn_jump_d_loop.dae
+  - first:
+      74: -9137748412218895943
+    second: GT_SonicMeshOBJ|sn_jump_d_s_loop.dae
+  - first:
+      74: 136190663559153003
+    second: GT_SonicMeshOBJ|sn_jump_e.dae
+  - first:
+      74: -8450162525340197514
+    second: GT_SonicMeshOBJ|sn_jump_loop.dae
+  - first:
+      74: -3247230131308706769
+    second: GT_SonicMeshOBJ|sn_jump_s.dae
+  - first:
+      74: 4996258218444059827
+    second: GT_SonicMeshOBJ|sn_jump_top.dae
+  - first:
+      74: 835842793324862070
+    second: GT_SonicMeshOBJ|sn_jumpstand01_l_s.dae
+  - first:
+      74: 7207597494782248564
+    second: GT_SonicMeshOBJ|sn_jumpstand01_r_s.dae
+  - first:
+      74: -7907113643672963230
+    second: GT_SonicMeshOBJ|sn_jumpstand_s.dae
+  - first:
+      74: -5470095205842794203
+    second: GT_SonicMeshOBJ|sn_landing_big.dae
+  - first:
+      74: -5418686270298020969
+    second: GT_SonicMeshOBJ|sn_landing_idle.dae
+  - first:
+      74: 7995457131329517594
+    second: GT_SonicMeshOBJ|sn_landing_loop.dae
+  - first:
+      74: -8838080766261439500
+    second: GT_SonicMeshOBJ|sn_landing_s.dae
+  - first:
+      74: -5208654247089238172
+    second: GT_SonicMeshOBJ|sn_polespin_jump_loop.dae
+  - first:
+      74: -8150248855048062663
+    second: GT_SonicMeshOBJ|sn_polespin_jump_s.dae
+  - first:
+      74: 2594402402574994173
+    second: GT_SonicMeshOBJ|sn_polespin_loop.dae
+  - first:
+      74: -1656808966016177235
+    second: GT_SonicMeshOBJ|sn_polespin_s.dae
+  externalObjects: {}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 1
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
