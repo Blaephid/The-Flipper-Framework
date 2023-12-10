@@ -1,12 +1,32 @@
 fileFormatVersion: 2
-guid: cdbdfb8050f6a1b4fa48528851bfb678
+guid: e67537df6fb33e345a2680d3479af749
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable:
   - first:
       74: -623603649343465320
     second: Scene
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GT_Sonic_Body
+    second: {fileID: 2100000, guid: 228ebca6adfb11f4a955b48ce562998f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GT_Sonic_Eyes
+    second: {fileID: 2100000, guid: ca7b1675a29716444bfe8376ae012c0b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GT_sonic_gm_cloth
+    second: {fileID: 2100000, guid: 9ba4779e4f3a7dc419db6e80d11417ca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GT_sonic_gm_shoes_red
+    second: {fileID: 2100000, guid: e2adb8c9c35d58b41a0475fb12adde71, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

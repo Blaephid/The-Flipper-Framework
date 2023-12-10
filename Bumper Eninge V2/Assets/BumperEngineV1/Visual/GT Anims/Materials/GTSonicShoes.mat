@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: GTSonicShoes
-  m_Shader: {fileID: 4800000, guid: deaac5126f9474447910e1d71337b249, type: 3}
+  m_Shader: {fileID: 4800000, guid: 35b921ad613e4ac40b30b1160ea55fc0, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _METALLICGLOSSMAP
@@ -27,7 +27,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Cube:
-        m_Texture: {fileID: 8900000, guid: d7d6af95cd904c94b993fb9392383260, type: 3}
+        m_Texture: {fileID: 8900000, guid: 4030eb1b45b40724eb96aa876973786a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -47,7 +47,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 769160c88c579924a9d96d46d89ce934, type: 3}
+        m_Texture: {fileID: 2800000, guid: d54b68f7418c8bb479c2c9613794db6e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -67,7 +67,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RimMap:
-        m_Texture: {fileID: 2800000, guid: 603b1767b913056409e88c4aaf0055fd, type: 3}
+        m_Texture: {fileID: 2800000, guid: 67618761e6aae764184829448fba1e25, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:

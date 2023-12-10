@@ -2,14 +2,18 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CheckPointLaser_Blue
   m_Shader: {fileID: 211, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _ALPHABLEND_ON _EMISSION _FADING_ON
+  m_ValidKeywords:
+  - _ALPHABLEND_ON
+  - _EMISSION
+  - _FADING_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -38,11 +42,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
-        m_Texture: {fileID: 2800000, guid: 7a6d76293afb3e74f87a8ce41cb53678, type: 3}
+        m_Texture: {fileID: 2800000, guid: 407e4afb32ff36f4ba5f690d8e3afc26, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 7a6d76293afb3e74f87a8ce41cb53678, type: 3}
+        m_Texture: {fileID: 2800000, guid: 407e4afb32ff36f4ba5f690d8e3afc26, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -57,6 +61,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _BlendOp: 0
     - _BumpScale: 1
@@ -98,3 +103,4 @@ Material:
     - _EmissionColor: {r: 0, g: 2, b: 1.955329, a: 1}
     - _SoftParticleFadeParams: {r: 0.5, g: 2, b: 0, a: 0}
     - _TintColor: {r: 1, g: 1, b: 1, a: 0.5}
+  m_BuildTextureStacks: []

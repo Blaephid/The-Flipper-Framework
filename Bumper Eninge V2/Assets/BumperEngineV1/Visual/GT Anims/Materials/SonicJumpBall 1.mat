@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SonicJumpBall 1
-  m_Shader: {fileID: 4800000, guid: deaac5126f9474447910e1d71337b249, type: 3}
+  m_Shader: {fileID: 4800000, guid: 35b921ad613e4ac40b30b1160ea55fc0, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -21,7 +21,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 4539ea805c16f9448805013669024340, type: 3}
+        m_Texture: {fileID: 2800000, guid: 27517636f716f26459d3e26e27c03318, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Cube:
@@ -45,7 +45,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: bfbc67d56fe692c419a7ce10dc6f3903, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2ede603e8da3f404393e195a2fb33d03, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -65,7 +65,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RimMap:
-        m_Texture: {fileID: 2800000, guid: 0a3295714d1595c479ead21b930e5510, type: 3}
+        m_Texture: {fileID: 2800000, guid: 706fcad48d4725d4ab60c11f28cd8d06, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:

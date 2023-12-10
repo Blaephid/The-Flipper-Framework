@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: GTEyes
-  m_Shader: {fileID: 4800000, guid: deaac5126f9474447910e1d71337b249, type: 3}
+  m_Shader: {fileID: 4800000, guid: 35b921ad613e4ac40b30b1160ea55fc0, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _GLOSSYREFLECTIONS_OFF
@@ -30,7 +30,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 88cf7c33bbe55da409612ba935d3e857, type: 3}
+        m_Texture: {fileID: 2800000, guid: 99b3451c9f6c41e49a12c5fcbe9ea766, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: -0.0067784553, y: 0.007475097}
     - _BumpMapBottom:
@@ -46,7 +46,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Cube:
-        m_Texture: {fileID: 8900000, guid: 9935f65ef8ff554428db03097bc3295c, type: 3}
+        m_Texture: {fileID: 8900000, guid: bb42fe9609d1d384d93b771bb154d9f0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -66,7 +66,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: df6b363ea5424ca4bbfcc7dd64734702, type: 3}
+        m_Texture: {fileID: 2800000, guid: 70b724c73e65c414a841c05fa61a06dc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: -0.0067784553, y: 0.007475097}
     - _MetallicGlossMap:
@@ -82,11 +82,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RefMap:
-        m_Texture: {fileID: 2800000, guid: 7119870ca22d3f94c802195bf619747b, type: 3}
+        m_Texture: {fileID: 2800000, guid: e2329b7072d0a944c9948a7b549247df, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RimMap:
-        m_Texture: {fileID: 2800000, guid: 5c26b28b485dc9c48bed4d3ee4085a52, type: 3}
+        m_Texture: {fileID: 2800000, guid: 03aad8f5bec366243b34366698dcf93c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: -0.0067784553, y: 0.007475097}
     - _Side:

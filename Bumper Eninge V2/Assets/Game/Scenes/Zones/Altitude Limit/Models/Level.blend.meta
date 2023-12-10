@@ -1,9 +1,39 @@
 fileFormatVersion: 2
-guid: 30b94936c043b54439d6ac2596047fbd
+guid: 8a3ba0c8df473c34f9b6f025ece981c4
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Danger Lines
+    second: {fileID: 2100000, guid: 9ba210706e9d6ea49a7320cfb205d12b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Floor
+    second: {fileID: 2100000, guid: 7a239a2ea3ebebe4bb040f97b394bf8d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Guard
+    second: {fileID: 2100000, guid: 9092d9bd32c9e6043a8a0f47ff799a03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Other
+    second: {fileID: 2100000, guid: 9092d9bd32c9e6043a8a0f47ff799a03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Road
+    second: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wall
+    second: {fileID: 2100000, guid: 58f7ebe9bfdc4294f9958020d14fccff, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -37,13 +67,13 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 0
+    addColliders: 1
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importCameras: 0
+    importLights: 0
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
