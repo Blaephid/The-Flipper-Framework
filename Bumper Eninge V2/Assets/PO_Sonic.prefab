@@ -6447,8 +6447,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RingCollectParticle: {fileID: 1000011339303976, guid: a9392ff007f838347a83411dd1d9e5e7,
     type: 3}
-  SpeedPadTrack: {fileID: 0}
-  DashRingMaterial: {fileID: 0}
+  SpeedPadTrack: {fileID: 2100000, guid: 620ddb7d525d8cf4c8825898d6d3273c, type: 2}
+  DashRingMaterial: {fileID: 2100000, guid: b759e3326b7e5e442b0b7e8f2058a414, type: 2}
   HomingBouncingPower: 0
   EnemyDamageShakeAmmount: 0
   EnemyHitShakeAmmount: 0
@@ -6471,11 +6471,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   basePlayer: {fileID: 1979695856965714}
-  RingGiver: {fileID: 1000012412811810, guid: d4fd95feefb62aa4da6662698e7f9ff2, type: 3}
-  ShieldGiver: {fileID: 1000011501981926, guid: 9eca80c57076a3b4d82233bb53f9396b,
+  RingGiver: {fileID: 1000012412811810, guid: 9819da52f45432d4884f2f63e4f33165, type: 3}
+  ShieldGiver: {fileID: 1000011501981926, guid: 19c0e282c5ce8414ea519d72e79dd479,
     type: 3}
   ShieldObject: {fileID: 1118500399814704}
-  NormalShieldMaterial: {fileID: 0}
+  NormalShieldMaterial: {fileID: 2100000, guid: 87b5faac8a750664d9bb8eda1b21739b,
+    type: 2}
   ShieldOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &5448501015510275567
 MonoBehaviour:
@@ -6492,7 +6493,7 @@ MonoBehaviour:
   tools: {fileID: 2061662532465713779}
   basePlayer: {fileID: 1979695856965714}
   ResumeTransform: {fileID: 4809842342266818}
-  LampDone: {fileID: 0}
+  LampDone: {fileID: 2100000, guid: 040c400990661674ca82deac3c7e584c, type: 2}
   LevelToGoNext: 0
   NextLevelNameLeft: GOING
   NextLevelNameRight: BACK
@@ -18231,7 +18232,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  m_CustomBlends: {fileID: 11400000, guid: 992bda7dd40f5094897b5f566d9d40eb, type: 2}
+  m_CustomBlends: {fileID: 11400000, guid: f8df76bae2524154ba8e85a65b9cb268, type: 2}
   m_CameraCutEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -19486,7 +19487,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3563295224368580408}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: 30c8cff7ea9612742b1224554853110a, type: 3}
   m_Controller: {fileID: 9100000, guid: 4b287442020621c4bb22752f773ef006, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
@@ -32085,7 +32086,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7315157129946473459}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 955f9d43d22c38043a74744cdae27c05, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 3c69be15b8efd5c4fa46a7d83fcb0380, type: 3}
   m_Controller: {fileID: 9100000, guid: d7dbc906bb527e247bea12e39343d424, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
