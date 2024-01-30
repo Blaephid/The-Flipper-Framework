@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class PullItems : MonoBehaviour
 {
-    CharacterTools tools;
+    S_CharacterTools tools;
 
     Animator CharacterAnimator;
-    PlayerBhysics player;
+    S_PlayerPhysics player;
 
     AnimationCurve radiusBySpeed;
     LayerMask ringMask;
@@ -19,8 +19,8 @@ public class PullItems : MonoBehaviour
 
     public void Start()
     {
-        player = GetComponent<PlayerBhysics>();
-        tools = GetComponent<CharacterTools>();
+        player = GetComponent<S_PlayerPhysics>();
+        tools = GetComponent<S_CharacterTools>();
 
         CharacterAnimator = tools.CharacterAnimator;
         radiusBySpeed = tools.coreStats.radiusBySpeed;

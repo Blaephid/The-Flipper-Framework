@@ -16,7 +16,7 @@ public class ShieldGiverControl : MonoBehaviour {
             if (!hasadded)
             {
                 hasadded = true;
-                Monitors_Interactions.HasShield = true;
+                S_Interaction_Monitors.HasShield = true;
                 GetComponent<AudioSource>().Play();
             }
         }

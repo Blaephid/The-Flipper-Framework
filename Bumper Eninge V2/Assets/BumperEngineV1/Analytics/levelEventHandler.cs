@@ -12,7 +12,7 @@ public class levelEventHandler : MonoBehaviour
     //public AnalyticsManager analyMan;
     Scene scene;
 
-    PlayerBhysics playerPhys;
+    S_PlayerPhysics playerPhys;
     string curScene;
 
     float timeInLevel;

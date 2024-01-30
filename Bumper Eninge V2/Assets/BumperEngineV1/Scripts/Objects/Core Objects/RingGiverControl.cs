@@ -16,7 +16,7 @@ public class RingGiverControl : MonoBehaviour {
             if (!hasadded)
             {
                 hasadded = true;
-                Objects_Interaction.RingAmount += Rings;
+                S_Interaction_Objects.RingAmount += Rings;
                 GetComponent<AudioSource>().Play();
             }
         }

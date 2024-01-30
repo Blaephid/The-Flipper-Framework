@@ -24,8 +24,8 @@ public class MetricTracker : MonoBehaviour
     bool followingAcc;
     bool followingJump;
 
-    PlayerBhysics player;
-    Action01_Jump jumpAction;
+    S_PlayerPhysics player;
+    S_Action01_Jump jumpAction;
 
 
 
@@ -33,10 +33,10 @@ public class MetricTracker : MonoBehaviour
     {
         if(other.tag == "Player")
         {
-            player = other.GetComponentInParent<PlayerBhysics>();
+            player = other.GetComponentInParent<S_PlayerPhysics>();
             if(trackJumpsInstead)
             {
-                jumpAction = other.GetComponentInParent<Action01_Jump>();
+                jumpAction = other.GetComponentInParent<S_Action01_Jump>();
             }
 
             if (startPoint.startTrack && atEnd)
@@ -113,7 +113,7 @@ public class MetricTracker : MonoBehaviour
 
             if(trackJumpsInstead)
             {
-                if((player.Action.Action != ActionManager.States.Jump && player.Action.Action != ActionManager.States.JumpDash) || jumpAction.Jumping)
+                if((player.Action.Action != S_ActionManager.States.Jump && player.Action.Action != S_ActionManager.States.JumpDash) || jumpAction.Jumping)
                     player.Action.JumpPressed = true;
 
                 if (!followingJump && !player.Grounded)

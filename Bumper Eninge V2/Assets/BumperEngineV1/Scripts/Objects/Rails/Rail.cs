@@ -12,7 +12,7 @@ public class Rail : MonoBehaviour
     Vector3[] RailRotationArray;
 
     public Transform WaypointsHolder;
-    public PlayerBhysics Player;
+    public S_PlayerPhysics Player;
 
     void Start()
     {

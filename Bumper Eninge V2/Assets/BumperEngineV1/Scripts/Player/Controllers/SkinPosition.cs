@@ -4,7 +4,7 @@ using System.Collections;
 public class SkinPosition : MonoBehaviour {
 
     SetPosition setPosScript;
-    public PlayerBhysics Player;
+    public S_PlayerPhysics Player;
 
     void Awake()
     {

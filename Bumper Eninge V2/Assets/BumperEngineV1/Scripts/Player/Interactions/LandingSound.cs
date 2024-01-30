@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LandingSound : MonoBehaviour {
 
-    public PlayerBhysics Player;
+    public S_PlayerPhysics Player;
     AudioSource source;
     bool played = false;
 

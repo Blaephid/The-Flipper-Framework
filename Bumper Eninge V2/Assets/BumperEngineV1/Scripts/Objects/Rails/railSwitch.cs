@@ -47,7 +47,7 @@ public class railSwitch : MonoBehaviour
     {
         if (main)
         {
-            LevelProgressControl.onReset += Reset;
+            S_Manager_LevelProgress.onReset += Reset;
         }
     }
 

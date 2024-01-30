@@ -43,7 +43,7 @@ namespace SplineMesh
         public float hopDistance = 12;
 
         bool active = false;
-        [HideInInspector] public Action05_Rail playerRail;
+        [HideInInspector] public S_Action05_Rail playerRail;
         float currentSpeed;
         float range;
         CurveSample sample;
@@ -82,7 +82,7 @@ namespace SplineMesh
             if (currentSpeed == 0)
                 currentSpeed = StartSpeed;
 
-            LevelProgressControl.onReset += ReturnOnDeath;
+            S_Manager_LevelProgress.onReset += ReturnOnDeath;
 
         }
 

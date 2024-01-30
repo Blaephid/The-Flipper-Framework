@@ -194,7 +194,7 @@ namespace SplineMesh {
                     typeof(MeshFilter),
                     typeof(MeshRenderer),
                     typeof(MeshBender),
-                    typeof(DeactivateOnStart),
+                    typeof(S_DeactivateOnStart),
                     typeof(MeshCollider));  
                 res.isStatic = true;
             } else {
@@ -205,8 +205,8 @@ namespace SplineMesh {
             res.GetComponent<MeshCollider>().material = physicMaterial;
             res.GetComponent<MeshCollider>().enabled = enableCollider;
             res.GetComponent<MeshRenderer>().enabled = enableVisual;
-            if(res.GetComponent<DeactivateOnStart>())
-               res.GetComponent<DeactivateOnStart>().enabled = DeactivateOnStart;
+            if(res.GetComponent<S_DeactivateOnStart>())
+               res.GetComponent<S_DeactivateOnStart>().enabled = DeactivateOnStart;
             res.tag = ObjTag;
             res.layer = ObjLayer;
 

@@ -7,7 +7,7 @@ public class AnalogDebug : MonoBehaviour {
     public RectTransform AnalogStickPos;
     public float Size;
 
-    public PlayerBinput Inp;
+    public S_PlayerInput Inp;
 
     void Update()
     {

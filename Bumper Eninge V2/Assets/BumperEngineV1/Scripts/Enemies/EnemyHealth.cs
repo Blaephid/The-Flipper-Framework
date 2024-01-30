@@ -7,7 +7,7 @@ public class EnemyHealth : MonoBehaviour {
     int HP;
 
     public GameObject Explosion;
-    public EnemySpawnerEternal SpawnReference { get; set; }
+    public S_Spawn_Enemy_Eternal SpawnReference { get; set; }
 
     public bool destroy = true;
 

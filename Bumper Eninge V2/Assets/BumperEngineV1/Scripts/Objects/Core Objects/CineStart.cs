@@ -40,7 +40,7 @@ public class CineStart : MonoBehaviour
     CinemachineVirtualCamera hedgeCam;
 
     GameObject Player;
-    ActionManager Actions;
+    S_ActionManager Actions;
 
     [Header("On Cancel")]
     public bool setBehind = true;
@@ -64,8 +64,8 @@ public class CineStart : MonoBehaviour
         {
             if (!endCine)
             {
-                Player = other.GetComponentInParent<PlayerBhysics>().gameObject;
-                Actions = Player.GetComponent<ActionManager>();
+                Player = other.GetComponentInParent<S_PlayerPhysics>().gameObject;
+                Actions = Player.GetComponent<S_ActionManager>();
             }
             else
                 DeactivateCam(lockTime);
@@ -77,11 +77,11 @@ public class CineStart : MonoBehaviour
         {
             if(!isActive && Player != null)
             {
-                if ( Actions.Action == ActionManager.States.Path || (Actions.Action == ActionManager.States.Regular && RegularAction) || (Actions.Action == ActionManager.States.Jump && JumpAction) 
-                    || (Actions.Action == ActionManager.States.Rail && RailAction) || (Actions.Action == ActionManager.States.WallRunning && wallRunAction) || (Actions.Action == ActionManager.States.RingRoad && RingRoadAction))
+                if ( Actions.Action == S_ActionManager.States.Path || (Actions.Action == S_ActionManager.States.Regular && RegularAction) || (Actions.Action == S_ActionManager.States.Jump && JumpAction) 
+                    || (Actions.Action == S_ActionManager.States.Rail && RailAction) || (Actions.Action == S_ActionManager.States.WallRunning && wallRunAction) || (Actions.Action == S_ActionManager.States.RingRoad && RingRoadAction))
                 {
                     isActive = true;
-                    hedgeCam = Player.GetComponent<CameraControl>().virtCam;
+                    hedgeCam = Player.GetComponent<S_Handler_Camera>().virtCam;
                     
 
                     ActivateCam(5f);
@@ -98,7 +98,7 @@ public class CineStart : MonoBehaviour
 
                     if (disableMove)
                     {
-                        Player.GetComponent<ActionManager>().actionDisable();
+                        Player.GetComponent<S_ActionManager>().actionDisable();
                     }
 
                 }
@@ -106,8 +106,8 @@ public class CineStart : MonoBehaviour
             else
             {
                 if(!(
-                    Actions.Action == ActionManager.States.Regular && RegularAction) && !(Actions.Action == ActionManager.States.Jump && JumpAction) && 
-                    !(Actions.Action == ActionManager.States.Rail && RailAction) && !(Actions.Action == ActionManager.States.WallRunning && wallRunAction) && !(Actions.Action == ActionManager.States.RingRoad && RingRoadAction) && onExit)
+                    Actions.Action == S_ActionManager.States.Regular && RegularAction) && !(Actions.Action == S_ActionManager.States.Jump && JumpAction) && 
+                    !(Actions.Action == S_ActionManager.States.Rail && RailAction) && !(Actions.Action == S_ActionManager.States.WallRunning && wallRunAction) && !(Actions.Action == S_ActionManager.States.RingRoad && RingRoadAction) && onExit)
                 {
                     DeactivateCam(0);
                 }
@@ -133,17 +133,17 @@ public class CineStart : MonoBehaviour
       
         if(startAtCameraPoint)
         {
-            attachedCam.transform.position = Player.GetComponent<CameraControl>().Cam.transform.position;
-            attachedCam.transform.rotation = Player.GetComponent<CameraControl>().Cam.transform.rotation;
+            attachedCam.transform.position = Player.GetComponent<S_Handler_Camera>().Cam.transform.position;
+            attachedCam.transform.rotation = Player.GetComponent<S_Handler_Camera>().Cam.transform.rotation;
         }
 
         attachedCam.transform.position += startOffset;
 
         attachedCam.SetActive(true);
-        hedgeCam = Player.GetComponent<CameraControl>().virtCam;
+        hedgeCam = Player.GetComponent<S_Handler_Camera>().virtCam;
         hedgeCam.gameObject.SetActive(false);
         if(disableFor > 0)
-            Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
+            Player.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true);
 
         if(timeDelay != 0)
         {
@@ -164,11 +164,11 @@ public class CineStart : MonoBehaviour
     {
         if (disableMove)
         {
-            Player.GetComponent<ActionManager>().actionEnable();
+            Player.GetComponent<S_ActionManager>().actionEnable();
         }
         if(setBehind)
         {
-            Player.GetComponent<CameraControl>().Cam.setBehind();
+            Player.GetComponent<S_Handler_Camera>().Cam.setBehind();
         }
 
         isActive = false;
@@ -177,6 +177,6 @@ public class CineStart : MonoBehaviour
         hedgeCam.gameObject.SetActive(true);
         attachedCam.SetActive(false);
         if(disableFor > 0)
-            Player.GetComponent<PlayerBinput>().LockInputForAWhile(disableFor, true);
+            Player.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true);
     }
 }

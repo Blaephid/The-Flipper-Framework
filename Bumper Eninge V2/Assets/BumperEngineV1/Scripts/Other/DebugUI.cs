@@ -4,9 +4,9 @@ using System.Collections;
 
 public class DebugUI : MonoBehaviour {
 
-    public PlayerBhysics phys;
-    public ActionManager action;
-    public PlayerBinput bimp;
+    public S_PlayerPhysics phys;
+    public S_ActionManager action;
+    public S_PlayerInput bimp;
 
     public Vector3 inputDirection;
     public float inputMagnitude;

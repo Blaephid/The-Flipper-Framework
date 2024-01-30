@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HintRingActor : MonoBehaviour
 {
-    HintBox _hintbox;
+    S_HintBox _hintbox;
     [TextArea(3, 20)]
     public string[] hintText;
     [TextArea(3, 20)]
@@ -33,7 +33,7 @@ public class HintRingActor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _hintbox = HintBox.instance;
+        _hintbox = S_HintBox.instance;
         InitialPos = Center.localPosition;
         LookTarget = Camera.main.transform;
         hintSound = GetComponent<AudioSource>();

@@ -5,15 +5,15 @@ using SplineMesh;
 
 public class SplineController : MonoBehaviour
 {
-    PlayerBhysics PlayerPhys;
+    S_PlayerPhysics PlayerPhys;
     public GameObject basePlayer;
-    PlayerBinput PlayerInput;
+    S_PlayerInput PlayerInput;
     public Spline activeSpline;
     // Start is called before the first frame update
     void Start()
     {
-        PlayerPhys = basePlayer.GetComponent<PlayerBhysics>();
-        PlayerInput = basePlayer.GetComponent<PlayerBinput>();
+        PlayerPhys = basePlayer.GetComponent<S_PlayerPhysics>();
+        PlayerInput = basePlayer.GetComponent<S_PlayerInput>();
     }
 
     private void FixedUpdate()

@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerSkin : MonoBehaviour {
 
     public Animator CharacterAnimator;
-    public PlayerBhysics Player;
+    public S_PlayerPhysics Player;
 
     public float skinRotationSpeed;
 

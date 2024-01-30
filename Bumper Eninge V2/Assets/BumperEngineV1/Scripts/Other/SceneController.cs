@@ -9,7 +9,7 @@ public class SceneController : MonoBehaviour {
     public static int LevelToLoad;
     public static int LastLoadedLevel;
 
-    PlayerBhysics Player;
+    S_PlayerPhysics Player;
 
     void Start()
     {
@@ -23,7 +23,7 @@ public class SceneController : MonoBehaviour {
             Instance = this;
         }
         LoadGameplay();
-        Player = GameObject.FindWithTag("Player").GetComponent<PlayerBhysics>();
+        Player = GameObject.FindWithTag("Player").GetComponent<S_PlayerPhysics>();
         Player.gameObject.SetActive(false);
 
     }

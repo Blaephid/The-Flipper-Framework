@@ -23,7 +23,7 @@ public class SpawnCharacter : MonoBehaviour {
 
 		yield return null;
 
-		Player.GetComponentInChildren<CharacterTools>().CharacterAnimator.transform.forward = transform.forward;
+		Player.GetComponentInChildren<S_CharacterTools>().CharacterAnimator.transform.forward = transform.forward;
 		//Player.transform.forward = transform.forward;
 		if (GameObject.Find("CharacterSelector") != null)
 		{

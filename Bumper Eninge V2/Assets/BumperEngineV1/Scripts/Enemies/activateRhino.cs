@@ -13,8 +13,8 @@ public class activateRhino : MonoBehaviour
         {
 
             Rhino.InitialEvents();
-            if (other.GetComponentInParent<Action05_Rail>()) 
-                Rhino.playerRail = other.GetComponentInParent<Action05_Rail>();
+            if (other.GetComponentInParent<S_Action05_Rail>()) 
+                Rhino.playerRail = other.GetComponentInParent<S_Action05_Rail>();
         }
     }
 }

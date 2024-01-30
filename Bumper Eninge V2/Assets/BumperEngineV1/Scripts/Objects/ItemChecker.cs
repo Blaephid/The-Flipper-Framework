@@ -5,8 +5,8 @@ using UnityEngine;
 public class ItemChecker : MonoBehaviour
 {
     public Transform Player;
-    public Objects_Interaction obj_Int;
-    public Pathers_Interaction path_Int;
+    public S_Interaction_Objects obj_Int;
+    public S_Interaction_Pathers path_Int;
 
     private void Update()
     {

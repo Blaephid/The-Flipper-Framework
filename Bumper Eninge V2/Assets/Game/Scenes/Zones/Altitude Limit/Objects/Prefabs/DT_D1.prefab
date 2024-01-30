@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 23816398090689138}
   - component: {fileID: 64557635885445410}
   - component: {fileID: 205444527974204698}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: DT_D1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 2833738bf92994044bdf2d7216aa845b, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: 2833738bf92994044bdf2d7216aa845b, type: 3}
 --- !u!205 &205444527974204698
 LODGroup:
   m_ObjectHideFlags: 0

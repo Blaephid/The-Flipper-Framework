@@ -13,7 +13,7 @@ public class MouseOrbitImproved : MonoBehaviour
     public float yMinLimit = -20f;
     public float yMaxLimit = 80f;
 
-    public PlayerBhysics Player;
+    public S_PlayerPhysics Player;
 
 
     public float x = 0.0f;

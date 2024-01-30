@@ -37,15 +37,15 @@ public class objectOnSpline : MonoBehaviour
 
     public void affectObject(GameObject go)
     {
-        if (isRings && go.GetComponent<RingSpawnerEternal>())
+        if (isRings && go.GetComponent<S_Spawn_Ring_Eternal>())
         {
             setRings(go);
         }
-        else if (isBooster && go.GetComponent<SpeedPadData>())
+        else if (isBooster && go.GetComponent<S_Data_SpeedPad>())
         {
             setBoosters(go);
         }
-        else if(isSpring && go.GetComponent<Spring_Proprieties>())
+        else if(isSpring && go.GetComponent<S_Data_Spring>())
         {
             setSprings(go);
         }
@@ -55,7 +55,7 @@ public class objectOnSpline : MonoBehaviour
 
     void setRings(GameObject go)
     {
-        RingSpawnerEternal goRing = go.GetComponent<RingSpawnerEternal>();
+        S_Spawn_Ring_Eternal goRing = go.GetComponent<S_Spawn_Ring_Eternal>();
         goRing.autoRespawn = respawnAuto;
         goRing.Distance = spawnDistance;
         goRing.RespawnTime = respawnTime;
@@ -64,7 +64,7 @@ public class objectOnSpline : MonoBehaviour
 
     void setBoosters(GameObject go)
     {
-        SpeedPadData pad = go.GetComponent<SpeedPadData>();
+        S_Data_SpeedPad pad = go.GetComponent<S_Data_SpeedPad>();
 
         pad.Speed = speed;
         pad.addSpeed = addRailSpeed;
@@ -74,7 +74,7 @@ public class objectOnSpline : MonoBehaviour
 
     void setSprings(GameObject go)
     {
-        Spring_Proprieties spring = go.GetComponent<Spring_Proprieties>();
+        S_Data_Spring spring = go.GetComponent<S_Data_Spring>();
         spring.SpringForce = force;
         spring.LockControl = LockControl;
         spring.LockTime = LockTime;

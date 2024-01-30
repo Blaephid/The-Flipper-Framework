@@ -26,7 +26,7 @@ public class PathTriggers : MonoBehaviour
     [SerializeField] Quaternion ExitRotation;
 
     private GameObject generated;
-    private DeactivateOnStart DeactivateOnStart;
+    private S_DeactivateOnStart DeactivateOnStart;
 
 
     // Update is called once per frame
@@ -101,7 +101,7 @@ public class PathTriggers : MonoBehaviour
         {
             res = UOUtility.Create(name,
                 generated,
-                typeof(DeactivateOnStart),
+                typeof(S_DeactivateOnStart),
                 typeof(BoxCollider));
             res.isStatic = true;
         }
@@ -109,7 +109,7 @@ public class PathTriggers : MonoBehaviour
         {
             res = childTransform.gameObject;
         }
-        res.GetComponent<DeactivateOnStart>().enabled = DeactivateOnStart;
+        res.GetComponent<S_DeactivateOnStart>().enabled = DeactivateOnStart;
         res.tag = "PathTrigger";
         res.layer = 0;
 
