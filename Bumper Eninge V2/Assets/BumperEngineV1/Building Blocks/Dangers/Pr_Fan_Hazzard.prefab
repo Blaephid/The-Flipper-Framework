@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5527423381473884701}
   - component: {fileID: 3199129649857593023}
   - component: {fileID: 7255136131324040645}
-  - component: {fileID: 4680696351185398191}
   - component: {fileID: 4866348618383848669}
+  - component: {fileID: 3097378542133672196}
   m_Layer: 12
   m_Name: Cube.048
   m_TagString: Hazard
@@ -85,20 +85,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4680696351185398191
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 315814870013145565}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -6851752233551798572, guid: 8a3ba0c8df473c34f9b6f025ece981c4, type: 3}
 --- !u!114 &4866348618383848669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,9 +97,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5cbaab292389404c85bc2310068bf55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RotateSpeed: {x: 0, y: 20, z: 0}
+  RotateSpeed: {x: 0, y: 40, z: 0}
   InitialRandomRotationAmm: 0
   SetBasedOnXpos: 1
+--- !u!64 &3097378542133672196
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 315814870013145565}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8301338372331653424, guid: d80dfa10a3f875a4a8f1ed156fbb4db2, type: 3}
 --- !u!1 &3328456821775724582
 GameObject:
   m_ObjectHideFlags: 0

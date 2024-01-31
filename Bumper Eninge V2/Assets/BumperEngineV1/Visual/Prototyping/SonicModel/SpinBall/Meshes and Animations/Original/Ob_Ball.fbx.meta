@@ -27,7 +27,12 @@ ModelImporter:
   - first:
       74: 2585626138074371106
     second: Armature|Spindash.001
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: model0
+    second: {fileID: 2100000, guid: 32001a75d7ae3174988e3e1696f35b70, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

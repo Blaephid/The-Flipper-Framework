@@ -11,6 +11,7 @@ public class S_Action07_RingRoad : MonoBehaviour {
 	S_ActionManager Action;
 	GameObject HomingTrailContainer;
 	public GameObject HomingTrail;
+	public Vector3 trailOffSet = new Vector3(0,-3,0);
 	S_PlayerPhysics Player;
 	S_PlayerInput Inp;
 
@@ -52,6 +53,7 @@ public class S_Action07_RingRoad : MonoBehaviour {
 		{
 			GameObject HomingTrailClone = Instantiate (HomingTrail, HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
 			HomingTrailClone.transform.parent = HomingTrailContainer.transform;
+			HomingTrailClone.transform.localPosition = trailOffSet;
 		}
 			
 		if (Action.Action07Control.HasTarget && Target != null)
