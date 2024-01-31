@@ -8,12 +8,12 @@ using UnityEngine.Events;
 namespace SplineMesh {
     [DisallowMultipleComponent]
     [ExecuteInEditMode]
-    [RequireComponent(typeof(Spline))]
+    [RequireComponent(typeof(S_Spline))]
     public class SplineSmoother : MonoBehaviour {
-        private Spline spline;
-        private Spline Spline {
+        private S_Spline spline;
+        private S_Spline Spline {
             get {
-                if (spline == null) spline = GetComponent<Spline>();
+                if (spline == null) spline = GetComponent<S_Spline>();
                 return spline;
             }
         }

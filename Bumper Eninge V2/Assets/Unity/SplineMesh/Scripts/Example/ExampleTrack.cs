@@ -30,7 +30,7 @@ namespace SplineMesh {
     [DisallowMultipleComponent]
     public class ExampleTrack : MonoBehaviour {
         private GameObject generated;
-        private Spline spline = null;
+        private S_Spline spline = null;
         private bool toUpdate = false;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace SplineMesh {
             var generatedTranform = transform.Find(generatedName);
             generated = generatedTranform != null ? generatedTranform.gameObject : UOUtility.Create(generatedName, gameObject);
 
-            spline = GetComponentInParent<Spline>();
+            spline = GetComponentInParent<S_Spline>();
 
             // we listen changes in the spline's node list and we update the list of segment accordingly
             // this way, if we insert a node between two others, a segment will be inserted too and the data won't shift
@@ -113,7 +113,7 @@ namespace SplineMesh {
                             generated,
                             typeof(MeshFilter),
                             typeof(MeshRenderer),
-                            typeof(MeshBender),
+                            typeof(S_MeshBender),
                             typeof(MeshCollider));
                         go.isStatic = true;
                     } else {
@@ -123,7 +123,7 @@ namespace SplineMesh {
                     go.GetComponent<MeshCollider>().material = tm.physicMaterial;
 
                     // we update the data in the bender. It will decide itself if the bending must be recalculated.
-                    MeshBender mb = go.GetComponent<MeshBender>();
+                    S_MeshBender mb = go.GetComponent<S_MeshBender>();
                     mb.Source = SourceMesh.Build(tm.mesh)
                         .Translate(tm.translation)
                         .Rotate(Quaternion.Euler(tm.rotation))

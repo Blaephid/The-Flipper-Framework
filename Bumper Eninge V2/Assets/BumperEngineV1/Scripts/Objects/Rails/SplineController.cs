@@ -8,7 +8,7 @@ public class SplineController : MonoBehaviour
     S_PlayerPhysics PlayerPhys;
     public GameObject basePlayer;
     S_PlayerInput PlayerInput;
-    public Spline activeSpline;
+    public S_Spline activeSpline;
     // Start is called before the first frame update
     void Start()
     {

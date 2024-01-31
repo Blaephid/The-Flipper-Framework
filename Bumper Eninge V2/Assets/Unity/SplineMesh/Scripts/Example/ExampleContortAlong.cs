@@ -11,11 +11,11 @@ namespace SplineMesh {
     /// This component is only for demo purpose and is not intended to be used as-is.
     /// </summary>
     [ExecuteInEditMode]
-    [RequireComponent(typeof(Spline))]
+    [RequireComponent(typeof(S_Spline))]
     public class ExampleContortAlong : MonoBehaviour {
-        private Spline spline;
+        private S_Spline spline;
         private float rate = 0;
-        private MeshBender meshBender;
+        private S_MeshBender meshBender;
 
         [HideInInspector]
         public GameObject generated;
@@ -66,17 +66,17 @@ namespace SplineMesh {
             generated = generatedTranform != null ? generatedTranform.gameObject : UOUtility.Create(generatedName, gameObject,
                 typeof(MeshFilter),
                 typeof(MeshRenderer),
-                typeof(MeshBender));
+                typeof(S_MeshBender));
 
             generated.GetComponent<MeshRenderer>().material = material;
 
-            meshBender = generated.GetComponent<MeshBender>();
-            spline = GetComponent<Spline>();
+            meshBender = generated.GetComponent<S_MeshBender>();
+            spline = GetComponent<S_Spline>();
 
             meshBender.Source = SourceMesh.Build(mesh)
                 .Rotate(Quaternion.Euler(rotation))
                 .Scale(scale);
-            meshBender.Mode = MeshBender.FillingMode.Once;
+            meshBender.Mode = S_MeshBender.FillingMode.Once;
             meshBender.SetInterval(spline, 0);
         }
     }

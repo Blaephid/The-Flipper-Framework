@@ -5,7 +5,7 @@ using SplineMesh;
 using System;
 
 public class S_Control_PulleyObject : MonoBehaviour {
-    public Spline Rail;
+    public S_Spline Rail;
     CapsuleCollider sphcol;
     [SerializeField]
     bool placeOnEnd;
@@ -18,7 +18,7 @@ public class S_Control_PulleyObject : MonoBehaviour {
 	void Start () 
     {
         rb = GetComponent<Rigidbody>();
-        Rail = GetComponentInParent<Spline>();
+        Rail = GetComponentInParent<S_Spline>();
         sphcol = GetComponent<CapsuleCollider>();
         homingtgt = GetComponentInChildren<S_Data_HomingTarget>().gameObject;
         PlaceOnRope();        

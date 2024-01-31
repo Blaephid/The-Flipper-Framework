@@ -22,7 +22,7 @@ public class S_Action13_Hovering : MonoBehaviour
     [HideInInspector] public float SkiddingStartPoint;
     float AirSkiddingIntensity;
 
-    updraft hoverForce;
+    S_Trigger_Updraft hoverForce;
 
     private void Awake()
     {
@@ -52,7 +52,7 @@ public class S_Action13_Hovering : MonoBehaviour
         AirSkiddingIntensity = Tools.stats.AirSkiddingForce;
     }
 
-    public void InitialEvents(updraft up)
+    public void InitialEvents(S_Trigger_Updraft up)
     {
         player.GravityAffects = false;
         inWind = true;
@@ -61,7 +61,7 @@ public class S_Action13_Hovering : MonoBehaviour
         hoverForce = up;
     }
 
-    public void updateHover(updraft up)
+    public void updateHover(S_Trigger_Updraft up)
     {
         inWind = true;
         hoverForce = up;

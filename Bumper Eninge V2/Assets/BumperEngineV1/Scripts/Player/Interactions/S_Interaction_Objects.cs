@@ -322,9 +322,9 @@ public class S_Interaction_Objects : MonoBehaviour {
         }
         else if (col.tag == "MovingRing")
         {
-            if (col.GetComponent<MovingRing>() != null)
+            if (col.GetComponent<S_MovingRing>() != null)
             {
-                if (col.GetComponent<MovingRing>().colectable)
+                if (col.GetComponent<S_MovingRing>().colectable)
                 {
 					StartCoroutine(IncreaseRing ());
                     Instantiate(RingCollectParticle, col.transform.position, Quaternion.identity);
@@ -336,8 +336,8 @@ public class S_Interaction_Objects : MonoBehaviour {
 		//Switch
 		if(col.tag == "Switch")
 		{	
-			if (col.GetComponent<Switch_Properties> () != null) {
-				col.GetComponent<Switch_Properties> ().Activate ();
+			if (col.GetComponent<S_Data_Switch> () != null) {
+				col.GetComponent<S_Data_Switch> ().Activate ();
 			}
 		}
 
@@ -359,7 +359,7 @@ public class S_Interaction_Objects : MonoBehaviour {
         {
             S_HedgeCamera.Shakeforce = EnemyHitShakeAmmount;
         //Either triggers an attack on the enemy or takes damage.
-            if (Actions.Action == S_ActionManager.States.SpinCharge)
+            if (Actions.Action == S_ActionManager.States.SpinCharge || (Actions.Action == S_ActionManager.States.Regular && Player.isRolling))
             {
                 attack.AttackThing(col, "SpinDash", "Enemy"); ;
                 
@@ -367,6 +367,7 @@ public class S_Interaction_Objects : MonoBehaviour {
             //If in the rolling or jumpdash animation.
             if (CharacterAnimator.GetInteger("Action") == 1 || CharacterAnimator.GetInteger("Action") == 11)
             {
+                Debug.Log("Rolling");
                 attack.AttackThing(col, "SpinJump", "Enemy");
             }
             else
@@ -497,15 +498,15 @@ public class S_Interaction_Objects : MonoBehaviour {
 
         else if(col.tag == "Wind")
         {
-            if(col.GetComponent<updraft>())
+            if(col.GetComponent<S_Trigger_Updraft>())
             {
                 if (Actions.Action == S_ActionManager.States.Hovering)
                 {
-                    Actions.Action13.updateHover(col.GetComponent<updraft>());
+                    Actions.Action13.updateHover(col.GetComponent<S_Trigger_Updraft>());
                 }
                 else
                 {
-                    Actions.Action13.InitialEvents(col.GetComponent<updraft>());
+                    Actions.Action13.InitialEvents(col.GetComponent<S_Trigger_Updraft>());
                     Actions.ChangeAction(S_ActionManager.States.Hovering);
                 }
             }
@@ -514,7 +515,7 @@ public class S_Interaction_Objects : MonoBehaviour {
 
         else if (col.tag == "HintRing")
         {
-            HintRingActor hintRing = col.GetComponent<HintRingActor>();
+            S_Data_HintRing hintRing = col.GetComponent<S_Data_HintRing>();
             //if (!HintBox.IsShowing)
             //{
             //    HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration);
@@ -528,7 +529,11 @@ public class S_Interaction_Objects : MonoBehaviour {
 
 
                 if (Actions.usingMouse)
+                {
+                    Debug.Log("SHOWHINT with = " +hintRing.hintText[0]);
                     HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
+                }
+                  
                 else
                 {
                     Gamepad input = Gamepad.current;

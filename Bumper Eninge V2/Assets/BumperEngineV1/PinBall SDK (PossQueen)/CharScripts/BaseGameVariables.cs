@@ -41,7 +41,7 @@ public class BaseGameVariables : ScriptableObject {
     public float MaxSpeedToPushBackwards = 100f;
     public float MaxSpeedToPushSideways = 150f;
     [Space]
-    public MovingRing MovingRing;
+    public S_MovingRing MovingRing;
     public int MaxRingLoss = 30;
     public float RingReleaseSpeed = 700;
     public float RingArcSpeed = 30;

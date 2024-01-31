@@ -60,7 +60,7 @@ namespace SplineMesh
         [HideInInspector] public float range = 0f;
         Transform RailTransform;
         public bool OnRail { get; set; }
-        public AddOnRail ConnectedRails;
+        public S_AddOnRail ConnectedRails;
         [HideInInspector] public float PlayerSpeed;
         [HideInInspector] public bool backwards;
         int RailSound = 1;
@@ -113,6 +113,8 @@ namespace SplineMesh
 
         private void OnDisable()
         {
+            if (!transform.parent.gameObject.activeSelf)
+                return;
 
             Player.GravityAffects = true;
 
@@ -142,7 +144,7 @@ namespace SplineMesh
 
         }
 
-        public void InitialEvents(float Range, Transform RailPos, bool isZip, Vector3 thisOffset, AddOnRail addOn)
+        public void InitialEvents(float Range, Transform RailPos, bool isZip, Vector3 thisOffset, S_AddOnRail addOn)
         {
             StartCoroutine(allowHop());
 
@@ -693,9 +695,9 @@ namespace SplineMesh
                     ConnectedRails.Announce();
 
                     ConnectedRails = ConnectedRails.nextRail;
-                    setOffSet.Set(-ConnectedRails.GetComponent<ExampleSower>().Offset3d.x, 0, 0);
+                    setOffSet.Set(-ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
 
-                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<Spline>();
+                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<S_Spline>();
                     RailTransform = Rail_int.RailSpline.transform.parent;
 
                     Debug.Log("Then With = " + range);
@@ -705,11 +707,11 @@ namespace SplineMesh
 
                     Debug.Log("Back To Previous Rail");
 
-                    AddOnRail temp = ConnectedRails;
+                    S_AddOnRail temp = ConnectedRails;
                     ConnectedRails = ConnectedRails.PrevRail;
-                    setOffSet.Set(-ConnectedRails.GetComponent<ExampleSower>().Offset3d.x, 0, 0);
+                    setOffSet.Set(-ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
 
-                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<Spline>();
+                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<S_Spline>();
                     RailTransform = Rail_int.RailSpline.transform.parent;
 
                     range = range + Rail_int.RailSpline.Length;

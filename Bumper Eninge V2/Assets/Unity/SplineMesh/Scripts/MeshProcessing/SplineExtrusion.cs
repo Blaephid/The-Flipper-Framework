@@ -22,9 +22,9 @@ namespace SplineMesh {
     /// This component doesn't offer much control as Unity is not a modeling tool. That said, you should be able to create your own version easily.
     /// </summary>
     [ExecuteInEditMode]
-    [RequireComponent(typeof(Spline))]
+    [RequireComponent(typeof(S_Spline))]
     public class SplineExtrusion : MonoBehaviour {
-        private Spline spline;
+        private S_Spline spline;
         private bool toUpdate = true;
         private GameObject generated;
 
@@ -54,7 +54,7 @@ namespace SplineMesh {
             var generatedTranform = transform.Find(generatedName);
             generated = generatedTranform != null ? generatedTranform.gameObject : UOUtility.Create(generatedName, gameObject);
 
-            spline = GetComponentInParent<Spline>();
+            spline = GetComponentInParent<S_Spline>();
             spline.NodeListChanged += (s, e) => toUpdate = true;
         }
 

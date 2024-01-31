@@ -46,6 +46,7 @@ public class S_HintBox : MonoBehaviour
 
     IEnumerator DisplayText (string text, float duration, string[] fullText, float[] fullDur, GameObject hintRing)
     {
+        Debug.Log("DisplayText");
         turnPage = false;
         //Debug.Log(text);
 
@@ -81,7 +82,7 @@ public class S_HintBox : MonoBehaviour
                 if (alpha == 255)
                 {
                     startChar += 1;
-                    if (startChar == Length)
+                    if (startChar >= Length)
                     {
                         hintText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
                         yield return new WaitForSeconds(duration);

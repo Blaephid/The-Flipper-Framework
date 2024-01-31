@@ -315,7 +315,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollSpeed: 10
-  Mat: {fileID: 0}
+  Mat: {fileID: 2100000, guid: 7f5030af0fdb0f742b172c2ca50e5143, type: 2}
   ScrollVector: {x: 0, y: -1}
 --- !u!1 &2391450905858721188
 GameObject:

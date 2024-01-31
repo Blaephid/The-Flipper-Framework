@@ -16,7 +16,7 @@ public class railSwitch : MonoBehaviour
     public GameObject redRails;
 
     [Header("Connected Rails")]
-    public AddOnRail[] connectedRails;
+    public S_AddOnRail[] connectedRails;
     public List<railSwitch> linkedSwitches;
 
     [Header("Stats")]
@@ -69,7 +69,7 @@ public class railSwitch : MonoBehaviour
 
             if (!blue && connectedRails.Length > 0)
             {
-                foreach (AddOnRail rail in connectedRails)
+                foreach (S_AddOnRail rail in connectedRails)
                 {
                     rail.switchTrigger();
                 }
@@ -145,7 +145,7 @@ public class railSwitch : MonoBehaviour
 
             if(connectedRails.Length > 0)
             {
-                foreach (AddOnRail rail in connectedRails)
+                foreach (S_AddOnRail rail in connectedRails)
                 {
                     rail.switchTrigger();
                 }

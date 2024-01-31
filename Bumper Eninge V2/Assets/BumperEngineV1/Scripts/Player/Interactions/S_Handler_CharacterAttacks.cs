@@ -51,17 +51,17 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
     {
         if (AttackType == "SpinDash")
         {
-            col.transform.parent.GetComponent<EnemyHealth>().DealDamage(1);
+            col.transform.parent.GetComponent<S_AI_Health>().DealDamage(1);
             obj_Int.updateTargets = true;
         }
 
         else if (AttackType == "SpinJump")
         {
-            if (col.transform.parent.GetComponent<EnemyHealth>() != null)
+            if (col.transform.parent.GetComponent<S_AI_Health>() != null)
             {
                 if (!Player.isRolling)
                 {
-                    col.transform.parent.GetComponent<EnemyHealth>().DealDamage(damage);
+                    col.transform.parent.GetComponent<S_AI_Health>().DealDamage(damage);
                     airAttack();
                 }
             }

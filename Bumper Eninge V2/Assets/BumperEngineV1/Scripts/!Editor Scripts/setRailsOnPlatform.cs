@@ -7,7 +7,7 @@ public class setRailsOnPlatform : MonoBehaviour
 {
     public bool Update;
 
-    public Spline rail;
+    public S_Spline rail;
     public Transform start;
     public Transform end;
 

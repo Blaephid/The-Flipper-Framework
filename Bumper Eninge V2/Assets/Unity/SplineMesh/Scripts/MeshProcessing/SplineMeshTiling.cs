@@ -19,7 +19,7 @@ namespace SplineMesh {
     [DisallowMultipleComponent]
     public class SplineMeshTiling : MonoBehaviour {
         private GameObject generated;
-        private Spline spline = null;
+        private S_Spline spline = null;
         private bool toUpdate = false;
 
 
@@ -58,7 +58,7 @@ namespace SplineMesh {
 
 
         [Tooltip("The mode to use to fill the choosen interval with the bent mesh.")]
-        public MeshBender.FillingMode mode = MeshBender.FillingMode.Repeat;
+        public S_MeshBender.FillingMode mode = S_MeshBender.FillingMode.Repeat;
 
         private void OnEnable() {
             // tip : if you name all generated content in the same way, you can easily find all of it
@@ -67,7 +67,7 @@ namespace SplineMesh {
             var generatedTranform = transform.Find(generatedName);
             generated = generatedTranform != null ? generatedTranform.gameObject : UOUtility.Create(generatedName, gameObject);
 
-            spline = GetComponentInParent<Spline>();
+            spline = GetComponentInParent<S_Spline>();
 
             toUpdate = true;
         }
@@ -143,12 +143,12 @@ namespace SplineMesh {
                 int i = 0;
                 foreach(var curve in spline.curves) {
                     var go = FindOrCreate("segment " + i++ + " mesh");
-                    go.GetComponent<MeshBender>().SetInterval(curve);
+                    go.GetComponent<S_MeshBender>().SetInterval(curve);
                     used.Add(go);
                 }
             } else {
                 var go = FindOrCreate("segment 1 mesh");
-                go.GetComponent<MeshBender>().SetInterval(spline, 0);
+                go.GetComponent<S_MeshBender>().SetInterval(spline, 0);
                 used.Add(go);
             }
 
@@ -193,11 +193,13 @@ namespace SplineMesh {
                     generated,
                     typeof(MeshFilter),
                     typeof(MeshRenderer),
-                    typeof(MeshBender),
+                    typeof(S_MeshBender),
                     typeof(S_DeactivateOnStart),
                     typeof(MeshCollider));  
                 res.isStatic = true;
-            } else {
+            } 
+            else 
+            {
                 res = childTransform.gameObject;
             }
             //Sets variabls of the components
@@ -210,11 +212,15 @@ namespace SplineMesh {
             res.tag = ObjTag;
             res.layer = ObjLayer;
 
-            MeshBender mb = res.GetComponent<MeshBender>();
+            S_MeshBender mb = res.GetComponent<S_MeshBender>();
+            if(mb == null)
+            {
+                mb = res.AddComponent<S_MeshBender>();
+            }
             mb.Source = SourceMesh.Build(mesh)
-                .Translate(translation)
-                .Rotate(Quaternion.Euler(rotation))
-                .Scale(scale);
+               .Translate(translation)
+               .Rotate(Quaternion.Euler(rotation))
+               .Scale(scale);
             mb.Mode = mode;
             return res;
         }

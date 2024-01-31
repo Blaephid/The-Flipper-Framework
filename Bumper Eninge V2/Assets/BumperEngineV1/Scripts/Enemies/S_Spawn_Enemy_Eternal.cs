@@ -45,7 +45,7 @@ public class S_Spawn_Enemy_Eternal : MonoBehaviour {
         HasSpawned = true;
         Instantiate(TeleportSparkle, transform.position, transform.rotation);
         EnemyClone = (GameObject)Instantiate(Enemy, transform.position, transform.rotation);
-        EnemyClone.GetComponent<EnemyHealth>().SpawnReference = this;
+        EnemyClone.GetComponent<S_AI_Health>().SpawnReference = this;
         //HomingAttackControl.UpdateHomingTargets();
     }
 

@@ -68,7 +68,7 @@ public class S_Interaction_Monitors : MonoBehaviour {
 
     public void OnTriggerEnter(Collider col)
     {
-        if (col.tag == "Monitor" && col.GetComponent<MonitorData>() != null)
+        if (col.tag == "Monitor" && col.GetComponent<S_Data_Monitor>() != null)
         {
             if (tools.CharacterAnimator.GetInteger("Action") == 1)
             {
@@ -87,22 +87,22 @@ public class S_Interaction_Monitors : MonoBehaviour {
         {
 
             //Monitors data
-            if (col.GetComponent<MonitorData>().Type == MonitorType.Ring)
+            if (col.GetComponent<S_Data_Monitor>().Type == MonitorType.Ring)
             {
                 if (Once == -1)
                 {
                     GameObject clone = (GameObject)Instantiate(RingGiver, transform.position, transform.rotation);
-                    clone.GetComponent<RingGiverControl>().Rings = col.GetComponent<MonitorData>().RingAmount;
-                    col.GetComponent<MonitorData>().DestroyMonitor();
+                    clone.GetComponent<S_RingGiverControl>().Rings = col.GetComponent<S_Data_Monitor>().RingAmount;
+                    col.GetComponent<S_Data_Monitor>().DestroyMonitor();
                     updateTgts = true;
                 }
             }
-            else if (col.GetComponent<MonitorData>().Type == MonitorType.Shield)
+            else if (col.GetComponent<S_Data_Monitor>().Type == MonitorType.Shield)
             {
                 if (Once == -1)
                 {
                     GameObject clone = (GameObject)Instantiate(ShieldGiver, transform.position, transform.rotation);
-                    col.GetComponent<MonitorData>().DestroyMonitor();
+                    col.GetComponent<S_Data_Monitor>().DestroyMonitor();
                     updateTgts = true;
                 }
             }

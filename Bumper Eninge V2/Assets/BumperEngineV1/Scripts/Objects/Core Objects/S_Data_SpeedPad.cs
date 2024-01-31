@@ -8,7 +8,7 @@ public class S_Data_SpeedPad : MonoBehaviour
     public bool onRail;
     public bool railBackwards;
     public bool isDashRing;
-    public Spline path;
+    public S_Spline path;
     public bool setSpeed = true;
     public float addSpeed = 15;
 

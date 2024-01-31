@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SplineMesh {
     [ExecuteInEditMode]
-    [RequireComponent(typeof(Spline))]
+    [RequireComponent(typeof(S_Spline))]
     public class RopeBuilder : MonoBehaviour {
         private bool toUpdate = false;
         private GameObject generated;
@@ -21,7 +21,7 @@ namespace SplineMesh {
             }
         }
 
-        private Spline spline;
+        private S_Spline spline;
         private GameObject firstSegment;
 
         [SerializeField]
@@ -32,7 +32,7 @@ namespace SplineMesh {
         public float segmentSpacing;
 
         private void OnEnable() {
-            spline = GetComponent<Spline>();
+            spline = GetComponent<S_Spline>();
             toUpdate = true;
         }
 

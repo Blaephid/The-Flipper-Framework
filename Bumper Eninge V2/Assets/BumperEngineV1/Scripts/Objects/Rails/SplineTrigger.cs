@@ -5,7 +5,7 @@ using SplineMesh;
 
 public class SplineTrigger : MonoBehaviour
 {
-    public Spline spline;
+    public S_Spline spline;
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<SplineController>())

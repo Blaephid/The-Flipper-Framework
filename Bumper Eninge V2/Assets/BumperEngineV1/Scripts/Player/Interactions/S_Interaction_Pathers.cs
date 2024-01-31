@@ -18,13 +18,13 @@ public class S_Interaction_Pathers : MonoBehaviour
     S_PlayerInput Input;
     S_ActionManager Actions;
     Collider CurentPathTrigger;
-    [HideInInspector] public CineStart currentCam;
+    [HideInInspector] public S_Trigger_CineCamera currentCam;
 
     //Spline        
     public float DistanceIncrements = 0.05f;
 
     float ClosestSample = 0f;
-    public Spline RailSpline { get; set; }
+    public S_Spline RailSpline { get; set; }
     public CurveSample RailSample { get; set; }
 
 
@@ -128,10 +128,10 @@ public class S_Interaction_Pathers : MonoBehaviour
     {
 
         
-        if (colli.gameObject.GetComponentInParent<Spline>())
+        if (colli.gameObject.GetComponentInParent<S_Spline>())
         {
 
-            RailSpline = colli.gameObject.GetComponentInParent<Spline>();
+            RailSpline = colli.gameObject.GetComponentInParent<S_Spline>();
             Transform ColPos;
             if (trigger)
             {
@@ -144,18 +144,18 @@ public class S_Interaction_Pathers : MonoBehaviour
 
             Vector3 offSet = Vector3.zero;
 
-            if(colli.gameObject.GetComponentInParent<ExampleSower>())
+            if(colli.gameObject.GetComponentInParent<S_PlaceOnSpline>())
             {
-                offSet.x = colli.gameObject.GetComponentInParent<ExampleSower>().Offset3d.x;
+                offSet.x = colli.gameObject.GetComponentInParent<S_PlaceOnSpline>().Offset3d.x;
             }
 
-            AddOnRail addOn = null;
+            S_AddOnRail addOn = null;
 
-            if(colli.gameObject.GetComponentInParent<AddOnRail>())
+            if(colli.gameObject.GetComponentInParent<S_AddOnRail>())
             {
-                if(colli.gameObject.GetComponentInParent<AddOnRail>() != null)
+                if(colli.gameObject.GetComponentInParent<S_AddOnRail>() != null)
                 {
-                    addOn = colli.gameObject.GetComponentInParent<AddOnRail>();
+                    addOn = colli.gameObject.GetComponentInParent<S_AddOnRail>();
  
                 }
             }
@@ -293,8 +293,8 @@ public class S_Interaction_Pathers : MonoBehaviour
             }
 
             //If the path is being started by a normal trigger
-            else if (col.gameObject.GetComponentInParent<Spline>() && col.gameObject.CompareTag("PathTrigger"))
-                RailSpline = col.gameObject.GetComponentInParent<Spline>();
+            else if (col.gameObject.GetComponentInParent<S_Spline>() && col.gameObject.CompareTag("PathTrigger"))
+                RailSpline = col.gameObject.GetComponentInParent<S_Spline>();
             else
                 RailSpline = null;
 
@@ -315,9 +315,9 @@ public class S_Interaction_Pathers : MonoBehaviour
                 }
 
                 //If the paths has a set camera angle.
-                if (col.gameObject.GetComponent<CineStart>())
+                if (col.gameObject.GetComponent<S_Trigger_CineCamera>())
                 {
-                    currentCam = col.gameObject.GetComponent<CineStart>();
+                    currentCam = col.gameObject.GetComponent<S_Trigger_CineCamera>();
                     currentCam.ActivateCam(8f);
                 }
 
@@ -354,7 +354,7 @@ public class S_Interaction_Pathers : MonoBehaviour
     }
 
 
-    public float GetClosestPos(Vector3 ColPos, Spline thisSpline)
+    public float GetClosestPos(Vector3 ColPos, S_Spline thisSpline)
     {
         //spline.nodes.Count - 1
 

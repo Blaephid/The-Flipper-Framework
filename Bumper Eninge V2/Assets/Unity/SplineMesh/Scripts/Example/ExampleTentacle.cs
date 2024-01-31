@@ -17,13 +17,13 @@ namespace SplineMesh {
     /// </summary>
     [DisallowMultipleComponent]
     public class ExampleTentacle : MonoBehaviour {
-        private Spline spline = null;
+        private S_Spline spline = null;
 
         public float startScale = 1, endScale = 1;
         public float startRoll = 0, endRoll = 0;
 
         private void OnEnable() {
-            spline = GetComponentInParent<Spline>();
+            spline = GetComponentInParent<S_Spline>();
         }
 
         private void OnValidate() {

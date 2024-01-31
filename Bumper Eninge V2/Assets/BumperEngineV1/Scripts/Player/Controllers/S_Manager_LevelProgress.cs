@@ -133,24 +133,24 @@ public class S_Manager_LevelProgress : MonoBehaviour {
     {
         if(col.tag == "Checkpoint")
         {
-            if (col.GetComponent<CheckPointData>() != null)
+            if (col.GetComponent<S_Data_Checkpoint>() != null)
             {
                 //Set Object
-                if (!col.GetComponent<CheckPointData>().IsOn)
+                if (!col.GetComponent<S_Data_Checkpoint>().IsOn)
                 {
                     if(Actions.eventMan != null)
                     {
-                        Actions.eventMan.LogEvents(false, col.GetComponent<CheckPointData>().checkPointName);
+                        Actions.eventMan.LogEvents(false, col.GetComponent<S_Data_Checkpoint>().checkPointName);
                     }
 
-                    col.GetComponent<CheckPointData>().IsOn = true;
+                    col.GetComponent<S_Data_Checkpoint>().IsOn = true;
                     col.GetComponent<AudioSource>().Play();
-                    foreach (Animator anim in col.GetComponent<CheckPointData>().Animators)
+                    foreach (Animator anim in col.GetComponent<S_Data_Checkpoint>().Animators)
                     {
                         anim.SetTrigger("Open");
                     }
-                    col.GetComponent<CheckPointData>().Laser.SetActive(false);
-                    SetCheckPoint(col.GetComponent<CheckPointData>().CheckPos);
+                    col.GetComponent<S_Data_Checkpoint>().Laser.SetActive(false);
+                    SetCheckPoint(col.GetComponent<S_Data_Checkpoint>().CheckPos);
                     CurrentCheckPoint = col.gameObject;
                     //CurrentCheckPointTimer = GameTimer;
                 }

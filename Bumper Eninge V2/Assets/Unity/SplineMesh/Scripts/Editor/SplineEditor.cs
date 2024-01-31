@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 namespace SplineMesh {
-    [CustomEditor(typeof(Spline))]
+    [CustomEditor(typeof(S_Spline))]
     public class SplineEditor : Editor {
 
         private const int QUAD_SIZE = 12;
@@ -27,7 +27,7 @@ namespace SplineMesh {
         private SelectionType selectionType;
         private bool mustCreateNewNode = false;
         private SerializedProperty nodesProp { get { return serializedObject.FindProperty("nodes"); } }
-        private Spline spline { get { return (Spline)serializedObject.targetObject; } }
+        private S_Spline spline { get { return (S_Spline)serializedObject.targetObject; } }
 
         private GUIStyle nodeButtonStyle, directionButtonStyle, upButtonStyle;
 
@@ -310,7 +310,7 @@ namespace SplineMesh {
 
         [MenuItem("GameObject/3D Object/Spline")]
         public static void CreateSpline() {
-            new GameObject("Spline", typeof(Spline));
+            new GameObject("Spline", typeof(S_Spline));
         }
     }
 }

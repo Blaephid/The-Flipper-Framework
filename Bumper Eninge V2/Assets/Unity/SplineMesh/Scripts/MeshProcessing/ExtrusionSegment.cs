@@ -17,7 +17,7 @@ namespace SplineMesh {
 
         private bool useSpline = false;
         private CubicBezierCurve curve;
-        private Spline spline;
+        private S_Spline spline;
         private float intervalStart, intervalEnd;
 
         private List<Vertex> shapeVertices = new List<Vertex>();
@@ -99,7 +99,7 @@ namespace SplineMesh {
             SetDirty();
         }
 
-        public void SetInterval(Spline spline, float intervalStart, float intervalEnd = 0) {
+        public void SetInterval(S_Spline spline, float intervalStart, float intervalEnd = 0) {
             if (this.spline == spline && this.intervalStart == intervalStart && this.intervalEnd == intervalEnd) return;
             if (spline == null) throw new ArgumentNullException("spline");
             if (intervalStart < 0 || intervalStart >= spline.Length) {
