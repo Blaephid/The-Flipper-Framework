@@ -6,42 +6,36 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/BumperEngineV1/Analytics/Custom User ID example.unity
-    guid: ca8d24c6dd452824d9f0e81eb36e4662
-  - enabled: 1
-    path: Assets/Game/Scenes/Menus/LogoScreen.unity
-    guid: 85c65dc7ca75cc2458be3aba0575d574
-  - enabled: 1
-    path: Assets/Game/Scenes/Menus/Disclaimers.unity
-    guid: 9179ab516b2b5644fbb965b0dbe073c5
-  - enabled: 1
-    path: Assets/Game/Scenes/Menus/CharacterSelect.unity
-    guid: f23c4b0dbb9199d48a80bc4592f77b29
-  - enabled: 1
-    path: Assets/Game/Scenes/Menus/StageSelect.unity
-    guid: ab5fe575787681c4dab1d232070d8d9d
-  - enabled: 1
-    path: Assets/Game/Scenes/Menus/LoadingScreen.unity
-    guid: 5222abf34946d874fb2350750e29d16d
-  - enabled: 1
-    path: Assets/Game/Scenes/Zones/TutorialLevel/TutorialLevel.unity
-    guid: 7faaf512d4c50f04bba6977a3a7836c9
-  - enabled: 1
-    path: Assets/Game/Scenes/Zones/Altitude Limit/AltitudeLimit.unity
-    guid: 4dad4fe5727c41f48b780de27f3d2039
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 0
-    path: Assets/Game/Scenes/Zones/IntroZone/IntroZone.unity
-    guid: bee65b02b1bee5c47b3603413cd07c9a
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 0
-    path: Assets/Game/Scenes/Zones/DemoZone/DemoZone.unity
-    guid: d99041847c98ee242aee707d8fa07b20
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 0
-    path: Assets/Game/Scenes/Zones/BlushCanyonZone_Profiles/BlushCanyonZone.unity
-    guid: dd96de45543fdb046a9546e18155640e
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Game/Scenes/Menus/StageCompleteScreen.unity
-    guid: da2531454c9a98440b8ce517b9b69a51
+    path: Assets/Game/Scenes/Menus/Sc_LogoScreen.unity
+    guid: c78a0b8e582aa4e46bde58cf11387512
   - enabled: 1
-    path: Assets/Game/Scenes/Zones/Rail Station/Rail Station.unity
-    guid: 5c21fb4782ca18b4782f864a62430e1e
+    path: Assets/Game/Scenes/Menus/Sc_CharacterSelect.unity
+    guid: ea0a3e63699b64c4998de08244c8ffae
+  - enabled: 1
+    path: Assets/Game/Scenes/Menus/Sc_StageSelect.unity
+    guid: a5e78746880fd1c4ebf434977a2b6f73
+  - enabled: 1
+    path: Assets/Game/Scenes/Zones/Altitude Limit/Sc_AltitudeLimit.unity
+    guid: 975ff8a3a5aaa15418195c73ef31af20
+  - enabled: 1
+    path: Assets/Game/Scenes/Zones/Rail Station/Sc_Rail Station.unity
+    guid: 2b7b030db2b8fbe43a499d47172dab4b
   m_configObjects: {}

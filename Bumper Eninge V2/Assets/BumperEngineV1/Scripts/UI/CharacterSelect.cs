@@ -9,7 +9,10 @@ public class CharacterSelect : MonoBehaviour {
 	[SerializeField] TextMeshProUGUI InfoText;
 	[SerializeField] GameObject GoButton;
 	// Use this for initialization
-	void Start () {
+
+	[SerializeField] string nextScene = "Sc_StageSelect";
+    [SerializeField] string lastScene = "Sc_LogoScreen";
+    void Start () {
 		
 	}
 	
@@ -34,14 +37,14 @@ public class CharacterSelect : MonoBehaviour {
 	public void LoadNextScene()
 	{
 		DontDestroyOnLoad (transform.root.gameObject);
-		SceneManager.LoadScene ("StageSelect");
+		SceneManager.LoadScene (nextScene);
 	}
 	public void LoadPastScene()
 	{
 		if (GameObject.Find ("CharacterSelector") != null) {
 			Destroy (GameObject.Find ("CharacterSelector"));
 		}
-		SceneManager.LoadScene ("LogoScreen");
+		SceneManager.LoadScene (lastScene);
 	}
 		
 
