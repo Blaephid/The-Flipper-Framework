@@ -8,10 +8,10 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mat_Ring For Road
-  m_Shader: {fileID: 4800000, guid: e7278824c689c1741a7a656cf37b2882, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: ef830501d05caf344a9c165e5cf7e823,
+    type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _EMISSION
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -21,6 +21,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Albedo_RGB:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -65,6 +69,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Normal_Texture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -77,6 +85,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Rim_Texture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -85,11 +97,25 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _BumpPower: 0
     - _BumpScale: 1
+    - _Bump_Power: 0
     - _CenterPower: 13.3
+    - _Center_Power: 1
     - _Cull: 2
     - _CullShadowPass: 3
     - _Cutoff: 0.5
@@ -101,6 +127,7 @@ Material:
     - _DiffuseScatteringEnabled: 1
     - _DoubleSided: 0
     - _DstBlend: 0
+    - _Emission: 1.3
     - _Exposure: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.315
@@ -114,7 +141,7 @@ Material:
     - _Lux_FlowRefraction: 0.02
     - _Lux_FlowSpeed: 0.05
     - _MatCapAccurate: 0
-    - _Metallic: 0.907
+    - _Metallic: 0.7
     - _Metallic2: 0
     - _MixMappingControl: 0
     - _Mode: 0
@@ -123,10 +150,14 @@ Material:
     - _ParallaxTiling: 1
     - _PuddleMask: 0
     - _PuddleMaskTiling: 1
+    - _QueueControl: 0
+    - _QueueOffset: 0
     - _RimPower: 3.7
+    - _Rim_Power: 1
     - _Rotation: 0
     - _ScatteringPower: 4
     - _Shininess: 0.556
+    - _Smoothness: 0.6
     - _SmoothnessTextureChannel: 0
     - _Snow: 0
     - _SnowDetailStrength: 0.3
@@ -148,14 +179,17 @@ Material:
     - _emission: 2
     m_Colors:
     - _CenterColor: {r: 1, g: 0.43590546, b: 0, a: 0}
+    - _Center_Color: {r: 1, g: 0.048432752, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color2: {r: 1, g: 1, b: 1, a: 1}
+    - _Dif_Color: {r: 0.09019608, g: 0, b: 0, a: 0}
     - _DiffuseScatteringCol: {r: 0.5147059, g: 0.5147059, b: 0.5147059, a: 0}
     - _DiffuseScatteringCol2: {r: 0, g: 0, b: 0, a: 0}
     - _DifuseColor: {r: 0.4528302, g: 0.1213243, b: 0.16200678, a: 0}
     - _EmissionColor: {r: 0.625, g: 0.47844827, b: 0, a: 1}
     - _ReflectColor: {r: 1, g: 0.93103445, b: 0, a: 0.5}
     - _RimColor: {r: 1, g: 0.37169808, b: 0.40126538, a: 0}
+    - _Rim_Color: {r: 1, g: 0.16651757, b: 0, a: 0}
     - _SnowAccumulation: {r: 0, g: 1, b: 0, a: 0}
     - _SnowDetailTiling: {r: 4, g: 4, b: 0, a: 0}
     - _SnowMaskTiling: {r: 0.3, g: 0.3, b: 0, a: 0}
@@ -168,3 +202,16 @@ Material:
     - _WaterColor: {r: 0, g: 0, b: 0, a: 0}
     - _WaterColor2: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
+--- !u!114 &8996886025991977011
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5

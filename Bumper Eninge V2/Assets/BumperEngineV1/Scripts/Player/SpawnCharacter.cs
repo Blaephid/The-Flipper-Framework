@@ -16,7 +16,7 @@ public class SpawnCharacter : MonoBehaviour {
     {
 		if (GameObject.Find("CharacterSelector") != null)
 		{
-			PlayerObject = GameObject.Find("CharacterSelector").GetComponent<CharacterSelect>().DesiredCharacter;
+			PlayerObject = GameObject.Find("CharacterSelector").GetComponent<S_CharacterSelect>().DesiredCharacter;
 		}
 		GameObject Player = Instantiate(PlayerObject);
 		Player.transform.position = transform.position;

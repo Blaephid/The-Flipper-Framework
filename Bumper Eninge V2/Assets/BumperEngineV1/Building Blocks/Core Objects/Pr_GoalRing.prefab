@@ -221,6 +221,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -1823322365421230674, guid: d832868ef3ddfcb4792f15f890ccdd6c,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5c1932ee9a5ce0541a77948d47ed07f9, type: 2}
     - target: {fileID: 919132149155446097, guid: d832868ef3ddfcb4792f15f890ccdd6c,
         type: 3}
       propertyPath: m_Name
@@ -228,6 +233,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d832868ef3ddfcb4792f15f890ccdd6c, type: 3}
+--- !u!1 &2127780314531258367 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -3756473180518285571, guid: d832868ef3ddfcb4792f15f890ccdd6c,
+    type: 3}
+  m_PrefabInstance: {fileID: 6222065278618476802}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8856547073958927395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127780314531258367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf2af176852640540a7c6277053f6746, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollSpeed: 0.5
+  Mat: {fileID: 2100000, guid: 8c74fcdd4e9c03f42b12411eb4986bc8, type: 2}
+  ScrollVector: {x: 0, y: -1}
 --- !u!4 &5896212583033456361 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d832868ef3ddfcb4792f15f890ccdd6c,

@@ -16622,6 +16622,7 @@ GameObject:
   - component: {fileID: 763248265161089792}
   - component: {fileID: 5149839153347052434}
   - component: {fileID: 1617007407978008853}
+  - component: {fileID: 4006772681666048908}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -16739,6 +16740,39 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4006772681666048908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1959734744651521527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &1961358216390361165
 GameObject:
   m_ObjectHideFlags: 0
@@ -32350,6 +32384,7 @@ GameObject:
   - component: {fileID: 588686098174976803}
   - component: {fileID: 5862973445973283921}
   - component: {fileID: 8486534444615071933}
+  - component: {fileID: 5292487375600873870}
   m_Layer: 0
   m_Name: JumpBall
   m_TagString: Untagged
@@ -32484,6 +32519,26 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &5292487375600873870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8950381718385962081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!1 &8981912900442997945
 GameObject:
   m_ObjectHideFlags: 0
@@ -33024,6 +33079,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SonicGT_Final 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5263888283255720253, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.927
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e67537df6fb33e345a2680d3479af749, type: 3}

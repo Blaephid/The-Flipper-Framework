@@ -1,4 +1,5 @@
-﻿Shader "0_SonicGT/CharacterShader" {
+﻿ Shader "0_SonicGT/Sh_CharacterShader" 
+{
 	Properties {
 		[HDR]_DifuseColor ("Dif Color", Color) = (1,1,1,0.0)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
@@ -35,15 +36,15 @@
 		    // extra pass that renders to depth buffer only
 		Pass {
         ZWrite On
-        ColorMask 0
+        //ColorMask 0
 		}
 		// paste in __forward rendering__ passes from Transparent/Diffuse
-		UsePass "Transparent/Diffuse/FORWARD"
+		// UsePass "Transparent/Diffuse/FORWARD"
 		*/
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows//alpha:fade 
+		#pragma surface surf Standard fullforwardshadows
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -61,7 +62,7 @@
 			float3 worldRefl;
 			INTERNAL_DATA
 		};
-
+		//THESE ARE THE PARAMETERSSSSSSSSSSSSSSSSSSSSSSS ------------------------------------------------------------------------------------------
 		sampler2D _CameraDepthTexture;
 		samplerCUBE _Cube;
 		float4 _RimColor,
@@ -79,19 +80,19 @@
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
 		// #pragma instancing_options assumeuniformscaling
-		UNITY_INSTANCING_BUFFER_START(Props)
+		//UNITY_INSTANCING_BUFFER_START(Props)
 			// put more per-instance properties here
-		UNITY_INSTANCING_BUFFER_END(Props)
+		//UNITY_INSTANCING_BUFFER_END(Props)
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			// Albedo comes from a texture tinted by color
-			fixed4 c = tex2D (_MainTex, IN.uv_MainTex);
+			fixed4 c = tex2D (_MainTex, IN.uv_MainTex); //texture sample for albedo
 			fixed4 r = tex2D (_RimMap, IN.uv_MainTex);			
 			fixed4 ref = tex2D (_RefMap, IN.uv_MainTex);			
 			
 			float3 VD = IN.viewDir;
 			fixed3 worldNormal = WorldNormalVector(IN,o.Normal);
-			float3 Nrm = UnpackScaleNormal (tex2D (_BumpMap, IN.uv_BumpMap),_BumpPower );
+			float3 Nrm = UnpackScaleNormal (tex2D (_BumpMap, IN.uv_BumpMap),_BumpPower ); 
 
 			float Center = saturate(dot (normalize(VD), Nrm * _CenterModifier));
 			float rim = 1.0 - saturate(dot (normalize(VD), Nrm * _RimModifier));
@@ -113,7 +114,6 @@
 			o.Normal = UnpackScaleNormal (tex2D (_BumpMap, IN.uv_BumpMap),_BumpPower );
 			o.Smoothness = _Glossiness;
 			o.Emission = o.Albedo * _emission *r;
-
 		}
 		ENDCG
 	}

@@ -57,7 +57,7 @@ QualitySettings:
     skinWeights: 4
     textureQuality: 0
     anisotropicTextures: 2
-    antiAliasing: 0
+    antiAliasing: 2
     softParticles: 1
     softVegetation: 1
     realtimeReflectionProbes: 1
@@ -76,7 +76,8 @@ QualitySettings:
     asyncUploadBufferSize: 4
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
-    customRenderPipeline: {fileID: 0}
+    customRenderPipeline: {fileID: 11400000, guid: 46fa85e8dd9606f489d5d7287c0505db,
+      type: 2}
     excludedTargetPlatforms: []
   - serializedVersion: 2
     name: Garbage
@@ -114,4 +115,6 @@ QualitySettings:
     resolutionScalingFixedDPIFactor: 1
     customRenderPipeline: {fileID: 0}
     excludedTargetPlatforms: []
-  m_PerPlatformDefaultQuality: {}
+  m_PerPlatformDefaultQuality:
+    Server: 0
+    Standalone: 0

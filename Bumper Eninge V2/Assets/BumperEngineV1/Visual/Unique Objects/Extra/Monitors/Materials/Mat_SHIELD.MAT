@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mat_SHIELD
-  m_Shader: {fileID: 4800000, guid: 7642b44c89db9cc4aa95e8c9be2a1996, type: 3}
+  m_Shader: {fileID: 200, guid: 0000000000000000f000000000000000, type: 0}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _EMISSION
@@ -44,7 +44,7 @@ Material:
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 77bcd2d460de5ca41970797220703652, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: -227.04643}
+        m_Offset: {x: 0, y: -329.77}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}

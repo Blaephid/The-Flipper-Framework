@@ -8,7 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mat_SonicJumpBall 1
-  m_Shader: {fileID: 4800000, guid: 35b921ad613e4ac40b30b1160ea55fc0, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: e603c9ab35e667946953ef95697643bc,
+    type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -20,6 +21,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Albedo_RGB:
+        m_Texture: {fileID: 2800000, guid: 2ede603e8da3f404393e195a2fb33d03, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 27517636f716f26459d3e26e27c03318, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -52,6 +57,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Normal_Texture:
+        m_Texture: {fileID: 2800000, guid: 27517636f716f26459d3e26e27c03318, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -68,7 +77,23 @@ Material:
         m_Texture: {fileID: 2800000, guid: 706fcad48d4725d4ab60c11f28cd8d06, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Rim_Texture:
+        m_Texture: {fileID: 2800000, guid: 706fcad48d4725d4ab60c11f28cd8d06, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -77,10 +102,13 @@ Material:
     - _Alpha: 0.5
     - _BumpPower: 1
     - _BumpScale: 1
+    - _Bump_Power: -1
     - _CenterPower: 20
+    - _Center_Power: 30
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _Emission: 0.4
     - _FadeMax: 4
     - _FadeMin: 2
     - _GlossMapScale: 1
@@ -90,8 +118,12 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _QueueControl: 0
+    - _QueueOffset: 0
     - _Reflectivity: 0
     - _RimPower: 3.7
+    - _Rim_Power: 4
+    - _Smoothness: 0.2
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -101,10 +133,28 @@ Material:
     m_Colors:
     - _CenterColor: {r: 1.8196079, g: 3.0745099, b: 5.992157, a: 0.891}
     - _CenterModifier: {r: 1, g: 1, b: 1, a: 1}
+    - _Center_Color: {r: 0.30054384, g: 0.45641106, b: 0.78353804, a: 0}
+    - _Center_Modifier: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Dif_Color: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
     - _DifuseColor: {r: 0.83823526, g: 0.83823526, b: 0.83823526, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 0.0627451, g: 3.4196079, b: 5.992157, a: 1}
     - _RimModifier: {r: 1, g: 1, b: 1, a: 1}
+    - _Rim_Color: {r: 0.012286487, g: 0.4910209, b: 0.78353804, a: 0}
+    - _Rim_Modifier: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
+--- !u!114 &5141926322209774786
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5
