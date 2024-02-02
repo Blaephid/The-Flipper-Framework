@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SetPosition : MonoBehaviour {
+public class S_SetPosition : MonoBehaviour {
 
     public Transform TargetPosition;
     public Vector3 Offset;

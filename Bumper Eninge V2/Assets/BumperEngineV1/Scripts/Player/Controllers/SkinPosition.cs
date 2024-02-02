@@ -3,12 +3,12 @@ using System.Collections;
 
 public class SkinPosition : MonoBehaviour {
 
-    SetPosition setPosScript;
+    S_SetPosition setPosScript;
     public S_PlayerPhysics Player;
 
     void Awake()
     {
-        setPosScript.GetComponent<SetPosition>();
+        setPosScript.GetComponent<S_SetPosition>();
     }
 
 	void Update () {

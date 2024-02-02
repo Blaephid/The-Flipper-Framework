@@ -52,7 +52,7 @@ public class StageSelectControl : MonoBehaviour {
     }
     public void GoToLevel( int levelToLoad)
     {
-        SceneController.LevelToLoad = levelToLoad;
+        S_SceneController.LevelToLoad = levelToLoad;
         End = true;
     }
 

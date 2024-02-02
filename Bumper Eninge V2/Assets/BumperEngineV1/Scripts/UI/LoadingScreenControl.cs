@@ -25,7 +25,7 @@ public class LoadingScreenControl : MonoBehaviour {
 
     void Start()
     {
-        LevelToLoad = SceneController.LevelToLoad;
+        LevelToLoad = S_SceneController.LevelToLoad;
         StageName1txt.text = StageName1;
         StageName2txt.text = StageName2;
     }
@@ -35,7 +35,7 @@ public class LoadingScreenControl : MonoBehaviour {
         count += 1;
         if (count == LoadingStart)
         {
-			SceneManager.LoadSceneAsync(SceneController.LevelToLoad, LoadSceneMode.Single);
+			SceneManager.LoadSceneAsync(S_SceneController.LevelToLoad, LoadSceneMode.Single);
         }
 
         if(!over && StageLoaded)
@@ -51,7 +51,7 @@ public class LoadingScreenControl : MonoBehaviour {
             {
                 //if (Cam) { Destroy(Cam.gameObject); }
                 Anim.SetInteger("Action", 1);
-				SceneManager.LoadScene(SceneController.LevelToLoad, LoadSceneMode.Additive);
+				SceneManager.LoadScene(S_SceneController.LevelToLoad, LoadSceneMode.Additive);
             }
             if(endCount > 60)
             {

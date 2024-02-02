@@ -2,9 +2,9 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class SceneController : MonoBehaviour {
+public class S_SceneController : MonoBehaviour {
 
-    static SceneController Instance;
+    static S_SceneController Instance;
     public Scene Gameplay;
     public static int LevelToLoad;
     public static int LastLoadedLevel;

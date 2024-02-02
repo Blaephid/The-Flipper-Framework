@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-public class StageSelect : MonoBehaviour {
+public class S_StageSelect : MonoBehaviour {
 
 	[SerializeField] private string CurrentStage;
 	[SerializeField] TextMeshProUGUI InfoText;

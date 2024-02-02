@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.Audio;
 using UnityEngine;
 
-public class LoadSound : MonoBehaviour {
+public class S_LoadSound : MonoBehaviour {
 
     public AudioMixer Music;
     public AudioMixer Sfx;

@@ -7,7 +7,7 @@ public class DebugLoadStage : MonoBehaviour {
 
     void Start()
     {
-        SceneController.LoadStageLoading(3);
+        S_SceneController.LoadStageLoading(3);
     }
 
 }

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TitleScreenControl : MonoBehaviour {
+public class S_TitleScreenControl : MonoBehaviour {
 
     public Image BlackFade;
     public Animator PressStartAnim;
