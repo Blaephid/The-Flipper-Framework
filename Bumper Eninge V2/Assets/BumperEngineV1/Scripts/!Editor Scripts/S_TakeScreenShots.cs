@@ -4,11 +4,13 @@ using UnityEngine;
 using System;
 using UnityEngine.Windows;
 using System.Runtime.CompilerServices;
-using UnityEditor;
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
 
 public class S_TakeScreenShots : MonoBehaviour
 {
-
+#if UNITY_EDITOR
     [SerializeField] string fileName = "Screenshot";
     [SerializeField] string folderPathFromAssets = "/ScreenShots/";
     [SerializeField] int scaleValue = 2;
@@ -26,9 +28,15 @@ public class S_TakeScreenShots : MonoBehaviour
         StartCoroutine(waitFor());
     }
 
+    private void Reset()
+    {
+        AssetDatabase.Refresh();
+    }
+
     IEnumerator waitFor()
     {
         yield return new WaitForSeconds(.3f);
-        AssetDatabase.Refresh();
+        Reset();
     }
+#endif
 }

@@ -15,7 +15,7 @@ public class S_TitleScreenControl : MonoBehaviour {
     bool End = false;
     float counter;
 
-    public string sceneTo = "CharacterSelect";
+    public string sceneTo = "Sc_CharacterSelect";
 
 
     void Start()

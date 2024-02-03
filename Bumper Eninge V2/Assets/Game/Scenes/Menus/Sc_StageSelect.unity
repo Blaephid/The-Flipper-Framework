@@ -514,7 +514,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: TutorialLevel
+          m_StringArgument: Sc_TutorialLevel
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1412595518}
@@ -1105,7 +1105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 6a5276e0705eb404ab6292ab79990cb4, type: 2}
+  m_Material: {fileID: 2100000, guid: 5ebdf78716370a94d8408657d1d26664, type: 2}
   m_Color: {r: 0.61314416, g: 0.1372549, b: 0.9686275, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1953,7 +1953,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: AltitudeLimit
+          m_StringArgument: Sc_AltitudeLimit
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1412595518}
@@ -2255,6 +2255,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1575517455}
   - component: {fileID: 1575517454}
+  - component: {fileID: 1575517456}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -2339,6 +2340,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1575517456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575517453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!1 &1796913063
 GameObject:
   m_ObjectHideFlags: 0
@@ -2455,7 +2476,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Rail Station
+          m_StringArgument: Sc_Rail Station
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1412595518}

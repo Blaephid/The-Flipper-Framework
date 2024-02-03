@@ -765,7 +765,8 @@ AudioSource:
   m_GameObject: {fileID: 880838291}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 5b2adb18cd095f64abcec84adf245fa1,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: f0372fd22634f5e45a37dd4409bf956e, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -1155,7 +1156,7 @@ MonoBehaviour:
   LogoRotationAccell: -800
   EndStageAt: 1.4
   Source: {fileID: 213788588}
-  sceneTo: Disclaimers
+  sceneTo: Sc_CharacterSelect
 --- !u!114 &1895321071
 MonoBehaviour:
   m_ObjectHideFlags: 0
