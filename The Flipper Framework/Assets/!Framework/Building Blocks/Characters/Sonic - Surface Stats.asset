@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d2c719ae1aa80d49a311cd005f7d906, type: 3}
+  m_Name: Sonic - Surface Stats
+  m_EditorClassIdentifier: 
+  Title: Sonic
+  StartAccell: 0.14
+  TangentialDrag: 2
+  TurnSpeed: 6
+  increasedTurnSpeed: 12
+  StartTopSpeed: 85
+  StartMaxSpeed: 160
+  StartMaxFallingSpeed: -350
+  StartJumpPower: 1.22
+  MoveDecell: 1.05
+  AirDecell: 1.25
+  generalHillMultiplier: 1
+  AirControlAmmount: 1.3
+  AirSkiddingForce: -2.5
+  fallGravity: {x: 0, y: -1.5, z: 0}
+  SpeedToStopAt: 10
+  SkiddingStartPoint: 5
+  SkiddingIntensity: -4
+  StartJumpDuration: 0.2
+  StartSlopedJumpDuration: 0.2
+  StartJumpSpeed: 4.2
+  speedLossOnJump: 0.985
+  canDoubleJump: 1
+  canTripleJump: 0
+  doubleJumpSpeed: 4.5
+  doubleJumpDuration: 0.14
+  speedLossOnDoubleJump: 0.98
+  StepSpeed: 55
+  StepDistance: 8
+  AirStepSpeed: 47
+  AirStepDistance: 6
+  HomingAttackSpeed: 60
+  HomingTimerLimit: 1
+  HomingSuccessDelay: 0.3
+  AirDashSpeed: 60
+  AirDashDuration: 0.35
+  SpinDashChargingSpeed: 1
+  MinimunCharge: 20
+  MaximunCharge: 100
+  SpinDashStillForce: 0.015
+  DropSpeed: 100
+  BounceMaxSpeed: 140
+  BounceUpSpeeds:
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  BounceHaltFactor: 0.7
+  BounceCoolDown: 8
+  DashSpeed: 80
+  EndingSpeedFactor: 1.23
+  MinimumEndingSpeed: 50
+  DropDashChargingSpeed: 1.15
+  DropMinimunCharge: 50
+  DropMaximunCharge: 150
+  InvincibilityTime: 90
+  MaxRingLoss: 20
+  scrapeModi: 0.6
+  climbModi: 1

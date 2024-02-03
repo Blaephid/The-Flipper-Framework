@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dd8428eb28953740948ebc46421b5e8, type: 3}
+  m_Name: Jason
+  m_EditorClassIdentifier: 
+  VoiceSets:
+  - Name: Jump
+    Clips:
+    - {fileID: 8300000, guid: 0542f705f82a5c84aa36e1c11ac4782e, type: 3}
+    - {fileID: 8300000, guid: 24abdff7eac49804e9b1b5dd5241c6bd, type: 3}
+    - {fileID: 8300000, guid: a3e75f58b3a0869449bd7b9da5ec41a8, type: 3}
+    Probability: 2
+  - Name: Homing
+    Clips:
+    - {fileID: 8300000, guid: b040c3be5d5bc794788f3e6db51730a0, type: 3}
+    - {fileID: 8300000, guid: 509a6c3d53a74174a8fa52f799610aaf, type: 3}
+    - {fileID: 8300000, guid: 8bd9b420288c0c5449ff2e35a0f444c8, type: 3}
+    - {fileID: 8300000, guid: 7053be03bca08564e91c0b88b95cb380, type: 3}
+    Probability: 1
+  - Name: Damage
+    Clips:
+    - {fileID: 8300000, guid: 09778b1214327c24d9b50ab9a271bc59, type: 3}
+    - {fileID: 8300000, guid: 90d5c5df17308d34bb62d60be0a1f3fc, type: 3}
+    - {fileID: 8300000, guid: 8dd04b001b5f7d844a55f3c20ac5efaf, type: 3}
+    Probability: 0
+  - Name: Death
+    Clips:
+    - {fileID: 8300000, guid: 52f4405e2be8bf3438a05eec4ac102bd, type: 3}
+    Probability: 0
