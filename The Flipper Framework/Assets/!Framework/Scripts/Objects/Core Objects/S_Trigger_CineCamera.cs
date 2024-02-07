@@ -77,8 +77,8 @@ public class S_Trigger_CineCamera : MonoBehaviour
         {
             if(!isActive && Player != null)
             {
-                if ( Actions.Action == S_ActionManager.States.Path || (Actions.Action == S_ActionManager.States.Regular && RegularAction) || (Actions.Action == S_ActionManager.States.Jump && JumpAction) 
-                    || (Actions.Action == S_ActionManager.States.Rail && RailAction) || (Actions.Action == S_ActionManager.States.WallRunning && wallRunAction) || (Actions.Action == S_ActionManager.States.RingRoad && RingRoadAction))
+                if ( Actions.whatAction == S_Enums.PlayerStates.Path || (Actions.whatAction == S_Enums.PlayerStates.Regular && RegularAction) || (Actions.whatAction == S_Enums.PlayerStates.Jump && JumpAction) 
+                    || (Actions.whatAction == S_Enums.PlayerStates.Rail && RailAction) || (Actions.whatAction == S_Enums.PlayerStates.WallRunning && wallRunAction) || (Actions.whatAction == S_Enums.PlayerStates.RingRoad && RingRoadAction))
                 {
                     isActive = true;
                     hedgeCam = Player.GetComponent<S_Handler_Camera>().virtCam;
@@ -106,8 +106,8 @@ public class S_Trigger_CineCamera : MonoBehaviour
             else
             {
                 if(!(
-                    Actions.Action == S_ActionManager.States.Regular && RegularAction) && !(Actions.Action == S_ActionManager.States.Jump && JumpAction) && 
-                    !(Actions.Action == S_ActionManager.States.Rail && RailAction) && !(Actions.Action == S_ActionManager.States.WallRunning && wallRunAction) && !(Actions.Action == S_ActionManager.States.RingRoad && RingRoadAction) && onExit)
+                    Actions.whatAction == S_Enums.PlayerStates.Regular && RegularAction) && !(Actions.whatAction == S_Enums.PlayerStates.Jump && JumpAction) && 
+                    !(Actions.whatAction == S_Enums.PlayerStates.Rail && RailAction) && !(Actions.whatAction == S_Enums.PlayerStates.WallRunning && wallRunAction) && !(Actions.whatAction == S_Enums.PlayerStates.RingRoad && RingRoadAction) && onExit)
                 {
                     DeactivateCam(0);
                 }

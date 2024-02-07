@@ -12,25 +12,25 @@ public class S_Action00_Regular : MonoBehaviour {
 	S_Handler_quickstep quickstepManager;
     S_Control_SoundsPlayer sounds;
 	GameObject characterCapsule;
-	GameObject rollingCapsule;
+	GameObject _rollingCapsule_;
 
     public float skinRotationSpeed;
     S_Action01_Jump JumpAction;
     Quaternion CharRot;
 
-	float MaximumSpeed; //The max amount of speed you can be at to perform a Spin Dash
-	float MaximumSlope; //The highest slope you can be on to Spin Dash
+	float _MaximumSpeed_; //The max amount of speed you can be at to perform a Spin Dash
+	float _MaximumSlope_; //The highest slope you can be on to Spin Dash
 
-	float SpeedToStopAt;
+	float _SpeedToStopAt_;
 
-	float SkiddingStartPoint;
+	float _SkiddingStartPoint_;
 
 
-	bool CanDashDuringFall;
+	bool _CanDashDuringFall_;
 
 	RaycastHit hit;
 
-	AnimationCurve CoyoteTimeBySpeed;
+	AnimationCurve _CoyoteTimeBySpeed_;
 	bool coyoteInEffect = false;
 	Vector3 coyoteRememberDir;
 	float coyoteRememberSpeed;
@@ -60,11 +60,11 @@ public class S_Action00_Regular : MonoBehaviour {
     void FixedUpdate()
     {
 
-		if(Player.SpeedMagnitude < 15 && Player.MoveInput == Vector3.zero && Player.Grounded)
+		if(Player.SpeedMagnitude < 15 && Player._moveInput == Vector3.zero && Player.Grounded)
 		{
 			Player.b_normalSpeed = 0;
 			Player.rb.velocity *= 0.90f;
-			Actions.skid.hasSked = false;
+			Actions.skid._hasSked = false;
 
 		}
 
@@ -119,7 +119,7 @@ public class S_Action00_Regular : MonoBehaviour {
         CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
 		CharacterAnimator.SetFloat("HorizontalInput", Actions.moveX *Player.rb.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player.Grounded);
-        CharacterAnimator.SetFloat("NormalSpeed", Player.b_normalSpeed + SkiddingStartPoint);
+        CharacterAnimator.SetFloat("NormalSpeed", Player.b_normalSpeed + _SkiddingStartPoint_);
 
 		//Set Character Animations and position1
 		CharacterAnimator.transform.parent = null;
@@ -170,7 +170,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		{
 			if (Actions.eventMan != null) Actions.eventMan.RollsPerformed += 1;
 			sounds.SpinningSound();
-			rollingCapsule.SetActive(true);
+			_rollingCapsule_.SetActive(true);
 			characterCapsule.SetActive(false);
 			//rollCounter = 0f;
 		}
@@ -180,13 +180,13 @@ public class S_Action00_Regular : MonoBehaviour {
 
 	void unCurl()
     {
-		CapsuleCollider col = rollingCapsule.GetComponent<CapsuleCollider>();
+		CapsuleCollider col = _rollingCapsule_.GetComponent<CapsuleCollider>();
 
 
 		if (!Physics.Raycast(col.transform.position + col.center, CharacterAnimator.transform.up, 4))
 		{
 			characterCapsule.SetActive(true);
-			rollingCapsule.SetActive(false);
+			_rollingCapsule_.SetActive(false);
 			rollCounter = 0f;
 			Rolling = false;
 			Player.isRolling = false;
@@ -207,7 +207,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			else
 				JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
 
-			Actions.ChangeAction(S_ActionManager.States.Jump);
+			Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 		}
 
 		//Set Camera to back
@@ -220,9 +220,9 @@ public class S_Action00_Regular : MonoBehaviour {
 		
 
 		//Do Spindash
-		if (Actions.spinChargePressed && Player.Grounded && Player.GroundNormal.y > MaximumSlope && Player.HorizontalSpeedMagnitude < MaximumSpeed)
+		if (Actions.spinChargePressed && Player.Grounded && Player.GroundNormal.y > _MaximumSlope_ && Player.HorizontalSpeedMagnitude < _MaximumSpeed_)
 		{
-			Actions.ChangeAction(S_ActionManager.States.SpinCharge);
+			Actions.ChangeAction(S_Enums.PlayerStates.SpinCharge);
 			Actions.Action03.InitialEvents();
 		}
 
@@ -289,12 +289,12 @@ public class S_Action00_Regular : MonoBehaviour {
 			{
 
 				//Do a homing attack
-				if (Actions.Action02 != null && Player.HomingDelay <= 0)
+				if (Actions.Action02 != null && Player._homingDelay_ <= 0)
 				{
 					if (Actions.Action02Control.HomingAvailable)
 					{
 						sounds.HomingAttackSound();
-						Actions.ChangeAction(S_ActionManager.States.Homing);
+						Actions.ChangeAction(S_Enums.PlayerStates.Homing);
 						Actions.Action02.InitialEvents();
 					}
 				}
@@ -302,21 +302,21 @@ public class S_Action00_Regular : MonoBehaviour {
 			//Do an air dash;
 			else if (Actions.Action02.HomingAvailable && Actions.SpecialPressed)
 			{
-				if (!Actions.Action02Control.HasTarget && CanDashDuringFall)
+				if (!Actions.Action02Control.HasTarget && _CanDashDuringFall_)
 				{
 					sounds.AirDashSound();
-					Actions.ChangeAction(S_ActionManager.States.JumpDash);
+					Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);
 					Actions.Action11.InitialEvents();
 				}
 			}
 
 			//Do a Double Jump
-			else if (Actions.JumpPressed && Actions.Action01.canDoubleJump)
+			else if (Actions.JumpPressed && Actions.Action01._canDoubleJump_)
 			{
 
 				Actions.Action01.jumpCount = 0;
 				Actions.Action01.InitialEvents(Vector3.up);
-				Actions.ChangeAction(S_ActionManager.States.Jump);
+				Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 			}
 
 
@@ -324,7 +324,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			if (Actions.BouncePressed && Player.rb.velocity.y < 35f)
 			{
 				Actions.Action06.InitialEvents();
-				Actions.ChangeAction(S_ActionManager.States.Bounce);
+				Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
 				//Actions.Action06.ShouldStomp = false;
 
 			}
@@ -350,7 +350,7 @@ public class S_Action00_Regular : MonoBehaviour {
     {
 		inCoyote = true;
 		coyoteInEffect = true;
-		float waitFor = CoyoteTimeBySpeed.Evaluate(Player.HorizontalSpeedMagnitude / 100);
+		float waitFor = _CoyoteTimeBySpeed_.Evaluate(Player.HorizontalSpeedMagnitude / 100);
 
 		yield return new WaitForSeconds(waitFor);
 		
@@ -366,14 +366,13 @@ public class S_Action00_Regular : MonoBehaviour {
 
 	private void AssignStats()
     {
-		CoyoteTimeBySpeed = Tools.coreStats.CoyoteTimeOverSpeed;
-		SpeedToStopAt = Tools.stats.SpeedToStopAt;
-		MaximumSlope = Tools.coreStats.MaximumSlope;
-		MaximumSpeed = Tools.coreStats.MaximumSpeed;
-		SkiddingStartPoint = Tools.stats.SkiddingStartPoint;
-		CanDashDuringFall = Tools.coreStats.CanDashDuringFall;
-		rollingCapsule = Tools.crouchCapsule;
-
+		_CoyoteTimeBySpeed_ = Tools.Stats.JumpStats.coyoteTimeOverSpeed;
+		_SpeedToStopAt_ = Tools.Stats.SkiddingStats.speedToStopAt;
+		_MaximumSlope_ = Tools.Stats.SpinChargeStats.maximumSlope;
+		_MaximumSpeed_ = Tools.Stats.SpinChargeStats.maximumSpeed;
+		_SkiddingStartPoint_ = Tools.Stats.SkiddingStats.skiddingStartPoint;
+		_CanDashDuringFall_ = Tools.Stats.HomingStats.canDashDuringFall;
+		_rollingCapsule_ = Tools.crouchCapsule;
     }
 
 	private void AssignTools()

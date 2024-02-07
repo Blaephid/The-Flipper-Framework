@@ -113,7 +113,7 @@ public class S_MetricTracker : MonoBehaviour
 
             if(trackJumpsInstead)
             {
-                if((player.Action.Action != S_ActionManager.States.Jump && player.Action.Action != S_ActionManager.States.JumpDash) || jumpAction.Jumping)
+                if((player.Action.whatAction != S_Enums.PlayerStates.Jump && player.Action.whatAction != S_Enums.PlayerStates.JumpDash) || jumpAction.Jumping)
                     player.Action.JumpPressed = true;
 
                 if (!followingJump && !player.Grounded)

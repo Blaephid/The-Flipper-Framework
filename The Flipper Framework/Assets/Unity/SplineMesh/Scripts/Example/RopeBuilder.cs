@@ -33,8 +33,6 @@ namespace SplineMesh {
 
         private void OnEnable() {
             spline = GetComponent<S_Spline>();
-            if(!spline)
-                spline = GetComponentInParent<S_Spline>();
             toUpdate = true;
         }
 

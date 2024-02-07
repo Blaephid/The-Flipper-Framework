@@ -22,12 +22,12 @@ public class S_Action06_Bounce : MonoBehaviour {
 
 	//[SerializeField] public bool ShouldStomp;
 
-	float DropSpeed;
+	float _dropSpeed_;
 	[HideInInspector] public List<float> BounceUpSpeeds;
-	float BounceUpMaxSpeed;
-	float BounceConsecutiveFactor;
-	float BounceHaltFactor;
-	float BounceCoolDown;
+	float _bounceUpMaxSpeed_;
+	float _bounceConsecutiveFactor_;
+	float _bounceHaltFactor_;
+	float _bounceCoolDown_;
 
 	float memoriseSpeed;
 	float nextSpeed;
@@ -64,8 +64,8 @@ public class S_Action06_Bounce : MonoBehaviour {
 
 			sounds.BounceStartSound();
 			BounceAvailable = false;
-			Player.rb.velocity = new Vector3(Player.rb.velocity.x * BounceHaltFactor, 0f, Player.rb.velocity.z * BounceHaltFactor);
-			Player.AddVelocity(new Vector3(0, -DropSpeed, 0));
+			Player.rb.velocity = new Vector3(Player.rb.velocity.x * _bounceHaltFactor_, 0f, Player.rb.velocity.z * _bounceHaltFactor_);
+			Player.AddVelocity(new Vector3(0, -_dropSpeed_, 0));
 
 			HomingTrailScript.emitTime = -1f;
 			HomingTrailScript.emit = true;
@@ -91,7 +91,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 		CurrentBounceAmount = BounceUpSpeeds [BounceCount];
 		
 
-		CurrentBounceAmount = Mathf.Clamp (CurrentBounceAmount, BounceUpSpeeds [BounceCount], BounceUpMaxSpeed);
+		CurrentBounceAmount = Mathf.Clamp (CurrentBounceAmount, BounceUpSpeeds [BounceCount], _bounceUpMaxSpeed_);
 
 		//HomingTrailScript.emitTime = (BounceCount +1) * 0.65f;
 		HomingTrailScript.emitTime = CurrentBounceAmount / 60f;
@@ -145,14 +145,14 @@ public class S_Action06_Bounce : MonoBehaviour {
 		HomingTrailScript.emitTime = 0;
 		HomingTrailScript.emit = true;
 
-		Action.ChangeAction(0);
+		Action.ChangeAction(S_Enums.PlayerStates.Regular);
 	}
 
 
     void FixedUpdate()
     {
 
-		bool raycasthit = Physics.SphereCast(transform.position, 0.5f, -transform.up, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.75f) + Player.negativeGHoverHeight, Player.Playermask);
+		bool raycasthit = Physics.SphereCast(transform.position, 0.5f, -transform.up, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.75f) + Player.negativeGHoverHeight, Player._Groundmask_);
         //bool raycasthit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.95f) + Player.negativeGHoverHeight, Player.Playermask);
 		bool groundhit = Player.Grounded || raycasthit;
 
@@ -165,15 +165,15 @@ public class S_Action06_Bounce : MonoBehaviour {
 			
 			HasBounced = false;
 
-			float coolDown = BounceCoolDown;
+			float coolDown = _bounceCoolDown_;
 			//coolDown -= 0.75f * (int)(Player.HorizontalSpeedMagnitude / 20);
 			//coolDown = Mathf.Clamp(coolDown, 3, 6);
 
 			//StartCoroutine(Action.lockBounceOnly(coolDown));
-			Action.ChangeAction (0);
+			Action.ChangeAction (S_Enums.PlayerStates.Regular);
 		} 
 
-		else if ((groundhit && !HasBounced) || (!groundhit && Player.rb.velocity.y > DropSpeed * 0.4f && !HasBounced)) 
+		else if ((groundhit && !HasBounced) || (!groundhit && Player.rb.velocity.y > _dropSpeed_ * 0.4f && !HasBounced)) 
 		{
 			
 			//if (Action.SkidPressed)
@@ -201,24 +201,24 @@ public class S_Action06_Bounce : MonoBehaviour {
 				}
 			}
 		}
-		else if(Player.rb.velocity.y > DropSpeed * 0.8f)
+		else if(Player.rb.velocity.y > _dropSpeed_ * 0.8f)
         {
-			Player.rb.velocity = new Vector3(Player.rb.velocity.x, -DropSpeed, Player.rb.velocity.z);
+			Player.rb.velocity = new Vector3(Player.rb.velocity.x, -_dropSpeed_, Player.rb.velocity.z);
         }
 
     }
     
 	private void AssignStats()
     {
-		DropSpeed = Tools.stats.DropSpeed;
-		for (int i = 0; i < Tools.stats.BounceUpSpeeds.Count; i++)
+		_dropSpeed_ = Tools.Stats.BounceStats.dropSpeed;
+		for (int i = 0; i < Tools.Stats.BounceStats.bounceUpSpeeds.Count; i++)
 		{
-			BounceUpSpeeds.Add(Tools.stats.BounceUpSpeeds[i]);
+			BounceUpSpeeds.Add(Tools.Stats.BounceStats.bounceUpSpeeds[i]);
 		}
-		BounceUpMaxSpeed = Tools.coreStats.BounceUpMaxSpeed;
-		BounceCoolDown = Tools.stats.BounceCoolDown;
-		BounceConsecutiveFactor = Tools.coreStats.BounceConsecutiveFactor;
-		BounceHaltFactor = Tools.stats.BounceHaltFactor;
+		_bounceUpMaxSpeed_ = Tools.Stats.BounceStats.bounceUpMaxSpeed;
+		_bounceCoolDown_ = Tools.Stats.BounceStats.bounceCoolDown;
+		_bounceConsecutiveFactor_ = Tools.Stats.BounceStats.bounceConsecutiveFactor;
+		_bounceHaltFactor_ = Tools.Stats.BounceStats.bounceHaltFactor;
 
 	}
 

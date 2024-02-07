@@ -22,8 +22,8 @@ public class S_Handler_WallRunning : MonoBehaviour
 
     [Header("Detecting Wall Run")]
     S_Action12_WallRunning WallRun;
-    float WallCheckDistance;
-    LayerMask wallLayerMask;
+    float _wallCheckDistance_;
+    LayerMask _WallLayerMask_;
     float CheckModifier = 1;
 
     [HideInInspector] public float checkSpeed;
@@ -69,7 +69,7 @@ public class S_Handler_WallRunning : MonoBehaviour
             saveVec = Player.rb.velocity;
 
             //If High enough above ground and not at an odd rotation
-            if (enoughAboveGround() && (Actions.Action == S_ActionManager.States.Regular || Actions.Action == S_ActionManager.States.JumpDash || (Actions.Action == S_ActionManager.States.Jump && GetComponent<S_Interaction_Pathers>().currentUpreel == null)))
+            if (enoughAboveGround() && (Actions.whatAction == S_Enums.PlayerStates.Regular || Actions.whatAction == S_Enums.PlayerStates.JumpDash || (Actions.whatAction == S_Enums.PlayerStates.Jump && GetComponent<S_Interaction_Pathers>().currentUpreel == null)))
             {
                 
                 if(Inp.trueMoveInput.sqrMagnitude > 0.8f)
@@ -126,8 +126,8 @@ public class S_Handler_WallRunning : MonoBehaviour
 
             //Enter wall run as a climb
             if (Actions.eventMan != null) Actions.eventMan.wallClimbsPerformed += 1;
-            WallRun.InitialEvents(true, frontWallDetect, false, WallCheckDistance * CheckModifier);
-            Actions.ChangeAction(S_ActionManager.States.WallRunning);        
+            WallRun.InitialEvents(true, frontWallDetect, false, _wallCheckDistance_ * CheckModifier);
+            Actions.ChangeAction(S_Enums.PlayerStates.WallRunning);
 
         }
     }
@@ -135,13 +135,13 @@ public class S_Handler_WallRunning : MonoBehaviour
     void tryWallRunLeft()
     {
         float dis = Vector3.Distance(transform.position, leftWallDetect.point);
-        if (Physics.Raycast(transform.position, Inp.trueMoveInput, dis + 0.1f, wallLayerMask))
+        if (Physics.Raycast(transform.position, Inp.trueMoveInput, dis + 0.1f, _WallLayerMask_))
         {
             //Debug.Log("Trigger Wall Left");
             //Enter a wallrun with wall on left.
             WallRun.InitialEvents(false, leftWallDetect, false);
             if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
-            Actions.ChangeAction(S_ActionManager.States.WallRunning);
+            Actions.ChangeAction(S_Enums.PlayerStates.WallRunning);
             
         }
     }
@@ -149,13 +149,13 @@ public class S_Handler_WallRunning : MonoBehaviour
     void tryWallRunRight()
     {
         float dis = Vector3.Distance(transform.position, rightWallDetect.point);
-        if (Physics.Raycast(transform.position, Inp.trueMoveInput, dis + 0.1f, wallLayerMask))
+        if (Physics.Raycast(transform.position, Inp.trueMoveInput, dis + 0.1f, _WallLayerMask_))
         {
             //Debug.Log("Trigger Wall Right");
             //Enter a wallrun with wall on right.
             WallRun.InitialEvents(false, rightWallDetect, true);
             if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
-            Actions.ChangeAction(S_ActionManager.States.WallRunning);
+            Actions.ChangeAction(S_Enums.PlayerStates.WallRunning);
             
         }
     }
@@ -164,7 +164,7 @@ public class S_Handler_WallRunning : MonoBehaviour
     {
         //If racycast does not detect ground
         if (!Player.Grounded)
-            return !Physics.Raycast(CharacterAnimator.transform.position, -Vector3.up, 6f, wallLayerMask);
+            return !Physics.Raycast(CharacterAnimator.transform.position, -Vector3.up, 6f, _WallLayerMask_);
         else
             return false;
     }
@@ -172,25 +172,25 @@ public class S_Handler_WallRunning : MonoBehaviour
     {
         //Checks for wall in front using raycasts, outputing hits and booleans
         wallFront = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out frontWallDetect,
-            WallCheckDistance * 2.5f, wallLayerMask);
+            _wallCheckDistance_ * 2.5f, _WallLayerMask_);
 
         //Checks for nearby walls using raycasts, outputing hits and booleans
-        wallRight = Physics.Raycast(CharacterAnimator.transform.position, CharacterAnimator.transform.right, out rightWallDetect, WallCheckDistance, wallLayerMask);
-        wallLeft = Physics.Raycast(CharacterAnimator.transform.position, -CharacterAnimator.transform.right, out leftWallDetect, WallCheckDistance, wallLayerMask);
+        wallRight = Physics.Raycast(CharacterAnimator.transform.position, CharacterAnimator.transform.right, out rightWallDetect, _wallCheckDistance_, _WallLayerMask_);
+        wallLeft = Physics.Raycast(CharacterAnimator.transform.position, -CharacterAnimator.transform.right, out leftWallDetect, _wallCheckDistance_, _WallLayerMask_);
 
         //If no walls directily on sides, checks at angles with greater range.
         if (!wallRight && !wallLeft && !wallFront)
         {
             //Checks for wall on right first. Sets angle between right and forward and uses it.
             Vector3 direction = Vector3.Lerp(CharacterAnimator.transform.right, CharacterAnimator.transform.forward, 0.4f);
-            wallRight = Physics.Raycast(CharacterAnimator.transform.position, direction, out rightWallDetect, WallCheckDistance * 2, wallLayerMask);
+            wallRight = Physics.Raycast(CharacterAnimator.transform.position, direction, out rightWallDetect, _wallCheckDistance_ * 2, _WallLayerMask_);
 
             //If no wall on right, checks left.
             if (!wallRight)
             {
                 //Same as before but left
                 direction = Vector3.Lerp(-CharacterAnimator.transform.right, CharacterAnimator.transform.forward, 0.4f);
-                wallLeft = Physics.Raycast(CharacterAnimator.transform.position, direction, out leftWallDetect, WallCheckDistance * 2, wallLayerMask);
+                wallLeft = Physics.Raycast(CharacterAnimator.transform.position, direction, out leftWallDetect, _wallCheckDistance_ * 2, _WallLayerMask_);
 
                
                 //If there isn't a wall and moving fast enough
@@ -199,7 +199,7 @@ public class S_Handler_WallRunning : MonoBehaviour
                     //Increases check range based on speed
                     CheckModifier = (Player.HorizontalSpeedMagnitude * 0.035f) + .5f;
                     wallFront = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out frontWallDetect,
-                    WallCheckDistance * CheckModifier, wallLayerMask);
+                    _wallCheckDistance_ * CheckModifier, _WallLayerMask_);
 
                 }
                 
@@ -286,8 +286,8 @@ public class S_Handler_WallRunning : MonoBehaviour
     private void AssignStats()
     {
 
-        wallLayerMask = Tools.coreStats.wallLayerMask;
-        WallCheckDistance = Tools.coreStats.WallCheckDistance;
+        _WallLayerMask_ = Tools.Stats.WallRunningStats.WallLayerMask;
+        _wallCheckDistance_ = Tools.Stats.WallRunningStats.wallCheckDistance;
     }
 
     //Responsible for assigning objects and components from the tools script.

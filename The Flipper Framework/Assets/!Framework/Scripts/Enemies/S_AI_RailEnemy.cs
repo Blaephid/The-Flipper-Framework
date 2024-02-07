@@ -299,7 +299,7 @@ namespace SplineMesh
                         playerDistance = playerRail.range - range;
                     }
 
-                    playerSpeed = (playerRail.PlayerSpeed - currentSpeed) / playerRail.railmaxSpeed;
+                    playerSpeed = (playerRail.PlayerSpeed - currentSpeed) / playerRail._railmaxSpeed_;
                     float changeSpeed = followSpeed * followBySpeedDif.Evaluate(Mathf.Abs(playerSpeed));
                     
 

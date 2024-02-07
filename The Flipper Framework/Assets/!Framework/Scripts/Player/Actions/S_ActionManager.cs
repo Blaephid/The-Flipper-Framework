@@ -9,12 +9,11 @@ public class S_ActionManager : MonoBehaviour {
     public levelEventHandler eventMan;
 
 
-    public States Action;
-	public States PreviousAction { get; set; }
+    public S_Enums.PlayerStates whatAction;
+	public S_Enums.PlayerStates whatPreviousAction { get; set; }
 
     //Action Scrips, Always leave them in the correct order;
     [Header("Actions")]
-
     public S_Action00_Regular Action00;
     public S_Action01_Jump Action01;
     public S_Action02_Homing Action02;
@@ -78,24 +77,7 @@ public class S_ActionManager : MonoBehaviour {
 
     void Start()
     {
-        ChangeAction(S_ActionManager.States.Regular);
-    }
-
-    public enum States
-    {
-        Regular,
-        Jump,
-        Homing,
-        SpinCharge,
-        Hurt,
-        Rail,
-        Bounce,
-        RingRoad,
-        DropCharge,
-        Path,
-        JumpDash,
-        WallRunning,
-        Hovering
+        ChangeAction(S_Enums.PlayerStates.Regular);
     }
 
     void Awake()
@@ -337,23 +319,23 @@ public class S_ActionManager : MonoBehaviour {
     }
 
     //Call this function to change the action
-    public void ChangeAction(States ActionToChange)
+    public void ChangeAction(S_Enums.PlayerStates ActionToChange)
     {
         //Put an case for all your actions here
         switch (ActionToChange)
         {
-            case States.Regular:
+            case S_Enums.PlayerStates.Regular:
                 changePossible(ActionToChange);
                 Action00.enabled = true;
                 break;
-            case States.Jump:
+            case S_Enums.PlayerStates.Jump:
                 if(!lockDoubleJump)
                 {
                     changePossible(ActionToChange);
                     Action01.enabled = true;
                 }
                 break;
-            case States.Homing:
+            case S_Enums.PlayerStates.Homing:
                 if (!lockHoming)
                 {
                     if (eventMan != null) eventMan.homingAttacksPerformed += 1;
@@ -361,7 +343,7 @@ public class S_ActionManager : MonoBehaviour {
                     Action02.enabled = true;
                 }
                 break;
-            case States.JumpDash:
+            case S_Enums.PlayerStates.JumpDash:
                 if (!lockJumpDash)
                 {
                     if (eventMan != null) eventMan.jumpDashesPerformed += 1;
@@ -369,20 +351,20 @@ public class S_ActionManager : MonoBehaviour {
                     Action11.enabled = true;
                 }
                 break;
-            case States.SpinCharge:
+            case S_Enums.PlayerStates.SpinCharge:
                 changePossible(ActionToChange);
                 Action03.enabled = true;
                 break;
-            case States.Hurt:
+            case S_Enums.PlayerStates.Hurt:
                 changePossible(ActionToChange);
                 Action04.enabled = true;
                 break;
-            case States.Rail:
+            case S_Enums.PlayerStates.Rail:
                 if (eventMan != null) eventMan.RailsGrinded += 1;
                 changePossible(ActionToChange);
                 Action05.enabled = true;
 				break;
-			case States.Bounce:
+			case S_Enums.PlayerStates.Bounce:
                 if(!lockBounce)
                 {
                     changePossible(ActionToChange);
@@ -390,24 +372,24 @@ public class S_ActionManager : MonoBehaviour {
                     Action06.enabled = true;
                 }
                 break;
-			case States.RingRoad:
+			case S_Enums.PlayerStates.RingRoad:
                 if (eventMan != null) eventMan.ringRoadsPerformed += 1;
                 changePossible(ActionToChange);
                 Action07.enabled = true;
 				break;
-			case States.DropCharge:
+			case S_Enums.PlayerStates.DropCharge:
                 changePossible(ActionToChange);
                 Action08.enabled = true;
                 break;
-            case States.Path:
+            case S_Enums.PlayerStates.Path:
                 changePossible(ActionToChange);
                 Action10.enabled = true;
                 break;
-            case States.WallRunning:
+            case S_Enums.PlayerStates.WallRunning:
                 changePossible(ActionToChange);
                 Action12.enabled = true;
                 break;
-            case States.Hovering:
+            case S_Enums.PlayerStates.Hovering:
                 changePossible(ActionToChange);
                 Action13.enabled = true;
                 break;
@@ -416,19 +398,19 @@ public class S_ActionManager : MonoBehaviour {
 
     }
 
-    private void changePossible(States newAction)
+    private void changePossible(S_Enums.PlayerStates newAction)
     {
-        PreviousAction = Action;
+        whatPreviousAction = whatAction;
 
-        switch(PreviousAction)
+        switch(whatPreviousAction)
         {
-            case States.Homing:
+            case S_Enums.PlayerStates.Homing:
                 Phys.GravityAffects = true;
                 actionEnable();
                 break;
         }
 
-        Action= newAction;
+        whatAction= newAction;
         DeactivateAllActions();
     }
 

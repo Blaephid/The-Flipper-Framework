@@ -318,8 +318,8 @@ public class S_HedgeCamera : MonoBehaviour
         }
 
         //Face down
-        if (MoveHeightBasedOnSpeed && !Player.Grounded && y < FallSpeedThreshold && (Actions.Action == S_ActionManager.States.Jump
-            || Actions.Action == S_ActionManager.States.Regular || Actions.Action == S_ActionManager.States.DropCharge))
+        if (MoveHeightBasedOnSpeed && !Player.Grounded && y < FallSpeedThreshold && (Actions.whatAction == S_Enums.PlayerStates.Jump
+            || Actions.whatAction == S_Enums.PlayerStates.Regular || Actions.whatAction == S_Enums.PlayerStates.DropCharge))
         {
             if (!facingDown)
             {
@@ -394,7 +394,7 @@ public class S_HedgeCamera : MonoBehaviour
             FollowDirection(3, 14, -10, 0);
         }
 
-        if (Player.HorizontalSpeedMagnitude > 30f && Actions.Action == S_ActionManager.States.WallRunning)
+        if (Player.HorizontalSpeedMagnitude > 30f && Actions.whatAction == S_Enums.PlayerStates.WallRunning)
         {
             //Debug.Log("Move camera behind");
             FollowDirection(2, 14, -10, 0.5f);
@@ -458,7 +458,7 @@ public class S_HedgeCamera : MonoBehaviour
     {
         if (!Locked)
         {
-            if (Actions.Action != S_ActionManager.States.Rail)
+            if (Actions.whatAction != S_Enums.PlayerStates.Rail)
             {
                 if (Player.Grounded)
                 {

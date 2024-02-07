@@ -14,7 +14,7 @@ namespace SplineMesh
         Quaternion CharRot;
         [HideInInspector] public S_Interaction_Pathers Rail_int;
 
-        GameObject jumpBall;
+        GameObject JumpBall;
 
         S_CharacterTools Tools;
         S_ActionManager Actions;
@@ -27,30 +27,30 @@ namespace SplineMesh
         [Header("Skin Rail Params")]
 
         public float skinRotationSpeed;
-        float OffsetRail = 2.05f;
-        float OffsetZip = -2.05f;
+        float _offsetRail_ = 2.05f;
+        float _offsetZip_ = -2.05f;
 
         public LayerMask railMask;
-        [HideInInspector] public float railmaxSpeed;
-        float railTopSpeed;
-        float decaySpeedLow;
-        float decaySpeedHigh;
-        float MinStartSpeed = 60f;
-        float PushFowardmaxSpeed = 80f;
-        float PushFowardIncrements = 15f;
-        float PushFowardDelay = 0.5f;
-        float SlopePower = 2.5f;
-        float UpHillMultiplier = 0.25f;
-        float DownHillMultiplier = 0.35f;
-        float UpHillMultiplierCrouching = 0.4f;
-        float DownHillMultiplierCrouching = 0.6f;
-        float DragVal = 0.0001f;
-        float PlayerBrakePower = 0.95f;
-        float HopDelay;
-        float hopDistance = 12;
-        float decayTime;
-        AnimationCurve accelBySpeed;
-        float decaySpeed;
+        [HideInInspector] public float _railmaxSpeed_;
+        float _railTopSpeed_;
+        float _decaySpeedLow_;
+        float _decaySpeedHigh_;
+        float _minStartSpeed_ = 60f;
+        float _pushFowardmaxSpeed_ = 80f;
+        float _pushFowardIncrements_ = 15f;
+        float _pushFowardDelay_ = 0.5f;
+        float _slopePower_ = 2.5f;
+        float _upHillMultiplier_ = 0.25f;
+        float _downHillMultiplier_ = 0.35f;
+        float _upHillMultiplierCrouching_ = 0.4f;
+        float _downHillMultiplierCrouching_ = 0.6f;
+        float _dragVal_ = 0.0001f;
+        float _playerBrakePower_ = 0.95f;
+        float _hopDelay_;
+        float _hopDistance_ = 12;
+        float _decayTime_;
+        AnimationCurve _accelBySpeed_;
+        float _decaySpeed_;
 
         float curvePosSlope { get; set; }
 
@@ -81,7 +81,7 @@ namespace SplineMesh
         bool canInput = true;
         bool canHop = false;
         float distanceToStep;
-        float stepSpeed = 3.5f;
+        float _stepSpeed_ = 3.5f;
         bool steppingRight;
 
         bool faceRight = true;
@@ -155,11 +155,11 @@ namespace SplineMesh
             setOffSet = -thisOffset;
 
             ConnectedRails = addOn;
-            jumpBall.SetActive(false);
+            JumpBall.SetActive(false);
             Actions.JumpPressed = false;
 
             isZipLine = isZip;
-            timer = PushFowardDelay;
+            timer = _pushFowardDelay_;
             RailContactSound = false;
 
             Boosted = false;
@@ -219,12 +219,12 @@ namespace SplineMesh
 
 
             // Check if was Homingattack
-            if (Actions.Action == S_ActionManager.States.Homing)
+            if (Actions.whatAction == S_Enums.PlayerStates.Homing)
             {
                 PlayerSpeed = Actions.Action02.LateSpeed;
                 dotdir = Vector3.Dot(Actions.Action02.TargetDirection.normalized, sample.tangent);
             }
-            else if (Actions.Action == S_ActionManager.States.DropCharge)
+            else if (Actions.whatAction == S_Enums.PlayerStates.DropCharge)
             {
                 //dotdir = Vector3.Dot(Player.rb.velocity.normalized, sample.tangent);
 
@@ -246,7 +246,7 @@ namespace SplineMesh
             {
                 PlayerSpeed = Mathf.Abs(PlayerSpeed * 0.8f);
             }
-            PlayerSpeed = Mathf.Max(PlayerSpeed, MinStartSpeed);
+            PlayerSpeed = Mathf.Max(PlayerSpeed, _minStartSpeed_);
 
             // Get Direction for the Rail
             if (dotdir > 0)
@@ -272,7 +272,7 @@ namespace SplineMesh
         IEnumerator allowHop()
         {
             canHop = false;
-            yield return new WaitForSeconds(HopDelay);
+            yield return new WaitForSeconds(_hopDelay_);
             canHop = true;
         }
         void FixedUpdate()
@@ -291,7 +291,7 @@ namespace SplineMesh
                 CharacterAnimator.SetInteger("Action", 0);
                 CharacterAnimator.SetBool("Grounded", Player.Grounded);
 
-                Actions.ChangeAction(S_ActionManager.States.Regular);
+                Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                 if (Actions.Action02 != null)
                 {
                     Actions.Action02.HomingAvailable = true;
@@ -355,7 +355,7 @@ namespace SplineMesh
                 //Player.transform.eulerAngles = new Vector3(0,1,0);
                 Actions.Action01.jumpCount = -1;
                 Actions.Action01.InitialEvents(sample.up, true, Player.rb.velocity.y);
-                Actions.ChangeAction(S_ActionManager.States.Jump);
+                Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 
                 if (Actions.Action02 != null)
                 {
@@ -381,20 +381,20 @@ namespace SplineMesh
             {
                 //ChangeSide
 
-                if (timer > PushFowardDelay)
+                if (timer > _pushFowardDelay_)
                 {
                     //Sounds.RailSoundStop();
                     isSwitching = true;
-                    if (PlayerSpeed < PushFowardmaxSpeed)
+                    if (PlayerSpeed < _pushFowardmaxSpeed_)
                     {
-                        PlayerSpeed += PushFowardIncrements + accelBySpeed.Evaluate(PlayerSpeed / PushFowardmaxSpeed);
+                        PlayerSpeed += _pushFowardIncrements_ + _accelBySpeed_.Evaluate(PlayerSpeed / _pushFowardmaxSpeed_);
                     }
                     faceRight = !faceRight;
                     timer = 0f;
                     Actions.SpecialPressed = false;
                 }
             }
-            isSwitching = (timer < PushFowardDelay);
+            isSwitching = (timer < _pushFowardDelay_);
 
             //If above a certain speed, the player breaks depending it they're presseing the skid button.
             if (Time.timeScale != 0 && !isZipLine)
@@ -455,7 +455,7 @@ namespace SplineMesh
                         //binormal = Quaternion.LookRotation(Vector3.right, Vector3.up) * binormal;
                         binormal += sample.Rotation * -setOffSet;
                     }
-                    transform.position = (sample.location + RailTransform.position + (sample.up * OffsetRail)) + binormal;
+                    transform.position = (sample.location + RailTransform.position + (sample.up * _offsetRail_)) + binormal;
 
                     if (canHop)
                     {
@@ -503,12 +503,12 @@ namespace SplineMesh
 
 
                     ZipHandle.transform.position = (sample.location + RailTransform.position) + setOffSet;
-                    transform.position = ZipHandle.transform.position + (ZipHandle.transform.up * OffsetZip);
+                    transform.position = ZipHandle.transform.position + (ZipHandle.transform.up * _offsetZip_);
 
 
                 }
 
-                if (isBraking && PlayerSpeed > MinStartSpeed) PlayerSpeed *= PlayerBrakePower;
+                if (isBraking && PlayerSpeed > _minStartSpeed_) PlayerSpeed *= _playerBrakePower_;
 
                 //Set Player Speed correctly so that it becomes smooth grinding
                 if (!backwards)
@@ -592,7 +592,7 @@ namespace SplineMesh
                 if (Actions.RightStepPressed)
                 {
                   
-                    distanceToStep = hopDistance;
+                    distanceToStep = _hopDistance_;
                     canInput = false;
                     steppingRight = true;
                     Actions.RightStepPressed = false;
@@ -604,7 +604,7 @@ namespace SplineMesh
                 {
                     
 
-                    distanceToStep = hopDistance;
+                    distanceToStep = _hopDistance_;
                     canInput = false;
                     steppingRight = false;
                     Actions.LeftStepPressed = false;
@@ -620,7 +620,7 @@ namespace SplineMesh
         {
             if (distanceToStep > 0)
             {
-                float move = stepSpeed;
+                float move = _stepSpeed_;
 
                 if (steppingRight)
                     move = -move;
@@ -632,19 +632,19 @@ namespace SplineMesh
                 setOffSet.Set(setOffSet.x + move, setOffSet.y, setOffSet.z);
                
                 if(move < 0)
-                    if(Physics.BoxCast(CharacterAnimator.transform.position,new Vector3(1.3f, 3f, 1.3f), -CharacterAnimator.transform.right, Quaternion.identity, 4, Tools.coreStats.StepLayerMask))
+                    if(Physics.BoxCast(CharacterAnimator.transform.position,new Vector3(1.3f, 3f, 1.3f), -CharacterAnimator.transform.right, Quaternion.identity, 4, Tools.Stats.QuickstepStats.StepLayerMask))
                     {
-                        Actions.ChangeAction(S_ActionManager.States.Regular);
+                        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                         CharacterAnimator.SetInteger("Action", 0);
                     }
                 else
-                    if (Physics.BoxCast(CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), CharacterAnimator.transform.right, Quaternion.identity, 4, Tools.coreStats.StepLayerMask))
+                    if (Physics.BoxCast(CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), CharacterAnimator.transform.right, Quaternion.identity, 4, Tools.Stats.QuickstepStats.StepLayerMask))
                     {
-                        Actions.ChangeAction(S_ActionManager.States.Regular);
+                        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                         CharacterAnimator.SetInteger("Action", 0);
                     }
 
-                distanceToStep -= stepSpeed;
+                distanceToStep -= _stepSpeed_;
 
                 if (distanceToStep < 6)
                 {
@@ -652,7 +652,7 @@ namespace SplineMesh
 
                     if (distanceToStep <= 0)
                     {
-                        Actions.ChangeAction(S_ActionManager.States.Regular);
+                        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                         OnRail = false;
                         CharacterAnimator.SetInteger("Action", 0);
                     }
@@ -778,8 +778,8 @@ namespace SplineMesh
                     boostTime -= Time.fixedDeltaTime;
                     if (boostTime < 0)
                     {
-                        PlayerSpeed -= decaySpeed;
-                        if (boostTime < -decayTime)
+                        PlayerSpeed -= _decaySpeed_;
+                        if (boostTime < -_decayTime_)
                         { 
                             Boosted = false;
                             boostTime = 0;
@@ -801,14 +801,14 @@ namespace SplineMesh
             if (Player.rb.velocity.y > 0.05f)
             {
                 //uphill and straight
-                float lean = UpHillMultiplier;
-                if (Crouching) { lean = UpHillMultiplierCrouching; }
+                float lean = _upHillMultiplier_;
+                if (Crouching) { lean = _upHillMultiplierCrouching_; }
                 //Debug.Log("UpHill : *" + lean);
-                float force = (SlopePower * curvePosSlope) * lean;
+                float force = (_slopePower_ * curvePosSlope) * lean;
                 //Debug.Log(Mathf.Abs(Player.p_rigidbody.velocity.normalized.y - 1));
                 float AbsYPow = Mathf.Abs(Player.rb.velocity.normalized.y * Player.rb.velocity.normalized.y);
                 //Debug.Log( "Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
-                force = (AbsYPow * force) + (DragVal * PlayerSpeed);
+                force = (AbsYPow * force) + (_dragVal_ * PlayerSpeed);
                 //Debug.Log(force);
                 force = Mathf.Clamp(force, -0.3f, 0.3f);
                 PlayerSpeed += force;
@@ -822,14 +822,14 @@ namespace SplineMesh
             else if (Player.rb.velocity.y < -0.05f)
             {
                 //Downhill
-                float lean = DownHillMultiplier;
-                if (Crouching) { lean = DownHillMultiplierCrouching; }
+                float lean = _downHillMultiplier_;
+                if (Crouching) { lean = _downHillMultiplierCrouching_; }
                 //Debug.Log("DownHill : *" + lean);
-                float force = (SlopePower * curvePosSlope) * lean;
+                float force = (_slopePower_ * curvePosSlope) * lean;
                 //Debug.Log(Mathf.Abs(Player.p_rigidbody.velocity.normalized.y));
                 float AbsYPow = Mathf.Abs(Player.rb.velocity.normalized.y * Player.rb.velocity.normalized.y);
                 //Debug.Log("Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
-                force = (AbsYPow * force) - (DragVal * PlayerSpeed);
+                force = (AbsYPow * force) - (_dragVal_ * PlayerSpeed);
                 //Debug.Log(force);
                 PlayerSpeed -= force;
 
@@ -842,11 +842,11 @@ namespace SplineMesh
             else
             {
                 //Decay
-                if (PlayerSpeed > railmaxSpeed)
-                    PlayerSpeed -= decaySpeedHigh;
+                if (PlayerSpeed > _railmaxSpeed_)
+                    PlayerSpeed -= _decaySpeedHigh_;
 
-                else if (PlayerSpeed > railTopSpeed)
-                    PlayerSpeed -= decaySpeedLow;
+                else if (PlayerSpeed > _railTopSpeed_)
+                    PlayerSpeed -= _decaySpeedLow_;
             }
 
             
@@ -882,30 +882,30 @@ namespace SplineMesh
 
         void AssignStats()
         {
-            railTopSpeed = Tools.coreStats.railTopSpeed;
-            railmaxSpeed = Tools.coreStats.railMaxSpeed;
-            decaySpeedHigh = Tools.coreStats.railDecaySpeedHigh;
-            decaySpeedLow = Tools.coreStats.railDecaySpeedLow;
-            MinStartSpeed = Tools.coreStats.MinStartSpeed;
-            PushFowardmaxSpeed = Tools.coreStats.RailPushFowardmaxSpeed;
-            PushFowardIncrements = Tools.coreStats.RailPushFowardIncrements;
-            PushFowardDelay = Tools.coreStats.RailPushFowardDelay;
-            SlopePower = Tools.coreStats.SlopePower;
-            UpHillMultiplier = Tools.coreStats.RailUpHillMultiplier;
-            DownHillMultiplier = Tools.coreStats.RailDownHillMultiplier;
-            UpHillMultiplierCrouching = Tools.coreStats.RailUpHillMultiplierCrouching;
-            DownHillMultiplierCrouching = Tools.coreStats.RailDownHillMultiplierCrouching;
-            DragVal = Tools.coreStats.RailDragVal;
-            PlayerBrakePower = Tools.coreStats.RailPlayerBrakePower;
-            HopDelay = Tools.coreStats.hopDelay;
-            stepSpeed = Tools.coreStats.hopSpeed;
-            hopDistance = Tools.coreStats.hopDistance;
-            accelBySpeed = Tools.coreStats.railAccelBySpeed;
+            _railTopSpeed_ = Tools.Stats.RailStats.railTopSpeed;
+            _railmaxSpeed_ = Tools.Stats.RailStats.railMaxSpeed;
+            _decaySpeedHigh_ = Tools.Stats.RailStats.railDecaySpeedHigh;
+            _decaySpeedLow_ = Tools.Stats.RailStats.railDecaySpeedLow;
+            _minStartSpeed_ = Tools.Stats.RailStats.MinStartSpeed;
+            _pushFowardmaxSpeed_ = Tools.Stats.RailStats.RailPushFowardmaxSpeed;
+            _pushFowardIncrements_ = Tools.Stats.RailStats.RailPushFowardIncrements;
+            _pushFowardDelay_ = Tools.Stats.RailStats.RailPushFowardDelay;
+            _slopePower_ = Tools.Stats.SlopeStats.slopePower;
+            _upHillMultiplier_ = Tools.Stats.RailStats.RailUpHillMultiplier;
+            _downHillMultiplier_ = Tools.Stats.RailStats.RailDownHillMultiplier;
+            _upHillMultiplierCrouching_ = Tools.Stats.RailStats.RailUpHillMultiplierCrouching;
+            _downHillMultiplierCrouching_ = Tools.Stats.RailStats.RailDownHillMultiplierCrouching;
+            _dragVal_ = Tools.Stats.RailStats.RailDragVal;
+            _playerBrakePower_ = Tools.Stats.RailStats.RailPlayerBrakePower;
+            _hopDelay_ = Tools.Stats.RailStats.hopDelay;
+            _stepSpeed_ = Tools.Stats.RailStats.hopSpeed;
+            _hopDistance_ = Tools.Stats.RailStats.hopDistance;
+            _accelBySpeed_ = Tools.Stats.RailStats.railAccelBySpeed;
 
-            OffsetRail = Tools.coreStats.OffsetRail;
-            OffsetZip = Tools.coreStats.OffsetZip;
-            decaySpeed = Tools.coreStats.railBoostDecaySpeed;
-            decayTime = Tools.coreStats.railBoostDecayTime;
+            _offsetRail_ = Tools.Stats.PositionWhenOnRails.offsetRail;
+            _offsetZip_ = Tools.Stats.PositionWhenOnRails.offsetZip;
+            _decaySpeed_ = Tools.Stats.RailStats.railBoostDecaySpeed;
+            _decayTime_ = Tools.Stats.RailStats.railBoostDecayTime;
 
         }
 
@@ -920,7 +920,7 @@ namespace SplineMesh
             CharacterAnimator = Tools.CharacterAnimator;
             Sounds = Tools.SoundControl;
 
-            jumpBall = Tools.JumpBall;
+            JumpBall = Tools.JumpBall;
         }
 
     }

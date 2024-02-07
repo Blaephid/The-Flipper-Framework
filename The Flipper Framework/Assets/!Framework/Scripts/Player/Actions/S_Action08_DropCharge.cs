@@ -23,9 +23,9 @@ public class S_Action08_DropCharge : MonoBehaviour
     SkinnedMeshRenderer[] PlayerSkin;
  
 
-    [HideInInspector] public float SpinDashChargingSpeed = 0.3f;
-    [HideInInspector] public float MinimunCharge = 10;
-    [HideInInspector] public float MaximunCharge = 100;
+    [HideInInspector] public float _spinDashChargingSpeed_ = 0.3f;
+    [HideInInspector] public float _minimunCharge_ = 10;
+    [HideInInspector] public float _maximunCharge_ = 100;
     bool Charging = true;
 
     [HideInInspector] public float charge;
@@ -54,7 +54,7 @@ public class S_Action08_DropCharge : MonoBehaviour
         if (Player.rb.velocity.y < 40f && Actions.Action08 != null)
         {
             //Debug.Log("Enter DropDash");
-            Actions.ChangeAction(S_ActionManager.States.DropCharge);
+            Actions.ChangeAction(S_Enums.PlayerStates.DropCharge);
 
             Actions.Action08.InitialEvents();
         }
@@ -75,7 +75,7 @@ public class S_Action08_DropCharge : MonoBehaviour
     {
         if (Charging)
         {
-            charge += SpinDashChargingSpeed;
+            charge += _spinDashChargingSpeed_;
 
             //Lock camera on behind
             // Cam.Cam.FollowDirection(3, 14f, -10,0);
@@ -114,9 +114,9 @@ public class S_Action08_DropCharge : MonoBehaviour
                 StartCoroutine(exitAction());
             }
 
-            if (charge > MaximunCharge)
+            if (charge > _maximunCharge_)
             {
-                charge = MaximunCharge;
+                charge = _maximunCharge_;
             }
         }
         else
@@ -128,7 +128,7 @@ public class S_Action08_DropCharge : MonoBehaviour
             }
         }
 
-        if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player.Playermask) || Vector3.Dot(Player.GroundNormal, Vector3.up) > 0.99)
+        if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player._Groundmask_) || Vector3.Dot(Player.GroundNormal, Vector3.up) > 0.99)
         {
 
             if (!Actions.JumpPressed)
@@ -145,10 +145,10 @@ public class S_Action08_DropCharge : MonoBehaviour
 
             Actions.JumpPressed = false;
             JumpBall.SetActive(false);
-            Actions.ChangeAction(S_ActionManager.States.Regular);
+            Actions.ChangeAction(S_Enums.PlayerStates.Regular);
         }
 
-        else if (Actions.SpecialPressed && charge > MinimunCharge)
+        else if (Actions.SpecialPressed && charge > _minimunCharge_)
         {
             AirRelease();
         }
@@ -161,10 +161,10 @@ public class S_Action08_DropCharge : MonoBehaviour
         {
             DropEffect.Stop();
         }
-        if (Actions.Action == S_ActionManager.States.DropCharge)
+        if (Actions.whatAction == S_Enums.PlayerStates.DropCharge)
         {
             JumpBall.SetActive(true);
-            Actions.ChangeAction(S_ActionManager.States.Jump);
+            Actions.ChangeAction(S_Enums.PlayerStates.Jump);
         }
     }
 
@@ -195,7 +195,7 @@ public class S_Action08_DropCharge : MonoBehaviour
         yield return new WaitForSeconds(time);
         Player.GravityAffects = true;
         JumpBall.SetActive(false);
-        Actions.ChangeAction(S_ActionManager.States.Jump);
+        Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 
     }
 
@@ -220,9 +220,9 @@ public class S_Action08_DropCharge : MonoBehaviour
 
         newForward = Vector3.ProjectOnPlane(CharacterAnimator.transform.forward, floorHit.normal);
 
-        if (charge < MinimunCharge)
+        if (charge < _minimunCharge_)
         {
-            charge = MinimunCharge;
+            charge = _minimunCharge_;
         }
     
 
@@ -336,9 +336,9 @@ public class S_Action08_DropCharge : MonoBehaviour
 
     private void AssignStats()
     {
-        SpinDashChargingSpeed = Tools.stats.DropDashChargingSpeed;
-        MinimunCharge = Tools.stats.DropMinimunCharge;
-        MaximunCharge = Tools.stats.DropMaximunCharge;
+        _spinDashChargingSpeed_ = Tools.Stats.DropChargeStats.chargingSpeed;
+        _minimunCharge_ = Tools.Stats.DropChargeStats.minimunCharge;
+        _maximunCharge_ = Tools.Stats.DropChargeStats.maximunCharge;
     }
 
     private void AssignTools()

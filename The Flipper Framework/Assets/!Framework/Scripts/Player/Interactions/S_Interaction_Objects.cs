@@ -36,12 +36,12 @@ public class S_Interaction_Objects : MonoBehaviour {
     [Header("Enemies")]
 
     
-    [HideInInspector] public float HomingBouncingPower;
+    [HideInInspector] public float _homingBouncingPower_;
 
     public bool updateTargets { get; set; }
 
-    [HideInInspector] public float EnemyDamageShakeAmmount;
-    [HideInInspector] public float EnemyHitShakeAmmount;
+    [HideInInspector] public float _enemyDamageShakeAmmount_;
+    [HideInInspector] public float _enemyHitShakeAmmount_;
 
     [Header("UI objects")]
 
@@ -81,17 +81,17 @@ public class S_Interaction_Objects : MonoBehaviour {
 
     void UpdateSpeed()
     {
-        if (Actions.Action == S_ActionManager.States.Regular)
+        if (Actions.whatAction == S_Enums.PlayerStates.Regular)
         {
             //DisplaySpeed = Player.SpeedMagnitude;
             DisplaySpeed = Player.HorizontalSpeedMagnitude;
         }
         
-        else if(Actions.Action == S_ActionManager.States.Rail)
+        else if(Actions.whatAction == S_Enums.PlayerStates.Rail)
         {
             DisplaySpeed = Actions.Action05.PlayerSpeed;
         }
-        else if (Actions.Action == S_ActionManager.States.WallRunning)
+        else if (Actions.whatAction == S_Enums.PlayerStates.WallRunning)
         {
             if (Actions.Action12.RunningSpeed > Actions.Action12.ClimbingSpeed)
             DisplaySpeed = Actions.Action12.RunningSpeed;
@@ -99,7 +99,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                 DisplaySpeed = Actions.Action12.ClimbingSpeed;
 
         }
-        else if (Actions.Action == S_ActionManager.States.Path)
+        else if (Actions.whatAction == S_Enums.PlayerStates.Path)
         {
             DisplaySpeed = Actions.Action10.PlayerSpeed;
         }
@@ -168,7 +168,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                     set = false;
 
             }
-            else if (Actions.Action == S_ActionManager.States.Rail)
+            else if (Actions.whatAction == S_Enums.PlayerStates.Rail)
             {
 
                 Actions.Action05.PlayerSpeed += addSpeed / 2;
@@ -208,7 +208,7 @@ public class S_Interaction_Objects : MonoBehaviour {
             if (pad.onRail)
              {
 
-                if (Actions.Action != S_ActionManager.States.Rail)
+                if (Actions.whatAction != S_Enums.PlayerStates.Rail)
                 {
                     transform.position = col.GetComponent<S_Data_SpeedPad>().positionToLockTo.position;
                 }
@@ -261,7 +261,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                 {
                                   
                     Actions.Action00.cancelCoyote();
-                    Actions.ChangeAction(S_ActionManager.States.Regular);
+                    Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                     CharacterAnimator.SetBool("Grounded", false);
                     CharacterAnimator.SetInteger("Action", 0);
 
@@ -351,15 +351,15 @@ public class S_Interaction_Objects : MonoBehaviour {
 				}
 			}
             DamagePlayer();
-            S_HedgeCamera.Shakeforce = EnemyDamageShakeAmmount;
+            S_HedgeCamera.Shakeforce = _enemyDamageShakeAmmount_;
         }
 
         //Enemies
         if (col.tag == "Enemy")
         {
-            S_HedgeCamera.Shakeforce = EnemyHitShakeAmmount;
+            S_HedgeCamera.Shakeforce = _enemyHitShakeAmmount_;
         //Either triggers an attack on the enemy or takes damage.
-            if (Actions.Action == S_ActionManager.States.SpinCharge || (Actions.Action == S_ActionManager.States.Regular && Player.isRolling))
+            if (Actions.whatAction == S_Enums.PlayerStates.SpinCharge || (Actions.whatAction == S_Enums.PlayerStates.Regular && Player.isRolling))
             {
                 attack.AttackThing(col, "SpinDash", "Enemy"); ;
                 
@@ -397,8 +397,8 @@ public class S_Interaction_Objects : MonoBehaviour {
             Actions.Action00.cancelCoyote();
             Player.GravityAffects = true;
 
-            if (Actions.Action == S_ActionManager.States.Homing || Actions.PreviousAction == S_ActionManager.States.Homing)
-                Player.HomingDelay = Tools.stats.HomingSuccessDelay;
+            if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
+                Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
 
             JumpBall.SetActive(false);
 			if (Actions.Action08 != null) {
@@ -429,7 +429,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                     StartCoroutine(lockGravity(spring.lockGravity));
                 }
 
-                Actions.ChangeAction(S_ActionManager.States.Regular);
+                Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                 
 
                 if (col.GetComponent<AudioSource>()) { col.GetComponent<AudioSource>().Play(); }
@@ -463,8 +463,8 @@ public class S_Interaction_Objects : MonoBehaviour {
 
 		else if (col.tag == "Bumper")
 		{
-            if (Actions.Action == S_ActionManager.States.Homing || Actions.PreviousAction == S_ActionManager.States.Homing)
-                Player.HomingDelay = Tools.stats.HomingSuccessDelay;
+            if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
+                Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
 
             JumpBall.SetActive(false);
 			if (Actions.Action08 != null) {
@@ -478,13 +478,13 @@ public class S_Interaction_Objects : MonoBehaviour {
 		//CancelHoming
 		else if (col.tag == "CancelHoming") 
 		{
-			if (Actions.Action == S_ActionManager.States.Homing || Actions.PreviousAction == S_ActionManager.States.Homing)
+			if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
             {
 
 				Vector3 newSpeed = new Vector3(1, 0, 1);
 
-				Actions.ChangeAction (S_ActionManager.States.Regular);
-				newSpeed = new Vector3(0, HomingBouncingPower, 0);
+				Actions.ChangeAction (S_Enums.PlayerStates.Regular);
+				newSpeed = new Vector3(0, _homingBouncingPower_, 0);
 				////Debug.Log (newSpeed);
 				Player.rb.velocity = newSpeed;
 				Player.transform.position = col.ClosestPoint (Player.transform.position);
@@ -492,7 +492,7 @@ public class S_Interaction_Objects : MonoBehaviour {
 					Actions.Action02.HomingAvailable = true;
 				}
 
-                Player.HomingDelay = Tools.stats.HomingSuccessDelay;
+                Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
             }
 		}
 
@@ -500,14 +500,14 @@ public class S_Interaction_Objects : MonoBehaviour {
         {
             if(col.GetComponent<S_Trigger_Updraft>())
             {
-                if (Actions.Action == S_ActionManager.States.Hovering)
+                if (Actions.whatAction == S_Enums.PlayerStates.Hovering)
                 {
                     Actions.Action13.updateHover(col.GetComponent<S_Trigger_Updraft>());
                 }
                 else
                 {
                     Actions.Action13.InitialEvents(col.GetComponent<S_Trigger_Updraft>());
-                    Actions.ChangeAction(S_ActionManager.States.Hovering);
+                    Actions.ChangeAction(S_Enums.PlayerStates.Hovering);
                 }
             }
                                 
@@ -637,7 +637,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                 break;
         }
 
-        Player.fallGravity = Player.StartFallGravity;
+        Player.fallGravity = Player._startFallGravity_;
     }
 
     private IEnumerator applyForce(Vector3 force, Vector3 position, int frames = 3)
@@ -650,14 +650,14 @@ public class S_Interaction_Objects : MonoBehaviour {
             yield return new WaitForFixedUpdate();
         }
 
-        Actions.ChangeAction(S_ActionManager.States.Regular);
+        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
         transform.position = position;
         Player.rb.velocity = force;
 
     }
     public void DamagePlayer()
     {
-        if (!Actions.Action04Control.IsHurt && Actions.Action != S_ActionManager.States.Hurt)
+        if (!Actions.Action04Control.IsHurt && Actions.whatAction != S_Enums.PlayerStates.Hurt)
         {
 
             if (!S_Interaction_Monitors.HasShield)
@@ -667,7 +667,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                     //LoseRings
                     Sounds.RingLossSound();
                     Actions.Action04Control.GetHurt();
-                    Actions.ChangeAction(S_ActionManager.States.Hurt);
+                    Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
                     Actions.Action04.InitialEvents();
                 }
                 if (RingAmount <= 0)
@@ -677,7 +677,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                     {
                         Sounds.DieSound();
                         Actions.Action04Control.isDead = true;
-                        Actions.ChangeAction(S_ActionManager.States.Hurt);
+                        Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
                         Actions.Action04.InitialEvents();
                     }
                 }
@@ -687,7 +687,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                 //Lose Shield
                 Sounds.SpikedSound();
                 S_Interaction_Monitors.HasShield = false;
-                Actions.ChangeAction(S_ActionManager.States.Hurt);
+                Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
                 Actions.Action04.InitialEvents();
             }
         }
@@ -696,9 +696,9 @@ public class S_Interaction_Objects : MonoBehaviour {
 
     private void AssignStats()
     {
-        HomingBouncingPower = Tools.coreStats.HomingBouncingPower;
-        EnemyDamageShakeAmmount = Tools.coreStats.EnemyDamageShakeAmmount;
-        EnemyHitShakeAmmount = Tools.coreStats.EnemyHitShakeAmmount;
+        _homingBouncingPower_ = Tools.Stats.EnemyInteraction.homingBouncingPower;
+        _enemyDamageShakeAmmount_ = Tools.Stats.EnemyInteraction.enemyDamageShakeAmmount;
+        _enemyHitShakeAmmount_ = Tools.Stats.EnemyInteraction.enemyHitShakeAmmount;
     }
 
     private void AssignTools()

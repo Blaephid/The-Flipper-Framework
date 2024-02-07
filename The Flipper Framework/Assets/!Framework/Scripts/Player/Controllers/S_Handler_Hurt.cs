@@ -20,14 +20,14 @@ public class S_Handler_Hurt : MonoBehaviour
     Transform faceHitCollider;
     float faceHitSize;
 
-    [HideInInspector] public int InvencibilityTime;
+    [HideInInspector] public int _invincibilityTime_;
     int counter;
     public bool IsHurt { get; set; }
     public bool IsInvencible { get; set; }
     float flickerCount;
-    float FlickerSpeed;
+    float _flickerSpeed_;
 
-    LayerMask bonkWall;
+    LayerMask _BonkWall_;
     GameObject WallToBonk;
     Vector3 previDir;
 
@@ -35,9 +35,9 @@ public class S_Handler_Hurt : MonoBehaviour
 
     GameObject MovingRing;
     GameObject releaseDirection;
-    [HideInInspector] public int MaxRingLoss;
-    [HideInInspector] public float RingReleaseSpeed;
-    [HideInInspector] public float RingArcSpeed;
+    [HideInInspector] public int _maxRingLoss_;
+    [HideInInspector] public float _ringReleaseSpeed_;
+    [HideInInspector] public float _ringArcSpeed_;
     bool releasingRings = false;
     int RingsToRelease;
 
@@ -58,7 +58,7 @@ public class S_Handler_Hurt : MonoBehaviour
             AssignStats();
         }
         InitialDir = transform.forward;
-        counter = InvencibilityTime;
+        counter = _invincibilityTime_;
         releaseDirection = new GameObject();
         previDir = transform.forward;
         this.enabled = true;
@@ -69,7 +69,7 @@ public class S_Handler_Hurt : MonoBehaviour
     void FixedUpdate () {
 
         counter += 1;
-        if(counter < InvencibilityTime)
+        if(counter < _invincibilityTime_)
         {
             IsInvencible = true;
             SkinFlicker();
@@ -89,7 +89,7 @@ public class S_Handler_Hurt : MonoBehaviour
 
         if(Actions.killBindPressed)
         {
-            if(Actions.Action != S_ActionManager.States.Hurt)
+            if(Actions.whatAction != S_Enums.PlayerStates.Hurt)
                 CharacterAnimator.SetTrigger("Damaged");
             isDead = true;
         }
@@ -114,10 +114,10 @@ public class S_Handler_Hurt : MonoBehaviour
     {
         faceHitCollider.transform.rotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, transform.up); ;
 
-        if((Actions.Action == 0 && Player.HorizontalSpeedMagnitude > 50) || (Actions.Action == S_ActionManager.States.Jump && Player.HorizontalSpeedMagnitude > 40) || (Actions.Action == S_ActionManager.States.JumpDash
-            && Player.HorizontalSpeedMagnitude > 30) || (Actions.Action == S_ActionManager.States.WallRunning && Actions.Action12.RunningSpeed > 5))
+        if((Actions.whatAction == 0 && Player.HorizontalSpeedMagnitude > 50) || (Actions.whatAction == S_Enums.PlayerStates.Jump && Player.HorizontalSpeedMagnitude > 40) || (Actions.whatAction == S_Enums.PlayerStates.JumpDash
+            && Player.HorizontalSpeedMagnitude > 30) || (Actions.whatAction == S_Enums.PlayerStates.WallRunning && Actions.Action12.RunningSpeed > 5))
         {
-            if(Physics.SphereCast(transform.position, 0.3f, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, bonkWall))
+            if(Physics.SphereCast(transform.position, 0.3f, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, _BonkWall_))
             {
                 
                 if (Vector3.Dot(CharacterAnimator.transform.forward, tempHit.normal) < -0.7f)
@@ -141,8 +141,8 @@ public class S_Handler_Hurt : MonoBehaviour
 
 
         Inp.enabled = false;
-        Actions.ChangeAction(S_ActionManager.States.Hurt);
-        Player.MoveInput = Vector3.zero;
+        Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
+        Player._moveInput = Vector3.zero;
         deadCounter += 1;
         //Debug.Log("DeathGroup");
 
@@ -182,7 +182,7 @@ public class S_Handler_Hurt : MonoBehaviour
 
     void SkinFlicker()
     {
-        flickerCount += FlickerSpeed;
+        flickerCount += _flickerSpeed_;
         if(flickerCount < 0)
         {
             ToggleSkin(false);
@@ -209,8 +209,8 @@ public class S_Handler_Hurt : MonoBehaviour
             movingRing = Instantiate(MovingRing, pos, Quaternion.identity);
             movingRing.transform.parent = null;
             movingRing.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            movingRing.GetComponent<Rigidbody>().AddForce((releaseDirection.transform.forward * RingReleaseSpeed), ForceMode.Acceleration);
-            releaseDirection.transform.Rotate(0, RingArcSpeed, 0);
+            movingRing.GetComponent<Rigidbody>().AddForce((releaseDirection.transform.forward * _ringReleaseSpeed_), ForceMode.Acceleration);
+            releaseDirection.transform.Rotate(0, _ringArcSpeed_, 0);
             RingsToRelease -= 1;
 
 	//		Player.GetComponent<Rigidbody> ().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
@@ -264,11 +264,11 @@ public class S_Handler_Hurt : MonoBehaviour
         {
            
             //Debug.Log("Attempt Bonk");
-            if (!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
+            if (!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, _BonkWall_) && !Player.Grounded)
             {
                 transform.position = transform.position + (CharacterAnimator.transform.up * 1.5f);
             }
-            else if (!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 1.5f), previDir, 10f, bonkWall) && !Player.Grounded)
+            else if (!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 1.5f), previDir, 10f, _BonkWall_) && !Player.Grounded)
             {
                 transform.position = transform.position + (-CharacterAnimator.transform.up * 1.5f);
             }
@@ -284,7 +284,7 @@ public class S_Handler_Hurt : MonoBehaviour
     IEnumerator giveChanceToWallClimb()
     {
         Vector3 newDir = CharacterAnimator.transform.forward;
-        if (Actions.Action != S_ActionManager.States.WallRunning)
+        if (Actions.whatAction != S_Enums.PlayerStates.WallRunning)
         {
             if(!Player.Grounded)
             {
@@ -296,27 +296,27 @@ public class S_Handler_Hurt : MonoBehaviour
                 }
             }
             
-            if (Actions.Action != S_ActionManager.States.WallRunning)
+            if (Actions.whatAction != S_Enums.PlayerStates.WallRunning)
             {
                 Actions.Action04.InitialEvents(true);
-                Actions.ChangeAction(S_ActionManager.States.Hurt);
+                Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
             }
         }
         else if(Actions.Action12.RunningSpeed > 0)
         {
             Actions.Action04.InitialEvents(true);
-            Actions.ChangeAction(S_ActionManager.States.Hurt);
+            Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
         }
     }
 
     private void AssignStats()
     {
-        InvencibilityTime = Tools.stats.InvincibilityTime;
-        MaxRingLoss = Tools.stats.MaxRingLoss;
-        RingReleaseSpeed = Tools.coreStats.RingReleaseSpeed;
-        RingArcSpeed = Tools.coreStats.RingArcSpeed;
-        FlickerSpeed = Tools.coreStats.FlickerSpeed;
-        bonkWall = Tools.coreStats.BonkOnWalls;
+        _invincibilityTime_ = Tools.Stats.WhenHurt.invincibilityTime;
+        _maxRingLoss_ = Tools.Stats.WhenHurt.maxRingLoss;
+        _ringReleaseSpeed_ = Tools.Stats.WhenHurt.ringReleaseSpeed;
+        _ringArcSpeed_ = Tools.Stats.WhenHurt.ringArcSpeed;
+        _flickerSpeed_ = Tools.Stats.WhenHurt.flickerSpeed;
+        _BonkWall_ = Tools.Stats.WhenBonked.BonkOnWalls;
     }
 
     private void AssignTools()

@@ -45,16 +45,16 @@ public class S_Action12_WallRunning : MonoBehaviour
 
     [Header("Wall Rules")]
     bool holdingWall;
-    float WallCheckDistance;
-    float minHeight;
-    LayerMask wallLayerMask;
-    float wallDuration;
+    float _wallCheckDistance_;
+    float _minHeight_;
+    LayerMask _wallLayerMask_;
+    float _wallDuration_;
     float Counter;
     float distanceFromWall;
 
     [Header("Wall Stats")]
-    float scrapeModi = 1f;
-    float climbModi = 1f;
+    float _scrapeModi_ = 1f;
+    float _climbModi_ = 1f;
 
     bool wall;
     Vector3 previDir;
@@ -218,7 +218,7 @@ public class S_Action12_WallRunning : MonoBehaviour
 
         //Set the climbing speed based on player's speed
         ClimbingSpeed = Player.HorizontalSpeedMagnitude * 0.8f;
-        ClimbingSpeed *= climbModi;
+        ClimbingSpeed *= _climbModi_;
         RunningSpeed = 0f;
 
         //If moving up, increases climbing speed
@@ -308,9 +308,9 @@ public class S_Action12_WallRunning : MonoBehaviour
 
         //Updates the status of the wall being climbed.
         if (Counter < 0.3f)
-            wall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance * 1.3f, wallLayerMask);
+            wall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance * 1.3f, _wallLayerMask_);
         else
-            wall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, 3f, wallLayerMask);
+            wall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, 3f, _wallLayerMask_);
 
         //If they reach the top of the wall
         if (!wall)
@@ -363,29 +363,29 @@ public class S_Action12_WallRunning : MonoBehaviour
         if (wallOnRight)
         {
             if (Counter < 0.3f)
-                wall = Physics.Raycast(transform.position, CharacterAnimator.transform.right, out wallToRun, WallCheckDistance * 2.5f, wallLayerMask);
+                wall = Physics.Raycast(transform.position, CharacterAnimator.transform.right, out wallToRun, _wallCheckDistance_ * 2.5f, _wallLayerMask_);
             else
             {
-                wall = Physics.Raycast(transform.position, CharacterAnimator.transform.right, out wallToRun, WallCheckDistance * 1.6f, wallLayerMask);
+                wall = Physics.Raycast(transform.position, CharacterAnimator.transform.right, out wallToRun, _wallCheckDistance_ * 1.6f, _wallLayerMask_);
 
                 if(!wall)
                 {
                     Vector3 backPos = Vector3.Lerp(transform.position, previLoc, 0.7f);
-                    wall = Physics.Raycast(backPos, CharacterAnimator.transform.right, out wallToRun, WallCheckDistance * 2.1f, wallLayerMask);
+                    wall = Physics.Raycast(backPos, CharacterAnimator.transform.right, out wallToRun, _wallCheckDistance_ * 2.1f, _wallLayerMask_);
                 }
             }              
         }
         else
         {
             if (Counter < 0.3f)
-                wall = Physics.Raycast(transform.position, -CharacterAnimator.transform.right, out wallToRun, WallCheckDistance * 2.5f, wallLayerMask);
+                wall = Physics.Raycast(transform.position, -CharacterAnimator.transform.right, out wallToRun, _wallCheckDistance_ * 2.5f, _wallLayerMask_);
             else
             {
-                wall = Physics.Raycast(transform.position, -CharacterAnimator.transform.right, out wallToRun, WallCheckDistance * 1.6f, wallLayerMask);
+                wall = Physics.Raycast(transform.position, -CharacterAnimator.transform.right, out wallToRun, _wallCheckDistance_ * 1.6f, _wallLayerMask_);
                 if (!wall)
                 {
                     Vector3 backPos = Vector3.Lerp(transform.position, previLoc, 0.8f);
-                    wall = Physics.Raycast(backPos, -CharacterAnimator.transform.right, out wallToRun, WallCheckDistance * 2.1f, wallLayerMask);
+                    wall = Physics.Raycast(backPos, -CharacterAnimator.transform.right, out wallToRun, _wallCheckDistance_ * 2.1f, _wallLayerMask_);
                 }
             }
                 
@@ -400,9 +400,9 @@ public class S_Action12_WallRunning : MonoBehaviour
 
             //Debug.Log("Lost the Wall");
             if(wallOnRight)
-                Debug.DrawRay(transform.position, CharacterAnimator.transform.right * WallCheckDistance * 2f, Color.blue, 20f);
+                Debug.DrawRay(transform.position, CharacterAnimator.transform.right * _wallCheckDistance_ * 2f, Color.blue, 20f);
             else
-                Debug.DrawRay(transform.position, -CharacterAnimator.transform.right * WallCheckDistance * 2f, Color.blue, 20f);
+                Debug.DrawRay(transform.position, -CharacterAnimator.transform.right * _wallCheckDistance_ * 2f, Color.blue, 20f);
 
         }
         else
@@ -437,7 +437,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         {
 
             //After being on the wall for too long.
-            if (ClimbingSpeed < -5f || Physics.Raycast(transform.position, CharacterAnimator.transform.up, 5, wallLayerMask))
+            if (ClimbingSpeed < -5f || Physics.Raycast(transform.position, CharacterAnimator.transform.up, 5, _wallLayerMask_))
             {
                 CharacterAnimator.SetInteger("Action", 0);
                 //Debug.Log("Out of Speed");
@@ -495,7 +495,7 @@ public class S_Action12_WallRunning : MonoBehaviour
                 SwitchToGround = true;
 
                 //Set rotation to put feet on ground.
-                Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance, wallLayerMask);
+                Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance, _wallLayerMask_);
                 Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
                 CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, wallToClimb.normal);
             }
@@ -512,7 +512,7 @@ public class S_Action12_WallRunning : MonoBehaviour
             //    newVec = (wallToClimb.normal * 4f);
 
             //Decreases scraping Speed
-            scrapingSpeed *= 0.95f * scrapeModi;
+            scrapingSpeed *= 0.95f * _scrapeModi_;
             //ClimbingSpeed -= 0.1f;
 
 
@@ -527,7 +527,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         
 
         //Set rotation to put feet on ground.
-        Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), -CharacterAnimator.transform.up, out wallToClimb, climbWallDistance, wallLayerMask);
+        Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), -CharacterAnimator.transform.up, out wallToClimb, climbWallDistance, _wallLayerMask_);
         Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
         CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, wallToClimb.normal);
 
@@ -560,19 +560,19 @@ public class S_Action12_WallRunning : MonoBehaviour
         //Decide speed to slide down wall.
         if (scrapingSpeed > 10 && scrapingSpeed < 20)
         {
-            scrapingSpeed *= (1.001f * scrapeModi);
+            scrapingSpeed *= (1.001f * _scrapeModi_);
         }
         else if (scrapingSpeed > 29)
         {
-            scrapingSpeed *= (1.0015f * scrapeModi);
+            scrapingSpeed *= (1.0015f * _scrapeModi_);
         }
         else if (scrapingSpeed > 2)
         {
-            scrapingSpeed += (1.0018f * scrapeModi);
+            scrapingSpeed += (1.0018f * _scrapeModi_);
         }
         else
         {
-            scrapingSpeed += (1.002f * scrapeModi);
+            scrapingSpeed += (1.002f * _scrapeModi_);
         }
 
         //Apply scraping speed
@@ -640,8 +640,8 @@ public class S_Action12_WallRunning : MonoBehaviour
 
        
 
-        if (immediately && Actions.Action != S_ActionManager.States.Jump)
-            Actions.ChangeAction(S_ActionManager.States.Regular);
+        if (immediately && Actions.whatAction != S_Enums.PlayerStates.Jump)
+            Actions.ChangeAction(S_Enums.PlayerStates.Regular);
     }
 
     void JumpfromWall()
@@ -705,7 +705,7 @@ public class S_Action12_WallRunning : MonoBehaviour
 
         //Actions.Action01.jumpCount = -1;
         Actions.Action01.InitialEvents(jumpAngle, true, 0, Mathf.Clamp(ClimbingSpeed, 5, ClimbingSpeed));
-        Actions.ChangeAction(S_ActionManager.States.Jump);
+        Actions.ChangeAction(S_Enums.PlayerStates.Jump);
     }
 
     IEnumerator JumpOverWall(Quaternion originalRotation, float jumpOverCounter = 0)
@@ -723,7 +723,7 @@ public class S_Action12_WallRunning : MonoBehaviour
             jumpOverCounter += 1;
             CharacterAnimator.transform.rotation = originalRotation;
             yield return new WaitForSeconds(0.0f);
-            if ((!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.6f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance * 1.3f, wallLayerMask)) || jumpOverCounter == 40)
+            if ((!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.6f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance * 1.3f, _wallLayerMask_)) || jumpOverCounter == 40)
             {
                 //Vector3 newVec = Player.p_rigidbody.velocity + CharacterAnimator.transform.forward * (ClimbingSpeed * 0.1f);
                 Player.rb.velocity += CharacterAnimator.transform.forward * 8;
@@ -735,8 +735,8 @@ public class S_Action12_WallRunning : MonoBehaviour
 
                 else
                 {
-                    if (Actions.Action != S_ActionManager.States.Jump)
-                        Actions.ChangeAction(S_ActionManager.States.Regular);
+                    if (Actions.whatAction != S_Enums.PlayerStates.Jump)
+                        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                     break;
                 }
             }
@@ -748,13 +748,13 @@ public class S_Action12_WallRunning : MonoBehaviour
     //Reponsible for assigning stats from the stats script.
     void AssignStats()
     {
-        WallCheckDistance = Tools.coreStats.WallCheckDistance;
-        minHeight = Tools.coreStats.minHeight;
-        wallLayerMask = Tools.coreStats.wallLayerMask;
-        wallDuration = Tools.coreStats.wallDuration;
+        _wallCheckDistance_ = Tools.Stats.WallRunningStats.wallCheckDistance;
+        _minHeight_ = Tools.Stats.WallRunningStats.minHeight;
+        _wallLayerMask_ = Tools.Stats.WallRunningStats.WallLayerMask;
+        _wallDuration_ = Tools.Stats.WallRunningStats.wallDuration;
 
-        scrapeModi = Tools.stats.scrapeModi;
-        climbModi = Tools.stats.climbModi;
+        _scrapeModi_ = Tools.Stats.WallRunningStats.scrapeModifier;
+        _climbModi_ = Tools.Stats.WallRunningStats.climbModifier;
     }
 
     //Responsible for assigning objects and components from the tools script.

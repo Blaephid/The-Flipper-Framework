@@ -36,7 +36,7 @@ public class S_Interaction_Pathers : MonoBehaviour
     [HideInInspector] public PulleyActor currentUpreel;
     Transform HandGripPoint;
     [HideInInspector] public Transform feetPoint;
-    float OffsetUpreel = 1.5f;
+    float _offsetUpreel_ = 1.5f;
 
     bool onceThisFrame = false;
 
@@ -47,7 +47,7 @@ public class S_Interaction_Pathers : MonoBehaviour
             Tools = GetComponent<S_CharacterTools>();
             AssignTools();
 
-            OffsetUpreel = Tools.coreStats.OffsetUpreel;
+            _offsetUpreel_ = Tools.Stats.PositionWhenOnRails.upreel;
         }
 
     }
@@ -96,7 +96,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
             //Moves the player to the position of the Upreel
             Vector3 HandPos = transform.position - HandGripPoint.position;
-            HandPos += (currentUpreel.transform.forward * OffsetUpreel);
+            HandPos += (currentUpreel.transform.forward * _offsetUpreel_);
             transform.position = currentUpreel.HandleGripPos.position + HandPos;
             CharacterAnimator.transform.rotation = Quaternion.LookRotation(-currentUpreel.transform.forward, currentUpreel.transform.up);
         }
@@ -164,7 +164,7 @@ public class S_Interaction_Pathers : MonoBehaviour
             {
                 //Sets the player to the rail grind action, and sets their position and what spline to follow.
                 Actions.Action05.InitialEvents(Range, RailSpline.transform.parent, false, offSet, addOn);
-                Actions.ChangeAction(S_ActionManager.States.Rail);
+                Actions.ChangeAction(S_Enums.PlayerStates.Rail);
             }
         }
     }
@@ -230,7 +230,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
                     //Sets the player to the rail grind action, and sets their position and what spline to follow.
                     Actions.Action05.InitialEvents(Range, RailSpline.transform, true, Vector3.zero, null);
-                    Actions.ChangeAction(S_ActionManager.States.Rail);
+                    Actions.ChangeAction(S_Enums.PlayerStates.Rail);
                 }
             }
         }
@@ -246,7 +246,7 @@ public class S_Interaction_Pathers : MonoBehaviour
             CharacterAnimator.SetTrigger("HitRail");
 
             currentUpreel.RetractPulley();
-            Actions.ChangeAction(S_ActionManager.States.Regular);
+            Actions.ChangeAction(S_Enums.PlayerStates.Regular);
         }
 
         //Automatic Paths
@@ -272,7 +272,7 @@ public class S_Interaction_Pathers : MonoBehaviour
         onceThisFrame = true;
 
         //If the player is already on a path, then hitting this trigger will end it.
-        if (Actions.Action == S_ActionManager.States.Path || col.gameObject.name == "End")
+        if (Actions.whatAction == S_Enums.PlayerStates.Path || col.gameObject.name == "End")
         {
             //See MoveAlongPath for more
             Actions.Action10.ExitPath();
@@ -328,7 +328,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
                 //Starts the player moving along the path using the path follow action
                 Actions.Action10.InitialEvents(range, RailSpline.transform, back, speedGo);
-                Actions.ChangeAction(S_ActionManager.States.Path);
+                Actions.ChangeAction(S_Enums.PlayerStates.Path);
             }
         }
         yield return new WaitForEndOfFrame();

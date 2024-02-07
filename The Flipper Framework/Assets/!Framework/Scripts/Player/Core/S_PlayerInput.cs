@@ -20,13 +20,10 @@ public class S_PlayerInput : MonoBehaviour {
 
 	private bool PreviousInputWasNull;
 
-    [HideInInspector] public AnimationCurve InputLerpingRateOverSpeed;
-    [HideInInspector] public bool UtopiaTurning;
-    [HideInInspector] public AnimationCurve UtopiaInputLerpingRateOverSpeed;
+    //[HideInInspector] public AnimationCurve InputLerpingRateOverSpeed;
+
     public float InputLerpSpeed { get; set; }
-    public Vector3 UtopiaInput { get; set; }
-    [HideInInspector] public float UtopiaIntensity;
-    [HideInInspector] public float UtopiaInitialInputLerpSpeed;
+
     [HideInInspector] public float UtopiaLerpingSpeed { get; set; }
     float InitialInputMag;
     float InitialLerpedInput;
@@ -57,7 +54,7 @@ public class S_PlayerInput : MonoBehaviour {
         AssignStats();
         
 
-        prevDecel = Player.MoveDecell;
+        prevDecel = Player._moveDeceleration_;
         //newInput = new PlayerNewInput();
 
         // get the transform of the main camera
@@ -70,11 +67,6 @@ public class S_PlayerInput : MonoBehaviour {
 
     private void Update()
     {
-        // Get curve position
-
-        InputLerpSpeed = InputLerpingRateOverSpeed.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
-        UtopiaLerpingSpeed = UtopiaInputLerpingRateOverSpeed.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
-
         AcquireMoveInput();
 
     }
@@ -89,10 +81,7 @@ public class S_PlayerInput : MonoBehaviour {
             moveInp = new Vector3(moveX, 0, moveY);
 
             InitialInputMag = moveInp.sqrMagnitude;
-            InitialLerpedInput = Mathf.Lerp(InitialLerpedInput, InitialInputMag, Time.deltaTime * UtopiaInitialInputLerpSpeed);
-
-            //If Utopia turing is enabled then input is affected.
-            float currentInputSpeed = (!UtopiaTurning) ? InputLerpSpeed : UtopiaLerpingSpeed;
+            InitialLerpedInput = Mathf.Lerp(InitialLerpedInput, InitialInputMag, Time.deltaTime);
 
 
             //Make movement relative to camera
@@ -108,7 +97,7 @@ public class S_PlayerInput : MonoBehaviour {
                 transformedInput.y = 0.0f;
 
                 Player.RawInput = transformedInput;
-                moveInp = Vector3.Lerp(move, transformedInput, Time.deltaTime * currentInputSpeed);
+                moveInp = transformedInput;
             }
      
 
@@ -156,7 +145,8 @@ public class S_PlayerInput : MonoBehaviour {
         //Debug.DrawRay(transform.position, Player.rb.velocity.normalized * 5, Color.red);
         //Debug.DrawRay(transform.position, transform.up * 4,Color.green, 150);
         //Debug.DrawRay(transform.position, -transform.up * 1.5f, Color.red, 150f);
-        Player.MoveInput = move;
+        Debug.Log(move);
+        Player._moveInput = move;
 
     }
 
@@ -165,7 +155,7 @@ public class S_PlayerInput : MonoBehaviour {
         
         move = Vector3.zero;
         LockedCounter += 1;
-        Player.MoveDecell = 1;
+        Player._moveDeceleration_ = 1;
         Player.b_normalSpeed = 0;
 
         if (LockCam)
@@ -180,7 +170,7 @@ public class S_PlayerInput : MonoBehaviour {
 
         if (LockedCounter > LockedTime)
         {
-            Player.MoveDecell = prevDecel;
+            Player._moveDeceleration_ = prevDecel;
             LockInput = false;
             move = oldMove;
         }
@@ -193,8 +183,6 @@ public class S_PlayerInput : MonoBehaviour {
         else
             LockedTime = duration;
 
-        Debug.Log(LockedTime);
-
         LockedCounter = 0;
         LockInput = true;
         LockCam = lockCam;
@@ -203,11 +191,6 @@ public class S_PlayerInput : MonoBehaviour {
 
     private void AssignStats()
     {
-        InputLerpingRateOverSpeed = Tools.coreStats.InputLerpingRateOverSpeed;
-        UtopiaTurning = Tools.coreStats.UtopiaTurning;
-        UtopiaInputLerpingRateOverSpeed = Tools.coreStats.UtopiaInputLerpingRateOverSpeed;
-        UtopiaIntensity = Tools.coreStats.UtopiaIntensity;
-        UtopiaInitialInputLerpSpeed = Tools.coreStats.UtopiaInitialInputLerpSpeed;
 
     }
 }

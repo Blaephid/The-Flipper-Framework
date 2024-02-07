@@ -10,23 +10,23 @@ public class S_Action04_Hurt : MonoBehaviour {
     S_Control_SoundsPlayer sounds;
     S_PlayerInput Inp;
 
-    LayerMask RecoilFrom;
+    LayerMask _recoilFrom_;
 
-    [HideInInspector] public float KnockbackUpwardsForce = 10;
+    [HideInInspector] public float _knockbackUpwardsForce_ = 10;
     int counter;
     public float deadCounter { get; set; }
 
-    [HideInInspector] public bool ResetSpeedOnHit = false;
-    [HideInInspector] public float KnockbackForce = 10;
+    [HideInInspector] public bool _resetSpeedOnHit_ = false;
+    [HideInInspector] public float _knockbackForce_ = 10;
 
-    float BonkBackForce;
-    float BonkUpForce;
+    float _bonkBackForce_;
+    float _bonkUpForce_;
 
-    float RecoilGround ;
-    float RecoilAir ;
+    float _recoilGround_ ;
+    float _recoilAir_ ;
 
-    float BonkLock ;
-    float BonkLockAir ;
+    float _bonkLock_ ;
+    float _bonkLockAir_ ;
 
     float lockedForGround;
     float lockedForAir;
@@ -53,31 +53,31 @@ public class S_Action04_Hurt : MonoBehaviour {
         //Change Velocity
         if (bonk)
         {
-            Vector3 newSpeed = -CharacterAnimator.transform.forward * BonkBackForce;
-            newSpeed.y = BonkUpForce;
+            Vector3 newSpeed = -CharacterAnimator.transform.forward * _bonkBackForce_;
+            newSpeed.y = _bonkUpForce_;
             if (Player.Grounded)
                 newSpeed.y *= 2;
             Player.rb.velocity = newSpeed;
 
-            lockedForAir = BonkLockAir;
-            lockedForGround = BonkLock;
+            lockedForAir = _bonkLockAir_;
+            lockedForGround = _bonkLock_;
             sounds.PainVoicePlay();
         }
-        else if (!ResetSpeedOnHit && !Physics.Raycast(transform.position, CharacterAnimator.transform.forward, 6, RecoilFrom))
+        else if (!_resetSpeedOnHit_ && !Physics.Raycast(transform.position, CharacterAnimator.transform.forward, 6, _recoilFrom_))
         {
-            Vector3 newSpeed = new Vector3((Player.rb.velocity.x / 2), KnockbackUpwardsForce, (Player.rb.velocity.z / 2));
-            newSpeed.y = KnockbackUpwardsForce;
+            Vector3 newSpeed = new Vector3((Player.rb.velocity.x / 2), _knockbackUpwardsForce_, (Player.rb.velocity.z / 2));
+            newSpeed.y = _knockbackUpwardsForce_;
             Player.rb.velocity = newSpeed;
-            lockedForAir = RecoilAir;
-            lockedForGround = RecoilGround;
+            lockedForAir = _recoilAir_;
+            lockedForGround = _recoilGround_;
         }
         else
         {
-            Vector3 newSpeed = -CharacterAnimator.transform.forward * KnockbackForce;
-            newSpeed.y = KnockbackUpwardsForce;
+            Vector3 newSpeed = -CharacterAnimator.transform.forward * _knockbackForce_;
+            newSpeed.y = _knockbackUpwardsForce_;
             Player.rb.velocity = newSpeed;
-            lockedForAir = RecoilAir * 1.4f;
-            lockedForGround = RecoilGround * 1.4f;
+            lockedForAir = _recoilAir_ * 1.4f;
+            lockedForGround = _recoilGround_ * 1.4f;
         }
 
         Inp.LockInputForAWhile(lockedForGround * 0.85f, false);
@@ -98,7 +98,7 @@ public class S_Action04_Hurt : MonoBehaviour {
                 Actions.Action01.jumpCount = 0;
 
                 CharacterAnimator.SetInteger("Action", 0);
-                Actions.ChangeAction(S_ActionManager.States.Regular);
+                Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                 //Debug.Log("What");
                 counter = 0;
             }
@@ -126,18 +126,18 @@ public class S_Action04_Hurt : MonoBehaviour {
 
     private void AssignStats ()
     {
-        KnockbackForce = Tools.coreStats.KnockbackForce;
-        KnockbackUpwardsForce = Tools.coreStats.KnockbackUpwardsForce;
-        ResetSpeedOnHit = Tools.coreStats.ResetSpeedOnHit;
-        RecoilFrom = Tools.coreStats.RecoilFrom;
+        _knockbackForce_ = Tools.Stats.WhenHurt.knockbackForce;
+        _knockbackUpwardsForce_ = Tools.Stats.WhenHurt.knockbackUpwardsForce;
+        _resetSpeedOnHit_ = Tools.Stats.WhenHurt.resetSpeedOnHit;
+        _recoilFrom_ = Tools.Stats.WhenHurt.recoilFrom;
 
-        BonkBackForce = Tools.coreStats.BonkBackwardsForce;
-        BonkUpForce = Tools.coreStats.BonkUpwardsForce;
+        _bonkBackForce_ = Tools.Stats.WhenBonked.bonkBackwardsForce;
+        _bonkUpForce_ = Tools.Stats.WhenBonked.bonkUpwardsForce;
 
-        RecoilAir = Tools.coreStats.HurtControlLockAir;
-        RecoilGround = Tools.coreStats.HurtControlLock;
-        BonkLock = Tools.coreStats.BonkControlLock;
-        BonkLockAir = Tools.coreStats.BonkControlLockAir;
+        _recoilAir_ = Tools.Stats.WhenHurt.hurtControlLockAir;
+        _recoilGround_ = Tools.Stats.WhenHurt.hurtControlLock;
+        _bonkLock_ = Tools.Stats.WhenBonked.bonkControlLock;
+        _bonkLockAir_ = Tools.Stats.WhenBonked.bonkControlLockAir;
     }
 
     private void AssignTools()

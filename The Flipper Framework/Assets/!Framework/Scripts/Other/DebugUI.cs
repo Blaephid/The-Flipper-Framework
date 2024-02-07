@@ -38,7 +38,7 @@ public class DebugUI : MonoBehaviour {
             " normalVelocity: " + normalVelocity + "\n" +
             " tangentVelocity: " + tangentVelocity + "\n" +
             " TangentMod: " + modTangent + "\n" +
-            " action: " + action.Action + "\n" +
+            " action: " + action.whatAction + "\n" +
             " Input A: " + Input.GetButton("A") + "\n" +
             " Input APress: " + Input.GetButtonDown("A") + "\n" +
             " Normal: " + phys.GroundNormal;

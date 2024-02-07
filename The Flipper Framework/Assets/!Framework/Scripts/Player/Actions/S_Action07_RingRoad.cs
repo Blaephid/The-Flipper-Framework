@@ -26,9 +26,9 @@ public class S_Action07_RingRoad : MonoBehaviour {
 	float Aspeed;
 
 	//[SerializeField] float DashingTimerLimit;
-	float DashSpeed;
-	float EndingSpeedFactor;
-	float MinimumEndingSpeed;
+	float _dashSpeed_;
+	float _endingSpeedFactor_;
+	float _minimumEndingSpeed_;
 	Vector3 direction;
 
 	void Awake()
@@ -95,7 +95,7 @@ public class S_Action07_RingRoad : MonoBehaviour {
 		{
 			Target = Action.Action07Control.TargetObject.transform;
 			direction = Target.position - transform.position;
-			Player.rb.velocity = direction.normalized * DashSpeed;
+			Player.rb.velocity = direction.normalized * _dashSpeed_;
 
 			GetComponent<S_Handler_Camera>().Cam.FollowDirection(4, 14f, -10,0);
 		}
@@ -104,10 +104,10 @@ public class S_Action07_RingRoad : MonoBehaviour {
 		{
 			float EndingSpeedResult = 0;
 
-			EndingSpeedResult = Mathf.Max (MinimumEndingSpeed, InitialVelocityMagnitude);
+			EndingSpeedResult = Mathf.Max (_minimumEndingSpeed_, InitialVelocityMagnitude);
 
 			Player.rb.velocity = Vector3.zero;
-			Player.rb.velocity = direction.normalized*EndingSpeedResult*EndingSpeedFactor;
+			Player.rb.velocity = direction.normalized*EndingSpeedResult*_endingSpeedFactor_;
 		
 			//GetComponent<CameraControl>().Cam.SetCamera(direction.normalized, 2.5f, 20, 5f,10);
 
@@ -117,15 +117,15 @@ public class S_Action07_RingRoad : MonoBehaviour {
 			GetComponent<S_PlayerInput>().LockInputForAWhile(10, true);
 
 			CharacterAnimator.SetInteger("Action", 0);
-			Action.ChangeAction(0);
+			Action.ChangeAction(S_Enums.PlayerStates.Regular);
 		}
     }
 
 	private void AssignStats()
     {
-		DashSpeed = Tools.stats.DashSpeed;
-		EndingSpeedFactor = Tools.stats.EndingSpeedFactor;
-		MinimumEndingSpeed = Tools.stats.MinimumEndingSpeed;
+		_dashSpeed_ = Tools.Stats.RingRoadStats.dashSpeed;
+		_endingSpeedFactor_ = Tools.Stats.RingRoadStats.endingSpeedFactor;
+		_minimumEndingSpeed_ = Tools.Stats.RingRoadStats.minimumEndingSpeed;
     }
 
 	private void AssignTools()

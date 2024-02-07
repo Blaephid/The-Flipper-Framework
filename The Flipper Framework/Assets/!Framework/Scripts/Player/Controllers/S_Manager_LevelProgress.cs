@@ -51,7 +51,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
 
         if (readyForNextStage)
         {
-            Player.MoveInput = Vector3.zero;
+            Player._moveInput = Vector3.zero;
             readyCount += Time.deltaTime;
             if(readyCount > 1.5f)
             {
@@ -85,7 +85,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
        
         Inp.LockInputForAWhile(20, true);
         StartCoroutine(Actions.lockAirMoves(20));
-        Actions.ChangeAction(S_ActionManager.States.Regular);
+        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
 
         tools.HomingTrailScript.emitTime = 0;
         tools.HomingTrailScript.emit = false;

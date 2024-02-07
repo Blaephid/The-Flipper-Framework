@@ -10,8 +10,8 @@ public class S_Action03_SpinCharge : MonoBehaviour
     Animator BallAnimator;
     S_Handler_Camera Cam;
     public float BallAnimationSpeedMultiplier;
-    GameObject lowerCapsule;
-    GameObject characterCapsule;
+    GameObject LowerCapsule;
+    GameObject CharacterCapsule;
 
     S_ActionManager Actions;
     S_Handler_quickstep quickstepManager;
@@ -27,13 +27,13 @@ public class S_Action03_SpinCharge : MonoBehaviour
     Transform PlayerSkinTransform;
 
     float time = 0;
-    [HideInInspector] public float SpinDashChargingSpeed = 0.3f;
-    [HideInInspector] public float MinimunCharge = 10;
-    [HideInInspector] public float MaximunCharge = 100;
-    [HideInInspector] public float SpinDashStillForce = 20f;
-    AnimationCurve SpeedLossByTime;
-    AnimationCurve ForceGainByAngle;
-    AnimationCurve gainBySpeed;
+    [HideInInspector] public float _spinDashChargingSpeed_ = 0.3f;
+    [HideInInspector] public float _minimunCharge_ = 10;
+    [HideInInspector] public float _maximunCharge_ = 100;
+    [HideInInspector] public float _spinDashStillForce_ = 20f;
+    AnimationCurve _speedLossByTime_;
+    AnimationCurve _forceGainByAngle_;
+    AnimationCurve _gainBySpeed_;
 
     bool tapped = false;
     float charge;
@@ -43,7 +43,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
     bool pressedCurrently = true;
 
 
-    float ReleaseShakeAmmount;
+    float _releaseShakeAmmount_;
 
     private void Awake()
     {
@@ -67,13 +67,13 @@ public class S_Action03_SpinCharge : MonoBehaviour
         pressedCurrently = true;
         tapped = true;
 
-        lowerCapsule.SetActive(true);
-        characterCapsule.SetActive(false);
+        LowerCapsule.SetActive(true);
+        CharacterCapsule.SetActive(false);
     }
 
     void FixedUpdate()
     {
-        charge += SpinDashChargingSpeed;
+        charge += _spinDashChargingSpeed_;
         time += Time.deltaTime;
 
         //Lock camera on behind
@@ -83,10 +83,10 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
 
         effects.DoSpindash(1, SpinDashChargedEffectAmm * charge, charge,
-        effects.GetSpinDashDust(), MaximunCharge);
+        effects.GetSpinDashDust(), _maximunCharge_);
 
-        Player.MoveInput *= 0.4f;
-        float stillForce = (SpinDashStillForce * SpeedLossByTime.Evaluate(time)) + 1;
+        Player._moveInput *= 0.4f;
+        float stillForce = (_spinDashStillForce_ * _speedLossByTime_.Evaluate(time)) + 1;
         Player.rb.velocity /= stillForce;
 
         //Counter to exit after not pressing button for a bit;
@@ -106,16 +106,16 @@ public class S_Action03_SpinCharge : MonoBehaviour
             if (!pressedCurrently)
             {
                 tapped = false;
-                charge += (SpinDashChargingSpeed * 2.5f);
+                charge += (_spinDashChargingSpeed_ * 2.5f);
             }
 
             pressedCurrently = true;
         }
 
         //Prevents going over the maximum
-        if (charge > MaximunCharge)
+        if (charge > _maximunCharge_)
         {
-            charge = MaximunCharge;
+            charge = _maximunCharge_;
         }
 
         startFall();
@@ -138,7 +138,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
             }
             else
             {
-                Actions.ChangeAction(S_ActionManager.States.Regular);
+                Actions.ChangeAction(S_Enums.PlayerStates.Regular);
             }
 
         }
@@ -204,11 +204,11 @@ public class S_Action03_SpinCharge : MonoBehaviour
         if (Actions.eventMan != null) Actions.eventMan.SpinChargesPeformed += 1;
 
         effects.EndSpinDash();
-        S_HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
-        if (charge < MinimunCharge)
+        S_HedgeCamera.Shakeforce = (_releaseShakeAmmount_ * charge) / 100;
+        if (charge < _minimunCharge_)
         {
             sounds.Source2.Stop();
-            Actions.ChangeAction(S_ActionManager.States.Regular);
+            Actions.ChangeAction(S_Enums.PlayerStates.Regular);
         }
         else
         {            
@@ -218,8 +218,8 @@ public class S_Action03_SpinCharge : MonoBehaviour
             float dif = Vector3.Dot(newForce.normalized, Player.rb.velocity.normalized);
 
             if(Player.HorizontalSpeedMagnitude > 20)
-                newForce *= ForceGainByAngle.Evaluate(dif);
-            newForce *= gainBySpeed.Evaluate(Player.HorizontalSpeedMagnitude / Player.MaxSpeed);
+                newForce *= _forceGainByAngle_.Evaluate(dif);
+            newForce *= _gainBySpeed_.Evaluate(Player.HorizontalSpeedMagnitude / Player.MaxSpeed);
 
             Player.rb.velocity += newForce;
 
@@ -233,7 +233,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
             Inp.LockInputForAWhile(0, false);
 
-            Actions.ChangeAction(S_ActionManager.States.Regular);
+            Actions.ChangeAction(S_Enums.PlayerStates.Regular);
         }
 
     }
@@ -286,14 +286,14 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
     private void AssignStats()
     {
-        SpinDashChargingSpeed = Tools.stats.SpinDashChargingSpeed;
-        MinimunCharge = Tools.stats.MinimunCharge;
-        MaximunCharge = Tools.stats.MaximunCharge;
-        SpinDashStillForce = Tools.stats.SpinDashStillForce;
-        SpeedLossByTime = Tools.coreStats.SpeedLossByTime;
-        ForceGainByAngle = Tools.coreStats.ForceGainByAngle;
-        gainBySpeed = Tools.coreStats.gainBySpeed;
-        ReleaseShakeAmmount = Tools.coreStats.ReleaseShakeAmmount;
+        _spinDashChargingSpeed_ = Tools.Stats.SpinChargeStats.spinDashChargingSpeed;
+        _minimunCharge_ = Tools.Stats.SpinChargeStats.minimunCharge;
+        _maximunCharge_ = Tools.Stats.SpinChargeStats.maximunCharge;
+        _spinDashStillForce_ = Tools.Stats.SpinChargeStats.spinDashStillForce;
+        _speedLossByTime_ = Tools.Stats.SpinChargeStats.speedLossByTime;
+        _forceGainByAngle_ = Tools.Stats.SpinChargeStats.forceGainByAngle;
+        _gainBySpeed_ = Tools.Stats.SpinChargeStats.gainBySpeed;
+        _releaseShakeAmmount_ = Tools.Stats.SpinChargeStats.releaseShakeAmmount;
     }
     private void AssignTools()
     {
@@ -310,7 +310,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
         PlayerSkin = Tools.PlayerSkin;
         PlayerSkinTransform = Tools.PlayerSkinTransform;
         SpinDashBall = Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
-        lowerCapsule = Tools.crouchCapsule;
-        characterCapsule = Tools.characterCapsule;
+        LowerCapsule = Tools.crouchCapsule;
+        CharacterCapsule = Tools.characterCapsule;
     }
 }

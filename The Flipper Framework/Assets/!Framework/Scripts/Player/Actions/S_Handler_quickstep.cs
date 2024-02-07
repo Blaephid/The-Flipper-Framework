@@ -8,13 +8,13 @@ public class S_Handler_quickstep : MonoBehaviour
 	S_CharacterTools Tools;
 	S_ActionManager Actions;
 	S_Handler_Camera Cam;
-	S_ActionManager.States startAction;
+    S_Enums.PlayerStates startAction;
 
 	Animator CharacterAnimator;
 
-	float DistanceToStep;
-	float quickStepSpeed;
-	LayerMask StepPlayermask;
+	float _DistanceToStep_;
+	float _quickStepSpeed_;
+	LayerMask _StepPlayermask_;
 	RaycastHit hit;
 
 	bool StepRight;
@@ -32,7 +32,7 @@ public class S_Handler_quickstep : MonoBehaviour
 		CharacterAnimator = Tools.CharacterAnimator;
 		Cam = Tools.GetComponent<S_Handler_Camera>();
 
-		StepPlayermask = Tools.coreStats.StepLayerMask;
+		_StepPlayermask_ = Tools.Stats.QuickstepStats.StepLayerMask;
 
 		this.enabled = false;
 	}
@@ -61,7 +61,7 @@ public class S_Handler_quickstep : MonoBehaviour
 
     public void initialEvents(bool right)
     {
-		startAction = Actions.Action;
+		startAction = Actions.whatAction;
 
 		if (Actions.eventMan != null) Actions.eventMan.quickstepsPerformed += 1;
 
@@ -76,18 +76,7 @@ public class S_Handler_quickstep : MonoBehaviour
 
 			canStep = true;
 			StepRight = true;
-			if (Player.Grounded)
-            {
-				quickStepSpeed = Tools.stats.StepSpeed;
-				DistanceToStep = Tools.stats.StepDistance;
-				air = false;
-			}
-			else
-            {
-				DistanceToStep = Tools.stats.AirStepDistance;
-				quickStepSpeed = Tools.stats.AirStepSpeed;
-				air = true;
-			}
+			setSpeedAndDistance();
 						
 		}
 		else
@@ -98,21 +87,26 @@ public class S_Handler_quickstep : MonoBehaviour
 			
 			canStep = true;
 			StepRight = false;
-			if (Player.Grounded)
-			{
-				quickStepSpeed = Tools.stats.StepSpeed;
-				DistanceToStep = Tools.stats.StepDistance;
-				air = false;
-			}
-			else
-			{
-				DistanceToStep = Tools.stats.AirStepDistance;
-				quickStepSpeed = Tools.stats.AirStepSpeed;
-				air = true;
-			}
+			setSpeedAndDistance();
 		}
 
 	}
+
+    private void setSpeedAndDistance()
+    {
+        if (Player.Grounded)
+        {
+            _quickStepSpeed_ = Tools.Stats.QuickstepStats.stepSpeed;
+            _DistanceToStep_ = Tools.Stats.QuickstepStats.stepDistance;
+            air = false;
+        }
+        else
+        {
+            _DistanceToStep_ = Tools.Stats.QuickstepStats.airStepDistance;
+            _quickStepSpeed_ = Tools.Stats.QuickstepStats.airStepSpeed;
+            air = true;
+        }
+    }
 
     // Update is called once per frame
     void FixedUpdate()
@@ -125,32 +119,32 @@ public class S_Handler_quickstep : MonoBehaviour
 		else if (!air && !Player.Grounded)
 			air = true;
 
-		if (startAction != Actions.Action)
-			DistanceToStep = 0;
+		if (startAction != Actions.whatAction)
+			_DistanceToStep_ = 0;
 	
-		if (DistanceToStep > 0)
+		if (_DistanceToStep_ > 0)
 		{
 			//Debug.Log(DistanceToStep);
 
-			float stepSpeed = quickStepSpeed;
+			float stepSpeed = _quickStepSpeed_;
 
 			//Debug.Log(stepSpeed);
 
 			if (StepRight)
 			{
-				Vector3 positionTo = transform.position + (CharacterAnimator.transform.right * DistanceToStep);
+				Vector3 positionTo = transform.position + (CharacterAnimator.transform.right * _DistanceToStep_);
 				float ToTravel = stepSpeed * Time.deltaTime;
 
-				if (DistanceToStep - ToTravel <= 0)
+				if (_DistanceToStep_ - ToTravel <= 0)
 				{
-					ToTravel = DistanceToStep;
-					DistanceToStep = 0;
+					ToTravel = _DistanceToStep_;
+					_DistanceToStep_ = 0;
 				}
 
-				DistanceToStep -= ToTravel;
+				_DistanceToStep_ -= ToTravel;
 
-				if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.35f, transform.position.z), CharacterAnimator.transform.right * 1, out hit, 1.5f, StepPlayermask) && canStep)
-					if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z), CharacterAnimator.transform.right * 1, out hit, .8f, StepPlayermask))
+				if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.35f, transform.position.z), CharacterAnimator.transform.right * 1, out hit, 1.5f, _StepPlayermask_) && canStep)
+					if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z), CharacterAnimator.transform.right * 1, out hit, .8f, _StepPlayermask_))
 						transform.position = Vector3.MoveTowards(transform.position, positionTo, ToTravel);
 					else
 						canStep = false;
@@ -159,19 +153,19 @@ public class S_Handler_quickstep : MonoBehaviour
 			// !(Physics.Raycast(transform.position, CharacterAnimator.transform.right * -1, out hit, 4f, StepPlayermask)
 			else if (!StepRight)
 			{
-				Vector3 positionTo = transform.position + (-CharacterAnimator.transform.right * DistanceToStep);
+				Vector3 positionTo = transform.position + (-CharacterAnimator.transform.right * _DistanceToStep_);
 				float ToTravel = stepSpeed * Time.deltaTime;
 
-				if (DistanceToStep - ToTravel <= 0)
+				if (_DistanceToStep_ - ToTravel <= 0)
 				{
-					ToTravel = DistanceToStep;
-					DistanceToStep = 0;
+					ToTravel = _DistanceToStep_;
+					_DistanceToStep_ = 0;
 				}
 
-				DistanceToStep -= ToTravel;
+				_DistanceToStep_ -= ToTravel;
 
-				if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.35f, transform.position.z), CharacterAnimator.transform.right * -1, out hit, 1.5f, StepPlayermask) && canStep)
-					if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z), CharacterAnimator.transform.right * -1, out hit, .8f, StepPlayermask))
+				if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.35f, transform.position.z), CharacterAnimator.transform.right * -1, out hit, 1.5f, _StepPlayermask_) && canStep)
+					if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z), CharacterAnimator.transform.right * -1, out hit, .8f, _StepPlayermask_))
 						transform.position = Vector3.MoveTowards(transform.position, positionTo, ToTravel);
 					else
 						canStep = false;

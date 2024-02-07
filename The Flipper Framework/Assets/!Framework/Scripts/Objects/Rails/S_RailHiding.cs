@@ -6,7 +6,7 @@ using SplineMesh;
 public class S_RailHiding : MonoBehaviour {
 
     public float Distance = 2000;
-    SplineMeshTiling[] Rail;
+    S_SplineMeshTiling[] Rail;
     Transform Player;
     float Distancetrckr;
     bool active = true;
@@ -16,7 +16,7 @@ public class S_RailHiding : MonoBehaviour {
     void Start () {
         Distance *= Distance;
         //Player = GameObject.FindWithTag("Player").transform;
-        Rail = GetComponentsInChildren<SplineMeshTiling>();
+        Rail = GetComponentsInChildren<S_SplineMeshTiling>();
     }
 	
 	// Update is called once per frame

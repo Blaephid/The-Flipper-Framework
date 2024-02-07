@@ -15,11 +15,11 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 	[Header("Enemies")]
 
-	[HideInInspector] public float BouncingPower;
-	[HideInInspector] public float HomingBouncingPower;
-	[HideInInspector] public float EnemyHomingStoppingPowerWhenAdditive;
-	[HideInInspector] public bool StopOnHomingAttackHit;
-	[HideInInspector] public bool StopOnHit;
+	[HideInInspector] public float _bouncingPower_;
+	[HideInInspector] public float _homingBouncingPower_;
+	[HideInInspector] public float _enemyHomingStoppingPowerWhenAdditive_;
+	[HideInInspector] public bool _shouldStopOnHomingAttackHit_;
+	[HideInInspector] public bool _shouldStopOnHit_;
 
 	private bool CanHitAgain = true;
 
@@ -84,7 +84,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         Vector3 newSpeed = new Vector3(1, 0, 1);
 
         //From a Jump
-        if ((Actions.Action == S_ActionManager.States.Jump || Actions.Action == S_ActionManager.States.Regular) && CanHitAgain)
+        if ((Actions.whatAction == S_Enums.PlayerStates.Jump || Actions.whatAction == S_Enums.PlayerStates.Regular) && CanHitAgain)
         {
 
             AttackFromJump(newSpeed);
@@ -92,14 +92,14 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         }
 
         //From a Homing Attack
-        else if ((Actions.Action == S_ActionManager.States.Homing || Actions.PreviousAction == S_ActionManager.States.Homing) && CanHitAgain)
+        else if ((Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing) && CanHitAgain)
         {
             AttackFromHoming(newSpeed);
         }
 
 
         //From a Bounce
-        else if (Actions.Action == S_ActionManager.States.Bounce && CanHitAgain)
+        else if (Actions.whatAction == S_Enums.PlayerStates.Bounce && CanHitAgain)
         {
             AttackFromBounce(newSpeed);
         }
@@ -112,7 +112,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         StartCoroutine(ResetTriggerBool());
 
         newSpeed = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
-        newSpeed.y = BouncingPower + Mathf.Abs(Player.rb.velocity.y);
+        newSpeed.y = _bouncingPower_ + Mathf.Abs(Player.rb.velocity.y);
         if (newSpeed.y > Player.rb.velocity.y * 1.5f)
             newSpeed.y = Player.rb.velocity.y * 1.5f;
 
@@ -126,7 +126,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         //An additive hit that keeps momentum
         if (Actions.HomingPressed || Actions.JumpPressed)
         {
-            newSpeed = new Vector3(Player.rb.velocity.x * 0.8f, HomingBouncingPower, Player.rb.velocity.z * 0.8f);
+            newSpeed = new Vector3(Player.rb.velocity.x * 0.8f, _homingBouncingPower_, Player.rb.velocity.z * 0.8f);
             Actions.SpecialPressed = false;
             Actions.HomingPressed = false;
             //Debug.Log("Additive Hit");
@@ -136,7 +136,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         //A normal hit that decreases speed
         else
         {
-            newSpeed = new Vector3(Player.rb.velocity.x * 0.3f, HomingBouncingPower, Player.rb.velocity.z * 0.15f);
+            newSpeed = new Vector3(Player.rb.velocity.x * 0.3f, _homingBouncingPower_, Player.rb.velocity.z * 0.15f);
             //Debug.Log("Normal Hit");
         }
 
@@ -145,7 +145,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 
 
-        Player.HomingDelay = Tools.stats.HomingSuccessDelay;
+        Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
     }
 
     private void AttackFromBounce(Vector3 newSpeed)
@@ -155,10 +155,10 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         newSpeed = new Vector3(1, 0, 1);
 
         newSpeed = Vector3.Scale(Player.rb.velocity, newSpeed);
-        newSpeed.y = HomingBouncingPower * 1.8f;
+        newSpeed.y = _homingBouncingPower_ * 1.8f;
         Player.rb.velocity = newSpeed;
 
-        Player.HomingDelay = Tools.stats.HomingSuccessDelay;
+        Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
     }
 
     private void EndAirAttack()
@@ -174,7 +174,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         }
         Actions.SpecialPressed = false;
         Actions.HomingPressed = false;
-        Actions.ChangeAction(0);
+        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
     }
 
 	private IEnumerator ResetTriggerBool()
@@ -186,11 +186,11 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 	private void AssignStats()
 	{
-		BouncingPower = Tools.coreStats.BouncingPower;
-		HomingBouncingPower = Tools.coreStats.HomingBouncingPower;
-		EnemyHomingStoppingPowerWhenAdditive = Tools.coreStats.EnemyHomingStoppingPowerWhenAdditive;
-		StopOnHomingAttackHit = Tools.coreStats.StopOnHomingAttackHit;
-		StopOnHit = Tools.coreStats.StopOnHit;
+		_bouncingPower_ = Tools.Stats.EnemyInteraction.bouncingPower;
+		_homingBouncingPower_ = Tools.Stats.EnemyInteraction.homingBouncingPower;
+		_enemyHomingStoppingPowerWhenAdditive_ = Tools.Stats.EnemyInteraction.enemyHomingStoppingPowerWhenAdditive;
+		_shouldStopOnHomingAttackHit_ = Tools.Stats.EnemyInteraction.shouldStopOnHomingAttackHit;
+		_shouldStopOnHit_ = Tools.Stats.EnemyInteraction.shouldStopOnHit;
 
 	}
 

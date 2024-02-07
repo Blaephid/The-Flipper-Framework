@@ -215,7 +215,7 @@ namespace SplineMesh
                 //CharacterAnimator.transform.rotation = rot;
 
 
-                if ((Physics.Raycast(sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + Player.RayToGroundRotDistancecor, Player.Playermask)))
+                if ((Physics.Raycast(sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + Player.RayToGroundRotDistancecor, Player._Groundmask_)))
                 {
                     //Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
                     //transform.position = (hitRot.point + PathTransform.position) + FootPos;
@@ -317,7 +317,7 @@ namespace SplineMesh
                 Path_Int.currentCam = null;
             }
 
-            Actions.ChangeAction(S_ActionManager.States.Regular);
+            Actions.ChangeAction(S_Enums.PlayerStates.Regular);
         }
 
         void AssignStats()

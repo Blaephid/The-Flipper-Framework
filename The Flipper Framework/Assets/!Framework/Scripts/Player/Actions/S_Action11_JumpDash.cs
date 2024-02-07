@@ -13,9 +13,9 @@ public class S_Action11_JumpDash : MonoBehaviour
     S_PlayerInput Inp;
     S_Handler_Camera Cam;
 
-    [HideInInspector] public bool isAdditive;
-    [HideInInspector] public float AirDashSpeed;
-    [HideInInspector] public float AirDashDuration;
+    [HideInInspector] public bool _isAdditive_;
+    [HideInInspector] public float _AirDashSpeed_;
+    [HideInInspector] public float _AirDashDuration_;
 
     float XZmag;
     GameObject HomingTrailContainer;
@@ -53,7 +53,7 @@ public class S_Action11_JumpDash : MonoBehaviour
             if (Action02.HomingAvailable)
             {
 
-                HomingTrailScript.emitTime = AirDashDuration + 0.5f;
+                HomingTrailScript.emitTime = _AirDashDuration_ + 0.5f;
                 HomingTrailScript.emit = true;
 
                 JumpBall.SetActive(false);
@@ -67,9 +67,9 @@ public class S_Action11_JumpDash : MonoBehaviour
 
                 AirDashParticle();
 
-                if (XZmag < AirDashSpeed)
+                if (XZmag < _AirDashSpeed_)
                 {
-                    Aspeed = AirDashSpeed;
+                    Aspeed = _AirDashSpeed_;
                 }
                 else
                 {
@@ -150,16 +150,16 @@ public class S_Action11_JumpDash : MonoBehaviour
         Player.rb.velocity = newVec;
 
         //End homing attck if in air for too long
-        if (Timer > AirDashDuration)
+        if (Timer > _AirDashDuration_)
         {
             JumpBall.SetActive(true);
-            Action.ChangeAction(S_ActionManager.States.Jump);
+            Action.ChangeAction(S_Enums.PlayerStates.Jump);
         }
         else if (Player.Grounded)
         {
             CharacterAnimator.SetInteger("Action", 0);
             CharacterAnimator.SetBool("Grounded", Player.Grounded);
-            Action.ChangeAction(S_ActionManager.States.Regular);
+            Action.ChangeAction(S_Enums.PlayerStates.Regular);
         }
     }
 
@@ -183,9 +183,9 @@ public class S_Action11_JumpDash : MonoBehaviour
 
     private void AssignStats()
     {
-        isAdditive = Tools.coreStats.isAdditive;
-        AirDashSpeed = Tools.stats.AirDashSpeed;
-        AirDashDuration = Tools.stats.AirDashDuration;
+        _isAdditive_ = Tools.Stats.JumpDashStats.isAdditive;
+        _AirDashSpeed_ = Tools.Stats.JumpDashStats.dashSpeed;
+        _AirDashDuration_ = Tools.Stats.JumpDashStats.duration;
     }
 
     private void AssignTools()

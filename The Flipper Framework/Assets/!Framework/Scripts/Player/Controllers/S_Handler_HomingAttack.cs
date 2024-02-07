@@ -15,12 +15,12 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
     bool scanning = true;
 
-    float TargetSearchDistance = 10;
-    float faceRange = 66;
-    LayerMask TargetLayer;
-    LayerMask BlockingLayers;
-    float FieldOfView;
-    float facingAmount;
+    float _targetSearchDistance_ = 10;
+    float _faceRange_ = 66;
+    LayerMask _TargetLayer_;
+    LayerMask _BlockingLayers_;
+    float _fieldOfView_;
+    float _facingAmount_;
     float distance;
 
     AudioSource IconSound;
@@ -30,7 +30,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 
     Transform Icon;
-    float IconScale;
+    float _iconScale_;
     GameObject normalIcon;
     GameObject damageIcon;
 
@@ -38,7 +38,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
     [HideInInspector] public GameObject[] TgtDebug;
 
     Transform MainCamera;
-    float IconDistanceScaling;
+    float _iconDistanceScaling_;
 
     int HomingCount;
     public bool HomingAvailable { get; set; }
@@ -75,7 +75,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
         HomingCount += 1;
 
-        if (Actions.Action == S_ActionManager.States.Homing)
+        if (Actions.whatAction == S_Enums.PlayerStates.Homing)
         {
             HomingAvailable = false;
             HomingCount = 0;
@@ -92,7 +92,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
         {
             Icon.position = TargetObject.transform.position;
             float camDist = Vector3.Distance(transform.position, MainCamera.position);
-            Icon.localScale = (Vector3.one * IconScale) + (Vector3.one * (camDist * IconDistanceScaling));
+            Icon.localScale = (Vector3.one * _iconScale_) + (Vector3.one * (camDist * _iconDistanceScaling_));
 
             if (AlreadyPlayed != TargetObject)
             {
@@ -114,7 +114,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
         while (scanning)
         {
 
-            while (!player.Grounded && Actions.Action != S_ActionManager.States.Rail)
+            while (!player.Grounded && Actions.whatAction != S_Enums.PlayerStates.Rail)
             {
                 UpdateHomingTargets();
                 if (!HasTarget)
@@ -139,7 +139,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
     {
         HasTarget = false;
         TargetObject = null;
-        TargetObject = GetClosestTarget(TargetLayer, TargetSearchDistance);
+        TargetObject = GetClosestTarget(_TargetLayer_, _targetSearchDistance_);
         previousTarget = TargetObject;
 
     }
@@ -152,7 +152,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
         GameObject closestTarget = null;
         distance = 0f;
         int checkLimit = 0;
-        RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, 10f, Camera.main.transform.forward, faceRange, layer);
+        RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, 10f, Camera.main.transform.forward, _faceRange_, layer);
         foreach (RaycastHit t in NewTargetsInRange)
         {
             if (t.collider.gameObject.GetComponent<S_Data_HomingTarget>())
@@ -204,14 +204,14 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
         if(TargetDistance < maxDisMod * Radius)
         {
-            bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < facingAmount; //Make sure Sonic is facing the target enough
+            bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < _facingAmount_; //Make sure Sonic is facing the target enough
 
             Vector3 screenPoint = Camera.main.WorldToViewportPoint(target.position); //Get the target's screen position
             bool onScreen = screenPoint.z > 0.3f && screenPoint.x > 0.08 && screenPoint.x < 0.92f && screenPoint.y > 0f && screenPoint.y < 0.95f; //Make sure the target is on screen
 
             if ((TargetDistance < distance || distance == 0f) && Facing && onScreen)
             {
-                if (!Physics.Linecast(transform.position, target.position, BlockingLayers))
+                if (!Physics.Linecast(transform.position, target.position, _BlockingLayers_))
                 {
                     HasTarget = true;
                     //Debug.Log(closestTarget);
@@ -243,15 +243,15 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
     private void AssignStats()
     {
-        TargetSearchDistance = tools.coreStats.TargetSearchDistance;
-        faceRange = tools.coreStats.faceRange;
-        TargetLayer = tools.coreStats.TargetLayer;
-        BlockingLayers = tools.coreStats.BlockingLayers;
-        FieldOfView = tools.coreStats.FieldOfView;
-        facingAmount = tools.coreStats.FacingAmount;
+        _targetSearchDistance_ = tools.Stats.HomingSearch.targetSearchDistance;
+        _faceRange_ = tools.Stats.HomingSearch.faceRange;
+        _TargetLayer_ = tools.Stats.HomingSearch.targetLayer;
+        _BlockingLayers_ = tools.Stats.HomingSearch.blockingLayers;
+        _fieldOfView_ = tools.Stats.HomingSearch.fieldOfView;
+        _facingAmount_ = tools.Stats.HomingSearch.facingAmount;
 
-        IconScale = tools.coreStats.IconScale;
-        IconDistanceScaling = tools.coreStats.IconDistanceScaling;
+        _iconScale_ = tools.Stats.HomingSearch.iconScale;
+        _iconDistanceScaling_ = tools.Stats.HomingSearch.iconDistanceScaling;
     }
 
 

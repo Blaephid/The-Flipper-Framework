@@ -9,14 +9,14 @@ public class S_Handler_RingRoad : MonoBehaviour {
     public GameObject TargetObject { get; set; }
     S_ActionManager Actions;
 
-    float TargetSearchDistance = 10;
+    float _targetSearchDistance_ = 10;
     Transform Icon;
-    float IconScale;
+    float _iconScale_;
 
     [HideInInspector] public GameObject[] Targets;
     [HideInInspector] public GameObject[] TgtDebug;
 
-    LayerMask layer;
+    LayerMask _Layer_;
     Transform MainCamera;
 
 
@@ -40,9 +40,9 @@ public class S_Handler_RingRoad : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        if(Actions.Action == S_ActionManager.States.RingRoad)
+        if(Actions.whatAction == S_Enums.PlayerStates.RingRoad)
         {
-            Collider[] TargetsInRange = GetCloseTargets(TargetSearchDistance);
+            Collider[] TargetsInRange = GetCloseTargets(_targetSearchDistance_);
 
             if (TargetsInRange.Length > 0)
             {
@@ -59,9 +59,9 @@ public class S_Handler_RingRoad : MonoBehaviour {
             yield return new WaitForFixedUpdate();
            
 
-            if (Actions.Action == S_ActionManager.States.Jump || Actions.Action == S_ActionManager.States.Regular)
+            if (Actions.whatAction == S_Enums.PlayerStates.Jump || Actions.whatAction == S_Enums.PlayerStates.Regular)
             {
-                Collider[] TargetsInRange = GetCloseTargets(TargetSearchDistance * 1.45f);
+                Collider[] TargetsInRange = GetCloseTargets(_targetSearchDistance_ * 1.45f);
 
                 if(TargetsInRange.Length > 0)
                 {
@@ -82,18 +82,18 @@ public class S_Handler_RingRoad : MonoBehaviour {
     void performRR()
     {
         //Do a LightDash Attack
-        if (Actions.Action != S_ActionManager.States.RingRoad && Actions.InteractPressed && TargetObject != null)
+        if (Actions.whatAction != S_Enums.PlayerStates.RingRoad && Actions.InteractPressed && TargetObject != null)
         {
             //Debug.Log("LightDash");
             Actions.CamResetPressed = false;
-            Actions.ChangeAction(S_ActionManager.States.RingRoad);
+            Actions.ChangeAction(S_Enums.PlayerStates.RingRoad);
             Actions.Action07.InitialEvents();
         }
     }
 
     Collider[] GetCloseTargets(float maxDistance)
     {
-        Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, maxDistance, layer, QueryTriggerInteraction.Collide);
+        Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, maxDistance, _Layer_, QueryTriggerInteraction.Collide);
         return TargetsInRange;
     }
 
@@ -146,9 +146,9 @@ public class S_Handler_RingRoad : MonoBehaviour {
 
     void AssignStats()
     {
-        TargetSearchDistance = Tools.coreStats.RingTargetSearchDistance;
-        IconScale = Tools.coreStats.RingRoadIconScale;
-        layer = Tools.coreStats.RingRoadLayer;
+        _targetSearchDistance_ = Tools.Stats.RingRoadStats.RingTargetSearchDistance;
+        _iconScale_ = Tools.Stats.RingRoadStats.RingRoadIconScale;
+        _Layer_ = Tools.Stats.RingRoadStats.RingRoadLayer;
     }
 
     void AssignTools()

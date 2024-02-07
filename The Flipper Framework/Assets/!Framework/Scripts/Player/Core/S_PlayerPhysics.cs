@@ -13,62 +13,61 @@ public class S_PlayerPhysics : MonoBehaviour
 
     [Header("Movement Values")]
 
-    float StartAccell = 0.5f;
+    float _startAcceleration_ = 0.5f;
     float MoveAccell;
 
-    AnimationCurve AccellOverSpeed;
-    float AccellShiftOverSpeed;
-    float DecellShiftOverSpeed;
+    AnimationCurve _accelOverSpeed_;
+    float _accelShiftOverSpeed_;
+    float _decelShiftOverSpeed_;
 
-    [HideInInspector] public float MoveDecell = 1.3f;
-    AnimationCurve DecellBySpeed;
-    float AirDecell = 1.05f;
-    float naturalAirDecell = 1.01f;
+    [HideInInspector] public float _moveDeceleration_ = 1.3f;
+    AnimationCurve _decelBySpeed_;
+    float _airDecell_ = 1.05f;
+    float _naturalAirDecel_ = 1.01f;
 
-    float TangentialDrag;
-    float TangentialDragShiftSpeed;
+    float _tangentialDrag_;
+    float _tangentialDragShiftSpeed_;
 
-    float TurnSpeed = 16f;
-    float increasedTurnSpeed = 500f;
+    float _turnSpeed_ = 16f;
 
-    AnimationCurve TurnRateOverAngle;
-    AnimationCurve TurnRateOverSpeed;
-    AnimationCurve TangDragOverAngle;
-    AnimationCurve TangDragOverSpeed;
+    AnimationCurve _turnRateOverAngle_;
+    AnimationCurve _turnRateOverSpeed_;
+    AnimationCurve _tangDragOverAngle_;
+    AnimationCurve _tangDragOverSpeed_;
 
-    float StartTopSpeed = 65f;
+    float _startTopSpeed_ = 65f;
     [HideInInspector] public float TopSpeed;
-    float StartMaxSpeed = 230f;
+    float _startMaxSpeed_ = 230f;
     [HideInInspector] public float MaxSpeed;
-    float StartMaxFallingSpeed = -500f;
+    float _startMaxFallingSpeed_ = -500f;
     float MaxFallingSpeed;
-    float StartJumpPower = 2;
+    float _startJumpPower_ = 2;
     float m_JumpPower;
 
-    float GroundStickingDistance = 1;
-    float GroundStickingPower = -1;
+    float _groundStickingDistance_ = 1;
+    float _groundStickingPower_ = -1;
 
-    float SlopeEffectLimit = 0.9f;
-    float StandOnSlopeLimit = 0.8f;
-    float SlopePower = 0.5f;
-    float SlopeRunningAngleLimit = 0.5f;
-    AnimationCurve SlopeSpeedLimit;
+    float _slopeEffectLimit_ = 0.9f;
+    float _standOnSlopeLimit_ = 0.8f;
+    float _slopePower_ = 0.5f;
+    float _slopeRunningAngleLimit_ = 0.5f;
+    AnimationCurve _slopeSpeedLimit_;
 
-    float generalHillMultiplier = 1;
-    float UphillMultiplier = 0.5f;
-    float DownhillMultiplier = 2;
-    float StartDownhillMultiplier = -7;
+    float _generalHillMultiplier_ = 1;
+    float _uphillMultiplier_ = 0.5f;
+    float _downhillMultiplier_ = 2;
+    float _startDownhillMultiplier_ = -7;
 
-    AnimationCurve SlopePowerOverSpeed;
-    AnimationCurve UpHillOverTime;
+    AnimationCurve _slopePowerOverSpeed_;
+    AnimationCurve _UpHillByTime_;
     float SlopePowerShiftSpeed;
     float LandingConversionFactor = 2;
 
     [Header("AirMovementExtras")]
-    float AirControlAmmount = 2;
+    float _airControlAmmount_ = 2;
     //float AirSkiddingForce = 10;g
-    bool StopAirMovementIfNoInput = false;
-    float keepNormalForThis = 0.083f;
+    bool _shouldStopAirMovementIfNoInput_ = false;
+    float _keepNormalForThis_ = 0.083f;
 
 
     public bool Grounded { get; set; }
@@ -78,29 +77,29 @@ public class S_PlayerPhysics : MonoBehaviour
     public Rigidbody rb { get; set; }
 
     [HideInInspector] public bool GravityAffects = true;
-    [HideInInspector] public Vector3 StartFallGravity;
+    [HideInInspector] public Vector3 _startFallGravity_;
     [HideInInspector] public Vector3 fallGravity;
-    Vector3 UpGravity;
-    public Vector3 MoveInput { get; set; }
+    Vector3 _upGravity_;
+    public Vector3 _moveInput { get; set; }
 
     [HideInInspector] public RaycastHit groundHit;
     Transform CollisionPoint;
 
     S_Control_SoundsPlayer sounds;
-    [HideInInspector] public float HomingDelay;
+    [HideInInspector] public float _homingDelay_;
 
 
 
 
     [Header("Rolling Values")]
 
-    float RollingLandingBoost;
-    float RollingDownhillBoost;
-    float RollingUphillBoost;
-    float RollingStartSpeed;
-    float RollingTurningDecreace;
-    float RollingFlatDecell;
-    float SlopeTakeoverAmount; // This is the normalized slope angle that the player has to be in order to register the land as "flat"
+    float _rollingLandingBoost_;
+    float _rollingDownhillBoost_;
+    float _rollingUphillBoost_;
+    float _rollingStartSpeed_;
+    float _rollingTurningDecrease_;
+    float _rollingFlatDecell_;
+    float _slopeTakeoverAmount_; // This is the normalized slope angle that the player has to be in order to register the land as "flat"
     public bool isRolling { get; set; }
 
     //Cache
@@ -152,7 +151,7 @@ public class S_PlayerPhysics : MonoBehaviour
     float RaytoGroundRotSpeedMax = 2.6f;
     float RotationResetThreshold = -0.1f;
 
-    [HideInInspector] public LayerMask Playermask;
+    [HideInInspector] public LayerMask _Groundmask_;
 
 
 
@@ -177,12 +176,12 @@ public class S_PlayerPhysics : MonoBehaviour
         TimeOnGround += Time.deltaTime;
         if (!Grounded) TimeOnGround = 0;
 
-        if(Action.Action != S_ActionManager.States.Path)
+        if(Action.whatAction != S_Enums.PlayerStates.Path)
             GeneralPhysics();
 
-        if (HomingDelay > 0)
+        if (_homingDelay_ > 0)
         {
-            HomingDelay -= Time.deltaTime;
+            _homingDelay_ -= Time.deltaTime;
         }
 
 
@@ -224,9 +223,9 @@ public class S_PlayerPhysics : MonoBehaviour
             PreviousRawInputForAnim = PreviousRawInputForAnim.normalized;
         }
 
-        if (MoveInput.sqrMagnitude >= 0.9f)
+        if (_moveInput.sqrMagnitude >= 0.9f)
         {
-            PreviousInput = MoveInput;
+            PreviousInput = _moveInput;
         }
         if (RawInput.sqrMagnitude >= 0.9f)
         {
@@ -234,10 +233,10 @@ public class S_PlayerPhysics : MonoBehaviour
         }
 
         //Set Curve thingies
-        curvePosAcell = Mathf.Lerp(curvePosAcell, AccellOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * AccellShiftOverSpeed);
-        curvePosDecell = Mathf.Lerp(curvePosDecell, DecellBySpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * DecellShiftOverSpeed);
-        curvePosTang = Mathf.Lerp(curvePosTang, TangDragOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * TangentialDragShiftSpeed);
-        curvePosSlope = Mathf.Lerp(curvePosSlope, SlopePowerOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * SlopePowerShiftSpeed);
+        curvePosAcell = Mathf.Lerp(curvePosAcell, _accelOverSpeed_.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * _accelShiftOverSpeed_);
+        curvePosDecell = Mathf.Lerp(curvePosDecell, _decelBySpeed_.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * _decelShiftOverSpeed_);
+        curvePosTang = Mathf.Lerp(curvePosTang, _tangDragOverSpeed_.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * _tangentialDragShiftSpeed_);
+        curvePosSlope = Mathf.Lerp(curvePosSlope, _slopePowerOverSpeed_.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed), Time.fixedDeltaTime * SlopePowerShiftSpeed);
 
         // Do it for X and Z
         if (HorizontalSpeedMagnitude > MaxSpeed)
@@ -295,7 +294,7 @@ public class S_PlayerPhysics : MonoBehaviour
             //Keep the rotation after exiting the ground for a while, to avoid collision issues.
 
             KeepNormalCounter += Time.deltaTime;
-            if (KeepNormalCounter < keepNormalForThis)
+            if (KeepNormalCounter < _keepNormalForThis_)
             //if (KeepNormalCounter < 1f)
             {
                 transform.rotation = Quaternion.FromToRotation(transform.up, KeepNormal) * transform.rotation;
@@ -330,7 +329,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
     Vector3 HandleGroundControl(float deltaTime, Vector3 input)
     {
-        if(Action.Action != S_ActionManager.States.JumpDash && Action.Action != S_ActionManager.States.WallRunning)
+        if(Action.whatAction != S_Enums.PlayerStates.JumpDash && Action.whatAction != S_Enums.PlayerStates.WallRunning)
         {
 
             //By Damizean
@@ -352,6 +351,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
                 // Normalize to get input direction.
 
+                
+
                 Vector3 inputDirection = input.normalized;
                 float inputMagnitude = input.magnitude;
 
@@ -366,14 +367,11 @@ public class S_PlayerPhysics : MonoBehaviour
                 // Step 2) Let the user retain some component of the velocity if it's trying to move in
                 //         nearby directions from the current one. This should improve controlability.
               
-                float turnRate = TurnRateOverAngle.Evaluate(deviationFromInput);
-                turnRate *= TurnRateOverSpeed.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed);
+                float turnRate = _turnRateOverAngle_.Evaluate(deviationFromInput);
+                turnRate *= _turnRateOverSpeed_.Evaluate((rb.velocity.sqrMagnitude / MaxSpeed) / MaxSpeed);
                 //lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, Mathf.Deg2Rad * TurnSpeed * turnRate * Time.deltaTime, 0.0f);
 
-                if (Action.Action == S_ActionManager.States.SpinCharge)
-                    lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, increasedTurnSpeed * turnRate * Time.deltaTime, 0.0f);
-                else
-                    lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, TurnSpeed * turnRate * Time.deltaTime, 0.0f);
+                lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Time.deltaTime, 0.0f);
                 
 
 
@@ -412,10 +410,10 @@ public class S_PlayerPhysics : MonoBehaviour
 
                 // Step 5) Dampen tangential components.
 
-                float dragRate = TangDragOverAngle.Evaluate(deviationFromInput)
-                                * TangDragOverSpeed.Evaluate((tangentSpeed * tangentSpeed) / (MaxSpeed * MaxSpeed));
+                float dragRate = _tangDragOverAngle_.Evaluate(deviationFromInput)
+                                * _tangDragOverSpeed_.Evaluate((tangentSpeed * tangentSpeed) / (MaxSpeed * MaxSpeed));
 
-                tangentVelocity = Vector3.MoveTowards(tangentVelocity, Vector3.zero, TangentialDrag * dragRate * deltaTime);
+                tangentVelocity = Vector3.MoveTowards(tangentVelocity, Vector3.zero, _tangentialDrag_ * dragRate * deltaTime);
 
                 lateralVelocity = normalVelocity + tangentVelocity;
 
@@ -431,16 +429,16 @@ public class S_PlayerPhysics : MonoBehaviour
             if (Grounded)
             {
                 float DecellAmount = 1;
-                if (isRolling && GroundNormal.y > SlopeTakeoverAmount && HorizontalSpeedMagnitude > 10)
+                if (isRolling && GroundNormal.y > _slopeTakeoverAmount_ && HorizontalSpeedMagnitude > 10)
                 {
-                    DecellAmount = RollingFlatDecell * curvePosDecell;
+                    DecellAmount = _rollingFlatDecell_ * curvePosDecell;
                     if (input.sqrMagnitude == 0)
-                        DecellAmount *= MoveDecell;
+                        DecellAmount *= _moveDeceleration_;
                 }
 
                 else if (input.sqrMagnitude == 0)
                 {
-                    DecellAmount = MoveDecell * curvePosDecell;
+                    DecellAmount = _moveDeceleration_ * curvePosDecell;
                 }
                 lateralVelocity /= DecellAmount;
             }
@@ -477,7 +475,9 @@ public class S_PlayerPhysics : MonoBehaviour
 
         // Call Ground Control
 
-        Vector3 setVelocity = HandleGroundControl(1, MoveInput * curvePosAcell);
+       
+
+        Vector3 setVelocity = HandleGroundControl(1, _moveInput * curvePosAcell);
         rb.velocity = setVelocity;
 
 
@@ -497,7 +497,7 @@ public class S_PlayerPhysics : MonoBehaviour
             }
             else
             {
-                Addsped = (GroundNormal * LandingConversionFactor) * RollingLandingBoost;
+                Addsped = (GroundNormal * LandingConversionFactor) * _rollingLandingBoost_;
                 //StickToGround(GroundStickingPower * RollingLandingBoost);
                 sounds.SpinningSound();
             }
@@ -508,9 +508,9 @@ public class S_PlayerPhysics : MonoBehaviour
         }
 
         //Get out of slope if speed is too low
-        if (HorizontalSpeedMagnitude < SlopeSpeedLimit.Evaluate(GroundNormal.y))
+        if (HorizontalSpeedMagnitude < _slopeSpeedLimit_.Evaluate(GroundNormal.y))
         {
-            if(SlopeRunningAngleLimit > GroundNormal.y)
+            if(_slopeRunningAngleLimit_ > GroundNormal.y)
             {
                 //transform.rotation = Quaternion.identity;
                 Grounded = false;
@@ -522,26 +522,26 @@ public class S_PlayerPhysics : MonoBehaviour
 
 
         //Apply slope power
-        if (GroundNormal.y < SlopeEffectLimit)
+        if (GroundNormal.y < _slopeEffectLimit_)
         {
 
             if (timeUpHill < 0)
                 timeUpHill = 0;
 
-            if (rb.velocity.y > StartDownhillMultiplier)
+            if (rb.velocity.y > _startDownhillMultiplier_)
             {
                 timeUpHill += Time.deltaTime;
                 //Debug.Log(p_rigidbody.velocity.y);
                 if (!isRolling)
                 {
-                    Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * UphillMultiplier * generalHillMultiplier, 0);
-                    force *= UpHillOverTime.Evaluate(timeUpHill);
+                    Vector3 force = new Vector3(0, (_slopePower_ * curvePosSlope) * _uphillMultiplier_ * _generalHillMultiplier_, 0);
+                    force *= _UpHillByTime_.Evaluate(timeUpHill);
                     AddVelocity(force);
                 }
                 else
                 {
-                    Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * UphillMultiplier * generalHillMultiplier, 0) * RollingUphillBoost;
-                    force *= UpHillOverTime.Evaluate(timeUpHill);
+                    Vector3 force = new Vector3(0, (_slopePower_ * curvePosSlope) * _uphillMultiplier_ * _generalHillMultiplier_, 0) * _rollingUphillBoost_;
+                    force *= _UpHillByTime_.Evaluate(timeUpHill);
                     AddVelocity(force);
                 }
             }
@@ -549,23 +549,23 @@ public class S_PlayerPhysics : MonoBehaviour
             else
             {
                 timeUpHill -= Time.deltaTime * 0.8f;
-                if (MoveInput != Vector3.zero && b_normalSpeed > 0)
+                if (_moveInput != Vector3.zero && b_normalSpeed > 0)
                 {
                     if (!isRolling)
                     {
-                        Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * DownhillMultiplier * generalHillMultiplier, 0);
+                        Vector3 force = new Vector3(0, (_slopePower_ * curvePosSlope) * _downhillMultiplier_ * _generalHillMultiplier_, 0);
                         AddVelocity(force);
                     }
                     else
                     {
-                        Vector3 force = new Vector3(0, (SlopePower * curvePosSlope) * DownhillMultiplier * generalHillMultiplier, 0) * RollingDownhillBoost;
+                        Vector3 force = new Vector3(0, (_slopePower_ * curvePosSlope) * _downhillMultiplier_ * _generalHillMultiplier_, 0) * _rollingDownhillBoost_;
                         AddVelocity(force);
                     }
 
                 }
-                else if (GroundNormal.y < StandOnSlopeLimit)
+                else if (GroundNormal.y < _standOnSlopeLimit_)
                 {
-                    Vector3 force = new Vector3(0, SlopePower * curvePosSlope, 0);
+                    Vector3 force = new Vector3(0, _slopePower_ * curvePosSlope, 0);
                     AddVelocity(force);
                 }
             }
@@ -595,7 +595,7 @@ public class S_PlayerPhysics : MonoBehaviour
             }
 
             //If the Raycast Hits something, it adds it's normal to the ground normal making an inbetween value the interpolates the direction;
-            if (Physics.Raycast(Raycasterpos, rb.velocity.normalized, out hitSticking, SpeedMagnitude * StickCastAhead * Time.deltaTime, Playermask))
+            if (Physics.Raycast(Raycasterpos, rb.velocity.normalized, out hitSticking, SpeedMagnitude * StickCastAhead * Time.deltaTime, _Groundmask_))
             {
                 if (EnableDebug) Debug.Log("AvoidingGroundCollision");
 
@@ -619,7 +619,7 @@ public class S_PlayerPhysics : MonoBehaviour
                 {
                     Vector3 Dir = Align(Velocity, normal.normalized);
                     float lerp = StickingLerps.y;
-                    if (Physics.Raycast(Raycasterpos + (rb.velocity * StickCastAhead * Time.deltaTime), -groundHit.normal, out hitSticking, 2.5f, Playermask))
+                    if (Physics.Raycast(Raycasterpos + (rb.velocity * StickCastAhead * Time.deltaTime), -groundHit.normal, out hitSticking, 2.5f, _Groundmask_))
                     {
                         float dist = hitSticking.distance;
                         if (EnableDebug)
@@ -686,7 +686,7 @@ public class S_PlayerPhysics : MonoBehaviour
         //    setVelocity = HandleGroundControl(1, (MoveInput * AirSkiddingForce) * MoveAccell);
         //}
 
-        if (MoveInput.sqrMagnitude > 0.1f)
+        if (_moveInput.sqrMagnitude > 0.1f)
         {
             float airMod = 1;
             float airMoveMod = 1;
@@ -695,7 +695,7 @@ public class S_PlayerPhysics : MonoBehaviour
                 airMod += 2f;
                 airMoveMod += 3f;
             }
-            if(Action.Action == S_ActionManager.States.Jump)
+            if(Action.whatAction == S_Enums.PlayerStates.Jump)
             {
                 //Debug.Log(Action.Action01.timeJumping);
                 if (Action.Action01.ControlCounter < 0.5)
@@ -710,7 +710,7 @@ public class S_PlayerPhysics : MonoBehaviour
                 }
                     
             }
-            else if(Action.Action == S_ActionManager.States.Bounce)
+            else if(Action.whatAction == S_Enums.PlayerStates.Bounce)
             {
                 airMod += 1f;
                 airMoveMod += 2.5f;
@@ -718,17 +718,17 @@ public class S_PlayerPhysics : MonoBehaviour
             airMoveMod = Mathf.Clamp(airMoveMod, 0.8f, 10);
             airMod = Mathf.Clamp(airMod, 0.8f, 10);
 
-            setVelocity = HandleGroundControl(AirControlAmmount * airMod, MoveInput * MoveAccell * airMoveMod);
+            setVelocity = HandleGroundControl(_airControlAmmount_ * airMod, _moveInput * MoveAccell * airMoveMod);
         }
         else
         {
-            setVelocity = HandleGroundControl(AirControlAmmount, MoveInput * MoveAccell);
+            setVelocity = HandleGroundControl(_airControlAmmount_, _moveInput * MoveAccell);
 
-            if (MoveInput == Vector3.zero && StopAirMovementIfNoInput)
+            if (_moveInput == Vector3.zero && _shouldStopAirMovementIfNoInput_)
             {
                 Vector3 ReducedSpeed = setVelocity;
-                ReducedSpeed.x = ReducedSpeed.x / AirDecell;
-                ReducedSpeed.z = ReducedSpeed.z / AirDecell;
+                ReducedSpeed.x = ReducedSpeed.x / _airDecell_;
+                ReducedSpeed.z = ReducedSpeed.z / _airDecell_;
                 //setVelocity = ReducedSpeed;
             }
 
@@ -740,8 +740,8 @@ public class S_PlayerPhysics : MonoBehaviour
         if (HorizontalSpeedMagnitude > 14)
         {
             Vector3 ReducedSpeed = setVelocity;
-            ReducedSpeed.x = ReducedSpeed.x / naturalAirDecell;
-            ReducedSpeed.z = ReducedSpeed.z / naturalAirDecell;
+            ReducedSpeed.x = ReducedSpeed.x / _naturalAirDecel_;
+            ReducedSpeed.z = ReducedSpeed.z / _naturalAirDecel_;
             //setVelocity = ReducedSpeed;
         }
 
@@ -783,7 +783,7 @@ public class S_PlayerPhysics : MonoBehaviour
                 gravMod = vertSpeed / 8;
             float applyMod = 1 + (gravMod * 0.1f);
 
-            Vector3 newGrav = new Vector3(0f, UpGravity.y * applyMod, 0f);
+            Vector3 newGrav = new Vector3(0f, _upGravity_.y * applyMod, 0f);
 
             return newGrav;
         }
@@ -794,7 +794,7 @@ public class S_PlayerPhysics : MonoBehaviour
     {
         RayToGroundDistancecor = RayToGroundDistance;
         RayToGroundRotDistancecor = RayToGroundRotDistance;
-        if (Action.Action == 0 && Grounded)
+        if (Action.whatAction == 0 && Grounded)
         {
             //grounder line
             RayToGroundDistancecor = Mathf.Max(RayToGroundDistance + (SpeedMagnitude * RaytoGroundSpeedRatio), RayToGroundDistance);
@@ -811,13 +811,13 @@ public class S_PlayerPhysics : MonoBehaviour
         }
         //Debug.Log(GravityAffects);
 
-        if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out groundHit, 2f + RayToGroundDistancecor, Playermask))
+        if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out groundHit, 2f + RayToGroundDistancecor, _Groundmask_))
         {
             GroundNormal = groundHit.normal;
             Grounded = true;
             GroundMovement();
         }
-        else if (Action.Action != S_ActionManager.States.Bounce && Action.Action != S_ActionManager.States.WallRunning && Action.Action != S_ActionManager.States.Rail)
+        else if (Action.whatAction != S_Enums.PlayerStates.Bounce && Action.whatAction != S_Enums.PlayerStates.WallRunning && Action.whatAction != S_Enums.PlayerStates.Rail)
         {
             Grounded = false;
             GroundNormal = Vector3.zero;
@@ -861,74 +861,74 @@ public class S_PlayerPhysics : MonoBehaviour
     //Matches all changeable stats to how they are set in the character stats script.
     private void AssignStats()
     {
-        StartAccell = Tools.stats.StartAccell;
-        AccellOverSpeed = Tools.coreStats.AccellOverSpeed;
-        AccellShiftOverSpeed = Tools.coreStats.AccellShiftOverSpeed;
-        TangentialDrag = Tools.stats.TangentialDrag;
-        TangentialDragShiftSpeed = Tools.coreStats.TangentialDragShiftSpeed;
-        TurnSpeed = Tools.stats.TurnSpeed;
-        increasedTurnSpeed = Tools.stats.increasedTurnSpeed;
-        TurnRateOverAngle = Tools.coreStats.TurnRateOverAngle;
-        TurnRateOverSpeed = Tools.coreStats.TurnRateOverSpeed;
-        TangDragOverAngle = Tools.coreStats.TangDragOverAngle;
-        TangDragOverSpeed = Tools.coreStats.TangDragOverSpeed;
-        StartTopSpeed = Tools.stats.StartTopSpeed;
-        StartMaxSpeed = Tools.stats.StartMaxSpeed;
-        StartMaxFallingSpeed = Tools.stats.StartMaxFallingSpeed;
-        StartJumpPower = Tools.stats.StartJumpPower;
-        MoveDecell = Tools.stats.MoveDecell;
-        DecellBySpeed = Tools.coreStats.DecellBySpeed;
-        DecellShiftOverSpeed = Tools.coreStats.DecellShiftOverSpeed;
-        naturalAirDecell = Tools.coreStats.naturalAirDecell;
-        AirDecell = Tools.stats.AirDecell;
-        GroundStickingDistance = Tools.coreStats.GroundStickingDistance;
-        GroundStickingPower = Tools.coreStats.GroundStickingPower;
-        SlopeEffectLimit = Tools.coreStats.SlopeEffectLimit;
-        StandOnSlopeLimit = Tools.coreStats.StandOnSlopeLimit;
-        SlopePower = Tools.coreStats.SlopePower;
-        SlopeRunningAngleLimit = Tools.coreStats.SlopeRunningAngleLimit;
-        SlopeSpeedLimit = Tools.coreStats.SlopeSpeedLimit;
-        generalHillMultiplier = Tools.stats.generalHillMultiplier;
-        UphillMultiplier = Tools.coreStats.UphillMultiplier;
-        DownhillMultiplier = Tools.coreStats.DownhillMultiplier;
-        StartDownhillMultiplier = Tools.coreStats.StartDownhillMultiplier;
-        SlopePowerOverSpeed = Tools.coreStats.SlopePowerOverSpeed;
-        AirControlAmmount = Tools.stats.AirControlAmmount;
-        //AirSkiddingForce = Tools.stats.AirSkiddingForce;
-        StopAirMovementIfNoInput = Tools.coreStats.StopAirMovementIfNoInput;
-        RollingLandingBoost = Tools.coreStats.RollingLandingBoost;
-        RollingDownhillBoost = Tools.coreStats.RollingDownhillBoost;
-        RollingUphillBoost = Tools.coreStats.RollingUphillBoost;
-        RollingStartSpeed = Tools.coreStats.RollingStartSpeed;
-        RollingTurningDecreace = Tools.coreStats.RollingTurningDecreace;
-        RollingFlatDecell = Tools.coreStats.RollingFlatDecell;
-        SlopeTakeoverAmount = Tools.coreStats.SlopeTakeoverAmount;
-        UpHillOverTime = Tools.coreStats.UpHillOverTime;
-        StartFallGravity = Tools.stats.fallGravity;
-        UpGravity = Tools.coreStats.UpGravity;
-        keepNormalForThis = Tools.coreStats.keepNormalForThis;
+        _startAcceleration_ = Tools.Stats.AccelerationStats.acceleration;
+        _accelOverSpeed_ = Tools.Stats.AccelerationStats.AccelBySpeed;
+        _accelShiftOverSpeed_ = Tools.Stats.AccelerationStats.accelShiftOverSpeed;
+        _tangentialDrag_ = Tools.Stats.TurningStats.tangentialDrag;
+        _tangentialDragShiftSpeed_ = Tools.Stats.TurningStats.tangentialDragShiftSpeed;
+        _turnSpeed_ = Tools.Stats.TurningStats.turnSpeed;
+     
+        _turnRateOverAngle_ = Tools.Stats.TurningStats.TurnRateByAngle;
+        _turnRateOverSpeed_ = Tools.Stats.TurningStats.TurnRateBySpeed;
+        _tangDragOverAngle_ = Tools.Stats.TurningStats.TangDragByAngle;
+        _tangDragOverSpeed_ = Tools.Stats.TurningStats.TangDragBySpeed;
+        _startTopSpeed_ = Tools.Stats.SpeedStats.startTopSpeed;
+        _startMaxSpeed_ = Tools.Stats.SpeedStats.startMaxSpeed;
+        _startMaxFallingSpeed_ = Tools.Stats.WhenInAir.startMaxFallingSpeed;
+        _startJumpPower_ = Tools.Stats.JumpStats.startJumpSpeed;
+        _moveDeceleration_ = Tools.Stats.DecelerationStats.moveDeceleration;
+        _decelBySpeed_ = Tools.Stats.DecelerationStats.DecelBySpeed;
+        _decelShiftOverSpeed_ = Tools.Stats.DecelerationStats.decelShiftOverSpeed;
+        _naturalAirDecel_ = Tools.Stats.DecelerationStats.naturalAirDecel;
+        _airDecell_ = Tools.Stats.DecelerationStats.airDecel;
+        _groundStickingDistance_ = Tools.Stats.StickToGround.groundStickingDistance;
+        _groundStickingPower_ = Tools.Stats.StickToGround.groundStickingPower;
+        _slopeEffectLimit_ = Tools.Stats.SlopeStats.slopeEffectLimit;
+        _standOnSlopeLimit_ = Tools.Stats.SlopeStats.standOnSlopeLimit;
+        _slopePower_ = Tools.Stats.SlopeStats.slopePower;
+        _slopeRunningAngleLimit_ = Tools.Stats.SlopeStats.slopeRunningAngleLimit;
+        _slopeSpeedLimit_ = Tools.Stats.SlopeStats.slopeSpeedLimit;
+        _generalHillMultiplier_ = Tools.Stats.SlopeStats.generalHillMultiplier;
+        _uphillMultiplier_ = Tools.Stats.SlopeStats.uphillMultiplier;
+        _downhillMultiplier_ = Tools.Stats.SlopeStats.downhillMultiplier;
+        _startDownhillMultiplier_ = Tools.Stats.SlopeStats.startDownhillMultiplier;
+        _slopePowerOverSpeed_ = Tools.Stats.SlopeStats.SlopePowerOverSpeed;
+        _airControlAmmount_ = Tools.Stats.WhenInAir.airControlAmmount;
+        
+        _shouldStopAirMovementIfNoInput_ = Tools.Stats.WhenInAir.shouldStopAirMovementWhenNoInput;
+        _rollingLandingBoost_ = Tools.Stats.RollingStats.rollingLandingBoost;
+        _rollingDownhillBoost_ = Tools.Stats.RollingStats.rollingDownhillBoost;
+        _rollingUphillBoost_ = Tools.Stats.RollingStats.rollingUphillBoost;
+        _rollingStartSpeed_ = Tools.Stats.RollingStats.rollingStartSpeed;
+        _rollingTurningDecrease_ = Tools.Stats.RollingStats.rollingTurningDecreace;
+        _rollingFlatDecell_ = Tools.Stats.RollingStats.rollingFlatDecell;
+        _slopeTakeoverAmount_ = Tools.Stats.RollingStats.slopeTakeoverAmount;
+        _UpHillByTime_ = Tools.Stats.SlopeStats.UpHillOverTime;
+        _startFallGravity_ = Tools.Stats.WhenInAir.fallGravity;
+        _upGravity_ = Tools.Stats.WhenInAir.upGravity;
+        _keepNormalForThis_ = Tools.Stats.WhenInAir.keepNormalForThis;
 
 
-        StickingLerps = Tools.coreStats.StickingLerps;
-        StickingNormalLimit = Tools.coreStats.StickingNormalLimit;
-        StickCastAhead = Tools.coreStats.StickCastAhead;
-        negativeGHoverHeight = Tools.coreStats.negativeGHoverHeight;
-        RayToGroundDistance = Tools.coreStats.RayToGroundDistance;
-        RaytoGroundSpeedRatio = Tools.coreStats.RaytoGroundSpeedRatio;
-        RaytoGroundSpeedMax = Tools.coreStats.RaytoGroundSpeedMax;
-        RayToGroundRotDistance = Tools.coreStats.RayToGroundRotDistance;
-        RaytoGroundRotSpeedMax = Tools.coreStats.RaytoGroundRotSpeedMax;
-        RotationResetThreshold = Tools.coreStats.RotationResetThreshold;
+        StickingLerps = Tools.Stats.GreedysStickToGround.stickingLerps;
+        StickingNormalLimit = Tools.Stats.GreedysStickToGround.stickingNormalLimit;
+        StickCastAhead = Tools.Stats.GreedysStickToGround.stickCastAhead;
+        negativeGHoverHeight = Tools.Stats.GreedysStickToGround.negativeGHoverHeight;
+        RayToGroundDistance = Tools.Stats.GreedysStickToGround.rayToGroundDistance;
+        RaytoGroundSpeedRatio = Tools.Stats.GreedysStickToGround.raytoGroundSpeedRatio;
+        RaytoGroundSpeedMax = Tools.Stats.GreedysStickToGround.raytoGroundSpeedMax;
+        RayToGroundRotDistance = Tools.Stats.GreedysStickToGround.rayToGroundRotDistance;
+        RaytoGroundRotSpeedMax = Tools.Stats.GreedysStickToGround.raytoGroundRotSpeedMax;
+        RotationResetThreshold = Tools.Stats.GreedysStickToGround.rotationResetThreshold;
 
-        Playermask = Tools.coreStats.Playermask;
+        _Groundmask_ = Tools.Stats.GroundMask;
 
         //Sets all changeable core values to how they are set to start in the editor.
-        MoveAccell = StartAccell;
-        TopSpeed = StartTopSpeed;
-        MaxSpeed = StartMaxSpeed;
-        MaxFallingSpeed = StartMaxFallingSpeed;
-        m_JumpPower = StartJumpPower;
-        fallGravity = StartFallGravity;
+        MoveAccell = _startAcceleration_;
+        TopSpeed = _startTopSpeed_;
+        MaxSpeed = _startMaxSpeed_;
+        MaxFallingSpeed = _startMaxFallingSpeed_;
+        m_JumpPower = _startJumpPower_;
+        fallGravity = _startFallGravity_;
 
         KeepNormal = Vector3.up;
 

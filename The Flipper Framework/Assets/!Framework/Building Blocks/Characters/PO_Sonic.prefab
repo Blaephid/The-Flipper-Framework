@@ -5616,8 +5616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4118abbbd81f40f4a9a770c7cb7576c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats: {fileID: 11400000, guid: 48acf3fada3825a4c8ee0df96ccd47de, type: 2}
-  coreStats: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee, type: 2}
+  Stats: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee, type: 2}
   camStats: {fileID: 11400000, guid: ba202d2693251114c953112101121bfc, type: 2}
   characterCapsule: {fileID: 1605683383104138}
   crouchCapsule: {fileID: 1794423812473573934}
@@ -5668,20 +5667,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Action: {fileID: 0}
-  MoveDecell: 1.025
+  _moveDeceleration_: 1.3
   TopSpeed: 70
   MaxSpeed: 260
   GravityAffects: 1
-  StartFallGravity: {x: 0, y: 0, z: 0}
+  _startFallGravity_: {x: 0, y: 0, z: 0}
   fallGravity: {x: 0, y: 0, z: 0}
-  HomingDelay: 0
+  _homingDelay_: 0
   EnableDebug: 0
   RayToGroundDistancecor: 0
   RayToGroundRotDistancecor: 0
   negativeGHoverHeight: 0.6115
-  Playermask:
+  _Groundmask_:
     serializedVersion: 2
-    m_Bits: 69687
+    m_Bits: 0
 --- !u!114 &8583335634310275265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5983,84 +5982,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputPreCamera: {x: 0, y: 0, z: 0}
   trueMoveInput: {x: 0, y: 0, z: 0}
-  InputLerpingRateOverSpeed:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.00084328733
-      value: 20.841314
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.20073509
-      value: 20.917809
-      inSlope: 0.16642177
-      outSlope: 0.16642177
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.35202777
-      value: 4.8686323
-      inSlope: -0.25124428
-      outSlope: -0.25124428
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 4.85957
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  UtopiaTurning: 1
-  UtopiaInputLerpingRateOverSpeed:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 10
-      inSlope: -31.337887
-      outSlope: -31.337887
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.27998918
-      value: 4.986231
-      inSlope: -0.04386031
-      outSlope: -0.04386031
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0.25
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  UtopiaIntensity: 4
-  UtopiaInitialInputLerpSpeed: 10
   moveInp: {x: 0, y: 0, z: 0}
   InputExporter: {x: 0, y: 0}
 --- !u!114 &114870394340389206
@@ -6077,7 +5998,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackingEvents: 0
   eventMan: {fileID: 0}
-  Action: 0
+  whatAction: 0
   Action00: {fileID: 114654845169286778}
   Action01: {fileID: 114873388628942606}
   Action02: {fileID: 114022693185401694}
@@ -6149,16 +6070,16 @@ MonoBehaviour:
   ControlCounter: 0
   jumpCount: 0
   Jumping: 0
-  StartJumpDuration: 0.2
-  StartSlopedJumpDuration: 0.2
-  StartJumpSpeed: 5
-  JumpSlopeConversion: 0.02
-  StopYSpeedOnRelease: 2
-  RollingLandingBoost: 0
+  _startJumpDuration_: 0
+  _startSlopedJumpDuration_: 0
+  _startJumpSpeed_: 0
+  _jumpSlopeConversion_: 0
+  _stopYSpeedOnRelease_: 0
+  _rollingLandingBoost_: 0
   JumpDuration: 0.11
   SlopedJumpDuration: 0.09
   JumpSpeed: 10
-  canDoubleJump: 1
+  _canDoubleJump_: 1
   timeJumping: 0
 --- !u!114 &114300969380773912
 MonoBehaviour:
@@ -6186,11 +6107,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1a4862d66441f4f94e9a7d171185b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAdditive: 0
-  HomingAttackSpeed: 0
-  AirDashSpeed: 0
-  AirDashDuration: 0
-  HomingTimerLimit: 0
+  _isAdditive_: 0
+  _homingAttackSpeed_: 0
+  _airDashSpeed_: 0
+  _airDashDuration_: 0
+  _homingTimerLimit_: 0
   skinRotationSpeed: 10
 --- !u!114 &114168122690048012
 MonoBehaviour:
@@ -6206,10 +6127,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BallAnimationSpeedMultiplier: 1
   SpinDashChargedEffectAmm: 0.07
-  SpinDashChargingSpeed: 2.5
-  MinimunCharge: 20
-  MaximunCharge: 150
-  SpinDashStillForce: 2000
+  _spinDashChargingSpeed_: 0.3
+  _minimunCharge_: 10
+  _maximunCharge_: 100
+  _spinDashStillForce_: 20
 --- !u!114 &114016931776330826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6222,10 +6143,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90121fd0e1ac3c647ab1807e022fa5c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InvencibilityTime: 170
-  MaxRingLoss: 30
-  RingReleaseSpeed: 700
-  RingArcSpeed: 30
+  _invincibilityTime_: 0
+  _maxRingLoss_: 0
+  _ringReleaseSpeed_: 0
+  _ringArcSpeed_: 0
   FadeOutImage: {fileID: 114068834119247430}
 --- !u!114 &114508106957425794
 MonoBehaviour:
@@ -6239,9 +6160,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36193597c27d39846afd0cfd81c7331c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  KnockbackUpwardsForce: 30
-  ResetSpeedOnHit: 1
-  KnockbackForce: 30
+  _knockbackUpwardsForce_: 10
+  _resetSpeedOnHit_: 0
+  _knockbackForce_: 10
 --- !u!114 &163950796223377526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6276,7 +6197,7 @@ MonoBehaviour:
   railMask:
     serializedVersion: 2
     m_Bits: 8388608
-  railmaxSpeed: 0
+  _railmaxSpeed_: 0
   range: 0
   ConnectedRails: {fileID: 0}
   PlayerSpeed: 0
@@ -6345,9 +6266,9 @@ MonoBehaviour:
   BallAnimationSpeedMultiplier: 0
   DropEffect: {fileID: 339764373253515146}
   SpinDashChargedEffectAmm: 0
-  SpinDashChargingSpeed: 2
-  MinimunCharge: 20
-  MaximunCharge: 400
+  _spinDashChargingSpeed_: 0.3
+  _minimunCharge_: 10
+  _maximunCharge_: 100
   charge: 0
   ReleaseShakeAmmount: 0
 --- !u!114 &4314005691558026853
@@ -6383,9 +6304,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fadeadbb69111459e75fec9dcceb48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAdditive: 0
-  AirDashSpeed: 0
-  AirDashDuration: 0
+  _isAdditive_: 0
+  _AirDashSpeed_: 0
+  _AirDashDuration_: 0
   skinRotationSpeed: 30
 --- !u!114 &6755438600529197151
 MonoBehaviour:
@@ -6448,9 +6369,9 @@ MonoBehaviour:
     type: 3}
   SpeedPadTrack: {fileID: 2100000, guid: 620ddb7d525d8cf4c8825898d6d3273c, type: 2}
   DashRingMaterial: {fileID: 2100000, guid: b759e3326b7e5e442b0b7e8f2058a414, type: 2}
-  HomingBouncingPower: 0
-  EnemyDamageShakeAmmount: 0
-  EnemyHitShakeAmmount: 0
+  _homingBouncingPower_: 0
+  _enemyDamageShakeAmmount_: 0
+  _enemyHitShakeAmmount_: 0
   RingsCounter: {fileID: 2457388693067843707}
   SpeedCounter: {fileID: 7963053821245621744}
   HintBox: {fileID: 7282556348054889851}
@@ -6492,7 +6413,6 @@ MonoBehaviour:
   tools: {fileID: 2061662532465713779}
   basePlayer: {fileID: 1979695856965714}
   ResumeTransform: {fileID: 4809842342266818}
-  LampDone: {fileID: 2100000, guid: 040c400990661674ca82deac3c7e584c, type: 2}
   LevelToGoNext: 0
   NextLevelNameLeft: GOING
   NextLevelNameRight: BACK
@@ -6510,11 +6430,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4194a8c5cb9ce4dbdb070aefc6c1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BouncingPower: 0
-  HomingBouncingPower: 0
-  EnemyHomingStoppingPowerWhenAdditive: 0
-  StopOnHomingAttackHit: 0
-  StopOnHit: 0
+  _bouncingPower_: 0
+  _homingBouncingPower_: 0
+  _enemyHomingStoppingPowerWhenAdditive_: 0
+  _shouldStopOnHomingAttackHit_: 0
+  _shouldStopOnHit_: 0
 --- !u!114 &8704419147606607401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6600,7 +6520,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   inWind: 0
-  SkiddingStartPoint: 0
+  _skiddingStartPoint_: 0
 --- !u!114 &2317282729712668892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6613,9 +6533,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84f9c6d1025f5e74e8387e08a266035a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RegularSkiddingStartPoint: 0
-  RegularSkiddingIntensity: 0
-  hasSked: 0
+  _regularSkiddingStartPoint_: 0
+  _regularSkiddingIntensity_: 0
+  _hasSked: 0
 --- !u!114 &6324398746597360212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16638,7 +16558,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
   m_LocalRotation: {x: -0.041879464, y: 0.10989423, z: -0.35363552, w: 0.9279608}
-  m_LocalPosition: {x: 5976.773, y: 113.54807, z: 2123.0925}
+  m_LocalPosition: {x: -838.549, y: 151.69789, z: 840.0161}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17040,7 +16960,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 31d0dcc6f2dd4e4408d18036a2c93862, type: 2}
+  m_Material: {fileID: 2100000, guid: 145768f58ebf54c44b2396507d6b1750, type: 2}
   m_DrawDistance: 50
   m_FadeScale: 0.911
   m_StartAngleFade: 180
@@ -32439,7 +32359,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 347cb66768d33a347aa2c4ee992dbc06, type: 2}
+  - {fileID: 2100000, guid: e74b177e44cd0df4f8a0e5376ed4b5ae, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

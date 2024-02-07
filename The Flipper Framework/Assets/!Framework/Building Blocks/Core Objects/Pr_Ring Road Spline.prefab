@@ -41,9 +41,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 853586103888125666}
-  - component: {fileID: 8086779699337043232}
   - component: {fileID: 4899720668742864800}
   - component: {fileID: 3617762599319094144}
+  - component: {fileID: 553594820864921953}
   m_Layer: 0
   m_Name: Spline
   m_TagString: Untagged
@@ -66,7 +66,7 @@ Transform:
   m_Father: {fileID: 4998489574652392}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8086779699337043232
+--- !u!114 &4899720668742864800
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1752959267358373740}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
+  m_Script: {fileID: 11500000, guid: 480c444dc6606644898a8ba231ff029f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UpdateThis: 0
@@ -83,7 +83,7 @@ MonoBehaviour:
   onlyOne: 0
   none: 0
   onEnd: 0
-  prefab: {fileID: 1543253352267630, guid: 41f48bd94c27ee141880c4de20d81fdc, type: 3}
+  prefab: {fileID: 1543253352267630, guid: 8f33dd768b24bc44084c70b4c9605d8f, type: 3}
   asPrefab: 0
   scale: 1
   scaleRange: 0
@@ -98,50 +98,6 @@ MonoBehaviour:
   isRandomYaw: 0
   randomSeed: 0
   alingwithterrain: 0
---- !u!114 &4899720668742864800
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1752959267358373740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bdec4da60e9d6244bd256a2fee1226b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nodes:
-  - position: {x: 0, y: 0, z: 0}
-    direction: {x: 0, y: 0, z: -3}
-    up: {x: 0, y: 1, z: 0}
-    scale: {x: 1, y: 1}
-    roll: 0
-  - position: {x: 0, y: 0, z: -12.375313}
-    direction: {x: 0, y: 0, z: -17.375309}
-    up: {x: 0, y: 1, z: 0}
-    scale: {x: 1, y: 1}
-    roll: 0
-  curves:
-  - n1:
-      position: {x: 0, y: 0, z: 0}
-      direction: {x: 0, y: 0, z: -3}
-      up: {x: 0, y: 1, z: 0}
-      scale: {x: 1, y: 1}
-      roll: 0
-    n2:
-      position: {x: 0, y: 0, z: -12.375313}
-      direction: {x: 0, y: 0, z: -17.375309}
-      up: {x: 0, y: 1, z: 0}
-      scale: {x: 1, y: 1}
-      roll: 0
-    Changed:
-      m_PersistentCalls:
-        m_Calls: []
-  Length: 12.375313
-  isLoop: 0
-  CurveChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &3617762599319094144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,3 +126,47 @@ MonoBehaviour:
   lockGravity: {x: 0, y: -1.5, z: 0}
   lockAirMoves: 1
   lockAirMovesTime: 30
+--- !u!114 &553594820864921953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752959267358373740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a18f8048288fd7948b9280a4e56b2043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodes:
+  - position: {x: -2.803071, y: 0, z: -0.075032234}
+    direction: {x: 0.53261185, y: 0, z: -0.060032368}
+    up: {x: 0, y: 1, z: 0}
+    scale: {x: 1, y: 1}
+    roll: 0
+  - position: {x: 13.2625265, y: 0, z: 0}
+    direction: {x: 17.161068, y: 0, z: 0.099223375}
+    up: {x: 0, y: 1, z: 0}
+    scale: {x: 1, y: 1}
+    roll: 0
+  curves:
+  - n1:
+      position: {x: -2.803071, y: 0, z: -0.075032234}
+      direction: {x: 0.53261185, y: 0, z: -0.060032368}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    n2:
+      position: {x: 13.2625265, y: 0, z: 0}
+      direction: {x: 17.161068, y: 0, z: 0.099223375}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    Changed:
+      m_PersistentCalls:
+        m_Calls: []
+  Length: 16.066048
+  isLoop: 0
+  CurveChanged:
+    m_PersistentCalls:
+      m_Calls: []

@@ -28,18 +28,18 @@ public class S_Action01_Jump : MonoBehaviour
     [HideInInspector] public bool Jumping;
 
     [Header("Core Stats")]
-    [HideInInspector] public float StartJumpDuration;
-    [HideInInspector] public float StartSlopedJumpDuration;
-    [HideInInspector] public float StartJumpSpeed;
-    [HideInInspector] public float JumpSlopeConversion;
-    [HideInInspector] public float StopYSpeedOnRelease;
-    [HideInInspector] public float RollingLandingBoost;
+    [HideInInspector] public float _startJumpDuration_;
+    [HideInInspector] public float _startSlopedJumpDuration_;
+    [HideInInspector] public float _startJumpSpeed_;
+    [HideInInspector] public float _jumpSlopeConversion_;
+    [HideInInspector] public float _stopYSpeedOnRelease_;
+    [HideInInspector] public float _rollingLandingBoost_;
 
     [HideInInspector] public float JumpDuration;
     [HideInInspector] public float SlopedJumpDuration;
     [HideInInspector] public float JumpSpeed;
-    float speedLossOnJump;
-    float speedLossOnDoubleJump;
+    float _speedLossOnJump_;
+    float _speedLossOnDoubleJump_;
 
 
     float jumpSpeedModifier = 1f;
@@ -47,11 +47,11 @@ public class S_Action01_Jump : MonoBehaviour
 
     [Header("Additional Jump Stats")]
 
-    [HideInInspector] public bool canDoubleJump = true;
-    bool canTripleJump = false;
+    [HideInInspector] public bool _canDoubleJump_ = true;
+    bool _canTripleJump_ = false;
 
-    float doubleJumpSpeed;
-    float doubleJumpDuration;
+    float _doubleJumpSpeed_;
+    float _doubleJumpDuration_;
 
 
     float jumpSlopeSpeed;
@@ -97,15 +97,15 @@ public class S_Action01_Jump : MonoBehaviour
             //if (Grounded || jumpCount == -1)
             if (Grounded)
             {
-                Player.rb.velocity = new Vector3(Player.rb.velocity.x * speedLossOnJump, verticalSpeed, Player.rb.velocity.z * speedLossOnJump);
+                Player.rb.velocity = new Vector3(Player.rb.velocity.x * _speedLossOnJump_, verticalSpeed, Player.rb.velocity.z * _speedLossOnJump_);
 
                 if (Actions.eventMan != null) Actions.eventMan.JumpsPerformed += 1;
 
                 //Sets jump stats for this specific jump.
 
-                JumpSpeed = StartJumpSpeed * jumpSpeedModifier;
-                JumpDuration = StartJumpDuration * jumpDurationModifier;
-                SlopedJumpDuration = StartSlopedJumpDuration * jumpDurationModifier;
+                JumpSpeed = _startJumpSpeed_ * jumpSpeedModifier;
+                JumpDuration = _startJumpDuration_ * jumpDurationModifier;
+                SlopedJumpDuration = _startSlopedJumpDuration_ * jumpDurationModifier;
 
                 //Number of jumps set to zero, allowing for double jumps.
                 jumpCount = 0;
@@ -121,7 +121,7 @@ public class S_Action01_Jump : MonoBehaviour
                 //Jump higher depending on the speed and the slope you're in
                 if (Player.rb.velocity.y > 0 && normaltoJump.y > 0)
                 {
-                    jumpSlopeSpeed = Player.rb.velocity.y * JumpSlopeConversion;
+                    jumpSlopeSpeed = Player.rb.velocity.y * _jumpSlopeConversion_;
                 }
 
             }
@@ -139,9 +139,9 @@ public class S_Action01_Jump : MonoBehaviour
                 InitialNormal = normaltoJump;
 
                 //Sets jump stats for this specific jump.
-                JumpSpeed = doubleJumpSpeed * jumpSpeedModifier;
-                JumpDuration = doubleJumpDuration * jumpDurationModifier;
-                SlopedJumpDuration = doubleJumpDuration * jumpDurationModifier;
+                JumpSpeed = _doubleJumpSpeed_ * jumpSpeedModifier;
+                JumpDuration = _doubleJumpDuration_ * jumpDurationModifier;
+                SlopedJumpDuration = _doubleJumpDuration_ * jumpDurationModifier;
 
                 JumpAgain();
             }
@@ -160,7 +160,7 @@ public class S_Action01_Jump : MonoBehaviour
     {
 
         //Set Animator Parameters
-        if (Actions.Action == S_ActionManager.States.Jump)
+        if (Actions.whatAction == S_Enums.PlayerStates.Jump)
         {
             CharacterAnimator.SetInteger("Action", 1);
         }
@@ -201,12 +201,12 @@ public class S_Action01_Jump : MonoBehaviour
                 {
 
                     //Do a homing attack
-                    if (Actions.Action02 != null && Player.HomingDelay <= 0)
+                    if (Actions.Action02 != null && Player._homingDelay_ <= 0)
                     {
                         if (Actions.Action02Control.HomingAvailable)
                         {
                             sounds.HomingAttackSound();
-                            Actions.ChangeAction(S_ActionManager.States.Homing);
+                            Actions.ChangeAction(S_Enums.PlayerStates.Homing);
                             Actions.Action02.InitialEvents();
                         }
                     }
@@ -223,7 +223,7 @@ public class S_Action01_Jump : MonoBehaviour
                     if (!Actions.Action02Control.HasTarget)
                     {
                         sounds.AirDashSound();
-                        Actions.ChangeAction(S_ActionManager.States.JumpDash);
+                        Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);
                         Actions.Action11.InitialEvents();
                     }
                 }
@@ -235,19 +235,19 @@ public class S_Action01_Jump : MonoBehaviour
             if (!Jumping && Actions.JumpPressed)
             {
                 //Do a double jump
-                if (jumpCount == 1 && canDoubleJump)
+                if (jumpCount == 1 && _canDoubleJump_)
                 {
                     
                     InitialEvents(Vector3.up);
-                    Actions.ChangeAction(S_ActionManager.States.Jump);
+                    Actions.ChangeAction(S_Enums.PlayerStates.Jump);
                 }
 
                 //Do a triple jump
-                else if (jumpCount == 2 && canTripleJump)
+                else if (jumpCount == 2 && _canTripleJump_)
                 {
                     //Debug.Log("Do a triple jump");
                     InitialEvents(Vector3.up);
-                    Actions.ChangeAction(S_ActionManager.States.Jump);
+                    Actions.ChangeAction(S_Enums.PlayerStates.Jump);
                 }
             }
             
@@ -258,7 +258,7 @@ public class S_Action01_Jump : MonoBehaviour
                 if(Actions.Action06.BounceAvailable && Player.rb.velocity.y < 35f)
                 {
                     Actions.Action06.InitialEvents();
-                    Actions.ChangeAction(S_ActionManager.States.Bounce);
+                    Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
                     //	Actions.Action06.ShouldStomp = false;
                 }
 
@@ -366,7 +366,7 @@ public class S_Action01_Jump : MonoBehaviour
             cancelled = true;
             //jumpCount = 1;
             Vector3 Velocity = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
-            Velocity.y = Velocity.y - StopYSpeedOnRelease;
+            Velocity.y = Velocity.y - _stopYSpeedOnRelease_;
             Player.rb.velocity = Velocity;
         }
 
@@ -380,7 +380,7 @@ public class S_Action01_Jump : MonoBehaviour
             Actions.JumpPressed = false;
             JumpBall.SetActive(false);
 
-            Actions.ChangeAction(S_ActionManager.States.Regular);
+            Actions.ChangeAction(S_Enums.PlayerStates.Regular);
             Actions.Action06.BounceCount = 0;
             //JumpBall.SetActive(false);
         }
@@ -403,9 +403,9 @@ public class S_Action01_Jump : MonoBehaviour
         Vector3 newVec;
 
         if (Player.rb.velocity.y > 10)
-            newVec = new Vector3(Player.rb.velocity.x * speedLossOnDoubleJump, Player.rb.velocity.y, Player.rb.velocity.z * speedLossOnDoubleJump);
+            newVec = new Vector3(Player.rb.velocity.x * _speedLossOnDoubleJump_, Player.rb.velocity.y, Player.rb.velocity.z * _speedLossOnDoubleJump_);
         else
-            newVec = new Vector3(Player.rb.velocity.x * speedLossOnDoubleJump, Mathf.Clamp(Player.rb.velocity.y * 0.1f, 0.1f, 5), Player.rb.velocity.z * speedLossOnDoubleJump);
+            newVec = new Vector3(Player.rb.velocity.x * _speedLossOnDoubleJump_, Mathf.Clamp(Player.rb.velocity.y * 0.1f, 0.1f, 5), Player.rb.velocity.z * _speedLossOnDoubleJump_);
 
         Player.rb.velocity = newVec;
 
@@ -421,21 +421,20 @@ public class S_Action01_Jump : MonoBehaviour
     //Reponsible for assigning stats from the stats script.
     private void AssignStats()
     {
-        StartJumpDuration = Tools.stats.StartJumpDuration;
-        StartJumpSpeed = Tools.stats.StartJumpSpeed;
-        StartSlopedJumpDuration = Tools.stats.StartSlopedJumpDuration;
-        JumpSlopeConversion = Tools.coreStats.JumpSlopeConversion;
-        RollingLandingBoost = Tools.coreStats.JumpRollingLandingBoost;
-        StopYSpeedOnRelease = Tools.coreStats.StopYSpeedOnRelease;
+        _startJumpDuration_ = Tools.Stats.JumpStats.startJumpDuration;
+        _startJumpSpeed_ = Tools.Stats.JumpStats.startJumpSpeed;
+        _startSlopedJumpDuration_ = Tools.Stats.JumpStats.startSlopedJumpDuration;
+        _jumpSlopeConversion_ = Tools.Stats.JumpStats.jumpSlopeConversion;
+        _rollingLandingBoost_ = Tools.Stats.JumpStats.jumpRollingLandingBoost;
+        _stopYSpeedOnRelease_ = Tools.Stats.JumpStats.stopYSpeedOnRelease;
 
-        canDoubleJump = Tools.stats.canDoubleJump;
-        canTripleJump = Tools.stats.canTripleJump;
-        doubleJumpDuration = Tools.stats.doubleJumpDuration;
-        doubleJumpSpeed = Tools.stats.doubleJumpSpeed;
+        _canDoubleJump_ = Tools.Stats.MultipleJumpStats.canDoubleJump;
+        _canTripleJump_ = Tools.Stats.MultipleJumpStats.canTripleJump;
+        _doubleJumpDuration_ = Tools.Stats.MultipleJumpStats.doubleJumpDuration;
+        _doubleJumpSpeed_ = Tools.Stats.MultipleJumpStats.doubleJumpSpeed;
 
-        speedLossOnDoubleJump = Tools.stats.speedLossOnDoubleJump;
-        speedLossOnJump = Tools.stats.speedLossOnJump;
-
+        _speedLossOnDoubleJump_ = Tools.Stats.MultipleJumpStats.speedLossOnDoubleJump;
+        _speedLossOnJump_ = Tools.Stats.JumpStats.speedLossOnJump;
 
     }
 

@@ -6,9 +6,8 @@ using UnityEngine.UI;
 public class S_CharacterTools : MonoBehaviour
 {
     [Header("Stats")]
-    public SO_SurfaceStatsCharacter stats;
-    public SO_CoreStatsCharacter coreStats;
-    public SO_CameraStats camStats;
+    public S_O_CharacterStats Stats;
+    public S_O_CameraStats camStats;
 
     [Header("Key Objects")]
     [Header ("Colliders")]

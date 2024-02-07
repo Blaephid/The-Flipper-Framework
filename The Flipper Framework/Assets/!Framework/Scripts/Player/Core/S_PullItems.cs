@@ -9,9 +9,9 @@ public class S_PullItems : MonoBehaviour
     Animator CharacterAnimator;
     S_PlayerPhysics player;
 
-    AnimationCurve radiusBySpeed;
-    LayerMask ringMask;
-    float basePullSpeed;
+    AnimationCurve _RadiusBySpeed_;
+    LayerMask _RingMask_;
+    float _basePullSpeed_;
 
     GameObject currentMonitor;
 
@@ -23,9 +23,9 @@ public class S_PullItems : MonoBehaviour
         tools = GetComponent<S_CharacterTools>();
 
         CharacterAnimator = tools.CharacterAnimator;
-        radiusBySpeed = tools.coreStats.radiusBySpeed;
-        ringMask = tools.coreStats.ringMask;
-        basePullSpeed = tools.coreStats.basePullSpeed;
+        _RadiusBySpeed_ = tools.Stats.ItemPulling.RadiusBySpeed;
+        _RingMask_ = tools.Stats.ItemPulling.RingMask;
+        _basePullSpeed_ = tools.Stats.ItemPulling.basePullSpeed;
 
 
         
@@ -41,7 +41,7 @@ public class S_PullItems : MonoBehaviour
     public void AddToList()
     {
 
-        Collider[] rings = Physics.OverlapSphere(transform.position, radiusBySpeed.Evaluate(player.HorizontalSpeedMagnitude / player.MaxSpeed), ringMask, QueryTriggerInteraction.Collide);
+        Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(player.HorizontalSpeedMagnitude / player.MaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
         foreach (Collider r in rings)
         {
             allRings.Add(r.transform.parent);
@@ -65,7 +65,7 @@ public class S_PullItems : MonoBehaviour
                    
                 else
                 {
-                    r.position = Vector3.MoveTowards(r.position, transform.position, Time.deltaTime * basePullSpeed * player.HorizontalSpeedMagnitude);
+                    r.position = Vector3.MoveTowards(r.position, transform.position, Time.deltaTime * _basePullSpeed_ * player.HorizontalSpeedMagnitude);
                 }
             
             }

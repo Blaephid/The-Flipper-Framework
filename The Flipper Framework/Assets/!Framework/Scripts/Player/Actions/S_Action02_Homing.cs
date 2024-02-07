@@ -13,11 +13,11 @@ public class S_Action02_Homing : MonoBehaviour
 
     GameObject JumpBall;
 
-    [HideInInspector] public bool isAdditive;
-    [HideInInspector] public float HomingAttackSpeed;
-    [HideInInspector] public float AirDashSpeed;
-    [HideInInspector] public float AirDashDuration;
-    [HideInInspector] public float HomingTimerLimit;
+    [HideInInspector] public bool _isAdditive_;
+    [HideInInspector] public float _homingAttackSpeed_;
+    [HideInInspector] public float _airDashSpeed_;
+    [HideInInspector] public float _airDashDuration_;
+    [HideInInspector] public float _homingTimerLimit_;
     //[HideInInspector] public float FacingAmount;
 
     float XZmag;
@@ -25,7 +25,7 @@ public class S_Action02_Homing : MonoBehaviour
     public Vector3 TargetDirection { get; set; }
     GameObject HomingTrailContainer;
     //public GameObject HomingTrail;
-    float Timer;
+    float timer;
     float Speed;
     float StoredSpeed;
     Vector3 direction;
@@ -59,7 +59,7 @@ public class S_Action02_Homing : MonoBehaviour
             AssignStats();
 
 
-            HomingTrailScript.emitTime = AirDashDuration;
+            HomingTrailScript.emitTime = _airDashDuration_;
             HomingTrailScript.emit = true;
 
 
@@ -76,7 +76,7 @@ public class S_Action02_Homing : MonoBehaviour
                 TargetDirection = Player.rb.velocity.normalized;
             }
 
-            Timer = 0;
+            timer = 0;
             HomingAvailable = false;
 
             XZmag = Player.HorizontalSpeedMagnitude;
@@ -96,9 +96,9 @@ public class S_Action02_Homing : MonoBehaviour
             // //Debug.Log(facingAmmount);
             // if (facingAmmount < FacingAmount) { IsAirDash = true; }
 
-            if (XZmag * 0.7f < HomingAttackSpeed)
+            if (XZmag * 0.7f < _homingAttackSpeed_)
             {
-                Speed = HomingAttackSpeed;
+                Speed = _homingAttackSpeed_;
                 StoredSpeed = Speed;
             }
             else
@@ -138,12 +138,12 @@ public class S_Action02_Homing : MonoBehaviour
     {
         
 
-        Timer += Time.deltaTime;
+        timer += Time.deltaTime;
 
         //Ends homing attack if in air for too long or target is lost
-        if (Target == null || Timer > HomingTimerLimit)
+        if (Target == null || timer > _homingTimerLimit_)
         {
-            Action.ChangeAction(0);
+            Action.ChangeAction(S_Enums.PlayerStates.Regular);
         }
 
         //direction = Target.position - transform.position;
@@ -164,14 +164,14 @@ public class S_Action02_Homing : MonoBehaviour
         else
         {
            //LateSpeed = Mathf.Max(XZmag, HomingAttackSpeed);
-           LateSpeed = Mathf.Max(XZmag, HomingAttackSpeed);
+           LateSpeed = Mathf.Max(XZmag, _homingAttackSpeed_);
         }
         
     }
 
     public void ResetHomingVariables()
     {
-        Timer = 0;
+        timer = 0;
         HomingTrailContainer.transform.DetachChildren();
         //IsAirDash = false;
     }
@@ -192,11 +192,11 @@ public class S_Action02_Homing : MonoBehaviour
     }
     private void AssignStats()
     {
-        isAdditive = Tools.coreStats.isAdditive;
-        HomingAttackSpeed = Tools.stats.HomingAttackSpeed;
-        AirDashSpeed = Tools.stats.AirDashSpeed;
-        HomingTimerLimit = Tools.stats.HomingTimerLimit;
-        AirDashDuration = Tools.stats.AirDashDuration;
+        _isAdditive_ = Tools.Stats.JumpDashStats.isAdditive;
+        _homingAttackSpeed_ = Tools.Stats.HomingStats.attackSpeed;
+        _airDashSpeed_ = Tools.Stats.JumpDashStats.dashSpeed;
+        _homingTimerLimit_ = Tools.Stats.HomingStats.timerLimit;
+        _airDashDuration_ = Tools.Stats.JumpDashStats.duration;
     }
 
 }
