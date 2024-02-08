@@ -28,10 +28,10 @@ public class S_Handler_Skidding : MonoBehaviour
 		sounds = Tools.SoundControl;
 
 		_regularSkiddingIntensity_ = Tools.Stats.SkiddingStats.skiddingIntensity;
-		_airSkiddingIntensity_ = Tools.Stats.WhenInAir.airSkiddingForce;
+		_airSkiddingIntensity_ = Tools.Stats.WhenInAir.skiddingForce;
 		_regularSkiddingStartPoint_ = Tools.Stats.SkiddingStats.skiddingStartPoint;
-		_spinSkiddingIntensity_ = Tools.Stats.SpinChargeStats.spinSkidIntesity;
-		_spinSkiddingStartPoint_ = Tools.Stats.SpinChargeStats.spinSkidStartPoint;
+		_spinSkiddingIntensity_ = Tools.Stats.SpinChargeStats.skidIntesity;
+		_spinSkiddingStartPoint_ = Tools.Stats.SpinChargeStats.skidStartPoint;
 	}
 
     // Update is called once per frame

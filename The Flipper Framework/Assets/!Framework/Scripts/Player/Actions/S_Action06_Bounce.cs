@@ -211,9 +211,9 @@ public class S_Action06_Bounce : MonoBehaviour {
 	private void AssignStats()
     {
 		_dropSpeed_ = Tools.Stats.BounceStats.dropSpeed;
-		for (int i = 0; i < Tools.Stats.BounceStats.bounceUpSpeeds.Count; i++)
+		for (int i = 0; i < Tools.Stats.BounceStats.listOfBounceSpeeds.Count; i++)
 		{
-			BounceUpSpeeds.Add(Tools.Stats.BounceStats.bounceUpSpeeds[i]);
+			BounceUpSpeeds.Add(Tools.Stats.BounceStats.listOfBounceSpeeds[i]);
 		}
 		_bounceUpMaxSpeed_ = Tools.Stats.BounceStats.bounceUpMaxSpeed;
 		_bounceCoolDown_ = Tools.Stats.BounceStats.bounceCoolDown;

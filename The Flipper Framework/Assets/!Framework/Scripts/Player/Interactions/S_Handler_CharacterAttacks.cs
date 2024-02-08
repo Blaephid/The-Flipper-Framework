@@ -145,7 +145,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 
 
-        Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
+        Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
     }
 
     private void AttackFromBounce(Vector3 newSpeed)
@@ -158,7 +158,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         newSpeed.y = _homingBouncingPower_ * 1.8f;
         Player.rb.velocity = newSpeed;
 
-        Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
+        Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
     }
 
     private void EndAirAttack()

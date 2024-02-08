@@ -245,7 +245,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
     {
         _targetSearchDistance_ = tools.Stats.HomingSearch.targetSearchDistance;
         _faceRange_ = tools.Stats.HomingSearch.faceRange;
-        _TargetLayer_ = tools.Stats.HomingSearch.targetLayer;
+        _TargetLayer_ = tools.Stats.HomingSearch.TargetLayer;
         _BlockingLayers_ = tools.Stats.HomingSearch.blockingLayers;
         _fieldOfView_ = tools.Stats.HomingSearch.fieldOfView;
         _facingAmount_ = tools.Stats.HomingSearch.facingAmount;

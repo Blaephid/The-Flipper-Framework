@@ -398,7 +398,7 @@ public class S_Interaction_Objects : MonoBehaviour {
             Player.GravityAffects = true;
 
             if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
-                Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
+                Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
 
             JumpBall.SetActive(false);
 			if (Actions.Action08 != null) {
@@ -464,7 +464,7 @@ public class S_Interaction_Objects : MonoBehaviour {
 		else if (col.tag == "Bumper")
 		{
             if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
-                Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
+                Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
 
             JumpBall.SetActive(false);
 			if (Actions.Action08 != null) {
@@ -492,7 +492,7 @@ public class S_Interaction_Objects : MonoBehaviour {
 					Actions.Action02.HomingAvailable = true;
 				}
 
-                Player._homingDelay_ = Tools.Stats.HomingStats.homingSuccessDelay;
+                Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
             }
 		}
 

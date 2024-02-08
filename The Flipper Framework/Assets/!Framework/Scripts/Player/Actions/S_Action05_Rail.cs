@@ -900,10 +900,10 @@ namespace SplineMesh
             _hopDelay_ = Tools.Stats.RailStats.hopDelay;
             _stepSpeed_ = Tools.Stats.RailStats.hopSpeed;
             _hopDistance_ = Tools.Stats.RailStats.hopDistance;
-            _accelBySpeed_ = Tools.Stats.RailStats.railAccelBySpeed;
+            _accelBySpeed_ = Tools.Stats.RailStats.RailAccelerationBySpeed;
 
-            _offsetRail_ = Tools.Stats.PositionWhenOnRails.offsetRail;
-            _offsetZip_ = Tools.Stats.PositionWhenOnRails.offsetZip;
+            _offsetRail_ = Tools.Stats.RailPosition.offsetRail;
+            _offsetZip_ = Tools.Stats.RailPosition.offsetZip;
             _decaySpeed_ = Tools.Stats.RailStats.railBoostDecaySpeed;
             _decayTime_ = Tools.Stats.RailStats.railBoostDecayTime;
 

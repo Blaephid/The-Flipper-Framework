@@ -13,9 +13,51 @@ MonoBehaviour:
   m_Name: SO_Sonic
   m_EditorClassIdentifier: 
   Title: Sonic
-  GroundMask:
-    serializedVersion: 2
-    m_Bits: 17
+  DefaultAccelerationStats:
+    acceleration: 0.16
+    AccelBySpeed:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.0073494106
+        value: 3.0190911
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.22795151
+        value: 2.4797328
+        inSlope: -6.846524
+        outSlope: -6.846524
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.36268327
+        outWeight: 0.25364646
+      - serializedVersion: 3
+        time: 0.46165943
+        value: 0.07486808
+        inSlope: -0.32374442
+        outSlope: -0.32374442
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.38305184
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0.129718
+        outSlope: 0.129718
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.24084997
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    accelShiftOverSpeed: 1
   AccelerationStats:
     acceleration: 0.16
     AccelBySpeed:
@@ -61,6 +103,34 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     accelShiftOverSpeed: 1
+  DefaultTurningStats:
+    tangentialDrag: 7.5
+    tangentialDragShiftSpeed: 1
+    turnSpeed: 14
+    TurnRateByAngle:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    TurnRateBySpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    TangDragByAngle:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    TangDragBySpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   TurningStats:
     tangentialDrag: 7.5
     tangentialDragShiftSpeed: 1
@@ -287,6 +357,17 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  DefaultDecelerationStats:
+    moveDeceleration: 1.05
+    airDecel: 1.25
+    DecelBySpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    decelShiftOverSpeed: 10
+    naturalAirDecel: 1.002
   DecelerationStats:
     moveDeceleration: 1.05
     airDecel: 1.25
@@ -343,53 +424,20 @@ MonoBehaviour:
       m_RotationOrder: 4
     decelShiftOverSpeed: 10
     naturalAirDecel: 1.002
+  DefaultSpeedStats:
+    topSpeed: 90
+    maxSpeed: 160
   SpeedStats:
-    startTopSpeed: 90
-    startMaxSpeed: 160
-  SlopeStats:
+    topSpeed: 90
+    maxSpeed: 160
+  DefaultSlopeStats:
     slopeEffectLimit: 0.85
     standOnSlopeLimit: 0.8
     slopePower: -1.4
     slopeRunningAngleLimit: 0.4
-    slopeSpeedLimit:
+    SlopeLimitBySpeed:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -1
-        value: 15
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0
-        value: 10
-        inSlope: -12.5
-        outSlope: -12.5
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.6
-        value: -10
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.8022388
-        value: -10
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -397,84 +445,68 @@ MonoBehaviour:
     uphillMultiplier: 0.6
     downhillMultiplier: 0.5
     startDownhillMultiplier: -1.7
-    SlopePowerOverSpeed:
+    SlopePowerByCurrentSpeed:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -0.0037117004
-        value: 0.9800911
-        inSlope: -0.044522513
-        outSlope: -0.044522513
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.7308518
-      - serializedVersion: 3
-        time: 0.58145475
-        value: 0.7018737
-        inSlope: -0.79097927
-        outSlope: -0.79097927
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.10719684
-        outWeight: 0.17956015
-      - serializedVersion: 3
-        time: 0.99842733
-        value: 0.5000419
-        inSlope: -0.0057910345
-        outSlope: -0.0057910345
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.5153387
-        outWeight: 0.33333334
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    UpHillOverTime:
+    UpHillEffectByTime:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.65367126
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1.1545639
-        value: 0.99627686
-        inSlope: 0.08583242
-        outSlope: 0.08583242
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.38432837
-        outWeight: 0
-      - serializedVersion: 3
-        time: 3.2279782
-        value: 1.2090323
-        inSlope: 0.05310603
-        outSlope: 0.05310603
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.24094588
-        outWeight: 0.15733339
-      - serializedVersion: 3
-        time: 9.970589
-        value: 1.4004413
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  StickToGround:
+  SlopeStats:
+    slopeEffectLimit: 4
+    standOnSlopeLimit: 0.8
+    slopePower: -1.4
+    slopeRunningAngleLimit: 0.4
+    SlopeLimitBySpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    generalHillMultiplier: 1
+    uphillMultiplier: 0.6
+    downhillMultiplier: 0.5
+    startDownhillMultiplier: -1.7
+    SlopePowerByCurrentSpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    UpHillEffectByTime:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  DefaultStickToGround:
+    GroundMask:
+      serializedVersion: 2
+      m_Bits: 0
     groundStickingDistance: 0.2
     groundStickingPower: -1.45
+  StickToGround:
+    GroundMask:
+      serializedVersion: 2
+      m_Bits: 1
+    groundStickingDistance: 0.2
+    groundStickingPower: -1.45
+  DefaultGreedysStickToGround:
+    stickingLerps: {x: 0.885, y: 1.005}
+    stickingNormalLimit: 0.5
+    stickCastAhead: 1.9
+    negativeGHoverHeight: 0.8
+    rayToGroundDistance: 1.4
+    raytoGroundSpeedRatio: 0.01
+    raytoGroundSpeedMax: 2.6
+    rayToGroundRotDistance: 1.1
+    raytoGroundRotSpeedMax: 2.6
+    rotationResetThreshold: -0.1
   GreedysStickToGround:
     stickingLerps: {x: 0.885, y: 1.005}
     stickingNormalLimit: 0.5
@@ -492,61 +524,60 @@ MonoBehaviour:
     shouldStopAirMovementWhenNoInput: 1
     upGravity: {x: 0, y: -1.45, z: 0}
     keepNormalForThis: 0.183
-    airControlAmmount: 1.3
-    airSkiddingForce: -2.5
+    controlAmmount: 1.3
+    skiddingForce: -2.5
+    fallGravity: {x: 0, y: -1.5, z: 0}
+  DefaultWhenInAir:
+    startMaxFallingSpeed: -400
+    startJumpPower: 1.2
+    shouldStopAirMovementWhenNoInput: 1
+    upGravity: {x: 0, y: -1.45, z: 0}
+    keepNormalForThis: 0.183
+    controlAmmount: 1.3
+    skiddingForce: -2.5
     fallGravity: {x: 0, y: -1.5, z: 0}
   RollingStats:
     rollingLandingBoost: 1.4
     rollingDownhillBoost: 1.9
     rollingUphillBoost: 1.2
     rollingStartSpeed: 5
-    rollingTurningDecreace: 0.6
+    rollingTurningDecrease: 0.6
+    rollingFlatDecell: 1.004
+    slopeTakeoverAmount: 0.995
+  DefaultRollingStats:
+    rollingLandingBoost: 1.4
+    rollingDownhillBoost: 1.9
+    rollingUphillBoost: 1.2
+    rollingStartSpeed: 5
+    rollingTurningDecrease: 0.6
     rollingFlatDecell: 1.004
     slopeTakeoverAmount: 0.995
   SkiddingStats:
     speedToStopAt: 10
     skiddingStartPoint: 30
     skiddingIntensity: -5
+  DefaultSkiddingStats:
+    speedToStopAt: 10
+    skiddingStartPoint: 5
+    skiddingIntensity: -5
   JumpStats:
-    coyoteTimeOverSpeed:
+    CoyoteTimeBySpeed:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.25
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.47674066
-        value: 0.3058715
-        inSlope: 0.38242492
-        outSlope: 0.38242492
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.20166862
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1.4283714
-        value: 0.69406635
-        inSlope: 0.0155814
-        outSlope: 0.0155814
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 2
-        value: 0.7
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    jumpSlopeConversion: 0.03
+    stopYSpeedOnRelease: 2
+    jumpRollingLandingBoost: 0
+    startJumpDuration: 0.2
+    startSlopedJumpDuration: 0.2
+    startJumpSpeed: 4
+    speedLossOnJump: 0.99
+  DefaultJumpStats:
+    CoyoteTimeBySpeed:
+      serializedVersion: 2
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -564,6 +595,13 @@ MonoBehaviour:
     doubleJumpSpeed: 4.5
     doubleJumpDuration: 0.14
     speedLossOnDoubleJump: 0.978
+  DefaultMultipleJumpStats:
+    canDoubleJump: 1
+    canTripleJump: 0
+    jumpCount: 2
+    doubleJumpSpeed: 4.5
+    doubleJumpDuration: 0.14
+    speedLossOnDoubleJump: 0.978
   QuickstepStats:
     stepSpeed: 55
     stepDistance: 8
@@ -572,10 +610,31 @@ MonoBehaviour:
     StepLayerMask:
       serializedVersion: 2
       m_Bits: 12289
+  DefaultQuickstepStats:
+    stepSpeed: 55
+    stepDistance: 8
+    airStepSpeed: 48
+    airStepDistance: 7
+    StepLayerMask:
+      serializedVersion: 2
+      m_Bits: 0
   HomingSearch:
     targetSearchDistance: 44
     faceRange: 70
-    targetLayer:
+    TargetLayer:
+      serializedVersion: 2
+      m_Bits: 0
+    blockingLayers:
+      serializedVersion: 2
+      m_Bits: 0
+    fieldOfView: 0.3
+    iconScale: 1.5
+    iconDistanceScaling: 0.2
+    facingAmount: 0.91
+  DefaultHomingSearch:
+    targetSearchDistance: 44
+    faceRange: 70
+    TargetLayer:
       serializedVersion: 2
       m_Bits: 0
     blockingLayers:
@@ -586,186 +645,83 @@ MonoBehaviour:
     iconDistanceScaling: 0.2
     facingAmount: 0.91
   HomingStats:
-    canDashDuringFall: 1
+    canDashWhenFalling: 1
     attackSpeed: 100
     timerLimit: 1
-    homingSuccessDelay: 0.3
+    successDelay: 0.3
+  DefaultHomingStats:
+    canDashWhenFalling: 1
+    attackSpeed: 100
+    timerLimit: 1
+    successDelay: 0.3
   SpinChargeStats:
-    spinDashChargingSpeed: 1.02
+    chargingSpeed: 1.02
     minimunCharge: 20
     maximunCharge: 110
-    spinDashStillForce: 0.015
-    maximumSpeed: 200
-    maximumSlope: -1
+    forceAgainstMovement: 0.015
+    maximumSpeedPerformedAt: 200
+    maximumSlopePerformedAt: -1
     releaseShakeAmmount: 1.5
-    speedLossByTime:
+    SpeedLossByTime:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.17126437
-        value: 0.15383902
-        inSlope: 0.84178543
-        outSlope: 0.84178543
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.15030552
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.4569687
-        value: 0.2870529
-        inSlope: 0.15902342
-        outSlope: 0.15902342
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1
-        value: 0.32
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    forceGainByAngle:
+    ForceGainByAngle:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -1
-        value: 1.5
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: -0.68459505
-        value: 1.4932616
-        inSlope: -0.037405934
-        outSlope: -0.037405934
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: -0.2794273
-        value: 1.3991126
-        inSlope: -0.013469808
-        outSlope: -0.013469808
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.2318419
-      - serializedVersion: 3
-        time: 0.055538576
-        value: 1.3400426
-        inSlope: -0.00092930277
-        outSlope: -0.00092930277
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.64673823
-        outWeight: 1
-      - serializedVersion: 3
-        time: 0.41400236
-        value: 1.0400462
-        inSlope: -0.20168929
-        outSlope: -0.20168929
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.42087892
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    gainBySpeed:
+    ForceGainByCurrentSpeed:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -0.004463196
-        value: 1.1162751
-        inSlope: -1.0501214
-        outSlope: -1.0501214
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 1
-      - serializedVersion: 3
-        time: 0.094237044
-        value: 0.9989804
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.28625274
-        value: 0.987371
-        inSlope: -0.18176991
-        outSlope: -0.18176991
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.5165197
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.49810767
-        value: 0.27877402
-        inSlope: -1.2622024
-        outSlope: -1.2622024
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.16490057
-        outWeight: 1
-      - serializedVersion: 3
-        time: 0.67160285
-        value: 0.09651268
-        inSlope: -0.64621824
-        outSlope: -0.64621824
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.69398016
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0.008926525
-        outSlope: 0.008926525
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 1
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    spinSkidStartPoint: 10
-    spinSkidIntesity: 3
+    skidStartPoint: 10
+    skidIntesity: 3
+  DefaultSpinChargeStats:
+    chargingSpeed: 1.02
+    minimunCharge: 20
+    maximunCharge: 110
+    forceAgainstMovement: 0.015
+    maximumSpeedPerformedAt: 200
+    maximumSlopePerformedAt: -1
+    releaseShakeAmmount: 1.5
+    SpeedLossByTime:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ForceGainByAngle:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ForceGainByCurrentSpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    skidStartPoint: 10
+    skidIntesity: 3
   BounceStats:
     dropSpeed: 100
     BounceMaxSpeed: 140
-    bounceUpSpeeds: []
+    listOfBounceSpeeds: []
+    bounceHaltFactor: 0.7
+    bounceCoolDown: 8
+    bounceUpMaxSpeed: 75
+    bounceConsecutiveFactor: 1.05
+  DefaultBounceStats:
+    dropSpeed: 100
+    BounceMaxSpeed: 140
+    listOfBounceSpeeds: []
     bounceHaltFactor: 0.7
     bounceCoolDown: 8
     bounceUpMaxSpeed: 75
@@ -779,11 +735,32 @@ MonoBehaviour:
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 262144
+  DefaultRingRoadStats:
+    dashSpeed: 100
+    endingSpeedFactor: 1.23
+    minimumEndingSpeed: 60
+    RingTargetSearchDistance: 8
+    RingRoadIconScale: 0
+    RingRoadLayer:
+      serializedVersion: 2
+      m_Bits: 0
   DropChargeStats:
     chargingSpeed: 1.2
     minimunCharge: 40
     maximunCharge: 150
+  DefaultDropChargeStats:
+    chargingSpeed: 1.2
+    minimunCharge: 40
+    maximunCharge: 150
   EnemyInteraction:
+    bouncingPower: 45
+    homingBouncingPower: 40
+    enemyHomingStoppingPowerWhenAdditive: 40
+    shouldStopOnHomingAttackHit: 1
+    shouldStopOnHit: 1
+    enemyDamageShakeAmmount: 0.5
+    enemyHitShakeAmmount: 1.2
+  DefaultEnemyInteraction:
     bouncingPower: 45
     homingBouncingPower: 40
     enemyHomingStoppingPowerWhenAdditive: 40
@@ -847,6 +824,17 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 1048576
     basePullSpeed: 1.2
+  DefaultItemPulling:
+    RadiusBySpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    RingMask:
+      serializedVersion: 2
+      m_Bits: 0
+    basePullSpeed: 1.2
   WhenBonked:
     BonkOnWalls:
       serializedVersion: 2
@@ -855,14 +843,36 @@ MonoBehaviour:
     bonkBackwardsForce: 18
     bonkControlLock: 20
     bonkControlLockAir: 40
+  DefaultWhenBonked:
+    BonkOnWalls:
+      serializedVersion: 2
+      m_Bits: 0
+    bonkUpwardsForce: 16
+    bonkBackwardsForce: 18
+    bonkControlLock: 20
+    bonkControlLockAir: 40
   WhenHurt:
     invincibilityTime: 90
     maxRingLoss: 20
     knockbackUpwardsForce: 30
-    resetSpeedOnHit: 0
+    shouldResetSpeedOnHit: 0
     recoilFrom:
       serializedVersion: 2
       m_Bits: 1
+    knockbackForce: 25
+    ringReleaseSpeed: 550
+    ringArcSpeed: 250
+    flickerSpeed: 3
+    hurtControlLock: 15
+    hurtControlLockAir: 30
+  DefaultWhenHurt:
+    invincibilityTime: 90
+    maxRingLoss: 20
+    knockbackUpwardsForce: 30
+    shouldResetSpeedOnHit: 0
+    recoilFrom:
+      serializedVersion: 2
+      m_Bits: 0
     knockbackForce: 25
     ringReleaseSpeed: 550
     ringArcSpeed: 250
@@ -888,69 +898,46 @@ MonoBehaviour:
     hopDelay: 0.3
     hopSpeed: 3.5
     hopDistance: 12
-    railAccelBySpeed:
+    RailAccelerationBySpeed:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -0.00011595199
-        value: 3.4983506
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.1271901
-        value: 3.4299853
-        inSlope: -2.3812664
-        outSlope: -2.3812664
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.36268327
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.24989967
-        value: 1.8247907
-        inSlope: -1.874958
-        outSlope: -1.874958
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.31413543
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.47658253
-        value: 1.0003442
-        inSlope: -0.17156783
-        outSlope: -0.17156783
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.22331554
-      - serializedVersion: 3
-        time: 0.8248428
-        value: 0.9967019
-        inSlope: -0.017031189
-        outSlope: -0.017031189
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1.0113525
-        value: 1.2039185
-        inSlope: 0.129718
-        outSlope: 0.129718
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.24084997
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     railBoostDecaySpeed: 0.45
     railBoostDecayTime: 0.45
-  PositionWhenOnRails:
+  DefaultRailStats:
+    railMaxSpeed: 125
+    railTopSpeed: 80
+    railDecaySpeedHigh: 0.18
+    railDecaySpeedLow: 0.06
+    MinStartSpeed: 20
+    RailPushFowardmaxSpeed: 90
+    RailPushFowardIncrements: 5
+    RailPushFowardDelay: 0.42
+    RailSlopePower: 2.5
+    RailUpHillMultiplier: 1.9
+    RailDownHillMultiplier: 0.5
+    RailUpHillMultiplierCrouching: 2.3
+    RailDownHillMultiplierCrouching: 0.65
+    RailDragVal: 0.0001
+    RailPlayerBrakePower: 0.97
+    hopDelay: 0.3
+    hopSpeed: 3.5
+    hopDistance: 12
+    RailAccelerationBySpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    railBoostDecaySpeed: 0.45
+    railBoostDecayTime: 0.45
+  RailPosition:
+    offsetRail: 1.3
+    offsetZip: -6.7
+    upreel: 0.3
+  DefaultRailPosition:
     offsetRail: 1.3
     offsetZip: -6.7
     upreel: 0.3
@@ -963,3 +950,13 @@ MonoBehaviour:
     wallDuration: 0
     scrapeModifier: 1
     climbModifier: 1
+  DefaultWallRunningStats:
+    wallCheckDistance: 1.2
+    minHeight: 5
+    WallLayerMask:
+      serializedVersion: 2
+      m_Bits: 0
+    wallDuration: 0
+    scrapeModifier: 1
+    climbModifier: 1
+  DefaultStats: {fileID: 0}

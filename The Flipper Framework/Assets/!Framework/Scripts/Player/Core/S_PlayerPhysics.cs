@@ -872,8 +872,8 @@ public class S_PlayerPhysics : MonoBehaviour
         _turnRateOverSpeed_ = Tools.Stats.TurningStats.TurnRateBySpeed;
         _tangDragOverAngle_ = Tools.Stats.TurningStats.TangDragByAngle;
         _tangDragOverSpeed_ = Tools.Stats.TurningStats.TangDragBySpeed;
-        _startTopSpeed_ = Tools.Stats.SpeedStats.startTopSpeed;
-        _startMaxSpeed_ = Tools.Stats.SpeedStats.startMaxSpeed;
+        _startTopSpeed_ = Tools.Stats.SpeedStats.topSpeed;
+        _startMaxSpeed_ = Tools.Stats.SpeedStats.maxSpeed;
         _startMaxFallingSpeed_ = Tools.Stats.WhenInAir.startMaxFallingSpeed;
         _startJumpPower_ = Tools.Stats.JumpStats.startJumpSpeed;
         _moveDeceleration_ = Tools.Stats.DecelerationStats.moveDeceleration;
@@ -887,23 +887,23 @@ public class S_PlayerPhysics : MonoBehaviour
         _standOnSlopeLimit_ = Tools.Stats.SlopeStats.standOnSlopeLimit;
         _slopePower_ = Tools.Stats.SlopeStats.slopePower;
         _slopeRunningAngleLimit_ = Tools.Stats.SlopeStats.slopeRunningAngleLimit;
-        _slopeSpeedLimit_ = Tools.Stats.SlopeStats.slopeSpeedLimit;
+        _slopeSpeedLimit_ = Tools.Stats.SlopeStats.SlopeLimitBySpeed;
         _generalHillMultiplier_ = Tools.Stats.SlopeStats.generalHillMultiplier;
         _uphillMultiplier_ = Tools.Stats.SlopeStats.uphillMultiplier;
         _downhillMultiplier_ = Tools.Stats.SlopeStats.downhillMultiplier;
         _startDownhillMultiplier_ = Tools.Stats.SlopeStats.startDownhillMultiplier;
-        _slopePowerOverSpeed_ = Tools.Stats.SlopeStats.SlopePowerOverSpeed;
-        _airControlAmmount_ = Tools.Stats.WhenInAir.airControlAmmount;
+        _slopePowerOverSpeed_ = Tools.Stats.SlopeStats.SlopePowerByCurrentSpeed;
+        _airControlAmmount_ = Tools.Stats.WhenInAir.controlAmmount;
         
         _shouldStopAirMovementIfNoInput_ = Tools.Stats.WhenInAir.shouldStopAirMovementWhenNoInput;
         _rollingLandingBoost_ = Tools.Stats.RollingStats.rollingLandingBoost;
         _rollingDownhillBoost_ = Tools.Stats.RollingStats.rollingDownhillBoost;
         _rollingUphillBoost_ = Tools.Stats.RollingStats.rollingUphillBoost;
         _rollingStartSpeed_ = Tools.Stats.RollingStats.rollingStartSpeed;
-        _rollingTurningDecrease_ = Tools.Stats.RollingStats.rollingTurningDecreace;
+        _rollingTurningDecrease_ = Tools.Stats.RollingStats.rollingTurningDecrease;
         _rollingFlatDecell_ = Tools.Stats.RollingStats.rollingFlatDecell;
         _slopeTakeoverAmount_ = Tools.Stats.RollingStats.slopeTakeoverAmount;
-        _UpHillByTime_ = Tools.Stats.SlopeStats.UpHillOverTime;
+        _UpHillByTime_ = Tools.Stats.SlopeStats.UpHillEffectByTime;
         _startFallGravity_ = Tools.Stats.WhenInAir.fallGravity;
         _upGravity_ = Tools.Stats.WhenInAir.upGravity;
         _keepNormalForThis_ = Tools.Stats.WhenInAir.keepNormalForThis;
@@ -920,7 +920,7 @@ public class S_PlayerPhysics : MonoBehaviour
         RaytoGroundRotSpeedMax = Tools.Stats.GreedysStickToGround.raytoGroundRotSpeedMax;
         RotationResetThreshold = Tools.Stats.GreedysStickToGround.rotationResetThreshold;
 
-        _Groundmask_ = Tools.Stats.GroundMask;
+        _Groundmask_ = Tools.Stats.StickToGround.GroundMask;
 
         //Sets all changeable core values to how they are set to start in the editor.
         MoveAccell = _startAcceleration_;

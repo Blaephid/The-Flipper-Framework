@@ -47,7 +47,7 @@ public class S_Interaction_Pathers : MonoBehaviour
             Tools = GetComponent<S_CharacterTools>();
             AssignTools();
 
-            _offsetUpreel_ = Tools.Stats.PositionWhenOnRails.upreel;
+            _offsetUpreel_ = Tools.Stats.RailPosition.upreel;
         }
 
     }

@@ -128,7 +128,7 @@ public class S_Action04_Hurt : MonoBehaviour {
     {
         _knockbackForce_ = Tools.Stats.WhenHurt.knockbackForce;
         _knockbackUpwardsForce_ = Tools.Stats.WhenHurt.knockbackUpwardsForce;
-        _resetSpeedOnHit_ = Tools.Stats.WhenHurt.resetSpeedOnHit;
+        _resetSpeedOnHit_ = Tools.Stats.WhenHurt.shouldResetSpeedOnHit;
         _recoilFrom_ = Tools.Stats.WhenHurt.recoilFrom;
 
         _bonkBackForce_ = Tools.Stats.WhenBonked.bonkBackwardsForce;

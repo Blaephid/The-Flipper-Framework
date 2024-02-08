@@ -286,13 +286,13 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
     private void AssignStats()
     {
-        _spinDashChargingSpeed_ = Tools.Stats.SpinChargeStats.spinDashChargingSpeed;
+        _spinDashChargingSpeed_ = Tools.Stats.SpinChargeStats.chargingSpeed;
         _minimunCharge_ = Tools.Stats.SpinChargeStats.minimunCharge;
         _maximunCharge_ = Tools.Stats.SpinChargeStats.maximunCharge;
-        _spinDashStillForce_ = Tools.Stats.SpinChargeStats.spinDashStillForce;
-        _speedLossByTime_ = Tools.Stats.SpinChargeStats.speedLossByTime;
-        _forceGainByAngle_ = Tools.Stats.SpinChargeStats.forceGainByAngle;
-        _gainBySpeed_ = Tools.Stats.SpinChargeStats.gainBySpeed;
+        _spinDashStillForce_ = Tools.Stats.SpinChargeStats.forceAgainstMovement;
+        _speedLossByTime_ = Tools.Stats.SpinChargeStats.SpeedLossByTime;
+        _forceGainByAngle_ = Tools.Stats.SpinChargeStats.ForceGainByAngle;
+        _gainBySpeed_ = Tools.Stats.SpinChargeStats.ForceGainByCurrentSpeed;
         _releaseShakeAmmount_ = Tools.Stats.SpinChargeStats.releaseShakeAmmount;
     }
     private void AssignTools()

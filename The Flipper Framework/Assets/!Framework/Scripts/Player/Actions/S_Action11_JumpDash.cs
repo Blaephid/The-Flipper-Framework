@@ -183,7 +183,7 @@ public class S_Action11_JumpDash : MonoBehaviour
 
     private void AssignStats()
     {
-        _isAdditive_ = Tools.Stats.JumpDashStats.isAdditive;
+        _isAdditive_ = Tools.Stats.JumpDashStats.shouldUseCurrentSpeedAsMinimum;
         _AirDashSpeed_ = Tools.Stats.JumpDashStats.dashSpeed;
         _AirDashDuration_ = Tools.Stats.JumpDashStats.duration;
     }

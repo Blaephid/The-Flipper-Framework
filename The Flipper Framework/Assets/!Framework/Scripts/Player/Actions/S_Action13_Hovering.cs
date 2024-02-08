@@ -49,7 +49,7 @@ public class S_Action13_Hovering : MonoBehaviour
     private void AssignStats()
     {
         _skiddingStartPoint_ = Tools.Stats.SkiddingStats.skiddingStartPoint;
-        _airSkiddingIntensity_ = Tools.Stats.WhenInAir.airSkiddingForce;
+        _airSkiddingIntensity_ = Tools.Stats.WhenInAir.skiddingForce;
     }
 
     public void InitialEvents(S_Trigger_Updraft up)

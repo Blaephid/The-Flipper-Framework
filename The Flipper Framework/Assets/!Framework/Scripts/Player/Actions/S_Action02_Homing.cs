@@ -192,7 +192,7 @@ public class S_Action02_Homing : MonoBehaviour
     }
     private void AssignStats()
     {
-        _isAdditive_ = Tools.Stats.JumpDashStats.isAdditive;
+        _isAdditive_ = Tools.Stats.JumpDashStats.shouldUseCurrentSpeedAsMinimum;
         _homingAttackSpeed_ = Tools.Stats.HomingStats.attackSpeed;
         _airDashSpeed_ = Tools.Stats.JumpDashStats.dashSpeed;
         _homingTimerLimit_ = Tools.Stats.HomingStats.timerLimit;

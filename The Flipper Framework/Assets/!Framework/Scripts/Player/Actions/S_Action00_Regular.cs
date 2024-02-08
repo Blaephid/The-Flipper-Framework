@@ -366,12 +366,12 @@ public class S_Action00_Regular : MonoBehaviour {
 
 	private void AssignStats()
     {
-		_CoyoteTimeBySpeed_ = Tools.Stats.JumpStats.coyoteTimeOverSpeed;
+		_CoyoteTimeBySpeed_ = Tools.Stats.JumpStats.CoyoteTimeBySpeed;
 		_SpeedToStopAt_ = Tools.Stats.SkiddingStats.speedToStopAt;
-		_MaximumSlope_ = Tools.Stats.SpinChargeStats.maximumSlope;
-		_MaximumSpeed_ = Tools.Stats.SpinChargeStats.maximumSpeed;
+		_MaximumSlope_ = Tools.Stats.SpinChargeStats.maximumSlopePerformedAt;
+		_MaximumSpeed_ = Tools.Stats.SpinChargeStats.maximumSpeedPerformedAt;
 		_SkiddingStartPoint_ = Tools.Stats.SkiddingStats.skiddingStartPoint;
-		_CanDashDuringFall_ = Tools.Stats.HomingStats.canDashDuringFall;
+		_CanDashDuringFall_ = Tools.Stats.HomingStats.canDashWhenFalling;
 		_rollingCapsule_ = Tools.crouchCapsule;
     }
 
