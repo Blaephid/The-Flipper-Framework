@@ -21,7 +21,7 @@ namespace SplineMesh
         private bool isDirty = false;
         private Mesh result;
         private bool useSpline;
-        private S_Spline spline;
+        private Spline spline;
         private float intervalStart, intervalEnd;
         private CubicBezierCurve curve;
         private Dictionary<float, CurveSample> sampleCache = new Dictionary<float, CurveSample>();
@@ -108,7 +108,7 @@ namespace SplineMesh
         /// <param name="spline">The <see cref="SplineMesh"/> to bend the source mesh along.</param>
         /// <param name="intervalStart">Distance from the spline start to place the mesh minimum X.<param>
         /// <param name="intervalEnd">Distance from the spline start to stop deforming the source mesh.</param>
-        public void SetInterval(S_Spline spline, float intervalStart, float intervalEnd = 0)
+        public void SetInterval(Spline spline, float intervalStart, float intervalEnd = 0)
         {
             if (this.spline == spline && this.intervalStart == intervalStart && this.intervalEnd == intervalEnd) return;
             if (spline == null) throw new ArgumentNullException("spline");

@@ -36,7 +36,7 @@ namespace SplineMesh {
             if (e.type == EventType.MouseUp) {
                 mustCreateNewNode = false;
             }
-            var spline = se.GetComponent<S_Spline>();
+            var spline = se.GetComponent<Spline>();
 
             CurveSample startSample = spline.GetSample(0);
             Quaternion q = startSample.Rotation;

@@ -137,15 +137,6 @@ public class S_PlayerInput : MonoBehaviour {
 
     void FixedUpdate()
     {
-        //Debug.DrawRay(transform.position, transform.forward * 7, Color.yellow, 150f);
-        //Debug.DrawRay(transform.position, -transform.forward, Color.red, 150f);
-        //Debug.DrawRay(transform.position, trueMoveInput * 5, Color.cyan);
-        //Vector3 releVec = Player.getRelevantVec(Player.rb.velocity);
-        //Debug.DrawRay(transform.position, new Vector3(releVec.x, 0f, releVec.z).normalized * 5, Color.blue);
-        //Debug.DrawRay(transform.position, Player.rb.velocity.normalized * 5, Color.red);
-        //Debug.DrawRay(transform.position, transform.up * 4,Color.green, 150);
-        //Debug.DrawRay(transform.position, -transform.up * 1.5f, Color.red, 150f);
-        Debug.Log(move);
         Player._moveInput = move;
 
     }

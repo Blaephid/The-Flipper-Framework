@@ -94,7 +94,7 @@ public class S_Action04_Hurt : MonoBehaviour {
             if (!Actions.Action04Control.isDead)
             {
 
-                Actions.Action02Control.HomingAvailable = true;
+                Actions.Action02Control._isHomingAvailable = true;
                 Actions.Action01.jumpCount = 0;
 
                 CharacterAnimator.SetInteger("Action", 0);

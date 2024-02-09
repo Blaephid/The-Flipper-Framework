@@ -12,10 +12,10 @@ namespace SplineMesh {
     /// We only move an object along the spline. Imagine a camera route, a ship patrol...
     /// </summary>
     [ExecuteInEditMode]
-    [RequireComponent(typeof(S_Spline))]
+    [RequireComponent(typeof(Spline))]
     public class ExampleFollowSpline : MonoBehaviour {
         private GameObject generated;
-        private S_Spline spline;
+        private Spline spline;
         private float rate = 0;
 
         public GameObject Follower;
@@ -28,7 +28,7 @@ namespace SplineMesh {
             generated = generatedTranform != null ? generatedTranform.gameObject : Instantiate(Follower, gameObject.transform);
             generated.name = generatedName;
 
-            spline = GetComponent<S_Spline>(); 
+            spline = GetComponent<Spline>(); 
 #if UNITY_EDITOR
             EditorApplication.update += EditorUpdate;
 #endif

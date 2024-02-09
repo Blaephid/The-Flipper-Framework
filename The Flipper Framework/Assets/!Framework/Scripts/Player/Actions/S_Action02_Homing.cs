@@ -66,9 +66,9 @@ public class S_Action02_Homing : MonoBehaviour
             JumpBall.SetActive(false);
 
 
-            if (Action.Action02Control.HasTarget)
+            if (Action.Action02Control._HasTarget)
             {
-                Target = HomingControl.TargetObject.transform;
+                Target = HomingControl._TargetObject.transform;
                 TargetDirection = (Target.transform.position - Player.playerPos).normalized;
             }
             else

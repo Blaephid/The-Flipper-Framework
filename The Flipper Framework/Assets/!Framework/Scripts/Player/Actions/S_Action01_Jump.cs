@@ -197,13 +197,13 @@ public class S_Action01_Jump : MonoBehaviour
             //If can homing attack pressed.
             if(Actions.HomingPressed)
             {
-                if (Actions.Action02.HomingAvailable && Actions.Action02Control.HasTarget && !Player.Grounded)
+                if (Actions.Action02.HomingAvailable && Actions.Action02Control._HasTarget && !Player.Grounded)
                 {
 
                     //Do a homing attack
                     if (Actions.Action02 != null && Player._homingDelay_ <= 0)
                     {
-                        if (Actions.Action02Control.HomingAvailable)
+                        if (Actions.Action02Control._isHomingAvailable)
                         {
                             sounds.HomingAttackSound();
                             Actions.ChangeAction(S_Enums.PlayerStates.Homing);
@@ -220,7 +220,7 @@ public class S_Action01_Jump : MonoBehaviour
             {
                 if (Actions.Action02.HomingAvailable)
                 {
-                    if (!Actions.Action02Control.HasTarget)
+                    if (!Actions.Action02Control._HasTarget)
                     {
                         sounds.AirDashSound();
                         Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);

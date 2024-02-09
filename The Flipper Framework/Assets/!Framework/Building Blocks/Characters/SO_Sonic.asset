@@ -619,16 +619,23 @@ MonoBehaviour:
     StepLayerMask:
       serializedVersion: 2
       m_Bits: 0
+  JumpDashStats:
+    dashSpeed: 80
+    duration: 0.3
+    shouldUseCurrentSpeedAsMinimum: 1
+  DefaultJumpDashStats:
+    dashSpeed: 80
+    duration: 0.3
+    shouldUseCurrentSpeedAsMinimum: 1
   HomingSearch:
     targetSearchDistance: 44
     faceRange: 70
     TargetLayer:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 131072
     blockingLayers:
       serializedVersion: 2
-      m_Bits: 0
-    fieldOfView: 0.3
+      m_Bits: 1
     iconScale: 1.5
     iconDistanceScaling: 0.2
     facingAmount: 0.91
@@ -641,7 +648,6 @@ MonoBehaviour:
     blockingLayers:
       serializedVersion: 2
       m_Bits: 0
-    fieldOfView: 0.3
     iconScale: 1.5
     iconDistanceScaling: 0.2
     facingAmount: 0.91

@@ -487,7 +487,7 @@ public class S_O_CharacterStats : ScriptableObject
 			faceRange = 70f,
 			TargetLayer = new LayerMask(),
 			blockingLayers = new LayerMask(),
-			fieldOfView = 0.3f,
+		
 			iconScale = 1.5f,
 			iconDistanceScaling = 0.2f,
 			facingAmount = 0.91f
@@ -501,7 +501,6 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    faceRange;
 		public LayerMask          TargetLayer;
 		public LayerMask          blockingLayers;
-		public float    fieldOfView;
 		public float    iconScale;
 		public float    iconDistanceScaling;
 		public float    facingAmount;

@@ -9,7 +9,7 @@ using System.Linq;
 [DisallowMultipleComponent]
 public class S_Trigger_Path : MonoBehaviour
 {
-    public S_Spline spline;
+    public Spline spline;
 
     public bool updateInPlayMode = true;
     private bool toUpdate = false;

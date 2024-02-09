@@ -285,13 +285,13 @@ public class S_Action00_Regular : MonoBehaviour {
 		if (!Player.Grounded && !coyoteInEffect)
 		{
 			//Do a homing attack
-			if (Actions.Action02Control.HasTarget && Actions.HomingPressed && Actions.Action02.HomingAvailable)
+			if (Actions.Action02Control._HasTarget && Actions.HomingPressed && Actions.Action02.HomingAvailable)
 			{
 
 				//Do a homing attack
 				if (Actions.Action02 != null && Player._homingDelay_ <= 0)
 				{
-					if (Actions.Action02Control.HomingAvailable)
+					if (Actions.Action02Control._isHomingAvailable)
 					{
 						sounds.HomingAttackSound();
 						Actions.ChangeAction(S_Enums.PlayerStates.Homing);
@@ -302,7 +302,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			//Do an air dash;
 			else if (Actions.Action02.HomingAvailable && Actions.SpecialPressed)
 			{
-				if (!Actions.Action02Control.HasTarget && _CanDashDuringFall_)
+				if (!Actions.Action02Control._HasTarget && _CanDashDuringFall_)
 				{
 					sounds.AirDashSound();
 					Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);

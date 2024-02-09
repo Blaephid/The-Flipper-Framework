@@ -24,7 +24,7 @@ public class S_Interaction_Pathers : MonoBehaviour
     public float DistanceIncrements = 0.05f;
 
     float ClosestSample = 0f;
-    public S_Spline RailSpline { get; set; }
+    public Spline RailSpline { get; set; }
     public CurveSample RailSample { get; set; }
 
 
@@ -33,7 +33,7 @@ public class S_Interaction_Pathers : MonoBehaviour
     float CurrentDist, dist;
 
     //Upreel
-    [HideInInspector] public PulleyActor currentUpreel;
+    [HideInInspector] public S_Upreel currentUpreel;
     Transform HandGripPoint;
     [HideInInspector] public Transform feetPoint;
     float _offsetUpreel_ = 1.5f;
@@ -128,10 +128,10 @@ public class S_Interaction_Pathers : MonoBehaviour
     {
 
         
-        if (colli.gameObject.GetComponentInParent<S_Spline>())
+        if (colli.gameObject.GetComponentInParent<Spline>())
         {
 
-            RailSpline = colli.gameObject.GetComponentInParent<S_Spline>();
+            RailSpline = colli.gameObject.GetComponentInParent<Spline>();
             Transform ColPos;
             if (trigger)
             {
@@ -240,7 +240,7 @@ public class S_Interaction_Pathers : MonoBehaviour
         {
             //Activates the upreel to start retracting. See PulleyActor class for more.
             //Sets currentUpreel. See Update() above for more.
-            currentUpreel = col.gameObject.GetComponentInParent<PulleyActor>();
+            currentUpreel = col.gameObject.GetComponentInParent<S_Upreel>();
 
             CharacterAnimator.SetInteger("Action", 9);
             CharacterAnimator.SetTrigger("HitRail");
@@ -293,8 +293,8 @@ public class S_Interaction_Pathers : MonoBehaviour
             }
 
             //If the path is being started by a normal trigger
-            else if (col.gameObject.GetComponentInParent<S_Spline>() && col.gameObject.CompareTag("PathTrigger"))
-                RailSpline = col.gameObject.GetComponentInParent<S_Spline>();
+            else if (col.gameObject.GetComponentInParent<Spline>() && col.gameObject.CompareTag("PathTrigger"))
+                RailSpline = col.gameObject.GetComponentInParent<Spline>();
             else
                 RailSpline = null;
 
@@ -354,7 +354,7 @@ public class S_Interaction_Pathers : MonoBehaviour
     }
 
 
-    public float GetClosestPos(Vector3 ColPos, S_Spline thisSpline)
+    public float GetClosestPos(Vector3 ColPos, Spline thisSpline)
     {
         //spline.nodes.Count - 1
 

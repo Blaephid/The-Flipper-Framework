@@ -17,7 +17,7 @@ namespace SplineMesh {
     /// </summary>
     [DisallowMultipleComponent]
     public class ExampleTentacle : MonoBehaviour {
-        private S_Spline spline { get => GetComponent<S_Spline>(); }
+        private Spline spline { get => GetComponent<Spline>(); }
 
         public float startScale = 1, endScale = 1;
         public float startRoll = 0, endRoll = 0;

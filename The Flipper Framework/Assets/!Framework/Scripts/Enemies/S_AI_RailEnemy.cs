@@ -5,7 +5,7 @@ using System;
 
 namespace SplineMesh
 {
-    [RequireComponent(typeof(S_Spline))]
+    [RequireComponent(typeof(Spline))]
     public class S_AI_RailEnemy : MonoBehaviour
     {
 
@@ -16,8 +16,8 @@ namespace SplineMesh
         public LayerMask railMask;
 
         [Header("Start Rails")]
-        public S_Spline startSpline;
-        S_Spline RailSpline;
+        public Spline startSpline;
+        Spline RailSpline;
         public S_AddOnRail startingConnectedRails;
         S_AddOnRail ConnectedRails;
 
@@ -112,7 +112,7 @@ namespace SplineMesh
             if (models.Length > 0)
             {
                 float tempRange = GetClosestPos(transform.position, RailSpline);
-                S_Spline thisSpline = RailSpline;
+                Spline thisSpline = RailSpline;
 
                 if (firstSet)
                 {
@@ -138,13 +138,13 @@ namespace SplineMesh
                     {
                         if (tempRange < 0 && !backwards && ConnectedRails.PrevRail != null && ConnectedRails.PrevRail.isActiveAndEnabled)
                         {
-                            thisSpline = ConnectedRails.PrevRail.GetComponentInParent<S_Spline>();
+                            thisSpline = ConnectedRails.PrevRail.GetComponentInParent<Spline>();
                             tempRange += thisSpline.Length;
                         }
                         else if (tempRange > thisSpline.Length && backwards && ConnectedRails.nextRail != null && ConnectedRails.nextRail.isActiveAndEnabled)
                         {
                             tempRange -= thisSpline.Length;
-                            thisSpline = ConnectedRails.PrevRail.GetComponentInParent<S_Spline>();
+                            thisSpline = ConnectedRails.PrevRail.GetComponentInParent<Spline>();
                         }
                     }
 
@@ -226,7 +226,7 @@ namespace SplineMesh
                     ConnectedRails = ConnectedRails.nextRail;
                     useOffset = new Vector3(-ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
 
-                    RailSpline = ConnectedRails.GetComponentInParent<S_Spline>();
+                    RailSpline = ConnectedRails.GetComponentInParent<Spline>();
                     RailTransform = RailSpline.transform.parent;
                 }
                 else
@@ -235,7 +235,7 @@ namespace SplineMesh
                     ConnectedRails = ConnectedRails.PrevRail;
                     useOffset = new Vector3(-ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
 
-                    RailSpline = ConnectedRails.GetComponentInParent<S_Spline>();
+                    RailSpline = ConnectedRails.GetComponentInParent<Spline>();
                     RailTransform = RailSpline.transform.parent;
 
                     range = range + RailSpline.Length;
@@ -333,7 +333,7 @@ namespace SplineMesh
             currentSpeed = Mathf.Clamp(currentSpeed, 30, 120);
         }
 
-        public float GetClosestPos(Vector3 ColPos, S_Spline thisSpline)
+        public float GetClosestPos(Vector3 ColPos, Spline thisSpline)
         {
 
             CurrentDist = 9999999f;
@@ -354,9 +354,9 @@ namespace SplineMesh
         {
             if(other.tag == "Rail")
             {
-                if(other.GetComponentInParent<S_Spline>())
+                if(other.GetComponentInParent<Spline>())
                 {
-                    RailSpline = other.GetComponentInParent<S_Spline>();
+                    RailSpline = other.GetComponentInParent<Spline>();
                     InitialEvents();
                 }
             }

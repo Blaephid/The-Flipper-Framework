@@ -11,9 +11,9 @@ namespace SplineMesh {
     /// This component is only for demo purpose and is not intended to be used as-is.
     /// </summary>
     [ExecuteInEditMode]
-    [RequireComponent(typeof(S_Spline))]
+    [RequireComponent(typeof(Spline))]
     public class ExampleContortAlong : MonoBehaviour {
-        private S_Spline spline;
+        private Spline spline;
         private float rate = 0;
         private S_MeshBender meshBender;
 
@@ -71,7 +71,7 @@ namespace SplineMesh {
             generated.GetComponent<MeshRenderer>().material = material;
 
             meshBender = generated.GetComponent<S_MeshBender>();
-            spline = GetComponent<S_Spline>();
+            spline = GetComponent<Spline>();
 
             meshBender.Source = SourceMesh.Build(mesh)
                 .Rotate(Quaternion.Euler(rotation))

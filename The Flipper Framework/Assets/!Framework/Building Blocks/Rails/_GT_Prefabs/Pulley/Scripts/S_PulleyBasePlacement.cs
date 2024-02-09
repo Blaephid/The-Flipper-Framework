@@ -6,7 +6,7 @@ using SplineMesh;
 [ExecuteInEditMode]
 public class S_PulleyBasePlacement : MonoBehaviour
 {
-    public S_Spline Rail;
+    public Spline Rail;
     public bool isEnd = false,isAlign = false;
     public float Range = 0f;
     public bool ChangeRotation = true;
@@ -19,7 +19,7 @@ public class S_PulleyBasePlacement : MonoBehaviour
 #if UNITY_EDITOR
         if (!Application.isPlaying)
         {
-            if (Rail == null) GetComponentInParent<S_Spline>();
+            if (Rail == null) GetComponentInParent<Spline>();
             CurveSample sample = (!isEnd) ? Rail.GetSampleAtDistance(Range) : Rail.GetSampleAtDistance(Rail.Length - Range);
             transform.position = sample.location + Rail.transform.position;
             Vector3 dir = Vector3.zero;

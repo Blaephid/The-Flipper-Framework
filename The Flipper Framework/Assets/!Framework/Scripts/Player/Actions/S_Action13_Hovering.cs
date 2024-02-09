@@ -72,13 +72,13 @@ public class S_Action13_Hovering : MonoBehaviour
         CharacterAnimator.SetInteger("Action", 13);
 
         //Do a homing attack
-        if (Actions.Action02.HomingAvailable && Actions.Action02Control.HasTarget && Actions.HomingPressed)
+        if (Actions.Action02.HomingAvailable && Actions.Action02Control._HasTarget && Actions.HomingPressed)
         {
 
             //Do a homing attack
             if (Actions.Action02 != null && PlayerPhys._homingDelay_ <= 0)
             {
-                if (Actions.Action02Control.HomingAvailable)
+                if (Actions.Action02Control._isHomingAvailable)
                 {
                     Sounds.HomingAttackSound();
                     Actions.ChangeAction(S_Enums.PlayerStates.Homing);

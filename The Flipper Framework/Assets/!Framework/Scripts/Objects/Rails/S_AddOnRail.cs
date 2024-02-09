@@ -115,8 +115,8 @@ public class S_AddOnRail : MonoBehaviour
         {
             foreach (S_AddOnRail rail in AddThis)
             {
-                S_Spline thisSpline = GetComponentInParent<S_Spline>();
-                S_Spline otherSpline = rail.GetComponentInParent<S_Spline>();
+                Spline thisSpline = GetComponentInParent<Spline>();
+                Spline otherSpline = rail.GetComponentInParent<Spline>();
 
                 CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
                 offset = sample.Rotation * offset;
@@ -129,8 +129,8 @@ public class S_AddOnRail : MonoBehaviour
 
             foreach(S_AddOnRail rail in AddBehindThese)
             {
-                S_Spline thisSpline = GetComponentInParent<S_Spline>();
-                S_Spline otherSpline = rail.GetComponentInParent<S_Spline>();
+                Spline thisSpline = GetComponentInParent<Spline>();
+                Spline otherSpline = rail.GetComponentInParent<Spline>();
 
                 CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
                 offset = sample.Rotation * offset;

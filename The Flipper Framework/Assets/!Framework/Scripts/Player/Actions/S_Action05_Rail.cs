@@ -697,7 +697,7 @@ namespace SplineMesh
                     ConnectedRails = ConnectedRails.nextRail;
                     setOffSet.Set(-ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
 
-                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<S_Spline>();
+                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<Spline>();
                     RailTransform = Rail_int.RailSpline.transform.parent;
 
                     Debug.Log("Then With = " + range);
@@ -711,7 +711,7 @@ namespace SplineMesh
                     ConnectedRails = ConnectedRails.PrevRail;
                     setOffSet.Set(-ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
 
-                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<S_Spline>();
+                    Rail_int.RailSpline = ConnectedRails.GetComponentInParent<Spline>();
                     RailTransform = Rail_int.RailSpline.transform.parent;
 
                     range = range + Rail_int.RailSpline.Length;
