@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SO_Sonic
   m_EditorClassIdentifier: 
   Title: Sonic
+  IIintIna: 0
   DefaultAccelerationStats:
     acceleration: 0.16
     AccelBySpeed:
@@ -730,8 +731,8 @@ MonoBehaviour:
     dashSpeed: 100
     endingSpeedFactor: 1.23
     minimumEndingSpeed: 60
-    RingTargetSearchDistance: 8
-    RingRoadIconScale: 0
+    SearchDistance: 8
+    iconScale: 0
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 262144
@@ -739,8 +740,8 @@ MonoBehaviour:
     dashSpeed: 100
     endingSpeedFactor: 1.23
     minimumEndingSpeed: 60
-    RingTargetSearchDistance: 8
-    RingRoadIconScale: 0
+    SearchDistance: 8
+    iconScale: 0
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 0
@@ -959,4 +960,4 @@ MonoBehaviour:
     wallDuration: 0
     scrapeModifier: 1
     climbModifier: 1
-  DefaultStats: {fileID: 0}
+  InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
