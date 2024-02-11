@@ -59,7 +59,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         {
             if (col.transform.parent.GetComponent<S_AI_Health>() != null)
             {
-                if (!Player.isRolling)
+                if (!Player._isRolling)
                 {
                     col.transform.parent.GetComponent<S_AI_Health>().DealDamage(damage);
                     airAttack();
@@ -72,7 +72,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	{
         if(AttackType == "SpinJump")
         {
-            if (!Player.isRolling)
+            if (!Player._isRolling)
             {
                 airAttack();
             }

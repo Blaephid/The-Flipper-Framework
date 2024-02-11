@@ -65,7 +65,7 @@ public class S_Handler_WallRunning : MonoBehaviour
             //Debug.DrawRay(transform.position, Player.MoveInput, Color.red);
 
 
-            checkSpeed = Player.HorizontalSpeedMagnitude;
+            checkSpeed = Player._horizontalSpeedMagnitude;
             saveVec = Player.rb.velocity;
 
             //If High enough above ground and not at an odd rotation
@@ -107,7 +107,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 
                 
             }
-            else if (Player.Grounded)
+            else if (Player._isGrounded)
             {
                 bannedWall = null;
             }
@@ -163,7 +163,7 @@ public class S_Handler_WallRunning : MonoBehaviour
     private bool enoughAboveGround()
     {
         //If racycast does not detect ground
-        if (!Player.Grounded)
+        if (!Player._isGrounded)
             return !Physics.Raycast(CharacterAnimator.transform.position, -Vector3.up, 6f, _WallLayerMask_);
         else
             return false;
@@ -197,7 +197,7 @@ public class S_Handler_WallRunning : MonoBehaviour
                 if (!wallLeft && !wallRight)
                 {
                     //Increases check range based on speed
-                    CheckModifier = (Player.HorizontalSpeedMagnitude * 0.035f) + .5f;
+                    CheckModifier = (Player._horizontalSpeedMagnitude * 0.035f) + .5f;
                     wallFront = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out frontWallDetect,
                     _wallCheckDistance_ * CheckModifier, _WallLayerMask_);
 

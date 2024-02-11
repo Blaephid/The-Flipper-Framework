@@ -70,7 +70,7 @@ public class S_Action07_RingRoad : MonoBehaviour {
 		CharacterAnimator.SetInteger("Action", 7);
 		CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
 		CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
-		CharacterAnimator.SetBool("Grounded", Player.Grounded);
+		CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
 		//Set Animation Angle
 		Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);

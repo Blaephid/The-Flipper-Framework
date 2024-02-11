@@ -114,8 +114,8 @@ public class S_Handler_Hurt : MonoBehaviour
     {
         faceHitCollider.transform.rotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, transform.up); ;
 
-        if((Actions.whatAction == 0 && Player.HorizontalSpeedMagnitude > 50) || (Actions.whatAction == S_Enums.PlayerStates.Jump && Player.HorizontalSpeedMagnitude > 40) || (Actions.whatAction == S_Enums.PlayerStates.JumpDash
-            && Player.HorizontalSpeedMagnitude > 30) || (Actions.whatAction == S_Enums.PlayerStates.WallRunning && Actions.Action12.RunningSpeed > 5))
+        if((Actions.whatAction == 0 && Player._horizontalSpeedMagnitude > 50) || (Actions.whatAction == S_Enums.PlayerStates.Jump && Player._horizontalSpeedMagnitude > 40) || (Actions.whatAction == S_Enums.PlayerStates.JumpDash
+            && Player._horizontalSpeedMagnitude > 30) || (Actions.whatAction == S_Enums.PlayerStates.WallRunning && Actions.Action12.RunningSpeed > 5))
         {
             if(Physics.SphereCast(transform.position, 0.3f, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, _BonkWall_))
             {
@@ -264,15 +264,15 @@ public class S_Handler_Hurt : MonoBehaviour
         {
            
             //Debug.Log("Attempt Bonk");
-            if (!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, _BonkWall_) && !Player.Grounded)
+            if (!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, _BonkWall_) && !Player._isGrounded)
             {
                 transform.position = transform.position + (CharacterAnimator.transform.up * 1.5f);
             }
-            else if (!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 1.5f), previDir, 10f, _BonkWall_) && !Player.Grounded)
+            else if (!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 1.5f), previDir, 10f, _BonkWall_) && !Player._isGrounded)
             {
                 transform.position = transform.position + (-CharacterAnimator.transform.up * 1.5f);
             }
-            else if (previousSpeed / 1.6f > Player.rb.velocity.sqrMagnitude || !Player.Grounded)
+            else if (previousSpeed / 1.6f > Player.rb.velocity.sqrMagnitude || !Player._isGrounded)
             {
                 StartCoroutine(giveChanceToWallClimb());
             }
@@ -286,7 +286,7 @@ public class S_Handler_Hurt : MonoBehaviour
         Vector3 newDir = CharacterAnimator.transform.forward;
         if (Actions.whatAction != S_Enums.PlayerStates.WallRunning)
         {
-            if(!Player.Grounded)
+            if(!Player._isGrounded)
             {
                 for (int i = 0; i < 3; i++)
                 {

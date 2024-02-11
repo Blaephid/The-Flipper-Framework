@@ -116,7 +116,7 @@ namespace SplineMesh
             if (!transform.parent.gameObject.activeSelf)
                 return;
 
-            Player.GravityAffects = true;
+            Player._isGravityOn = true;
 
             OnRail = false;
             isZipLine = false;
@@ -165,7 +165,7 @@ namespace SplineMesh
             Boosted = false;
             boostTime = 0;
 
-            Player.GravityAffects = false;
+            Player._isGravityOn = false;
             // Player.p_rigidbody.useGravity = false;
 
             //Animations and Skin Changes
@@ -202,7 +202,7 @@ namespace SplineMesh
             OnRail = true;
 
             if(distanceToStep <= 0)
-                PlayerSpeed = Player.SpeedMagnitude;
+                PlayerSpeed = Player._speedMagnitude;
 
        
 
@@ -289,7 +289,7 @@ namespace SplineMesh
 
                 Actions.Action00.readyCoyote();
                 CharacterAnimator.SetInteger("Action", 0);
-                CharacterAnimator.SetBool("Grounded", Player.Grounded);
+                CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
                 Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                 if (Actions.Action02 != null)
@@ -306,7 +306,7 @@ namespace SplineMesh
             //CameraFocus();
             //Set Animator Parameters
             //CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
-            CharacterAnimator.SetFloat("GroundSpeed", PlayerSpeed / Player.MaxSpeed);
+            CharacterAnimator.SetFloat("GroundSpeed", PlayerSpeed / Player._currentMaxSpeed);
             CharacterAnimator.SetBool("Grounded", false);
 
             // Actions Go Here
@@ -337,7 +337,7 @@ namespace SplineMesh
 
                     jumpCorrectedOffset = -jumpCorrectedOffset;
                     ZipBody.isKinematic = true;
-                    Player.GroundNormal = new Vector3(0f, 1f, 0f);
+                    Player._groundNormal = new Vector3(0f, 1f, 0f);
 
                     StartCoroutine(Rail_int.JumpFromZipLine(ZipHandle, 1));
 
@@ -814,9 +814,9 @@ namespace SplineMesh
                 PlayerSpeed += force;
 
                 //Enforce max Speed
-                if (PlayerSpeed > Player.MaxSpeed)
+                if (PlayerSpeed > Player._currentMaxSpeed)
                 {
-                    PlayerSpeed = Player.MaxSpeed;
+                    PlayerSpeed = Player._currentMaxSpeed;
                 }
             }
             else if (Player.rb.velocity.y < -0.05f)
@@ -834,9 +834,9 @@ namespace SplineMesh
                 PlayerSpeed -= force;
 
                 //Enforce max Speed
-                if (PlayerSpeed > Player.MaxSpeed)
+                if (PlayerSpeed > Player._currentMaxSpeed)
                 {
-                    PlayerSpeed = Player.MaxSpeed;
+                    PlayerSpeed = Player._currentMaxSpeed;
                 }
             }
             else

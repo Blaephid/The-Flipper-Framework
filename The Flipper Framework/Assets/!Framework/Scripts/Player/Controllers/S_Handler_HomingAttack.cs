@@ -110,7 +110,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
         while (_isScanning)
         {
 
-            while (!_PlayerPhys.Grounded && _Actions.whatAction != S_Enums.PlayerStates.Rail)
+            while (!_PlayerPhys._isGrounded && _Actions.whatAction != S_Enums.PlayerStates.Rail)
             {
                 UpdateHomingTargets();
                 if (!_HasTarget)

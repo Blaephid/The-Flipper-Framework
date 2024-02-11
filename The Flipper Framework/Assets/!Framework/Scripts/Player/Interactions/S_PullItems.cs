@@ -41,7 +41,7 @@ public class S_PullItems : MonoBehaviour
     public void AddToList()
     {
 
-        Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(player.HorizontalSpeedMagnitude / player.MaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
+        Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(player._horizontalSpeedMagnitude / player._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
         foreach (Collider r in rings)
         {
             allRings.Add(r.transform.parent);
@@ -65,7 +65,7 @@ public class S_PullItems : MonoBehaviour
                    
                 else
                 {
-                    r.position = Vector3.MoveTowards(r.position, transform.position, Time.deltaTime * _basePullSpeed_ * player.HorizontalSpeedMagnitude);
+                    r.position = Vector3.MoveTowards(r.position, transform.position, Time.deltaTime * _basePullSpeed_ * player._horizontalSpeedMagnitude);
                 }
             
             }

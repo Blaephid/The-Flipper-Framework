@@ -21,7 +21,7 @@ public class S_RailHiding : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Distancetrckr = (S_PlayerPhysics.MasterPlayer.playerPos - transform.position).sqrMagnitude;
+        Distancetrckr = (S_PlayerPhysics.s_MasterPlayer._playerPos - transform.position).sqrMagnitude;
 
         if (!active && Distancetrckr < Distance)
         {

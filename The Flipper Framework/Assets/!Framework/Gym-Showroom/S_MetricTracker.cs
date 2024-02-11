@@ -46,7 +46,7 @@ public class S_MetricTracker : MonoBehaviour
                     if(trackSpeed)
                     {
                         Debug.Log("Speed at start was = " + startPoint.Speed);
-                        Debug.Log("Speed at end was = " + player.HorizontalSpeedMagnitude);
+                        Debug.Log("Speed at end was = " + player._horizontalSpeedMagnitude);
                     }
 
                     if(trackDistance)
@@ -66,7 +66,7 @@ public class S_MetricTracker : MonoBehaviour
 
                 thisPos = other.transform.position;
 
-                Speed = player.HorizontalSpeedMagnitude;
+                Speed = player._horizontalSpeedMagnitude;
 
                 Seconds = 0;
                 followingAcc = false;
@@ -86,17 +86,17 @@ public class S_MetricTracker : MonoBehaviour
 
             if (trackAccel)
             {
-                if (player.HorizontalSpeedMagnitude < 0.5 && !followingAcc)
+                if (player._horizontalSpeedMagnitude < 0.5 && !followingAcc)
                 { 
                     Debug.Log("Can track accel");
                     followingAcc = true;
                     thisPos = player.transform.position;
                 }
 
-                if (player.HorizontalSpeedMagnitude > 0.5f && followingAcc)
+                if (player._horizontalSpeedMagnitude > 0.5f && followingAcc)
                     Seconds += Time.fixedDeltaTime;
 
-                if(player.HorizontalSpeedMagnitude >= player.TopSpeed)
+                if(player._horizontalSpeedMagnitude >= player._currentTopSpeed)
                 {
                     Debug.Log("Time to Top Speed = " + Seconds);
                     Debug.Log("Distance to Top Speed = " + Vector3.Distance(player.transform.position, thisPos));
@@ -113,10 +113,10 @@ public class S_MetricTracker : MonoBehaviour
 
             if(trackJumpsInstead)
             {
-                if((player.Action.whatAction != S_Enums.PlayerStates.Jump && player.Action.whatAction != S_Enums.PlayerStates.JumpDash) || jumpAction.Jumping)
-                    player.Action.JumpPressed = true;
+                if((player._Action.whatAction != S_Enums.PlayerStates.Jump && player._Action.whatAction != S_Enums.PlayerStates.JumpDash) || jumpAction.Jumping)
+                    player._Action.JumpPressed = true;
 
-                if (!followingJump && !player.Grounded)
+                if (!followingJump && !player._isGrounded)
                 {
                     followingJump = true;
                     thisPos = player.transform.position;
@@ -124,7 +124,7 @@ public class S_MetricTracker : MonoBehaviour
 
                 else if (followingJump)
                 {
-                    if(!player.Grounded)
+                    if(!player._isGrounded)
                     {
                         Seconds += Time.fixedDeltaTime;
 
@@ -135,16 +135,16 @@ public class S_MetricTracker : MonoBehaviour
                                 //Debug.Log("Peak Jump At = " + (player.transform.position.y - thisPos.y));
 
                                 if (jumpAction.jumpCount < 2)
-                                    player.Action.JumpPressed = true;
+                                    player._Action.JumpPressed = true;
                                 //else
                                 //    player.Action.SpecialPressed = true;
                             }
                             else
-                                player.Action.JumpPressed = false;
+                                player._Action.JumpPressed = false;
                         }
                     }
 
-                    else if (player.Grounded)
+                    else if (player._isGrounded)
                     {
                         startTrack = false;
                         Debug.Log("Distance between = " + Vector3.Distance(thisPos, player.transform.position));

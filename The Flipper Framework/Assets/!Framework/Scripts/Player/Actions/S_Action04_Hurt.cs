@@ -55,7 +55,7 @@ public class S_Action04_Hurt : MonoBehaviour {
         {
             Vector3 newSpeed = -CharacterAnimator.transform.forward * _bonkBackForce_;
             newSpeed.y = _bonkUpForce_;
-            if (Player.Grounded)
+            if (Player._isGrounded)
                 newSpeed.y *= 2;
             Player.rb.velocity = newSpeed;
 
@@ -89,7 +89,7 @@ public class S_Action04_Hurt : MonoBehaviour {
         //Get out of Action
         counter += 1;
 
-        if ((Player.Grounded && counter > lockedForGround) || counter > lockedForAir)
+        if ((Player._isGrounded && counter > lockedForGround) || counter > lockedForAir)
         {
             if (!Actions.Action04Control.isDead)
             {
@@ -116,7 +116,7 @@ public class S_Action04_Hurt : MonoBehaviour {
         if (Actions.Action04Control.isDead)
         {
             deadCounter += Time.deltaTime;
-            if (Player.Grounded && deadCounter > 0.3f)
+            if (Player._isGrounded && deadCounter > 0.3f)
             {
                 CharacterAnimator.SetBool("Dead", true);
             }

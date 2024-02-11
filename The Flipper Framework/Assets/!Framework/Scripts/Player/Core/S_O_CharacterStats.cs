@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using UnityEngine;
 using static S_O_CharacterStats;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -17,14 +18,20 @@ public class S_O_CharacterStats : ScriptableObject
 	#region acceleration
 	//-------------------------------------------------------------------------------------------------
 
-	public StrucAcceleration DefaultAccelerationStats = SetStrucAcceleration();
+	public StrucAcceleration BasicAccelerationStats = SetStrucAcceleration();
 	public StrucAcceleration AccelerationStats = SetStrucAcceleration();
 
 	static StrucAcceleration SetStrucAcceleration () {
 		return new StrucAcceleration
 		{
 			acceleration = 0.16f,
-			AccelBySpeed = new AnimationCurve(),
+			AccelBySpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 3),
+				new Keyframe(0.22f, 2.5f),
+				new Keyframe(0.6f, 0.1f),
+				new Keyframe(1f, 0.02f),
+			}),
 			accelShiftOverSpeed = 1f
 		};
 	}
@@ -43,7 +50,7 @@ public class S_O_CharacterStats : ScriptableObject
 
 	#region turning
 	//-------------------------------------------------------------------------------------------------
-	public StrucTurning DefaultTurningStats = SetStrucTurning();
+	public StrucTurning BasicTurningStats = SetStrucTurning();
 	public StrucTurning TurningStats = SetStrucTurning();
 
 	static StrucTurning SetStrucTurning () {
@@ -52,10 +59,42 @@ public class S_O_CharacterStats : ScriptableObject
 			tangentialDrag = 7.5f,
 			tangentialDragShiftSpeed = 1f,
 			turnSpeed = 14f,
-			TurnRateByAngle = new AnimationCurve(),
-			TurnRateBySpeed = new AnimationCurve(),
-			TangDragByAngle = new AnimationCurve(),
-			TangDragBySpeed = new AnimationCurve()
+			TurnRateByAngle = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0),
+				new Keyframe(0.05f, 0.05f),
+				new Keyframe(0.21f, 0.23f),
+				new Keyframe(0.5f, 0.5f),
+				new Keyframe(0.75f, 0.5f),
+				new Keyframe(0.99f, 0.36f),
+				new Keyframe(1f, 0f),
+			}),
+			TurnRateBySpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 1f),
+				new Keyframe(0.12f, 1f),
+				new Keyframe(0.25f, 0.85f),
+				new Keyframe(0.73f, 0.85f),
+				new Keyframe(0.78f, 0.75f),
+				new Keyframe(1f, 0.7f),
+			}),
+			TangDragByAngle = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0f),
+				new Keyframe(0.15f, 0.02f),
+				new Keyframe(0.45f, 0.06f),
+				new Keyframe(0.75f, 0.08f),
+				new Keyframe(0.85f, 0.14f),
+				new Keyframe(1f, 0.22f),
+			}),
+			TangDragBySpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0f),
+				new Keyframe(0.4f, 0.02f),
+				new Keyframe(0.55f, 0.2f),
+				new Keyframe(0.8f, 0.6f),
+				new Keyframe(1, 0.6f),
+			}),
 		};
 	}
 
@@ -74,7 +113,7 @@ public class S_O_CharacterStats : ScriptableObject
 
 	#region Deceleration
 	//-------------------------------------------------------------------------------------------------
-	public StrucDeceleration DefaultDecelerationStats = SetStrucDeceleration();
+	public StrucDeceleration BasicDecelerationStats = SetStrucDeceleration();
 	public StrucDeceleration DecelerationStats = SetStrucDeceleration();
 
 	static StrucDeceleration SetStrucDeceleration () {
@@ -82,7 +121,14 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			moveDeceleration = 1.05f,
 			airDecel = 1.25f,
-			DecelBySpeed = new AnimationCurve(),
+			DecelBySpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 1.005f),
+				new Keyframe(0.2f, 1.002f),
+				new Keyframe(0.5f, 1.01f),
+				new Keyframe(0.7f, 1.03f),
+				new Keyframe(1f, 1.1f),
+			}),
 			decelShiftOverSpeed = 10f,
 			naturalAirDecel = 1.002f
 		};
@@ -123,7 +169,7 @@ public class S_O_CharacterStats : ScriptableObject
 	#region slopes
 	//-------------------------------------------------------------------------------------------------
 
-	public StrucSlopes DefaultSlopeStats = SetStrucSlopes();
+	public StrucSlopes BasicSlopeStats = SetStrucSlopes();
 	public StrucSlopes SlopeStats = SetStrucSlopes();
 
 	static StrucSlopes SetStrucSlopes () {
@@ -133,13 +179,29 @@ public class S_O_CharacterStats : ScriptableObject
 			standOnSlopeLimit = 0.8f,
 			slopePower = -1.4f,
 			slopeRunningAngleLimit = 0.4f,
-			SlopeLimitBySpeed = new AnimationCurve(),
+			SlopeLimitBySpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(-1, 15f),
+				new Keyframe(0f, 10f),
+				new Keyframe(0.6f, -10f),
+				new Keyframe(1f, -10f),
+			}),
 			generalHillMultiplier = 1.0f,
 			uphillMultiplier = 0.6f,
 			downhillMultiplier = 0.5f,
 			startDownhillMultiplier = -1.7f,
-			SlopePowerByCurrentSpeed = new AnimationCurve(),
-			UpHillEffectByTime = new AnimationCurve()
+			SlopePowerByCurrentSpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 1f),
+				new Keyframe(1f, 0.5f),
+			}),
+			UpHillEffectByTime = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0.6f),
+				new Keyframe(1f, 1f),
+				new Keyframe(4f, 1.2f),
+				new Keyframe(10f, 1.3f),
+			}),
 		};
 	}
 
@@ -170,32 +232,9 @@ public class S_O_CharacterStats : ScriptableObject
 	}
 	#endregion
 
+
 	#region sticking
 	//-------------------------------------------------------------------------------------------------
-
-	public StrucGeneralStick DefaultStickToGround = SetStrucGeneralStick();
-	public StrucGeneralStick StickToGround = SetStrucGeneralStick();
-
-	static StrucGeneralStick SetStrucGeneralStick () {
-		return new StrucGeneralStick
-		{
-			GroundMask = new LayerMask(),
-			groundStickingDistance = 0.2f,
-			groundStickingPower = -1.45f
-		};
-	}
-
-	[System.Serializable]
-	public struct StrucGeneralStick
-	{
-		[Tooltip("Core: Decides what collision layer an object must have to be considered ground, and therefore if the player is grounded when standing on it.")]
-		public LayerMask          GroundMask;
-
-		[Tooltip("Core:")]
-		public float    groundStickingDistance;
-		[Tooltip("Core:")]
-		public float    groundStickingPower;
-	}
 
 	public StrucGreedyStick DefaultGreedysStickToGround = SetStrucGreedyStick();
 	public StrucGreedyStick GreedysStickToGround = SetStrucGreedyStick();
@@ -203,6 +242,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucGreedyStick SetStrucGreedyStick () {
 		return new StrucGreedyStick
 		{
+			GroundMask = new LayerMask(),
 			stickingLerps = new Vector2(0.885f, 1.005f),
 			stickingNormalLimit = 0.5f,
 			stickCastAhead = 1.9f,
@@ -219,6 +259,7 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucGreedyStick
 	{
+		public LayerMask GroundMask;
 		[Tooltip("Core: This is the values of the Lerps when the player encounters a slope , the first one is negative slopes (loops), and the second one is positive Slopes (imagine running on the outside of a loop),This values shouldnt be touched unless yuou want to go absurdly faster. Default values 0.885 and 1.5")]
 		public Vector2  stickingLerps;
 		[Tooltip("Core: This is the limit from 0 to 1 the degrees that the player should be sticking 0 is no angle , 1 is everything bellow 90°, and 0.5 is 45° angles, default 0.4")]
@@ -356,14 +397,21 @@ public class S_O_CharacterStats : ScriptableObject
 	//-------------------------------------------------------------------------------------------------
 
 	public StrucJumps JumpStats = SetStrucJumps();
-	public StrucJumps DefaultJumpStats = SetStrucJumps();
+	[HideInInspector] public StrucJumps BasicJumpStats = SetStrucJumps();
 
 	static StrucJumps SetStrucJumps () {
 		return new StrucJumps
 		{
-			CoyoteTimeBySpeed = new AnimationCurve(),
+			CoyoteTimeBySpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0.175f),
+				new Keyframe(0.05f, 0.28f),
+				new Keyframe(0.25f, 0.3f),
+				new Keyframe(1f, 0.42f),
+				new Keyframe(1.5f, 0.55f),
+			}),
 			jumpSlopeConversion = 0.03f,
-			stopYSpeedOnRelease = 2f,
+			stopYSpeedOnRelease = 2.1f,
 			jumpRollingLandingBoost = 0f,
 			startJumpDuration = 0.2f,
 			startSlopedJumpDuration = 0.2f,
@@ -409,13 +457,13 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucMultiJumps
 	{
-		public bool               canDoubleJump;
-		public bool               canTripleJump;
-		public int                jumpCount;
+		public bool         canDoubleJump;
+		public bool         canTripleJump;
+		public int	jumpCount;
 
-		public float    doubleJumpSpeed;
-		public float    doubleJumpDuration;
-		public float    speedLossOnDoubleJump;
+		public float	doubleJumpSpeed;
+		public float	doubleJumpDuration;
+		public float	speedLossOnDoubleJump;
 	}
 	#endregion
 
@@ -439,11 +487,11 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucQuickstep
 	{
-		public float    stepSpeed;
-		public float    stepDistance;
-		public float    airStepSpeed;
-		public float    airStepDistance;
-		public LayerMask          StepLayerMask;
+		public float	stepSpeed;
+		public float	stepDistance;
+		public float	airStepSpeed;
+		public float	airStepDistance;
+		public LayerMask    StepLayerMask;
 
 	}
 	#endregion
@@ -487,7 +535,7 @@ public class S_O_CharacterStats : ScriptableObject
 			faceRange = 70f,
 			TargetLayer = new LayerMask(),
 			blockingLayers = new LayerMask(),
-		
+
 			iconScale = 1.5f,
 			iconDistanceScaling = 0.2f,
 			facingAmount = 0.91f
@@ -497,13 +545,13 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucHomingSearch
 	{
-		public float    targetSearchDistance;
-		public float    faceRange;
-		public LayerMask          TargetLayer;
-		public LayerMask          blockingLayers;
-		public float    iconScale;
-		public float    iconDistanceScaling;
-		public float    facingAmount;
+		public float		targetSearchDistance;
+		public float		faceRange;
+		public LayerMask		TargetLayer;
+		public LayerMask		blockingLayers;
+		public float		iconScale;
+		public float		iconDistanceScaling;
+		public float		facingAmount;
 
 	}
 
@@ -532,13 +580,13 @@ public class S_O_CharacterStats : ScriptableObject
 
 	#endregion
 
-	
+
 
 	#region spin Charge
 	//-------------------------------------------------------------------------------------------------
 
 	public StrucSpinCharge SpinChargeStats = SetStrucSpinCharge();
-	public StrucSpinCharge DefaultSpinChargeStats = SetStrucSpinCharge();
+	public StrucSpinCharge BasicSpinChargeStats = SetStrucSpinCharge();
 
 	static StrucSpinCharge SetStrucSpinCharge () {
 		return new StrucSpinCharge
@@ -550,9 +598,31 @@ public class S_O_CharacterStats : ScriptableObject
 			maximumSpeedPerformedAt = 200f,
 			maximumSlopePerformedAt = -1f,
 			releaseShakeAmmount = 1.5f,
-			SpeedLossByTime = new AnimationCurve(),
-			ForceGainByAngle = new AnimationCurve(),
-			ForceGainByCurrentSpeed = new AnimationCurve(),
+			SpeedLossByTime = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0f, 0.1f),
+				new Keyframe(0.4f, 0.25f),
+				new Keyframe(1f, 0.35f),
+			}),
+			ForceGainByAngle = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(-1, 2f),
+				new Keyframe(-0.85f, 2f),
+				new Keyframe(-0.65f, 1.5f),
+				new Keyframe(0f, 1.2f),
+				new Keyframe(0.3f, 1.05f),
+				new Keyframe(1f, 1f),
+			}),
+			ForceGainByCurrentSpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 1.2f),
+				new Keyframe(0.05f, 1.2f),
+				new Keyframe(0.15f, 1f),
+				new Keyframe(0.3f, 1f),
+				new Keyframe(0.55f, 0.4f),
+				new Keyframe(0.75f, 0.15f),
+				new Keyframe(1f, 0f),
+			}),
 			skidStartPoint = 10f,
 			skidIntesity = 3f
 		};
@@ -588,7 +658,7 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			dropSpeed = 100f,
 			BounceMaxSpeed = 140f,
-			listOfBounceSpeeds = new List<float>(),
+			listOfBounceSpeeds = new List<float> { 40f, 42f, 44f },
 			bounceHaltFactor = 0.7f,
 			bounceCoolDown = 8f,
 			bounceUpMaxSpeed = 75f,
@@ -602,7 +672,7 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		public float              dropSpeed;
 		public float              BounceMaxSpeed;
-		public List<float>                  listOfBounceSpeeds;
+		public List<float>        listOfBounceSpeeds;
 		public float              bounceHaltFactor;
 		public float              bounceCoolDown;
 		public float              bounceUpMaxSpeed;
@@ -703,12 +773,19 @@ public class S_O_CharacterStats : ScriptableObject
 	#region pull Items
 	//-------------------------------------------------------------------------------------------------
 	public StrucItemPull ItemPulling = SetStrucItemPull();
-	public StrucItemPull DefaultItemPulling = SetStrucItemPull();
+	public StrucItemPull BasicItemPulling = SetStrucItemPull();
 
 	static StrucItemPull SetStrucItemPull () {
 		return new StrucItemPull
 		{
-			RadiusBySpeed = new AnimationCurve(),
+			RadiusBySpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 1.3f),
+				new Keyframe(0.15f, 1.3f),
+				new Keyframe(0.25f, 4f),
+				new Keyframe(0.7f, 7f),
+				new Keyframe(1f, 9f),
+			}),
 			RingMask = new LayerMask(),
 			basePullSpeed = 1.2f
 		};
@@ -802,7 +879,7 @@ public class S_O_CharacterStats : ScriptableObject
 	//-------------------------------------------------------------------------------------------------
 
 	public StrucRails RailStats = SetStrucRails();
-	public StrucRails DefaultRailStats = SetStrucRails();
+	public StrucRails BasicRailStats = SetStrucRails();
 
 	static StrucRails SetStrucRails () {
 		return new StrucRails
@@ -825,7 +902,14 @@ public class S_O_CharacterStats : ScriptableObject
 			hopDelay = 0.3f,
 			hopSpeed = 3.5f,
 			hopDistance = 12f,
-			RailAccelerationBySpeed = new AnimationCurve(),
+			RailAccelerationBySpeed = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 3.5f),
+				new Keyframe(0.12f, 3.5f),
+				new Keyframe(0.25f, 1.82f),
+				new Keyframe(0.825f, 1f),
+				new Keyframe(1f, 1.2f),
+			}),
 			railBoostDecaySpeed = 0.45f,
 			railBoostDecayTime = 0.45f
 		};
@@ -922,23 +1006,28 @@ public class S_O_CharacterStats : ScriptableObject
 [CustomEditor(typeof(S_O_CharacterStats))]
 public class S_O_CharacterStatsEditor : Editor
 {
-	
+	S_O_CharacterStats stats;
+	GUIStyle headerStyle;
+	GUIStyle ResetToDefaultButton;
 
 	public override void OnInspectorGUI () {
-		//base.OnInspectorGUI();
+		DrawInspector();
+	}
+	private void OnEnable () {
+		//Setting variables
+		stats = (S_O_CharacterStats)target;
+
+		if (stats.InspectorTheme == null) { return; }
+		headerStyle = stats.InspectorTheme._MainHeaders;
+		ResetToDefaultButton = stats.InspectorTheme._DefaultButton;
+	}
+
+	private void DrawInspector () {
 
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("InspectorTheme"), new GUIContent("Inspector Theme"));
 		serializedObject.ApplyModifiedProperties();
 
 
-		//Setting variables
-		S_O_CharacterStats stats = (S_O_CharacterStats)target;
-
-		if (stats.InspectorTheme == null) { return; }
-		GUIStyle headerStyle = stats.InspectorTheme._MainHeaders;
-		
-
-		GUIStyle ResetToDefaultButton = stats.InspectorTheme._DefaultButton;
 
 
 		//Will only happen if above is attatched.
@@ -975,7 +1064,8 @@ public class S_O_CharacterStatsEditor : Editor
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Aerial Actions", headerStyle);
 		DrawJumping();
-		DrawMultiJumps();		
+		DrawMultiJumps();
+		DrawHomingSearch();
 		DrawHoming();
 		DrawJumpDash();
 		DrawBounce();
@@ -1000,14 +1090,13 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawWhenBonked();
 		DrawWhenHurt();
 
-		//Speeds
-		#region Speeds
-		//Speeds
 		void DrawProperty ( string property, string outputName ) {
+			GUILayout.BeginHorizontal();
 			EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
 		}
 
-
+		//Speeds
+		#region Speeds
 		void DrawSpeed () {
 			EditorGUILayout.Space();
 			DrawProperty("SpeedStats", "Speeds");
@@ -1018,6 +1107,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.SpeedStats = stats.DefaultSpeedStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1030,9 +1120,10 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.AccelerationStats = stats.DefaultAccelerationStats;
+				stats.AccelerationStats = stats.BasicAccelerationStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1045,9 +1136,10 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.DecelerationStats = stats.DefaultDecelerationStats;
+				stats.DecelerationStats = stats.BasicDecelerationStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1060,9 +1152,10 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.TurningStats = stats.DefaultTurningStats;
+				stats.TurningStats = stats.BasicTurningStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1075,9 +1168,10 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.SlopeStats = stats.DefaultSlopeStats;
+				stats.SlopeStats = stats.BasicSlopeStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1085,16 +1179,15 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Sticking
 		void DrawSticking () {
 			EditorGUILayout.Space();
-			DrawProperty("StickToGround", "Sticking To the Ground");
 			DrawProperty("GreedysStickToGround", "Sticking to the Ground (Greedy's Version)");
 
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.StickToGround = stats.DefaultStickToGround;
 				stats.GreedysStickToGround = stats.DefaultGreedysStickToGround;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1110,6 +1203,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.WhenInAir = stats.DefaultWhenInAir;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1125,6 +1219,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.RollingStats = stats.DefaultRollingStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1140,6 +1235,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.SkiddingStats = stats.DefaultSkiddingStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1152,9 +1248,10 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.JumpStats = stats.DefaultJumpStats;
+				stats.JumpStats = stats.BasicJumpStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1170,6 +1267,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.MultipleJumpStats = stats.DefaultMultipleJumpStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1185,6 +1283,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.QuickstepStats = stats.DefaultQuickstepStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1197,9 +1296,10 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.SpinChargeStats = stats.DefaultSpinChargeStats;
+				stats.SpinChargeStats = stats.BasicSpinChargeStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1208,15 +1308,27 @@ public class S_O_CharacterStatsEditor : Editor
 		void DrawHoming () {
 			EditorGUILayout.Space();
 			DrawProperty("HomingStats", "Homing Attack");
-			DrawProperty("HomingSearch", "Homing Targetting");
 
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
 				stats.HomingStats = stats.DefaultHomingStats;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
+
+		void DrawHomingSearch () {
+			EditorGUILayout.Space();
+			DrawProperty("HomingSearch", "Homing Targetting");
+
+			Undo.RecordObject(stats, "set to defaults");
+			if (GUILayout.Button("Default", ResetToDefaultButton))
+			{
 				stats.HomingSearch = stats.DefaultHomingSearch;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1232,6 +1344,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.BounceStats = stats.DefaultBounceStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1247,6 +1360,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.RingRoadStats = stats.DefaultRingRoadStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1262,12 +1376,13 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.DropChargeStats = stats.DefaultDropChargeStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
 		//JumpDash
 		#region JumpDash
-		void DrawJumpDash() {
+		void DrawJumpDash () {
 			EditorGUILayout.Space();
 			DrawProperty("JumpDashStats", "Jump Dash");
 
@@ -1276,7 +1391,8 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.JumpDashStats = stats.DefaultJumpDashStats;
 			}
 			serializedObject.ApplyModifiedProperties();
-		}		
+			GUILayout.EndHorizontal();
+		}
 		#endregion
 
 		//EnemyInteraction
@@ -1291,6 +1407,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.EnemyInteraction = stats.DefaultEnemyInteraction;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1303,12 +1420,12 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.ItemPulling = stats.DefaultItemPulling;
+				stats.ItemPulling = stats.BasicItemPulling;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
-
 
 		//WhenBonked
 		#region WhenBonked
@@ -1322,9 +1439,9 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.WhenBonked = stats.DefaultWhenBonked;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
-
 
 		//WhenHurt       
 		#region WhenHurt
@@ -1338,6 +1455,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.WhenHurt = stats.DefaultWhenHurt;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1350,9 +1468,10 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.RailStats = stats.DefaultRailStats;
+				stats.RailStats = stats.BasicRailStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1368,6 +1487,7 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.RailPosition = stats.DefaultRailPosition;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
 
@@ -1383,8 +1503,10 @@ public class S_O_CharacterStatsEditor : Editor
 				stats.WallRunningStats = stats.DefaultWallRunningStats;
 			}
 			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
 		#endregion
+
 
 
 

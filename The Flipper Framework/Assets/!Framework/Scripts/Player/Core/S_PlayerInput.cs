@@ -92,7 +92,7 @@ public class S_PlayerInput : MonoBehaviour {
             if (moveInp != Vector3.zero && !onPath)
             {
                 Vector3 transformedInput;
-                transformedInput = Quaternion.FromToRotation(cam.up, Player.GroundNormal) * (cam.rotation * moveInp);
+                transformedInput = Quaternion.FromToRotation(cam.up, Player._groundNormal) * (cam.rotation * moveInp);
                 transformedInput = transform.InverseTransformDirection(transformedInput);
                 transformedInput.y = 0.0f;
 

@@ -128,14 +128,14 @@ public class S_Action08_DropCharge : MonoBehaviour
             }
         }
 
-        if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player._Groundmask_) || Vector3.Dot(Player.GroundNormal, Vector3.up) > 0.99)
+        if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player._Groundmask_) || Vector3.Dot(Player._groundNormal, Vector3.up) > 0.99)
         {
 
             if (!Actions.JumpPressed)
                 Release();
             else
             {
-                Player.isRolling = true;
+                Player._isRolling = true;
                 JumpBall.SetActive(false);
                 if (DropEffect.isPlaying == true)
                 {
@@ -191,9 +191,9 @@ public class S_Action08_DropCharge : MonoBehaviour
 
         Debug.Log(time);
 
-        Player.GravityAffects = false;
+        Player._isGravityOn = false;
         yield return new WaitForSeconds(time);
-        Player.GravityAffects = true;
+        Player._isGravityOn = true;
         JumpBall.SetActive(false);
         Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 
@@ -246,16 +246,16 @@ public class S_Action08_DropCharge : MonoBehaviour
         Vector3 newVec = charge *  newForward;
 
         Actions.Action00.Curl();
-        Player.isRolling = true;
+        Player._isRolling = true;
         Actions.Action00.rollCounter = 0.005f;
 
 
-        Vector3 releVec = Player.getRelevantVec(newVec);
+        Vector3 releVec = Player.GetRelevantVec(newVec);
         float newSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
 
         Debug.DrawRay(transform.position, newVec.normalized * 30, Color.red * 2, 20f);
 
-        if (newSpeedMagnitude > Player.HorizontalSpeedMagnitude)
+        if (newSpeedMagnitude > Player._horizontalSpeedMagnitude)
         {
             Player.rb.velocity = newVec;
 
@@ -263,7 +263,7 @@ public class S_Action08_DropCharge : MonoBehaviour
         }
         else
         {
-            Player.rb.velocity = newVec.normalized * (Player.HorizontalSpeedMagnitude + (charge* 0.45f));
+            Player.rb.velocity = newVec.normalized * (Player._horizontalSpeedMagnitude + (charge* 0.45f));
             Cam.Cam.FollowHeightDirection(20, 15f);
         }
     }
@@ -308,7 +308,7 @@ public class S_Action08_DropCharge : MonoBehaviour
             }
         }
 
-        if (Player.Grounded && DropEffect.isPlaying)
+        if (Player._isGrounded && DropEffect.isPlaying)
         {
             DropEffect.Stop();
         }

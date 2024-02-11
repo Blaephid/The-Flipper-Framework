@@ -84,7 +84,7 @@ public class S_Interaction_Objects : MonoBehaviour {
         if (Actions.whatAction == S_Enums.PlayerStates.Regular)
         {
             //DisplaySpeed = Player.SpeedMagnitude;
-            DisplaySpeed = Player.HorizontalSpeedMagnitude;
+            DisplaySpeed = Player._horizontalSpeedMagnitude;
         }
         
         else if(Actions.whatAction == S_Enums.PlayerStates.Rail)
@@ -105,10 +105,10 @@ public class S_Interaction_Objects : MonoBehaviour {
         }
         else
         {
-             DisplaySpeed = Player.HorizontalSpeedMagnitude;           
+             DisplaySpeed = Player._horizontalSpeedMagnitude;           
         }
 
-        if (SpeedCounter != null && Player.SpeedMagnitude > 10f) SpeedCounter.text = DisplaySpeed.ToString("F0");
+        if (SpeedCounter != null && Player._speedMagnitude > 10f) SpeedCounter.text = DisplaySpeed.ToString("F0");
         else if (SpeedCounter != null && DisplaySpeed < 10f) SpeedCounter.text = "0"; 
     }
 
@@ -141,7 +141,7 @@ public class S_Interaction_Objects : MonoBehaviour {
         {
             transform.position += (-Platform.TranslateVector);
         }
-        if (!Player.Grounded)
+        if (!Player._isGrounded)
         {
             Platform = null;
         }
@@ -238,8 +238,8 @@ public class S_Interaction_Objects : MonoBehaviour {
                 if (pad.LockToDirection)
                 {
                     float speed = col.GetComponent<S_Data_SpeedPad>().Speed;
-                    if (speed < Player.HorizontalSpeedMagnitude)
-                        speed = Player.HorizontalSpeedMagnitude;
+                    if (speed < Player._horizontalSpeedMagnitude)
+                        speed = Player._horizontalSpeedMagnitude;
 
                     if(!pad.isDashRing)
                         StartCoroutine(applyForce(col.transform.forward * speed, lockpos, 1));
@@ -359,7 +359,7 @@ public class S_Interaction_Objects : MonoBehaviour {
         {
             S_HedgeCamera.Shakeforce = _enemyHitShakeAmmount_;
         //Either triggers an attack on the enemy or takes damage.
-            if (Actions.whatAction == S_Enums.PlayerStates.SpinCharge || (Actions.whatAction == S_Enums.PlayerStates.Regular && Player.isRolling))
+            if (Actions.whatAction == S_Enums.PlayerStates.SpinCharge || (Actions.whatAction == S_Enums.PlayerStates.Regular && Player._isRolling))
             {
                 attack.AttackThing(col, "SpinDash", "Enemy"); ;
                 
@@ -395,7 +395,7 @@ public class S_Interaction_Objects : MonoBehaviour {
         if (col.tag == "Spring")
         {
             Actions.Action00.cancelCoyote();
-            Player.GravityAffects = true;
+            Player._isGravityOn = true;
 
             if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
                 Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
@@ -628,16 +628,16 @@ public class S_Interaction_Objects : MonoBehaviour {
     private IEnumerator lockGravity(Vector3 newGrav)
     {
 
-        Player.fallGravity = newGrav;
+        Player._fallGravity_ = newGrav;
         yield return new WaitForSeconds(0.2f);
         while (true)
         {
             yield return new WaitForFixedUpdate();
-            if (Player.Grounded)
+            if (Player._isGrounded)
                 break;
         }
 
-        Player.fallGravity = Player._startFallGravity_;
+        Player._fallGravity_ = Player._startFallGravity_;
     }
 
     private IEnumerator applyForce(Vector3 force, Vector3 position, int frames = 3)

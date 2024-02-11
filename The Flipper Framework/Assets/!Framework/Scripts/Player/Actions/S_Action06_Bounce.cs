@@ -58,7 +58,7 @@ public class S_Action06_Bounce : MonoBehaviour {
         {
 	
 			HasBounced = false;
-			memoriseSpeed = Player.HorizontalSpeedMagnitude;
+			memoriseSpeed = Player._horizontalSpeedMagnitude;
 			nextSpeed = memoriseSpeed;
 
 
@@ -84,7 +84,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 		hitHeight = transform.position.y;
 
 		Action.BouncePressed = false;
-		Player.Grounded = false;
+		Player.SetIsGrounded(false);
 		Action.Action02.HomingAvailable = true;
 
 		HasBounced = true;
@@ -101,12 +101,12 @@ public class S_Action06_Bounce : MonoBehaviour {
 		Vector3 newVec;
 
 		
-		if(Player.HorizontalSpeedMagnitude < 20)
+		if(Player._horizontalSpeedMagnitude < 20)
         {
 			newVec = CharacterAnimator.transform.forward;
 			newVec *= 20;
 		}
-		else if (nextSpeed > Player.HorizontalSpeedMagnitude)
+		else if (nextSpeed > Player._horizontalSpeedMagnitude)
 		{
 			newVec = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z).normalized;
 			newVec *= nextSpeed;
@@ -115,7 +115,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 			newVec = Player.rb.velocity;
 
 		Player.rb.velocity = new Vector3 (newVec.x, CurrentBounceAmount, newVec.z);
-		Player.AddVelocity (Player.GroundNormal);
+		Player.AddVelocity (Player._groundNormal);
 
 		sounds.BounceImpactSound ();
 
@@ -152,9 +152,9 @@ public class S_Action06_Bounce : MonoBehaviour {
     void FixedUpdate()
     {
 
-		bool raycasthit = Physics.SphereCast(transform.position, 0.5f, -transform.up, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.75f) + Player.negativeGHoverHeight, Player._Groundmask_);
+		bool raycasthit = Physics.SphereCast(transform.position, 0.5f, -transform.up, out hit, (Player._speedMagnitude * Time.deltaTime * 0.75f) + Player._negativeGHoverHeight_, Player._Groundmask_);
         //bool raycasthit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.95f) + Player.negativeGHoverHeight, Player.Playermask);
-		bool groundhit = Player.Grounded || raycasthit;
+		bool groundhit = Player._isGrounded || raycasthit;
 
 		if (nextSpeed > memoriseSpeed / 2)
 			nextSpeed /= 1.0005f;
@@ -183,10 +183,10 @@ public class S_Action06_Bounce : MonoBehaviour {
 
 			if(true)
 			{
-				if (Player.Grounded)
+				if (Player._isGrounded)
 				{
 					//Debug.Log("Ground Bounce " + Player.GroundNormal);
-					Bounce(Player.GroundNormal);
+					Bounce(Player._groundNormal);
 				}
 				else if (raycasthit)
 				{

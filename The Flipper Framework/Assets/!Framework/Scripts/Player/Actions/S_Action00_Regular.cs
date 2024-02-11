@@ -60,7 +60,7 @@ public class S_Action00_Regular : MonoBehaviour {
     void FixedUpdate()
     {
 
-		if(Player.SpeedMagnitude < 15 && Player._moveInput == Vector3.zero && Player.Grounded)
+		if(Player._speedMagnitude < 15 && Player._moveInput == Vector3.zero && Player._isGrounded)
 		{
 			Player.b_normalSpeed = 0;
 			Player.rb.velocity *= 0.90f;
@@ -70,13 +70,13 @@ public class S_Action00_Regular : MonoBehaviour {
 
 		//Skidding
 
-		if (Player.Grounded)
+		if (Player._isGrounded)
 			Actions.skid.RegularSkid();
 		else
 			Actions.skid.jumpSkid();
 
 		//Set Homing attack to true
-		if (Player.Grounded) 
+		if (Player._isGrounded) 
 		{
 			readyCoyote();
 
@@ -102,8 +102,8 @@ public class S_Action00_Regular : MonoBehaviour {
     {
 		inCoyote = false;
 		coyoteInEffect = true;
-		if (Player.Grounded)
-			coyoteRememberDir = Player.GroundNormal;
+		if (Player._isGrounded)
+			coyoteRememberDir = Player._groundNormal;
 		else
 			coyoteRememberDir = transform.up;
 		coyoteRememberSpeed = Player.rb.velocity.y;
@@ -113,21 +113,21 @@ public class S_Action00_Regular : MonoBehaviour {
     {	
 
         //Set Animator Parameters
-        if (Player.Grounded) { CharacterAnimator.SetInteger("Action", 0); }
+        if (Player._isGrounded) { CharacterAnimator.SetInteger("Action", 0); }
         CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
 		CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player.rb.velocity.x+Player.rb.velocity.z)/2));
         CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
 		CharacterAnimator.SetFloat("HorizontalInput", Actions.moveX *Player.rb.velocity.magnitude);
-        CharacterAnimator.SetBool("Grounded", Player.Grounded);
+        CharacterAnimator.SetBool("Grounded", Player._isGrounded);
         CharacterAnimator.SetFloat("NormalSpeed", Player.b_normalSpeed + _SkiddingStartPoint_);
 
 		//Set Character Animations and position1
 		CharacterAnimator.transform.parent = null;
         
         //Set Skin Rotation
-        if (Player.Grounded)
+        if (Player._isGrounded)
 		{
-			Vector3 releVec = Player.getRelevantVec(Player.rb.velocity);
+			Vector3 releVec = Player.GetRelevantVec(Player.rb.velocity);
 			Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
 			Debug.DrawRay(transform.position, newForward.normalized * 5, Color.yellow);
 			//newForward = releVec - transform.up * Vector3.Dot(releVec, transform.up);
@@ -145,7 +145,7 @@ public class S_Action00_Regular : MonoBehaviour {
         }
         else
         {
-			Vector3 releVec = Player.getRelevantVec(Player.rb.velocity);
+			Vector3 releVec = Player.GetRelevantVec(Player.rb.velocity);
 			Vector3 VelocityMod = new Vector3(releVec.x, 0, releVec.z);
 			//VelocityMod = Player.rb.velocity;
 
@@ -174,7 +174,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			characterCapsule.SetActive(false);
 			//rollCounter = 0f;
 		}
-		Player.isRolling = true;
+		Player._isRolling = true;
 		Rolling = true;
 	}
 
@@ -189,7 +189,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			_rollingCapsule_.SetActive(false);
 			rollCounter = 0f;
 			Rolling = false;
-			Player.isRolling = false;
+			Player._isRolling = false;
 
 		}
 
@@ -199,11 +199,11 @@ public class S_Action00_Regular : MonoBehaviour {
     {
 
 		//Jump
-		if (Actions.JumpPressed && (Player.Grounded || coyoteInEffect))
+		if (Actions.JumpPressed && (Player._isGrounded || coyoteInEffect))
 		{
 
-			if (Player.Grounded)
-				JumpAction.InitialEvents(Player.GroundNormal, true, Player.rb.velocity.y);
+			if (Player._isGrounded)
+				JumpAction.InitialEvents(Player._groundNormal, true, Player.rb.velocity.y);
 			else
 				JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
 
@@ -220,27 +220,27 @@ public class S_Action00_Regular : MonoBehaviour {
 		
 
 		//Do Spindash
-		if (Actions.spinChargePressed && Player.Grounded && Player.GroundNormal.y > _MaximumSlope_ && Player.HorizontalSpeedMagnitude < _MaximumSpeed_)
+		if (Actions.spinChargePressed && Player._isGrounded && Player._groundNormal.y > _MaximumSlope_ && Player._horizontalSpeedMagnitude < _MaximumSpeed_)
 		{
 			Actions.ChangeAction(S_Enums.PlayerStates.SpinCharge);
 			Actions.Action03.InitialEvents();
 		}
 
         //Check if rolling
-        if (Player.Grounded && Player.isRolling) 
+        if (Player._isGrounded && Player._isRolling) 
 		{ 
 			CharacterAnimator.SetInteger("Action", 1); 
 		}
-        CharacterAnimator.SetBool("isRolling", Player.isRolling);
+        CharacterAnimator.SetBool("isRolling", Player._isRolling);
 
         //Change to rolling state
-        if (Actions.RollPressed && Player.Grounded)
+        if (Actions.RollPressed && Player._isGrounded)
 		{
 			Curl();
 		}
 
 		//Exit rolling state
-		if ((!Actions.RollPressed && rollCounter > minRollTime) | !Player.Grounded)
+		if ((!Actions.RollPressed && rollCounter > minRollTime) | !Player._isGrounded)
 		{
 			unCurl();
 		}
@@ -263,7 +263,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		//Enable Quickstep right or left
 		if (Actions.RightStepPressed && !quickstepManager.enabled)
 		{
-			if (Player.HorizontalSpeedMagnitude > 10f)
+			if (Player._horizontalSpeedMagnitude > 10f)
 			{
 
 				quickstepManager.initialEvents(true);
@@ -273,7 +273,7 @@ public class S_Action00_Regular : MonoBehaviour {
 
 		else if (Actions.LeftStepPressed && !quickstepManager.enabled)
 		{
-			if (Player.HorizontalSpeedMagnitude > 10f)
+			if (Player._horizontalSpeedMagnitude > 10f)
 			{
 				quickstepManager.initialEvents(false);
 				quickstepManager.enabled = true;
@@ -282,7 +282,7 @@ public class S_Action00_Regular : MonoBehaviour {
 
 
 		//The actions the player can take while the air		
-		if (!Player.Grounded && !coyoteInEffect)
+		if (!Player._isGrounded && !coyoteInEffect)
 		{
 			//Do a homing attack
 			if (Actions.Action02Control._HasTarget && Actions.HomingPressed && Actions.Action02.HomingAvailable)
@@ -333,12 +333,12 @@ public class S_Action00_Regular : MonoBehaviour {
 			if (Actions.Action08 != null)
 			{
 
-				if (!Player.Grounded && Actions.RollPressed)
+				if (!Player._isGrounded && Actions.RollPressed)
 				{
 					Actions.Action08.TryDropCharge();
 				}
 
-				if (Player.Grounded && Actions.Action08.DropEffect.isPlaying)
+				if (Player._isGrounded && Actions.Action08.DropEffect.isPlaying)
 				{
 					Actions.Action08.DropEffect.Stop();
 				}
@@ -350,7 +350,7 @@ public class S_Action00_Regular : MonoBehaviour {
     {
 		inCoyote = true;
 		coyoteInEffect = true;
-		float waitFor = _CoyoteTimeBySpeed_.Evaluate(Player.HorizontalSpeedMagnitude / 100);
+		float waitFor = _CoyoteTimeBySpeed_.Evaluate(Player._horizontalSpeedMagnitude / 100);
 
 		yield return new WaitForSeconds(waitFor);
 		

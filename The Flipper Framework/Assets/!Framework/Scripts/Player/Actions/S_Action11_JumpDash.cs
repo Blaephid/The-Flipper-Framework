@@ -63,7 +63,7 @@ public class S_Action11_JumpDash : MonoBehaviour
                 Timer = 0;
                 Action02.HomingAvailable = false;
 
-                XZmag = Player.HorizontalSpeedMagnitude;
+                XZmag = Player._horizontalSpeedMagnitude;
 
                 AirDashParticle();
 
@@ -96,7 +96,7 @@ public class S_Action11_JumpDash : MonoBehaviour
         CharacterAnimator.SetInteger("Action", 11);
         CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
         CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
-        CharacterAnimator.SetBool("Grounded", Player.Grounded);
+        CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
         //Set Animation Angle
         Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
@@ -145,7 +145,7 @@ public class S_Action11_JumpDash : MonoBehaviour
 
         Vector3 newVec = Direction.normalized * Aspeed;
         if(Player.rb.velocity.y < 0)
-            newVec.y = Player.fallGravity.y * 0.5f;
+            newVec.y = Player._fallGravity_.y * 0.5f;
 
         Player.rb.velocity = newVec;
 
@@ -155,10 +155,10 @@ public class S_Action11_JumpDash : MonoBehaviour
             JumpBall.SetActive(true);
             Action.ChangeAction(S_Enums.PlayerStates.Jump);
         }
-        else if (Player.Grounded)
+        else if (Player._isGrounded)
         {
             CharacterAnimator.SetInteger("Action", 0);
-            CharacterAnimator.SetBool("Grounded", Player.Grounded);
+            CharacterAnimator.SetBool("Grounded", Player._isGrounded);
             Action.ChangeAction(S_Enums.PlayerStates.Regular);
         }
     }
@@ -171,8 +171,8 @@ public class S_Action11_JumpDash : MonoBehaviour
         //else
         //    JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
 
-        if (Player.SpeedMagnitude > 60)
-            JumpDashParticleClone.transform.localScale = new Vector3(Player.SpeedMagnitude / 60f, Player.SpeedMagnitude / 60f, Player.SpeedMagnitude / 60f);
+        if (Player._speedMagnitude > 60)
+            JumpDashParticleClone.transform.localScale = new Vector3(Player._speedMagnitude / 60f, Player._speedMagnitude / 60f, Player._speedMagnitude / 60f);
         //else
         //    JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
 

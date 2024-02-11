@@ -113,11 +113,11 @@ namespace SplineMesh
             InitialRot = transform.rotation;
             CharacterAnimator.SetBool("Grounded", true);
 
-            OriginalRayToGroundRot = Player.RayToGroundRotDistancecor;
-            OriginalRayToGround = Player.RayToGroundDistancecor;
+            OriginalRayToGroundRot = Player._RayToGroundRotDistancecor;
+            OriginalRayToGround = Player._RayToGroundDistancecor;
 
-            Player.RayToGroundDistancecor = Player.RayToGroundDistancecor * 4f;
-            Player.RayToGroundRotDistancecor = Player.RayToGroundRotDistancecor * 4f;
+            Player._RayToGroundDistancecor = Player._RayToGroundDistancecor * 4f;
+            Player._RayToGroundRotDistancecor = Player._RayToGroundRotDistancecor * 4f;
 
         }
 
@@ -138,7 +138,7 @@ namespace SplineMesh
             CharacterAnimator.SetInteger("Action", 0);
             CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
             CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
-            CharacterAnimator.SetBool("Grounded", Player.Grounded);
+            CharacterAnimator.SetBool("Grounded", Player._isGrounded);
             
 
             //Set Animation Angle
@@ -159,9 +159,9 @@ namespace SplineMesh
             Player.alignWithGround();
 
             //Slowly increases player speed.
-            if (PlayerSpeed < Player.TopSpeed || PlayerSpeed < PathTopSpeed)
+            if (PlayerSpeed < Player._currentTopSpeed || PlayerSpeed < PathTopSpeed)
             {
-                if (PlayerSpeed < Player.TopSpeed * 0.7f)
+                if (PlayerSpeed < Player._currentTopSpeed * 0.7f)
                     PlayerSpeed += .14f;
                 else
                     PlayerSpeed += .07f;
@@ -169,18 +169,18 @@ namespace SplineMesh
             }
 
             //Simple Slope effects
-            if (Player.GroundNormal.y < 1 && Player.GroundNormal != Vector3.zero)
+            if (Player._groundNormal.y < 1 && Player._groundNormal != Vector3.zero)
             {
                 //UpHill
                 if (Player.rb.velocity.y > 0f)
                 {
-                    PlayerSpeed -= (1f - Player.GroundNormal.y) * 0.1f;
+                    PlayerSpeed -= (1f - Player._groundNormal.y) * 0.1f;
                 }
 
                 //DownHill
                 if (Player.rb.velocity.y < 0f)
                 {
-                    PlayerSpeed += (1f - Player.GroundNormal.y) * 0.1f;
+                    PlayerSpeed += (1f - Player._groundNormal.y) * 0.1f;
                 }
             }
 
@@ -215,7 +215,7 @@ namespace SplineMesh
                 //CharacterAnimator.transform.rotation = rot;
 
 
-                if ((Physics.Raycast(sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + Player.RayToGroundRotDistancecor, Player._Groundmask_)))
+                if ((Physics.Raycast(sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + Player._RayToGroundRotDistancecor, Player._Groundmask_)))
                 {
                     //Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
                     //transform.position = (hitRot.point + PathTransform.position) + FootPos;
@@ -300,8 +300,8 @@ namespace SplineMesh
 
             CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Player.groundHit.normal);
 
-            Player.RayToGroundDistancecor = OriginalRayToGround;
-            Player.RayToGroundRotDistancecor = OriginalRayToGroundRot;
+            Player._RayToGroundDistancecor = OriginalRayToGround;
+            Player._RayToGroundRotDistancecor = OriginalRayToGroundRot;
 
             Player.GetComponent<S_Handler_Camera>().Cam.setBehind();
             Input.LockInputForAWhile(30f, true);

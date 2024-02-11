@@ -194,7 +194,7 @@ public class S_ActionManager : MonoBehaviour
         {
                 if (ctx.performed)
                 {
-                        if (!Phys.Grounded)
+                        if (!Phys._isGrounded)
                         {
                                 BouncePressed = ctx.ReadValueAsButton();
                         }
@@ -223,7 +223,7 @@ public class S_ActionManager : MonoBehaviour
         {
                 if (ctx.performed)
                 {
-                        if (Phys.Grounded)
+                        if (Phys._isGrounded)
                                 spinChargePressed = ctx.ReadValueAsButton();
 
                 }
@@ -415,7 +415,7 @@ public class S_ActionManager : MonoBehaviour
                 switch (whatPreviousAction)
                 {
                         case S_Enums.PlayerStates.Homing:
-                                Phys.GravityAffects = true;
+                                Phys._isGravityOn = true;
                                 actionEnable();
                                 break;
                 }
@@ -461,7 +461,7 @@ public class S_ActionManager : MonoBehaviour
                 for (int s = 0; s < time; s++)
                 {
                         yield return new WaitForFixedUpdate();
-                        if (Phys.Grounded)
+                        if (Phys._isGrounded)
                                 break;
                 }
 
@@ -479,7 +479,7 @@ public class S_ActionManager : MonoBehaviour
                 for (int v = 0; v < time; v++)
                 {
                         yield return new WaitForFixedUpdate();
-                        if (Phys.Grounded)
+                        if (Phys._isGrounded)
                                 break;
                 }
 

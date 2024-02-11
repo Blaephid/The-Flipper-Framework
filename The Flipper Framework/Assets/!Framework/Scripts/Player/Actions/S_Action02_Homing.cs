@@ -69,7 +69,7 @@ public class S_Action02_Homing : MonoBehaviour
             if (Action.Action02Control._HasTarget)
             {
                 Target = HomingControl._TargetObject.transform;
-                TargetDirection = (Target.transform.position - Player.playerPos).normalized;
+                TargetDirection = (Target.transform.position - Player._playerPos).normalized;
             }
             else
             {
@@ -79,7 +79,7 @@ public class S_Action02_Homing : MonoBehaviour
             timer = 0;
             HomingAvailable = false;
 
-            XZmag = Player.HorizontalSpeedMagnitude;
+            XZmag = Player._horizontalSpeedMagnitude;
 
 
 
@@ -117,13 +117,13 @@ public class S_Action02_Homing : MonoBehaviour
 
 
         //Player.Gravity = new Vector3(0f, 0f, 0f);
-        Player.GravityAffects = false;
+        Player._isGravityOn = false;
 
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 1);
         CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
         CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
-        CharacterAnimator.SetBool("Grounded", Player.Grounded);
+        CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
         //Set Animation Angle
         Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);

@@ -128,7 +128,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
     void startFall()
     {
         //Stop if not grounded
-        if (!Player.Grounded)
+        if (!Player._isGrounded)
         {
             Actions.SpecialPressed = false;
             effects.EndSpinDash();
@@ -161,7 +161,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
         //Enable Quickstep right or left
         if (Actions.RightStepPressed && !quickstepManager.enabled)
         {
-            if (Player.HorizontalSpeedMagnitude > 10f)
+            if (Player._horizontalSpeedMagnitude > 10f)
             {
 
                 quickstepManager.initialEvents(true);
@@ -171,7 +171,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
         else if (Actions.LeftStepPressed && !quickstepManager.enabled)
         {
-            if (Player.HorizontalSpeedMagnitude > 10f)
+            if (Player._horizontalSpeedMagnitude > 10f)
             {
                 quickstepManager.initialEvents(false);
                 quickstepManager.enabled = true;
@@ -217,9 +217,9 @@ public class S_Action03_SpinCharge : MonoBehaviour
             Vector3 newForce = charge * (PlayerSkinTransform.forward);
             float dif = Vector3.Dot(newForce.normalized, Player.rb.velocity.normalized);
 
-            if(Player.HorizontalSpeedMagnitude > 20)
+            if(Player._horizontalSpeedMagnitude > 20)
                 newForce *= _forceGainByAngle_.Evaluate(dif);
-            newForce *= _gainBySpeed_.Evaluate(Player.HorizontalSpeedMagnitude / Player.MaxSpeed);
+            newForce *= _gainBySpeed_.Evaluate(Player._horizontalSpeedMagnitude / Player._currentMaxSpeed);
 
             Player.rb.velocity += newForce;
 
@@ -228,7 +228,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
             
             Actions.Action00.Rolling = true;
-            Player.isRolling = true;
+            Player._isRolling = true;
             Actions.Action00.rollCounter = 0.3f;
 
             Inp.LockInputForAWhile(0, false);
@@ -258,7 +258,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
         if (Player.RawInput.sqrMagnitude > 0.1f)
         {
             
-            CharRot = Quaternion.LookRotation(Tools.MainCamera.transform.forward - Player.GroundNormal * Vector3.Dot(Tools.MainCamera.transform.forward, Player.GroundNormal), transform.up);
+            CharRot = Quaternion.LookRotation(Tools.MainCamera.transform.forward - Player._groundNormal * Vector3.Dot(Tools.MainCamera.transform.forward, Player._groundNormal), transform.up);
         }
         else if (Player.rb.velocity != Vector3.zero)
         {

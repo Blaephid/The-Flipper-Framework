@@ -113,7 +113,7 @@ public class S_Action01_Jump : MonoBehaviour
                 //Sets jump direction
                 InitialNormal = normaltoJump;
 
-                Player.TimeOnGround = 0;
+                Player._TimeOnGround = 0;
 
                 //SnapOutOfGround to make sure you do jump
                 transform.position += (InitialNormal * 0.3f);
@@ -169,8 +169,8 @@ public class S_Action01_Jump : MonoBehaviour
         {
             CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
         }
-        CharacterAnimator.SetFloat("GroundSpeed", Player.HorizontalSpeedMagnitude);
-        CharacterAnimator.SetBool("Grounded", Player.Grounded);
+        CharacterAnimator.SetFloat("GroundSpeed", Player._horizontalSpeedMagnitude);
+        CharacterAnimator.SetBool("Grounded", Player._isGrounded);
         CharacterAnimator.SetBool("isRolling", false);
 
         //Set Animation Angle
@@ -197,7 +197,7 @@ public class S_Action01_Jump : MonoBehaviour
             //If can homing attack pressed.
             if(Actions.HomingPressed)
             {
-                if (Actions.Action02.HomingAvailable && Actions.Action02Control._HasTarget && !Player.Grounded)
+                if (Actions.Action02.HomingAvailable && Actions.Action02Control._HasTarget && !Player._isGrounded)
                 {
 
                     //Do a homing attack
@@ -296,7 +296,7 @@ public class S_Action01_Jump : MonoBehaviour
             //Enable Quickstep right or left
             if (Actions.RightStepPressed && !stepManager.enabled)
             {
-                if (Player.HorizontalSpeedMagnitude > 15f)
+                if (Player._horizontalSpeedMagnitude > 15f)
                 {
                     Debug.Log("Step in Jump");
                     stepManager.initialEvents(true);
@@ -308,7 +308,7 @@ public class S_Action01_Jump : MonoBehaviour
             else if (Actions.LeftStepPressed && !stepManager.enabled)
             {
 
-                if (Player.HorizontalSpeedMagnitude > 15f)
+                if (Player._horizontalSpeedMagnitude > 15f)
                 {
 
                     stepManager.initialEvents(false);
@@ -344,7 +344,7 @@ public class S_Action01_Jump : MonoBehaviour
         //Add Jump Speed
         else if (Counter < JumpDuration && Jumping)
         {
-            Player.isRolling = false;
+            Player._isRolling = false;
             if (Counter < SlopedJumpDuration)
             {
                 Player.AddVelocity(InitialNormal * (JumpSpeed));
@@ -371,7 +371,7 @@ public class S_Action01_Jump : MonoBehaviour
         }
 
         //End Action
-        if (Player.Grounded && Counter > SlopedJumpDuration)
+        if (Player._isGrounded && Counter > SlopedJumpDuration)
         {
 
             jumpCount = 0;

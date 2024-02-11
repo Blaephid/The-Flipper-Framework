@@ -94,7 +94,7 @@ public class S_Action12_WallRunning : MonoBehaviour
 
         Counter = 0;
         Actions.JumpPressed = false;
-        Player.GravityAffects = false;
+        Player._isGravityOn = false;
         Cam.Cam.LockHeight = false ;
 
         //If entering a wallclimb
@@ -142,9 +142,9 @@ public class S_Action12_WallRunning : MonoBehaviour
     private void FixedUpdate()
     {
         //Cancel action by letting go of skid after .5 seconds
-        if ((!holdingWall && Counter > 0.9f && (Climbing || Running)) || Player.Grounded)
+        if ((!holdingWall && Counter > 0.9f && (Climbing || Running)) || Player._isGrounded)
         {
-            if (Running && !Player.Grounded)
+            if (Running && !Player._isGrounded)
                 StartCoroutine(loseWall());
             else
                 ExitWall(true);
@@ -217,7 +217,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         dropShadow.SetActive(false);
 
         //Set the climbing speed based on player's speed
-        ClimbingSpeed = Player.HorizontalSpeedMagnitude * 0.8f;
+        ClimbingSpeed = Player._horizontalSpeedMagnitude * 0.8f;
         ClimbingSpeed *= _climbModi_;
         RunningSpeed = 0f;
 
@@ -256,7 +256,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         //CharacterAnimator.SetBool("Grounded", true);
 
         ClimbingSpeed = 0f;
-        RunningSpeed = Player.HorizontalSpeedMagnitude;
+        RunningSpeed = Player._horizontalSpeedMagnitude;
         scrapingSpeed = Player.rb.velocity.y * 0.7f;
 
         //If running with the wall on the right
@@ -523,7 +523,7 @@ public class S_Action12_WallRunning : MonoBehaviour
 
     void FromWallToGround()
     {
-        Player.GravityAffects = true;
+        Player._isGravityOn = true;
         
 
         //Set rotation to put feet on ground.
@@ -628,7 +628,7 @@ public class S_Action12_WallRunning : MonoBehaviour
 
         dropShadow.SetActive(true);
         Cam.Cam.CameraMaxDistance = Cam.InitialDistance;
-        Player.GravityAffects = true;
+        Player._isGravityOn = true;
         Cam.Cam.LockHeight = true;
         camTarget.position = constantTarget.position;
         CharacterAnimator.transform.rotation = Quaternion.identity;

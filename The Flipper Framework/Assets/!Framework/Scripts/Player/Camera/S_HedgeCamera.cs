@@ -138,7 +138,7 @@ public class S_HedgeCamera : MonoBehaviour
         if (true)
         {
             
-            if (Player.GroundNormal.y < AngleThreshold || camOnAngle)
+            if (Player._groundNormal.y < AngleThreshold || camOnAngle)
             {                             
                 CanGoBehind = true;
                 AboveSpeedLock = true;
@@ -153,7 +153,7 @@ public class S_HedgeCamera : MonoBehaviour
             //    CanGoBehind = true;
             //    AboveSpeedLock = true;
             //}
-            else if (!Player.Grounded)
+            else if (!Player._isGrounded)
             {
                 CanGoBehind = true;
                 AboveSpeedLock = true;
@@ -190,7 +190,7 @@ public class S_HedgeCamera : MonoBehaviour
 
             if (canMove)
             {
-                if (Player.SpeedMagnitude > 10)
+                if (Player._speedMagnitude > 10)
                 {
                     x += (Actions.moveCamX * ((InputXSpeed)) * InvertedX) * Time.deltaTime;
                     y -= (Actions.moveCamY * ((InputYSpeed)) * InvertedY) * Time.deltaTime;
@@ -220,7 +220,7 @@ public class S_HedgeCamera : MonoBehaviour
             if (!UseCurve)
             {
                 //float NormalMod = Mathf.Abs(Player.b_normalSpeed - Player.MaxSpeed);
-                float NormalMod = Mathf.Abs(Player.HorizontalSpeedMagnitude - Player.MaxSpeed);
+                float NormalMod = Mathf.Abs(Player._horizontalSpeedMagnitude - Player._currentMaxSpeed);
                 //x += (((Input.GetAxis("Horizontal")) * NormalMod) * AutoXRotationSpeed) * Time.deltaTime;
                 //;
                 //y -= 0;
@@ -233,7 +233,7 @@ public class S_HedgeCamera : MonoBehaviour
             else
             {
 
-                CurveX = AutoXRotationCurve.Evaluate((Player.rb.velocity.sqrMagnitude / Player.MaxSpeed) / Player.MaxSpeed);
+                CurveX = AutoXRotationCurve.Evaluate((Player.rb.velocity.sqrMagnitude / Player._currentMaxSpeed) / Player._currentMaxSpeed);
                 CurveX = CurveX * 100;
                 x += ((Actions.moveCamX * CurveX) * AutoXRotationSpeed) * Time.deltaTime;
 
@@ -311,14 +311,14 @@ public class S_HedgeCamera : MonoBehaviour
     {
         float y = Player.rb.velocity.y;
 
-        if (LockHeight && Player.Grounded && Player.SpeedMagnitude >= 10)
+        if (LockHeight && Player._isGrounded && Player._speedMagnitude >= 10)
         {
             ////Debug.Log ("Lock");
             FollowHeightDirection(HeightToLock, LockHeightSpeed);
         }
 
         //Face down
-        if (MoveHeightBasedOnSpeed && !Player.Grounded && y < FallSpeedThreshold && (Actions.whatAction == S_Enums.PlayerStates.Jump
+        if (MoveHeightBasedOnSpeed && !Player._isGrounded && y < FallSpeedThreshold && (Actions.whatAction == S_Enums.PlayerStates.Jump
             || Actions.whatAction == S_Enums.PlayerStates.Regular || Actions.whatAction == S_Enums.PlayerStates.DropCharge))
         {
             if (!facingDown)
@@ -334,7 +334,7 @@ public class S_HedgeCamera : MonoBehaviour
                 FollowHeightDirection(-y, HeightFollowSpeed * 0.3f);
 
         }
-        else if (y > FallSpeedThreshold && !Player.Grounded && LockHeight && Actions.moveCamY <= 0.5)
+        else if (y > FallSpeedThreshold && !Player._isGrounded && LockHeight && Actions.moveCamY <= 0.5)
         {
             if (facingDown)
             {
@@ -343,15 +343,15 @@ public class S_HedgeCamera : MonoBehaviour
             }
 
             ////Sets the camera height to move towards set height at varying speeds
-            if (Player.HorizontalSpeedMagnitude > 140)
+            if (Player._horizontalSpeedMagnitude > 140)
                 FollowHeightDirection(HeightToLock, HeightFollowSpeed * 3f);
-            else if (Player.HorizontalSpeedMagnitude > 100)
+            else if (Player._horizontalSpeedMagnitude > 100)
                 FollowHeightDirection(HeightToLock, HeightFollowSpeed * 2.5f);
-            else if (Player.HorizontalSpeedMagnitude > 60)
+            else if (Player._horizontalSpeedMagnitude > 60)
                 FollowHeightDirection(HeightToLock, HeightFollowSpeed * 2f);
-            else if (Player.HorizontalSpeedMagnitude > 30)
+            else if (Player._horizontalSpeedMagnitude > 30)
                 FollowHeightDirection(HeightToLock, HeightFollowSpeed * 1.6f);
-            else if (Player.HorizontalSpeedMagnitude > 10)
+            else if (Player._horizontalSpeedMagnitude > 10)
                 FollowHeightDirection(HeightToLock, HeightFollowSpeed);
         }
         else if (facingDown)
@@ -388,13 +388,13 @@ public class S_HedgeCamera : MonoBehaviour
         else if (afterMoveDelay > 0)
             afterMoveDelay -= Time.deltaTime;
 
-        if (Player.HorizontalSpeedMagnitude > LockCamAtHighSpeed && (lookTimer > 0) && !GoingTowardsCamera && afterMoveDelay <= 0)
+        if (Player._horizontalSpeedMagnitude > LockCamAtHighSpeed && (lookTimer > 0) && !GoingTowardsCamera && afterMoveDelay <= 0)
         {
             //Debug.Log("Move camera behind");
             FollowDirection(3, 14, -10, 0);
         }
 
-        if (Player.HorizontalSpeedMagnitude > 30f && Actions.whatAction == S_Enums.PlayerStates.WallRunning)
+        if (Player._horizontalSpeedMagnitude > 30f && Actions.whatAction == S_Enums.PlayerStates.WallRunning)
         {
             //Debug.Log("Move camera behind");
             FollowDirection(2, 14, -10, 0.5f);
@@ -460,7 +460,7 @@ public class S_HedgeCamera : MonoBehaviour
         {
             if (Actions.whatAction != S_Enums.PlayerStates.Rail)
             {
-                if (Player.Grounded)
+                if (Player._isGrounded)
                 {
                     y = Mathf.Lerp(y, height, Time.deltaTime * speed);
                 }
@@ -575,7 +575,7 @@ public class S_HedgeCamera : MonoBehaviour
 
         float heightMod = vertFollowSpeedByAngle.Evaluate(Quaternion.Angle(newRot, targetRot) / 18);
 
-        if (!Player.Grounded)
+        if (!Player._isGrounded)
         {
             newRot = Quaternion.Slerp(newRot, targetRot, Time.deltaTime * CameraVerticalRotationSpeed * heightMod);
 

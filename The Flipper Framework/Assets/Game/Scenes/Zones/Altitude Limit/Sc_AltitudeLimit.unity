@@ -1830,6 +1830,7 @@ Transform:
   m_Children:
   - {fileID: 1702894621}
   - {fileID: 759243674}
+  - {fileID: 3825729597873988349}
   m_Father: {fileID: 830219747}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11202,18 +11203,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugForce: 0
-  LineLength: 30
-  isSpring: 0
-  isBoostRing: 0
-  spring: {fileID: 0}
-  speedPad: {fileID: 0}
-  Force: 0
-  ShotCenter: {fileID: 0}
-  lockGravity: {x: 0, y: 0, z: 0}
-  FallGravity: {x: 0, y: -1.5, z: 0}
-  UpGravity: {x: 0, y: -1.7, z: 0}
-  PlayerDecell: 1.005
 --- !u!4 &512627838 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000012764413882, guid: 8246331b774a4c04eb8b5ef338a220db,
@@ -23633,9 +23622,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5581a25298e347940b3e1c9251f6414b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: Altitude Limit 1
-  folderPathFromAssets: /ScreenShots/
-  scaleValue: 2
 --- !u!20 &1018664528
 Camera:
   m_ObjectHideFlags: 0
@@ -23692,7 +23678,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 17.833, y: -14.595, z: 2.049}
 --- !u!4 &1019490216 stripped
 Transform:
@@ -40873,6 +40859,7 @@ Transform:
   m_Children:
   - {fileID: 1090344464}
   - {fileID: 1759149321}
+  - {fileID: 1791582654}
   m_Father: {fileID: 570514848}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -43840,7 +43827,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1638567187}
     m_Modifications:
     - target: {fileID: 1000011085789068, guid: 6b40bb70d414d654ebbc560b12afa271, type: 3}
       propertyPath: m_Name
@@ -43892,6 +43879,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b40bb70d414d654ebbc560b12afa271, type: 3}
+--- !u!4 &1791582654 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4000010276886016, guid: 6b40bb70d414d654ebbc560b12afa271,
+    type: 3}
+  m_PrefabInstance: {fileID: 1791582653}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1794628040
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52006,12 +51999,12 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 89676202}
     m_Modifications:
     - target: {fileID: 1888251127096729419, guid: 57677e8b94125a744bceef9578b5886f,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1888251127096729419, guid: 57677e8b94125a744bceef9578b5886f,
         type: 3}
@@ -52070,6 +52063,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57677e8b94125a744bceef9578b5886f, type: 3}
+--- !u!4 &3825729597873988349 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1888251127096729419, guid: 57677e8b94125a744bceef9578b5886f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3825729597873988348}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4025866293568937188
 GameObject:
   m_ObjectHideFlags: 0

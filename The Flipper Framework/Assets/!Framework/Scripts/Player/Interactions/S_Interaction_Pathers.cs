@@ -178,21 +178,21 @@ public class S_Interaction_Pathers : MonoBehaviour
 
             if(col.GetComponent<CapsuleCollider>().radius == 4)
             {
-                if(Player.SpeedMagnitude > 120 || Mathf.Abs(Player.rb.velocity.y) > 30)
+                if(Player._speedMagnitude > 120 || Mathf.Abs(Player.rb.velocity.y) > 30)
                 {
                     AttachToRail(null, true, col);
                 }
             }
             else if (col.GetComponent<CapsuleCollider>().radius == 3)
             {
-                if (Player.SpeedMagnitude > 80 || Mathf.Abs(Player.rb.velocity.y) > 20)
+                if (Player._speedMagnitude > 80 || Mathf.Abs(Player.rb.velocity.y) > 20)
                 {
                     AttachToRail(null, true, col);
                 }
             }
             else if (col.GetComponent<CapsuleCollider>().radius == 2)
             {
-                if (Player.SpeedMagnitude > 40 || Mathf.Abs(Player.rb.velocity.y) > 10)
+                if (Player._speedMagnitude > 40 || Mathf.Abs(Player.rb.velocity.y) > 10)
                 {
                     AttachToRail(null, true, col);
                 }
@@ -289,7 +289,7 @@ public class S_Interaction_Pathers : MonoBehaviour
                 Debug.Log("Enter Path Spline from Pad");
                 RailSpline = col.gameObject.GetComponent<S_Data_SpeedPad>().path;
                 //col.GetComponent<AudioSource>().Play();
-                speedGo = Mathf.Max(col.gameObject.GetComponent<S_Data_SpeedPad>().Speed, Player.HorizontalSpeedMagnitude);
+                speedGo = Mathf.Max(col.gameObject.GetComponent<S_Data_SpeedPad>().Speed, Player._horizontalSpeedMagnitude);
             }
 
             //If the path is being started by a normal trigger

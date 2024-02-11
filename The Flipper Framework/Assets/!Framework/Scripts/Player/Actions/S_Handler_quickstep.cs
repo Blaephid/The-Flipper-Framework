@@ -94,7 +94,7 @@ public class S_Handler_quickstep : MonoBehaviour
 
         private void setSpeedAndDistance()
         {
-                if (Player.Grounded)
+                if (Player._isGrounded)
                 {
                         _quickStepSpeed_ = Tools.Stats.QuickstepStats.stepSpeed;
                         _DistanceToStep_ = Tools.Stats.QuickstepStats.stepDistance;
@@ -114,9 +114,9 @@ public class S_Handler_quickstep : MonoBehaviour
 
                 timeTrack = Time.fixedDeltaTime;
 
-                if (air && Player.Grounded)
+                if (air && Player._isGrounded)
                         this.enabled = false;
-                else if (!air && !Player.Grounded)
+                else if (!air && !Player._isGrounded)
                         air = true;
 
                 if (startAction != Actions.whatAction)
@@ -183,7 +183,7 @@ public class S_Handler_quickstep : MonoBehaviour
 
         IEnumerator CoolDown()
         {
-                if (Player.Grounded)
+                if (Player._isGrounded)
                         yield return new WaitForSeconds(0.05f);
                 else
                         yield return new WaitForSeconds(0.20f);
