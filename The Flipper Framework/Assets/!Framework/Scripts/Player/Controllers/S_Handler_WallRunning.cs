@@ -66,7 +66,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 
 
             checkSpeed = Player._horizontalSpeedMagnitude;
-            saveVec = Player.rb.velocity;
+            saveVec = Player._RB.velocity;
 
             //If High enough above ground and not at an odd rotation
             if (enoughAboveGround() && (Actions.whatAction == S_Enums.PlayerStates.Regular || Actions.whatAction == S_Enums.PlayerStates.JumpDash || (Actions.whatAction == S_Enums.PlayerStates.Jump && GetComponent<S_Interaction_Pathers>().currentUpreel == null)))

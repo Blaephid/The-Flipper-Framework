@@ -63,7 +63,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		if(Player._speedMagnitude < 15 && Player._moveInput == Vector3.zero && Player._isGrounded)
 		{
 			Player.b_normalSpeed = 0;
-			Player.rb.velocity *= 0.90f;
+			Player._RB.velocity *= 0.90f;
 			Actions.skid._hasSked = false;
 
 		}
@@ -106,7 +106,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			coyoteRememberDir = Player._groundNormal;
 		else
 			coyoteRememberDir = transform.up;
-		coyoteRememberSpeed = Player.rb.velocity.y;
+		coyoteRememberSpeed = Player._RB.velocity.y;
 	}
 
     void Update()
@@ -114,10 +114,10 @@ public class S_Action00_Regular : MonoBehaviour {
 
         //Set Animator Parameters
         if (Player._isGrounded) { CharacterAnimator.SetInteger("Action", 0); }
-        CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
-		CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player.rb.velocity.x+Player.rb.velocity.z)/2));
-        CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
-		CharacterAnimator.SetFloat("HorizontalInput", Actions.moveX *Player.rb.velocity.magnitude);
+        CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
+		CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player._RB.velocity.x+Player._RB.velocity.z)/2));
+        CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
+		CharacterAnimator.SetFloat("HorizontalInput", Actions.moveX *Player._RB.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player._isGrounded);
         CharacterAnimator.SetFloat("NormalSpeed", Player.b_normalSpeed + _SkiddingStartPoint_);
 
@@ -127,8 +127,8 @@ public class S_Action00_Regular : MonoBehaviour {
         //Set Skin Rotation
         if (Player._isGrounded)
 		{
-			Vector3 releVec = Player.GetRelevantVec(Player.rb.velocity);
-			Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
+			Vector3 releVec = Player.GetRelevantVec(Player._RB.velocity);
+			Vector3 newForward = Player._RB.velocity - transform.up * Vector3.Dot(Player._RB.velocity, transform.up);
 			Debug.DrawRay(transform.position, newForward.normalized * 5, Color.yellow);
 			//newForward = releVec - transform.up * Vector3.Dot(releVec, transform.up);
 
@@ -145,11 +145,11 @@ public class S_Action00_Regular : MonoBehaviour {
         }
         else
         {
-			Vector3 releVec = Player.GetRelevantVec(Player.rb.velocity);
+			Vector3 releVec = Player.GetRelevantVec(Player._RB.velocity);
 			Vector3 VelocityMod = new Vector3(releVec.x, 0, releVec.z);
 			//VelocityMod = Player.rb.velocity;
 
-			Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
+			Vector3 newForward = Player._RB.velocity - transform.up * Vector3.Dot(Player._RB.velocity, transform.up);
 			Debug.DrawRay(transform.position, newForward.normalized * 5, Color.yellow);
 			if (VelocityMod != Vector3.zero)
             {
@@ -203,7 +203,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		{
 
 			if (Player._isGrounded)
-				JumpAction.InitialEvents(Player._groundNormal, true, Player.rb.velocity.y);
+				JumpAction.InitialEvents(Player._groundNormal, true, Player._RB.velocity.y);
 			else
 				JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
 
@@ -321,7 +321,7 @@ public class S_Action00_Regular : MonoBehaviour {
 
 
 			//Do a Bounce Attack
-			if (Actions.BouncePressed && Player.rb.velocity.y < 35f)
+			if (Actions.BouncePressed && Player._RB.velocity.y < 35f)
 			{
 				Actions.Action06.InitialEvents();
 				Actions.ChangeAction(S_Enums.PlayerStates.Bounce);

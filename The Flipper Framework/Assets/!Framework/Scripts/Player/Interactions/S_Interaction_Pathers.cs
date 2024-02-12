@@ -91,7 +91,7 @@ public class S_Interaction_Pathers : MonoBehaviour
         {
             //Deactives player control and freezes movemnt to keep them in line with the upreel.
 
-            Player.rb.velocity = Vector3.zero;
+            Player._RB.velocity = Vector3.zero;
             Input.LockInputForAWhile(0f, false);
 
             //Moves the player to the position of the Upreel
@@ -104,7 +104,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
     IEnumerator exitPulley()
     {
-        Player.rb.velocity = Vector3.zero;
+        Player._RB.velocity = Vector3.zero;
         Player.AddVelocity(new Vector3(0f, 60f, 0f));
 
         yield return new WaitForSeconds(.2f);
@@ -178,21 +178,21 @@ public class S_Interaction_Pathers : MonoBehaviour
 
             if(col.GetComponent<CapsuleCollider>().radius == 4)
             {
-                if(Player._speedMagnitude > 120 || Mathf.Abs(Player.rb.velocity.y) > 30)
+                if(Player._speedMagnitude > 120 || Mathf.Abs(Player._RB.velocity.y) > 30)
                 {
                     AttachToRail(null, true, col);
                 }
             }
             else if (col.GetComponent<CapsuleCollider>().radius == 3)
             {
-                if (Player._speedMagnitude > 80 || Mathf.Abs(Player.rb.velocity.y) > 20)
+                if (Player._speedMagnitude > 80 || Mathf.Abs(Player._RB.velocity.y) > 20)
                 {
                     AttachToRail(null, true, col);
                 }
             }
             else if (col.GetComponent<CapsuleCollider>().radius == 2)
             {
-                if (Player._speedMagnitude > 40 || Mathf.Abs(Player.rb.velocity.y) > 10)
+                if (Player._speedMagnitude > 40 || Mathf.Abs(Player._RB.velocity.y) > 10)
                 {
                     AttachToRail(null, true, col);
                 }

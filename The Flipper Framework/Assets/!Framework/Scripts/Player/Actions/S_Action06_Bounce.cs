@@ -64,7 +64,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 
 			sounds.BounceStartSound();
 			BounceAvailable = false;
-			Player.rb.velocity = new Vector3(Player.rb.velocity.x * _bounceHaltFactor_, 0f, Player.rb.velocity.z * _bounceHaltFactor_);
+			Player._RB.velocity = new Vector3(Player._RB.velocity.x * _bounceHaltFactor_, 0f, Player._RB.velocity.z * _bounceHaltFactor_);
 			Player.AddVelocity(new Vector3(0, -_dropSpeed_, 0));
 
 			HomingTrailScript.emitTime = -1f;
@@ -108,13 +108,13 @@ public class S_Action06_Bounce : MonoBehaviour {
 		}
 		else if (nextSpeed > Player._horizontalSpeedMagnitude)
 		{
-			newVec = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z).normalized;
+			newVec = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z).normalized;
 			newVec *= nextSpeed;
 		}
 		else
-			newVec = Player.rb.velocity;
+			newVec = Player._RB.velocity;
 
-		Player.rb.velocity = new Vector3 (newVec.x, CurrentBounceAmount, newVec.z);
+		Player._RB.velocity = new Vector3 (newVec.x, CurrentBounceAmount, newVec.z);
 		Player.AddVelocity (Player._groundNormal);
 
 		sounds.BounceImpactSound ();
@@ -132,7 +132,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 
 	private void Stomp()
     {
-		Player.rb.velocity = new Vector3 (0f, Player.rb.velocity.y, 0f);
+		Player._RB.velocity = new Vector3 (0f, Player._RB.velocity.y, 0f);
 		CharacterAnimator.SetInteger("Action", 6);
 
 		jumpBall.SetActive(false);
@@ -161,7 +161,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 
 
         //End Action
-        if (!raycasthit && HasBounced && Player.rb.velocity.y > 4f) { 
+        if (!raycasthit && HasBounced && Player._RB.velocity.y > 4f) { 
 			
 			HasBounced = false;
 
@@ -173,7 +173,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 			Action.ChangeAction (S_Enums.PlayerStates.Regular);
 		} 
 
-		else if ((groundhit && !HasBounced) || (!groundhit && Player.rb.velocity.y > _dropSpeed_ * 0.4f && !HasBounced)) 
+		else if ((groundhit && !HasBounced) || (!groundhit && Player._RB.velocity.y > _dropSpeed_ * 0.4f && !HasBounced)) 
 		{
 			
 			//if (Action.SkidPressed)
@@ -201,9 +201,9 @@ public class S_Action06_Bounce : MonoBehaviour {
 				}
 			}
 		}
-		else if(Player.rb.velocity.y > _dropSpeed_ * 0.8f)
+		else if(Player._RB.velocity.y > _dropSpeed_ * 0.8f)
         {
-			Player.rb.velocity = new Vector3(Player.rb.velocity.x, -_dropSpeed_, Player.rb.velocity.z);
+			Player._RB.velocity = new Vector3(Player._RB.velocity.x, -_dropSpeed_, Player._RB.velocity.z);
         }
 
     }

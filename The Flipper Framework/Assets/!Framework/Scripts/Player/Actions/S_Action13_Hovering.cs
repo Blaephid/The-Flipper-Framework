@@ -95,7 +95,7 @@ public class S_Action13_Hovering : MonoBehaviour
 		{
 			exitWindTimer = 0;
 
-			if (PlayerPhys.rb.velocity.y < floatSpeed)
+			if (PlayerPhys._RB.velocity.y < floatSpeed)
 			{
 				PlayerPhys.AddVelocity(hoverForce.transform.up * floatSpeed);
 			}
@@ -105,7 +105,7 @@ public class S_Action13_Hovering : MonoBehaviour
 		{
 			exitWindTimer += Time.deltaTime;
 
-			if (PlayerPhys.rb.velocity.y < floatSpeed)
+			if (PlayerPhys._RB.velocity.y < floatSpeed)
 			{
 				PlayerPhys.AddVelocity(hoverForce.transform.up * (floatSpeed * 0.35f));
 			}
@@ -119,7 +119,7 @@ public class S_Action13_Hovering : MonoBehaviour
 		//Skidding
 		if ((PlayerPhys.b_normalSpeed < -_skiddingStartPoint_) && !PlayerPhys._isGrounded)
 		{
-			if (PlayerPhys._speedMagnitude >= -(_airSkiddingIntensity_ * 0.8f)) PlayerPhys.AddVelocity(PlayerPhys.rb.velocity.normalized * (_airSkiddingIntensity_ * 0.8f) * (PlayerPhys._isRolling ? 0.5f : 1));
+			if (PlayerPhys._speedMagnitude >= -(_airSkiddingIntensity_ * 0.8f)) PlayerPhys.AddVelocity(PlayerPhys._RB.velocity.normalized * (_airSkiddingIntensity_ * 0.8f) * (PlayerPhys._isRolling ? 0.5f : 1));
 
 
 			if (PlayerPhys._speedMagnitude < 4)
@@ -134,7 +134,7 @@ public class S_Action13_Hovering : MonoBehaviour
 	}
 	void updateModel () {
 		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(PlayerPhys.rb.velocity.x, 0, PlayerPhys.rb.velocity.z);
+		Vector3 VelocityMod = new Vector3(PlayerPhys._RB.velocity.x, 0, PlayerPhys._RB.velocity.z);
 		if (VelocityMod != Vector3.zero)
 		{
 			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
@@ -151,11 +151,11 @@ public class S_Action13_Hovering : MonoBehaviour
 
 		if (difference > 0.98)
 		{
-			floatSpeed = -Mathf.Clamp(PlayerPhys.rb.velocity.y, -100, 0);
+			floatSpeed = -Mathf.Clamp(PlayerPhys._RB.velocity.y, -100, 0);
 		}
-		else if (PlayerPhys.rb.velocity.y > 0)
+		else if (PlayerPhys._RB.velocity.y > 0)
 		{
-			floatSpeed = Mathf.Clamp(floatSpeed, 0.5f, PlayerPhys.rb.velocity.y);
+			floatSpeed = Mathf.Clamp(floatSpeed, 0.5f, PlayerPhys._RB.velocity.y);
 		}
 	}
 

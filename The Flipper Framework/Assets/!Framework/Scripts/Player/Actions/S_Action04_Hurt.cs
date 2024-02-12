@@ -57,7 +57,7 @@ public class S_Action04_Hurt : MonoBehaviour {
             newSpeed.y = _bonkUpForce_;
             if (Player._isGrounded)
                 newSpeed.y *= 2;
-            Player.rb.velocity = newSpeed;
+            Player._RB.velocity = newSpeed;
 
             lockedForAir = _bonkLockAir_;
             lockedForGround = _bonkLock_;
@@ -65,9 +65,9 @@ public class S_Action04_Hurt : MonoBehaviour {
         }
         else if (!_resetSpeedOnHit_ && !Physics.Raycast(transform.position, CharacterAnimator.transform.forward, 6, _recoilFrom_))
         {
-            Vector3 newSpeed = new Vector3((Player.rb.velocity.x / 2), _knockbackUpwardsForce_, (Player.rb.velocity.z / 2));
+            Vector3 newSpeed = new Vector3((Player._RB.velocity.x / 2), _knockbackUpwardsForce_, (Player._RB.velocity.z / 2));
             newSpeed.y = _knockbackUpwardsForce_;
-            Player.rb.velocity = newSpeed;
+            Player._RB.velocity = newSpeed;
             lockedForAir = _recoilAir_;
             lockedForGround = _recoilGround_;
         }
@@ -75,7 +75,7 @@ public class S_Action04_Hurt : MonoBehaviour {
         {
             Vector3 newSpeed = -CharacterAnimator.transform.forward * _knockbackForce_;
             newSpeed.y = _knockbackUpwardsForce_;
-            Player.rb.velocity = newSpeed;
+            Player._RB.velocity = newSpeed;
             lockedForAir = _recoilAir_ * 1.4f;
             lockedForGround = _recoilGround_ * 1.4f;
         }

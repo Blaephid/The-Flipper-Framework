@@ -445,7 +445,7 @@ public class S_Interaction_Objects : MonoBehaviour {
 
                 if (spring.IsAdditive)
                 {
-                    Vector3 newVelocity = new Vector3(Player.rb.velocity.x, 0f, Player.rb.velocity.z);
+                    Vector3 newVelocity = new Vector3(Player._RB.velocity.x, 0f, Player._RB.velocity.z);
                     newVelocity = (newVelocity * 0.8f) + (spring.transform.up * spring.SpringForce);
                     StartCoroutine(applyForce(newVelocity, spring.BounceCenter.position));
                 }
@@ -486,7 +486,7 @@ public class S_Interaction_Objects : MonoBehaviour {
 				Actions.ChangeAction (S_Enums.PlayerStates.Regular);
 				newSpeed = new Vector3(0, _homingBouncingPower_, 0);
 				////Debug.Log (newSpeed);
-				Player.rb.velocity = newSpeed;
+				Player._RB.velocity = newSpeed;
 				Player.transform.position = col.ClosestPoint (Player.transform.position);
 				if (Actions.Action02 != null) {
 					Actions.Action02.HomingAvailable = true;
@@ -646,13 +646,13 @@ public class S_Interaction_Objects : MonoBehaviour {
         for(int i = 0; i < frames; i++)
         {
             transform.position = position;
-            Player.rb.velocity = Vector3.zero;
+            Player._RB.velocity = Vector3.zero;
             yield return new WaitForFixedUpdate();
         }
 
         Actions.ChangeAction(S_Enums.PlayerStates.Regular);
         transform.position = position;
-        Player.rb.velocity = force;
+        Player._RB.velocity = force;
 
     }
     public void DamagePlayer()

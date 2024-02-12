@@ -45,8 +45,8 @@ public class S_Action07_RingRoad : MonoBehaviour {
 
     public void InitialEvents()
 	{
-		InitialVelocityMagnitude = Player.rb.velocity.magnitude;
-		Player.rb.velocity = Vector3.zero;
+		InitialVelocityMagnitude = Player._RB.velocity.magnitude;
+		Player._RB.velocity = Vector3.zero;
 
 		JumpBall.SetActive(false);
 		if (HomingTrailContainer.transform.childCount < 1) 
@@ -68,12 +68,12 @@ public class S_Action07_RingRoad : MonoBehaviour {
 
 		//Set Animator Parameters
 		CharacterAnimator.SetInteger("Action", 7);
-		CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
-		CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
+		CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
+		CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
 		CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
 		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, Player.rb.velocity.y, Player.rb.velocity.z);
+		Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, Player._RB.velocity.y, Player._RB.velocity.z);
 		if (VelocityMod != Vector3.zero)
 		{
 			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
@@ -95,7 +95,7 @@ public class S_Action07_RingRoad : MonoBehaviour {
 		{
 			Target = Action.Action07Control.TargetObject.transform;
 			direction = Target.position - transform.position;
-			Player.rb.velocity = direction.normalized * _dashSpeed_;
+			Player._RB.velocity = direction.normalized * _dashSpeed_;
 
 			GetComponent<S_Handler_Camera>().Cam.FollowDirection(4, 14f, -10,0);
 		}
@@ -106,8 +106,8 @@ public class S_Action07_RingRoad : MonoBehaviour {
 
 			EndingSpeedResult = Mathf.Max (_minimumEndingSpeed_, InitialVelocityMagnitude);
 
-			Player.rb.velocity = Vector3.zero;
-			Player.rb.velocity = direction.normalized*EndingSpeedResult*_endingSpeedFactor_;
+			Player._RB.velocity = Vector3.zero;
+			Player._RB.velocity = direction.normalized*EndingSpeedResult*_endingSpeedFactor_;
 		
 			//GetComponent<CameraControl>().Cam.SetCamera(direction.normalized, 2.5f, 20, 5f,10);
 

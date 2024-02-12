@@ -130,7 +130,7 @@ public class S_MetricTracker : MonoBehaviour
 
                         if(!jumpAction.Jumping)
                         {
-                            if(player.rb.velocity.y < 0)
+                            if(player._RB.velocity.y < 0)
                             {
                                 //Debug.Log("Peak Jump At = " + (player.transform.position.y - thisPos.y));
 

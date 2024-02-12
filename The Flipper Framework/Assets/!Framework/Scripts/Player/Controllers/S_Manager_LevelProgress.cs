@@ -100,7 +100,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
         characterTransform.forward = ResumeFace;
       
 
-        Player.rb.velocity = characterTransform.forward * 2;
+        Player._RB.velocity = characterTransform.forward * 2;
         Actions.Action04.deadCounter = 0;
 
         Cam.Cam.Reversed = false;

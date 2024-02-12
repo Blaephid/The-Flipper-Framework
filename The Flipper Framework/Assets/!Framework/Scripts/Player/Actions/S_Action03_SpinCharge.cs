@@ -87,7 +87,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
         Player._moveInput *= 0.4f;
         float stillForce = (_spinDashStillForce_ * _speedLossByTime_.Evaluate(time)) + 1;
-        Player.rb.velocity /= stillForce;
+        Player._RB.velocity /= stillForce;
 
         //Counter to exit after not pressing button for a bit;
         
@@ -215,16 +215,16 @@ public class S_Action03_SpinCharge : MonoBehaviour
             sounds.SpinDashReleaseSound();
 
             Vector3 newForce = charge * (PlayerSkinTransform.forward);
-            float dif = Vector3.Dot(newForce.normalized, Player.rb.velocity.normalized);
+            float dif = Vector3.Dot(newForce.normalized, Player._RB.velocity.normalized);
 
             if(Player._horizontalSpeedMagnitude > 20)
                 newForce *= _forceGainByAngle_.Evaluate(dif);
             newForce *= _gainBySpeed_.Evaluate(Player._horizontalSpeedMagnitude / Player._currentMaxSpeed);
 
-            Player.rb.velocity += newForce;
+            Player._RB.velocity += newForce;
 
-            CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player.rb.velocity.x + Player.rb.velocity.z) / 2));
-            CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
+            CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player._RB.velocity.x + Player._RB.velocity.z) / 2));
+            CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
 
             
             Actions.Action00.Rolling = true;
@@ -242,7 +242,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
     {
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 0);
-        CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
+        CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
         //CharacterAnimator.SetFloat("GroundSpeed", 0);
         CharacterAnimator.SetBool("Grounded", true);
         CharacterAnimator.SetFloat("NormalSpeed", 0);
@@ -260,7 +260,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
             
             CharRot = Quaternion.LookRotation(Tools.MainCamera.transform.forward - Player._groundNormal * Vector3.Dot(Tools.MainCamera.transform.forward, Player._groundNormal), transform.up);
         }
-        else if (Player.rb.velocity != Vector3.zero)
+        else if (Player._RB.velocity != Vector3.zero)
         {
             //CharRot = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
         }

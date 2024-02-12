@@ -111,12 +111,12 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
     {
         StartCoroutine(ResetTriggerBool());
 
-        newSpeed = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
-        newSpeed.y = _bouncingPower_ + Mathf.Abs(Player.rb.velocity.y);
-        if (newSpeed.y > Player.rb.velocity.y * 1.5f)
-            newSpeed.y = Player.rb.velocity.y * 1.5f;
+        newSpeed = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z);
+        newSpeed.y = _bouncingPower_ + Mathf.Abs(Player._RB.velocity.y);
+        if (newSpeed.y > Player._RB.velocity.y * 1.5f)
+            newSpeed.y = Player._RB.velocity.y * 1.5f;
 
-        Player.rb.velocity = newSpeed;
+        Player._RB.velocity = newSpeed;
     }
 
     private void AttackFromHoming(Vector3 newSpeed)
@@ -126,7 +126,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         //An additive hit that keeps momentum
         if (Actions.HomingPressed || Actions.JumpPressed)
         {
-            newSpeed = new Vector3(Player.rb.velocity.x * 0.8f, _homingBouncingPower_, Player.rb.velocity.z * 0.8f);
+            newSpeed = new Vector3(Player._RB.velocity.x * 0.8f, _homingBouncingPower_, Player._RB.velocity.z * 0.8f);
             Actions.SpecialPressed = false;
             Actions.HomingPressed = false;
             //Debug.Log("Additive Hit");
@@ -136,12 +136,12 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         //A normal hit that decreases speed
         else
         {
-            newSpeed = new Vector3(Player.rb.velocity.x * 0.3f, _homingBouncingPower_, Player.rb.velocity.z * 0.15f);
+            newSpeed = new Vector3(Player._RB.velocity.x * 0.3f, _homingBouncingPower_, Player._RB.velocity.z * 0.15f);
             //Debug.Log("Normal Hit");
         }
 
 
-        Player.rb.velocity = newSpeed;
+        Player._RB.velocity = newSpeed;
 
 
 
@@ -154,9 +154,9 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
         newSpeed = new Vector3(1, 0, 1);
 
-        newSpeed = Vector3.Scale(Player.rb.velocity, newSpeed);
+        newSpeed = Vector3.Scale(Player._RB.velocity, newSpeed);
         newSpeed.y = _homingBouncingPower_ * 1.8f;
-        Player.rb.velocity = newSpeed;
+        Player._RB.velocity = newSpeed;
 
         Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
     }

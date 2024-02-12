@@ -129,7 +129,7 @@ public class S_Handler_Hurt : MonoBehaviour
             }
         }
         WallToBonk = null;
-        previousSpeed = Player.rb.velocity.sqrMagnitude;
+        previousSpeed = Player._RB.velocity.sqrMagnitude;
     }
 
     void Death()
@@ -272,7 +272,7 @@ public class S_Handler_Hurt : MonoBehaviour
             {
                 transform.position = transform.position + (-CharacterAnimator.transform.up * 1.5f);
             }
-            else if (previousSpeed / 1.6f > Player.rb.velocity.sqrMagnitude || !Player._isGrounded)
+            else if (previousSpeed / 1.6f > Player._RB.velocity.sqrMagnitude || !Player._isGrounded)
             {
                 StartCoroutine(giveChanceToWallClimb());
             }
@@ -291,7 +291,7 @@ public class S_Handler_Hurt : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     yield return new WaitForFixedUpdate();
-                    Player.rb.velocity = Vector3.zero;
+                    Player._RB.velocity = Vector3.zero;
                     CharacterAnimator.transform.forward = newDir;
                 }
             }

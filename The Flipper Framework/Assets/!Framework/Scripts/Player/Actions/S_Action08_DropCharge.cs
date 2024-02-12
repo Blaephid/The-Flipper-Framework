@@ -51,7 +51,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 
     public void TryDropCharge()
     {
-        if (Player.rb.velocity.y < 40f && Actions.Action08 != null)
+        if (Player._RB.velocity.y < 40f && Actions.Action08 != null)
         {
             //Debug.Log("Enter DropDash");
             Actions.ChangeAction(S_Enums.PlayerStates.DropCharge);
@@ -241,7 +241,7 @@ public class S_Action08_DropCharge : MonoBehaviour
         S_HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
         sounds.SpinDashReleaseSound();
 
-        Player.alignWithGround();
+        Player.AlignWithGround();
 
         Vector3 newVec = charge *  newForward;
 
@@ -257,13 +257,13 @@ public class S_Action08_DropCharge : MonoBehaviour
 
         if (newSpeedMagnitude > Player._horizontalSpeedMagnitude)
         {
-            Player.rb.velocity = newVec;
+            Player._RB.velocity = newVec;
 
             Cam.Cam.FollowHeightDirection(18, 25f);
         }
         else
         {
-            Player.rb.velocity = newVec.normalized * (Player._horizontalSpeedMagnitude + (charge* 0.45f));
+            Player._RB.velocity = newVec.normalized * (Player._horizontalSpeedMagnitude + (charge* 0.45f));
             Cam.Cam.FollowHeightDirection(20, 15f);
         }
     }
@@ -300,7 +300,7 @@ public class S_Action08_DropCharge : MonoBehaviour
         //Set Animation Angle
         //if (!Player.Grounded)
         {
-            Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+            Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z);
             if(VelocityMod != Vector3.zero)
             {
                 Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);

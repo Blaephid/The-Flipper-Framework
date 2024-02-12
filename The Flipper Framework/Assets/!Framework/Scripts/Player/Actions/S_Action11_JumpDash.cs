@@ -94,12 +94,12 @@ public class S_Action11_JumpDash : MonoBehaviour
 
         //Set Animator Parameters
         CharacterAnimator.SetInteger("Action", 11);
-        CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
-        CharacterAnimator.SetFloat("GroundSpeed", Player.rb.velocity.magnitude);
+        CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
+        CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
         //Set Animation Angle
-        Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+        Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z);
         if(VelocityMod != Vector3.zero)
         {
             Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
@@ -144,10 +144,10 @@ public class S_Action11_JumpDash : MonoBehaviour
         }
 
         Vector3 newVec = Direction.normalized * Aspeed;
-        if(Player.rb.velocity.y < 0)
+        if(Player._RB.velocity.y < 0)
             newVec.y = Player._fallGravity_.y * 0.5f;
 
-        Player.rb.velocity = newVec;
+        Player._RB.velocity = newVec;
 
         //End homing attck if in air for too long
         if (Timer > _AirDashDuration_)

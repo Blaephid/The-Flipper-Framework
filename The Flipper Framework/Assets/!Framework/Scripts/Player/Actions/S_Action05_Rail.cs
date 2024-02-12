@@ -133,8 +133,8 @@ namespace SplineMesh
 
             transform.rotation = Quaternion.identity;
 
-            if(Player.rb.velocity != Vector3.zero)
-                CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
+            if(Player._RB.velocity != Vector3.zero)
+                CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player._RB.velocity, Vector3.up);
 
             //if (Skin != null)
             //{
@@ -207,7 +207,7 @@ namespace SplineMesh
        
 
             CurveSample sample = Rail_int.RailSpline.GetSampleAtDistance(range);
-            float dotdir = Vector3.Dot(Player.rb.velocity.normalized, sample.tangent);
+            float dotdir = Vector3.Dot(Player._RB.velocity.normalized, sample.tangent);
             Crouching = false;
             PulleyRotate = 0f;
 
@@ -264,7 +264,7 @@ namespace SplineMesh
             }
 
 
-            Player.rb.velocity = Vector3.zero;
+            Player._RB.velocity = Vector3.zero;
 
         }
 
@@ -331,9 +331,9 @@ namespace SplineMesh
                 if (isZipLine)
                 {
                     if (!backwards)
-                        Player.rb.velocity = sample.tangent * PlayerSpeed;
+                        Player._RB.velocity = sample.tangent * PlayerSpeed;
                     else
-                        Player.rb.velocity = -sample.tangent * PlayerSpeed;
+                        Player._RB.velocity = -sample.tangent * PlayerSpeed;
 
                     jumpCorrectedOffset = -jumpCorrectedOffset;
                     ZipBody.isKinematic = true;
@@ -354,7 +354,7 @@ namespace SplineMesh
 
                 //Player.transform.eulerAngles = new Vector3(0,1,0);
                 Actions.Action01.jumpCount = -1;
-                Actions.Action01.InitialEvents(sample.up, true, Player.rb.velocity.y);
+                Actions.Action01.InitialEvents(sample.up, true, Player._RB.velocity.y);
                 Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 
                 if (Actions.Action02 != null)
@@ -517,10 +517,10 @@ namespace SplineMesh
                     if (isZipLine && ZipBody != null)
                     {
                         ZipBody.velocity = sample.tangent * (PlayerSpeed);
-                        Player.rb.velocity = sample.tangent;
+                        Player._RB.velocity = sample.tangent;
                     }
                     else
-                        Player.rb.velocity = sample.tangent * (PlayerSpeed);
+                        Player._RB.velocity = sample.tangent * (PlayerSpeed);
 
                     //remove camera tracking at the end of the rail to be safe from strange turns
                     //if (range > Rail_int.RailSpline.Length * 0.9f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f;}
@@ -535,10 +535,10 @@ namespace SplineMesh
                     if (isZipLine && ZipBody != null)
                     {
                         ZipBody.velocity = -sample.tangent * (PlayerSpeed);
-                        Player.rb.velocity = -sample.tangent;
+                        Player._RB.velocity = -sample.tangent;
                     }
                     else
-                        Player.rb.velocity = -sample.tangent * (PlayerSpeed);
+                        Player._RB.velocity = -sample.tangent * (PlayerSpeed);
                     //remove camera tracking at the end of the rail to be safe from strange turns
                     //if (range < 0.1f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f; }
                     if (range > Rail_int.RailSpline.Length * 0.9f)
@@ -734,14 +734,14 @@ namespace SplineMesh
 
                     if (backwards)
                     {
-                        Player.rb.velocity = ZipBody.velocity;
+                        Player._RB.velocity = ZipBody.velocity;
                     }
                     else
                     {
-                        Player.rb.velocity = ZipBody.velocity;
+                        Player._RB.velocity = ZipBody.velocity;
                     }
 
-                    Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+                    Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z);
                     if (VelocityMod != Vector3.zero)
                     {
                         CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
@@ -752,11 +752,11 @@ namespace SplineMesh
                 {
 
                     if (backwards)
-                        Player.rb.velocity = -sample.tangent * PlayerSpeed;
+                        Player._RB.velocity = -sample.tangent * PlayerSpeed;
                     else
-                        Player.rb.velocity = sample.tangent * PlayerSpeed;
+                        Player._RB.velocity = sample.tangent * PlayerSpeed;
 
-                    Vector3 VelocityMod = new Vector3(Player.rb.velocity.x, 0, Player.rb.velocity.z);
+                    Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z);
                     if (VelocityMod != Vector3.zero)
                     {
                         CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
@@ -798,7 +798,7 @@ namespace SplineMesh
             //Debug.Log(Player.p_rigidbody.velocity.normalized.y);
 
             //if (Player.rb.velocity.y >= -3f)
-            if (Player.rb.velocity.y > 0.05f)
+            if (Player._RB.velocity.y > 0.05f)
             {
                 //uphill and straight
                 float lean = _upHillMultiplier_;
@@ -806,7 +806,7 @@ namespace SplineMesh
                 //Debug.Log("UpHill : *" + lean);
                 float force = (_slopePower_ * curvePosSlope) * lean;
                 //Debug.Log(Mathf.Abs(Player.p_rigidbody.velocity.normalized.y - 1));
-                float AbsYPow = Mathf.Abs(Player.rb.velocity.normalized.y * Player.rb.velocity.normalized.y);
+                float AbsYPow = Mathf.Abs(Player._RB.velocity.normalized.y * Player._RB.velocity.normalized.y);
                 //Debug.Log( "Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
                 force = (AbsYPow * force) + (_dragVal_ * PlayerSpeed);
                 //Debug.Log(force);
@@ -819,7 +819,7 @@ namespace SplineMesh
                     PlayerSpeed = Player._currentMaxSpeed;
                 }
             }
-            else if (Player.rb.velocity.y < -0.05f)
+            else if (Player._RB.velocity.y < -0.05f)
             {
                 //Downhill
                 float lean = _downHillMultiplier_;
@@ -827,7 +827,7 @@ namespace SplineMesh
                 //Debug.Log("DownHill : *" + lean);
                 float force = (_slopePower_ * curvePosSlope) * lean;
                 //Debug.Log(Mathf.Abs(Player.p_rigidbody.velocity.normalized.y));
-                float AbsYPow = Mathf.Abs(Player.rb.velocity.normalized.y * Player.rb.velocity.normalized.y);
+                float AbsYPow = Mathf.Abs(Player._RB.velocity.normalized.y * Player._RB.velocity.normalized.y);
                 //Debug.Log("Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
                 force = (AbsYPow * force) - (_dragVal_ * PlayerSpeed);
                 //Debug.Log(force);

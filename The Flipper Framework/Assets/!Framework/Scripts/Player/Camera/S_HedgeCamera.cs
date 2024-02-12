@@ -233,7 +233,7 @@ public class S_HedgeCamera : MonoBehaviour
             else
             {
 
-                CurveX = AutoXRotationCurve.Evaluate((Player.rb.velocity.sqrMagnitude / Player._currentMaxSpeed) / Player._currentMaxSpeed);
+                CurveX = AutoXRotationCurve.Evaluate((Player._RB.velocity.sqrMagnitude / Player._currentMaxSpeed) / Player._currentMaxSpeed);
                 CurveX = CurveX * 100;
                 x += ((Actions.moveCamX * CurveX) * AutoXRotationSpeed) * Time.deltaTime;
 
@@ -309,7 +309,7 @@ public class S_HedgeCamera : MonoBehaviour
 
     void CameraSet()
     {
-        float y = Player.rb.velocity.y;
+        float y = Player._RB.velocity.y;
 
         if (LockHeight && Player._isGrounded && Player._speedMagnitude >= 10)
         {
