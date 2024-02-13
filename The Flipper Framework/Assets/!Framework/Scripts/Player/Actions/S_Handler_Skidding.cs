@@ -20,9 +20,8 @@ public class S_Handler_Skidding : MonoBehaviour
 	float _spinSkiddingIntensity_;
 
 	// Start is called before the first frame update
-	void Awake()
-    {
-        Player = GetComponent<S_PlayerPhysics>();
+	void Awake () {
+		Player = GetComponent<S_PlayerPhysics>();
 		Tools = GetComponent<S_CharacterTools>();
 		Inp = GetComponent<S_PlayerInput>();
 		sounds = Tools.SoundControl;
@@ -34,16 +33,16 @@ public class S_Handler_Skidding : MonoBehaviour
 		_spinSkiddingStartPoint_ = Tools.Stats.SpinChargeStats.skidStartPoint;
 	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	// Update is called once per frame
+	void Update () {
 
-    public void RegularSkid()
-    {
-		if (Player.b_normalSpeed < -_regularSkiddingStartPoint_ && !Inp.LockInput)
+	}
+
+	public void RegularSkid () {
+		if (Player._inputVelocityDifference < -_regularSkiddingStartPoint_ && !Inp.LockInput)
 		{
+			Tools.CharacterAnimator.SetTrigger("Skidding");
+
 			float thisSkid;
 			if (Player._isGrounded)
 				thisSkid = _regularSkiddingIntensity_;
@@ -62,7 +61,7 @@ public class S_Handler_Skidding : MonoBehaviour
 			}
 			if (Player._speedMagnitude < 4)
 			{
-				Player.b_normalSpeed = 0;
+				Player._inputVelocityDifference = 0;
 				_hasSked = false;
 
 			}
@@ -74,10 +73,9 @@ public class S_Handler_Skidding : MonoBehaviour
 		}
 	}
 
-	public void jumpSkid()
-    {
+	public void jumpSkid () {
 
-		if ((Player.b_normalSpeed < -_regularSkiddingStartPoint_) && !Player._isGrounded && !Inp.LockInput)
+		if ((Player._inputVelocityDifference < -_regularSkiddingStartPoint_) && !Player._isGrounded && !Inp.LockInput)
 		{
 
 			Vector3 releVec = Player.GetRelevantVec(Player._RB.velocity);
@@ -87,16 +85,15 @@ public class S_Handler_Skidding : MonoBehaviour
 			if (Player._speedMagnitude < 4)
 			{
 				Player._isRolling = false;
-				Player.b_normalSpeed = 0;
+				Player._inputVelocityDifference = 0;
 
 			}
 		}
 	}
 
-	public void spinSkid()
-    {
+	public void spinSkid () {
 		//Skidding
-		if (Player.b_normalSpeed < -_spinSkiddingStartPoint_ && !Inp.LockInput)
+		if (Player._inputVelocityDifference < -_spinSkiddingStartPoint_ && !Inp.LockInput)
 		{
 			Vector3 releVec = Player.GetRelevantVec(Player._RB.velocity);
 			if (Player._horizontalSpeedMagnitude >= -_spinSkiddingIntensity_) Player.AddVelocity(Player._RB.velocity.normalized * _spinSkiddingIntensity_ * (Player._isRolling ? 0.5f : 1));
@@ -104,7 +101,7 @@ public class S_Handler_Skidding : MonoBehaviour
 
 			if (Player._speedMagnitude < 4)
 			{
-				Player.b_normalSpeed = 0;
+				Player._inputVelocityDifference = 0;
 
 			}
 		}

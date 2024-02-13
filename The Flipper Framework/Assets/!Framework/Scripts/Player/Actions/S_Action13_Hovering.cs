@@ -117,7 +117,7 @@ public class S_Action13_Hovering : MonoBehaviour
 		}
 
 		//Skidding
-		if ((PlayerPhys.b_normalSpeed < -_skiddingStartPoint_) && !PlayerPhys._isGrounded)
+		if ((PlayerPhys._inputVelocityDifference < -_skiddingStartPoint_) && !PlayerPhys._isGrounded)
 		{
 			if (PlayerPhys._speedMagnitude >= -(_airSkiddingIntensity_ * 0.8f)) PlayerPhys.AddVelocity(PlayerPhys._RB.velocity.normalized * (_airSkiddingIntensity_ * 0.8f) * (PlayerPhys._isRolling ? 0.5f : 1));
 
@@ -125,7 +125,7 @@ public class S_Action13_Hovering : MonoBehaviour
 			if (PlayerPhys._speedMagnitude < 4)
 			{
 				PlayerPhys._isRolling = false;
-				PlayerPhys.b_normalSpeed = 0;
+				PlayerPhys._inputVelocityDifference = 0;
 
 			}
 		}

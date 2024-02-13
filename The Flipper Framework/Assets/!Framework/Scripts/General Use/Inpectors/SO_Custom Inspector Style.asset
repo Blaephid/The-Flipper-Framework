@@ -88,7 +88,7 @@ MonoBehaviour:
     m_Normal:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.8235294, g: 0.8235294, b: 0.8235294, a: 1}
+      m_TextColor: {r: 0.8537736, g: 0.8879564, b: 1, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
@@ -130,7 +130,7 @@ MonoBehaviour:
     m_Padding:
       m_Left: 2
       m_Right: 2
-      m_Top: 6
+      m_Top: 0
       m_Bottom: 0
     m_Overflow:
       m_Left: 0
@@ -138,18 +138,18 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Font: {fileID: 12800000, guid: b17d02c8350bcfb40a8b3cfc712730be, type: 3}
-    m_FontSize: 21
+    m_FontSize: 25
     m_FontStyle: 1
-    m_Alignment: 3
+    m_Alignment: 0
     m_WordWrap: 0
     m_RichText: 0
-    m_TextClipping: 1
-    m_ImagePosition: 0
+    m_TextClipping: 0
+    m_ImagePosition: 3
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
-    m_FixedHeight: 28
+    m_FixedHeight: 32.4
     m_StretchWidth: 1
-    m_StretchHeight: 1
+    m_StretchHeight: 0
   _SubHeaders:
     m_Name: label
     m_Normal:

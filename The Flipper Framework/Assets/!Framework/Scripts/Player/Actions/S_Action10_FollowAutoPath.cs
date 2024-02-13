@@ -292,7 +292,7 @@ namespace SplineMesh
 
             }
 
-            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player._RB.velocity, Player.groundHit.normal);
+            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player._RB.velocity, Player.hitGround.normal);
 
             Player.GetComponent<S_Handler_Camera>().Cam.setBehind();
             Input.LockInputForAWhile(30f, true);

@@ -62,7 +62,7 @@ public class S_Action00_Regular : MonoBehaviour {
 
 		if(Player._speedMagnitude < 15 && Player._moveInput == Vector3.zero && Player._isGrounded)
 		{
-			Player.b_normalSpeed = 0;
+			Player._inputVelocityDifference = 0;
 			Player._RB.velocity *= 0.90f;
 			Actions.skid._hasSked = false;
 
@@ -115,11 +115,9 @@ public class S_Action00_Regular : MonoBehaviour {
         //Set Animator Parameters
         if (Player._isGrounded) { CharacterAnimator.SetInteger("Action", 0); }
         CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
-		CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player._RB.velocity.x+Player._RB.velocity.z)/2));
         CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
 		CharacterAnimator.SetFloat("HorizontalInput", Actions.moveX *Player._RB.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player._isGrounded);
-        CharacterAnimator.SetFloat("NormalSpeed", Player.b_normalSpeed + _SkiddingStartPoint_);
 
 		//Set Character Animations and position1
 		CharacterAnimator.transform.parent = null;
@@ -129,7 +127,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		{
 			Vector3 releVec = Player.GetRelevantVec(Player._RB.velocity);
 			Vector3 newForward = Player._RB.velocity - transform.up * Vector3.Dot(Player._RB.velocity, transform.up);
-			Debug.DrawRay(transform.position, newForward.normalized * 5, Color.yellow);
+
 			//newForward = releVec - transform.up * Vector3.Dot(releVec, transform.up);
 
             if (newForward.magnitude < 0.1f)
@@ -150,7 +148,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			//VelocityMod = Player.rb.velocity;
 
 			Vector3 newForward = Player._RB.velocity - transform.up * Vector3.Dot(Player._RB.velocity, transform.up);
-			Debug.DrawRay(transform.position, newForward.normalized * 5, Color.yellow);
+
 			if (VelocityMod != Vector3.zero)
             {
 				//Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.fallGravity.normalized);
@@ -213,7 +211,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		//Set Camera to back
 		if (Actions.CamResetPressed)
 		{
-			if (Actions.moveVec == Vector2.zero && Player.b_normalSpeed < 5f)
+			if (Actions.moveVec == Vector2.zero && Player._inputVelocityDifference < 5f)
 				Cam.Cam.FollowDirection(6, 14f, -10, 0);
 		}
 

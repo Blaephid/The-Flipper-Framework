@@ -5249,12 +5249,15 @@ MonoBehaviour:
   _Groundmask_:
     serializedVersion: 2
     m_Bits: 0
+  _arePhysicsOn: 1
+  _coreVelocity: {x: 0, y: 0, z: 0}
+  _environmentalVelocity: {x: 0, y: 0, z: 0}
+  _totalVelocity: {x: 0, y: 0, z: 0}
   _currentTopSpeed: 0
   _currentMaxSpeed: 0
+  _inputVelocityDifference: 1
   _isGravityOn: 1
   _EnableDebug: 0
-  _RayToGroundDistancecor: 0
-  _RayToGroundRotDistancecor: 0
 --- !u!114 &8583335634310275265
 MonoBehaviour:
   m_ObjectHideFlags: 0

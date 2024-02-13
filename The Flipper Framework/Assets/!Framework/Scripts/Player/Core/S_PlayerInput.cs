@@ -54,7 +54,7 @@ public class S_PlayerInput : MonoBehaviour {
         AssignStats();
         
 
-        prevDecel = Player._moveDeceleration_;
+        //prevDecel = Player._moveDeceleration_;
         //newInput = new PlayerNewInput();
 
         // get the transform of the main camera
@@ -146,8 +146,8 @@ public class S_PlayerInput : MonoBehaviour {
         
         move = Vector3.zero;
         LockedCounter += 1;
-        Player._moveDeceleration_ = 1;
-        Player.b_normalSpeed = 0;
+        //Player._moveDeceleration_ = 1;
+        Player._inputVelocityDifference = 0;
 
         if (LockCam)
         {
@@ -161,7 +161,7 @@ public class S_PlayerInput : MonoBehaviour {
 
         if (LockedCounter > LockedTime)
         {
-            Player._moveDeceleration_ = prevDecel;
+            //Player._moveDeceleration_ = prevDecel;
             LockInput = false;
             move = oldMove;
         }

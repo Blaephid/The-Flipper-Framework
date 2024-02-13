@@ -223,7 +223,6 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
             Player._RB.velocity += newForce;
 
-            CharacterAnimator.SetFloat("XZSpeed", Mathf.Abs((Player._RB.velocity.x + Player._RB.velocity.z) / 2));
             CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
 
             
@@ -245,7 +244,6 @@ public class S_Action03_SpinCharge : MonoBehaviour
         CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
         //CharacterAnimator.SetFloat("GroundSpeed", 0);
         CharacterAnimator.SetBool("Grounded", true);
-        CharacterAnimator.SetFloat("NormalSpeed", 0);
         BallAnimator.SetFloat("SpinCharge", charge);
         BallAnimator.speed = charge * BallAnimationSpeedMultiplier;
 

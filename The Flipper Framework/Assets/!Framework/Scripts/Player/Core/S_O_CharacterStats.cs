@@ -24,7 +24,8 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucAcceleration SetStrucAcceleration () {
 		return new StrucAcceleration
 		{
-			acceleration = 0.16f,
+			runAcceleration = 0.16f,
+			rollAccel = 0.02f,
 			AccelBySpeed = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0, 3),
@@ -40,7 +41,9 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucAcceleration
 	{
 		[Tooltip("Surface: This determines the average acceleration")]
-		public float              acceleration;
+		public float              runAcceleration;
+		[Tooltip("Surface: This determines the average acceleration")]
+		public float              rollAccel;
 		[Tooltip("Core:")]
 		public AnimationCurve     AccelBySpeed;
 		[Tooltip("Core:")]
@@ -189,7 +192,8 @@ public class S_O_CharacterStats : ScriptableObject
 			generalHillMultiplier = 1.0f,
 			uphillMultiplier = 0.6f,
 			downhillMultiplier = 0.5f,
-			startDownhillMultiplier = -1.7f,
+			downhillThreshold = -1.7f,
+			uphillThreshold = 0.1f,
 			SlopePowerByCurrentSpeed = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0, 1f),
@@ -224,7 +228,9 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("This is multiplied with the force of a slope when going downhill to determine the force for.")]
 		public float              downhillMultiplier;
 		[Tooltip("Core:")]
-		public float              startDownhillMultiplier;
+		public float              downhillThreshold;
+		[Tooltip("Core:")]
+		public float              uphillThreshold;
 		[Tooltip("Core: This determines how much force is gained from the slope depending on the current speed. ")]
 		public AnimationCurve     SlopePowerByCurrentSpeed;
 		[Tooltip("Core:")]
@@ -246,13 +252,20 @@ public class S_O_CharacterStats : ScriptableObject
 			stickingLerps = new Vector2(0.885f, 1.005f),
 			stickingNormalLimit = 0.5f,
 			stickCastAhead = 1.9f,
-			negativeGHoverHeight = 0.8f,
+			negativeGHoverHeight = 0.05f,
 			rayToGroundDistance = 1.4f,
 			raytoGroundSpeedRatio = 0.01f,
 			raytoGroundSpeedMax = 2.6f,
 			rayToGroundRotDistance = 1.1f,
 			raytoGroundRotSpeedMax = 2.6f,
-			rotationResetThreshold = -0.1f
+			rotationResetThreshold = -0.1f,
+			upwardsLimitByCurrentSlope = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0.2f, 0.5f),
+				new Keyframe(0.85f, 0.3f),
+				new Keyframe(1f, 0.2f),
+			}),
+			stepHeight = 0.75f,
 		};
 	}
 
@@ -266,7 +279,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    stickingNormalLimit;
 		[Tooltip("Core: This is the cast ahead when the player hits a slope, this will be used to predict it's path if it is going on a high speed. too much of this value might send the player flying off before it hits the loop, too little might see micro stutters, default value 1.9")]
 		public float    stickCastAhead;
-		[Tooltip("Core: This is the position above the raycast hit point that the player will be placed if he is loosing grip on positive G turns, this value will snap the player back into the mesh, it shouldnt be moved unless you scale the collider, default value 0.6115")]
+		[Tooltip("Core: This is the position above the raycast hit point that the player will be placed if they are loosing grip. This is added to character collider size, so it should scale. Default value 0.005")]
 		public float    negativeGHoverHeight;
 		[Tooltip("Core:")]
 		public float    rayToGroundDistance;
@@ -280,6 +293,10 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    raytoGroundRotSpeedMax;
 		[Tooltip("Core:")]
 		public float    rotationResetThreshold;
+		[Tooltip("Core:")]
+		public AnimationCurve    upwardsLimitByCurrentSlope;
+		[Tooltip("Core:")]
+		public float        stepHeight;
 	}
 	#endregion
 
@@ -416,7 +433,9 @@ public class S_O_CharacterStats : ScriptableObject
 			startJumpDuration = 0.2f,
 			startSlopedJumpDuration = 0.2f,
 			startJumpSpeed = 4f,
-			speedLossOnJump = 0.99f
+			speedLossOnJump = 0.99f,
+			jumpExtraControlThreshold = 0.4f,
+			jumpAirControl = new Vector2(1.3f, 1.1f)
 		};
 	}
 
@@ -432,6 +451,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    startSlopedJumpDuration;
 		public float    startJumpSpeed;
 		public float    speedLossOnJump;
+		public float      jumpExtraControlThreshold;
+		public Vector2      jumpAirControl;
 	}
 	#endregion
 
@@ -662,7 +683,8 @@ public class S_O_CharacterStats : ScriptableObject
 			bounceHaltFactor = 0.7f,
 			bounceCoolDown = 8f,
 			bounceUpMaxSpeed = 75f,
-			bounceConsecutiveFactor = 1.05f
+			bounceConsecutiveFactor = 1.05f,
+			bounceAirControl = new Vector2 (1.4f, 1.1f),
 		};
 	}
 
@@ -677,6 +699,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float              bounceCoolDown;
 		public float              bounceUpMaxSpeed;
 		public float              bounceConsecutiveFactor;
+		public Vector2	bounceAirControl;
 
 	}
 	#endregion

@@ -15,7 +15,8 @@ MonoBehaviour:
   Title: Sonic
   IIintIna: 0
   BasicAccelerationStats:
-    acceleration: 0.16
+    runAcceleration: 0.16
+    rollAccel: 0.02
     AccelBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -60,7 +61,8 @@ MonoBehaviour:
       m_RotationOrder: 4
     accelShiftOverSpeed: 1
   AccelerationStats:
-    acceleration: 0.18
+    runAcceleration: 0.8
+    rollAccel: 0.4
     AccelBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -649,8 +651,8 @@ MonoBehaviour:
     decelShiftOverSpeed: 10
     naturalAirDecel: 1.002
   DecelerationStats:
-    moveDeceleration: 1.002
-    airDecel: 1.25
+    moveDeceleration: 4
+    airDecel: 1.5
     DecelBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -703,7 +705,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     decelShiftOverSpeed: 10
-    naturalAirDecel: 1.002
+    naturalAirDecel: 0.15
   DefaultSpeedStats:
     topSpeed: 90
     maxSpeed: 160
@@ -760,7 +762,8 @@ MonoBehaviour:
     generalHillMultiplier: 1
     uphillMultiplier: 0.6
     downhillMultiplier: 0.5
-    startDownhillMultiplier: -1.7
+    downhillThreshold: -1.7
+    uphillThreshold: 0.1
     SlopePowerByCurrentSpeed:
       serializedVersion: 2
       m_Curve:
@@ -828,9 +831,9 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   SlopeStats:
-    slopeEffectLimit: 0.85
+    slopeEffectLimit: 0.92
     standOnSlopeLimit: 0.8
-    slopePower: -1.4
+    slopePower: -1.8
     slopeRunningAngleLimit: 0.4
     SlopeLimitBySpeed:
       serializedVersion: 2
@@ -877,7 +880,8 @@ MonoBehaviour:
     generalHillMultiplier: 1
     uphillMultiplier: 0.6
     downhillMultiplier: 0.5
-    startDownhillMultiplier: -1.7
+    downhillThreshold: -1.7
+    uphillThreshold: 0.1
     SlopePowerByCurrentSpeed:
       serializedVersion: 2
       m_Curve:
@@ -958,13 +962,38 @@ MonoBehaviour:
     rayToGroundRotDistance: 1.1
     raytoGroundRotSpeedMax: 2.6
     rotationResetThreshold: -0.1
+    upwardsLimitByCurrentSlope:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.3
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    stepHeight: 0
   GreedysStickToGround:
     GroundMask:
       serializedVersion: 2
-      m_Bits: 4097
+      m_Bits: 1
     stickingLerps: {x: 0.885, y: 1.005}
     stickingNormalLimit: 0.5
-    stickCastAhead: 1.9
+    stickCastAhead: 2.2
     negativeGHoverHeight: 0.8
     rayToGroundDistance: 1.4
     raytoGroundSpeedRatio: 0.01
@@ -972,6 +1001,31 @@ MonoBehaviour:
     rayToGroundRotDistance: 1.1
     raytoGroundRotSpeedMax: 2.6
     rotationResetThreshold: -0.1
+    upwardsLimitByCurrentSlope:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.3
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    stepHeight: 1.1
   WhenInAir:
     startMaxFallingSpeed: -400
     startJumpPower: 1.2
@@ -1073,6 +1127,8 @@ MonoBehaviour:
     startSlopedJumpDuration: 0.2
     startJumpSpeed: 4
     speedLossOnJump: 0.99
+    jumpExtraControlThreshold: 0.6
+    jumpAirControl: {x: 1.3, y: 1.1}
   BasicJumpStats:
     CoyoteTimeBySpeed:
       serializedVersion: 2
@@ -1132,6 +1188,8 @@ MonoBehaviour:
     startSlopedJumpDuration: 0.2
     startJumpSpeed: 4
     speedLossOnJump: 0.99
+    jumpExtraControlThreshold: 0.4
+    jumpAirControl: {x: 1.3, y: 1.1}
   MultipleJumpStats:
     canDoubleJump: 1
     canTripleJump: 0
@@ -1559,6 +1617,7 @@ MonoBehaviour:
     bounceCoolDown: 8
     bounceUpMaxSpeed: 75
     bounceConsecutiveFactor: 1.05
+    bounceAirControl: {x: 1.4, y: 1.1}
   DefaultBounceStats:
     dropSpeed: 100
     BounceMaxSpeed: 140
@@ -1570,6 +1629,7 @@ MonoBehaviour:
     bounceCoolDown: 8
     bounceUpMaxSpeed: 75
     bounceConsecutiveFactor: 1.05
+    bounceAirControl: {x: 1.4, y: 1.1}
   RingRoadStats:
     dashSpeed: 100
     endingSpeedFactor: 1.23

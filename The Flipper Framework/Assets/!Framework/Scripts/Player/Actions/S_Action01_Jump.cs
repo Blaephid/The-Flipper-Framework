@@ -87,6 +87,8 @@ public class S_Action01_Jump : MonoBehaviour
             timeJumping = 0f;
             //Debug.Log(jumpCount);
 
+			Player.SetIsGrounded(false);
+
             if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
                 normaltoJump = Vector3.up;
 
@@ -267,7 +269,7 @@ public class S_Action01_Jump : MonoBehaviour
             //Set Camera to back
             if (Actions.CamResetPressed)
             {
-                if (Actions.moveX == 0 && Actions.moveY == 0 && Player.b_normalSpeed < 5f)
+                if (Actions.moveX == 0 && Actions.moveY == 0 && Player._inputVelocityDifference < 5f)
                     Cam.Cam.FollowDirection(10, 14f, -10, 0);
             }
 
