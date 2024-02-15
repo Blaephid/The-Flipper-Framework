@@ -147,7 +147,7 @@ public class S_Action11_JumpDash : MonoBehaviour
         if(Player._RB.velocity.y < 0)
             newVec.y = Player._fallGravity_.y * 0.5f;
 
-        Player._RB.velocity = newVec;
+        Player.setCoreVelocity(newVec);
 
         //End homing attck if in air for too long
         if (Timer > _AirDashDuration_)

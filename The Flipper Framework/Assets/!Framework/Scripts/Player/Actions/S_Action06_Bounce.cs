@@ -65,7 +65,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 			sounds.BounceStartSound();
 			BounceAvailable = false;
 			Player._RB.velocity = new Vector3(Player._RB.velocity.x * _bounceHaltFactor_, 0f, Player._RB.velocity.z * _bounceHaltFactor_);
-			Player.AddVelocity(new Vector3(0, -_dropSpeed_, 0));
+			Player.AddCoreVelocity(new Vector3(0, -_dropSpeed_, 0));
 
 			HomingTrailScript.emitTime = -1f;
 			HomingTrailScript.emit = true;
@@ -115,7 +115,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 			newVec = Player._RB.velocity;
 
 		Player._RB.velocity = new Vector3 (newVec.x, CurrentBounceAmount, newVec.z);
-		Player.AddVelocity (Player._groundNormal);
+		Player.AddCoreVelocity (Player._groundNormal);
 
 		sounds.BounceImpactSound ();
 

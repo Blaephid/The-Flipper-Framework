@@ -63,7 +63,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		if(Player._speedMagnitude < 15 && Player._moveInput == Vector3.zero && Player._isGrounded)
 		{
 			Player._inputVelocityDifference = 0;
-			Player._RB.velocity *= 0.90f;
+			//Player._RB.velocity *= 0.90f;
 			Actions.skid._hasSked = false;
 
 		}

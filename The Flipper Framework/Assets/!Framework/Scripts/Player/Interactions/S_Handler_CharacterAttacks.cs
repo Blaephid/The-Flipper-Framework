@@ -116,7 +116,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         if (newSpeed.y > Player._RB.velocity.y * 1.5f)
             newSpeed.y = Player._RB.velocity.y * 1.5f;
 
-        Player._RB.velocity = newSpeed;
+        Player.setTotalVelocity(newSpeed);
     }
 
     private void AttackFromHoming(Vector3 newSpeed)
@@ -141,7 +141,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         }
 
 
-        Player._RB.velocity = newSpeed;
+        Player.setTotalVelocity(newSpeed);
 
 
 
@@ -156,7 +156,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
         newSpeed = Vector3.Scale(Player._RB.velocity, newSpeed);
         newSpeed.y = _homingBouncingPower_ * 1.8f;
-        Player._RB.velocity = newSpeed;
+        Player.setTotalVelocity(newSpeed);
 
         Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
     }

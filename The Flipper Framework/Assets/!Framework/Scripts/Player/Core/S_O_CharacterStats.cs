@@ -266,6 +266,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(1f, 0.2f),
 			}),
 			stepHeight = 0.75f,
+			groundDifferenceLimit = 0.3f,
 		};
 	}
 
@@ -297,6 +298,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public AnimationCurve    upwardsLimitByCurrentSlope;
 		[Tooltip("Core:")]
 		public float        stepHeight;
+		public float        groundDifferenceLimit;
 	}
 	#endregion
 

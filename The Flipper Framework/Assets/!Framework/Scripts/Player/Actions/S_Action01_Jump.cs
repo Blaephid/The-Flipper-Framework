@@ -99,7 +99,8 @@ public class S_Action01_Jump : MonoBehaviour
             //if (Grounded || jumpCount == -1)
             if (Grounded)
             {
-                Player._RB.velocity = new Vector3(Player._RB.velocity.x * _speedLossOnJump_, verticalSpeed, Player._RB.velocity.z * _speedLossOnJump_);
+                //Player._RB.velocity = new Vector3(Player._RB.velocity.x * _speedLossOnJump_, verticalSpeed, Player._RB.velocity.z * _speedLossOnJump_);
+
 
                 if (Actions.eventMan != null) Actions.eventMan.JumpsPerformed += 1;
 
@@ -349,15 +350,15 @@ public class S_Action01_Jump : MonoBehaviour
             Player._isRolling = false;
             if (Counter < SlopedJumpDuration)
             {
-                Player.AddVelocity(InitialNormal * (JumpSpeed));
+                Player.AddCoreVelocity(InitialNormal * (JumpSpeed));
                 //Debug.Log(InitialNormal);
             }
             else
             {
-                Player.AddVelocity(new Vector3(0, 1, 0) * (JumpSpeed));
+                Player.AddCoreVelocity(new Vector3(0, 1, 0) * (JumpSpeed));
             }
             //Extra speed
-            Player.AddVelocity(new Vector3(0, 1, 0) * (jumpSlopeSpeed));
+            Player.AddCoreVelocity(new Vector3(0, 1, 0) * (jumpSlopeSpeed));
         }
         
 
@@ -369,7 +370,8 @@ public class S_Action01_Jump : MonoBehaviour
             //jumpCount = 1;
             Vector3 Velocity = new Vector3(Player._RB.velocity.x, Player._RB.velocity.y, Player._RB.velocity.z);
             Velocity.y = Velocity.y - _stopYSpeedOnRelease_;
-            Player._RB.velocity = Velocity;
+            //Player._RB.velocity = Velocity;
+			Player.setTotalVelocity(Velocity);
         }
 
         //End Action
@@ -409,7 +411,8 @@ public class S_Action01_Jump : MonoBehaviour
         else
             newVec = new Vector3(Player._RB.velocity.x * _speedLossOnDoubleJump_, Mathf.Clamp(Player._RB.velocity.y * 0.1f, 0.1f, 5), Player._RB.velocity.z * _speedLossOnDoubleJump_);
 
-        Player._RB.velocity = newVec;
+		//Player._RB.velocity = newVec;
+		Player.setTotalVelocity(newVec);
 
         GameObject JumpDashParticleClone = Instantiate(Tools.JumpDashParticle, Tools.FeetPoint.position, Quaternion.identity) as GameObject;
 

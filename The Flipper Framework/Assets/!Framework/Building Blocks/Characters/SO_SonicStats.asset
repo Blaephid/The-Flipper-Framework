@@ -987,15 +987,16 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     stepHeight: 0
+    groundDifferenceLimit: 0
   GreedysStickToGround:
     GroundMask:
       serializedVersion: 2
       m_Bits: 1
-    stickingLerps: {x: 0.885, y: 1.005}
+    stickingLerps: {x: 0.99, y: 0.95}
     stickingNormalLimit: 0.5
     stickCastAhead: 2.2
-    negativeGHoverHeight: 0.8
-    rayToGroundDistance: 1.4
+    negativeGHoverHeight: 1.4
+    rayToGroundDistance: 2.1
     raytoGroundSpeedRatio: 0.01
     raytoGroundSpeedMax: 2.6
     rayToGroundRotDistance: 1.1
@@ -1026,6 +1027,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     stepHeight: 1.1
+    groundDifferenceLimit: 0.32
   WhenInAir:
     startMaxFallingSpeed: -400
     startJumpPower: 1.2

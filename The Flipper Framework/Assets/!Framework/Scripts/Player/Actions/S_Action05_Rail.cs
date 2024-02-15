@@ -265,6 +265,7 @@ namespace SplineMesh
 
 
             Player._RB.velocity = Vector3.zero;
+			Player.setTotalVelocity(Vector3.zero);
 
         }
 
@@ -337,7 +338,7 @@ namespace SplineMesh
 
                     jumpCorrectedOffset = -jumpCorrectedOffset;
                     ZipBody.isKinematic = true;
-                    Player._groundNormal = new Vector3(0f, 1f, 0f);
+                    Player._groundNormal = Vector3.up;
 
                     StartCoroutine(Rail_int.JumpFromZipLine(ZipHandle, 1));
 

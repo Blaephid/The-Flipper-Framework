@@ -105,12 +105,12 @@ public class S_Interaction_Pathers : MonoBehaviour
     IEnumerator exitPulley()
     {
         Player._RB.velocity = Vector3.zero;
-        Player.AddVelocity(new Vector3(0f, 60f, 0f));
+        Player.AddCoreVelocity(new Vector3(0f, 60f, 0f));
 
         yield return new WaitForSeconds(.2f);
 
         //Actions.ChangeAction(0);
-        Player.AddVelocity(CharacterAnimator.transform.forward * 15f);
+        Player.AddCoreVelocity(CharacterAnimator.transform.forward * 15f);
     }
 
     public void OnCollisionEnter(Collision col)

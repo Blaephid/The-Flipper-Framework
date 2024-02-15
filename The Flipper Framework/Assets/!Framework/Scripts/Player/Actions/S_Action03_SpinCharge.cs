@@ -87,7 +87,10 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
         Player._moveInput *= 0.4f;
         float stillForce = (_spinDashStillForce_ * _speedLossByTime_.Evaluate(time)) + 1;
-        Player._RB.velocity /= stillForce;
+		if (stillForce * 4 < Player._horizontalSpeedMagnitude)
+		{
+			Player.AddCoreVelocity(Player._RB.velocity.normalized * -stillForce);
+		}
 
         //Counter to exit after not pressing button for a bit;
         
@@ -179,8 +182,6 @@ public class S_Action03_SpinCharge : MonoBehaviour
         }
     }
 
-   
-
 
     IEnumerator delayRelease()
     {
@@ -221,7 +222,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
                 newForce *= _forceGainByAngle_.Evaluate(dif);
             newForce *= _gainBySpeed_.Evaluate(Player._horizontalSpeedMagnitude / Player._currentMaxSpeed);
 
-            Player._RB.velocity += newForce;
+            Player.AddCoreVelocity(newForce);
 
             CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
 

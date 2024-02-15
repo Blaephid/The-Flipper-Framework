@@ -52,6 +52,7 @@ public class S_Control_PulleyObject : MonoBehaviour {
         homingtgt.SetActive(true);
         rb.isKinematic = true;
         rb.velocity = Vector3.zero;
+		
 
         PlaceOnRope();
     }

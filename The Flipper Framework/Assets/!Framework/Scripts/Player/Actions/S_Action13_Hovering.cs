@@ -97,7 +97,7 @@ public class S_Action13_Hovering : MonoBehaviour
 
 			if (PlayerPhys._RB.velocity.y < floatSpeed)
 			{
-				PlayerPhys.AddVelocity(hoverForce.transform.up * floatSpeed);
+				PlayerPhys.AddCoreVelocity(hoverForce.transform.up * floatSpeed);
 			}
 
 		}
@@ -107,7 +107,7 @@ public class S_Action13_Hovering : MonoBehaviour
 
 			if (PlayerPhys._RB.velocity.y < floatSpeed)
 			{
-				PlayerPhys.AddVelocity(hoverForce.transform.up * (floatSpeed * 0.35f));
+				PlayerPhys.AddCoreVelocity(hoverForce.transform.up * (floatSpeed * 0.35f));
 			}
 
 			if (exitWindTimer >= exitWind)
@@ -119,7 +119,7 @@ public class S_Action13_Hovering : MonoBehaviour
 		//Skidding
 		if ((PlayerPhys._inputVelocityDifference < -_skiddingStartPoint_) && !PlayerPhys._isGrounded)
 		{
-			if (PlayerPhys._speedMagnitude >= -(_airSkiddingIntensity_ * 0.8f)) PlayerPhys.AddVelocity(PlayerPhys._RB.velocity.normalized * (_airSkiddingIntensity_ * 0.8f) * (PlayerPhys._isRolling ? 0.5f : 1));
+			if (PlayerPhys._speedMagnitude >= -(_airSkiddingIntensity_ * 0.8f)) PlayerPhys.AddCoreVelocity(PlayerPhys._RB.velocity.normalized * (_airSkiddingIntensity_ * 0.8f) * (PlayerPhys._isRolling ? 0.5f : 1));
 
 
 			if (PlayerPhys._speedMagnitude < 4)

@@ -248,7 +248,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                 }
                 else
                 {
-                    Player.AddVelocity(col.transform.forward * col.GetComponent<S_Data_SpeedPad>().Speed);
+                    Player.AddCoreVelocity(col.transform.forward * col.GetComponent<S_Data_SpeedPad>().Speed);
 
                     if (col.GetComponent<S_Data_SpeedPad>().Snap)
                     {
@@ -486,7 +486,7 @@ public class S_Interaction_Objects : MonoBehaviour {
 				Actions.ChangeAction (S_Enums.PlayerStates.Regular);
 				newSpeed = new Vector3(0, _homingBouncingPower_, 0);
 				////Debug.Log (newSpeed);
-				Player._RB.velocity = newSpeed;
+				Player.setTotalVelocity(newSpeed);
 				Player.transform.position = col.ClosestPoint (Player.transform.position);
 				if (Actions.Action02 != null) {
 					Actions.Action02.HomingAvailable = true;

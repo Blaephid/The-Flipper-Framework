@@ -57,7 +57,8 @@ public class S_Action04_Hurt : MonoBehaviour {
             newSpeed.y = _bonkUpForce_;
             if (Player._isGrounded)
                 newSpeed.y *= 2;
-            Player._RB.velocity = newSpeed;
+            //Player._RB.velocity = newSpeed;
+			Player.setTotalVelocity(newSpeed);
 
             lockedForAir = _bonkLockAir_;
             lockedForGround = _bonkLock_;
@@ -67,7 +68,8 @@ public class S_Action04_Hurt : MonoBehaviour {
         {
             Vector3 newSpeed = new Vector3((Player._RB.velocity.x / 2), _knockbackUpwardsForce_, (Player._RB.velocity.z / 2));
             newSpeed.y = _knockbackUpwardsForce_;
-            Player._RB.velocity = newSpeed;
+            //Player._RB.velocity = newSpeed;
+			Player.setTotalVelocity(newSpeed);
             lockedForAir = _recoilAir_;
             lockedForGround = _recoilGround_;
         }
@@ -75,7 +77,8 @@ public class S_Action04_Hurt : MonoBehaviour {
         {
             Vector3 newSpeed = -CharacterAnimator.transform.forward * _knockbackForce_;
             newSpeed.y = _knockbackUpwardsForce_;
-            Player._RB.velocity = newSpeed;
+            //Player._RB.velocity = newSpeed;
+			Player.setTotalVelocity(newSpeed);
             lockedForAir = _recoilAir_ * 1.4f;
             lockedForGround = _recoilGround_ * 1.4f;
         }

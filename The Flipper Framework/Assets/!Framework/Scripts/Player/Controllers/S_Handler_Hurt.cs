@@ -291,7 +291,7 @@ public class S_Handler_Hurt : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     yield return new WaitForFixedUpdate();
-                    Player._RB.velocity = Vector3.zero;
+                    Player.setTotalVelocity(Vector3.zero);
                     CharacterAnimator.transform.forward = newDir;
                 }
             }

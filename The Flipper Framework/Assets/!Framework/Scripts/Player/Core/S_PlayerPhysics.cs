@@ -29,6 +29,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	S_Control_SoundsPlayer _SoundController;
 
 	CapsuleCollider _CharacterCapsule;
+	private Transform               _FeetTransform;
 	#endregion
 
 
@@ -121,6 +122,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _raytoGroundRotSpeedMax_ = 2.6f;
 	private float                 _rotationResetThreshold_ = -0.1f;
 	private float                 _stepHeight_ = 0.6f;
+	private float                 _groundDifferenceLimit_ = 0.3f;
 
 	[HideInInspector]
 	public LayerMask              _Groundmask_;
@@ -138,7 +140,11 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3                _environmentalVelocity;
 	[HideInInspector]
 	public Vector3                _totalVelocity;
+	public Vector3                _prevTotalVelocity;
 	private List<Vector3>         _listOfVelocityToAddNextUpdate = new List<Vector3>();
+	private List<Vector3>         _listOfCoreVelocityToAdd= new List<Vector3>();
+	private Vector3               _externalSetVelocity;
+	private Vector3               _externalCoreVelocity;
 
 	public float _speedMagnitude { get; set; }
 	public float _horizontalSpeedMagnitude { get; set; }
@@ -184,7 +190,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	public bool                   _EnableDebug;
 	public float _TimeOnGround { get; set; }
 	[HideInInspector]
-	private Vector3               _feetPoint;
 
 	#endregion
 	#endregion
@@ -219,11 +224,10 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Sets public variables relevant to other calculations 
 	void Update () {
-		_speedMagnitude = _RB.velocity.magnitude;
-		Vector3 releVec = GetRelevantVec(_RB.velocity);
-		_horizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
 
 		_playerPos = transform.position;
+
+		CheckForGround();
 	}
 
 	//Involed in sticking calculations
@@ -275,15 +279,15 @@ public class S_PlayerPhysics : MonoBehaviour
 		curvePosTang = _tangDragOverSpeed_.Evaluate(_horizontalSpeedMagnitude / _currentMaxSpeed );
 		curveSlopePower = _slopePowerOverSpeed_.Evaluate(_horizontalSpeedMagnitude / _currentMaxSpeed);
 
-		// Clamp horizontal running speed.
-		if (_horizontalSpeedMagnitude > _currentMaxSpeed)
-		{
-			Vector3 ReducedSpeed = _RB.velocity;
-			float keepY = _RB.velocity.y;
-			ReducedSpeed = Vector3.ClampMagnitude(ReducedSpeed, _currentMaxSpeed);
-			ReducedSpeed.y = keepY;
-			_RB.velocity = ReducedSpeed;
-		}
+		//// Clamp horizontal running speed.
+		//if (_horizontalSpeedMagnitude > _currentMaxSpeed)
+		//{
+		//	Vector3 ReducedSpeed = _RB.velocity;
+		//	float keepY = _RB.velocity.y;
+		//	ReducedSpeed = Vector3.ClampMagnitude(ReducedSpeed, _currentMaxSpeed);
+		//	ReducedSpeed.y = keepY;
+		//	_RB.velocity = ReducedSpeed;
+		//}
 
 		//Do it for Y
 		//if (Mathf.Abs(rb.velocity.y) > MaxFallingSpeed)
@@ -297,12 +301,37 @@ public class S_PlayerPhysics : MonoBehaviour
 		//    rb.velocity = ReducedSpeed;
 		//}
 
-		//Finds out if grounded, then calls the appropriate movement handler.
 		CheckForGround();
+
+		//If the rigidbody velocity is smaller than it was last frame (such as from hitting a wall),
+		//Then apply the difference to the corevelocity as well so it knows there's been a change.
+		//But if the difference is minor (such as lightly colliding with a slope when going up), then ignore change.
+		Debug.Log("This Frame = " + _RB.velocity.magnitude + "  Last Frame = " + _prevTotalVelocity.magnitude);
+		if (_RB.velocity.sqrMagnitude < _prevTotalVelocity.sqrMagnitude)
+		{
+			Debug.Log("Lower");
+			float dif = Mathf.Abs(_RB.velocity.magnitude - _speedMagnitude);
+			float sped = _RB.velocity.sqrMagnitude;
+
+			if (dif < 10 && sped > Mathf.Pow(15, 2))
+			{
+				Debug.Log("Change");
+				_RB.velocity = _RB.velocity * _speedMagnitude;
+			}
+			else
+			{
+				//Debug.Log("ABS = " + Mathf.Abs(_RB.velocity.sqrMagnitude - _prevTotalVelocity.sqrMagnitude) + "  VEC = " +(_prevTotalVelocity - _RB.velocity).sqrMagnitude);
+
+				Vector3 Difference = _prevTotalVelocity - _RB.velocity;
+				_coreVelocity -= Difference;
+			}
+		}
+
+		//Calls the appropriate movement handler.
 		if (_isGrounded)
 			GroundMovement();
 		else
-			AirMovement();
+			HandleAirMovement();
 		AlignWithGround();
 
 		//StartCoroutine(setVelocityAtEndOfUpdate());
@@ -326,19 +355,21 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 
 		//Uses the ray to check for ground, if found, sets grounded to true and takes the normal.
-		if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hitGround, 2f + _rayToGroundDistancecor, _Groundmask_))
+		if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out RaycastHit hitGroundTemp, 2f + _rayToGroundDistancecor, _Groundmask_))
 		{
-			_groundNormal = hitGround.normal;
-
-			SetIsGrounded(true);
+			if(Vector3.Angle(_groundNormal, hitGroundTemp.normal) / 180 < _groundDifferenceLimit_)
+			{
+				hitGround = hitGroundTemp;
+				SetIsGrounded(true);
+				_groundNormal = hitGround.normal;
+				return;
+			}
 		}
-		//If not found, then sets grounded to false.
-		else
-		{
-			_groundNormal = Vector3.zero;
 
-			SetIsGrounded(false);
-		}
+		//If return is not called yet, then sets grounded to false.
+		_groundNormal = Vector3.up;
+		SetIsGrounded(false);
+		
 	}
 
 	IEnumerator SetVelocityAtEndOfUpdate() {
@@ -346,26 +377,62 @@ public class S_PlayerPhysics : MonoBehaviour
 		SetTotalVelocity();
 	}
 
+	//After every other calculation has been made, all of the new velocities and combined and set to the rigidbody.
+	//This includes the core and environmental velocities, but also the others that have been added into a list using the addvelocity method.
 	private void SetTotalVelocity () {
-		_totalVelocity = _coreVelocity + _environmentalVelocity;
-
-		foreach(Vector3 force in _listOfVelocityToAddNextUpdate)
+		
+		if(_externalCoreVelocity != Vector3.zero)
 		{
-			_totalVelocity += force;
+			_coreVelocity = _externalCoreVelocity;
+			_externalCoreVelocity = Vector3.zero;
+		}
+		else
+		{
+			foreach (Vector3 force in _listOfCoreVelocityToAdd)
+			{
+				_coreVelocity += force;
+			}
+		}
+		_listOfCoreVelocityToAdd.Clear();
+
+		if (_externalSetVelocity != Vector3.zero)
+		{
+			_totalVelocity = _externalSetVelocity;
+			_externalSetVelocity = Vector3.zero;
+		}
+		else
+		{
+			_totalVelocity = _coreVelocity + _environmentalVelocity;
+
+			foreach (Vector3 force in _listOfVelocityToAddNextUpdate)
+			{
+				_totalVelocity += force;
+			}
+			
 		}
 		_listOfVelocityToAddNextUpdate.Clear();
 
+
 		_RB.velocity = _totalVelocity;
+		_prevTotalVelocity = _totalVelocity;
+
+		Debug.DrawRay(hitGround.point + (_groundNormal * 0.25f), _totalVelocity.normalized * 1f, Color.green, 900);
+
+		_speedMagnitude = _totalVelocity.magnitude;
+		Vector3 releVec = GetRelevantVec(_RB.velocity);
+		_horizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
 	}
 
 	//Calls all the functions involved in managing coreVelocity on the ground, such as normal control (with normal modifiers), sticking to the ground, and effects from slopes.
 	private void GroundMovement () {
 
+		Debug.DrawRay(_FeetTransform.position, -hitGround.normal * 0.4f, Color.gray, 900, true);
 		 _TimeOnGround += Time.deltaTime;
 
 		_coreVelocity = HandleControlledVelocity(1, _moveInput, new Vector2 (1,1));
 		_coreVelocity = StickToGround(_coreVelocity);
-		_coreVelocity = HandleSlopePhysics(_coreVelocity);
+		Debug.DrawRay(hitGround.point + (_groundNormal * 0.25f), _coreVelocity.normalized * 1.2f, Color.blue, 900);
+		//_coreVelocity = HandleSlopePhysics(_coreVelocity);
 	}
 
 	//Handles core velocity, which is the velocity directly under the player's control (seperate from environmental velocity which is placed on the character by other things).
@@ -378,19 +445,28 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Gets current running velocity, then splits it into horizontal and vertical velocity relative to the character.
 		//This means running up a wall will have zero vertical velocity because the character isn't moveing up relative to their rotation.
-		Vector3 velocity = _RB.velocity;
+		Vector3 velocity = _coreVelocity;
 		Vector3 localVelocity = transform.InverseTransformDirection(velocity);
 		Vector3 lateralVelocity = new Vector3(localVelocity.x, 0.0f, localVelocity.z);
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		lateralVelocity = HandleTurningAndAccel(lateralVelocity, input, modifier);
-
 		lateralVelocity = HandleDecel(lateralVelocity, input, _isGrounded);
 
 
 		// Compose local velocity back and compute velocity back into the Global frame.
 		localVelocity = lateralVelocity + verticalVelocity;
 		velocity = transform.TransformDirection(localVelocity);
+
+		// Clamp horizontal running speed.
+		if (_horizontalSpeedMagnitude > _currentMaxSpeed)
+		{
+			Vector3 ReducedSpeed = velocity;
+			float keepY = velocity.y;
+			ReducedSpeed = Vector3.ClampMagnitude(ReducedSpeed, _currentMaxSpeed);
+			ReducedSpeed.y = keepY;
+			velocity = ReducedSpeed;
+		}
 
 		return velocity;
 	}
@@ -527,7 +603,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (_horizontalSpeedMagnitude < _slopeSpeedLimit_.Evaluate(_groundNormal.y))
 		{
 			SetIsGrounded(false);
-			AddVelocity(_groundNormal * 2f);
+			AddCoreVelocity(_groundNormal * 2f);
 		}
 
 		//Slope power
@@ -576,73 +652,100 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//If moving and has been grounded for long enough.
 		//Then ready a raycast to check for slopes.
-		if (_TimeOnGround > 0.1f && _horizontalSpeedMagnitude > 1)
+		if (_TimeOnGround > 0.06f && _horizontalSpeedMagnitude > 1)
 		{
 			float DirectionDot = Vector3.Dot(_RB.velocity.normalized, hitGround.normal);
-			Vector3 groundNormal = hitGround.normal;
-			Vector3 raycastStartPosition = _RB.position + _feetPoint + (_groundNormal * 0.25f);
+			Vector3 newGroundNormal = hitGround.normal;
+			Vector3 raycastStartPosition = hitGround.point + (_groundNormal * 0.25f);
+			Vector3 rayCastDirection = _RB.velocity.normalized;
+
+			Debug.DrawRay(raycastStartPosition, _RB.velocity.normalized * 1.8f, Color.white, 900);
 
 			//Negative slopes (like loops, where the player starts facing more upwards).
-			//Shoots a raycast forwards from just above the ground, meaning when theres a wall or sudden steel slope relative to the ground, it will hit.		
-			if (Physics.BoxCast(raycastStartPosition, new Vector3(0.1f, 0f, 0.4f), velocity.normalized, out RaycastHit hitSticking, 
-				Quaternion.LookRotation(velocity, groundNormal), _horizontalSpeedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, _Groundmask_))
+			//Shoots a raycast forwards from just above the ground, meaning when theres a wall or sudden slope relative to the ground, it will hit.		
+			if (Physics.BoxCast(raycastStartPosition, new Vector3(0.1f, 0.04f, 0.4f), rayCastDirection, out RaycastHit hitSticking, 
+				Quaternion.LookRotation(velocity, newGroundNormal), _horizontalSpeedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, _Groundmask_))
 			{
-				float dif = Vector3.Angle(groundNormal, hitSticking.normal) / 180;
-				float limit = _upwardsLimitByCurrentSlope_.Evaluate(groundNormal.y);
+				float dif = Vector3.Angle(newGroundNormal, hitSticking.normal) / 180;
+				float limit = _upwardsLimitByCurrentSlope_.Evaluate(newGroundNormal.y);
 
 				//If the difference between current slope and encountered one is under the limit specific to that current slope
 				//(if slope is flat ground, lower limit, this is to make this happen more when heading downhill then to sudden flatground)
 				//Then it creates a velocity aligned to that new normal, then interpolates from the current to this new one.			
 				if (dif < limit) 
 				{
-					groundNormal = hitSticking.normal;
-					Vector3 Dir = AlignWithNormal(velocity, groundNormal);
-					velocity = Vector3.Lerp(velocity, Dir, _stickingLerps_.x);
-					_RB.position = hitGround.point + groundNormal * _negativeGHoverHeight_;
+					Debug.DrawRay(raycastStartPosition, rayCastDirection * 1.7f, Color.black, 900);
+
+					newGroundNormal = hitSticking.normal;
+					Vector3 Dir = AlignWithNormal(velocity, newGroundNormal);
+					velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.x);
+
+					Debug.DrawRay(raycastStartPosition, velocity.normalized * 1.5f, Color.red, 900);
+
+					//_groundNormal = Vector3.Lerp(_groundNormal, newGroundNormal, _stickingLerps_.x);
+					transform.position = hitGround.point + (newGroundNormal * _negativeGHoverHeight_) + (newGroundNormal * _FeetTransform.localPosition.y);
+					//transform.position += newGroundNormal * _negativeGHoverHeight_;
+
+					Debug.DrawRay(hitGround.point + newGroundNormal * _negativeGHoverHeight_, newGroundNormal * 0.3f, Color.cyan, 900);
+
 				}
 
-				//If not, then shoot a spherecase down from above and slightly continuing on from the impact point.
+				//If not, then shoot a spherecast down from above and slightly continuing on from the impact point.
 				//If there is a lip, if the wall infront is very short-
 				//Then if the ledge is within step height and a similar angle to the current one-
 				//the player will be moved to the position of the player, automatically stepping up over the lip.
-				else if (Physics.SphereCast(hitSticking.point + _RB.velocity.normalized + groundNormal * 1.5f, _CharacterCapsule.radius,
-					-groundNormal, out RaycastHit hitLip, 1.45f - _CharacterCapsule.radius, _Groundmask_))
+				else if (Physics.SphereCast(hitSticking.point + rayCastDirection + newGroundNormal * 1.5f, _CharacterCapsule.radius,
+					-newGroundNormal, out RaycastHit hitLip, 1.45f - _CharacterCapsule.radius, _Groundmask_))
 				{
-					float dis = Vector3.Distance(hitSticking.point + _RB.velocity.normalized, hitLip.point);
-					float dot = Vector3.Dot(hitLip.normal, groundNormal);
-					if (dis < _stepHeight_ && dis > 0.015f && _horizontalSpeedMagnitude > 20f && dot > 0.98f)
-					{
-						Vector3 castPosition = (hitSticking.point + _RB.velocity.normalized + groundNormal) - (groundNormal * hitLip.distance);
-						_RB.position = castPosition + _feetPoint;
-					}
+					//float dis = Vector3.Distance(hitSticking.point + _RB.velocity.normalized, hitLip.point);
+					//float dot = Vector3.Dot(hitLip.normal, newGroundNormal);
+					//if (dis < _stepHeight_ && dis > 0.015f && _horizontalSpeedMagnitude > 20f && dot > 0.98f)
+					//{
+					//	Vector3 castPosition = (hitSticking.point + _RB.velocity.normalized + newGroundNormal) - (newGroundNormal * hitLip.distance);
+					//	_RB.position = castPosition + _feetPoint;
+					//}
 				}
+
+				return velocity;
 			}
 			//Positive slopes (like the outside of a loop, where the player starts facing more downwards).
-			else
+			else if (_TimeOnGround > 0.1f)
 			{
 				//If the difference between current movement and ground normal is less than the limit to stick (lower limits prevent super sticking).
-				//Then create a velocity relative to the current groundNormal, then lerps from one to the other.
 				if (Mathf.Abs(DirectionDot) < _stickingNormalLimit_)
 				{
-					Vector3 Dir = AlignWithNormal(velocity, groundNormal.normalized);
-					float lerp = _stickingLerps_.y;
-
+					raycastStartPosition = raycastStartPosition + (_RB.velocity * _stickCastAhead_ * Time.deltaTime);
 					//Shoots a raycast from infront, but downwards to check for lower ground.
-					if (Physics.Raycast(raycastStartPosition + (_RB.velocity * _stickCastAhead_ * Time.deltaTime), -hitGround.normal, out hitSticking, 2.5f, _Groundmask_))
+					if (Physics.Raycast(raycastStartPosition, -hitGround.normal, out hitSticking, 2.5f, _Groundmask_))
 					{
-						if (hitSticking.distance > 1.5f)
+						//If the gound hit is further than the distance to the feet, then the ground is lower, so the slope is positive
+						//Then create a velocity relative to the current groundNormal, then lerp from one to the other.
+						//Also apply force downwards to stick.
+						float hitDis = Vector3.Distance(raycastStartPosition, hitSticking.point);
+						float feetDis = Vector3.Distance(raycastStartPosition, raycastStartPosition + (hitGround.normal * _FeetTransform.localPosition.y)); ;
+						if (hitDis > feetDis + 0.15f)
 						{
-							lerp = 3;
-							//transform.position = hitGround.point + groundNormal * (_CharacterCapsule.height / 2f + _negativeGHoverHeight_);
-							_RB.position = hitGround.point + groundNormal * _negativeGHoverHeight_;
+							Vector3 Dir = AlignWithNormal(velocity, newGroundNormal);
+							float lerp = _stickingLerps_.y;
+
+							if (hitSticking.distance > 1.5f)
+							{
+								lerp = 3;
+								//transform.position = hitGround.point + groundNormal * (_CharacterCapsule.height / 2f + _negativeGHoverHeight_);
+								_RB.position = hitGround.point + newGroundNormal * _negativeGHoverHeight_;
+							}
+							velocity = Vector3.LerpUnclamped(velocity, Dir, lerp);
+							//_groundNormal = Vector3.Lerp(_groundNormal, newGroundNormal, _stickingLerps_.x);
+							AddCoreVelocity(-newGroundNormal * 2); // Adds velocity downwards to remain on the slope.
+
+							return velocity;
 						}
 					}
-					velocity = Vector3.LerpUnclamped(velocity, Dir, lerp);
+					
 				}
 			}
-			AddVelocity(-groundNormal * 2); // Adds velocity downwards to remain on the slope.
 		}
-		return velocity;
+		return AlignWithNormal(velocity, _groundNormal);
 	}
 
 	//Makes a vector relative to a normal. Such as a forward direction being affected by the ground.
@@ -652,7 +755,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		return vec;
 	}
 
-	void AirMovement () {
+	//Calls methods relevant to general control and gravity, while applying the turn and accelleration modifiers depending on a number of factors while in the air.
+	void HandleAirMovement () {
 
 		float airAccelMod = 1;
 		float airTurnMod = 1;
@@ -679,28 +783,25 @@ public class S_PlayerPhysics : MonoBehaviour
 		
 		//Apply Gravity
 		if (_isGravityOn)
-			_coreVelocity += Gravity((int)_coreVelocity.y);
+			_coreVelocity += GetGravity(_coreVelocity.y);
 		//Max Falling Speed
 		_coreVelocity = new Vector3(_coreVelocity.x, Mathf.Clamp(_coreVelocity.y, _maxFallingSpeed_, _coreVelocity.y), _coreVelocity.z);
 	}
 
-	Vector3 Gravity ( int vertSpeed ) {
+	//Returns appropriate downwards force when in the air
+	Vector3 GetGravity ( float vertSpeed ) {
 
-		if (vertSpeed < 0)
+		//If falling down, return normal fall gravity.
+		if (vertSpeed <= 0)
 		{
 			return _fallGravity_;
 		}
+		//If currently moving up while in the air, apply a different (typically higher) gravity force with an slight increase dependant on upwards speed.
 		else
 		{
-			int gravMod;
-			if (vertSpeed > 70)
-				gravMod = vertSpeed / 12;
-			else
-				gravMod = vertSpeed / 8;
-			float applyMod = 1 + (gravMod * 0.1f);
-
-			Vector3 newGrav = new Vector3(0f, _upGravity_.y * applyMod, 0f);
-
+	
+			float applyMod = Mathf.Clamp(1 + ((vertSpeed / 10) * 0.1f), 1, 3);
+			Vector3 newGrav = new Vector3(_upGravity_.x, _upGravity_.y * applyMod, _upGravity_.z);
 			return newGrav;
 		}
 	}
@@ -712,14 +813,13 @@ public class S_PlayerPhysics : MonoBehaviour
 	/// </summary>
 	/// 
 	#region public 
+	//
 	public void AlignWithGround () {
 
 
 		//if ((Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out hitRot, 2f + RayToGroundRotDistancecor, Playermask)))
 		if (_isGrounded)
 		{
-			_groundNormal = hitGround.normal;
-
 			_KeepNormal = _groundNormal;
 
 			transform.rotation = Quaternion.FromToRotation(transform.up, _groundNormal) * transform.rotation;
@@ -789,9 +889,17 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	}
 
-	public void AddVelocity ( Vector3 force ) {
+	public void AddTotalVelocity ( Vector3 force ) {
 		_listOfVelocityToAddNextUpdate.Add(force);
 		//_RB.velocity += force;
+	}public void AddCoreVelocity ( Vector3 force ) {
+		_listOfCoreVelocityToAdd.Add(force);
+		//_RB.velocity += force;
+	}
+	public void setCoreVelocity(Vector3 force ) {
+		_externalCoreVelocity = force;
+	}public void setTotalVelocity(Vector3 force ) {
+		_externalSetVelocity = force;
 	}
 
 	#endregion
@@ -865,6 +973,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_Groundmask_ = _Tools.Stats.GreedysStickToGround.GroundMask;
 		_upwardsLimitByCurrentSlope_ = _Tools.Stats.GreedysStickToGround.upwardsLimitByCurrentSlope;
 		_stepHeight_ = _Tools.Stats.GreedysStickToGround.stepHeight;
+		_groundDifferenceLimit_ = _Tools.Stats.GreedysStickToGround.groundDifferenceLimit;
 
 		//Sets all changeable core values to how they are set to start in the editor.
 		_runAccell = _startAcceleration_;
@@ -886,7 +995,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_Action = GetComponent<S_ActionManager>();
 		_SoundController = _Tools.SoundControl;
 		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
-		_feetPoint = _Tools.FeetPoint.localPosition;
+		_FeetTransform = _Tools.FeetPoint;
 	}
 
 	#endregion

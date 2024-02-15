@@ -88,7 +88,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         JumpBall.SetActive(false);
 
         OriginalVelocity = Player._RB.velocity;
-        Player._RB.velocity = Vector3.zero;
+        Player.setCoreVelocity(Vector3.zero);
         distanceFromWall = coreCollider.radius * 1.15f;
 
 
@@ -445,7 +445,7 @@ public class S_Action12_WallRunning : MonoBehaviour
                 //Drops and send the player back a bit.
                 Vector3 newVec = new Vector3(0f, ClimbingSpeed, 0f);
                 newVec += (-CharacterAnimator.transform.forward * 6f);
-                Player._RB.velocity = newVec;
+                Player.setCoreVelocity(newVec);
 
                 CharacterAnimator.transform.rotation = Quaternion.LookRotation(-wallToClimb.normal, Vector3.up);
                 //Input.LockInputForAWhile(10f, true);
@@ -457,7 +457,7 @@ public class S_Action12_WallRunning : MonoBehaviour
             {
                 Vector3 newVec = new Vector3(0f, ClimbingSpeed, 0f);
                 newVec += (CharacterAnimator.transform.forward * 20f);
-                Player._RB.velocity = newVec;
+                Player.setCoreVelocity(newVec);
             }
 
             //Adds a changing deceleration
@@ -517,7 +517,7 @@ public class S_Action12_WallRunning : MonoBehaviour
 
 
             //Sets velocity
-            Player._RB.velocity = newVec;
+            Player.setCoreVelocity(newVec);
         }
     }
 
@@ -535,7 +535,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         Vector3 newVec = CharacterAnimator.transform.forward * (ClimbingSpeed);
         newVec += -wallToClimb.normal * 10f;
 
-        Player._RB.velocity = newVec;
+        Player.setCoreVelocity(newVec);
 
         //Actions.ChangeAction(0);
     }
@@ -598,7 +598,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         if (Counter < 0.3f)
             newVec += -wallNormal * 3;
 
-        Player._RB.velocity = newVec;
+        Player.setCoreVelocity(newVec);
 
         //Debug.Log(scrapingSpeed);
         //Debug.Log(Player.p_rigidbody.velocity.y);
@@ -616,7 +616,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         yield return null;
 
         CharacterAnimator.transform.forward = newVec.normalized;
-        Player._RB.velocity = newVec;
+        Player.setCoreVelocity(newVec);
         ExitWall(true);
     }
 
@@ -682,7 +682,7 @@ public class S_Action12_WallRunning : MonoBehaviour
             }
 
             //CharacterAnimator.transform.forward = newVec.normalized;
-            Player._RB.velocity = newVec;
+            Player.setCoreVelocity(newVec);
 
         }
         else
@@ -695,7 +695,7 @@ public class S_Action12_WallRunning : MonoBehaviour
 
             Debug.DrawRay(transform.position, faceDir, Color.red, 20);
 
-            Player._RB.velocity = faceDir * 4f;
+            Player.setCoreVelocity(faceDir * 4f);
         }
 
         SwitchToJump = 0;
@@ -713,7 +713,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         float jumpSpeed = Player._RB.velocity.y * 0.6f;
         if (jumpSpeed < 5) jumpSpeed = 5;
 
-        Player._RB.velocity = CharacterAnimator.transform.up * jumpSpeed;
+        Player.setCoreVelocity(CharacterAnimator.transform.up * jumpSpeed);
 
         ExitWall(false);
         Inp.LockInputForAWhile(25f, false);
@@ -726,7 +726,7 @@ public class S_Action12_WallRunning : MonoBehaviour
             if ((!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.6f, transform.position.z), CharacterAnimator.transform.forward, out wallToClimb, climbWallDistance * 1.3f, _wallLayerMask_)) || jumpOverCounter == 40)
             {
                 //Vector3 newVec = Player.p_rigidbody.velocity + CharacterAnimator.transform.forward * (ClimbingSpeed * 0.1f);
-                Player._RB.velocity += CharacterAnimator.transform.forward * 8;
+                Player.AddCoreVelocity( CharacterAnimator.transform.forward * 8);
                 if (Actions.RollPressed)
                 {
                     Actions.Action08.TryDropCharge();
