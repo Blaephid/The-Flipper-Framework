@@ -367,6 +367,15 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
+        time: 0.02
+        value: 0
+        inSlope: -0.004915444
+        outSlope: -0.004915444
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.33333334
+      - serializedVersion: 3
         time: 0.05
         value: 0.05
         inSlope: 0
@@ -428,13 +437,22 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 5
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
+      - serializedVersion: 3
+        time: 0.02
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.12
         value: 1
@@ -992,16 +1010,16 @@ MonoBehaviour:
     GroundMask:
       serializedVersion: 2
       m_Bits: 1
-    stickingLerps: {x: 0.99, y: 0.95}
+    stickingLerps: {x: 0.98, y: 1.02}
     stickingNormalLimit: 0.5
-    stickCastAhead: 2.2
-    negativeGHoverHeight: 1.4
-    rayToGroundDistance: 2.1
-    raytoGroundSpeedRatio: 0.01
-    raytoGroundSpeedMax: 2.6
+    stickCastAhead: 1.7
+    negativeGHoverHeight: 0.8
+    rayToGroundDistance: 1.3
+    raytoGroundSpeedRatio: 0.04
+    raytoGroundSpeedMax: 2.9
     rayToGroundRotDistance: 1.1
     raytoGroundRotSpeedMax: 2.6
-    rotationResetThreshold: -0.1
+    rotationResetThreshold: -0.05
     upwardsLimitByCurrentSlope:
       serializedVersion: 2
       m_Curve:
@@ -1026,15 +1044,15 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    stepHeight: 1.1
+    stepHeight: 1
     groundDifferenceLimit: 0.32
   WhenInAir:
     startMaxFallingSpeed: -400
     startJumpPower: 1.2
     shouldStopAirMovementWhenNoInput: 1
     upGravity: {x: 0, y: -1.45, z: 0}
-    keepNormalForThis: 0.183
-    controlAmmount: 1.3
+    keepNormalForThis: 0.3
+    controlAmmount: {x: 0.7, y: 0.8}
     skiddingForce: -2.5
     fallGravity: {x: 0, y: -1.5, z: 0}
   DefaultWhenInAir:
@@ -1043,7 +1061,7 @@ MonoBehaviour:
     shouldStopAirMovementWhenNoInput: 1
     upGravity: {x: 0, y: -1.45, z: 0}
     keepNormalForThis: 0.183
-    controlAmmount: 1.3
+    controlAmmount: {x: 0.7, y: 0.8}
     skiddingForce: -2.5
     fallGravity: {x: 0, y: -1.5, z: 0}
   RollingStats:

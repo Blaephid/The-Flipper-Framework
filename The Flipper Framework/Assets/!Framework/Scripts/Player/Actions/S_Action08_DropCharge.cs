@@ -232,7 +232,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 		S_HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
 		sounds.SpinDashReleaseSound();
 
-		Player.AlignWithGround();
+		Player.AlignToGround(Player._groundNormal);
 
 		Vector3 newVec = charge *  newForward;
 

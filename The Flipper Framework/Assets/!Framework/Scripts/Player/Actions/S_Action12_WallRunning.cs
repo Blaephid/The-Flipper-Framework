@@ -186,10 +186,10 @@ public class S_Action12_WallRunning : MonoBehaviour
         transformedInput.y = 0.0f;
         //Debug.DrawRay(transform.position, transformedInput * 10, Color.red);
 
-        if (Inp.trueMoveInput.sqrMagnitude > 0.4f)
+        if (Inp.camMoveInput.sqrMagnitude > 0.4f)
         {
             //Debug.Log(Vector3.Dot(wallDirection, Inp.trueMoveInput));
-            if(Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized) > 0.05f)
+            if(Vector3.Dot(wallDirection.normalized, Inp.camMoveInput.normalized) > 0.05f)
             {
                 return true;
             }
@@ -687,7 +687,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         }
         else
         {
-            Debug.Log(Vector3.Dot(wallToClimb.normal, Inp.trueMoveInput));
+            Debug.Log(Vector3.Dot(wallToClimb.normal, Inp.camMoveInput));
             Debug.Log(ClimbingSpeed);
 
             jumpAngle = Vector3.Lerp(wallToClimb.normal, transform.up, 0.6f);

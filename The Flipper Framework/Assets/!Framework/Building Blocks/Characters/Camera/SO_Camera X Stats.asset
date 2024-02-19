@@ -54,7 +54,7 @@ MonoBehaviour:
   HeightToLock: 15
   HeightFollowSpeed: 6
   FallSpeedThreshold: -80
-  CameraMaxDistance: -13
+  CameraMaxDistance: -18
   AngleThreshold: 0.45
   CollidableLayers:
     serializedVersion: 2
@@ -129,7 +129,7 @@ MonoBehaviour:
   stationaryCamIncrease: 1.3
   yMinLimit: -100
   yMaxLimit: 100
-  LockCamAtHighSpeed: 45
+  LockCamAtHighSpeed: 200
   MoveLerpingSpeed: 4
   RotationLerpingSpeed: 8
   LockedRotationSpeed: 6

@@ -116,7 +116,7 @@ public class S_ActionManager : MonoBehaviour
                 moveX = moveVec.x;
                 moveY = moveVec.y;
                 usingMouse = true;
-        }
+	}
 
         public void CamInput(InputAction.CallbackContext ctx)
         {

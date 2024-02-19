@@ -72,7 +72,7 @@ public class S_Handler_WallRunning : MonoBehaviour
             if (enoughAboveGround() && (Actions.whatAction == S_Enums.PlayerStates.Regular || Actions.whatAction == S_Enums.PlayerStates.JumpDash || (Actions.whatAction == S_Enums.PlayerStates.Jump && GetComponent<S_Interaction_Pathers>().currentUpreel == null)))
             {
                 
-                if(Inp.trueMoveInput.sqrMagnitude > 0.8f)
+                if(Inp.camMoveInput.sqrMagnitude > 0.8f)
                 {
                     //Checks for nearby walls using raycasts
                     CheckForWall();
@@ -135,7 +135,7 @@ public class S_Handler_WallRunning : MonoBehaviour
     void tryWallRunLeft()
     {
         float dis = Vector3.Distance(transform.position, leftWallDetect.point);
-        if (Physics.Raycast(transform.position, Inp.trueMoveInput, dis + 0.1f, _WallLayerMask_))
+        if (Physics.Raycast(transform.position, Inp.camMoveInput, dis + 0.1f, _WallLayerMask_))
         {
             //Debug.Log("Trigger Wall Left");
             //Enter a wallrun with wall on left.
@@ -149,7 +149,7 @@ public class S_Handler_WallRunning : MonoBehaviour
     void tryWallRunRight()
     {
         float dis = Vector3.Distance(transform.position, rightWallDetect.point);
-        if (Physics.Raycast(transform.position, Inp.trueMoveInput, dis + 0.1f, _WallLayerMask_))
+        if (Physics.Raycast(transform.position, Inp.camMoveInput, dis + 0.1f, _WallLayerMask_))
         {
             //Debug.Log("Trigger Wall Right");
             //Enter a wallrun with wall on right.
@@ -220,7 +220,7 @@ public class S_Handler_WallRunning : MonoBehaviour
                 Vector3 wallDirection = frontWallDetect.point - transform.position;
                 //Debug.Log(Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized));
 
-                if (Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized) < 0.2f)
+                if (Vector3.Dot(wallDirection.normalized, Inp.camMoveInput.normalized) < 0.2f)
                 {
                     wallFront = false;
                 }
@@ -235,7 +235,7 @@ public class S_Handler_WallRunning : MonoBehaviour
                 Vector3 wallDirection = rightWallDetect.point - transform.position;
                 //Debug.Log(Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized));
 
-                if (Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized) < 0.2f)
+                if (Vector3.Dot(wallDirection.normalized, Inp.camMoveInput.normalized) < 0.2f)
                 {
                     wallFront = false;
                 }
@@ -250,7 +250,7 @@ public class S_Handler_WallRunning : MonoBehaviour
             //Debug.DrawRay(transform.position, wallDirection, Color.red, 60f);
             //Debug.DrawRay(transform.position, Inp.trueMoveInput, Color.green, 60f);
 
-            if (Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized) < 0.2f)
+            if (Vector3.Dot(wallDirection.normalized, Inp.camMoveInput.normalized) < 0.2f)
             {
                 wallFront = false;
             }

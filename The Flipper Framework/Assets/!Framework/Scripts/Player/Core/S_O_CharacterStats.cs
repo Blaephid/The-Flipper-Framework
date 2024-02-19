@@ -314,7 +314,7 @@ public class S_O_CharacterStats : ScriptableObject
 			shouldStopAirMovementWhenNoInput = true,
 			upGravity = new Vector3(0f, -1.45f, 0),
 			keepNormalForThis = 0.183f,
-			controlAmmount = 1.3f,
+			controlAmmount = new Vector2(0.7f, 0.8f),
 			skiddingForce = -2.5f,
 			fallGravity = new Vector3(0, -1.5f, 0)
 		};
@@ -334,7 +334,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core:")]
 		public float    keepNormalForThis;
 		[Tooltip("Surface:")]
-		public float    controlAmmount;
+		public Vector2   controlAmmount;
 		[Tooltip("Surface:")]
 		public float    skiddingForce;
 		[Tooltip("Surface:")]

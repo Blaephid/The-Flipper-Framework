@@ -116,8 +116,6 @@ public class S_Action01_Jump : MonoBehaviour
                 //Sets jump direction
                 InitialNormal = normaltoJump;
 
-                Player._TimeOnGround = 0;
-
                 //SnapOutOfGround to make sure you do jump
                 transform.position += (InitialNormal * 0.3f);
 
@@ -350,15 +348,15 @@ public class S_Action01_Jump : MonoBehaviour
             Player._isRolling = false;
             if (Counter < SlopedJumpDuration)
             {
-                Player.AddCoreVelocity(InitialNormal * (JumpSpeed));
+                Player.AddCoreVelocity(InitialNormal * (JumpSpeed), false);
                 //Debug.Log(InitialNormal);
             }
             else
             {
-                Player.AddCoreVelocity(new Vector3(0, 1, 0) * (JumpSpeed));
+                Player.AddCoreVelocity(new Vector3(0, 1, 0) * (JumpSpeed), false);
             }
             //Extra speed
-            Player.AddCoreVelocity(new Vector3(0, 1, 0) * (jumpSlopeSpeed));
+            Player.AddCoreVelocity(new Vector3(0, 1, 0) * (jumpSlopeSpeed), false);
         }
         
 
@@ -371,7 +369,7 @@ public class S_Action01_Jump : MonoBehaviour
             Vector3 Velocity = new Vector3(Player._RB.velocity.x, Player._RB.velocity.y, Player._RB.velocity.z);
             Velocity.y = Velocity.y - _stopYSpeedOnRelease_;
             //Player._RB.velocity = Velocity;
-			Player.setTotalVelocity(Velocity);
+			//Player.setTotalVelocity(Velocity);
         }
 
         //End Action

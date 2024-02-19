@@ -793,8 +793,6 @@ namespace SplineMesh
 
             //slope curve from Bhys
             curvePosSlope = Player.curveSlopePower;
-            float v = Input.InputExporter.y;
-            v = (v + 1) / 2;
             //use player vertical speed to find if player is going up or down
             //Debug.Log(Player.p_rigidbody.velocity.normalized.y);
 

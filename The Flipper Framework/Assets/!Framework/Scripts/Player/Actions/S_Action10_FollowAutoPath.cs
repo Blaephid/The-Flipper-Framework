@@ -150,7 +150,7 @@ namespace SplineMesh
             //Increase the Amount of distance through the Spline by DeltaTime
             float ammount = (Time.deltaTime * PlayerSpeed);
 
-            Player.AlignWithGround();
+            Player.AlignToGround(Player._groundNormal);
 
             //Slowly increases player speed.
             if (PlayerSpeed < Player._currentTopSpeed || PlayerSpeed < PathTopSpeed)
@@ -276,7 +276,7 @@ namespace SplineMesh
         {
             
 
-            Player.AlignWithGround();
+            Player.AlignToGround(Player._groundNormal);
 
             //Set Player Speed correctly for smoothness
             if (!backwards)

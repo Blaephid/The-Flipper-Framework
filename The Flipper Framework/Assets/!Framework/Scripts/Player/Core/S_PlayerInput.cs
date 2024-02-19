@@ -7,12 +7,13 @@ public class S_PlayerInput : MonoBehaviour {
     private S_PlayerPhysics Player; // Reference to the ball controller.
     S_Handler_Camera Cam;
     S_ActionManager Actions;
-    S_CharacterTools Tools;
+    S_CharacterTools _Tools;
+	Transform _MainSkin;
 
-    public Vector3 moveAcc { get; set; }
+	public Vector3 moveAcc { get; set; }
     private Vector3 move;
     public Vector3 inputPreCamera;
-    public Vector3 trueMoveInput;
+    public Vector3 camMoveInput;
     // the world-relative desired move direction, calculated from the camForward and user input.
 
     private Transform cam; // A reference to the main camera in the scenes transform
@@ -37,7 +38,7 @@ public class S_PlayerInput : MonoBehaviour {
     public float prevDecel { get; set; }
 	private bool HittingWall;
 
-    [HideInInspector] public Vector3 moveInp;
+    [HideInInspector] public Vector3 finalMoveInput;
     private float moveX;
     private float moveY;
     [HideInInspector] public Vector2 InputExporter = Vector2.zero;
@@ -49,9 +50,10 @@ public class S_PlayerInput : MonoBehaviour {
         Actions = GetComponent<S_ActionManager>();
         Cam = GetComponent<S_Handler_Camera>();
 
-        Tools = GetComponent<S_CharacterTools>();
-        
-        AssignStats();
+        _Tools = GetComponent<S_CharacterTools>();
+		_MainSkin = _Tools.mainSkin;
+
+		AssignStats();
         
 
         //prevDecel = Player._moveDeceleration_;
@@ -78,37 +80,25 @@ public class S_PlayerInput : MonoBehaviour {
         {
             moveX = Actions.moveX;
             moveY = Actions.moveY;
-            moveInp = new Vector3(moveX, 0, moveY);
+            finalMoveInput = new Vector3(moveX, 0, moveY);
 
-            InitialInputMag = moveInp.sqrMagnitude;
+            InitialInputMag = finalMoveInput.sqrMagnitude;
             InitialLerpedInput = Mathf.Lerp(InitialLerpedInput, InitialInputMag, Time.deltaTime);
 
 
             //Make movement relative to camera
-            inputPreCamera = moveInp;
-            trueMoveInput = GetTrueInput(moveInp);
+            inputPreCamera = finalMoveInput;
+            camMoveInput = GetInputByCameraDirection(finalMoveInput);
+			finalMoveInput = GetInputByLocalTransform(finalMoveInput);
 
-            
-            if (moveInp != Vector3.zero && !onPath)
-            {
-                Vector3 transformedInput;
-                transformedInput = Quaternion.FromToRotation(cam.up, Player._groundNormal) * (cam.rotation * moveInp);
-                transformedInput = transform.InverseTransformDirection(transformedInput);
-                transformedInput.y = 0.0f;
+			Vector3 debugRay = transform.TransformDirection(finalMoveInput);
+			//Debug.DrawRay(transform.position, debugRay * 1.5f, Color.black, 200f);
+			//Debug.DrawRay(transform.position + debugRay * 1.5f, debugRay * 0.5f, Color.red, 200f);
 
-                Player.RawInput = transformedInput;
-                moveInp = transformedInput;
-            }
-     
+			move = finalMoveInput;
+			
 
-            if (moveInp.x < 0.02 && moveInp.z < 0.02 && moveInp.x > -0.02 && moveInp.z > -0.02)
-            {
-                moveInp = Vector3.zero;
-            }
-
-            move = moveInp;
-            
-        }
+		}
 
         //Lock Input Funcion
         if (LockInput)
@@ -117,23 +107,50 @@ public class S_PlayerInput : MonoBehaviour {
             LockedInputFunction(move);
         }
 
-        InputExporter.x = moveInp.x;
-        InputExporter.y = moveInp.y;
+  
     }
 
-    public Vector3 GetTrueInput(Vector3 inputDirection)
+    public Vector3 GetInputByCameraDirection(Vector3 inputDirection)
     {
-        if(inputDirection.sqrMagnitude > 0.3f)
-        {
-            float _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                              Cam.Cam.transform.eulerAngles.y;
+        
+            //float _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+            //                  Cam.Cam.transform.eulerAngles.y;
 
-            //The direction the player is inputting to move
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            return targetDirection;
-        }
-        return inputDirection;
+            ////The direction the player is inputting to move
+            //Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            //return targetDirection;
+
+			float x = inputDirection.x;
+			float z = inputDirection.z;
+
+			Vector3 camForward = Cam.Cam.transform.forward;
+			Vector3 camRight = Cam.Cam.transform.right;
+
+			camForward.y = 0;
+			camRight.y = 0;
+			camForward.Normalize();
+			camRight.Normalize();
+			Vector3 targetDirection = (z * camForward) + (x * camRight);
+			return targetDirection;
     }
+
+	Vector3 GetInputByLocalTransform(Vector3 inputDirection) {
+
+		if (inputDirection != Vector3.zero)
+		{
+			Vector3 transformedInput = inputDirection;
+			Vector3 upDirection = Player._isGrounded ? Player._groundNormal : transform.up;
+			transformedInput = Quaternion.FromToRotation(cam.up, upDirection) *  (cam.rotation * inputDirection);
+			//transformedInput = _MainSkin.transform.rotation * inputDirection;
+			transformedInput = transform.InverseTransformDirection(transformedInput);
+			transformedInput.y = 0.0f;
+
+			Player.RawInput = transformedInput;
+			return transformedInput;	
+		}
+		return inputDirection;
+
+	}
 
     void FixedUpdate()
     {

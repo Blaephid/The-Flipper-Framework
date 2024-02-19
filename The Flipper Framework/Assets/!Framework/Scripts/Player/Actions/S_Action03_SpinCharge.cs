@@ -89,7 +89,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
         float stillForce = (_spinDashStillForce_ * _speedLossByTime_.Evaluate(time)) + 1;
 		if (stillForce * 4 < Player._horizontalSpeedMagnitude)
 		{
-			Player.AddCoreVelocity(Player._RB.velocity.normalized * -stillForce);
+			Player.AddCoreVelocity(Player._RB.velocity.normalized * -stillForce, false);
 		}
 
         //Counter to exit after not pressing button for a bit;
@@ -222,7 +222,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
                 newForce *= _forceGainByAngle_.Evaluate(dif);
             newForce *= _gainBySpeed_.Evaluate(Player._horizontalSpeedMagnitude / Player._currentMaxSpeed);
 
-            Player.AddCoreVelocity(newForce);
+            Player.AddCoreVelocity(newForce, false);
 
             CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
 
