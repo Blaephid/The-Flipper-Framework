@@ -145,7 +145,7 @@ public class S_PlayerInput : MonoBehaviour {
 			transformedInput = transform.InverseTransformDirection(transformedInput);
 			transformedInput.y = 0.0f;
 
-			Player.RawInput = transformedInput;
+			Player._rawInput = transformedInput;
 			return transformedInput;	
 		}
 		return inputDirection;

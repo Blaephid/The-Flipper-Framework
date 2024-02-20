@@ -10,7 +10,7 @@ namespace SplineMesh
         S_PlayerPhysics Player;
         S_PlayerInput Input;
         Animator CharacterAnimator;
-        S_Control_SoundsPlayer Sounds;
+        S_Control_PlayerSound Sounds;
         Quaternion CharRot;
         [HideInInspector] public S_Interaction_Pathers Rail_int;
 
@@ -265,7 +265,7 @@ namespace SplineMesh
 
 
             Player._RB.velocity = Vector3.zero;
-			Player.setTotalVelocity(Vector3.zero);
+			Player.SetTotalVelocity(Vector3.zero);
 
         }
 
@@ -792,7 +792,7 @@ namespace SplineMesh
             }
 
             //slope curve from Bhys
-            curvePosSlope = Player.curveSlopePower;
+            curvePosSlope = Player._curvePosSlopePower;
             //use player vertical speed to find if player is going up or down
             //Debug.Log(Player.p_rigidbody.velocity.normalized.y);
 
@@ -889,7 +889,7 @@ namespace SplineMesh
             _pushFowardmaxSpeed_ = Tools.Stats.RailStats.RailPushFowardmaxSpeed;
             _pushFowardIncrements_ = Tools.Stats.RailStats.RailPushFowardIncrements;
             _pushFowardDelay_ = Tools.Stats.RailStats.RailPushFowardDelay;
-            _slopePower_ = Tools.Stats.SlopeStats.slopePower;
+            _slopePower_ = Tools.Stats.SlopeStats.generalHillMultiplier;
             _upHillMultiplier_ = Tools.Stats.RailStats.RailUpHillMultiplier;
             _downHillMultiplier_ = Tools.Stats.RailStats.RailDownHillMultiplier;
             _upHillMultiplierCrouching_ = Tools.Stats.RailStats.RailUpHillMultiplierCrouching;

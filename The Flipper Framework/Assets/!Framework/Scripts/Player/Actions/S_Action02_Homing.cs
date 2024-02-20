@@ -154,7 +154,7 @@ public class S_Action02_Homing : MonoBehaviour
         direction = Target.position - transform.position;
         newRotation = Vector3.RotateTowards(newRotation, direction, 1f, 0.0f);
         //Player._RB.velocity = newRotation * Speed;
-		Player.setCoreVelocity(newRotation * Speed);
+		Player.SetCoreVelocity(newRotation * Speed);
         
 
         //Set Player location when close enough, for precision.

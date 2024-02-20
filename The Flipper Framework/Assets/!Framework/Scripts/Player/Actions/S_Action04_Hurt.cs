@@ -7,7 +7,7 @@ public class S_Action04_Hurt : MonoBehaviour {
     S_PlayerPhysics Player;
     S_CharacterTools Tools;
     S_ActionManager Actions;
-    S_Control_SoundsPlayer sounds;
+    S_Control_PlayerSound sounds;
     S_PlayerInput Inp;
 
     LayerMask _recoilFrom_;
@@ -58,7 +58,7 @@ public class S_Action04_Hurt : MonoBehaviour {
             if (Player._isGrounded)
                 newSpeed.y *= 2;
             //Player._RB.velocity = newSpeed;
-			Player.setTotalVelocity(newSpeed);
+			Player.SetTotalVelocity(newSpeed);
 
             lockedForAir = _bonkLockAir_;
             lockedForGround = _bonkLock_;
@@ -69,7 +69,7 @@ public class S_Action04_Hurt : MonoBehaviour {
             Vector3 newSpeed = new Vector3((Player._RB.velocity.x / 2), _knockbackUpwardsForce_, (Player._RB.velocity.z / 2));
             newSpeed.y = _knockbackUpwardsForce_;
             //Player._RB.velocity = newSpeed;
-			Player.setTotalVelocity(newSpeed);
+			Player.SetTotalVelocity(newSpeed);
             lockedForAir = _recoilAir_;
             lockedForGround = _recoilGround_;
         }
@@ -78,7 +78,7 @@ public class S_Action04_Hurt : MonoBehaviour {
             Vector3 newSpeed = -CharacterAnimator.transform.forward * _knockbackForce_;
             newSpeed.y = _knockbackUpwardsForce_;
             //Player._RB.velocity = newSpeed;
-			Player.setTotalVelocity(newSpeed);
+			Player.SetTotalVelocity(newSpeed);
             lockedForAir = _recoilAir_ * 1.4f;
             lockedForGround = _recoilGround_ * 1.4f;
         }

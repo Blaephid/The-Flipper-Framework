@@ -14,7 +14,7 @@ public class S_Handler_Hurt : MonoBehaviour
     S_Handler_Camera Cam;
     
 
-    S_Control_SoundsPlayer Sounds;
+    S_Control_PlayerSound Sounds;
     GameObject JumpBall;
     Animator CharacterAnimator;
     Transform faceHitCollider;
@@ -291,7 +291,7 @@ public class S_Handler_Hurt : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     yield return new WaitForFixedUpdate();
-                    Player.setTotalVelocity(Vector3.zero);
+                    Player.SetTotalVelocity(Vector3.zero);
                     CharacterAnimator.transform.forward = newDir;
                 }
             }

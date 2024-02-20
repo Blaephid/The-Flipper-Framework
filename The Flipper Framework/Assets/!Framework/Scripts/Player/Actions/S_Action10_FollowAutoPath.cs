@@ -12,7 +12,7 @@ namespace SplineMesh
         S_PlayerPhysics Player;
         S_PlayerInput Input;
         Animator CharacterAnimator;
-        S_Control_SoundsPlayer Sounds;
+        S_Control_PlayerSound Sounds;
         Quaternion CharRot;
         S_Interaction_Pathers Path_Int;
         S_ActionManager Actions;
@@ -150,7 +150,7 @@ namespace SplineMesh
             //Increase the Amount of distance through the Spline by DeltaTime
             float ammount = (Time.deltaTime * PlayerSpeed);
 
-            Player.AlignToGround(Player._groundNormal);
+            Player.AlignToGround(Player._groundNormal, Player._isGrounded);
 
             //Slowly increases player speed.
             if (PlayerSpeed < Player._currentTopSpeed || PlayerSpeed < PathTopSpeed)
@@ -209,7 +209,7 @@ namespace SplineMesh
                 //CharacterAnimator.transform.rotation = rot;
 
 
-                if ((Physics.Raycast(sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + Tools.Stats.GreedysStickToGround.rayToGroundDistance, Player._Groundmask_)))
+                if ((Physics.Raycast(sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + Tools.Stats.FindingGround.rayToGroundDistance, Player._Groundmask_)))
                 {
                     //Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
                     //transform.position = (hitRot.point + PathTransform.position) + FootPos;
@@ -276,7 +276,7 @@ namespace SplineMesh
         {
             
 
-            Player.AlignToGround(Player._groundNormal);
+            Player.AlignToGround(Player._groundNormal, Player._isGrounded);
 
             //Set Player Speed correctly for smoothness
             if (!backwards)
@@ -292,7 +292,7 @@ namespace SplineMesh
 
             }
 
-            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player._RB.velocity, Player.hitGround.normal);
+            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player._RB.velocity, Player._HitGround.normal);
 
             Player.GetComponent<S_Handler_Camera>().Cam.setBehind();
             Input.LockInputForAWhile(30f, true);

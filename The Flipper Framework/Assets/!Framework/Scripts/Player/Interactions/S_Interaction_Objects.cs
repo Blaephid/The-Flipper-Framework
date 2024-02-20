@@ -18,7 +18,7 @@ public class S_Interaction_Objects : MonoBehaviour {
     S_PlayerPhysics Player;
     S_HedgeCamera Cam;
     Animator CharacterAnimator;
-    S_Control_SoundsPlayer Sounds;
+    S_Control_PlayerSound Sounds;
     S_ActionManager Actions;
     S_PlayerInput Inp;
     S_Handler_CharacterAttacks attack;
@@ -486,7 +486,7 @@ public class S_Interaction_Objects : MonoBehaviour {
 				Actions.ChangeAction (S_Enums.PlayerStates.Regular);
 				newSpeed = new Vector3(0, _homingBouncingPower_, 0);
 				////Debug.Log (newSpeed);
-				Player.setTotalVelocity(newSpeed);
+				Player.SetTotalVelocity(newSpeed);
 				Player.transform.position = col.ClosestPoint (Player.transform.position);
 				if (Actions.Action02 != null) {
 					Actions.Action02.HomingAvailable = true;
@@ -628,7 +628,7 @@ public class S_Interaction_Objects : MonoBehaviour {
     private IEnumerator lockGravity(Vector3 newGrav)
     {
 
-        Player._fallGravity_ = newGrav;
+        Player._currentFallGravity = newGrav;
         yield return new WaitForSeconds(0.2f);
         while (true)
         {
@@ -637,7 +637,7 @@ public class S_Interaction_Objects : MonoBehaviour {
                 break;
         }
 
-        Player._fallGravity_ = Player._startFallGravity_;
+        Player._currentFallGravity = Player._startFallGravity_;
     }
 
     private IEnumerator applyForce(Vector3 force, Vector3 position, int frames = 3)

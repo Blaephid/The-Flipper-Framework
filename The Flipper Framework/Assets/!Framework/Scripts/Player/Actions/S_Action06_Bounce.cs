@@ -10,7 +10,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 	S_CharacterTools Tools;
 
 	S_PlayerInput Input;
-	S_Control_SoundsPlayer sounds;
+	S_Control_PlayerSound sounds;
 	S_VolumeTrailRenderer HomingTrailScript;
 	GameObject jumpBall;
 

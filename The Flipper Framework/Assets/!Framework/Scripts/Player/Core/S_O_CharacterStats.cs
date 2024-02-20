@@ -13,8 +13,6 @@ public class S_O_CharacterStats : ScriptableObject
 {
 	[HideInInspector] public string Title = "Title";
 
-	public int IIintIna;
-
 	#region acceleration
 	//-------------------------------------------------------------------------------------------------
 
@@ -33,22 +31,22 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.6f, 0.1f),
 				new Keyframe(1f, 0.02f),
 			}),
-			accelShiftOverSpeed = 1f
 		};
 	}
 
 	[System.Serializable]
 	public struct StrucAcceleration
 	{
-		[Tooltip("Surface: This determines the average acceleration")]
+		[Tooltip("Surface: Decides the average acceleration when running or in the air. How much speed to be added per frame.")]
 		public float              runAcceleration;
-		[Tooltip("Surface: This determines the average acceleration")]
+		[Tooltip("Surface: Decides the average acceleration when curled in a ball on the ground. How much speed to be added per frame")]
 		public float              rollAccel;
-		[Tooltip("Core:")]
+		[Tooltip("Core: Decides how much of the acceleration values to accelerate by based on current running speed by Top Speed (not max speed)")]
 		public AnimationCurve     AccelBySpeed;
-		[Tooltip("Core:")]
-		public float              accelShiftOverSpeed;
-	};
+		[Tooltip("Core: Decides how much of the acceleration values to accelerate by based on y normal of current slope. 0 = horizontal wall. ")]
+		public AnimationCurve	AccelBySlopeAngle;
+	
+	}
 	#endregion
 
 	#region turning
@@ -59,8 +57,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucTurning SetStrucTurning () {
 		return new StrucTurning
 		{
-			tangentialDrag = 7.5f,
-			tangentialDragShiftSpeed = 1f,
+			turnDrag = 7.5f,
 			turnSpeed = 14f,
 			TurnRateByAngle = new AnimationCurve(new Keyframe[]
 			{
@@ -81,7 +78,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.78f, 0.75f),
 				new Keyframe(1f, 0.7f),
 			}),
-			TangDragByAngle = new AnimationCurve(new Keyframe[]
+			DragByAngle = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0, 0f),
 				new Keyframe(0.15f, 0.02f),
@@ -90,7 +87,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.85f, 0.14f),
 				new Keyframe(1f, 0.22f),
 			}),
-			TangDragBySpeed = new AnimationCurve(new Keyframe[]
+			DragBySpeed = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0, 0f),
 				new Keyframe(0.4f, 0.02f),
@@ -104,13 +101,18 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucTurning
 	{
-		public float              tangentialDrag;
-		public float              tangentialDragShiftSpeed;
+		[Tooltip("Surface : Decides how fast the character will turn. Core calculations are applied to this number, but it can easily be changed. How many degrees to change per frame")]
 		public float              turnSpeed;
+		[Tooltip("Surface : Decides how much speed will be lost when turning. Calculations are applied to this, but it can easily be changed. How much speed to lose per frame")]
+		public float              turnDrag;
+		[Tooltip("Core : Multiplies the turn speed based on the the angle difference between input direction and moving direction")]
 		public AnimationCurve     TurnRateByAngle;
+		[Tooltip("Core : Multiplies the turn speed based on the the current speed divided by max speed.")]
 		public AnimationCurve     TurnRateBySpeed;
-		public AnimationCurve     TangDragByAngle;
-		public AnimationCurve     TangDragBySpeed;
+		[Tooltip("Core : Multiplies the speed loss when turning by the angle difference between input direction and moving direction")]
+		public AnimationCurve     DragByAngle;
+		[Tooltip("Core : Multiplies the speed loss when turning based on the the current speed divided by max speed.")]
+		public AnimationCurve     DragBySpeed;
 	}
 	#endregion
 
@@ -132,7 +134,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.7f, 1.03f),
 				new Keyframe(1f, 1.1f),
 			}),
-			decelShiftOverSpeed = 10f,
+			rollingFlatDecell = 1.004f,
 			naturalAirDecel = 1.002f
 		};
 	}
@@ -140,10 +142,15 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucDeceleration
 	{
+		[Tooltip("Surface : Decides how fast the player will lose speed when not inputing on the ground. How much speed to lose per frame.")]
 		public float              moveDeceleration;
+		[Tooltip("Surface : Decides how fast the player will lose speed when not inputing in the air. How much speed to lose per frame.")]
 		public float              airDecel;
+		[Tooltip("Surface: Decides how fast the player will lose speed when rolling and not on a slope, even if there is an input. Applied against the roll acceleration.")]
+		public float		rollingFlatDecell;
+		[Tooltip("Core : Multiplies the deceleration this frame, based on the current speed divided by Max speed.")]
 		public AnimationCurve     DecelBySpeed;
-		public float              decelShiftOverSpeed;
+		[Tooltip("Surface : Decides how much horizontal speed the player will lose for each frame in the air. Stacks with other decelerations")]
 		public float              naturalAirDecel;
 	}
 	#endregion
@@ -164,7 +171,9 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucSpeeds
 	{
+		[Tooltip("Surface : The highest speed the player can reach normally. By just running on flat ground they cannot exceed this. If they do via actions, slopes or other means, then their acceleration will not increase their speed further.")]
 		public float    topSpeed;
+		[Tooltip("Surface : The highest speed the player can ever reach. Certain environmental pieces may increase speed past this, but this is not part of character movement, and will not last long.")]
 		public float    maxSpeed;
 	}
 	#endregion
@@ -179,10 +188,7 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucSlopes
 		{
 			slopeEffectLimit = 0.85f,
-			standOnSlopeLimit = 0.8f,
-			slopePower = -1.4f,
-			slopeRunningAngleLimit = 0.4f,
-			SlopeLimitBySpeed = new AnimationCurve(new Keyframe[]
+			SpeedLimitBySlopeAngle = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(-1, 15f),
 				new Keyframe(0f, 10f),
@@ -206,35 +212,33 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(4f, 1.2f),
 				new Keyframe(10f, 1.3f),
 			}),
+			landingConversionFactor = 2,
 		};
 	}
 
 	[System.Serializable]
 	public struct StrucSlopes
 	{
-		[Tooltip("Core:")]
+		[Tooltip("Core: If the y normal of the floor is below this, then the player is considered on a slope. 1 = flat ground, as it's pointing straight up.")]
 		public float              slopeEffectLimit;
-		[Tooltip("Core:")]
-		public float              standOnSlopeLimit;
-		[Tooltip("Core:")]
-		public float              slopePower;
-		[Tooltip("Core:")]
-		public float              slopeRunningAngleLimit;
-		[Tooltip("Core:")]
-		public AnimationCurve     SlopeLimitBySpeed;
+		[Tooltip("Core: Decides if the player will fall off the slope. If their speed is under what this curve has for the current normal's y value, then they fall off.")]
+		public AnimationCurve     SpeedLimitBySlopeAngle;
+		[Tooltip("Surface : Sets the overall force power of slopes.")]
 		public float              generalHillMultiplier;
-		[Tooltip("Core : This is multiplied with the force of a slope when going uphill to determine the force against.")]
+		[Tooltip("Surface : Multiplied with the force of a slope when going uphill to determine the force against.")]
 		public float              uphillMultiplier;
-		[Tooltip("This is multiplied with the force of a slope when going downhill to determine the force for.")]
+		[Tooltip("Surface : Multiplied with the force of a slope when going downhill to determine the force for.")]
 		public float              downhillMultiplier;
-		[Tooltip("Core:")]
+		[Tooltip("Core : The speed the player should be moving downwards when grounded on a slope to be considered going downhill.")]
 		public float              downhillThreshold;
-		[Tooltip("Core:")]
+		[Tooltip("Core : The speed the player should be moving upwards when grounded on a slope to be considered going uphill.")]
 		public float              uphillThreshold;
-		[Tooltip("Core: This determines how much force is gained from the slope depending on the current speed. ")]
+		[Tooltip("Core : Determines the power of the slope by current speed divided by max. ")]
 		public AnimationCurve     SlopePowerByCurrentSpeed;
-		[Tooltip("Core:")]
+		[Tooltip("Core: Determines the power of the slope when going uphill, based on how long has been spent going uphill since they were last going downhill or on flat ground.")]
 		public AnimationCurve     UpHillEffectByTime;
+		[Tooltip("Core: Amount of force gained when landing on a slope.")]
+		public float                  landingConversionFactor;
 	}
 	#endregion
 
@@ -242,22 +246,16 @@ public class S_O_CharacterStats : ScriptableObject
 	#region sticking
 	//-------------------------------------------------------------------------------------------------
 
-	public StrucGreedyStick DefaultGreedysStickToGround = SetStrucGreedyStick();
-	public StrucGreedyStick GreedysStickToGround = SetStrucGreedyStick();
+	public StrucStickToGround DefaultStickToGround = SetStrucGreedyStick();
+	public StrucStickToGround GreedysStickToGround = SetStrucGreedyStick();
 
-	static StrucGreedyStick SetStrucGreedyStick () {
-		return new StrucGreedyStick
+	static StrucStickToGround SetStrucGreedyStick () {
+		return new StrucStickToGround
 		{
-			GroundMask = new LayerMask(),
 			stickingLerps = new Vector2(0.885f, 1.005f),
 			stickingNormalLimit = 0.5f,
 			stickCastAhead = 1.9f,
 			negativeGHoverHeight = 0.05f,
-			rayToGroundDistance = 1.4f,
-			raytoGroundSpeedRatio = 0.01f,
-			raytoGroundSpeedMax = 2.6f,
-			rayToGroundRotDistance = 1.1f,
-			raytoGroundRotSpeedMax = 2.6f,
 			rotationResetThreshold = -0.1f,
 			upwardsLimitByCurrentSlope = new AnimationCurve(new Keyframe[]
 			{
@@ -266,51 +264,70 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(1f, 0.2f),
 			}),
 			stepHeight = 0.75f,
+		};
+	}
+
+	[System.Serializable]
+	public struct StrucStickToGround
+	{	
+		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (loops), and Y is positive Slopes (imagine running on the outside of a loop). ")]
+		public Vector2	stickingLerps;
+		[Range(0, 1)]
+		[Tooltip("Core: The maximum difference betwen current ground angle and movement direction that allows the player to stick. 0 means the player can't stick to the ground, 1 is everything bellow 180° difference, and 0.5 is 90° angles")]
+		public float	stickingNormalLimit;
+		[Tooltip("Core: The cast ahead to check for slopes to align to. Multiplied by the movement this frame. Too much of this value might send the player flying off before it hits the loop, too little might see micro stutters, default value 1.9")]
+		public float	stickCastAhead;
+		[Tooltip("Core: This is the position above the raycast hit point that the player will be placed if they are loosing grip.")]
+		public float	negativeGHoverHeight;
+		[Tooltip("Core: If the y value of the player's relative up direction is less than this (-1 is fully upside down) when in the air, then they will rotate sideways to face back up, rather than the conventonal rotation approach. This keeps them facing in their movement direction.")]
+		public float	rotationResetThreshold;
+		[Tooltip("Core: When lerping up negative slopes, if the difference between the two is under this, then will lerp up it, otherwise it is seen as a wall, not a slope. The value is based on the normal y of the current slope, so running on a horizonal wall can have a different difference limit to running on flat ground.")]
+		public AnimationCurve    upwardsLimitByCurrentSlope;
+		[Range (0, 1.5f)]
+		[Tooltip("Core: The maximum height a wall infront can be to be considered a step to move up onto when running.")]
+		public float        stepHeight;
+	}
+
+	public StrucFindGround DefaultFindGround = SetStrucFindGround();
+	public StrucFindGround FindingGround = SetStrucFindGround();
+
+	static StrucFindGround SetStrucFindGround () {
+		return new StrucFindGround
+		{
+			GroundMask = new LayerMask(),
+			rayToGroundDistance = 1.4f,
+			raytoGroundSpeedRatio = 0.01f,
+			raytoGroundSpeedMax = 2.6f,
 			groundDifferenceLimit = 0.3f,
 		};
 	}
 
 	[System.Serializable]
-	public struct StrucGreedyStick
+	public struct StrucFindGround
 	{
-		public LayerMask GroundMask;
-		[Tooltip("Core: This is the values of the Lerps when the player encounters a slope , the first one is negative slopes (loops), and the second one is positive Slopes (imagine running on the outside of a loop),This values shouldnt be touched unless yuou want to go absurdly faster. Default values 0.885 and 1.5")]
-		public Vector2  stickingLerps;
-		[Tooltip("Core: This is the limit from 0 to 1 the degrees that the player should be sticking 0 is no angle , 1 is everything bellow 90°, and 0.5 is 45° angles, default 0.4")]
-		public float    stickingNormalLimit;
-		[Tooltip("Core: This is the cast ahead when the player hits a slope, this will be used to predict it's path if it is going on a high speed. too much of this value might send the player flying off before it hits the loop, too little might see micro stutters, default value 1.9")]
-		public float    stickCastAhead;
-		[Tooltip("Core: This is the position above the raycast hit point that the player will be placed if they are loosing grip. This is added to character collider size, so it should scale. Default value 0.005")]
-		public float    negativeGHoverHeight;
-		[Tooltip("Core:")]
-		public float    rayToGroundDistance;
-		[Tooltip("Core:")]
-		public float    raytoGroundSpeedRatio;
-		[Tooltip("Core:")]
-		public float    raytoGroundSpeedMax;
-		[Tooltip("Core:")]
-		public float    rayToGroundRotDistance;
-		[Tooltip("Core:")]
-		public float    raytoGroundRotSpeedMax;
-		[Tooltip("Core:")]
-		public float    rotationResetThreshold;
-		[Tooltip("Core:")]
-		public AnimationCurve    upwardsLimitByCurrentSlope;
-		[Tooltip("Core:")]
-		public float        stepHeight;
+		[Tooltip("Core: The layer an object must be set to, to be considered ground the player can run on.")]
+		public LayerMask    GroundMask;
+		[Range(0, 1)]
+		[Tooltip("Core: The maximum difference between the current rotation and floor when checking if grounded. If the floor is too different to this then won't be grounded. 1 = 180 degrees")]
 		public float        groundDifferenceLimit;
+		[Tooltip("Core: The max range downwards of the ground checker.")]
+		public float        rayToGroundDistance;
+		[Tooltip("Core: Adds current horizontal speed multiplied by this to the ground checker when running along the ground. Combats how it's easier to lose when at higher speed.")]
+		public float        raytoGroundSpeedRatio;
+		[Tooltip("Core: The maximum range the ground checker can reach when increased by the above ratio.")]
+		public float        raytoGroundSpeedMax;
 	}
-	#endregion
 
-	#region air
-	//-------------------------------------------------------------------------------------------------
-	public StrucInAir WhenInAir = SetStrucInAir();
+		#endregion
+
+		#region air
+		//-------------------------------------------------------------------------------------------------
+		public StrucInAir WhenInAir = SetStrucInAir();
 	public StrucInAir DefaultWhenInAir = SetStrucInAir();
 	static StrucInAir SetStrucInAir () {
 		return new StrucInAir
 		{
 			startMaxFallingSpeed = -400f,
-			startJumpPower = 1.2f,
 			shouldStopAirMovementWhenNoInput = true,
 			upGravity = new Vector3(0f, -1.45f, 0),
 			keepNormalForThis = 0.183f,
@@ -323,22 +340,20 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucInAir
 	{
-		[Tooltip("Surface:")]
+		[Tooltip("Surface: The maximum speed the player can ever be moving downwards when not grounded.")]
 		public float    startMaxFallingSpeed;
-		[Tooltip("Surface:")]
-		public float    startJumpPower;
-		[Tooltip("Core:")]
+		[Tooltip("Core: Whether or not the player should decelerate when there's no input in the air.")]
 		public bool               shouldStopAirMovementWhenNoInput;
-		[Tooltip("Core:")]
-		public Vector3  upGravity;
-		[Tooltip("Core:")]
+		[Tooltip("Core: How long to keep rotation relative to ground after losing it.")]
 		public float    keepNormalForThis;
-		[Tooltip("Surface:")]
+		[Tooltip("Surface: X is multiplied with the turning speed when in the air, Y is multiplied with acceleration when in the air.")]
 		public Vector2   controlAmmount;
-		[Tooltip("Surface:")]
+		[Tooltip("Surface: ")]
 		public float    skiddingForce;
-		[Tooltip("Surface:")]
+		[Tooltip("Surface: Force to add onto the player per frame when in the air and falling downwards.")]
 		public Vector3  fallGravity;
+		[Tooltip("Surface: Force to add onto the player per frame when in the air but currently moving upwards (such as launched by a slope)")]
+		public Vector3  upGravity;
 	}
 
 	#endregion
@@ -357,9 +372,7 @@ public class S_O_CharacterStats : ScriptableObject
 			rollingDownhillBoost = 1.9f,
 			rollingUphillBoost = 1.2f,
 			rollingStartSpeed = 5f,
-			rollingTurningDecrease = 0.6f,
-			rollingFlatDecell = 1.004f,
-			slopeTakeoverAmount = 0.995f
+			rollingTurningModifier = 0.6f,
 		};
 	}
 
@@ -368,20 +381,16 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucRolling
 	{
-		[Tooltip("Core:")]
+		[Tooltip("Core: Multiplied by landing conversion factor to gain more force when landing on a slope and immediately rolling.")]
 		public float    rollingLandingBoost;
-		[Tooltip("Core:")]
+		[Tooltip("Core: Multiplies force for when rolling downhill..")]
 		public float    rollingDownhillBoost;
-		[Tooltip("Core:")]
+		[Tooltip("Core: Multiplies force against when rolling uphill")]
 		public float    rollingUphillBoost;
-		[Tooltip("Core:")]
+		[Tooltip("Core: Minimum speed to be at to start rolling.")]
 		public float    rollingStartSpeed;
-		[Tooltip("Core:")]
-		public float    rollingTurningDecrease;
-		[Tooltip("Core:")]
-		public float    rollingFlatDecell;
-		[Tooltip("Core:")]
-		public float    slopeTakeoverAmount; // This is the normalized slope angle that the player has to be in order to register the land as "flat"
+		[Tooltip("Core: When rolling, multiplied by turn speed.")]
+		public float    rollingTurningModifier;
 	}
 
 	#endregion
@@ -1078,6 +1087,7 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawDecel();
 		DrawTurning();
 		DrawSlopes();
+		DrawFindGround();
 		DrawSticking();
 
 		EditorGUILayout.Space();
@@ -1209,7 +1219,23 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.GreedysStickToGround = stats.DefaultGreedysStickToGround;
+				stats.GreedysStickToGround = stats.DefaultStickToGround;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
+		#endregion
+
+		//Sticking
+		#region Ground
+		void DrawFindGround () {
+			EditorGUILayout.Space();
+			DrawProperty("FindingGround", "Finding the ground");
+
+			Undo.RecordObject(stats, "set to defaults");
+			if (GUILayout.Button("Default", ResetToDefaultButton))
+			{
+				stats.FindingGround = stats.DefaultFindGround;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

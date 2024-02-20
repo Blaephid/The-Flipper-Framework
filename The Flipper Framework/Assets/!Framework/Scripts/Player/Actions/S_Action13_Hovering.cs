@@ -9,7 +9,7 @@ public class S_Action13_Hovering : MonoBehaviour
 	S_ActionManager Actions;
 	Animator CharacterAnimator;
 	Transform PlayerSkin;
-	S_Control_SoundsPlayer Sounds;
+	S_Control_PlayerSound Sounds;
 
 	float floatSpeed = 15;
 	public AnimationCurve forceFromSource;

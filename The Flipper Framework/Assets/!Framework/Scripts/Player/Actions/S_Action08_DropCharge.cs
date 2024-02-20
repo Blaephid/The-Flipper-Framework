@@ -13,7 +13,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 	S_Handler_Camera Cam;
 	S_ActionManager Actions;
 	S_PlayerPhysics Player;
-	S_Control_SoundsPlayer sounds;
+	S_Control_PlayerSound sounds;
 	[HideInInspector] public ParticleSystem DropEffect;
 	GameObject JumpBall;
 	public float SpinDashChargedEffectAmm;
@@ -76,7 +76,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 			//Lock camera on behind
 			// Cam.Cam.FollowDirection(3, 14f, -10,0);
 
-			if (Player.RawInput.sqrMagnitude > 0.9f)
+			if (Player._rawInput.sqrMagnitude > 0.9f)
 			{
 				//RawPrevInput = Player.RawInput;
 				//RawPrevInput = Vector3.Scale(CharacterAnimator.transform.forward, Player.GroundNormal);
@@ -232,7 +232,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 		S_HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
 		sounds.SpinDashReleaseSound();
 
-		Player.AlignToGround(Player._groundNormal);
+		Player.AlignToGround(Player._groundNormal, true);
 
 		Vector3 newVec = charge *  newForward;
 
@@ -248,13 +248,13 @@ public class S_Action08_DropCharge : MonoBehaviour
 
 		if (newSpeedMagnitude > Player._horizontalSpeedMagnitude)
 		{
-			Player.setCoreVelocity( newVec);
+			Player.SetCoreVelocity( newVec);
 
 			Cam.Cam.FollowHeightDirection(18, 25f);
 		}
 		else
 		{
-			Player.setCoreVelocity(newVec.normalized * (Player._horizontalSpeedMagnitude + (charge * 0.45f)));
+			Player.SetCoreVelocity(newVec.normalized * (Player._horizontalSpeedMagnitude + (charge * 0.45f)));
 			Cam.Cam.FollowHeightDirection(20, 15f);
 		}
 	}

@@ -16,7 +16,7 @@ public class S_Action01_Jump : MonoBehaviour
     S_Handler_Camera Cam;
     S_Handler_quickstep stepManager;
 
-    S_Control_SoundsPlayer sounds;
+    S_Control_PlayerSound sounds;
     Animator CharacterAnimator;
     public float skinRotationSpeed;
     GameObject JumpBall;
@@ -410,7 +410,7 @@ public class S_Action01_Jump : MonoBehaviour
             newVec = new Vector3(Player._RB.velocity.x * _speedLossOnDoubleJump_, Mathf.Clamp(Player._RB.velocity.y * 0.1f, 0.1f, 5), Player._RB.velocity.z * _speedLossOnDoubleJump_);
 
 		//Player._RB.velocity = newVec;
-		Player.setTotalVelocity(newVec);
+		Player.SetTotalVelocity(newVec);
 
         GameObject JumpDashParticleClone = Instantiate(Tools.JumpDashParticle, Tools.FeetPoint.position, Quaternion.identity) as GameObject;
 

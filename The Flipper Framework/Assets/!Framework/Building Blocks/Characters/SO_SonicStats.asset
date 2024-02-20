@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: SO_SonicStats
   m_EditorClassIdentifier: 
   Title: Sonic
-  IIintIna: 0
   BasicAccelerationStats:
     runAcceleration: 0.16
     rollAccel: 0.02
@@ -59,7 +58,12 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    accelShiftOverSpeed: 1
+    AccelBySlopeAngle:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   AccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4
@@ -105,11 +109,60 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    accelShiftOverSpeed: 1
+    AccelBySlopeAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1.0074642
+        value: 0.2
+        inSlope: 0.000010205589
+        outSlope: 0.000010205589
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.2706776
+      - serializedVersion: 3
+        time: -0.1
+        value: 0
+        inSlope: -0.0016549187
+        outSlope: -0.0016549187
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.7753021
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.1
+        value: 0
+        inSlope: 0.016887128
+        outSlope: 0.016887128
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.47014928
+        value: 1
+        inSlope: 0.0029262083
+        outSlope: 0.0029262083
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.6206897
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   BasicTurningStats:
-    tangentialDrag: 7.5
-    tangentialDragShiftSpeed: 1
     turnSpeed: 14
+    turnDrag: 7.5
     TurnRateByAngle:
       serializedVersion: 2
       m_Curve:
@@ -239,7 +292,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    TangDragByAngle:
+    DragByAngle:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -299,7 +352,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    TangDragBySpeed:
+    DragBySpeed:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -351,9 +404,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   TurningStats:
-    tangentialDrag: 7.5
-    tangentialDragShiftSpeed: 1
     turnSpeed: 14
+    turnDrag: 7.5
     TurnRateByAngle:
       serializedVersion: 2
       m_Curve:
@@ -501,7 +553,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    TangDragByAngle:
+    DragByAngle:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -561,7 +613,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    TangDragBySpeed:
+    DragBySpeed:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -615,6 +667,7 @@ MonoBehaviour:
   BasicDecelerationStats:
     moveDeceleration: 1.05
     airDecel: 1.25
+    rollingFlatDecell: 1.004
     DecelBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -666,11 +719,11 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    decelShiftOverSpeed: 10
     naturalAirDecel: 1.002
   DecelerationStats:
     moveDeceleration: 4
     airDecel: 1.5
+    rollingFlatDecell: 1.004
     DecelBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -722,20 +775,16 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    decelShiftOverSpeed: 10
     naturalAirDecel: 0.15
   DefaultSpeedStats:
     topSpeed: 90
     maxSpeed: 160
   SpeedStats:
-    topSpeed: 90
+    topSpeed: 100
     maxSpeed: 160
   BasicSlopeStats:
     slopeEffectLimit: 0.85
-    standOnSlopeLimit: 0.8
-    slopePower: -1.4
-    slopeRunningAngleLimit: 0.4
-    SlopeLimitBySpeed:
+    SpeedLimitBySlopeAngle:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
@@ -848,17 +897,15 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    landingConversionFactor: 0
   SlopeStats:
     slopeEffectLimit: 0.92
-    standOnSlopeLimit: 0.8
-    slopePower: -1.8
-    slopeRunningAngleLimit: 0.4
-    SlopeLimitBySpeed:
+    SpeedLimitBySlopeAngle:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: -1
-        value: 15
+        value: 50
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -867,7 +914,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 0
-        value: 10
+        value: 30
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -875,8 +922,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.6
-        value: -10
+        time: 0.8
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -885,7 +932,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: -10
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -966,26 +1013,19 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  DefaultGreedysStickToGround:
-    GroundMask:
-      serializedVersion: 2
-      m_Bits: 0
+    landingConversionFactor: 2
+  DefaultStickToGround:
     stickingLerps: {x: 0.885, y: 1.005}
     stickingNormalLimit: 0.5
     stickCastAhead: 1.9
-    negativeGHoverHeight: 0.8
-    rayToGroundDistance: 1.4
-    raytoGroundSpeedRatio: 0.01
-    raytoGroundSpeedMax: 2.6
-    rayToGroundRotDistance: 1.1
-    raytoGroundRotSpeedMax: 2.6
+    negativeGHoverHeight: 0.05
     rotationResetThreshold: -0.1
     upwardsLimitByCurrentSlope:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 0.7
+        time: 0.2
+        value: 0.5
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -993,7 +1033,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
+        time: 0.85
         value: 0.3
         inSlope: 0
         outSlope: 0
@@ -1001,24 +1041,24 @@ MonoBehaviour:
         weightedMode: 0
         inWeight: 0
         outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    stepHeight: 0
-    groundDifferenceLimit: 0
+    stepHeight: 0.75
   GreedysStickToGround:
-    GroundMask:
-      serializedVersion: 2
-      m_Bits: 1
     stickingLerps: {x: 0.98, y: 1.02}
-    stickingNormalLimit: 0.5
+    stickingNormalLimit: 0.519
     stickCastAhead: 1.7
     negativeGHoverHeight: 0.8
-    rayToGroundDistance: 1.3
-    raytoGroundSpeedRatio: 0.04
-    raytoGroundSpeedMax: 2.9
-    rayToGroundRotDistance: 1.1
-    raytoGroundRotSpeedMax: 2.6
     rotationResetThreshold: -0.05
     upwardsLimitByCurrentSlope:
       serializedVersion: 2
@@ -1045,41 +1085,50 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     stepHeight: 1
-    groundDifferenceLimit: 0.32
+  DefaultFindGround:
+    GroundMask:
+      serializedVersion: 2
+      m_Bits: 0
+    groundDifferenceLimit: 0.3
+    rayToGroundDistance: 1.4
+    raytoGroundSpeedRatio: 0.01
+    raytoGroundSpeedMax: 2.6
+  FindingGround:
+    GroundMask:
+      serializedVersion: 2
+      m_Bits: 1
+    groundDifferenceLimit: 0.3
+    rayToGroundDistance: 1.4
+    raytoGroundSpeedRatio: 0.01
+    raytoGroundSpeedMax: 2.6
   WhenInAir:
     startMaxFallingSpeed: -400
-    startJumpPower: 1.2
     shouldStopAirMovementWhenNoInput: 1
-    upGravity: {x: 0, y: -1.45, z: 0}
     keepNormalForThis: 0.3
     controlAmmount: {x: 0.7, y: 0.8}
     skiddingForce: -2.5
     fallGravity: {x: 0, y: -1.5, z: 0}
+    upGravity: {x: 0, y: -1.45, z: 0}
   DefaultWhenInAir:
     startMaxFallingSpeed: -400
-    startJumpPower: 1.2
     shouldStopAirMovementWhenNoInput: 1
-    upGravity: {x: 0, y: -1.45, z: 0}
     keepNormalForThis: 0.183
     controlAmmount: {x: 0.7, y: 0.8}
     skiddingForce: -2.5
     fallGravity: {x: 0, y: -1.5, z: 0}
+    upGravity: {x: 0, y: -1.45, z: 0}
   RollingStats:
     rollingLandingBoost: 1.4
     rollingDownhillBoost: 1.9
     rollingUphillBoost: 1.2
     rollingStartSpeed: 5
-    rollingTurningDecrease: 0.6
-    rollingFlatDecell: 1.004
-    slopeTakeoverAmount: 0.995
+    rollingTurningModifier: 0.6
   DefaultRollingStats:
     rollingLandingBoost: 1.4
     rollingDownhillBoost: 1.9
     rollingUphillBoost: 1.2
     rollingStartSpeed: 5
-    rollingTurningDecrease: 0.6
-    rollingFlatDecell: 1.004
-    slopeTakeoverAmount: 0.995
+    rollingTurningModifier: 0.6
   SkiddingStats:
     speedToStopAt: 10
     skiddingStartPoint: 5

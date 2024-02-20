@@ -9,7 +9,7 @@ public class S_Handler_Skidding : MonoBehaviour
 	S_PlayerInput Inp;
 
 
-	S_Control_SoundsPlayer sounds;
+	S_Control_PlayerSound sounds;
 
 
 	[HideInInspector] public float _regularSkiddingStartPoint_;

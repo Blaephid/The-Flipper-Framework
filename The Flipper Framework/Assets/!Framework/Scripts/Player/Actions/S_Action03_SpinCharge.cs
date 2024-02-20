@@ -17,7 +17,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
     S_Handler_quickstep quickstepManager;
 
     S_PlayerPhysics Player;
-    S_Control_SoundsPlayer sounds;
+    S_Control_PlayerSound sounds;
     S_Control_EffectsPlayer effects;
     public float SpinDashChargedEffectAmm;
 
@@ -254,7 +254,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
 
         //Rotation
 
-        if (Player.RawInput.sqrMagnitude > 0.1f)
+        if (Player._rawInput.sqrMagnitude > 0.1f)
         {
             
             CharRot = Quaternion.LookRotation(Tools.MainCamera.transform.forward - Player._groundNormal * Vector3.Dot(Tools.MainCamera.transform.forward, Player._groundNormal), transform.up);

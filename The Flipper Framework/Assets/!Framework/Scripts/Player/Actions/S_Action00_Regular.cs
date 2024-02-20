@@ -10,7 +10,7 @@ public class S_Action00_Regular : MonoBehaviour {
     S_ActionManager Actions;
 	S_Handler_Camera Cam;
 	S_Handler_quickstep quickstepManager;
-    S_Control_SoundsPlayer sounds;
+    S_Control_PlayerSound sounds;
 	GameObject characterCapsule;
 	GameObject _rollingCapsule_;
 
