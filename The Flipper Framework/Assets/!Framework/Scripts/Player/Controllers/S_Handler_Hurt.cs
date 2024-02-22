@@ -7,7 +7,7 @@ public class S_Handler_Hurt : MonoBehaviour
     S_CharacterTools Tools;
 
     S_ActionManager Actions;
-    S_PlayerInput Inp;
+    S_PlayerInput _Input;
     S_Manager_LevelProgress Level;
     S_PlayerPhysics Player;
     S_Interaction_Objects Objects;
@@ -87,7 +87,7 @@ public class S_Handler_Hurt : MonoBehaviour
             RingLoss();
         }
 
-        if(Actions.killBindPressed)
+        if(_Input.killBindPressed)
         {
             if(Actions.whatAction != S_Enums.PlayerStates.Hurt)
                 CharacterAnimator.SetTrigger("Damaged");
@@ -140,9 +140,9 @@ public class S_Handler_Hurt : MonoBehaviour
         JumpBall.SetActive (false);
 
 
-        Inp.enabled = false;
+        _Input.enabled = false;
         Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
-        Player._moveInput = Vector3.zero;
+		_Input._move = Vector3.zero;
         deadCounter += 1;
         //Debug.Log("DeathGroup");
 
@@ -169,7 +169,7 @@ public class S_Handler_Hurt : MonoBehaviour
                 //Cam.Cam.SetCamera(InitialDir, 5);
             }
 
-            Inp.enabled = true;
+            _Input.enabled = true;
             Level.ResetToCheckPoint();
             //Debug.Log("CallingReset");
             isDead = false;
@@ -247,7 +247,7 @@ public class S_Handler_Hurt : MonoBehaviour
     {
         if (col.tag == "Pit")
         {
-            Cam.Cam.SetCamera(-99);
+            Cam._HedgeCam.SetCamera(-99);
         }
     }
     public void OnTriggerEnter(Collider col)
@@ -326,7 +326,7 @@ public class S_Handler_Hurt : MonoBehaviour
         Actions = GetComponent<S_ActionManager>();
         Objects = GetComponent<S_Interaction_Objects>();
         Cam = GetComponent<S_Handler_Camera>();
-        Inp = GetComponent<S_PlayerInput>();
+        _Input = GetComponent<S_PlayerInput>();
 
         faceHitCollider = Tools.faceHit.transform;
         JumpBall = Tools.JumpBall;

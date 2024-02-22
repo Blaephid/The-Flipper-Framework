@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using UnityEngine;
-using static S_O_CharacterStats;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -95,6 +92,13 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.8f, 0.6f),
 				new Keyframe(1, 0.6f),
 			}),
+			TurnRateByInputChange = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 1.2f),
+				new Keyframe(0.2f, 1.2f),
+				new Keyframe(0.5f, 1),
+				new Keyframe(1, 1f),
+			}),
 		};
 	}
 
@@ -109,6 +113,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public AnimationCurve     TurnRateByAngle;
 		[Tooltip("Core : Multiplies the turn speed based on the the current speed divided by max speed.")]
 		public AnimationCurve     TurnRateBySpeed;
+		[Tooltip("Core : Multiplies the turn speed based on how different the actual controller input is compared to last frame. This is to allow turning speed to be different if the camera is changing rather than the controller input.")]
+		public AnimationCurve     TurnRateByInputChange;
 		[Tooltip("Core : Multiplies the speed loss when turning by the angle difference between input direction and moving direction")]
 		public AnimationCurve     DragByAngle;
 		[Tooltip("Core : Multiplies the speed loss when turning based on the the current speed divided by max speed.")]
@@ -1060,9 +1066,6 @@ public class S_O_CharacterStatsEditor : Editor
 
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("InspectorTheme"), new GUIContent("Inspector Theme"));
 		serializedObject.ApplyModifiedProperties();
-
-
-
 
 		//Will only happen if above is attatched.
 		if (stats == null) return;

@@ -39,42 +39,11 @@ public class S_ActionManager : MonoBehaviour
         [HideInInspector] public bool lockJumpDash;
         [HideInInspector] public bool lockDoubleJump;
 
-        //NewInput system
-        public PlayerNewInput newInput;
-
-        //NewInput inputs stored
-        [HideInInspector] public float moveX;
-        [HideInInspector] public float moveY;
-        [HideInInspector] public Vector2 moveVec;
-
-        Vector2 CurrentCamMovement;
-        [HideInInspector] public float moveCamX;
-        [HideInInspector] public float moveCamY;
-        float camSensi;
-        public float mouseSensi;
-
-        [HideInInspector] public bool JumpPressed;
-        [HideInInspector] public bool RollPressed;
-        [HideInInspector] public bool SpecialPressed;
-        [HideInInspector] public bool LeftStepPressed;
-        [HideInInspector] public bool RightStepPressed;
-        //[HideInInspector] public bool SkidPressed;
-        [HideInInspector] public bool BouncePressed;
-        [HideInInspector] public bool InteractPressed;
-        [HideInInspector] public bool CamResetPressed;
-        [HideInInspector] public bool HomingPressed;
-        [HideInInspector] public bool spinChargePressed;
-        [HideInInspector] public bool killBindPressed;
-
         [HideInInspector] public bool isPaused;
-        [HideInInspector] public bool usingMouse = false;
 
         //Etc
 
         S_PlayerPhysics Phys;
-        S_Handler_Camera Cam;
-        S_PlayerInput Input;
-        S_CharacterTools Tools;
 
         void Start()
         {
@@ -89,182 +58,10 @@ public class S_ActionManager : MonoBehaviour
                 if (Phys == null)
                 {
                         Phys = GetComponent<S_PlayerPhysics>();
-                        Input = GetComponent<S_PlayerInput>();
-                        Cam = GetComponent<S_Handler_Camera>();
-                        Tools = GetComponent<S_CharacterTools>();
                 }
-
-                //Managing Inputs
-
-                mouseSensi = Tools.camStats.InputMouseSensi;
-                camSensi = Tools.camStats.InputSensi;
 
 
         }
-
-        public void MoveInput(InputAction.CallbackContext ctx)
-        {
-                moveVec = ctx.ReadValue<Vector2>();
-                usingMouse = false;
-                moveX = moveVec.x;
-                moveY = moveVec.y;
-        }
-
-        public void MoveInputKeyboard(InputAction.CallbackContext ctx)
-        {
-                moveVec = ctx.ReadValue<Vector2>();
-                moveX = moveVec.x;
-                moveY = moveVec.y;
-                usingMouse = true;
-	}
-
-        public void CamInput(InputAction.CallbackContext ctx)
-        {
-                usingMouse = false;
-                CurrentCamMovement = ctx.ReadValue<Vector2>();
-                moveCamX = CurrentCamMovement.x * camSensi;
-                moveCamY = CurrentCamMovement.y * camSensi;
-        }
-
-        public void CamMouseInput(InputAction.CallbackContext ctx)
-        {
-                usingMouse = true;
-                CurrentCamMovement = ctx.ReadValue<Vector2>();
-                moveCamX = CurrentCamMovement.x * mouseSensi;
-                moveCamY = CurrentCamMovement.y * mouseSensi;
-        }
-
-        public void Jump(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed || ctx.canceled)
-                {
-                        JumpPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void Roll(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed || ctx.canceled)
-                {
-                        RollPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void LeftStep(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed || ctx.canceled)
-                {
-                        LeftStepPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void RightStep(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed || ctx.canceled)
-                {
-                        RightStepPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void Special(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed || ctx.canceled)
-                {
-                        SpecialPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void Homing(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed || ctx.canceled)
-                {
-                        HomingPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void Interact(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed || ctx.canceled)
-                {
-                        InteractPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void Power(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed)
-                {
-                        if (!Phys._isGrounded)
-                        {
-                                BouncePressed = ctx.ReadValueAsButton();
-                        }
-                }
-
-                else if (ctx.canceled)
-                {
-                        BouncePressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void Skid(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed)
-                {
-                        // SkidPressed = ctx.ReadValueAsButton();
-
-                }
-                else if (ctx.canceled)
-                {
-                        // SkidPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void spinCharge(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed)
-                {
-                        if (Phys._isGrounded)
-                                spinChargePressed = ctx.ReadValueAsButton();
-
-                }
-                else if (ctx.canceled)
-                {
-                        spinChargePressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void killBind(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed)
-                {
-                        killBindPressed = ctx.ReadValueAsButton();
-
-                }
-                else if (ctx.canceled)
-                {
-                        killBindPressed = ctx.ReadValueAsButton();
-                }
-        }
-
-        public void CamReset(InputAction.CallbackContext ctx)
-        {
-                if (ctx.performed)
-                {
-                        CamResetPressed = !CamResetPressed;
-                        if (Cam.Cam.LockCamAtHighSpeed != 20f)
-                                Cam.Cam.LockCamAtHighSpeed = 20f;
-                        else
-                                Cam.Cam.LockCamAtHighSpeed = Cam.Cam.StartLockCam;
-                }
-
-        }
-
-        //Additional input help
-        //private void Update()
-        //{
-        //    moveCamX = CurrentCamMovement.x;
-        //    moveCamY = CurrentCamMovement.y;
-        //}
 
 
         public void DeactivateAllActions()

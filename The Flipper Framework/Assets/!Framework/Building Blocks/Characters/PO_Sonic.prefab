@@ -918,11 +918,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1152676602291728}
-  m_LocalRotation: {x: -0.2802816, y: -0.27203906, z: -0.5236966, w: -0.7570858}
-  m_LocalPosition: {x: -118.94394, y: -189.66415, z: -1622.1802}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.9999999, y: 0.9999999, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4983425988363839137}
   m_Father: {fileID: 4577307297244524}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1844,7 +1845,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1369616296626614}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.82, y: 5.48, z: 12.94}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5240,11 +5241,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf837daebff4b9748af103d6635b5e0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Action: {fileID: 0}
   _moveDeceleration_: 1.3
   _homingDelay_: 0
   _startFallGravity_: {x: 0, y: 0, z: 0}
-  _fallGravity_: {x: 0, y: 0, z: 0}
   _negativeGHoverHeight_: 0.6115
   _Groundmask_:
     serializedVersion: 2
@@ -5256,10 +5255,11 @@ MonoBehaviour:
   _prevTotalVelocity: {x: 0, y: 0, z: 0}
   _currentTopSpeed: 0
   _currentMaxSpeed: 0
+  curvePosAcell: 0
   _inputVelocityDifference: 1
   _canBeGrounded: 1
   _isGravityOn: 1
-  _EnableDebug: 0
+  _currentFallGravity: {x: 0, y: 0, z: 0}
 --- !u!114 &8583335634310275265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5288,8 +5288,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: MoveInput
         m_Mode: 0
         m_Arguments:
@@ -5304,8 +5304,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: Roll
         m_Mode: 0
         m_Arguments:
@@ -5320,8 +5320,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Roll[/Mouse/leftButton]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: RightStep
         m_Mode: 0
         m_Arguments:
@@ -5336,8 +5336,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Right Step[/Keyboard/e]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: LeftStep
         m_Mode: 0
         m_Arguments:
@@ -5352,8 +5352,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Left Step[/Keyboard/q]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: CamReset
         m_Mode: 0
         m_Arguments:
@@ -5368,8 +5368,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Camera Reset[/Keyboard/f]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: Jump
         m_Mode: 0
         m_Arguments:
@@ -5383,25 +5383,13 @@ MonoBehaviour:
     m_ActionId: e16675b5-a1e2-4aeb-9ea2-e97861123be7
     m_ActionName: CharacterActions/Jump[/Keyboard/space]
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
-        m_MethodName: Skid
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 27482aec-dc87-42ba-a8cd-fc41c580d62f
     m_ActionName: CharacterActions/Skid[/Keyboard/leftShift]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: Special
         m_Mode: 0
         m_Arguments:
@@ -5416,8 +5404,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Special[/Mouse/middleButton]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: Power
         m_Mode: 0
         m_Arguments:
@@ -5432,8 +5420,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Power[/Mouse/rightButton]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: Interact
         m_Mode: 0
         m_Arguments:
@@ -5448,8 +5436,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Interact[/Keyboard/x]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: Homing
         m_Mode: 0
         m_Arguments:
@@ -5464,8 +5452,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Homing[/Mouse/middleButton]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: CamInput
         m_Mode: 0
         m_Arguments:
@@ -5480,8 +5468,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/Move[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: CamMouseInput
         m_Mode: 0
         m_Arguments:
@@ -5496,9 +5484,9 @@ MonoBehaviour:
     m_ActionName: CharacterActions/MoveMouse[/Mouse/delta]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
-        m_MethodName: killBind
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
+        m_MethodName: KillBind
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5512,9 +5500,9 @@ MonoBehaviour:
     m_ActionName: CharacterActions/New action
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
-        m_MethodName: spinCharge
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
+        m_MethodName: SpinCharge
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5528,8 +5516,8 @@ MonoBehaviour:
     m_ActionName: CharacterActions/New action
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114870394340389206}
-        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
         m_MethodName: MoveInputKeyboard
         m_Mode: 0
         m_Arguments:
@@ -5559,10 +5547,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514900622d8654843bb4ebdbc2468f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputPreCamera: {x: 0, y: 0, z: 0}
-  camMoveInput: {x: 0, y: 0, z: 0}
-  finalMoveInput: {x: 0, y: 0, z: 0}
-  InputExporter: {x: 0, y: 0}
+  _move: {x: 0, y: 0, z: 0}
+  _inputWithoutCamera: {x: 0, y: 0, z: 0}
+  _prevInputWithoutCamera: {x: 0, y: 0, z: 0}
+  _camMoveInput: {x: 0, y: 0, z: 0}
+  moveX: 0
+  moveY: 0
+  moveVec: {x: 0, y: 0}
+  moveCamX: 0
+  moveCamY: 0
+  mouseSensi: 0
+  JumpPressed: 0
+  RollPressed: 0
+  SpecialPressed: 0
+  LeftStepPressed: 0
+  RightStepPressed: 0
+  BouncePressed: 0
+  InteractPressed: 0
+  CamResetPressed: 0
+  HomingPressed: 0
+  spinChargePressed: 0
+  killBindPressed: 0
+  usingMouse: 0
 --- !u!114 &114870394340389206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5599,25 +5605,7 @@ MonoBehaviour:
   lockHoming: 0
   lockJumpDash: 0
   lockDoubleJump: 0
-  moveX: 0
-  moveY: 0
-  moveVec: {x: 0, y: 0}
-  moveCamX: 0
-  moveCamY: 0
-  mouseSensi: 0
-  JumpPressed: 0
-  RollPressed: 0
-  SpecialPressed: 0
-  LeftStepPressed: 0
-  RightStepPressed: 0
-  BouncePressed: 0
-  InteractPressed: 0
-  CamResetPressed: 0
-  HomingPressed: 0
-  spinChargePressed: 0
-  killBindPressed: 0
   isPaused: 0
-  usingMouse: 0
 --- !u!114 &114654845169286778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5929,9 +5917,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1662691c848ef3f4caa5c4f59d5f16ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cam: {fileID: 1852949516445399776}
-  virtCam: {fileID: 3629193546532909564}
-  InitialDistance: 0
+  _HedgeCam: {fileID: 1852949516445399776}
+  _VirtCam: {fileID: 3629193546532909564}
+  _initialDistance: 0
 --- !u!114 &9180579401819028431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6240,21 +6228,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 436692277dcc6cd4b8d0f30eaaee2382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tools: {fileID: 2061662532465713779}
-  Target: {fileID: 5864465826205128439}
-  Player: {fileID: 114945863342939534}
-  Skin: {fileID: 6420733220765619769}
-  Actions: {fileID: 114870394340389206}
-  LockHeight: 1
-  CameraMaxDistance: -13
-  StartLockCam: 0
-  LockCamAtHighSpeed: 45
-  y: 20
-  PlayerPosLerped: {fileID: 4591767841459208}
-  canMove: 0
-  lookTimer: 0
-  LockedRotationSpeed: 6
-  Reversed: 0
+  _Tools: {fileID: 2061662532465713779}
+  _Target: {fileID: 5864465826205128439}
+  _PlayerPhys: {fileID: 114945863342939534}
+  _Skin: {fileID: 2990453842665127441}
+  _Actions: {fileID: 114870394340389206}
+  _Input: {fileID: 114421511878716788}
+  _PlayerTransformCopy: {fileID: 4591767841459208}
+  _shouldSetHeightWhenMoving_: 0
+  _cameraMaxDistance_: -11
+  _lockCamAtSpeed_: 130
+  _startLockCam: 0
+  _posY: 20
+  _preY: 20
+  _canMove: 0
+  _lookTimer: 0
+  _lockedRotationSpeed_: 0
+  _isReversed: 0
 --- !u!1 &220682979989224753
 GameObject:
   m_ObjectHideFlags: 0
@@ -16136,8 +16126,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
-  m_LocalRotation: {x: 0.010836976, y: -0.9897351, z: 0.018624738, w: -0.14128}
-  m_LocalPosition: {x: -282.76376, y: -1.0866847, z: -146.7785}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000007529743, w: 1}
+  m_LocalPosition: {x: 0.17, y: 1.65, z: -5.74}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16938,7 +16928,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5300954947105530035}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.25, z: 0}
+  m_LocalPosition: {x: 0, y: 2.458, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26765,8 +26755,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8412749811221693294}
-  - component: {fileID: 6777946757538278528}
-  - component: {fileID: 7373614404973310691}
   m_Layer: 8
   m_Name: PathFeetPoint
   m_TagString: Untagged
@@ -26789,56 +26777,6 @@ Transform:
   m_Father: {fileID: 6281468032168078379}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &6777946757538278528
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7874859071667184223}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: -3237599127065390014, guid: 75c547a17f146d84fa9e2c8bbd77e8d9, type: 3}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &7373614404973310691
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7874859071667184223}
-  m_Mesh: {fileID: -5495902117074765545, guid: caae083c10cb18243968d28eb2129258, type: 3}
 --- !u!1 &8233638774310098282
 GameObject:
   m_ObjectHideFlags: 0
@@ -31943,6 +31881,103 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.00000047683716, y: 1.2803048, z: 0.00000071525574}
     m_Extent: {x: 1.2880863, y: 1.2880858, z: 1.2880859}
   m_DirtyAABB: 0
+--- !u!1 &8892487838112748428
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4983425988363839137}
+  - component: {fileID: 4648941596629900591}
+  - component: {fileID: 4682950165497355661}
+  - component: {fileID: 6479443449365341579}
+  m_Layer: 8
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4983425988363839137
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8892487838112748428}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.52, z: 0}
+  m_LocalScale: {x: 0.67296, y: 3.6065269, z: 0.67296}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4591767841459208}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &4648941596629900591
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8892487838112748428}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &4682950165497355661
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8892487838112748428}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &6479443449365341579
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8892487838112748428}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8942409023770622517
 GameObject:
   m_ObjectHideFlags: 0
@@ -32017,7 +32052,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8950381718385962081}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.164, z: -0.25}
+  m_LocalPosition: {x: 0, y: 0.38, z: -0.25}
   m_LocalScale: {x: 2.23605, y: 2.9068646, z: 2.9068646}
   m_ConstrainProportionsScale: 0
   m_Children: []

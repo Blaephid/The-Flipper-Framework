@@ -12,50 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f48d55fdb945b2a45a4655f2bcf8617e, type: 3}
   m_Name: SO_Camera X Stats
   m_EditorClassIdentifier: 
-  UseAutoRotation: 1
-  UseCurve: 1
-  AutoXRotationSpeed: 1
-  AutoXRotationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.003
-      value: 1
-      inSlope: -0.013668673
-      outSlope: -0.013668673
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.17289181
-    - serializedVersion: 3
-      time: 1
-      value: 0.2
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  Title: Title
   LockHeight: 1
   LockHeightSpeed: 0.8
   MoveHeightBasedOnSpeed: 1
+  minHeightToLookDown: 50
   HeightToLock: 15
   HeightFollowSpeed: 6
   FallSpeedThreshold: -80
   CameraMaxDistance: -18
-  AngleThreshold: 0.45
+  AngleThreshold: {x: 0.35, y: 0.7}
   CollidableLayers:
     serializedVersion: 2
     m_Bits: 1
@@ -127,10 +93,13 @@ MonoBehaviour:
   InputSensi: 1
   InputMouseSensi: 0.035
   stationaryCamIncrease: 1.3
+  afterMoveXDelay: 0.3
+  afterMoveYDelay: 0.5
   yMinLimit: -100
-  yMaxLimit: 100
+  yMaxLimit: 95
   LockCamAtHighSpeed: 200
   MoveLerpingSpeed: 4
   RotationLerpingSpeed: 8
   LockedRotationSpeed: 6
   ShakeDampen: 4
+  InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

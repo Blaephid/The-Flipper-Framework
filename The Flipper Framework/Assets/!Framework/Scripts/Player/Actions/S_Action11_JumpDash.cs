@@ -10,7 +10,7 @@ public class S_Action11_JumpDash : MonoBehaviour
     Animator CharacterAnimator;
     S_Action02_Homing Action02;
     S_PlayerPhysics Player;
-    S_PlayerInput Inp;
+    S_PlayerInput _Input;
     S_Handler_Camera Cam;
 
     [HideInInspector] public bool _isAdditive_;
@@ -57,8 +57,8 @@ public class S_Action11_JumpDash : MonoBehaviour
                 HomingTrailScript.emit = true;
 
                 JumpBall.SetActive(false);
-                Action.SpecialPressed = false;
-                Action.HomingPressed = false;
+                _Input.SpecialPressed = false;
+                _Input.HomingPressed = false;
 
                 Timer = 0;
                 Action02.HomingAvailable = false;
@@ -116,21 +116,21 @@ public class S_Action11_JumpDash : MonoBehaviour
 
         Timer += Time.deltaTime;
 
-        if (Inp.inputPreCamera != Vector3.zero)
+        if (_Input._inputWithoutCamera != Vector3.zero)
         {
             if(Timer > 0.03)
             {
                 
-                Vector3 FaceDir = CharacterAnimator.transform.position - Cam.Cam.transform.position;
+                Vector3 FaceDir = CharacterAnimator.transform.position - Cam._HedgeCam.transform.position;
                 bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, FaceDir.normalized) < 0f;
                 if (Facing)
                 {
-                    Inp.inputPreCamera.x = -Inp.inputPreCamera.x;
+                    _Input._inputWithoutCamera.x = -_Input._inputWithoutCamera.x;
                 }
 
 
                 //Direction = CharacterAnimator.transform.forward;
-                Direction = Vector3.RotateTowards(new Vector3 (Direction.x, 0, Direction.z), CharacterAnimator.transform.right, Mathf.Clamp(Inp.inputPreCamera.x * 4, -2.5f, 2.5f) * Time.deltaTime, 0f);
+                Direction = Vector3.RotateTowards(new Vector3 (Direction.x, 0, Direction.z), CharacterAnimator.transform.right, Mathf.Clamp(_Input._inputWithoutCamera.x * 4, -2.5f, 2.5f) * Time.deltaTime, 0f);
             }           
 
             //Direction.y = Player.fallGravity.y * 0.1f;
@@ -194,7 +194,7 @@ public class S_Action11_JumpDash : MonoBehaviour
         Player = GetComponent<S_PlayerPhysics>();
         Action = GetComponent<S_ActionManager>();
         Action02 = GetComponent<S_Action02_Homing>();
-        Inp = GetComponent<S_PlayerInput>();
+        _Input = GetComponent<S_PlayerInput>();
         Cam = GetComponent<S_Handler_Camera>();
 
 

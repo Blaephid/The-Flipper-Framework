@@ -9,6 +9,7 @@ public class S_Handler_RingRoad : MonoBehaviour
         public bool HasTarget { get; set; }
         public GameObject TargetObject { get; set; }
         S_ActionManager Actions;
+	S_PlayerInput _Input;
 
         float _targetSearchDistance_ = 10;
         Transform Icon;
@@ -78,10 +79,10 @@ public class S_Handler_RingRoad : MonoBehaviour
 
         void PerformRingRoad () {
                 //Do a LightDash Attack
-                if (Actions.whatAction != S_Enums.PlayerStates.RingRoad && Actions.InteractPressed && TargetObject != null)
+                if (Actions.whatAction != S_Enums.PlayerStates.RingRoad && _Input.InteractPressed && TargetObject != null)
                 {
-                        //Debug.Log("LightDash");
-                        Actions.CamResetPressed = false;
+			//Debug.Log("LightDash");
+			_Input.CamResetPressed = false;
                         Actions.ChangeAction(S_Enums.PlayerStates.RingRoad);
                         Actions.Action07.InitialEvents();
                 }
@@ -144,6 +145,7 @@ public class S_Handler_RingRoad : MonoBehaviour
         void AssignTools () {
                 Actions = GetComponent<S_ActionManager>();
                 player = GetComponent<S_PlayerPhysics>();
+		_Input = GetComponent<S_PlayerInput>();
 
                 Icon = Tools.homingIcons.GetComponent<Transform>();
                 MainCamera = Tools.MainCamera;

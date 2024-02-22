@@ -158,8 +158,8 @@ public class S_PauseControl : MonoBehaviour {
         SensX.value = PlayerPrefs.GetFloat("X_SENS");
         SensY.value = PlayerPrefs.GetFloat("Y_SENS");
 
-        Cam.SensiX = PlayerPrefs.GetFloat("X_SENS");
-        Cam.SensiY = PlayerPrefs.GetFloat("Y_SENS");
+        Cam._sensiX = PlayerPrefs.GetFloat("X_SENS");
+        Cam._sensiY = PlayerPrefs.GetFloat("Y_SENS");
     }
     public void SetVolume()
     {
@@ -171,9 +171,9 @@ public class S_PauseControl : MonoBehaviour {
 
         //Set Sensitiviy
         PlayerPrefs.SetFloat("X_SENS", SensX.value);
-        Cam.SensiX = SensX.value;
+        Cam._sensiX = SensX.value;
         PlayerPrefs.SetFloat("Y_SENS", SensY.value);
-        Cam.SensiY = SensY.value;
+        Cam._sensiY = SensY.value;
     }
 
     public void InvetInput(bool isX)
@@ -184,13 +184,13 @@ public class S_PauseControl : MonoBehaviour {
             {
                 PlayerPrefs.SetInt("X_INV", 1);
                 SetInvertIcons(true, true);
-                Cam.InvertedX = -1;
+                Cam._invertedX = -1;
             }
             else
             {
                 PlayerPrefs.SetInt("X_INV", 0);
                 SetInvertIcons(false, true);
-                Cam.InvertedX = 1;
+                Cam._invertedX = 1;
             }
         }
         else
@@ -199,39 +199,39 @@ public class S_PauseControl : MonoBehaviour {
             {
                 PlayerPrefs.SetInt("Y_INV", 1);
                 SetInvertIcons(true, false);
-                Cam.InvertedY = -1;
+                Cam._invertedY = -1;
             }
             else
             {
                 PlayerPrefs.SetInt("Y_INV", 0);
                 SetInvertIcons(false, false);
-                Cam.InvertedY = 1;
+                Cam._invertedY = 1;
             }
         }
     }
     void InitialIconsSet()
     {
-        Cam.SensiX = PlayerPrefs.GetFloat("X_SENS");
-        Cam.SensiY = PlayerPrefs.GetFloat("Y_SENS");
+        Cam._sensiX = PlayerPrefs.GetFloat("X_SENS");
+        Cam._sensiY = PlayerPrefs.GetFloat("Y_SENS");
 
         if (PlayerPrefs.GetInt("Y_INV") == 0)
         {
-            Cam.InvertedY = 1;
+            Cam._invertedY = 1;
             SetInvertIcons(false, false);
         }
         else
         {
-            Cam.InvertedY = -1;
+            Cam._invertedY = -1;
             SetInvertIcons(true, false);
         }
         if (PlayerPrefs.GetInt("X_INV") == 0)
         {
-            Cam.InvertedX = 1;
+            Cam._invertedX = 1;
             SetInvertIcons(false, true);
         }
         else
         {
-            Cam.InvertedX = -1;
+            Cam._invertedX = -1;
             SetInvertIcons(true, true);
         }
 

@@ -17,15 +17,18 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Members
-	private S_ActionManager	_Action;
-	private S_CharacterTools	_Tools;
+	private S_ActionManager       _Action;
+	private S_CharacterTools      _Tools;
 	private S_Control_PlayerSound _SoundController;
 	static public S_PlayerPhysics s_MasterPlayer;
+	private S_PlayerInput         _Input;
+	private S_Handler_Camera      _camHandler;
 
 	[HideInInspector]
-	public Rigidbody		_RB { get; set; }
+	public Rigidbody _RB { get; set; }
 	private CapsuleCollider       _CharacterCapsule;
 	private Transform             _FeetTransform;
+	private Transform             _MainSkin;
 	#endregion
 
 	//General
@@ -50,6 +53,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _turnSpeed_ = 16f;
 	private AnimationCurve        _TurnRateByAngle_;
 	private AnimationCurve        _TurnRateBySpeed_;
+	private AnimationCurve        _TurnRateByInputChange_;
 	private AnimationCurve        _DragByAngle_;
 	private AnimationCurve        _DragBySpeed_;
 
@@ -138,8 +142,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	public float _horizontalSpeedMagnitude { get; set; }
 
 	public Vector3 _moveInput { get; set; }
-	public Vector3 _previousInput { get; set; }
-	public Vector3 _rawInput { get; set; }
 
 	[HideInInspector]
 	public float                  _currentTopSpeed;
@@ -149,8 +151,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _currentRollAccell;
 	public float                  curvePosAcell;
 	private float                 _curvePosDecell;
-	public float		_curvePosDrag { get; set; }
-	public float		_curvePosSlopePower { get; set; }
+	public float _curvePosDrag { get; set; }
+	public float _curvePosSlopePower { get; set; }
 	[HideInInspector]
 	public float                  _inputVelocityDifference = 1;
 	[Tooltip("A quick reference to the players current location")]
@@ -159,23 +161,26 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _timeUpHill;
 
 	[Tooltip("Used to check if the player is currently grounded. _isGrounded")]
-	public bool		_isGrounded { get; set; }
+	public bool _isGrounded { get; set; }
 	[HideInInspector]
 	public bool                   _canBeGrounded = true;
-	public Vector3		_groundNormal { get; set; }
-	public Vector3		_collisionPointsNormal { get; set; }
+	public Vector3 _groundNormal { get; set; }
+	public Vector3 _collisionPointsNormal { get; set; }
 	private Vector3               _keepNormal;
+	private float                 _sideFacingUp;
 	private float                 _keepNormalCounter;
-	public bool		_wasInAir { get; set; }
+	public bool _wasInAir { get; set; }
 	[HideInInspector]
 	public bool                   _isGravityOn = true;
 	[HideInInspector]
 	public Vector3                _currentFallGravity;
 
-	public bool		_isRolling { get; set; }
+	public bool _isRolling { get; set; }
 
 	private float                 _groundingDelay;
-	public float		_timeOnGround { get; set; }
+	public float _timeOnGround { get; set; }
+
+	private bool                  _canTurn = true;
 
 	#endregion
 	#endregion
@@ -211,7 +216,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		_playerPos = transform.position;
 
-		CheckForGround();
+		//CheckForGround();
 	}
 	#endregion
 
@@ -238,7 +243,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 		Vector3 newVelocity = _RB.velocity;
 		if (newVelocity.sqrMagnitude <= _prevTotalVelocity.sqrMagnitude && _prevTotalVelocity.sqrMagnitude > 1)
-		{	
+		{
 			float angleChange = Vector3.Angle(newVelocity, _prevTotalVelocity) / 180;
 			float sizeDifference = Mathf.Abs(newVelocity.magnitude - _speedMagnitude);
 			float newSpeed = _RB.velocity.sqrMagnitude;
@@ -271,7 +276,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
 	void CheckForGround () {
 
-		if(_groundingDelay > 0)
+		if (_groundingDelay > 0)
 		{
 			_groundingDelay -= Time.fixedDeltaTime;
 			return;
@@ -303,7 +308,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If return is not called yet, then sets grounded to false.
 		_groundNormal = Vector3.up;
 		SetIsGrounded(false, 0.1f);
-
 	}
 
 	//After every other calculation has been made, all of the new velocities and combined and set to the rigidbody.
@@ -360,7 +364,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		_timeOnGround += Time.deltaTime;
 
-		_coreVelocity = HandleControlledVelocity(_moveInput, new Vector2(1, 1));
+		_coreVelocity = HandleControlledVelocity(new Vector2(1, 1));
 		_coreVelocity = StickToGround(_coreVelocity);
 		_coreVelocity = HandleSlopePhysics(_coreVelocity);
 	}
@@ -391,11 +395,12 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 
 		//Handles lateral velocity.
-		_coreVelocity = HandleControlledVelocity(_moveInput, new Vector2(airTurnMod, airAccelMod));
+		_coreVelocity = HandleControlledVelocity(new Vector2(airTurnMod, airAccelMod));
 
 		//Apply Gravity (vertical velocity)
 		if (_isGravityOn)
 			_coreVelocity = SetGravity(_coreVelocity, _coreVelocity.y);
+
 
 		//Clamp to max falling speed, so can't fall faster than this.
 		_coreVelocity = new Vector3(_coreVelocity.x, Mathf.Clamp(_coreVelocity.y, _maxFallingSpeed_, _coreVelocity.y), _coreVelocity.z);
@@ -403,7 +408,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles core velocity, which is the velocity directly under the player's control (seperate from environmental velocity which is placed on the character by other things).
 	//This turns, decreases and/or increases the velocity based on input.
-	Vector3 HandleControlledVelocity ( Vector3 input, Vector2 modifier ) {
+	Vector3 HandleControlledVelocity ( Vector2 modifier ) {
 
 		//Certain actions control velocity in their own way.
 		if (_Action.whatAction == S_Enums.PlayerStates.JumpDash || _Action.whatAction == S_Enums.PlayerStates.WallRunning) { return _coreVelocity; }
@@ -417,8 +422,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		//Apply changes to the lateral velocity based on input.
-		lateralVelocity = HandleTurningAndAcceleration(lateralVelocity, input, modifier);
-		lateralVelocity = HandleDecel(lateralVelocity, input, _isGrounded);
+		lateralVelocity = HandleTurningAndAcceleration(lateralVelocity, _Input._move, modifier);
+		lateralVelocity = HandleDecel(lateralVelocity, _Input._move, _isGrounded);
 
 		// Clamp horizontal running speed. coreVelocity can never exceed the player moving laterally faster than this.
 		localVelocity = lateralVelocity + verticalVelocity;
@@ -448,19 +453,34 @@ public class S_PlayerPhysics : MonoBehaviour
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
 
-		float deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
-		Quaternion lateralToInput = Mathf.Approximately(lateralVelocity.sqrMagnitude, 0.0f)
-			? Quaternion.LookRotation (inputDirection, transform.up)
+		float deviationFromInput = 0;
+		if (_canTurn)
+		{
+			deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
+			_inputVelocityDifference = deviationFromInput;
+			Quaternion lateralToInput = lateralVelocity.sqrMagnitude < 1
+			? Quaternion.identity
 			: Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
 
-		// Step 2) Rotate lateral velocity towards the same velocity under the desired rotation.
-		//         The ammount rotated is determined by turn speed multiplied by turn rate (defined by the difference in angles, and current speed).
+			// Step 2) Rotate lateral velocity towards the same velocity under the desired rotation.
+			//         The ammount rotated is determined by turn speed multiplied by turn rate (defined by the difference in angles, and current speed).
+			//	Turn speed will also increase if the difference in pure input (ignoring camera) is different, allowing precise movement with the camera.
 
-		float turnRate = (_isRolling ? _rollingTurningModifier_ : 1.0f);
-		turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
-		turnRate *= _TurnRateBySpeed_.Evaluate((_RB.velocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
-		lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Time.deltaTime * modifier.x, 0.0f);
 
+
+			float turnRate = (_isRolling ? _rollingTurningModifier_ : 1.0f);
+			turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
+			turnRate *= _TurnRateBySpeed_.Evaluate((_RB.velocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
+			if (_moveInput != inputDirection)
+			{
+				turnRate *= _TurnRateByInputChange_.Evaluate(Vector3.Angle(_Input._inputWithoutCamera, _Input._prevInputWithoutCamera) / 180);
+				_Input._prevInputWithoutCamera = _Input._inputWithoutCamera;
+				_moveInput = inputDirection;
+			}
+			Debug.DrawRay(transform.position, lateralToInput * lateralVelocity.normalized, Color.black, 5);
+			Debug.DrawRay(transform.position + lateralToInput * lateralVelocity.normalized, lateralToInput * lateralVelocity.normalized * 0.2f, Color.yellow, 5);
+			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Time.deltaTime * modifier.x, 0.0f);
+		}
 
 		// Step 3) Get current velocity (if it's zero then use input)
 		//         Increase or decrease the size by using movetowards zero (a minus value increases size in the velocity direction)
@@ -510,7 +530,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		{
 			decelAmount += _constantAirDecel_;
 		}
-		
+
 		//Apply calculated deceleration
 		return Vector3.MoveTowards(lateralVelocity, Vector3.zero, decelAmount);
 	}
@@ -639,13 +659,13 @@ public class S_PlayerPhysics : MonoBehaviour
 					raycastStartPosition = raycastStartPosition + (rayCastDirection * (_horizontalSpeedMagnitude * 0.7f) * _stickCastAhead_ * Time.deltaTime);
 					//Shoots a raycast from infront, but downwards to check for lower ground.
 					//Then create a velocity relative to the current groundNormal, then lerp from one to the other.
-					
+
 					if (Physics.Raycast(raycastStartPosition, -_HitGround.normal, out hitSticking, 2.5f, _Groundmask_))
 					{
 						newGroundNormal = hitSticking.normal;
 						Vector3 Dir = AlignWithNormal(velocity, newGroundNormal, velocity.magnitude);
 						velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.y);
-						
+
 					}
 					AddCoreVelocity(-newGroundNormal * 2, false); // Adds velocity downwards to remain on the slope.
 
@@ -712,7 +732,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 	}
 
-
 	#endregion
 
 	/// <summary>
@@ -733,38 +752,50 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If in the air, then stick to previous normal for a moment before rotating legs towards gravity. This avoids collision issues
 		else
 		{
-			_keepNormalCounter += Time.deltaTime;
 			if (_keepNormalCounter < _keepNormalForThis_)
 			{
+				_keepNormalCounter += Time.deltaTime;
 				transform.rotation = Quaternion.FromToRotation(transform.up, _keepNormal) * transform.rotation;
+				if (_keepNormalCounter >= _keepNormalForThis_)
+				{
+					_sideFacingUp = Mathf.Sign(_MainSkin.right.y);
+				}
 			}
 			else
 			{
 				//If upside down, then the player must rotate sideways, and not forwards. This keeps them facing the same way while pointing down to the ground again.
 				if (_keepNormal.y < _rotationResetThreshold_)
 				{
+					_canTurn = false;
+
+					float sideFacingUp = Mathf.Sign(_MainSkin.right.y);
+
 					//If the left side is under 0 y normal, then it is lower, so it is quicker to rotate so the lower left reaches normal
 					//then rotate in the direction of th left going up, and when it becomes higher, set it to 0 and you've rotated around on the local sides.
-					if (-transform.right.y < 0)
+					if (_sideFacingUp != sideFacingUp && transform.up.y > 0)
 					{
-						transform.rotation = Quaternion.RotateTowards(transform.rotation,
-							Quaternion.FromToRotation(-transform.right, transform.up) * transform.rotation, 10f);
-
-						if (-transform.right.y >= 0)
-						{
-							transform.right = new Vector3(transform.right.x, 0, transform.right.z);
-							//_keepNormal = Vector3.up;
-						}
+						transform.right = new Vector3(transform.right.x, 0, transform.right.z);
+						_canTurn = true;
+						_keepNormal = Vector3.up;
 					}
 					else
 					{
-						transform.rotation = Quaternion.RotateTowards(transform.rotation,
-							Quaternion.FromToRotation(transform.right, transform.up) * transform.rotation, 10f);
+						_sideFacingUp = Mathf.Sign(_MainSkin.right.y);
 
-						if (transform.right.y >= 0)
+						Debug.DrawRay(transform.position, _MainSkin.right * 2, Color.red, 10f);
+						Debug.DrawRay(transform.position, _MainSkin.forward, Color.yellow, 10f);
+						Debug.DrawRay(transform.position, _camHandler._HedgeCam.transform.forward, Color.black, 10f);
+
+						// Get the forward vector and rotate the player around it.
+						Vector3 forwardVector = new Vector3 (_RB.velocity.x, 0, _RB.velocity.z).normalized;
+						
+						if(transform.right.y > -transform.right.y)
 						{
-							transform.right = new Vector3(transform.right.x, 0, transform.right.z);
-							//_keepNormal = Vector3.up;
+							transform.Rotate(forwardVector, 6);
+						}
+						else
+						{
+							transform.Rotate(forwardVector, -6);
 						}
 					}
 				}
@@ -772,6 +803,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				{
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
+					if (targetRot == transform.rotation) { _canTurn = true; }
 				}
 			}
 		}
@@ -793,6 +825,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 			else
 			{
+				_canTurn = true;
 				_keepNormalCounter = 0;
 			}
 		}
@@ -804,7 +837,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_listOfVelocityToAddNextUpdate.Add(force);
 		if (shouldPrintForce) Debug.Log("Add Total FORCE");
 	}
-	public void AddCoreVelocity ( Vector3 force, bool shouldPrintForce = false ) {
+	public void AddCoreVelocity ( Vector3 force, bool shouldPrintForce = true ) {
 		_listOfCoreVelocityToAdd.Add(force);
 		if (shouldPrintForce) Debug.Log("ADD Core FORCE");
 	}
@@ -834,6 +867,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		_TurnRateByAngle_ = _Tools.Stats.TurningStats.TurnRateByAngle;
 		_TurnRateBySpeed_ = _Tools.Stats.TurningStats.TurnRateBySpeed;
+		_TurnRateByInputChange_ = _Tools.Stats.TurningStats.TurnRateByInputChange;
 		_DragByAngle_ = _Tools.Stats.TurningStats.DragByAngle;
 		_DragBySpeed_ = _Tools.Stats.TurningStats.DragBySpeed;
 		_startTopSpeed_ = _Tools.Stats.SpeedStats.topSpeed;
@@ -900,11 +934,13 @@ public class S_PlayerPhysics : MonoBehaviour
 	private void AssignTools () {
 		s_MasterPlayer = this;
 		_RB = GetComponent<Rigidbody>();
-		_previousInput = transform.forward;
 		_Action = GetComponent<S_ActionManager>();
 		_SoundController = _Tools.SoundControl;
 		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
 		_FeetTransform = _Tools.FeetPoint;
+		_Input = GetComponent<S_PlayerInput>();
+		_MainSkin = _Tools.mainSkin;
+		_camHandler = GetComponent<S_Handler_Camera>();
 	}
 
 	#endregion

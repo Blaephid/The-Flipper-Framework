@@ -1,204 +1,317 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
+using UnityEditor;
 
-public class S_PlayerInput : MonoBehaviour {
+public class S_PlayerInput : MonoBehaviour
+{
+	/// <summary>
+	/// Members ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region members
 
-    private S_PlayerPhysics Player; // Reference to the ball controller.
-    S_Handler_Camera Cam;
-    S_ActionManager Actions;
-    S_CharacterTools _Tools;
-	Transform _MainSkin;
+	//Unity
+	#region Unity Specific Members
 
-	public Vector3 moveAcc { get; set; }
-    private Vector3 move;
-    public Vector3 inputPreCamera;
-    public Vector3 camMoveInput;
-    // the world-relative desired move direction, calculated from the camForward and user input.
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_Handler_Camera      _CamHandler;
+	private S_CharacterTools      _Tools;
 
-    private Transform cam; // A reference to the main camera in the scenes transform
-    private Vector3 camForward; // The current forward direction of the camera
+	private Transform             _Camera; // A reference to the main camera in the scene's transform
 
-	private bool PreviousInputWasNull;
+	#endregion
 
-    //[HideInInspector] public AnimationCurve InputLerpingRateOverSpeed;
+	// Trackers
+	#region trackers
+	[HideInInspector]
+	public Vector3     _move;
+	public Vector3      _inputWithoutCamera;
+	public Vector3      _prevInputWithoutCamera;
+	[HideInInspector]
+	public Vector3     _camMoveInput;
 
-    public float InputLerpSpeed { get; set; }
+	public bool	_isInputLocked { get; set; }
+	float               _lockedTime;
+	float               _lockedCounter = 0;
+	[HideInInspector]
+	public bool	_isCamLocked { get; set; }
 
-    [HideInInspector] public float UtopiaLerpingSpeed { get; set; }
-    float InitialInputMag;
-    float InitialLerpedInput;
+	//input
+	//NewInput system
+	public PlayerNewInput		newInput;
 
-    public bool LockInput { get; set; }
-    float LockedTime;
-    Vector3 LockedInput;
-    float LockedCounter = 0;
-    [HideInInspector] public bool LockCam { get; set; }
-    public bool onPath { get; set; }
-    public float prevDecel { get; set; }
-	private bool HittingWall;
+	//NewInput inputs stored
+	[HideInInspector] public float	moveX;
+	[HideInInspector] public float	moveY;
+	[HideInInspector] public Vector2	moveVec;
 
-    [HideInInspector] public Vector3 finalMoveInput;
-    private float moveX;
-    private float moveY;
-    [HideInInspector] public Vector2 InputExporter = Vector2.zero;
+	Vector2 CurrentCamMovement;
+	[HideInInspector] public float	moveCamX;
+	[HideInInspector] public float	moveCamY;
+	float				camSensi;
+	public float			mouseSensi;
 
-    private void Awake()
-    {
-        // Set up the reference.
-        Player = GetComponent<S_PlayerPhysics>();
-        Actions = GetComponent<S_ActionManager>();
-        Cam = GetComponent<S_Handler_Camera>();
+	[HideInInspector] public bool		JumpPressed;
+	[HideInInspector] public bool		RollPressed;
+	[HideInInspector] public bool		SpecialPressed;
+	[HideInInspector] public bool		LeftStepPressed;
+	[HideInInspector] public bool		RightStepPressed;
+	[HideInInspector] public bool		BouncePressed;
+	[HideInInspector] public bool		InteractPressed;
+	[HideInInspector] public bool		CamResetPressed;
+	[HideInInspector] public bool		HomingPressed;
+	[HideInInspector] public bool		spinChargePressed;
+	[HideInInspector] public bool		killBindPressed;
 
-        _Tools = GetComponent<S_CharacterTools>();
-		_MainSkin = _Tools.mainSkin;
+	[HideInInspector] public bool		usingMouse = false;
 
-		AssignStats();
-        
+	#endregion
+	#endregion
 
-        //prevDecel = Player._moveDeceleration_;
-        //newInput = new PlayerNewInput();
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
 
-        // get the transform of the main camera
-        if (Camera.main != null)
-        {
-            cam = Camera.main.transform;
-        }
+	// Start is called before the first frame update
+	void Start () {
+		// Set up the reference.
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_CamHandler = GetComponent<S_Handler_Camera>();
+		_Tools = GetComponent<S_CharacterTools>();
 
-    }
-
-    private void Update()
-    {
-        AcquireMoveInput();
-
-    }
-
-    void AcquireMoveInput()
-    {
-        // calculate move direction
-        if (cam != null)
-        {
-            moveX = Actions.moveX;
-            moveY = Actions.moveY;
-            finalMoveInput = new Vector3(moveX, 0, moveY);
-
-            InitialInputMag = finalMoveInput.sqrMagnitude;
-            InitialLerpedInput = Mathf.Lerp(InitialLerpedInput, InitialInputMag, Time.deltaTime);
-
-
-            //Make movement relative to camera
-            inputPreCamera = finalMoveInput;
-            camMoveInput = GetInputByCameraDirection(finalMoveInput);
-			finalMoveInput = GetInputByLocalTransform(finalMoveInput);
-
-			Vector3 debugRay = transform.TransformDirection(finalMoveInput);
-			//Debug.DrawRay(transform.position, debugRay * 1.5f, Color.black, 200f);
-			//Debug.DrawRay(transform.position + debugRay * 1.5f, debugRay * 0.5f, Color.red, 200f);
-
-			move = finalMoveInput;
-			
-
-		}
-
-        //Lock Input Funcion
-        if (LockInput)
-        {
-            //Debug.Log(LockedCounter);
-            LockedInputFunction(move);
-        }
-
-  
-    }
-
-    public Vector3 GetInputByCameraDirection(Vector3 inputDirection)
-    {
-        
-            //float _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-            //                  Cam.Cam.transform.eulerAngles.y;
-
-            ////The direction the player is inputting to move
-            //Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            //return targetDirection;
-
-			float x = inputDirection.x;
-			float z = inputDirection.z;
-
-			Vector3 camForward = Cam.Cam.transform.forward;
-			Vector3 camRight = Cam.Cam.transform.right;
-
-			camForward.y = 0;
-			camRight.y = 0;
-			camForward.Normalize();
-			camRight.Normalize();
-			Vector3 targetDirection = (z * camForward) + (x * camRight);
-			return targetDirection;
-    }
-
-	Vector3 GetInputByLocalTransform(Vector3 inputDirection) {
-
-		if (inputDirection != Vector3.zero)
+		// get the transform of the main camera
+		if (Camera.main != null)
 		{
-			Vector3 transformedInput = inputDirection;
-			Vector3 upDirection = Player._isGrounded ? Player._groundNormal : transform.up;
-			transformedInput = Quaternion.FromToRotation(cam.up, upDirection) *  (cam.rotation * inputDirection);
-			//transformedInput = _MainSkin.transform.rotation * inputDirection;
-			transformedInput = transform.InverseTransformDirection(transformedInput);
-			transformedInput.y = 0.0f;
-
-			Player._rawInput = transformedInput;
-			return transformedInput;	
+			_Camera = Camera.main.transform;
 		}
-		return inputDirection;
+
+		//Managing Inputs
+		mouseSensi = _Tools.camStats.InputMouseSensi;
+		camSensi = _Tools.camStats.InputSensi;
+	}
+
+	// Update is called once per frame
+	void Update () {
+		AcquireMoveInput();
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+	//Figures out the desired movement direction from input, camera and player transform.
+	private void AcquireMoveInput () {
+
+		//Lock Input Funcion
+		if (_isInputLocked)
+		{
+			HandleLockedInput();
+		}
+
+		//Calculate move direction
+		else if (_Camera != null)
+		{
+			//Make movement relative to camera and character
+			_inputWithoutCamera = new Vector3(moveX, 0, moveY);
+			_camMoveInput = GetInputByLocalTransform(_inputWithoutCamera);
+			_move = _camMoveInput;
+		}
 
 	}
 
-    void FixedUpdate()
-    {
-        Player._moveInput = move;
+	//Takes in a direction and returns it relative to the camera and player
+	private Vector3 GetInputByLocalTransform ( Vector3 inputDirection ) {
 
-    }
+		if (inputDirection != Vector3.zero)
+		{
+			Vector3 transformedInput;
+			Vector3 upDirection = _PlayerPhys._isGrounded ? _PlayerPhys._groundNormal : transform.up;
 
-    void LockedInputFunction(Vector3 oldMove)
-    {
-        
-        move = Vector3.zero;
-        LockedCounter += 1;
-        //Player._moveDeceleration_ = 1;
-        Player._inputVelocityDifference = 0;
+			//Affect input by camera
+			transformedInput = Quaternion.FromToRotation(_Camera.up, upDirection) * (_Camera.rotation * inputDirection);
+			_camMoveInput = transformedInput;
 
-        if (LockCam)
-        {
-            Cam.Cam.FollowDirection(3, 14, -10,0, true);
-        }
+			//Makes input relevant to character.
+			transformedInput = transform.InverseTransformDirection(transformedInput);
+			transformedInput.y = 0.0f;
+			return transformedInput;
+		}
+		return inputDirection;
+	}
 
-        //if (Actions.Action != 0)
-        //{
-        //    LockedCounter = LockedTime;
-        //}
+	//Prevents changing input when input is locked, but counts up the frames until timer has expired.
+	private void HandleLockedInput () {
 
-        if (LockedCounter > LockedTime)
-        {
-            //Player._moveDeceleration_ = prevDecel;
-            LockInput = false;
-            move = oldMove;
-        }
-    }
+		_move = Vector3.zero;
+		_lockedCounter += 1;
 
-    public void LockInputForAWhile(float duration, bool lockCam)
-    {
-        if (LockInput)
-            LockedTime = Mathf.Max(duration, LockedTime);
-        else
-            LockedTime = duration;
+		//Sets the camera behind if locked when input is.
+		if (_isCamLocked)
+		{
+			_CamHandler._HedgeCam.FollowDirection(3, 14, -10, 0, true);
+		}
 
-        LockedCounter = 0;
-        LockInput = true;
-        LockCam = lockCam;
-    }
+		if (_lockedCounter > _lockedTime)
+		{
+			_isInputLocked = false;
+		}
+	}
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+	//Called by other scripts to set the input to locked for a time limit.
+	public void LockInputForAWhile ( float duration, bool lockCam ) {
+		if (_isInputLocked)
+			_lockedTime = Mathf.Max(duration, _lockedTime);
+		else
+			_lockedTime = duration;
+
+		_lockedCounter = 0;
+		_isInputLocked = true;
+		_isCamLocked = lockCam;
+	}
+	#endregion
+
+	#region inputSystem
+	public void MoveInput ( InputAction.CallbackContext ctx ) {
+		moveVec = ctx.ReadValue<Vector2>();
+		usingMouse = false;
+		moveX = moveVec.x;
+		moveY = moveVec.y;
+	}
+
+	public void MoveInputKeyboard ( InputAction.CallbackContext ctx ) {
+		moveVec = ctx.ReadValue<Vector2>();
+		moveX = moveVec.x;
+		moveY = moveVec.y;
+		usingMouse = true;
+	}
+
+	public void CamInput ( InputAction.CallbackContext ctx ) {
+		usingMouse = false;
+		CurrentCamMovement = ctx.ReadValue<Vector2>();
+		moveCamX = CurrentCamMovement.x * camSensi;
+		moveCamY = CurrentCamMovement.y * camSensi;
+	}
+
+	public void CamMouseInput ( InputAction.CallbackContext ctx ) {
+		usingMouse = true;
+		CurrentCamMovement = ctx.ReadValue<Vector2>();
+		moveCamX = CurrentCamMovement.x * mouseSensi;
+		moveCamY = CurrentCamMovement.y * mouseSensi;
+	}
+
+	public void Jump ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed || ctx.canceled)
+		{
+			JumpPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void Roll ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed || ctx.canceled)
+		{
+			RollPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void LeftStep ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed || ctx.canceled)
+		{
+			LeftStepPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void RightStep ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed || ctx.canceled)
+		{
+			RightStepPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void Special ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed || ctx.canceled)
+		{
+			SpecialPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void Homing ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed || ctx.canceled)
+		{
+			HomingPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void Interact ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed || ctx.canceled)
+		{
+			InteractPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void Power ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed)
+		{
+			if (!_PlayerPhys._isGrounded)
+			{
+				BouncePressed = ctx.ReadValueAsButton();
+			}
+		}
+
+		else if (ctx.canceled)
+		{
+			BouncePressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void SpinCharge ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed)
+		{
+			if (_PlayerPhys._isGrounded)
+				spinChargePressed = ctx.ReadValueAsButton();
+
+		}
+		else if (ctx.canceled)
+		{
+			spinChargePressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void KillBind ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed)
+		{
+			killBindPressed = ctx.ReadValueAsButton();
+
+		}
+		else if (ctx.canceled)
+		{
+			killBindPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void CamReset ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed)
+		{
+			CamResetPressed = !CamResetPressed;
+			if (_CamHandler._HedgeCam._lockCamAtSpeed_ != 20f)
+				_CamHandler._HedgeCam._lockCamAtSpeed_ = 20f;
+			else
+				_CamHandler._HedgeCam._lockCamAtSpeed_ = _CamHandler._HedgeCam._startLockCam;
+		}
+
+	}
+	#endregion
 
 
-    private void AssignStats()
-    {
-
-    }
 }

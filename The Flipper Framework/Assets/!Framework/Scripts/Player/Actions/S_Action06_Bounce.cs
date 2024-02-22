@@ -9,7 +9,7 @@ public class S_Action06_Bounce : MonoBehaviour {
     S_PlayerPhysics Player;
 	S_CharacterTools Tools;
 
-	S_PlayerInput Input;
+	S_PlayerInput _Input;
 	S_Control_PlayerSound sounds;
 	S_VolumeTrailRenderer HomingTrailScript;
 	GameObject jumpBall;
@@ -83,7 +83,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 
 		hitHeight = transform.position.y;
 
-		Action.BouncePressed = false;
+		_Input.BouncePressed = false;
 		Player.SetIsGrounded(false);
 		Action.Action02.HomingAvailable = true;
 
@@ -137,10 +137,10 @@ public class S_Action06_Bounce : MonoBehaviour {
 
 		jumpBall.SetActive(false);
 
-		Action.BouncePressed = false;
+		_Input.BouncePressed = false;
 		Action.Action02.HomingAvailable = true;
 
-		Input.LockInputForAWhile(20, false);
+		_Input.LockInputForAWhile(20, false);
 
 		HomingTrailScript.emitTime = 0;
 		HomingTrailScript.emit = true;
@@ -225,7 +225,7 @@ public class S_Action06_Bounce : MonoBehaviour {
 	private void AssignTools()
     {
 		Player = GetComponent<S_PlayerPhysics>();
-		Input = GetComponent<S_PlayerInput>();
+		_Input = GetComponent<S_PlayerInput>();
 		Action = GetComponent<S_ActionManager>();
 
 		CharacterAnimator = Tools.CharacterAnimator;

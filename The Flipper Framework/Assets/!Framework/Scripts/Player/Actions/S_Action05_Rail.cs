@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Windows;
 //using Luminosity.IO;
 
 namespace SplineMesh
@@ -8,7 +9,7 @@ namespace SplineMesh
     public class S_Action05_Rail : MonoBehaviour
     {
         S_PlayerPhysics Player;
-        S_PlayerInput Input;
+        S_PlayerInput _Input;
         Animator CharacterAnimator;
         S_Control_PlayerSound Sounds;
         Quaternion CharRot;
@@ -124,12 +125,13 @@ namespace SplineMesh
             isBraking = false;
             RailContactSound = false;
             StartCoroutine(DelayCollision());
-            ////////Sounds.RailSoundStop();
-            ///
 
-            Actions.RollPressed = false;
-            Actions.SpecialPressed = false;
-            Actions.BouncePressed = false;
+			////////Sounds.RailSoundStop();
+			///
+
+			_Input.RollPressed = false;
+            _Input.SpecialPressed = false;
+            _Input.BouncePressed = false;
 
             transform.rotation = Quaternion.identity;
 
@@ -156,7 +158,7 @@ namespace SplineMesh
 
             ConnectedRails = addOn;
             JumpBall.SetActive(false);
-            Actions.JumpPressed = false;
+            _Input.JumpPressed = false;
 
             isZipLine = isZip;
             timer = _pushFowardDelay_;
@@ -322,7 +324,7 @@ namespace SplineMesh
         {
             timer += Time.deltaTime;
 
-            if (Actions.JumpPressed)
+            if (_Input.JumpPressed)
             {
                 //Cam.CamLagSet(0.8f, 0f);
 
@@ -366,7 +368,7 @@ namespace SplineMesh
             }
 
 
-            if (Actions.RollPressed && !isZipLine)
+            if (_Input.RollPressed && !isZipLine)
             {
                 //Crouch
                 Crouching = true;
@@ -378,7 +380,7 @@ namespace SplineMesh
                 CharacterAnimator.SetBool("isRolling", false);
             }
 
-            if (Actions.SpecialPressed && !isZipLine)
+            if (_Input.SpecialPressed && !isZipLine)
             {
                 //ChangeSide
 
@@ -392,7 +394,7 @@ namespace SplineMesh
                     }
                     faceRight = !faceRight;
                     timer = 0f;
-                    Actions.SpecialPressed = false;
+                    _Input.SpecialPressed = false;
                 }
             }
             isSwitching = (timer < _pushFowardDelay_);
@@ -400,7 +402,7 @@ namespace SplineMesh
             //If above a certain speed, the player breaks depending it they're presseing the skid button.
             if (Time.timeScale != 0 && !isZipLine)
             {
-                isBraking = Actions.BouncePressed;
+                isBraking = _Input.BouncePressed;
 
             }
             else
@@ -467,14 +469,14 @@ namespace SplineMesh
                 else
                 {
                     float rotatePoint = 0;
-                    if (Actions.RightStepPressed)
+                    if (_Input.RightStepPressed)
                     {
-                        Actions.LeftStepPressed = false;
+                        _Input.LeftStepPressed = false;
                         rotatePoint = 1;
                     }
-                    else if (Actions.LeftStepPressed)
+                    else if (_Input.LeftStepPressed)
                     {
-                        Actions.RightStepPressed = false;
+                        _Input.RightStepPressed = false;
                         rotatePoint = -1;
                     }
 
@@ -566,49 +568,49 @@ namespace SplineMesh
             if(canInput)
             {
                 //Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
-                if (Actions.RightStepPressed)
+                if (_Input.RightStepPressed)
                 {
                     Vector3 Direction = CharacterAnimator.transform.position - Cam.transform.position;
                     bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < -0.5f;
                     if (Facing)
                     {
-                        Actions.RightStepPressed = false;
-                        Actions.LeftStepPressed = true;
+                        _Input.RightStepPressed = false;
+                        _Input.LeftStepPressed = true;
                     }
                 }
-                else if (Actions.LeftStepPressed)
+                else if (_Input.LeftStepPressed)
                 {
                     Vector3 Direction = CharacterAnimator.transform.position - Cam.transform.position;
                     bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < -0.5f;
                     if (Facing)
                     {
-                        Actions.RightStepPressed = true;
-                        Actions.LeftStepPressed = false;
+                        _Input.RightStepPressed = true;
+                        _Input.LeftStepPressed = false;
                     }
                 }
 
                 Debug.DrawRay(transform.position - (sample.up * 2) + (CharacterAnimator.transform.right * 3), CharacterAnimator.transform.right * 10, Color.red);
                 Debug.DrawRay(transform.position - (sample.up * 2) + (CharacterAnimator.transform.right * 3), -CharacterAnimator.transform.right * 10, Color.red);
 
-                if (Actions.RightStepPressed)
+                if (_Input.RightStepPressed)
                 {
                   
                     distanceToStep = _hopDistance_;
                     canInput = false;
                     steppingRight = true;
-                    Actions.RightStepPressed = false;
+                    _Input.RightStepPressed = false;
                     performStep();
                     return;
 
                 }
-                else if (Actions.LeftStepPressed)
+                else if (_Input.LeftStepPressed)
                 {
                     
 
                     distanceToStep = _hopDistance_;
                     canInput = false;
                     steppingRight = false;
-                    Actions.LeftStepPressed = false;
+                    _Input.LeftStepPressed = false;
                     performStep();
                     return;
                 }
@@ -725,7 +727,7 @@ namespace SplineMesh
             }
             else
             {
-                Input.LockInputForAWhile(5f, false);
+                _Input.LockInputForAWhile(5f, false);
 
                 if (isZipLine)
                 {
@@ -764,8 +766,8 @@ namespace SplineMesh
                     }
                 }
 
-                Actions.LeftStepPressed = false;
-                Actions.RightStepPressed = false;
+                _Input.LeftStepPressed = false;
+                _Input.RightStepPressed = false;
 
                 OnRail = false;
             }
@@ -911,10 +913,10 @@ namespace SplineMesh
         void AssignTools()
         {
             Actions = GetComponent<S_ActionManager>();
-            Input = GetComponent<S_PlayerInput>();
+            _Input = GetComponent<S_PlayerInput>();
             Rail_int = GetComponent<S_Interaction_Pathers>();
             Player = GetComponent<S_PlayerPhysics>();
-            Cam = GetComponent<S_Handler_Camera>().Cam;
+            Cam = GetComponent<S_Handler_Camera>()._HedgeCam;
 
             CharacterAnimator = Tools.CharacterAnimator;
             Sounds = Tools.SoundControl;

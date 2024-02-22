@@ -10,6 +10,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	S_Interaction_Objects obj_Int;
 	S_ActionManager Actions;
 	S_CharacterTools Tools;
+	S_PlayerInput _Input;
 
 	GameObject JumpBall;
 
@@ -124,11 +125,11 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         StartCoroutine(ResetTriggerBool());
 
         //An additive hit that keeps momentum
-        if (Actions.HomingPressed || Actions.JumpPressed)
+        if (_Input.HomingPressed || _Input.JumpPressed)
         {
             newSpeed = new Vector3(Player._RB.velocity.x * 0.8f, _homingBouncingPower_, Player._RB.velocity.z * 0.8f);
-            Actions.SpecialPressed = false;
-            Actions.HomingPressed = false;
+            _Input.SpecialPressed = false;
+            _Input.HomingPressed = false;
             //Debug.Log("Additive Hit");
 
         }
@@ -172,8 +173,8 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
                 Actions.Action08.DropEffect.Stop();
             }
         }
-        Actions.SpecialPressed = false;
-        Actions.HomingPressed = false;
+        _Input.SpecialPressed = false;
+        _Input.HomingPressed = false;
         Actions.ChangeAction(S_Enums.PlayerStates.Regular);
     }
 
@@ -199,6 +200,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		Player = GetComponent<S_PlayerPhysics>();
 		obj_Int = GetComponent<S_Interaction_Objects>();
 		Actions = GetComponent<S_ActionManager>();
+		_Input = GetComponent<S_PlayerInput>();
 
 		JumpBall = Tools.JumpBall;
 	}

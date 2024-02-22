@@ -10,7 +10,7 @@ public class S_Action12_WallRunning : MonoBehaviour
     Animator CharacterAnimator;
     Transform characterTransform;
     S_PlayerPhysics Player;
-    S_PlayerInput Inp;
+    S_PlayerInput _Input;
     S_ActionManager Actions;
     S_Control_PlayerSound sounds;
     S_Handler_HomingAttack homingControl;
@@ -93,9 +93,9 @@ public class S_Action12_WallRunning : MonoBehaviour
 
 
         Counter = 0;
-        Actions.JumpPressed = false;
+        _Input.JumpPressed = false;
         Player._isGravityOn = false;
-        Cam.Cam.LockHeight = false ;
+        Cam._HedgeCam._shouldSetHeightWhenMoving_ = false ;
 
         //If entering a wallclimb
         if (Climb)
@@ -181,15 +181,15 @@ public class S_Action12_WallRunning : MonoBehaviour
     bool inputtingToWall(Vector3 wallDirection)
     {
         Vector3 transformedInput;
-        transformedInput = (CharacterAnimator.transform.rotation * Inp.inputPreCamera);
+        transformedInput = (CharacterAnimator.transform.rotation * _Input._inputWithoutCamera);
         transformedInput = transform.InverseTransformDirection(transformedInput);
         transformedInput.y = 0.0f;
         //Debug.DrawRay(transform.position, transformedInput * 10, Color.red);
 
-        if (Inp.camMoveInput.sqrMagnitude > 0.4f)
+        if (_Input._camMoveInput.sqrMagnitude > 0.4f)
         {
             //Debug.Log(Vector3.Dot(wallDirection, Inp.trueMoveInput));
-            if(Vector3.Dot(wallDirection.normalized, Inp.camMoveInput.normalized) > 0.05f)
+            if(Vector3.Dot(wallDirection.normalized, _Input._camMoveInput.normalized) > 0.05f)
             {
                 return true;
             }
@@ -291,8 +291,8 @@ public class S_Action12_WallRunning : MonoBehaviour
         Vector3 newCamPos = camTarget.position + (wallHit.normal.normalized * 1.8f);
         newCamPos.y += 3f;
         camTarget.position = newCamPos;
-        Cam.Cam.SetCamera(CharacterAnimator.transform.forward, 2f, 0, 0.001f, 30);
-        Cam.Cam.CameraMaxDistance = Cam.InitialDistance - 2f;
+        Cam._HedgeCam.SetCamera(CharacterAnimator.transform.forward, 2f, 0, 0.001f, 1.1f);
+        Cam._HedgeCam._cameraMaxDistance_ = Cam._initialDistance - 2f;
 
     }
 
@@ -304,7 +304,7 @@ public class S_Action12_WallRunning : MonoBehaviour
     void ClimbingInteraction()
     {
         //Prevents normal movement in input and physics
-        Inp.LockInputForAWhile(0f, false);
+        _Input.LockInputForAWhile(0f, false);
 
         //Updates the status of the wall being climbed.
         if (Counter < 0.3f)
@@ -337,7 +337,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         }
 
         //If jumping off wall
-        if (Actions.JumpPressed)
+        if (_Input.JumpPressed)
         {
             wall = false;
 
@@ -354,7 +354,7 @@ public class S_Action12_WallRunning : MonoBehaviour
     void RunningInteraction()
     {
         //Prevents normal movement in input and physics
-        Inp.LockInputForAWhile(0f, false);
+        _Input.LockInputForAWhile(0f, false);
 
         CharacterAnimator.SetFloat("GroundSpeed", RunningSpeed);
         CharacterAnimator.SetBool("WallRight", wallOnRight);
@@ -407,14 +407,14 @@ public class S_Action12_WallRunning : MonoBehaviour
         }
         else
         {
-            Cam.Cam.FollowDirection(15, 14f, 0, 0);
+            Cam._HedgeCam.FollowDirection(15, 14f, 0, 0);
             holdingWall = inputtingToWall(wallToRun.point - transform.position);
             currentWall = wallToRun.collider.gameObject;
         }
             
 
         //If jumping off wall
-        if (Actions.JumpPressed)
+        if (_Input.JumpPressed)
         {
             wall = false;
             transform.position = new Vector3(wallToRun.point.x + wallToRun.normal.x * 0.9f, wallToRun.point.y + wallToRun.normal.y * 0.5f, wallToRun.point.z + wallToRun.normal.z * 0.9f);
@@ -627,9 +627,9 @@ public class S_Action12_WallRunning : MonoBehaviour
         //Actions.SkidPressed = false;
 
         dropShadow.SetActive(true);
-        Cam.Cam.CameraMaxDistance = Cam.InitialDistance;
+        Cam._HedgeCam._cameraMaxDistance_ = Cam._initialDistance;
         Player._isGravityOn = true;
-        Cam.Cam.LockHeight = true;
+        Cam._HedgeCam._shouldSetHeightWhenMoving_ = true;
         camTarget.position = constantTarget.position;
         CharacterAnimator.transform.rotation = Quaternion.identity;
         if(previDir != Vector3.zero)
@@ -687,7 +687,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         }
         else
         {
-            Debug.Log(Vector3.Dot(wallToClimb.normal, Inp.camMoveInput));
+            Debug.Log(Vector3.Dot(wallToClimb.normal, _Input._camMoveInput));
             Debug.Log(ClimbingSpeed);
 
             jumpAngle = Vector3.Lerp(wallToClimb.normal, transform.up, 0.6f);
@@ -716,7 +716,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         Player.SetCoreVelocity(CharacterAnimator.transform.up * jumpSpeed);
 
         ExitWall(false);
-        Inp.LockInputForAWhile(25f, false);
+        _Input.LockInputForAWhile(25f, false);
 
         while (true)
         {
@@ -727,7 +727,7 @@ public class S_Action12_WallRunning : MonoBehaviour
             {
                 //Vector3 newVec = Player.p_rigidbody.velocity + CharacterAnimator.transform.forward * (ClimbingSpeed * 0.1f);
                 Player.AddCoreVelocity( CharacterAnimator.transform.forward * 8);
-                if (Actions.RollPressed)
+                if (_Input.RollPressed)
                 {
                     Actions.Action08.TryDropCharge();
                     break;
@@ -763,7 +763,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         Player = GetComponent<S_PlayerPhysics>();
         Actions = GetComponent<S_ActionManager>();
         Cam = GetComponent<S_Handler_Camera>();
-        Inp = GetComponent<S_PlayerInput>();
+        _Input = GetComponent<S_PlayerInput>();
         Control = GetComponent<S_Handler_WallRunning>();
 
         CharacterAnimator = Tools.CharacterAnimator;

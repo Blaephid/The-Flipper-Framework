@@ -81,7 +81,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
                     || (Actions.whatAction == S_Enums.PlayerStates.Rail && RailAction) || (Actions.whatAction == S_Enums.PlayerStates.WallRunning && wallRunAction) || (Actions.whatAction == S_Enums.PlayerStates.RingRoad && RingRoadAction))
                 {
                     isActive = true;
-                    hedgeCam = Player.GetComponent<S_Handler_Camera>().virtCam;
+                    hedgeCam = Player.GetComponent<S_Handler_Camera>()._VirtCam;
                     
 
                     ActivateCam(5f);
@@ -133,14 +133,14 @@ public class S_Trigger_CineCamera : MonoBehaviour
       
         if(startAtCameraPoint)
         {
-            attachedCam.transform.position = Player.GetComponent<S_Handler_Camera>().Cam.transform.position;
-            attachedCam.transform.rotation = Player.GetComponent<S_Handler_Camera>().Cam.transform.rotation;
+            attachedCam.transform.position = Player.GetComponent<S_Handler_Camera>()._HedgeCam.transform.position;
+            attachedCam.transform.rotation = Player.GetComponent<S_Handler_Camera>()._HedgeCam.transform.rotation;
         }
 
         attachedCam.transform.position += startOffset;
 
         attachedCam.SetActive(true);
-        hedgeCam = Player.GetComponent<S_Handler_Camera>().virtCam;
+        hedgeCam = Player.GetComponent<S_Handler_Camera>()._VirtCam;
         hedgeCam.gameObject.SetActive(false);
         if(disableFor > 0)
             Player.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true);
@@ -168,7 +168,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
         }
         if(setBehind)
         {
-            Player.GetComponent<S_Handler_Camera>().Cam.setBehind();
+            Player.GetComponent<S_Handler_Camera>()._HedgeCam.setBehind();
         }
 
         isActive = false;

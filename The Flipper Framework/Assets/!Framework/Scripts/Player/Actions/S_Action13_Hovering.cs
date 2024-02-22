@@ -7,6 +7,7 @@ public class S_Action13_Hovering : MonoBehaviour
 	S_CharacterTools Tools;
 	S_PlayerPhysics PlayerPhys;
 	S_ActionManager Actions;
+	S_PlayerInput _Input;
 	Animator CharacterAnimator;
 	Transform PlayerSkin;
 	S_Control_PlayerSound Sounds;
@@ -40,6 +41,7 @@ public class S_Action13_Hovering : MonoBehaviour
 		Actions = GetComponent<S_ActionManager>();
 		CharacterAnimator = Tools.CharacterAnimator;
 		PlayerSkin = Tools.PlayerSkinTransform;
+		_Input = GetComponent<S_PlayerInput>();
 
 		Sounds = Tools.SoundControl;
 	}
@@ -66,7 +68,7 @@ public class S_Action13_Hovering : MonoBehaviour
 		CharacterAnimator.SetInteger("Action", 13);
 
 		//Do a homing attack
-		if (Actions.Action02.HomingAvailable && Actions.Action02Control._HasTarget && Actions.HomingPressed)
+		if (Actions.Action02.HomingAvailable && Actions.Action02Control._HasTarget && _Input.HomingPressed)
 		{
 
 			//Do a homing attack
@@ -125,7 +127,6 @@ public class S_Action13_Hovering : MonoBehaviour
 			if (PlayerPhys._speedMagnitude < 4)
 			{
 				PlayerPhys._isRolling = false;
-				PlayerPhys._inputVelocityDifference = 0;
 
 			}
 		}

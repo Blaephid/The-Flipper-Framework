@@ -292,6 +292,12 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    TurnRateByInputChange:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
     DragByAngle:
       serializedVersion: 2
       m_Curve:
@@ -404,41 +410,23 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   TurningStats:
-    turnSpeed: 14
+    turnSpeed: 6
     turnDrag: 7.5
     TurnRateByAngle:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.3
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
-      - serializedVersion: 3
-        time: 0.02
-        value: 0
-        inSlope: -0.004915444
-        outSlope: -0.004915444
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 1
-        outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.05
-        value: 0.05
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.21
-        value: 0.23
+        value: 0.6
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -447,7 +435,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 0.5
-        value: 0.5
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -456,16 +444,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 0.75
-        value: 0.5
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.99
-        value: 0.36
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -474,7 +453,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 0
+        value: 0.5
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -550,6 +529,48 @@ MonoBehaviour:
         weightedMode: 0
         inWeight: 0
         outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    TurnRateByInputChange:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.5
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -1104,8 +1125,8 @@ MonoBehaviour:
   WhenInAir:
     startMaxFallingSpeed: -400
     shouldStopAirMovementWhenNoInput: 1
-    keepNormalForThis: 0.3
-    controlAmmount: {x: 0.7, y: 0.8}
+    keepNormalForThis: 0.4
+    controlAmmount: {x: 0.6, y: 0.8}
     skiddingForce: -2.5
     fallGravity: {x: 0, y: -1.5, z: 0}
     upGravity: {x: 0, y: -1.45, z: 0}

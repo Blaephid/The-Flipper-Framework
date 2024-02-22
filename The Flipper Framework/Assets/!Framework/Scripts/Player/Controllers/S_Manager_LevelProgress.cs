@@ -17,7 +17,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
     S_ActionManager Actions;
     S_PlayerPhysics Player;
     S_Handler_Camera Cam;
-    S_PlayerInput Inp;
+    S_PlayerInput _Input;
     public GameObject CurrentCheckPoint { get; set; }
 
     Transform characterTransform;
@@ -36,7 +36,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
         Cam = basePlayer.GetComponent<S_Handler_Camera>();
         Actions = basePlayer.GetComponent<S_ActionManager>();
         Player = basePlayer.GetComponent<S_PlayerPhysics>();
-        Inp = basePlayer.GetComponent<S_PlayerInput>();
+        _Input = basePlayer.GetComponent<S_PlayerInput>();
         characterTransform = tools.CharacterAnimator.transform;
         ResumePosition = characterTransform.position;
         ResumeRotation = characterTransform.rotation;
@@ -51,7 +51,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
 
         if (readyForNextStage)
         {
-            Player._moveInput = Vector3.zero;
+            _Input._move = Vector3.zero;
             readyCount += Time.deltaTime;
             if(readyCount > 1.5f)
             {
@@ -83,7 +83,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
     public void ResetToCheckPoint()
     {
        
-        Inp.LockInputForAWhile(20, true);
+        _Input.LockInputForAWhile(20, true);
         StartCoroutine(Actions.lockAirMoves(20));
         Actions.ChangeAction(S_Enums.PlayerStates.Regular);
 
@@ -103,8 +103,8 @@ public class S_Manager_LevelProgress : MonoBehaviour {
         Player.SetTotalVelocity(characterTransform.forward * 2);
         Actions.Action04.deadCounter = 0;
 
-        Cam.Cam.Reversed = false;
-        Cam.Cam.setBehindWithHeight();
+        Cam._HedgeCam._isReversed = false;
+        Cam._HedgeCam.setBehindWithHeight();
 
     }
 

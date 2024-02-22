@@ -9,11 +9,12 @@ public enum TriggerType
 public class S_Trigger_Camera : MonoBehaviour {
 
     public TriggerType Type;
-    public float FaceSpeed = 1f;
+    public float FaceSpeed = 2f;
     public float CameraAltitude;
     public float ChangeDistance;
     public bool changeAltitude;
     public bool changeDistance = false;
 	public bool ReleaseOnExit = false;
+	public float duration = 1;
 
 }

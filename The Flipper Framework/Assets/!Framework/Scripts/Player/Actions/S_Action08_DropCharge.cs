@@ -4,6 +4,7 @@ using System.Collections;
 public class S_Action08_DropCharge : MonoBehaviour
 {
 	S_CharacterTools Tools;
+	S_PlayerInput _Input;
 
 	Animator CharacterAnimator;
 
@@ -76,18 +77,6 @@ public class S_Action08_DropCharge : MonoBehaviour
 			//Lock camera on behind
 			// Cam.Cam.FollowDirection(3, 14f, -10,0);
 
-			if (Player._rawInput.sqrMagnitude > 0.9f)
-			{
-				//RawPrevInput = Player.RawInput;
-				//RawPrevInput = Vector3.Scale(CharacterAnimator.transform.forward, Player.GroundNormal);
-				RawPrevInput = CharacterAnimator.transform.forward;
-			}
-			else
-			{
-				//RawPrevInput = Vector3.Scale(CharacterAnimator.transform.forward, Player.GroundNormal);
-				//RawPrevInput = Player.PreviousRawInput;
-				RawPrevInput = CharacterAnimator.transform.forward;
-			}
 
 			if (DropEffect.isPlaying == false)
 			{
@@ -96,7 +85,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 
 			// Player.rigidbody.velocity /= SpinDashStillForce;
 
-			if (!Actions.RollPressed)
+			if (!_Input.RollPressed)
 			{
 				//if (DropEffect.isPlaying == true)
 				//{
@@ -117,7 +106,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 		}
 		else
 		{
-			if (Actions.RollPressed)
+			if (_Input.RollPressed)
 			{
 				Charging = true;
 				StopCoroutine(exitAction());
@@ -127,7 +116,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 		if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player._Groundmask_) || Vector3.Dot(Player._groundNormal, Vector3.up) > 0.99)
 		{
 
-			if (!Actions.JumpPressed)
+			if (!_Input.JumpPressed)
 				Release();
 			else
 			{
@@ -139,12 +128,12 @@ public class S_Action08_DropCharge : MonoBehaviour
 				}
 			}
 
-			Actions.JumpPressed = false;
+			_Input.JumpPressed = false;
 			JumpBall.SetActive(false);
 			Actions.ChangeAction(S_Enums.PlayerStates.Regular);
 		}
 
-		else if (Actions.SpecialPressed && charge > _minimunCharge_)
+		else if (_Input.SpecialPressed && charge > _minimunCharge_)
 		{
 			AirRelease();
 		}
@@ -165,9 +154,9 @@ public class S_Action08_DropCharge : MonoBehaviour
 
 	void AirRelease () {
 
-		Actions.JumpPressed = false;
-		Actions.SpecialPressed = false;
-		Actions.HomingPressed = false;
+		_Input.JumpPressed = false;
+		_Input.SpecialPressed = false;
+		_Input.HomingPressed = false;
 		charge *= 0.6f;
 
 		StartCoroutine(airDash());
@@ -229,7 +218,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 
 
 	void Launch ( float charge ) {
-		S_HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
+		Cam._HedgeCam.ApplyCameraShake((ReleaseShakeAmmount * charge) / 100, 40);
 		sounds.SpinDashReleaseSound();
 
 		Player.AlignToGround(Player._groundNormal, true);
@@ -250,12 +239,12 @@ public class S_Action08_DropCharge : MonoBehaviour
 		{
 			Player.SetCoreVelocity( newVec);
 
-			Cam.Cam.FollowHeightDirection(18, 25f);
+			Cam._HedgeCam.FollowHeightDirection(18, 25f);
 		}
 		else
 		{
 			Player.SetCoreVelocity(newVec.normalized * (Player._horizontalSpeedMagnitude + (charge * 0.45f)));
-			Cam.Cam.FollowHeightDirection(20, 15f);
+			Cam._HedgeCam.FollowHeightDirection(20, 15f);
 		}
 	}
 
@@ -269,7 +258,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 	}
 
 	public float externalDash () {
-		S_HedgeCamera.Shakeforce = (ReleaseShakeAmmount * charge) / 100;
+		Cam._HedgeCam.ApplyCameraShake((ReleaseShakeAmmount * charge) / 100, 30);
 		sounds.SpinDashReleaseSound();
 		return charge;
 	}
@@ -330,6 +319,7 @@ public class S_Action08_DropCharge : MonoBehaviour
 		Player = GetComponent<S_PlayerPhysics>();
 		Actions = GetComponent<S_ActionManager>();
 		Cam = GetComponent<S_Handler_Camera>();
+		_Input = GetComponent<S_PlayerInput>();
 
 		CharacterAnimator = Tools.CharacterAnimator;
 		sounds = Tools.SoundControl;

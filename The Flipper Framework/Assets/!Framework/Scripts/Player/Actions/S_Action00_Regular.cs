@@ -6,7 +6,7 @@ public class S_Action00_Regular : MonoBehaviour {
     private Animator CharacterAnimator;
 	S_CharacterTools Tools;
     S_PlayerPhysics Player;
-	S_PlayerInput Input;
+	S_PlayerInput _Input;
     S_ActionManager Actions;
 	S_Handler_Camera Cam;
 	S_Handler_quickstep quickstepManager;
@@ -60,12 +60,9 @@ public class S_Action00_Regular : MonoBehaviour {
     void FixedUpdate()
     {
 
-		if(Player._speedMagnitude < 15 && Player._moveInput == Vector3.zero && Player._isGrounded)
+		if(Player._speedMagnitude < 15 && _Input._move == Vector3.zero && Player._isGrounded)
 		{
-			Player._inputVelocityDifference = 0;
-			//Player._RB.velocity *= 0.90f;
 			Actions.skid._hasSked = false;
-
 		}
 
 		//Skidding
@@ -116,7 +113,7 @@ public class S_Action00_Regular : MonoBehaviour {
         if (Player._isGrounded) { CharacterAnimator.SetInteger("Action", 0); }
         CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
         CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
-		CharacterAnimator.SetFloat("HorizontalInput", Actions.moveX *Player._RB.velocity.magnitude);
+		CharacterAnimator.SetFloat("HorizontalInput", _Input.moveX *Player._RB.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
 		//Set Character Animations and position1
@@ -197,7 +194,7 @@ public class S_Action00_Regular : MonoBehaviour {
     {
 
 		//Jump
-		if (Actions.JumpPressed && (Player._isGrounded || coyoteInEffect))
+		if (_Input.JumpPressed && (Player._isGrounded || coyoteInEffect))
 		{
 
 			if (Player._isGrounded)
@@ -209,16 +206,16 @@ public class S_Action00_Regular : MonoBehaviour {
 		}
 
 		//Set Camera to back
-		if (Actions.CamResetPressed)
+		if (_Input.CamResetPressed)
 		{
-			if (Actions.moveVec == Vector2.zero && Player._inputVelocityDifference < 5f)
-				Cam.Cam.FollowDirection(6, 14f, -10, 0);
+			if (_Input.moveVec == Vector2.zero && Player._horizontalSpeedMagnitude < 5f)
+				Cam._HedgeCam.FollowDirection(6, 14f, -10, 0);
 		}
 
 		
 
 		//Do Spindash
-		if (Actions.spinChargePressed && Player._isGrounded && Player._groundNormal.y > _MaximumSlope_ && Player._horizontalSpeedMagnitude < _MaximumSpeed_)
+		if (_Input.spinChargePressed && Player._isGrounded && Player._groundNormal.y > _MaximumSlope_ && Player._horizontalSpeedMagnitude < _MaximumSpeed_)
 		{
 			Actions.ChangeAction(S_Enums.PlayerStates.SpinCharge);
 			Actions.Action03.InitialEvents();
@@ -232,13 +229,13 @@ public class S_Action00_Regular : MonoBehaviour {
         CharacterAnimator.SetBool("isRolling", Player._isRolling);
 
         //Change to rolling state
-        if (Actions.RollPressed && Player._isGrounded)
+        if (_Input.RollPressed && Player._isGrounded)
 		{
 			Curl();
 		}
 
 		//Exit rolling state
-		if ((!Actions.RollPressed && rollCounter > minRollTime) | !Player._isGrounded)
+		if ((!_Input.RollPressed && rollCounter > minRollTime) | !Player._isGrounded)
 		{
 			unCurl();
 		}
@@ -249,17 +246,17 @@ public class S_Action00_Regular : MonoBehaviour {
 		/////Quickstepping
 		///
 		//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
-		if (Actions.RightStepPressed)
+		if (_Input.RightStepPressed)
 		{
 			quickstepManager.pressRight();
 		}
-		else if (Actions.LeftStepPressed)
+		else if (_Input.LeftStepPressed)
 		{
 			quickstepManager.pressLeft();
 		}
 
 		//Enable Quickstep right or left
-		if (Actions.RightStepPressed && !quickstepManager.enabled)
+		if (_Input.RightStepPressed && !quickstepManager.enabled)
 		{
 			if (Player._horizontalSpeedMagnitude > 10f)
 			{
@@ -269,7 +266,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			}
 		}
 
-		else if (Actions.LeftStepPressed && !quickstepManager.enabled)
+		else if (_Input.LeftStepPressed && !quickstepManager.enabled)
 		{
 			if (Player._horizontalSpeedMagnitude > 10f)
 			{
@@ -283,7 +280,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		if (!Player._isGrounded && !coyoteInEffect)
 		{
 			//Do a homing attack
-			if (Actions.Action02Control._HasTarget && Actions.HomingPressed && Actions.Action02.HomingAvailable)
+			if (Actions.Action02Control._HasTarget && _Input.HomingPressed && Actions.Action02.HomingAvailable)
 			{
 
 				//Do a homing attack
@@ -298,7 +295,7 @@ public class S_Action00_Regular : MonoBehaviour {
 				}
 			}
 			//Do an air dash;
-			else if (Actions.Action02.HomingAvailable && Actions.SpecialPressed)
+			else if (Actions.Action02.HomingAvailable && _Input.SpecialPressed)
 			{
 				if (!Actions.Action02Control._HasTarget && _CanDashDuringFall_)
 				{
@@ -309,7 +306,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			}
 
 			//Do a Double Jump
-			else if (Actions.JumpPressed && Actions.Action01._canDoubleJump_)
+			else if (_Input.JumpPressed && Actions.Action01._canDoubleJump_)
 			{
 
 				Actions.Action01.jumpCount = 0;
@@ -319,7 +316,7 @@ public class S_Action00_Regular : MonoBehaviour {
 
 
 			//Do a Bounce Attack
-			if (Actions.BouncePressed && Player._RB.velocity.y < 35f)
+			if (_Input.BouncePressed && Player._RB.velocity.y < 35f)
 			{
 				Actions.Action06.InitialEvents();
 				Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
@@ -331,7 +328,7 @@ public class S_Action00_Regular : MonoBehaviour {
 			if (Actions.Action08 != null)
 			{
 
-				if (!Player._isGrounded && Actions.RollPressed)
+				if (!Player._isGrounded && _Input.RollPressed)
 				{
 					Actions.Action08.TryDropCharge();
 				}
@@ -376,7 +373,7 @@ public class S_Action00_Regular : MonoBehaviour {
 	private void AssignTools()
 	{
         Player = GetComponent<S_PlayerPhysics>();
-        Input = GetComponent<S_PlayerInput>();
+        _Input = GetComponent<S_PlayerInput>();
         Actions = GetComponent<S_ActionManager>();
         JumpAction = GetComponent<S_Action01_Jump>();
         Cam = GetComponent<S_Handler_Camera>();

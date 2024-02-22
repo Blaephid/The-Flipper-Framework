@@ -8,6 +8,7 @@ public class S_Handler_quickstep : MonoBehaviour
         S_CharacterTools Tools;
         S_ActionManager Actions;
         S_Handler_Camera Cam;
+	S_PlayerInput _Input;
         S_Enums.PlayerStates startAction;
 
         Animator CharacterAnimator;
@@ -31,6 +32,7 @@ public class S_Handler_quickstep : MonoBehaviour
                 Actions = GetComponent<S_ActionManager>();
                 CharacterAnimator = Tools.CharacterAnimator;
                 Cam = Tools.GetComponent<S_Handler_Camera>();
+		_Input = GetComponent<S_PlayerInput>();
 
                 _StepPlayermask_ = Tools.Stats.QuickstepStats.StepLayerMask;
 
@@ -39,23 +41,23 @@ public class S_Handler_quickstep : MonoBehaviour
 
         public void pressRight()
         {
-                Vector3 Direction = CharacterAnimator.transform.position - Cam.Cam.transform.position;
+                Vector3 Direction = CharacterAnimator.transform.position - Cam._HedgeCam.transform.position;
                 bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < 0f;
                 if (Facing)
                 {
-                        Actions.RightStepPressed = false;
-                        Actions.LeftStepPressed = true;
+                        _Input.RightStepPressed = false;
+			_Input.LeftStepPressed = true;
                 }
         }
 
         public void pressLeft()
         {
-                Vector3 Direction = CharacterAnimator.transform.position - Cam.Cam.transform.position;
+                Vector3 Direction = CharacterAnimator.transform.position - Cam._HedgeCam.transform.position;
                 bool Facing = Vector3.Dot(CharacterAnimator.transform.forward, Direction.normalized) < 0f;
                 if (Facing)
                 {
-                        Actions.RightStepPressed = true;
-                        Actions.LeftStepPressed = false;
+			_Input.RightStepPressed = true;
+                        _Input.LeftStepPressed = false;
                 }
         }
 
@@ -70,8 +72,8 @@ public class S_Handler_quickstep : MonoBehaviour
                 if (right)
                 {
 
-                        Actions.RightStepPressed = false;
-                        Actions.LeftStepPressed = false;
+                        _Input.RightStepPressed = false;
+                        _Input.LeftStepPressed = false;
 
 
                         canStep = true;
@@ -81,8 +83,8 @@ public class S_Handler_quickstep : MonoBehaviour
                 }
                 else
                 {
-                        Actions.RightStepPressed = false;
-                        Actions.LeftStepPressed = false;
+                        _Input.RightStepPressed = false;
+                        _Input.LeftStepPressed = false;
 
 
                         canStep = true;
