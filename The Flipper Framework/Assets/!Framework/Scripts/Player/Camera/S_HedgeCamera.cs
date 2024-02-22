@@ -371,21 +371,22 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Causes the camera to turn around to face a designated vector direction in world space.
 	public void RotateDirection ( Vector3 dir, float speed, float height ) {
-		float dot = Vector3.Dot(dir, transform.right);
+		//float dot = Vector3.Dot(dir, transform.right);
 		//_posX += (dot * speed);
 
-		//Quaternion localDirection = Quaternion.LookRotation(dir, _PlayerTransformCopy.up) * _PlayerTransformCopy.rotation;
+		//Because posY and posX represent the euler angles angles of rotation around the player, they can lerp towards euler angles obtained f
 		Quaternion localDirection = Quaternion.LookRotation(dir, _PlayerTransformCopy.up) * _PlayerTransformCopy.rotation;
 		Vector3 eulers = _PlayerTransformCopy.InverseTransformDirection(localDirection.eulerAngles);
 		_posX = Mathf.MoveTowards(_posX, eulers.y, speed);
 
+		//Y position will be acquired either from a designated height or part of the direction.
 		if (_posY != height)
 		{
 			_posY = Mathf.Lerp(_posY, height, Time.deltaTime * 5);
 		}
 		else
 		{
-			//_posY = Mathf.MoveTowards(_posY, eulers.x, speed);
+			_posY = Mathf.MoveTowards(_posY, eulers.x, speed);
 		}
 	}
 

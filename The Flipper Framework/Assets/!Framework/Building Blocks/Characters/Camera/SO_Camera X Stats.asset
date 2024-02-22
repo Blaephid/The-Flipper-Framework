@@ -17,11 +17,11 @@ MonoBehaviour:
   LockHeightSpeed: 0.8
   MoveHeightBasedOnSpeed: 1
   minHeightToLookDown: 50
-  HeightToLock: 15
+  HeightToLock: 5
   HeightFollowSpeed: 6
-  FallSpeedThreshold: -80
+  FallSpeedThreshold: -120
   CameraMaxDistance: -18
-  AngleThreshold: {x: 0.35, y: 0.7}
+  AngleThreshold: {x: 0.4, y: 0.7}
   CollidableLayers:
     serializedVersion: 2
     m_Bits: 1

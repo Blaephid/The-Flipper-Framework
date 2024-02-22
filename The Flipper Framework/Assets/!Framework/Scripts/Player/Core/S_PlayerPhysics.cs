@@ -167,7 +167,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3 _groundNormal { get; set; }
 	public Vector3 _collisionPointsNormal { get; set; }
 	private Vector3               _keepNormal;
-	private float                 _sideFacingUp;
+
+	private bool                  _isRotatingLeft;
+	private Vector3               _rotateSidewaysTowards;
 	private float                 _keepNormalCounter;
 	public bool _wasInAir { get; set; }
 	[HideInInspector]
@@ -752,13 +754,28 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If in the air, then stick to previous normal for a moment before rotating legs towards gravity. This avoids collision issues
 		else
 		{
+			Vector3 localRight = _MainSkin.right;
+
 			if (_keepNormalCounter < _keepNormalForThis_)
 			{
 				_keepNormalCounter += Time.deltaTime;
 				transform.rotation = Quaternion.FromToRotation(transform.up, _keepNormal) * transform.rotation;
+
+				//Upon counter ending, prepare to rotate to ground.
 				if (_keepNormalCounter >= _keepNormalForThis_)
 				{
-					_sideFacingUp = Mathf.Sign(_MainSkin.right.y);
+					if (localRight.y >= 0)
+					{
+						_isRotatingLeft = false;
+						_rotateSidewaysTowards = new Vector3 (_RB.velocity.x, 0, _RB.velocity.z).normalized * -1;
+						//_rotateSidewaysTowards = Vector3.Cross(-forwardVector, transform.up);
+					}
+					else
+					{
+						_isRotatingLeft = true;
+						_rotateSidewaysTowards = new Vector3 (_RB.velocity.x, 0, _RB.velocity.z).normalized;
+						//_rotateSidewaysTowards = Vector3.Cross(forwardVector, transform.up);
+					}
 				}
 			}
 			else
@@ -766,41 +783,33 @@ public class S_PlayerPhysics : MonoBehaviour
 				//If upside down, then the player must rotate sideways, and not forwards. This keeps them facing the same way while pointing down to the ground again.
 				if (_keepNormal.y < _rotationResetThreshold_)
 				{
+					//Disabled turning until all the way over to prevent velocity changing because of the unqiue camera movement.
 					_canTurn = false;
 
-					float sideFacingUp = Mathf.Sign(_MainSkin.right.y);
+					Debug.Log(_isRotatingLeft + "  And  " + localRight.y);
 
-					//If the left side is under 0 y normal, then it is lower, so it is quicker to rotate so the lower left reaches normal
-					//then rotate in the direction of th left going up, and when it becomes higher, set it to 0 and you've rotated around on the local sides.
-					if (_sideFacingUp != sideFacingUp && transform.up.y > 0)
+					//Side facing up is used to check if the player's right side is still pointing down or up, which means it's higher or lower than the left.
+					//If the side changes, then the player has flipped over completely.
+					if ((!_isRotatingLeft && localRight.y >= 0) || (_isRotatingLeft && localRight.y < 0))
+					//if(true)
 					{
-						transform.right = new Vector3(transform.right.x, 0, transform.right.z);
-						_canTurn = true;
-						_keepNormal = Vector3.up;
+						
+						Vector3 cross = Vector3.Cross(_rotateSidewaysTowards, transform.up);
+						Debug.DrawRay(transform.position, cross, Color.red, 10f);
+
+						Quaternion targetRot = Quaternion.FromToRotation(transform.up, cross) * transform.rotation;
+						transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
 					}
 					else
 					{
-						_sideFacingUp = Mathf.Sign(_MainSkin.right.y);
-
-						Debug.DrawRay(transform.position, _MainSkin.right * 2, Color.red, 10f);
-						Debug.DrawRay(transform.position, _MainSkin.forward, Color.yellow, 10f);
-						Debug.DrawRay(transform.position, _camHandler._HedgeCam.transform.forward, Color.black, 10f);
-
-						// Get the forward vector and rotate the player around it.
-						Vector3 forwardVector = new Vector3 (_RB.velocity.x, 0, _RB.velocity.z).normalized;
-						
-						if(transform.right.y > -transform.right.y)
-						{
-							transform.Rotate(forwardVector, 6);
-						}
-						else
-						{
-							transform.Rotate(forwardVector, -6);
-						}
+						transform.right = new Vector3(transform.right.x, 0, transform.right.z).normalized;
+						_keepNormal = Vector3.up;	
+						_canTurn = true;			
 					}
 				}
 				else
 				{
+					//In other situations, use a general rotation to face upwards again.
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
 					if (targetRot == transform.rotation) { _canTurn = true; }
