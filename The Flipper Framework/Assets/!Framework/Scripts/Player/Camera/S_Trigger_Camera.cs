@@ -16,5 +16,6 @@ public class S_Trigger_Camera : MonoBehaviour {
     public bool changeDistance = false;
 	public bool ReleaseOnExit = false;
 	public float duration = 1;
+	public bool shouldRotateCameraUpToThis;
 
 }

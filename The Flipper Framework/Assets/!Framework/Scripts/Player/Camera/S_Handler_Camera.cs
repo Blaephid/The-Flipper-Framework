@@ -24,100 +24,42 @@ public class S_Handler_Camera : MonoBehaviour
 				switch (cameraData.Type)
 				{
 					case TriggerType.LockToDirection:
-						Vector3 dir = col.transform.forward;
-						if (cameraData.changeAltitude)
-							_HedgeCam.SetCamera(dir, cameraData.duration, cameraData.CameraAltitude, cameraData.FaceSpeed);
-						else
-							_HedgeCam.SetCameraNoHeight(dir, cameraData.duration, cameraData.FaceSpeed);
-						_HedgeCam._isMasterLocked = true;
-						_HedgeCam._canMove = false;
-						_HedgeCam._isLocked = true;
-						if (cameraData.changeDistance)
-						{
-							_HedgeCam._cameraMaxDistance_ = cameraData.ChangeDistance;
-						}
-						else
-						{
-							_HedgeCam._cameraMaxDistance_ = _initialDistance;
-						}
+						setHedgeCamera(cameraData, col.transform.forward);
+						LockCamera(true);
+						changeDistance(cameraData);
 						break;
 
 					case TriggerType.SetFree:
 						_HedgeCam._cameraMaxDistance_ = _initialDistance;
-						_HedgeCam._isMasterLocked = false;
+						LockCamera(false);
 						_HedgeCam._isReversed = false;
-						_HedgeCam._isLocked = false;
-						_HedgeCam._canMove = true;
 						break;
 
 					case TriggerType.justEffect:
-						if (!cameraData.changeDistance)
-						{
-							_HedgeCam._cameraMaxDistance_ = _initialDistance;
-						}
-						else
-						{
-							_HedgeCam._cameraMaxDistance_ = cameraData.ChangeDistance;
-						}
+						changeDistance(cameraData);
 						if (cameraData.changeAltitude)
 							_HedgeCam.SetCameraNoLook(cameraData.CameraAltitude);
-
 						break;
 
 
 					case TriggerType.SetFreeAndLookTowards:
-						dir = col.transform.forward;
-						if (cameraData.changeAltitude)
-							_HedgeCam.SetCamera(dir, 2.5f, cameraData.CameraAltitude, cameraData.FaceSpeed);
-						else
-							_HedgeCam.SetCameraNoHeight(dir, 2.5f, cameraData.FaceSpeed);
-						if (!cameraData.changeDistance)
-						{
-							_HedgeCam._cameraMaxDistance_ = _initialDistance;
-						}
-						else
-						{
-							_HedgeCam._cameraMaxDistance_ = cameraData.ChangeDistance;
-						}
-						_HedgeCam._isMasterLocked = false;
-						_HedgeCam._isLocked = false;
+						setHedgeCamera(cameraData, col.transform.forward);
+						changeDistance(cameraData);
+						LockCamera(false);
 						break;
 
-					case TriggerType.Reverse:
-						dir = -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward;
+					case TriggerType.Reverse:				
 						_HedgeCam._isReversed = true;
-						if (cameraData.changeAltitude)
-							_HedgeCam.SetCamera(dir, 2.5f, cameraData.CameraAltitude, cameraData.FaceSpeed);
-						else
-							_HedgeCam.SetCameraNoHeight(dir, 2.5f, cameraData.FaceSpeed);
-						if (!cameraData.changeDistance)
-						{
-							_HedgeCam._cameraMaxDistance_ = _initialDistance;
-						}
-						else
-						{
-							_HedgeCam._cameraMaxDistance_ = cameraData.ChangeDistance;
-						}
-						_HedgeCam._isMasterLocked = false;
-						_HedgeCam._isLocked = false;
+						setHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
+						changeDistance(cameraData);
+						LockCamera(false);
 						break;
 
 					case TriggerType.ReverseAndLockControl:
-						dir = -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward;
 						_HedgeCam._isReversed = true;
-						if (cameraData.changeAltitude)
-							_HedgeCam.SetCamera(dir, 2.5f, cameraData.CameraAltitude, cameraData.FaceSpeed);
-						else
-							_HedgeCam.SetCameraNoHeight(dir, 2.5f, cameraData.FaceSpeed);
-						if (!cameraData.changeDistance)
-						{
-							_HedgeCam._cameraMaxDistance_ = _initialDistance;
-						}
-						else
-						{
-							_HedgeCam._cameraMaxDistance_ = cameraData.ChangeDistance;
-						}
-						_HedgeCam._canMove = false;
+						setHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
+						changeDistance(cameraData);
+						LockCamera(true) ;
 						break;
 				}
 
@@ -125,6 +67,32 @@ public class S_Handler_Camera : MonoBehaviour
 			}
 		}
 
+	}
+
+	void changeDistance(S_Trigger_Camera cameraData) {
+		if (!cameraData.changeDistance)
+		{
+			_HedgeCam._cameraMaxDistance_ = _initialDistance;
+		}
+		else
+		{
+			_HedgeCam._cameraMaxDistance_ = cameraData.ChangeDistance;
+		}
+	}
+
+	void LockCamera(bool state) {
+		_HedgeCam._isMasterLocked = state;
+		_HedgeCam._isLocked = state;
+		_HedgeCam._canMove = !state;
+	}
+
+	void setHedgeCamera(S_Trigger_Camera cameraData, Vector3 dir) {
+		Quaternion targetRotation = Quaternion.LookRotation(cameraData.transform.forward, cameraData.transform.up);
+
+		if (cameraData.changeAltitude)
+			_HedgeCam.SetCameraToDirection(dir, 2.5f, cameraData.CameraAltitude, cameraData.FaceSpeed, targetRotation, cameraData.shouldRotateCameraUpToThis);
+		else
+			_HedgeCam.SetCameraNoHeight(dir, 2.5f, cameraData.FaceSpeed, targetRotation, cameraData.shouldRotateCameraUpToThis);
 	}
 
 	public void OnTriggerExit ( Collider col ) {
@@ -141,9 +109,6 @@ public class S_Handler_Camera : MonoBehaviour
 					_HedgeCam._isLocked = false;
 					_HedgeCam._canMove = true;
 					_HedgeCam._lookTimer = 0;
-
-					Vector3 dir = col.transform.forward;
-					_HedgeCam.SetCamera(dir, 2.5f, cameraData.CameraAltitude);
 				}
 
 				else if (cameraData.ReleaseOnExit)

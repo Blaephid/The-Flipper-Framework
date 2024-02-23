@@ -661,7 +661,6 @@ public class S_PlayerPhysics : MonoBehaviour
 					raycastStartPosition = raycastStartPosition + (rayCastDirection * (_horizontalSpeedMagnitude * 0.7f) * _stickCastAhead_ * Time.deltaTime);
 					//Shoots a raycast from infront, but downwards to check for lower ground.
 					//Then create a velocity relative to the current groundNormal, then lerp from one to the other.
-
 					if (Physics.Raycast(raycastStartPosition, -_HitGround.normal, out hitSticking, 2.5f, _Groundmask_))
 					{
 						newGroundNormal = hitSticking.normal;
@@ -669,7 +668,9 @@ public class S_PlayerPhysics : MonoBehaviour
 						velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.y);
 
 					}
-					AddCoreVelocity(-newGroundNormal * 2, false); // Adds velocity downwards to remain on the slope.
+
+					// Adds velocity downwards to remain on the slope.
+					AddCoreVelocity(-newGroundNormal * 2, false); 
 
 				}
 			}
@@ -692,11 +693,11 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (Physics.BoxCast(raycastStartPosition, new Vector3(0.15f, 0.05f, 0.01f), rayCastDirection, out RaycastHit hitSticking,
 				Quaternion.LookRotation(rayCastDirection, newGroundNormal), _horizontalSpeedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, _Groundmask_))
 		{
-			//Shoot a boxcast down from above and slightly continuing on from the impact point. If there is a lip, the wall infront is very short-
+			//Shoot a boxcast down from above and slightly continuing on from the impact point. If there is a lip, the wall infront is very short
 			Vector3 rayStartPosition = hitSticking.point + (rayCastDirection * 0.15f) + (newGroundNormal * 1.25f) + (newGroundNormal * _CharacterCapsule.radius);
 			if (Physics.SphereCast(rayStartPosition, _CharacterCapsule.radius, -newGroundNormal, out RaycastHit hitLip, 1.2f, _Groundmask_))
 			{
-				//if the ledge is within step height and a similar angle to the current one, then it is a step
+				//if the lip is within step height and a similar angle to the current one, then it is a step
 				float stepHeight = 1.5f - (hitLip.distance);
 				float floorToStepDot = Vector3.Dot(hitLip.normal, newGroundNormal);
 				if (stepHeight < _stepHeight_ && stepHeight > 0.05f && _horizontalSpeedMagnitude > 5f && floorToStepDot > 0.93f)
@@ -764,17 +765,16 @@ public class S_PlayerPhysics : MonoBehaviour
 				//Upon counter ending, prepare to rotate to ground.
 				if (_keepNormalCounter >= _keepNormalForThis_)
 				{
+					// Going off the current rotation, can tell if needs to rotate right or left (rotate right if right side is higher than left), and prepare the angle to rotate around. 
 					if (localRight.y >= 0)
 					{
 						_isRotatingLeft = false;
 						_rotateSidewaysTowards = new Vector3 (_RB.velocity.x, 0, _RB.velocity.z).normalized * -1;
-						//_rotateSidewaysTowards = Vector3.Cross(-forwardVector, transform.up);
 					}
 					else
 					{
 						_isRotatingLeft = true;
 						_rotateSidewaysTowards = new Vector3 (_RB.velocity.x, 0, _RB.velocity.z).normalized;
-						//_rotateSidewaysTowards = Vector3.Cross(forwardVector, transform.up);
 					}
 				}
 			}
@@ -786,12 +786,9 @@ public class S_PlayerPhysics : MonoBehaviour
 					//Disabled turning until all the way over to prevent velocity changing because of the unqiue camera movement.
 					_canTurn = false;
 
-					Debug.Log(_isRotatingLeft + "  And  " + localRight.y);
-
-					//Side facing up is used to check if the player's right side is still pointing down or up, which means it's higher or lower than the left.
-					//If the side changes, then the player has flipped over completely.
+					//If the player was set to rotating right, and their right side is still higher than their left, then they have not flipped over all the way yet. Same with rotating left and lower left. 
+					//Then get a cross product from preset rotating angle and transform up, then move in that direction.
 					if ((!_isRotatingLeft && localRight.y >= 0) || (_isRotatingLeft && localRight.y < 0))
-					//if(true)
 					{
 						
 						Vector3 cross = Vector3.Cross(_rotateSidewaysTowards, transform.up);
@@ -800,6 +797,7 @@ public class S_PlayerPhysics : MonoBehaviour
 						Quaternion targetRot = Quaternion.FromToRotation(transform.up, cross) * transform.rotation;
 						transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
 					}
+					//When flipped over, set y value of the right side to zero to ensure not tilted anymore, and ready main rotation to sort any remaining rotation differences.
 					else
 					{
 						transform.right = new Vector3(transform.right.x, 0, transform.right.z).normalized;
@@ -807,9 +805,9 @@ public class S_PlayerPhysics : MonoBehaviour
 						_canTurn = true;			
 					}
 				}
+				//General rotation to face up again.
 				else
-				{
-					//In other situations, use a general rotation to face upwards again.
+				{		
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
 					if (targetRot == transform.rotation) { _canTurn = true; }
@@ -818,6 +816,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 	}
 
+	//Called anywhere to get what the input velocity is in the player's local space.
 	public Vector3 GetRelevantVec ( Vector3 vec ) {
 		return transform.InverseTransformDirection(vec);
 	}

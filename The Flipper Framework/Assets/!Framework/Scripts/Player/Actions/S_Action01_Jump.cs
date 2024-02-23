@@ -267,7 +267,7 @@ public class S_Action01_Jump : MonoBehaviour
 			if (_Input.CamResetPressed)
 			{
 				if (_Input.moveX == 0 && _Input.moveY == 0 && Player._horizontalSpeedMagnitude < 5f)
-					Cam._HedgeCam.FollowDirection(10, 14f, -10, 0);
+					Cam._HedgeCam.GoBehindCharacter(6, 20, false);
 			}
 
 

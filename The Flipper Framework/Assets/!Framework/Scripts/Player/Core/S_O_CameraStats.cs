@@ -21,6 +21,7 @@ public class S_O_CameraStats : ScriptableObject
 	public float FallSpeedThreshold = -80;
 
 	public float CameraMaxDistance = -13;
+	public AnimationCurve cameraDistanceBySpeed;
 	public Vector2 AngleThreshold = new Vector2 (0.3f, 0.2f);
 
 	public LayerMask CollidableLayers;

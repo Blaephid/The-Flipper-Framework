@@ -97,7 +97,7 @@ public class S_Action07_RingRoad : MonoBehaviour {
 			direction = Target.position - transform.position;
 			Player._RB.velocity = direction.normalized * _dashSpeed_;
 
-			GetComponent<S_Handler_Camera>()._HedgeCam.FollowDirection(4, 14f, -10,0);
+			GetComponent<S_Handler_Camera>()._HedgeCam.GoBehindCharacter(7, 30f, true);
 		}
 
 		else

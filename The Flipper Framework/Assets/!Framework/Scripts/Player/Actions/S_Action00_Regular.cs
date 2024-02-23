@@ -209,7 +209,7 @@ public class S_Action00_Regular : MonoBehaviour {
 		if (_Input.CamResetPressed)
 		{
 			if (_Input.moveVec == Vector2.zero && Player._horizontalSpeedMagnitude < 5f)
-				Cam._HedgeCam.FollowDirection(6, 14f, -10, 0);
+				Cam._HedgeCam.GoBehindCharacter(6, 20f, false);
 		}
 
 		

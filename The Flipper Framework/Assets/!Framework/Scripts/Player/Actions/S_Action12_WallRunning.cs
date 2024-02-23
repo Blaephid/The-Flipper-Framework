@@ -407,7 +407,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         }
         else
         {
-            Cam._HedgeCam.FollowDirection(15, 14f, 0, 0);
+            Cam._HedgeCam.GoBehindCharacter(3, 0, false);
             holdingWall = inputtingToWall(wallToRun.point - transform.position);
             currentWall = wallToRun.collider.gameObject;
         }

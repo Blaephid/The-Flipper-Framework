@@ -6,13 +6,13 @@ using UnityEditor;
 public class S_PlayerInput : MonoBehaviour
 {
 	/// <summary>
-	/// Members ----------------------------------------------------------------------------------
+	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
-	#region members
+	#region Properties
 
 	//Unity
-	#region Unity Specific Members
+	#region Unity Specific
 
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_Handler_Camera      _CamHandler;
@@ -154,7 +154,7 @@ public class S_PlayerInput : MonoBehaviour
 		//Sets the camera behind if locked when input is.
 		if (_isCamLocked)
 		{
-			_CamHandler._HedgeCam.FollowDirection(3, 14, -10, 0, true);
+			_CamHandler._HedgeCam.GoBehindCharacter(3, 0, true);
 		}
 
 		if (_lockedCounter > _lockedTime)

@@ -21,6 +21,57 @@ MonoBehaviour:
   HeightFollowSpeed: 6
   FallSpeedThreshold: -120
   CameraMaxDistance: -18
+  cameraDistanceBySpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.00012588501
+      value: 0.9041214
+      inSlope: 0.0501728
+      outSlope: 0.0501728
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.17478259
+      value: 0.9128844
+      inSlope: 0.0967938
+      outSlope: 0.0967938
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.45097604
+    - serializedVersion: 3
+      time: 0.62251157
+      value: 1.2592441
+      inSlope: 2.002831
+      outSlope: 2.002831
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.14784919
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.8065822
+      value: 1.6338576
+      inSlope: 1.0080309
+      outSlope: 1.0080309
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.98868066
+      value: 1.6756628
+      inSlope: 0.22957443
+      outSlope: 0.22957443
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   AngleThreshold: {x: 0.4, y: 0.7}
   CollidableLayers:
     serializedVersion: 2
@@ -97,7 +148,7 @@ MonoBehaviour:
   afterMoveYDelay: 0.5
   yMinLimit: -100
   yMaxLimit: 95
-  LockCamAtHighSpeed: 200
+  LockCamAtHighSpeed: 80
   MoveLerpingSpeed: 4
   RotationLerpingSpeed: 8
   LockedRotationSpeed: 6
