@@ -20,11 +20,16 @@ public class S_O_CameraStats : ScriptableObject
 	public float HeightFollowSpeed = 6;
 	public float FallSpeedThreshold = -80;
 
-	public float CameraMaxDistance = -13;
+	public float CameraMaxDistance = 15;
 	public AnimationCurve cameraDistanceBySpeed;
 	public Vector2 AngleThreshold = new Vector2 (0.3f, 0.2f);
 
 	public LayerMask CollidableLayers;
+
+	public Vector2               softZone;
+	public Vector2               deadZone;
+	public Vector2               turnZone;
+	public bool                   shouldMoveInInputDirection = true;
 
 	public float CameraRotationSpeed = 100;
 	public float CameraVerticalRotationSpeed = 12;
@@ -44,9 +49,6 @@ public class S_O_CameraStats : ScriptableObject
 	public float yMaxLimit = 100f;
 
 	public float LockCamAtHighSpeed = 45;
-
-	public float MoveLerpingSpeed = 4;
-	public float RotationLerpingSpeed = 8;
 
 	public float LockedRotationSpeed = 6;
 	public float ShakeDampen = 4;

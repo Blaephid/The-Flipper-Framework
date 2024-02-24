@@ -294,7 +294,7 @@ namespace SplineMesh
 
             CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player._RB.velocity, Player._HitGround.normal);
 
-            Player.GetComponent<S_Handler_Camera>()._HedgeCam.setBehind();
+            Player.GetComponent<S_Handler_Camera>()._HedgeCam.SetBehind(0);
             Input.LockInputForAWhile(30f, true);
 
             //Reenables Colliders

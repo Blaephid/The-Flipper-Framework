@@ -292,7 +292,7 @@ public class S_Action12_WallRunning : MonoBehaviour
         newCamPos.y += 3f;
         camTarget.position = newCamPos;
         Cam._HedgeCam.SetCamera(CharacterAnimator.transform.forward, 2f, 0, 0.001f, 1.1f);
-        Cam._HedgeCam._cameraMaxDistance_ = Cam._initialDistance - 2f;
+        //Cam._HedgeCam._cameraMaxDistance_ = Cam._initialDistance - 2f;
 
     }
 
@@ -627,10 +627,10 @@ public class S_Action12_WallRunning : MonoBehaviour
         //Actions.SkidPressed = false;
 
         dropShadow.SetActive(true);
-        Cam._HedgeCam._cameraMaxDistance_ = Cam._initialDistance;
+        //Cam._HedgeCam._cameraMaxDistance_ = Cam._initialDistance;
         Player._isGravityOn = true;
         Cam._HedgeCam._shouldSetHeightWhenMoving_ = true;
-        camTarget.position = constantTarget.position;
+        //camTarget.position = constantTarget.position;
         CharacterAnimator.transform.rotation = Quaternion.identity;
         if(previDir != Vector3.zero)
             CharacterAnimator.transform.forward = previDir;

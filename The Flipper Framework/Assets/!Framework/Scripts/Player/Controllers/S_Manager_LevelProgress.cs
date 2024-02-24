@@ -37,7 +37,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
         Actions = basePlayer.GetComponent<S_ActionManager>();
         Player = basePlayer.GetComponent<S_PlayerPhysics>();
         _Input = basePlayer.GetComponent<S_PlayerInput>();
-        characterTransform = tools.CharacterAnimator.transform;
+        characterTransform = tools.mainSkin;
         ResumePosition = characterTransform.position;
         ResumeRotation = characterTransform.rotation;
         ResumeFace = characterTransform.forward;
@@ -104,7 +104,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
         Actions.Action04.deadCounter = 0;
 
         Cam._HedgeCam._isReversed = false;
-        Cam._HedgeCam.setBehindWithHeight();
+        Cam._HedgeCam.SetBehind(20);
 
     }
 

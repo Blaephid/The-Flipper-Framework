@@ -98,6 +98,10 @@ public class S_PlayerInput : MonoBehaviour
 		AcquireMoveInput();
 	}
 
+	private void FixedUpdate () {
+		_PlayerPhys._moveInput = _move;
+	}
+
 	#endregion
 
 	/// <summary>

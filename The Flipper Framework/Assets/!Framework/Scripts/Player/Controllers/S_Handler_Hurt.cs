@@ -247,7 +247,7 @@ public class S_Handler_Hurt : MonoBehaviour
     {
         if (col.tag == "Pit")
         {
-            Cam._HedgeCam.SetCamera(-99);
+            Cam._HedgeCam.SetCameraNoLook(100);
         }
     }
     public void OnTriggerEnter(Collider col)

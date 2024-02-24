@@ -168,7 +168,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
         }
         if(setBehind)
         {
-            Player.GetComponent<S_Handler_Camera>()._HedgeCam.setBehind();
+            Player.GetComponent<S_Handler_Camera>()._HedgeCam.SetBehind(0);
         }
 
         isActive = false;

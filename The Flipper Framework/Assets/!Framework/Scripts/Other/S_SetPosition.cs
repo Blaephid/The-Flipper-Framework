@@ -4,6 +4,7 @@ using System.Collections;
 public class S_SetPosition : MonoBehaviour {
 
     public Transform TargetPosition;
+	public Rigidbody _RB;
     public Vector3 Offset;
 
     Vector3 DynamicOffset;
@@ -13,12 +14,15 @@ public class S_SetPosition : MonoBehaviour {
 
         if (!Dynamic)
         {
+			//transform.position = _RB.position + Offset;
             transform.position = TargetPosition.position + Offset;
         }
         else
         {
-            transform.position = TargetPosition.position + DynamicOffset;
-        }
+			//transform.position = _RB.position + DynamicOffset;
+			transform.position = TargetPosition.position + DynamicOffset;
+			
+		}
 
 	}
 

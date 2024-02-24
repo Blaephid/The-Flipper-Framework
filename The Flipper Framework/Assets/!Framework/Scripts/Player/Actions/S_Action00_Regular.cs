@@ -116,8 +116,6 @@ public class S_Action00_Regular : MonoBehaviour {
 		CharacterAnimator.SetFloat("HorizontalInput", _Input.moveX *Player._RB.velocity.magnitude);
         CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
-		//Set Character Animations and position1
-		CharacterAnimator.transform.parent = null;
         
         //Set Skin Rotation
         if (Player._isGrounded)

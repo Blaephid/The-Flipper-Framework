@@ -239,12 +239,12 @@ public class S_Action08_DropCharge : MonoBehaviour
 		{
 			Player.SetCoreVelocity( newVec);
 
-			Cam._HedgeCam.FollowHeightDirection(18, 25f);
+			Cam._HedgeCam.ChangeHeight(18, 25f);
 		}
 		else
 		{
 			Player.SetCoreVelocity(newVec.normalized * (Player._horizontalSpeedMagnitude + (charge * 0.45f)));
-			Cam._HedgeCam.FollowHeightDirection(20, 15f);
+			Cam._HedgeCam.ChangeHeight(20, 15f);
 		}
 	}
 

@@ -142,6 +142,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public float _horizontalSpeedMagnitude { get; set; }
 
 	public Vector3 _moveInput { get; set; }
+	public Vector3 _trackMoveInput { get; set; }
 
 	[HideInInspector]
 	public float                  _currentTopSpeed;
@@ -424,8 +425,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		//Apply changes to the lateral velocity based on input.
-		lateralVelocity = HandleTurningAndAcceleration(lateralVelocity, _Input._move, modifier);
-		lateralVelocity = HandleDecel(lateralVelocity, _Input._move, _isGrounded);
+		lateralVelocity = HandleTurningAndAcceleration(lateralVelocity, _moveInput, modifier);
+		lateralVelocity = HandleDecel(lateralVelocity, _moveInput, _isGrounded);
 
 		// Clamp horizontal running speed. coreVelocity can never exceed the player moving laterally faster than this.
 		localVelocity = lateralVelocity + verticalVelocity;
@@ -452,35 +453,33 @@ public class S_PlayerPhysics : MonoBehaviour
 		Vector3 inputDirection = input.normalized;
 		float inputMagnitude = Mathf.Max(Mathf.Abs(input.x), Mathf.Abs(input.z));
 
-		// Step 1) Determine angle between current lateral velocity and desired direction.
-		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
 
 		float deviationFromInput = 0;
 		if (_canTurn)
 		{
+			// Step 1) Determine angle between current lateral velocity and desired direction.
+			//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
+
 			deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
 			_inputVelocityDifference = deviationFromInput;
 			Quaternion lateralToInput = lateralVelocity.sqrMagnitude < 1
 			? Quaternion.identity
 			: Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
 
+
 			// Step 2) Rotate lateral velocity towards the same velocity under the desired rotation.
 			//         The ammount rotated is determined by turn speed multiplied by turn rate (defined by the difference in angles, and current speed).
 			//	Turn speed will also increase if the difference in pure input (ignoring camera) is different, allowing precise movement with the camera.
 
-
-
 			float turnRate = (_isRolling ? _rollingTurningModifier_ : 1.0f);
 			turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
 			turnRate *= _TurnRateBySpeed_.Evaluate((_RB.velocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
-			if (_moveInput != inputDirection)
+			if (_trackMoveInput != inputDirection)
 			{
 				turnRate *= _TurnRateByInputChange_.Evaluate(Vector3.Angle(_Input._inputWithoutCamera, _Input._prevInputWithoutCamera) / 180);
 				_Input._prevInputWithoutCamera = _Input._inputWithoutCamera;
-				_moveInput = inputDirection;
+				_trackMoveInput = inputDirection;
 			}
-			Debug.DrawRay(transform.position, lateralToInput * lateralVelocity.normalized, Color.black, 5);
-			Debug.DrawRay(transform.position + lateralToInput * lateralVelocity.normalized, lateralToInput * lateralVelocity.normalized * 0.2f, Color.yellow, 5);
 			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Time.deltaTime * modifier.x, 0.0f);
 		}
 
@@ -802,7 +801,7 @@ public class S_PlayerPhysics : MonoBehaviour
 					{
 						transform.right = new Vector3(transform.right.x, 0, transform.right.z).normalized;
 						_keepNormal = Vector3.up;	
-						_canTurn = true;			
+						//_canTurn = true;			
 					}
 				}
 				//General rotation to face up again.
@@ -810,7 +809,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				{		
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
-					if (targetRot == transform.rotation) { _canTurn = true; }
+					if (transform.rotation == targetRot) { _canTurn = true; }
 				}
 			}
 		}

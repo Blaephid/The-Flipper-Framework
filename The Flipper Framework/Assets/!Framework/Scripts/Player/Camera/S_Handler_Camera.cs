@@ -7,10 +7,12 @@ public class S_Handler_Camera : MonoBehaviour
 
 	public S_HedgeCamera _HedgeCam;
 	public CinemachineVirtualCamera _VirtCam;
+	private S_CharacterTools _Tools;
 	[HideInInspector] public float _initialDistance;
 
-	void Awake () {
-		_initialDistance = _HedgeCam._cameraMaxDistance_;
+	void Start () {
+		_Tools = GetComponent<S_CharacterTools>();
+		_initialDistance = _Tools.camStats.CameraMaxDistance;
 	}
 
 
