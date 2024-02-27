@@ -144,37 +144,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
 	}
 
 	void handleInput () {
-		/////Quickstepping
-		///
-		//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
-		if (_Input.RightStepPressed)
-		{
-			quickstepManager.pressRight();
-		}
-		else if (_Input.LeftStepPressed)
-		{
-			quickstepManager.pressLeft();
-		}
-
-		//Enable Quickstep right or left
-		if (_Input.RightStepPressed && !quickstepManager.enabled)
-		{
-			if (Player._horizontalSpeedMagnitude > 10f)
-			{
-
-				quickstepManager.initialEvents(true);
-				quickstepManager.enabled = true;
-			}
-		}
-
-		else if (_Input.LeftStepPressed && !quickstepManager.enabled)
-		{
-			if (Player._horizontalSpeedMagnitude > 10f)
-			{
-				quickstepManager.initialEvents(false);
-				quickstepManager.enabled = true;
-			}
-		}
+		quickstepManager.ReadyAction();
 	}
 
 
@@ -220,7 +190,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
 			CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
 
 
-			Actions.Action00.Rolling = true;
+			Actions.Action00._isRolling = true;
 			Player._isRolling = true;
 			Actions.Action00.rollCounter = 0.3f;
 
@@ -254,7 +224,7 @@ public class S_Action03_SpinCharge : MonoBehaviour
 		{
 			//CharRot = Quaternion.LookRotation(Player.rb.velocity, Vector3.up);
 		}
-		CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * Actions.Action00.skinRotationSpeed);
+		CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * Actions.Action00._skinRotationSpeed);
 
 
 		for (int i = 0 ; i < PlayerSkin.Length ; i++)

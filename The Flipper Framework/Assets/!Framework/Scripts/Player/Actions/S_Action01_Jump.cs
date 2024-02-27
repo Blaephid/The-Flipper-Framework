@@ -14,7 +14,7 @@ public class S_Action01_Jump : MonoBehaviour
 	S_ActionManager Actions;
 	S_Handler_HomingAttack homingControl;
 	S_Handler_Camera Cam;
-	S_Handler_quickstep stepManager;
+	S_Handler_quickstep quickStepManager;
 	S_PlayerInput _Input;
 
 	S_Control_PlayerSound sounds;
@@ -280,41 +280,7 @@ public class S_Action01_Jump : MonoBehaviour
 
 			}
 
-			/////Enalbing Quickstepping
-			///
-			//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
-			if (_Input.RightStepPressed)
-			{
-				stepManager.pressRight();
-			}
-			else if (_Input.LeftStepPressed)
-			{
-				stepManager.pressLeft();
-			}
-
-			//Enable Quickstep right or left
-			if (_Input.RightStepPressed && !stepManager.enabled)
-			{
-				if (Player._horizontalSpeedMagnitude > 15f)
-				{
-					Debug.Log("Step in Jump");
-					stepManager.initialEvents(true);
-					stepManager.enabled = true;
-				}
-
-			}
-
-			else if (_Input.LeftStepPressed && !stepManager.enabled)
-			{
-
-				if (Player._horizontalSpeedMagnitude > 15f)
-				{
-
-					stepManager.initialEvents(false);
-					stepManager.enabled = true;
-				}
-
-			}
+			quickStepManager.ReadyAction();
 		}
 
 	}
@@ -443,7 +409,7 @@ public class S_Action01_Jump : MonoBehaviour
 		Cam = GetComponent<S_Handler_Camera>();
 		homingControl = GetComponent<S_Handler_HomingAttack>();
 
-		stepManager = GetComponent<S_Handler_quickstep>();
+		quickStepManager = GetComponent<S_Handler_quickstep>();
 		_Input = GetComponent<S_PlayerInput>();
 
 		CharacterAnimator = Tools.CharacterAnimator;

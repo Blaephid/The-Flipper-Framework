@@ -13,146 +13,514 @@ MonoBehaviour:
   m_Name: SO_Camera X Stats
   m_EditorClassIdentifier: 
   Title: Title
-  LockHeight: 1
-  LockHeightSpeed: 0.8
-  MoveHeightBasedOnSpeed: 1
-  minHeightToLookDown: 50
-  HeightToLock: 5
-  HeightFollowSpeed: 6
-  FallSpeedThreshold: -120
-  CameraMaxDistance: 8
-  cameraDistanceBySpeed:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0.00012588501
-      value: 0.9041214
-      inSlope: 0.52598983
-      outSlope: 0.52598983
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.19322284
-      value: 1.0056884
-      inSlope: 0.0967938
-      outSlope: 0.0967938
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.45097604
-    - serializedVersion: 3
-      time: 0.7737414
-      value: 1.257413
-      inSlope: 1.3533474
-      outSlope: 1.3533474
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.09994501
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.91725755
-      value: 1.5192164
-      inSlope: 1.0080309
-      outSlope: 1.0080309
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 1
-    - serializedVersion: 3
-      time: 0.9960659
-      value: 1.6010549
-      inSlope: -0.05804124
-      outSlope: -0.05804124
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 1
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  AngleThreshold: {x: 0.4, y: 0.7}
-  CollidableLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  softZone: {x: 0.05, y: 0.02}
-  deadZone: {x: 0, y: 0}
-  turnZone: {x: 0, y: 0}
-  shouldMoveInInputDirection: 1
-  CameraRotationSpeed: 100
-  CameraVerticalRotationSpeed: 11
-  vertFollowSpeedByAngle:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.011224547
-      value: 1.3010539
-      inSlope: 0.018602315
-      outSlope: 0.018602315
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.44536728
-    - serializedVersion: 3
-      time: 0.16027454
-      value: 1.2229573
-      inSlope: -1.2998843
-      outSlope: -1.2998843
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.268877
-      value: 1.0686951
-      inSlope: -0.7718603
-      outSlope: -0.7718603
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 1
-      outWeight: 0.59741086
-    - serializedVersion: 3
-      time: 0.44902062
-      value: 0.98619914
-      inSlope: -0.42252564
-      outSlope: -0.42252564
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.45577127
-      outWeight: 0.43958735
-    - serializedVersion: 3
-      time: 0.5220119
-      value: 0.6146825
-      inSlope: -1.3295356
-      outSlope: -1.3295356
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.25511637
-      outWeight: 0.6196643
-    - serializedVersion: 3
-      time: 0.9999506
-      value: 0.41846848
-      inSlope: 0.044062342
-      outSlope: 0.044062342
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.42972305
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  CameraMoveSpeed: 100
-  InputXSpeed: 70
-  InputYSpeed: 55
-  InputSensi: 1
-  InputMouseSensi: 0.035
-  stationaryCamIncrease: 1.3
-  afterMoveXDelay: 0.3
-  afterMoveYDelay: 0.5
-  yMinLimit: -100
-  yMaxLimit: 95
-  LockCamAtHighSpeed: 200
-  LockedRotationSpeed: 2
-  ShakeDampen: 4
+  DefaultLockHeightStats:
+    LockHeight: 1
+    LockHeightSpeed: 0.8
+    HeightToLock: 10
+    afterMoveYDelay: 0.4
+  LockHeightStats:
+    LockHeight: 1
+    LockHeightSpeed: 0.8
+    HeightToLock: 10
+    afterMoveYDelay: 0.4
+  DefaultAutoLookDownStats:
+    shouldLookDownWhenInAir: 1
+    minHeightToLookDown: 50
+    FallSpeedThreshold: -140
+    HeightFollowSpeed: 6
+  AutoLookDownStats:
+    shouldLookDownWhenInAir: 1
+    minHeightToLookDown: 50
+    FallSpeedThreshold: -140
+    HeightFollowSpeed: 6
+  DefaultDistanceStats:
+    CameraMaxDistance: 8
+    cameraDistanceBySpeed:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.2
+        value: 0.85
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.3
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.4
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.6
+        value: 1.2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.7
+        value: 1.2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.8
+        value: 1.35
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.85
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    CollidableLayers:
+      serializedVersion: 2
+      m_Bits: 0
+  DistanceStats:
+    CameraMaxDistance: 8
+    cameraDistanceBySpeed:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.2
+        value: 0.85
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.3
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.4
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.6
+        value: 1.2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.7
+        value: 1.2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.8
+        value: 1.35
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.85
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    CollidableLayers:
+      serializedVersion: 2
+      m_Bits: 1
+  DefaultAligningStats:
+    angleThresholdUpwards: 0.4
+    angleThresholdDownwards: 0.8
+    CameraVerticalRotationSpeed: 11
+    vertFollowSpeedByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  AligningStats:
+    angleThresholdUpwards: 0.4
+    angleThresholdDownwards: 0.8
+    CameraVerticalRotationSpeed: 11
+    vertFollowSpeedByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  DefaultLookAheadStats:
+    shouldMoveInInputDirection: 1
+    inputPredictonDistance: 1.5
+    cameraMoveToInputSpeed: 3
+  LookAheadStats:
+    shouldMoveInInputDirection: 1
+    inputPredictonDistance: 1.5
+    cameraMoveToInputSpeed: 3
+  DefaultInputStats:
+    InputXSpeed: 70
+    InputYSpeed: 55
+    InputSensi: 1
+    InputMouseSensi: 0.035
+    stationaryCamIncrease: 1.35
+  InputStats:
+    InputXSpeed: 70
+    InputYSpeed: 55
+    InputSensi: 1
+    InputMouseSensi: 0.035
+    stationaryCamIncrease: 1.35
+  DefaultTargetByAngleStats:
+    shouldMoveBasedOnAngle: 1
+    moveUpByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: -0.7
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: -0.35
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.35
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.75
+        value: 1.6
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1.6
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    moveSideByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1
+        value: -1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: -0.2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  TargetByAngleStats:
+    shouldMoveBasedOnAngle: 1
+    moveUpByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: -0.7
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: -0.35
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.35
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.75
+        value: 1.6
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1.6
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    moveSideByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1
+        value: -1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: -0.2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  DefaultRotateBehindStats:
+    LockCamAtHighSpeed: 90
+    afterMoveXDelay: 0.4
+    rotateToBehindSpeed: 5
+    rotateCharacterBeforeCameraFollows: 0.2
+    followFacingDirectionSpeed: 0.5
+  RotateBehindStats:
+    LockCamAtHighSpeed: 90
+    afterMoveXDelay: 0.4
+    rotateToBehindSpeed: 4
+    rotateCharacterBeforeCameraFollows: 0.18
+    followFacingDirectionSpeed: 0.3
+  DefaultClampingStats:
+    yMinLimit: -90
+    yMaxLimit: 90
+  ClampingStats:
+    yMinLimit: -75
+    yMaxLimit: 80
+  DefaultEffectsStats:
+    ShakeDampen: 4
+  EffectsStats:
+    ShakeDampen: 4
   InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

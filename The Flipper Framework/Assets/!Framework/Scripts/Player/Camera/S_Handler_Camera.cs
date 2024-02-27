@@ -12,7 +12,7 @@ public class S_Handler_Camera : MonoBehaviour
 
 	void Start () {
 		_Tools = GetComponent<S_CharacterTools>();
-		_initialDistance = _Tools.camStats.CameraMaxDistance;
+		_initialDistance = _Tools.camStats.DistanceStats.CameraMaxDistance;
 	}
 
 

@@ -89,8 +89,8 @@ public class S_PlayerInput : MonoBehaviour
 		}
 
 		//Managing Inputs
-		mouseSensi = _Tools.camStats.InputMouseSensi;
-		camSensi = _Tools.camStats.InputSensi;
+		mouseSensi = _Tools.camStats.InputStats.InputMouseSensi;
+		camSensi = _Tools.camStats.InputStats.InputSensi;
 	}
 
 	// Update is called once per frame

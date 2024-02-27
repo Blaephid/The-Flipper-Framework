@@ -1,25 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S_DeactivateOnStart : MonoBehaviour {
+public class S_DeactivateOnStart : MonoBehaviour
+{
 
-	public bool StopRender;
-	public bool Des = false;
+	public enumDeactivate _whatAction = enumDeactivate.Deactivate;
+
+	public enum enumDeactivate
+	{
+		stopRendering,
+		Destroy,
+		Deactivate
+	}
+
 	void Start () {
 
-		if (StopRender)
+		switch (_whatAction)
 		{
-			gameObject.GetComponent<Renderer>().enabled = false;
+			case enumDeactivate.Deactivate:
+				gameObject.SetActive(false);
+				break;
+			case enumDeactivate.stopRendering:
+				gameObject.GetComponent<Renderer>().enabled = false;
+				break;
+			case enumDeactivate.Destroy:
+				Destroy(gameObject);
+				break;
 		}
-		else if (Des)
-        {
-			Destroy(gameObject);
-        }
-		else
-			gameObject.SetActive(false);
-
-
 
 	}
-	
+
 }

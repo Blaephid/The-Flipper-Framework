@@ -102,7 +102,7 @@ Material:
     - _Alpha: 0.5
     - _BumpPower: 1
     - _BumpScale: 1
-    - _Bump_Power: -1
+    - _Bump_Power: 0.54
     - _CenterPower: 20
     - _Center_Power: 30
     - _Cutoff: 0.5
@@ -114,7 +114,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.35
     - _GlossyReflections: 1
-    - _Metallic: 0
+    - _Metallic: 0.05
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -123,7 +123,7 @@ Material:
     - _Reflectivity: 0
     - _RimPower: 3.7
     - _Rim_Power: 4
-    - _Smoothness: 0.2
+    - _Smoothness: 0.168
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -133,7 +133,7 @@ Material:
     m_Colors:
     - _CenterColor: {r: 1.8196079, g: 3.0745099, b: 5.992157, a: 0.891}
     - _CenterModifier: {r: 1, g: 1, b: 1, a: 1}
-    - _Center_Color: {r: 0.30054384, g: 0.45641106, b: 0.78353804, a: 0}
+    - _Center_Color: {r: 0.19037023, g: 0.3154668, b: 0.5849056, a: 0}
     - _Center_Modifier: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Dif_Color: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
@@ -141,7 +141,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 0.0627451, g: 3.4196079, b: 5.992157, a: 1}
     - _RimModifier: {r: 1, g: 1, b: 1, a: 1}
-    - _Rim_Color: {r: 0.012286487, g: 0.4910209, b: 0.78353804, a: 0}
+    - _Rim_Color: {r: 0.013483422, g: 0.5952109, b: 0.9528302, a: 0}
     - _Rim_Modifier: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

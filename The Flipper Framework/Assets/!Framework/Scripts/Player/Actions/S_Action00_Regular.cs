@@ -1,385 +1,384 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S_Action00_Regular : MonoBehaviour {
+public class S_Action00_Regular : MonoBehaviour
+{
 
-    private Animator CharacterAnimator;
-	S_CharacterTools Tools;
-    S_PlayerPhysics Player;
-	S_PlayerInput _Input;
-    S_ActionManager Actions;
-	S_Handler_Camera Cam;
-	S_Handler_quickstep quickstepManager;
-    S_Control_PlayerSound sounds;
-	GameObject characterCapsule;
-	GameObject _rollingCapsule_;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
 
-    public float skinRotationSpeed;
-    S_Action01_Jump JumpAction;
-    Quaternion CharRot;
+	//Unity
+	#region Unity Specific Properties
 
-	float _MaximumSpeed_; //The max amount of speed you can be at to perform a Spin Dash
-	float _MaximumSlope_; //The highest slope you can be on to Spin Dash
+	private Animator		_CharacterAnimator;
+	private S_CharacterTools	_Tools;
+	private S_PlayerPhysics	_PlayerPhys;
+	private S_PlayerInput	_Input;
+	private S_ActionManager	_Actions;
+	private S_Handler_Camera	_CamHandler;
+	private S_Handler_quickstep	_QuickstepManager;
+	private S_Control_PlayerSound _Sounds;
+	private GameObject            _CharacterCapsule;
+	private GameObject            _RollingCapsule;
+	private S_Action01_Jump       _JumpAction;
 
-	float _SpeedToStopAt_;
 
-	float _SkiddingStartPoint_;
+	#endregion
 
+	//General
+	#region General Properties
 
-	bool _CanDashDuringFall_;
+	//Stats
+	#region Stats
+	public float	_skinRotationSpeed;
+	private float	_MaximumSpeedForSpinDash_;
+	private float	_MaximumSlopeForSpinDash_;
+	private bool	_CanDashDuringFall_;
+	private AnimationCurve _CoyoteTimeBySpeed_;
 
-	RaycastHit hit;
+	#endregion
 
-	AnimationCurve _CoyoteTimeBySpeed_;
-	bool coyoteInEffect = false;
-	Vector3 coyoteRememberDir;
-	float coyoteRememberSpeed;
-	bool inCoyote = false;
+	// Trackers
+	#region trackers
+
+	private Quaternion CharRot;
+	private RaycastHit hit;
+
+	//Coyote
+	private bool coyoteInEffect = false;
+	private Vector3 coyoteRememberDir;
+	private float coyoteRememberSpeed;
+	private bool _isInCoyote = false;
 
 	//Used to prevent rolling sound from constantly playing.
-	[HideInInspector] public bool Rolling = false;
+	[HideInInspector] public bool _isRolling = false;
 	[HideInInspector] public float rollCounter;
-	float minRollTime = 0.3f;
+	private float minRollTime = 0.3f;
+	#endregion
+	#endregion
+	#endregion
 
-    void Awake()
-    {
-		Tools = GetComponent<S_CharacterTools>();
-    }
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
 
-    private void Start()
-    {
-        AssignTools();
+	// Start is called before the first frame update
+	void Start () {
+		_Tools = GetComponent<S_CharacterTools>();
+		AssignTools();
 		AssignStats();
-    }
+	}
 
-    private void OnDisable()
-    {
-		//cancelCoyote();
-    }
+	// Update is called once per frame
+	void Update () {
 
-    void FixedUpdate()
-    {
+		HandleAnimator();
+		SetSkinRotation();
+		handleInputs();
+	}
 
-		if(Player._speedMagnitude < 15 && _Input._move == Vector3.zero && Player._isGrounded)
+	private void FixedUpdate () {
+		if (_PlayerPhys._speedMagnitude < 15 && _Input._move == Vector3.zero && _PlayerPhys._isGrounded)
 		{
-			Actions.skid._hasSked = false;
+			_Actions.skid._hasSked = false;
 		}
 
 		//Skidding
 
-		if (Player._isGrounded)
-			Actions.skid.RegularSkid();
+		if (_PlayerPhys._isGrounded)
+			_Actions.skid.RegularSkid();
 		else
-			Actions.skid.jumpSkid();
+			_Actions.skid.jumpSkid();
 
 		//Set Homing attack to true
-		if (Player._isGrounded) 
+		if (_PlayerPhys._isGrounded)
 		{
 			readyCoyote();
 
-			if (Actions.Action02 != null) {
-			Actions.Action02.HomingAvailable = true;
+			if (_Actions.Action02 != null)
+			{
+				_Actions.Action02.HomingAvailable = true;
 			}
 
-			if (Actions.Action06.BounceCount > 0) {
-				Actions.Action06.BounceCount = 0;
+			if (_Actions.Action06.BounceCount > 0)
+			{
+				_Actions.Action06.BounceCount = 0;
 			}
-				
+
 		}
-		else if(!inCoyote)
-        {
+		else if (!_isInCoyote)
+		{
 			StartCoroutine(CoyoteTime());
-        }
-
-		
-
-    }
-
-	public void readyCoyote()
-    {
-		inCoyote = false;
-		coyoteInEffect = true;
-		if (Player._isGrounded)
-			coyoteRememberDir = Player._groundNormal;
-		else
-			coyoteRememberDir = transform.up;
-		coyoteRememberSpeed = Player._RB.velocity.y;
+		}
 	}
 
-    void Update()
-    {	
+	#endregion
 
-        //Set Animator Parameters
-        if (Player._isGrounded) { CharacterAnimator.SetInteger("Action", 0); }
-        CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
-        CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
-		CharacterAnimator.SetFloat("HorizontalInput", _Input.moveX *Player._RB.velocity.magnitude);
-        CharacterAnimator.SetBool("Grounded", Player._isGrounded);
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
 
-        
-        //Set Skin Rotation
-        if (Player._isGrounded)
+	private void HandleAnimator() {
+		//Set Animator Parameters
+		if (_PlayerPhys._isGrounded) { _CharacterAnimator.SetInteger("Action", 0); }
+		_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
+		_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._RB.velocity.magnitude);
+		_CharacterAnimator.SetFloat("HorizontalInput", _Input.moveX * _PlayerPhys._RB.velocity.magnitude);
+		_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+
+	public void SetSkinRotation() {
+		//Set Skin Rotation
+		if (_PlayerPhys._isGrounded)
 		{
-			Vector3 releVec = Player.GetRelevantVec(Player._RB.velocity);
-			Vector3 newForward = Player._RB.velocity - transform.up * Vector3.Dot(Player._RB.velocity, transform.up);
+			Vector3 releVec = _PlayerPhys.GetRelevantVec(_PlayerPhys._RB.velocity);
+			Vector3 newForward = _PlayerPhys._RB.velocity - transform.up * Vector3.Dot(_PlayerPhys._RB.velocity, transform.up);
 
-			//newForward = releVec - transform.up * Vector3.Dot(releVec, transform.up);
 
-            if (newForward.magnitude < 0.1f)
-            {
-                newForward = CharacterAnimator.transform.forward;
-            }
+			if (newForward.magnitude < 0.1f)
+			{
+				newForward = _CharacterAnimator.transform.forward;
+			}
 
 			CharRot = Quaternion.LookRotation(newForward, transform.up);
-			CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
-
-           // CharRot = Quaternion.LookRotation( Player.rigidbody.velocity, transform.up);
-           // CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
-        }
-        else
-        {
-			Vector3 releVec = Player.GetRelevantVec(Player._RB.velocity);
+			_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
+		}
+		else
+		{
+			Vector3 releVec = _PlayerPhys.GetRelevantVec(_PlayerPhys._RB.velocity);
 			Vector3 VelocityMod = new Vector3(releVec.x, 0, releVec.z);
-			//VelocityMod = Player.rb.velocity;
 
-			Vector3 newForward = Player._RB.velocity - transform.up * Vector3.Dot(Player._RB.velocity, transform.up);
+			Vector3 newForward = _PlayerPhys._RB.velocity - transform.up * Vector3.Dot(_PlayerPhys._RB.velocity, transform.up);
 
 			if (VelocityMod != Vector3.zero)
-            {
-				//Quaternion CharRot = Quaternion.LookRotation(VelocityMod, -Player.fallGravity.normalized);
+			{
 				Quaternion CharRot = Quaternion.LookRotation(newForward, transform.up);
-				CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+				_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
 			}
-   
-        }
 
-		handleInputs();
-
+		}
 	}
 
-	public void Curl()
-    {
-		if (!Rolling)
+	#endregion
+
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
+
+	#endregion
+
+
+
+	public void readyCoyote () {
+		_isInCoyote = false;
+		coyoteInEffect = true;
+		if (_PlayerPhys._isGrounded)
+			coyoteRememberDir = _PlayerPhys._groundNormal;
+		else
+			coyoteRememberDir = transform.up;
+		coyoteRememberSpeed = _PlayerPhys._RB.velocity.y;
+	}
+
+
+	public void Curl () {
+		if (!_isRolling)
 		{
-			if (Actions.eventMan != null) Actions.eventMan.RollsPerformed += 1;
-			sounds.SpinningSound();
-			_rollingCapsule_.SetActive(true);
-			characterCapsule.SetActive(false);
+			if (_Actions.eventMan != null) _Actions.eventMan.RollsPerformed += 1;
+			_Sounds.SpinningSound();
+			_RollingCapsule.SetActive(true);
+			_CharacterCapsule.SetActive(false);
 			//rollCounter = 0f;
 		}
-		Player._isRolling = true;
-		Rolling = true;
+		_PlayerPhys._isRolling = true;
+		_isRolling = true;
 	}
 
-	void unCurl()
-    {
-		CapsuleCollider col = _rollingCapsule_.GetComponent<CapsuleCollider>();
+	void unCurl () {
+		CapsuleCollider col = _RollingCapsule.GetComponent<CapsuleCollider>();
 
 
-		if (!Physics.Raycast(col.transform.position + col.center, CharacterAnimator.transform.up, 4))
+		if (!Physics.Raycast(col.transform.position + col.center, _CharacterAnimator.transform.up, 4))
 		{
-			characterCapsule.SetActive(true);
-			_rollingCapsule_.SetActive(false);
+			_CharacterCapsule.SetActive(true);
+			_RollingCapsule.SetActive(false);
 			rollCounter = 0f;
-			Rolling = false;
-			Player._isRolling = false;
+			_isRolling = false;
+			_PlayerPhys._isRolling = false;
 
 		}
 
 	}
 
-	void handleInputs()
-    {
+	void handleInputs () {
 
 		//Jump
-		if (_Input.JumpPressed && (Player._isGrounded || coyoteInEffect))
+		if (_Input.JumpPressed && (_PlayerPhys._isGrounded || coyoteInEffect))
 		{
 
-			if (Player._isGrounded)
-				JumpAction.InitialEvents(Player._groundNormal, true, Player._RB.velocity.y);
+			if (_PlayerPhys._isGrounded)
+				_JumpAction.InitialEvents(_PlayerPhys._groundNormal, true, _PlayerPhys._RB.velocity.y);
 			else
-				JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
+				_JumpAction.InitialEvents(coyoteRememberDir, true, coyoteRememberSpeed);
 
-			Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+			_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 		}
 
 		//Set Camera to back
 		if (_Input.CamResetPressed)
 		{
-			if (_Input.moveVec == Vector2.zero && Player._horizontalSpeedMagnitude < 5f)
-				Cam._HedgeCam.GoBehindCharacter(6, 20f, false);
+			if (_Input.moveVec == Vector2.zero && _PlayerPhys._horizontalSpeedMagnitude < 5f)
+				_CamHandler._HedgeCam.GoBehindCharacter(6, 20f, false);
 		}
 
-		
+
 
 		//Do Spindash
-		if (_Input.spinChargePressed && Player._isGrounded && Player._groundNormal.y > _MaximumSlope_ && Player._horizontalSpeedMagnitude < _MaximumSpeed_)
+		if (_Input.spinChargePressed && _PlayerPhys._isGrounded && _PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerPhys._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
 		{
-			Actions.ChangeAction(S_Enums.PlayerStates.SpinCharge);
-			Actions.Action03.InitialEvents();
+			_Actions.ChangeAction(S_Enums.PlayerStates.SpinCharge);
+			_Actions.Action03.InitialEvents();
 		}
 
-        //Check if rolling
-        if (Player._isGrounded && Player._isRolling) 
-		{ 
-			CharacterAnimator.SetInteger("Action", 1); 
+		//Check if rolling
+		if (_PlayerPhys._isGrounded && _PlayerPhys._isRolling)
+		{
+			_CharacterAnimator.SetInteger("Action", 1);
 		}
-        CharacterAnimator.SetBool("isRolling", Player._isRolling);
+		_CharacterAnimator.SetBool("isRolling", _PlayerPhys._isRolling);
 
-        //Change to rolling state
-        if (_Input.RollPressed && Player._isGrounded)
+		//Change to rolling state
+		if (_Input.RollPressed && _PlayerPhys._isGrounded)
 		{
 			Curl();
 		}
 
 		//Exit rolling state
-		if ((!_Input.RollPressed && rollCounter > minRollTime) | !Player._isGrounded)
+		if ((!_Input.RollPressed && rollCounter > minRollTime) | !_PlayerPhys._isGrounded)
 		{
 			unCurl();
 		}
 
-		if (Rolling)
+		if (_isRolling)
 			rollCounter += Time.deltaTime;
 
-		/////Quickstepping
-		///
-		//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
-		if (_Input.RightStepPressed)
-		{
-			quickstepManager.pressRight();
-		}
-		else if (_Input.LeftStepPressed)
-		{
-			quickstepManager.pressLeft();
-		}
-
-		//Enable Quickstep right or left
-		if (_Input.RightStepPressed && !quickstepManager.enabled)
-		{
-			if (Player._horizontalSpeedMagnitude > 10f)
-			{
-
-				quickstepManager.initialEvents(true);
-				quickstepManager.enabled = true;
-			}
-		}
-
-		else if (_Input.LeftStepPressed && !quickstepManager.enabled)
-		{
-			if (Player._horizontalSpeedMagnitude > 10f)
-			{
-				quickstepManager.initialEvents(false);
-				quickstepManager.enabled = true;
-			}
-		}
-
+		_QuickstepManager.ReadyAction();
 
 		//The actions the player can take while the air		
-		if (!Player._isGrounded && !coyoteInEffect)
+		if (!_PlayerPhys._isGrounded && !coyoteInEffect)
 		{
 			//Do a homing attack
-			if (Actions.Action02Control._HasTarget && _Input.HomingPressed && Actions.Action02.HomingAvailable)
+			if (_Actions.Action02Control._HasTarget && _Input.HomingPressed && _Actions.Action02.HomingAvailable)
 			{
 
 				//Do a homing attack
-				if (Actions.Action02 != null && Player._homingDelay_ <= 0)
+				if (_Actions.Action02 != null && _PlayerPhys._homingDelay_ <= 0)
 				{
-					if (Actions.Action02Control._isHomingAvailable)
+					if (_Actions.Action02Control._isHomingAvailable)
 					{
-						sounds.HomingAttackSound();
-						Actions.ChangeAction(S_Enums.PlayerStates.Homing);
-						Actions.Action02.InitialEvents();
+						_Sounds.HomingAttackSound();
+						_Actions.ChangeAction(S_Enums.PlayerStates.Homing);
+						_Actions.Action02.InitialEvents();
 					}
 				}
 			}
 			//Do an air dash;
-			else if (Actions.Action02.HomingAvailable && _Input.SpecialPressed)
+			else if (_Actions.Action02.HomingAvailable && _Input.SpecialPressed)
 			{
-				if (!Actions.Action02Control._HasTarget && _CanDashDuringFall_)
+				if (!_Actions.Action02Control._HasTarget && _CanDashDuringFall_)
 				{
-					sounds.AirDashSound();
-					Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);
-					Actions.Action11.InitialEvents();
+					_Sounds.AirDashSound();
+					_Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);
+					_Actions.Action11.InitialEvents();
 				}
 			}
 
 			//Do a Double Jump
-			else if (_Input.JumpPressed && Actions.Action01._canDoubleJump_)
+			else if (_Input.JumpPressed && _Actions.Action01._canDoubleJump_)
 			{
 
-				Actions.Action01.jumpCount = 0;
-				Actions.Action01.InitialEvents(Vector3.up);
-				Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+				_Actions.Action01.jumpCount = 0;
+				_Actions.Action01.InitialEvents(Vector3.up);
+				_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 			}
 
 
 			//Do a Bounce Attack
-			if (_Input.BouncePressed && Player._RB.velocity.y < 35f)
+			if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f)
 			{
-				Actions.Action06.InitialEvents();
-				Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
+				_Actions.Action06.InitialEvents();
+				_Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
 				//Actions.Action06.ShouldStomp = false;
 
 			}
 
 			//Do a DropDash Attack
-			if (Actions.Action08 != null)
+			if (_Actions.Action08 != null)
 			{
 
-				if (!Player._isGrounded && _Input.RollPressed)
+				if (!_PlayerPhys._isGrounded && _Input.RollPressed)
 				{
-					Actions.Action08.TryDropCharge();
+					_Actions.Action08.TryDropCharge();
 				}
 
-				if (Player._isGrounded && Actions.Action08.DropEffect.isPlaying)
+				if (_PlayerPhys._isGrounded && _Actions.Action08.DropEffect.isPlaying)
 				{
-					Actions.Action08.DropEffect.Stop();
+					_Actions.Action08.DropEffect.Stop();
 				}
 			}
 		}
 	}
 
-	IEnumerator CoyoteTime()
-    {
-		inCoyote = true;
+	IEnumerator CoyoteTime () {
+		_isInCoyote = true;
 		coyoteInEffect = true;
-		float waitFor = _CoyoteTimeBySpeed_.Evaluate(Player._horizontalSpeedMagnitude / 100);
+		float waitFor = _CoyoteTimeBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / 100);
 
 		yield return new WaitForSeconds(waitFor);
-		
-		coyoteInEffect = false;
-    }
 
-	public void cancelCoyote()
-    {
-		inCoyote = false;
+		coyoteInEffect = false;
+	}
+
+	public void cancelCoyote () {
+		_isInCoyote = false;
 		coyoteInEffect = false;
 		StopCoroutine(CoyoteTime());
 	}
 
-	private void AssignStats()
-    {
-		_CoyoteTimeBySpeed_ = Tools.Stats.JumpStats.CoyoteTimeBySpeed;
-		_SpeedToStopAt_ = Tools.Stats.SkiddingStats.speedToStopAt;
-		_MaximumSlope_ = Tools.Stats.SpinChargeStats.maximumSlopePerformedAt;
-		_MaximumSpeed_ = Tools.Stats.SpinChargeStats.maximumSpeedPerformedAt;
-		_SkiddingStartPoint_ = Tools.Stats.SkiddingStats.skiddingStartPoint;
-		_CanDashDuringFall_ = Tools.Stats.HomingStats.canDashWhenFalling;
-		_rollingCapsule_ = Tools.crouchCapsule;
-    }
+	private void AssignStats () {
+		_CoyoteTimeBySpeed_ = _Tools.Stats.JumpStats.CoyoteTimeBySpeed;
+		_MaximumSlopeForSpinDash_ = _Tools.Stats.SpinChargeStats.maximumSlopePerformedAt;
+		_MaximumSpeedForSpinDash_ = _Tools.Stats.SpinChargeStats.maximumSpeedPerformedAt;
+		_CanDashDuringFall_ = _Tools.Stats.HomingStats.canDashWhenFalling;
+	}
 
-	private void AssignTools()
-	{
-        Player = GetComponent<S_PlayerPhysics>();
-        _Input = GetComponent<S_PlayerInput>();
-        Actions = GetComponent<S_ActionManager>();
-        JumpAction = GetComponent<S_Action01_Jump>();
-        Cam = GetComponent<S_Handler_Camera>();
-        quickstepManager = GetComponent<S_Handler_quickstep>();
-        sounds = Tools.SoundControl;
-        quickstepManager.enabled = false;
-        characterCapsule = Tools.characterCapsule;
-        CharacterAnimator = Tools.CharacterAnimator;
-    }
+	private void AssignTools () {
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Input = GetComponent<S_PlayerInput>();
+		_Actions = GetComponent<S_ActionManager>();
+		_JumpAction = GetComponent<S_Action01_Jump>();
+		_CamHandler = GetComponent<S_Handler_Camera>();
+		_QuickstepManager = GetComponent<S_Handler_quickstep>();
+		_Sounds = _Tools.SoundControl;
+		_QuickstepManager.enabled = false;
+		_CharacterCapsule = _Tools.characterCapsule;
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_RollingCapsule = _Tools.crouchCapsule;
+	}
 
 }
