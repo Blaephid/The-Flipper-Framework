@@ -168,9 +168,9 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         JumpBall.SetActive(false);
         if (Actions.Action08 != null)
         {
-            if (Actions.Action08.DropEffect.isPlaying == true)
+            if (Actions.Action08._DropEffect.isPlaying == true)
             {
-                Actions.Action08.DropEffect.Stop();
+                Actions.Action08._DropEffect.Stop();
             }
         }
         _Input.SpecialPressed = false;

@@ -2,17 +2,44 @@
 using System.Collections.Generic;
 using System.Collections;
 
-public class S_Action06_Bounce : MonoBehaviour {
+public class S_Action06_Bounce : MonoBehaviour
+{
 
-    S_ActionManager Action;
-    Animator CharacterAnimator;
-    S_PlayerPhysics Player;
-	S_CharacterTools Tools;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
 
-	S_PlayerInput _Input;
-	S_Control_PlayerSound sounds;
-	S_VolumeTrailRenderer HomingTrailScript;
-	GameObject jumpBall;
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
+	private S_Control_PlayerSound _Sounds;
+	private S_VolumeTrailRenderer HomingTrailScript;
+
+	private Animator _CharacterAnimator;
+	private GameObject jumpBall;
+	#endregion
+
+	//General
+	#region General Properties
+
+	//Stats
+	#region Stats
+	private float _dropSpeed_;
+	[HideInInspector]
+	public List<float> _BounceUpSpeeds_;
+	private float _bounceUpMaxSpeed_;
+	private float _bounceConsecutiveFactor_;
+	private float _bounceHaltFactor_;
+	private float _bounceCoolDown_;
+	#endregion
+
+	// Trackers
+	#region trackers
 
 	[HideInInspector] public bool BounceAvailable;
 	private bool HasBounced;
@@ -20,149 +47,57 @@ public class S_Action06_Bounce : MonoBehaviour {
 	private float CurrentBounceAmount;
 	[HideInInspector] public int BounceCount;
 
-	//[SerializeField] public bool ShouldStomp;
+	private float memoriseSpeed;
+	private float nextSpeed;
 
-	float _dropSpeed_;
-	[HideInInspector] public List<float> BounceUpSpeeds;
-	float _bounceUpMaxSpeed_;
-	float _bounceConsecutiveFactor_;
-	float _bounceHaltFactor_;
-	float _bounceCoolDown_;
+	private RaycastHit hit;
+	#endregion
 
-	float memoriseSpeed;
-	float nextSpeed;
+	#endregion
+	#endregion
 
-	float hitHeight;
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
 
-    Vector3 direction;
-    RaycastHit hit;
+	// Start is called before the first frame update
+	void Start () {
 
-    void Awake()
-    {
-
-		if (Player == null)
-        {
-			Tools = GetComponent<S_CharacterTools>();
-			AssignTools();
-
-			AssignStats();	
-		}
-        
 	}
 
- 
-
-    public void InitialEvents()
-    {
-		if(!Action.lockBounce)
-        {
-	
-			HasBounced = false;
-			memoriseSpeed = Player._horizontalSpeedMagnitude;
-			nextSpeed = memoriseSpeed;
-
-
-			sounds.BounceStartSound();
-			BounceAvailable = false;
-			Player._RB.velocity = new Vector3(Player._RB.velocity.x * _bounceHaltFactor_, 0f, Player._RB.velocity.z * _bounceHaltFactor_);
-			Player.AddCoreVelocity(new Vector3(0, -_dropSpeed_, 0));
-
-			HomingTrailScript.emitTime = -1f;
-			HomingTrailScript.emit = true;
-
-			//Set Animator Parameters
-			CharacterAnimator.SetInteger("Action", 1);
-			CharacterAnimator.SetBool("isRolling", false);
-			jumpBall.SetActive(true);
-		}
-    }
-
-   		
-	private void Bounce(Vector3 normal)
-	{
-
-		hitHeight = transform.position.y;
-
-		_Input.BouncePressed = false;
-		Player.SetIsGrounded(false);
-		Action.Action02.HomingAvailable = true;
-
-		HasBounced = true;
-		CurrentBounceAmount = BounceUpSpeeds [BounceCount];
-		
-
-		CurrentBounceAmount = Mathf.Clamp (CurrentBounceAmount, BounceUpSpeeds [BounceCount], _bounceUpMaxSpeed_);
-
-		//HomingTrailScript.emitTime = (BounceCount +1) * 0.65f;
-		HomingTrailScript.emitTime = CurrentBounceAmount / 60f;
-
-		HomingTrailScript.emit = true;
-
-		Vector3 newVec;
-
-		
-		if(Player._horizontalSpeedMagnitude < 20)
-        {
-			newVec = CharacterAnimator.transform.forward;
-			newVec *= 20;
-		}
-		else if (nextSpeed > Player._horizontalSpeedMagnitude)
+	// Called when the script is enabled, but will only assign the tools and stats on the first time.
+	private void OnEnable () {
+		if (_PlayerPhys == null)
 		{
-			newVec = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z).normalized;
-			newVec *= nextSpeed;
+			_Tools = GetComponent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
 		}
-		else
-			newVec = Player._RB.velocity;
-
-		Player._RB.velocity = new Vector3 (newVec.x, CurrentBounceAmount, newVec.z);
-		Player.AddCoreVelocity (Player._groundNormal);
-
-		sounds.BounceImpactSound ();
-
-		//Set Animator Parameters
-		CharacterAnimator.SetInteger ("Action", 1);
-		CharacterAnimator.SetBool ("isRolling", false);
-		jumpBall.SetActive(false);
-
-		if (BounceCount < BounceUpSpeeds.Count - 1) {
-			BounceCount++;
-		}
+	}
+	private void OnDisable () {
 
 	}
 
-	private void Stomp()
-    {
-		Player._RB.velocity = new Vector3 (0f, Player._RB.velocity.y, 0f);
-		CharacterAnimator.SetInteger("Action", 6);
+	// Update is called once per frame
+	void Update () {
 
-		jumpBall.SetActive(false);
-
-		_Input.BouncePressed = false;
-		Action.Action02.HomingAvailable = true;
-
-		_Input.LockInputForAWhile(20, false);
-
-		HomingTrailScript.emitTime = 0;
-		HomingTrailScript.emit = true;
-
-		Action.ChangeAction(S_Enums.PlayerStates.Regular);
 	}
 
-
-    void FixedUpdate()
-    {
-
-		bool raycasthit = Physics.SphereCast(transform.position, 0.5f, -transform.up, out hit, (Player._speedMagnitude * Time.deltaTime * 0.75f) + Player._negativeGHoverHeight_, Player._Groundmask_);
-        //bool raycasthit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.95f) + Player.negativeGHoverHeight, Player.Playermask);
-		bool groundhit = Player._isGrounded || raycasthit;
+	private void FixedUpdate () {
+		bool raycasthit = Physics.SphereCast(transform.position, 0.5f, -transform.up, out hit, (_PlayerPhys._speedMagnitude * Time.deltaTime * 0.75f) + _PlayerPhys._negativeGHoverHeight_, _PlayerPhys._Groundmask_);
+		//bool raycasthit = Physics.Raycast(transform.position, Vector3.down, out hit, (Player.SpeedMagnitude * Time.deltaTime * 0.95f) + Player.negativeGHoverHeight, Player.Playermask);
+		bool groundhit = _PlayerPhys._isGrounded || raycasthit;
 
 		if (nextSpeed > memoriseSpeed / 2)
 			nextSpeed /= 1.0005f;
 
 
-        //End Action
-        if (!raycasthit && HasBounced && Player._RB.velocity.y > 4f) { 
-			
+		//End Action
+		if (!raycasthit && HasBounced && _PlayerPhys._RB.velocity.y > 4f)
+		{
+
 			HasBounced = false;
 
 			float coolDown = _bounceCoolDown_;
@@ -170,23 +105,20 @@ public class S_Action06_Bounce : MonoBehaviour {
 			//coolDown = Mathf.Clamp(coolDown, 3, 6);
 
 			//StartCoroutine(Action.lockBounceOnly(coolDown));
-			Action.ChangeAction (S_Enums.PlayerStates.Regular);
-		} 
+			_Actions.Action00.StartAction();
+			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+		}
 
-		else if ((groundhit && !HasBounced) || (!groundhit && Player._RB.velocity.y > _dropSpeed_ * 0.4f && !HasBounced)) 
+		else if ((groundhit && !HasBounced) || (!groundhit && _PlayerPhys._RB.velocity.y > _dropSpeed_ * 0.4f && !HasBounced))
 		{
-			
-			//if (Action.SkidPressed)
-   //         {
-			//	Stomp();
-			//}
 
-			if(true)
+
+			if (true)
 			{
-				if (Player._isGrounded)
+				if (_PlayerPhys._isGrounded)
 				{
 					//Debug.Log("Ground Bounce " + Player.GroundNormal);
-					Bounce(Player._groundNormal);
+					Bounce(_PlayerPhys._groundNormal);
 				}
 				else if (raycasthit)
 				{
@@ -195,42 +127,164 @@ public class S_Action06_Bounce : MonoBehaviour {
 					Bounce(hit.normal);
 				}
 				else
-                {
-					
+				{
+
 					Bounce(Vector3.up);
 				}
 			}
 		}
-		else if(Player._RB.velocity.y > _dropSpeed_ * 0.8f)
-        {
-			Player._RB.velocity = new Vector3(Player._RB.velocity.x, -_dropSpeed_, Player._RB.velocity.z);
-        }
-
-    }
-    
-	private void AssignStats()
-    {
-		_dropSpeed_ = Tools.Stats.BounceStats.dropSpeed;
-		for (int i = 0; i < Tools.Stats.BounceStats.listOfBounceSpeeds.Count; i++)
+		else if (_PlayerPhys._RB.velocity.y > _dropSpeed_ * 0.8f)
 		{
-			BounceUpSpeeds.Add(Tools.Stats.BounceStats.listOfBounceSpeeds[i]);
+			_PlayerPhys._RB.velocity = new Vector3(_PlayerPhys._RB.velocity.x, -_dropSpeed_, _PlayerPhys._RB.velocity.z);
 		}
-		_bounceUpMaxSpeed_ = Tools.Stats.BounceStats.bounceUpMaxSpeed;
-		_bounceCoolDown_ = Tools.Stats.BounceStats.bounceCoolDown;
-		_bounceConsecutiveFactor_ = Tools.Stats.BounceStats.bounceConsecutiveFactor;
-		_bounceHaltFactor_ = Tools.Stats.BounceStats.bounceHaltFactor;
 
 	}
 
-	private void AssignTools()
-    {
-		Player = GetComponent<S_PlayerPhysics>();
+	public void AttemptAction () {
+		if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f)
+		{
+			InitialEvents();
+			_Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
+		}
+	}
+
+	public void StartAction () {
+
+	}
+
+	public void StopAction () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+
+	public void HandleInputs () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+
+	#endregion
+
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
+
+	//Responsible for assigning objects and components from the tools script.
+	private void AssignTools () {
 		_Input = GetComponent<S_PlayerInput>();
-		Action = GetComponent<S_ActionManager>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Actions = GetComponent<S_ActionManager>();
 
-		CharacterAnimator = Tools.CharacterAnimator;
-		sounds = Tools.SoundControl;
-		HomingTrailScript = Tools.HomingTrailScript;
-		jumpBall = Tools.JumpBall;
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_Sounds = _Tools.SoundControl;
+		HomingTrailScript = _Tools.HomingTrailScript;
+		jumpBall = _Tools.JumpBall;
 	}
+
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
+		_dropSpeed_ = _Tools.Stats.BounceStats.dropSpeed;
+		for (int i = 0 ; i < _Tools.Stats.BounceStats.listOfBounceSpeeds.Count ; i++)
+		{
+			_BounceUpSpeeds_.Add(_Tools.Stats.BounceStats.listOfBounceSpeeds[i]);
+		}
+		_bounceUpMaxSpeed_ = _Tools.Stats.BounceStats.bounceUpMaxSpeed;
+		_bounceCoolDown_ = _Tools.Stats.BounceStats.bounceCoolDown;
+		_bounceConsecutiveFactor_ = _Tools.Stats.BounceStats.bounceConsecutiveFactor;
+		_bounceHaltFactor_ = _Tools.Stats.BounceStats.bounceHaltFactor;
+	}
+	#endregion
+
+
+
+	public void InitialEvents () {
+		if (!_Actions.lockBounce)
+		{
+
+			HasBounced = false;
+			memoriseSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+			nextSpeed = memoriseSpeed;
+
+
+			_Sounds.BounceStartSound();
+			BounceAvailable = false;
+			_PlayerPhys._RB.velocity = new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_);
+			_PlayerPhys.AddCoreVelocity(new Vector3(0, -_dropSpeed_, 0));
+
+			HomingTrailScript.emitTime = -1f;
+			HomingTrailScript.emit = true;
+
+			//Set Animator Parameters
+			_CharacterAnimator.SetInteger("Action", 1);
+			_CharacterAnimator.SetBool("isRolling", false);
+			jumpBall.SetActive(true);
+		}
+	}
+
+
+	private void Bounce ( Vector3 normal ) {
+
+		_Input.BouncePressed = false;
+		_PlayerPhys.SetIsGrounded(false);
+		_Actions.Action02._isHomingAvailable = true;
+
+		HasBounced = true;
+		CurrentBounceAmount = _BounceUpSpeeds_[BounceCount];
+
+
+		CurrentBounceAmount = Mathf.Clamp(CurrentBounceAmount, _BounceUpSpeeds_[BounceCount], _bounceUpMaxSpeed_);
+
+		//HomingTrailScript.emitTime = (BounceCount +1) * 0.65f;
+		HomingTrailScript.emitTime = CurrentBounceAmount / 60f;
+
+		HomingTrailScript.emit = true;
+
+		Vector3 newVec;
+
+
+		if (_PlayerPhys._horizontalSpeedMagnitude < 20)
+		{
+			newVec = _CharacterAnimator.transform.forward;
+			newVec *= 20;
+		}
+		else if (nextSpeed > _PlayerPhys._horizontalSpeedMagnitude)
+		{
+			newVec = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z).normalized;
+			newVec *= nextSpeed;
+		}
+		else
+			newVec = _PlayerPhys._RB.velocity;
+
+		_PlayerPhys._RB.velocity = new Vector3(newVec.x, CurrentBounceAmount, newVec.z);
+		_PlayerPhys.AddCoreVelocity(_PlayerPhys._groundNormal);
+
+		_Sounds.BounceImpactSound();
+
+		//Set Animator Parameters
+		_CharacterAnimator.SetInteger("Action", 1);
+		_CharacterAnimator.SetBool("isRolling", false);
+		jumpBall.SetActive(false);
+
+		if (BounceCount < _BounceUpSpeeds_.Count - 1)
+		{
+			BounceCount++;
+		}
+
+	}
+
+
 }

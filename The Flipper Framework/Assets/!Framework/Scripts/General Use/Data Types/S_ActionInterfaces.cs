@@ -5,16 +5,16 @@ using UnityEngine;
 
 public interface IAction
 {
-	void ReadyAction ();
+	bool AttemptAction ();
 
 	void StartAction ();
 
-	void EndAction ();
+	void StopAction ();
 }
 
 public interface IMainAction : IAction
 {
-	
+	void HandleInputs ();
 }
 
 public interface ISubAction : IAction

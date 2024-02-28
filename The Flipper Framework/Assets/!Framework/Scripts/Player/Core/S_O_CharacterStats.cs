@@ -28,6 +28,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.6f, 0.1f),
 				new Keyframe(1f, 0.02f),
 			}),
+			angleToAccelerate = 120,
 		};
 	}
 
@@ -41,8 +42,10 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: Decides how much of the acceleration values to accelerate by based on current running speed by Top Speed (not max speed)")]
 		public AnimationCurve     AccelBySpeed;
 		[Tooltip("Core: Decides how much of the acceleration values to accelerate by based on y normal of current slope. 0 = horizontal wall. ")]
-		public AnimationCurve	AccelBySlopeAngle;
-	
+		public AnimationCurve         AccelBySlopeAngle;
+		[Tooltip("Core: If the angle between current direction and input direction is greater than this, then the player will not gain speed")]
+		public float                    angleToAccelerate;
+
 	}
 	#endregion
 
@@ -153,7 +156,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Surface : Decides how fast the player will lose speed when not inputing in the air. How much speed to lose per frame.")]
 		public float              airDecel;
 		[Tooltip("Surface: Decides how fast the player will lose speed when rolling and not on a slope, even if there is an input. Applied against the roll acceleration.")]
-		public float		rollingFlatDecell;
+		public float                  rollingFlatDecell;
 		[Tooltip("Core : Multiplies the deceleration this frame, based on the current speed divided by Max speed.")]
 		public AnimationCurve     DecelBySpeed;
 		[Tooltip("Surface : Decides how much horizontal speed the player will lose for each frame in the air. Stacks with other decelerations")]
@@ -275,18 +278,18 @@ public class S_O_CharacterStats : ScriptableObject
 
 	[System.Serializable]
 	public struct StrucStickToGround
-	{	
+	{
 		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (loops), and Y is positive Slopes (imagine running on the outside of a loop). ")]
-		public Vector2	stickingLerps;
+		public Vector2      stickingLerps;
 		[Range(0, 1)]
 		[Tooltip("Core: The maximum difference betwen current ground angle and movement direction that allows the player to stick. 0 means the player can't stick to the ground, 1 is everything bellow 180° difference, and 0.5 is 90° angles")]
-		public float	stickingNormalLimit;
+		public float        stickingNormalLimit;
 		[Tooltip("Core: The cast ahead to check for slopes to align to. Multiplied by the movement this frame. Too much of this value might send the player flying off before it hits the loop, too little might see micro stutters, default value 1.9")]
-		public float	stickCastAhead;
+		public float        stickCastAhead;
 		[Tooltip("Core: This is the position above the raycast hit point that the player will be placed if they are loosing grip.")]
-		public float	negativeGHoverHeight;
+		public float        negativeGHoverHeight;
 		[Tooltip("Core: If the y value of the player's relative up direction is less than this (-1 is fully upside down) when in the air, then they will rotate sideways to face back up, rather than the conventonal rotation approach. This keeps them facing in their movement direction.")]
-		public float	rotationResetThreshold;
+		public float        rotationResetThreshold;
 		[Tooltip("Core: When lerping up negative slopes, if the difference between the two is under this, then will lerp up it, otherwise it is seen as a wall, not a slope. The value is based on the normal y of the current slope, so running on a horizonal wall can have a different difference limit to running on flat ground.")]
 		public AnimationCurve    upwardsLimitByCurrentSlope;
 		[Range (0, 1.5f)]
@@ -324,11 +327,11 @@ public class S_O_CharacterStats : ScriptableObject
 		public float        raytoGroundSpeedMax;
 	}
 
-		#endregion
+	#endregion
 
-		#region air
-		//-------------------------------------------------------------------------------------------------
-		public StrucInAir WhenInAir = SetStrucInAir();
+	#region air
+	//-------------------------------------------------------------------------------------------------
+	public StrucInAir WhenInAir = SetStrucInAir();
 	public StrucInAir DefaultWhenInAir = SetStrucInAir();
 	static StrucInAir SetStrucInAir () {
 		return new StrucInAir
@@ -338,7 +341,6 @@ public class S_O_CharacterStats : ScriptableObject
 			upGravity = new Vector3(0f, -1.45f, 0),
 			keepNormalForThis = 0.183f,
 			controlAmmount = new Vector2(0.7f, 0.8f),
-			skiddingForce = -2.5f,
 			fallGravity = new Vector3(0, -1.5f, 0)
 		};
 	}
@@ -354,8 +356,6 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    keepNormalForThis;
 		[Tooltip("Surface: X is multiplied with the turning speed when in the air, Y is multiplied with acceleration when in the air.")]
 		public Vector2   controlAmmount;
-		[Tooltip("Surface: ")]
-		public float    skiddingForce;
 		[Tooltip("Surface: Force to add onto the player per frame when in the air and falling downwards.")]
 		public Vector3  fallGravity;
 		[Tooltip("Surface: Force to add onto the player per frame when in the air but currently moving upwards (such as launched by a slope)")]
@@ -410,19 +410,33 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucSkidding
 		{
 			speedToStopAt = 10,
-			skiddingStartPoint = 5,
-			skiddingIntensity = -5
+			shouldSkiddingDisableTurning = true,
+			angleToPerformSkid = 5,
+			skiddingIntensity = -5,
+			canSkidInAir = true,
+			skiddingIntensityInAir = -2.5f,
 		};
 	}
 
 
 	[System.Serializable]
+	[Tooltip("Surface: Skidding is when the player holds inputs against their movement direction to quickly slow down.")]
 	public struct StrucSkidding
 	{
-		public float    speedToStopAt;
-
-		public float    skiddingStartPoint;
-		public float    skiddingIntensity;
+		[Tooltip("Surface: Immediately stop if skidding while under this speed.")]
+		public float	speedToStopAt;
+		[Tooltip("Surface: Whether the player can change their direction while skidding")]
+		public bool	shouldSkiddingDisableTurning;
+		[Tooltip("Surface: How precise the angle has to be against the character's movement. E.G. a value of 160 means the player's input should be between a 160 and 180 degrees angle from movement.")]
+		public float	angleToPerformSkid;
+		[Range(-100, 0)]
+		[Tooltip("Surface: How much force to apply against the character per frame as they skid on the ground.")]
+		public float	skiddingIntensity;
+		[Tooltip("Surface: Whehter or not the player can perform a skid while airborn.")]
+		public bool	canSkidInAir;
+		[Range(-100, 0)]
+		[Tooltip("Surface: How much force to apply against the character per frame as they skid in the air.")]
+		public float	skiddingIntensityInAir;
 	}
 
 	#endregion
@@ -497,11 +511,11 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		public bool         canDoubleJump;
 		public bool         canTripleJump;
-		public int	jumpCount;
+		public int          jumpCount;
 
-		public float	doubleJumpSpeed;
-		public float	doubleJumpDuration;
-		public float	speedLossOnDoubleJump;
+		public float        doubleJumpSpeed;
+		public float        doubleJumpDuration;
+		public float        speedLossOnDoubleJump;
 	}
 	#endregion
 
@@ -525,10 +539,10 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucQuickstep
 	{
-		public float	stepSpeed;
-		public float	stepDistance;
-		public float	airStepSpeed;
-		public float	airStepDistance;
+		public float        stepSpeed;
+		public float        stepDistance;
+		public float        airStepSpeed;
+		public float        airStepDistance;
 		public LayerMask    StepLayerMask;
 
 	}
@@ -583,13 +597,13 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucHomingSearch
 	{
-		public float		targetSearchDistance;
-		public float		faceRange;
-		public LayerMask		TargetLayer;
-		public LayerMask		blockingLayers;
-		public float		iconScale;
-		public float		iconDistanceScaling;
-		public float		facingAmount;
+		public float                  targetSearchDistance;
+		public float                  faceRange;
+		public LayerMask              TargetLayer;
+		public LayerMask              blockingLayers;
+		public float                  iconScale;
+		public float                  iconDistanceScaling;
+		public float                  facingAmount;
 
 	}
 
@@ -629,6 +643,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucSpinCharge SetStrucSpinCharge () {
 		return new StrucSpinCharge
 		{
+			whatAimMethod = S_Enums.SpinChargeAiming.Camera,
 			chargingSpeed = 1.02f,
 			minimunCharge = 20f,
 			maximunCharge = 110f,
@@ -661,7 +676,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.75f, 0.15f),
 				new Keyframe(1f, 0f),
 			}),
-			skidStartPoint = 10f,
+			angleToPerformSkid = 10f,
 			skidIntesity = 3f
 		};
 	}
@@ -669,6 +684,7 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucSpinCharge
 	{
+		public S_Enums.SpinChargeAiming whatAimMethod;
 		public float              chargingSpeed;
 		public float              minimunCharge;
 		public float              maximunCharge;
@@ -679,7 +695,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public AnimationCurve     SpeedLossByTime;
 		public AnimationCurve     ForceGainByAngle;
 		public AnimationCurve     ForceGainByCurrentSpeed;
-		public float              skidStartPoint;
+		public float              angleToPerformSkid;
 		public float              skidIntesity;
 
 	}
@@ -701,7 +717,7 @@ public class S_O_CharacterStats : ScriptableObject
 			bounceCoolDown = 8f,
 			bounceUpMaxSpeed = 75f,
 			bounceConsecutiveFactor = 1.05f,
-			bounceAirControl = new Vector2 (1.4f, 1.1f),
+			bounceAirControl = new Vector2(1.4f, 1.1f),
 		};
 	}
 
@@ -716,7 +732,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float              bounceCoolDown;
 		public float              bounceUpMaxSpeed;
 		public float              bounceConsecutiveFactor;
-		public Vector2	bounceAirControl;
+		public Vector2      bounceAirControl;
 
 	}
 	#endregion

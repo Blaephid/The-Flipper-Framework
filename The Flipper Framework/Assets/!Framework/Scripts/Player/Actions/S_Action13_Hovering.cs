@@ -47,8 +47,8 @@ public class S_Action13_Hovering : MonoBehaviour
 	}
 
 	private void AssignStats () {
-		_skiddingStartPoint_ = Tools.Stats.SkiddingStats.skiddingStartPoint;
-		_airSkiddingIntensity_ = Tools.Stats.WhenInAir.skiddingForce;
+		_skiddingStartPoint_ = Tools.Stats.SkiddingStats.angleToPerformSkid;
+		_airSkiddingIntensity_ = Tools.Stats.SkiddingStats.skiddingIntensity;
 	}
 
 	public void InitialEvents ( S_Trigger_Updraft up ) {
@@ -68,7 +68,7 @@ public class S_Action13_Hovering : MonoBehaviour
 		CharacterAnimator.SetInteger("Action", 13);
 
 		//Do a homing attack
-		if (Actions.Action02.HomingAvailable && Actions.Action02Control._HasTarget && _Input.HomingPressed)
+		if (Actions.Action02._isHomingAvailable && Actions.Action02Control._HasTarget && _Input.HomingPressed)
 		{
 
 			//Do a homing attack
@@ -126,7 +126,7 @@ public class S_Action13_Hovering : MonoBehaviour
 
 			if (PlayerPhys._speedMagnitude < 4)
 			{
-				PlayerPhys._isRolling = false;
+				Actions.Action00.SetIsRolling(false);
 
 			}
 		}

@@ -120,7 +120,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			{
 				if (Actions.Action02 != null)
 				{
-					Actions.Action02.HomingAvailable = true;
+					Actions.Action02._isHomingAvailable = true;
 				}
 			}
 			updateTargets = false;
@@ -196,9 +196,9 @@ public class S_Interaction_Objects : MonoBehaviour
 			JumpBall.SetActive(false);
 			if (Actions.Action08 != null)
 			{
-				if (Actions.Action08.DropEffect.isPlaying == true)
+				if (Actions.Action08._DropEffect.isPlaying == true)
 				{
-					Actions.Action08.DropEffect.Stop();
+					Actions.Action08._DropEffect.Stop();
 				}
 			}
 
@@ -220,7 +220,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			else if (!col.GetComponent<S_Data_SpeedPad>().path)
 			{
 
-				Actions.Action02.HomingAvailable = true;
+				Actions.Action02._isHomingAvailable = true;
 
 				transform.rotation = Quaternion.identity;
 				//ResetPlayerRotation
@@ -257,7 +257,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (pad.isDashRing)
 				{
 
-					Actions.Action00.cancelCoyote();
+					Actions.Action00.CancelCoyote();
 					Actions.ChangeAction(S_Enums.PlayerStates.Regular);
 					CharacterAnimator.SetBool("Grounded", false);
 					CharacterAnimator.SetInteger("Action", 0);
@@ -345,9 +345,9 @@ public class S_Interaction_Objects : MonoBehaviour
 			JumpBall.SetActive(false);
 			if (Actions.Action08 != null)
 			{
-				if (Actions.Action08.DropEffect.isPlaying == true)
+				if (Actions.Action08._DropEffect.isPlaying == true)
 				{
-					Actions.Action08.DropEffect.Stop();
+					Actions.Action08._DropEffect.Stop();
 				}
 			}
 			DamagePlayer();
@@ -394,7 +394,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		if (col.tag == "Spring")
 		{
-			Actions.Action00.cancelCoyote();
+			Actions.Action00.CancelCoyote();
 			Player._isGravityOn = true;
 
 			if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
@@ -403,9 +403,9 @@ public class S_Interaction_Objects : MonoBehaviour
 			JumpBall.SetActive(false);
 			if (Actions.Action08 != null)
 			{
-				if (Actions.Action08.DropEffect.isPlaying == true)
+				if (Actions.Action08._DropEffect.isPlaying == true)
 				{
-					Actions.Action08.DropEffect.Stop();
+					Actions.Action08._DropEffect.Stop();
 				}
 			}
 
@@ -440,7 +440,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 				if (Actions.Action02 != null)
 				{
-					Actions.Action02.HomingAvailable = true;
+					Actions.Action02._isHomingAvailable = true;
 				}
 
 				if (spring.anim != null)
@@ -472,9 +472,9 @@ public class S_Interaction_Objects : MonoBehaviour
 			JumpBall.SetActive(false);
 			if (Actions.Action08 != null)
 			{
-				if (Actions.Action08.DropEffect.isPlaying == true)
+				if (Actions.Action08._DropEffect.isPlaying == true)
 				{
-					Actions.Action08.DropEffect.Stop();
+					Actions.Action08._DropEffect.Stop();
 				}
 			}
 
@@ -495,7 +495,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				Player.transform.position = col.ClosestPoint(Player.transform.position);
 				if (Actions.Action02 != null)
 				{
-					Actions.Action02.HomingAvailable = true;
+					Actions.Action02._isHomingAvailable = true;
 				}
 
 				Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;

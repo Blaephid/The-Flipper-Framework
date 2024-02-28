@@ -1,58 +1,66 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S_Action01_Jump : MonoBehaviour
+public class S_Action01_Jump : MonoBehaviour, IMainAction
 {
-	S_CharacterTools Tools;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
 
-	RaycastHit hit;
-	Vector3 DirInput;
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
+	private S_Handler_Camera _CamHandler;
+	private S_Handler_quickstep _QuickStepManager;
+	private S_Control_PlayerSound _Sounds;
 
-	[Header("Basic Resources")]
+	private Animator CharacterAnimator;
+	private GameObject JumpBall;
+	#endregion
 
-	S_PlayerPhysics Player;
-	S_ActionManager Actions;
-	S_Handler_HomingAttack homingControl;
-	S_Handler_Camera Cam;
-	S_Handler_quickstep quickStepManager;
-	S_PlayerInput _Input;
+	//General
+	#region General Properties
 
-	S_Control_PlayerSound sounds;
-	Animator CharacterAnimator;
+	//Stats
+	#region Stats
+	[Header("Core Stats")]
+	private float _startJumpDuration_;
+	private float _startSlopedJumpDuration_;
+	private float _startJumpSpeed_;
+	private float _jumpSlopeConversion_;
+	private float _stopYSpeedOnRelease_;
+
+	[HideInInspector] 
+	public bool _canDoubleJump_ = true;
+	bool _canTripleJump_ = false;
+
+	float _doubleJumpSpeed_;
+	float _doubleJumpDuration_;
+	float _speedLossOnDoubleJump_;
+	#endregion
+
+	// Trackers
+	#region trackers
+
 	public float skinRotationSpeed;
-	GameObject JumpBall;
-
 	public Vector3 InitialNormal { get; set; }
 	public float Counter { get; set; }
 	public float ControlCounter;
 	[HideInInspector] public int jumpCount;
 	[HideInInspector] public bool Jumping;
 
-	[Header("Core Stats")]
-	[HideInInspector] public float _startJumpDuration_;
-	[HideInInspector] public float _startSlopedJumpDuration_;
-	[HideInInspector] public float _startJumpSpeed_;
-	[HideInInspector] public float _jumpSlopeConversion_;
-	[HideInInspector] public float _stopYSpeedOnRelease_;
-	[HideInInspector] public float _rollingLandingBoost_;
-
-	[HideInInspector] public float JumpDuration;
-	[HideInInspector] public float SlopedJumpDuration;
-	[HideInInspector] public float JumpSpeed;
-	float _speedLossOnJump_;
-	float _speedLossOnDoubleJump_;
+	private float JumpDuration;
+	private float SlopedJumpDuration;
+	private float JumpSpeed;
 
 
 	float jumpSpeedModifier = 1f;
 	float jumpDurationModifier = 1f;
-
-	[Header("Additional Jump Stats")]
-
-	[HideInInspector] public bool _canDoubleJump_ = true;
-	bool _canTripleJump_ = false;
-
-	float _doubleJumpSpeed_;
-	float _doubleJumpDuration_;
 
 
 	float jumpSlopeSpeed;
@@ -60,153 +68,70 @@ public class S_Action01_Jump : MonoBehaviour
 
 	[HideInInspector] public float timeJumping;
 	bool cancelled;
+	#endregion
 
+	#endregion
+	#endregion
 
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
 
+	// Start is called before the first frame update
+	void Start () {
 
-	void Awake () {
-		if (Player == null)
+	}
+
+	// Called when the script is enabled, but will only assign the tools and stats on the first time.
+	private void OnEnable () {
+		if (_PlayerPhys == null)
 		{
-			Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
-
 			AssignStats();
 		}
+		JumpBall.SetActive(true);
 	}
 
-	public void InitialEvents ( Vector3 normaltoJump, bool Grounded = false, float verticalSpeed = 0, float controlDelay = 0, float minJumpSpeed = 0 ) {
-		if (!Actions.lockDoubleJump)
-		{
-			_Input.RollPressed = false;
-			cancelled = false;
-			Jumping = true;
-			Counter = 0;
-			ControlCounter = controlDelay;
-			jumpSlopeSpeed = 0;
-			timeJumping = 0f;
-			//Debug.Log(jumpCount);
-
-			Player.SetIsGrounded(false);
-
-			if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
-				normaltoJump = Vector3.up;
-
-			if (verticalSpeed < 0)
-				verticalSpeed = 0;
-
-			//If performing a grounded jump. JumpCount may be changed externally to allow for this.
-			//if (Grounded || jumpCount == -1)
-			if (Grounded)
-			{
-				//Player._RB.velocity = new Vector3(Player._RB.velocity.x * _speedLossOnJump_, verticalSpeed, Player._RB.velocity.z * _speedLossOnJump_);
-
-
-				if (Actions.eventMan != null) Actions.eventMan.JumpsPerformed += 1;
-
-				//Sets jump stats for this specific jump.
-
-				JumpSpeed = _startJumpSpeed_ * jumpSpeedModifier;
-				JumpDuration = _startJumpDuration_ * jumpDurationModifier;
-				SlopedJumpDuration = _startSlopedJumpDuration_ * jumpDurationModifier;
-
-				//Number of jumps set to zero, allowing for double jumps.
-				jumpCount = 0;
-
-				//Sets jump direction
-				InitialNormal = normaltoJump;
-
-				//SnapOutOfGround to make sure you do jump
-				transform.position += (InitialNormal * 0.3f);
-
-				//Jump higher depending on the speed and the slope you're in
-				if (Player._RB.velocity.y > 0 && normaltoJump.y > 0)
-				{
-					jumpSlopeSpeed = Player._RB.velocity.y * _jumpSlopeConversion_;
-				}
-
-			}
-
-			else
-			{
-
-				if (Actions.eventMan != null) Actions.eventMan.DoubleJumpsPerformed += 1;
-
-				//Increases jump count
-				if (jumpCount == 0)
-					jumpCount = 1;
-
-				//Sets jump direction
-				InitialNormal = normaltoJump;
-
-				//Sets jump stats for this specific jump.
-				JumpSpeed = _doubleJumpSpeed_ * jumpSpeedModifier;
-				JumpDuration = _doubleJumpDuration_ * jumpDurationModifier;
-				SlopedJumpDuration = _doubleJumpDuration_ * jumpDurationModifier;
-
-				JumpAgain();
-			}
-
-			//SetAnims
-			CharacterAnimator.SetInteger("Action", 1);
-
-
-			//Sound
-			sounds.JumpSound();
-		}
-
+	private void OnDisable () {
+		JumpBall.SetActive(false);
 	}
 
+
+	// Update is called once per frame
 	void Update () {
-
 		//Set Animator Parameters
-		if (Actions.whatAction == S_Enums.PlayerStates.Jump)
-		{
-			CharacterAnimator.SetInteger("Action", 1);
-		}
+		_Actions.Action00.HandleAnimator(1);
+		_Actions.Action00.SetSkinRotation(skinRotationSpeed);
 
-		if (!(Player._RB.velocity.y < 0.1f && Player._RB.velocity.y > -0.1f))
-		{
-			CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
-		}
-		CharacterAnimator.SetFloat("GroundSpeed", Player._horizontalSpeedMagnitude);
-		CharacterAnimator.SetBool("Grounded", Player._isGrounded);
-		CharacterAnimator.SetBool("isRolling", false);
+		////Set Animation Angle
+		//Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
 
-		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z);
-
-		if (VelocityMod != Vector3.zero)
-		{
-			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-			CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
-		}
-
-		//if (Actions.Action02 != null)
+		//if (VelocityMod != Vector3.zero)
 		//{
-		//    Actions.Action02.HomingAvailable = true;
+		//	Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
+		//	CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 		//}
-		if (Actions.Action06 != null)
-		{
-			Actions.Action06.BounceAvailable = true;
-		}
 
 		//Actions
-		if (!Actions.isPaused)
+		if (!_Actions.isPaused)
 		{
 			//If can homing attack pressed.
 			if (_Input.HomingPressed)
 			{
-				if (Actions.Action02.HomingAvailable && Actions.Action02Control._HasTarget && !Player._isGrounded)
+				if (_Actions.Action02._isHomingAvailable && _Actions.Action02Control._HasTarget && !_PlayerPhys._isGrounded)
 				{
 
 					//Do a homing attack
-					if (Actions.Action02 != null && Player._homingDelay_ <= 0)
+					if (_Actions.Action02 != null && _PlayerPhys._homingDelay_ <= 0)
 					{
-						if (Actions.Action02Control._isHomingAvailable)
+						if (_Actions.Action02Control._isHomingAvailable)
 						{
-							sounds.HomingAttackSound();
-							Actions.ChangeAction(S_Enums.PlayerStates.Homing);
-							Actions.Action02.InitialEvents();
+							_Sounds.HomingAttackSound();
+							_Actions.ChangeAction(S_Enums.PlayerStates.Homing);
+							_Actions.Action02.InitialEvents();
 						}
 					}
 
@@ -217,13 +142,13 @@ public class S_Action01_Jump : MonoBehaviour
 			//If no tgt, do air dash;
 			if (_Input.SpecialPressed)
 			{
-				if (Actions.Action02.HomingAvailable)
+				if (_Actions.Action02._isHomingAvailable)
 				{
-					if (!Actions.Action02Control._HasTarget)
+					if (!_Actions.Action02Control._HasTarget)
 					{
-						sounds.AirDashSound();
-						Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);
-						Actions.Action11.InitialEvents();
+						_Sounds.AirDashSound();
+						_Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);
+						_Actions.Action11.InitialEvents();
 					}
 				}
 			}
@@ -238,7 +163,7 @@ public class S_Action01_Jump : MonoBehaviour
 				{
 
 					InitialEvents(Vector3.up);
-					Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+					_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 				}
 
 				//Do a triple jump
@@ -246,7 +171,7 @@ public class S_Action01_Jump : MonoBehaviour
 				{
 					//Debug.Log("Do a triple jump");
 					InitialEvents(Vector3.up);
-					Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+					_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 				}
 			}
 
@@ -254,10 +179,10 @@ public class S_Action01_Jump : MonoBehaviour
 			//Do a Bounce Attack
 			if (_Input.BouncePressed)
 			{
-				if (Actions.Action06.BounceAvailable && Player._RB.velocity.y < 35f)
+				if (_Actions.Action06.BounceAvailable && _PlayerPhys._RB.velocity.y < 35f)
 				{
-					Actions.Action06.InitialEvents();
-					Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
+					_Actions.Action06.InitialEvents();
+					_Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
 					//	Actions.Action06.ShouldStomp = false;
 				}
 
@@ -266,8 +191,8 @@ public class S_Action01_Jump : MonoBehaviour
 			//Set Camera to back
 			if (_Input.CamResetPressed)
 			{
-				if (_Input.moveX == 0 && _Input.moveY == 0 && Player._horizontalSpeedMagnitude < 5f)
-					Cam._HedgeCam.GoBehindCharacter(6, 20, false);
+				if (_Input.moveX == 0 && _Input.moveY == 0 && _PlayerPhys._horizontalSpeedMagnitude < 5f)
+					_CamHandler._HedgeCam.GoBehindCharacter(6, 20, false);
 			}
 
 
@@ -276,16 +201,15 @@ public class S_Action01_Jump : MonoBehaviour
 
 			if (_Input.RollPressed)
 			{
-				Actions.Action08.TryDropCharge();
+				_Actions.Action08.TryDropCharge();
 
 			}
 
-			quickStepManager.ReadyAction();
+			_QuickStepManager.AttemptAction();
 		}
-
 	}
 
-	void FixedUpdate () {
+	private void FixedUpdate () {
 		//Jump action
 		Counter += Time.fixedDeltaTime;
 		ControlCounter += Time.fixedDeltaTime;
@@ -308,35 +232,35 @@ public class S_Action01_Jump : MonoBehaviour
 		//Add Jump Speed
 		else if (Counter < JumpDuration && Jumping)
 		{
-			Player._isRolling = false;
+			_Actions.Action00.SetIsRolling(false);
 			if (Counter < SlopedJumpDuration)
 			{
-				Player.AddCoreVelocity(InitialNormal * (JumpSpeed), false);
+				_PlayerPhys.AddCoreVelocity(InitialNormal * (JumpSpeed), false);
 				//Debug.Log(InitialNormal);
 			}
 			else
 			{
-				Player.AddCoreVelocity(new Vector3(0, 1, 0) * (JumpSpeed), false);
+				_PlayerPhys.AddCoreVelocity(new Vector3(0, 1, 0) * (JumpSpeed), false);
 			}
 			//Extra speed
-			Player.AddCoreVelocity(new Vector3(0, 1, 0) * (jumpSlopeSpeed), false);
+			_PlayerPhys.AddCoreVelocity(new Vector3(0, 1, 0) * (jumpSlopeSpeed), false);
 		}
 
 
 
 		//Cancel Jump
-		if (!cancelled && Player._RB.velocity.y > 0 && !Jumping && Counter > 0.1)
+		if (!cancelled && _PlayerPhys._RB.velocity.y > 0 && !Jumping && Counter > 0.1)
 		{
 			cancelled = true;
 			//jumpCount = 1;
-			Vector3 Velocity = new Vector3(Player._RB.velocity.x, Player._RB.velocity.y, Player._RB.velocity.z);
+			Vector3 Velocity = new Vector3(_PlayerPhys._RB.velocity.x, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z);
 			Velocity.y = Velocity.y - _stopYSpeedOnRelease_;
 			//Player._RB.velocity = Velocity;
 			//Player.setTotalVelocity(Velocity);
 		}
 
 		//End Action
-		if (Player._isGrounded && Counter > SlopedJumpDuration)
+		if (_PlayerPhys._isGrounded && Counter > SlopedJumpDuration)
 		{
 
 			jumpCount = 0;
@@ -345,14 +269,198 @@ public class S_Action01_Jump : MonoBehaviour
 			_Input.JumpPressed = false;
 			JumpBall.SetActive(false);
 
-			Actions.ChangeAction(S_Enums.PlayerStates.Regular);
-			Actions.Action06.BounceCount = 0;
+			_Actions.Action00.StartAction();
+			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.Action06.BounceCount = 0;
 			//JumpBall.SetActive(false);
 		}
 
 		//Skidding
-		Actions.skid.jumpSkid();
+		_Actions.skid.AttemptAction();
+	}
 
+	public bool AttemptAction () {
+		bool willChangeAction = false;
+		if (_Input.JumpPressed)
+		{
+			switch(_Actions.whatAction)
+			{
+				default:
+					//Normal grounded Jump
+					if (_PlayerPhys._isGrounded)
+					{
+						InitialEvents(_PlayerPhys._groundNormal, true, _PlayerPhys._RB.velocity.y);
+						_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+					}
+					//Jump from regular action due to coyote time
+					else if (_Actions.Action00._coyoteInEffect)
+					{
+						InitialEvents(_Actions.Action00._coyoteRememberDir, true, _Actions.Action00._coyoteRememberSpeed);
+						_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+					}
+					//Jump when in the air
+					else
+					{
+						jumpCount = 0;
+						InitialEvents(Vector3.up);
+						_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+					}
+					willChangeAction = true;
+					break;
+			}
+		}
+		return willChangeAction;
+	}
+
+	public void StartAction () {
+
+	}
+
+	public void StopAction () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+
+	public void HandleInputs () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+
+	#endregion
+
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
+	//Responsible for assigning objects and components from the tools script.
+	private void AssignTools () {
+
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Actions = GetComponent<S_ActionManager>();
+		_CamHandler = GetComponent<S_Handler_Camera>();
+
+		_QuickStepManager = GetComponent<S_Handler_quickstep>();
+		_Input = GetComponent<S_PlayerInput>();
+
+		CharacterAnimator = _Tools.CharacterAnimator;
+		_Sounds = _Tools.SoundControl;
+		JumpBall = _Tools.JumpBall;
+
+	}
+
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
+		_startJumpDuration_ = _Tools.Stats.JumpStats.startJumpDuration;
+		_startJumpSpeed_ = _Tools.Stats.JumpStats.startJumpSpeed;
+		_startSlopedJumpDuration_ = _Tools.Stats.JumpStats.startSlopedJumpDuration;
+		_jumpSlopeConversion_ = _Tools.Stats.JumpStats.jumpSlopeConversion;
+		_stopYSpeedOnRelease_ = _Tools.Stats.JumpStats.stopYSpeedOnRelease;
+
+		_canDoubleJump_ = _Tools.Stats.MultipleJumpStats.canDoubleJump;
+		_canTripleJump_ = _Tools.Stats.MultipleJumpStats.canTripleJump;
+		_doubleJumpDuration_ = _Tools.Stats.MultipleJumpStats.doubleJumpDuration;
+		_doubleJumpSpeed_ = _Tools.Stats.MultipleJumpStats.doubleJumpSpeed;
+
+		_speedLossOnDoubleJump_ = _Tools.Stats.MultipleJumpStats.speedLossOnDoubleJump;
+	}
+	#endregion
+
+
+
+
+	public void InitialEvents ( Vector3 normaltoJump, bool Grounded = false, float verticalSpeed = 0, float controlDelay = 0, float minJumpSpeed = 0 ) {
+		if (!_Actions.lockDoubleJump)
+		{
+			_Input.RollPressed = false;
+			cancelled = false;
+			Jumping = true;
+			Counter = 0;
+			ControlCounter = controlDelay;
+			jumpSlopeSpeed = 0;
+			timeJumping = 0f;
+			//Debug.Log(jumpCount);
+
+			_PlayerPhys.SetIsGrounded(false);
+
+			if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
+				normaltoJump = Vector3.up;
+
+			if (verticalSpeed < 0)
+				verticalSpeed = 0;
+
+			//If performing a grounded jump. JumpCount may be changed externally to allow for this.
+			//if (Grounded || jumpCount == -1)
+			if (Grounded)
+			{
+				//Player._RB.velocity = new Vector3(Player._RB.velocity.x * _speedLossOnJump_, verticalSpeed, Player._RB.velocity.z * _speedLossOnJump_);
+
+
+				if (_Actions.eventMan != null) _Actions.eventMan.JumpsPerformed += 1;
+
+				//Sets jump stats for this specific jump.
+
+				JumpSpeed = _startJumpSpeed_ * jumpSpeedModifier;
+				JumpDuration = _startJumpDuration_ * jumpDurationModifier;
+				SlopedJumpDuration = _startSlopedJumpDuration_ * jumpDurationModifier;
+
+				//Number of jumps set to zero, allowing for double jumps.
+				jumpCount = 0;
+
+				//Sets jump direction
+				InitialNormal = normaltoJump;
+
+				//SnapOutOfGround to make sure you do jump
+				transform.position += (InitialNormal * 0.3f);
+
+				//Jump higher depending on the speed and the slope you're in
+				if (_PlayerPhys._RB.velocity.y > 0 && normaltoJump.y > 0)
+				{
+					jumpSlopeSpeed = _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_;
+				}
+
+			}
+
+			else
+			{
+
+				if (_Actions.eventMan != null) _Actions.eventMan.DoubleJumpsPerformed += 1;
+
+				//Increases jump count
+				if (jumpCount == 0)
+					jumpCount = 1;
+
+				//Sets jump direction
+				InitialNormal = normaltoJump;
+
+				//Sets jump stats for this specific jump.
+				JumpSpeed = _doubleJumpSpeed_ * jumpSpeedModifier;
+				JumpDuration = _doubleJumpDuration_ * jumpDurationModifier;
+				SlopedJumpDuration = _doubleJumpDuration_ * jumpDurationModifier;
+
+				JumpAgain();
+			}
+
+			//SetAnims
+			CharacterAnimator.SetInteger("Action", 1);
+
+
+			//Sound
+			_Sounds.JumpSound();
+		}
 
 	}
 
@@ -366,63 +474,20 @@ public class S_Action01_Jump : MonoBehaviour
 
 		Vector3 newVec;
 
-		if (Player._RB.velocity.y > 10)
-			newVec = new Vector3(Player._RB.velocity.x * _speedLossOnDoubleJump_, Player._RB.velocity.y, Player._RB.velocity.z * _speedLossOnDoubleJump_);
+		if (_PlayerPhys._RB.velocity.y > 10)
+			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
 		else
-			newVec = new Vector3(Player._RB.velocity.x * _speedLossOnDoubleJump_, Mathf.Clamp(Player._RB.velocity.y * 0.1f, 0.1f, 5), Player._RB.velocity.z * _speedLossOnDoubleJump_);
+			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, Mathf.Clamp(_PlayerPhys._RB.velocity.y * 0.1f, 0.1f, 5), _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
 
 		//Player._RB.velocity = newVec;
-		Player.SetTotalVelocity(newVec);
+		_PlayerPhys.SetTotalVelocity(newVec);
 
-		GameObject JumpDashParticleClone = Instantiate(Tools.JumpDashParticle, Tools.FeetPoint.position, Quaternion.identity) as GameObject;
+		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
 
 		//JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
 
-		JumpDashParticleClone.transform.position = Tools.FeetPoint.position;
+		JumpDashParticleClone.transform.position = _Tools.FeetPoint.position;
 		JumpDashParticleClone.transform.rotation = Quaternion.LookRotation(Vector3.up);
 
-	}
-
-	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
-		_startJumpDuration_ = Tools.Stats.JumpStats.startJumpDuration;
-		_startJumpSpeed_ = Tools.Stats.JumpStats.startJumpSpeed;
-		_startSlopedJumpDuration_ = Tools.Stats.JumpStats.startSlopedJumpDuration;
-		_jumpSlopeConversion_ = Tools.Stats.JumpStats.jumpSlopeConversion;
-		_rollingLandingBoost_ = Tools.Stats.JumpStats.jumpRollingLandingBoost;
-		_stopYSpeedOnRelease_ = Tools.Stats.JumpStats.stopYSpeedOnRelease;
-
-		_canDoubleJump_ = Tools.Stats.MultipleJumpStats.canDoubleJump;
-		_canTripleJump_ = Tools.Stats.MultipleJumpStats.canTripleJump;
-		_doubleJumpDuration_ = Tools.Stats.MultipleJumpStats.doubleJumpDuration;
-		_doubleJumpSpeed_ = Tools.Stats.MultipleJumpStats.doubleJumpSpeed;
-
-		_speedLossOnDoubleJump_ = Tools.Stats.MultipleJumpStats.speedLossOnDoubleJump;
-		_speedLossOnJump_ = Tools.Stats.JumpStats.speedLossOnJump;
-
-	}
-
-	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		Player = GetComponent<S_PlayerPhysics>();
-		Actions = GetComponent<S_ActionManager>();
-		Cam = GetComponent<S_Handler_Camera>();
-		homingControl = GetComponent<S_Handler_HomingAttack>();
-
-		quickStepManager = GetComponent<S_Handler_quickstep>();
-		_Input = GetComponent<S_PlayerInput>();
-
-		CharacterAnimator = Tools.CharacterAnimator;
-		sounds = Tools.SoundControl;
-		JumpBall = Tools.JumpBall;
-	}
-
-
-	private void OnDisable () {
-		JumpBall.SetActive(false);
-	}
-
-	private void OnEnable () {
-		JumpBall.SetActive(true);
 	}
 }

@@ -64,6 +64,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    angleToAccelerate: 120
   AccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4
@@ -160,6 +161,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    angleToAccelerate: 120
   BasicTurningStats:
     turnSpeed: 14
     turnDrag: 7.5
@@ -1136,7 +1138,6 @@ MonoBehaviour:
     shouldStopAirMovementWhenNoInput: 1
     keepNormalForThis: 0.4
     controlAmmount: {x: 0.6, y: 0.8}
-    skiddingForce: -2.5
     fallGravity: {x: 0, y: -1.5, z: 0}
     upGravity: {x: 0, y: -1.45, z: 0}
   DefaultWhenInAir:
@@ -1144,7 +1145,6 @@ MonoBehaviour:
     shouldStopAirMovementWhenNoInput: 1
     keepNormalForThis: 0.183
     controlAmmount: {x: 0.7, y: 0.8}
-    skiddingForce: -2.5
     fallGravity: {x: 0, y: -1.5, z: 0}
     upGravity: {x: 0, y: -1.45, z: 0}
   RollingStats:
@@ -1161,12 +1161,18 @@ MonoBehaviour:
     rollingTurningModifier: 0.6
   SkiddingStats:
     speedToStopAt: 10
-    skiddingStartPoint: 5
+    shouldSkiddingDisableTurning: 1
+    angleToPerformSkid: 160
     skiddingIntensity: -5
+    canSkidInAir: 1
+    skiddingIntensityInAir: -2.5
   DefaultSkiddingStats:
     speedToStopAt: 10
-    skiddingStartPoint: 5
+    shouldSkiddingDisableTurning: 1
+    angleToPerformSkid: 5
     skiddingIntensity: -5
+    canSkidInAir: 1
+    skiddingIntensityInAir: -2.5
   JumpStats:
     CoyoteTimeBySpeed:
       serializedVersion: 2
@@ -1362,6 +1368,7 @@ MonoBehaviour:
     timerLimit: 1
     successDelay: 0.3
   SpinChargeStats:
+    whatAimMethod: 1
     chargingSpeed: 1.02
     minimunCharge: 20
     maximunCharge: 110
@@ -1531,9 +1538,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    skidStartPoint: 10
-    skidIntesity: 3
+    angleToPerformSkid: 160
+    skidIntesity: -3
   BasicSpinChargeStats:
+    whatAimMethod: 1
     chargingSpeed: 1.02
     minimunCharge: 20
     maximunCharge: 110
@@ -1703,7 +1711,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    skidStartPoint: 10
+    angleToPerformSkid: 10
     skidIntesity: 3
   BounceStats:
     dropSpeed: 100

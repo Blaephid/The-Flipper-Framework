@@ -32,7 +32,7 @@ MonoBehaviour:
     shouldLookDownWhenInAir: 1
     minHeightToLookDown: 50
     FallSpeedThreshold: -140
-    HeightFollowSpeed: 6
+    HeightFollowSpeed: 7
   DefaultDistanceStats:
     CameraMaxDistance: 8
     cameraDistanceBySpeed:
@@ -279,8 +279,8 @@ MonoBehaviour:
     cameraMoveToInputSpeed: 3
   LookAheadStats:
     shouldMoveInInputDirection: 1
-    inputPredictonDistance: 1.5
-    cameraMoveToInputSpeed: 3
+    inputPredictonDistance: 0.9
+    cameraMoveToInputSpeed: 2.2
   DefaultInputStats:
     InputXSpeed: 70
     InputYSpeed: 55
@@ -464,7 +464,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: -1
-        value: -1.5
+        value: -1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -491,7 +491,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 1.5
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0

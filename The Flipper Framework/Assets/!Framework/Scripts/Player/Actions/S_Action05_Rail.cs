@@ -223,8 +223,8 @@ namespace SplineMesh
             // Check if was Homingattack
             if (Actions.whatAction == S_Enums.PlayerStates.Homing)
             {
-                PlayerSpeed = Actions.Action02.LateSpeed;
-                dotdir = Vector3.Dot(Actions.Action02.TargetDirection.normalized, sample.tangent);
+                PlayerSpeed = Actions.Action02._lateSpeed;
+                dotdir = Vector3.Dot(Actions.Action02._targetDirection.normalized, sample.tangent);
             }
             else if (Actions.whatAction == S_Enums.PlayerStates.DropCharge)
             {
@@ -290,14 +290,14 @@ namespace SplineMesh
             {
 
 
-                Actions.Action00.readyCoyote();
+                Actions.Action00.ReadyCoyote();
                 CharacterAnimator.SetInteger("Action", 0);
                 CharacterAnimator.SetBool("Grounded", Player._isGrounded);
 
                 Actions.ChangeAction(S_Enums.PlayerStates.Regular);
                 if (Actions.Action02 != null)
                 {
-                    Actions.Action02.HomingAvailable = true;
+                    Actions.Action02._isHomingAvailable = true;
                 }
             }
 
@@ -362,7 +362,7 @@ namespace SplineMesh
 
                 if (Actions.Action02 != null)
                 {
-                    Actions.Action02.HomingAvailable = true;
+                    Actions.Action02._isHomingAvailable = true;
                 }
 
             }

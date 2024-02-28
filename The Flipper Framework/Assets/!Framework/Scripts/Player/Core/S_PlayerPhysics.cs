@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.Windows;
 using UnityEditor;
+using System.Linq;
 
 public class S_PlayerPhysics : MonoBehaviour
 {
@@ -42,6 +43,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _startRollAcceleration_ = 4f;
 	private AnimationCurve        _AccelBySpeed_;
 	private AnimationCurve        _AccelBySlope_;
+	private float                   _angleToAccelerate_;
 
 	[HideInInspector]
 	public float                  _moveDeceleration_ = 1.3f;
@@ -93,10 +95,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	float                         _rollingLandingBoost_;
 	private float                 _rollingDownhillBoost_;
 	private float                 _rollingUphillBoost_;
-	private float                 _rollingStartSpeed_;
 	private float                 _rollingTurningModifier_;
 	private float                 _rollingDecel_;
-	private float                 _slopeTakeoverAmount_; // This is the normalized slope angle that the player has to be in order to register the land as "flat"
 
 	[Header("Stick To Ground")]
 	private Vector2               _stickingLerps_ = new Vector2(0.885f, 1.5f);
@@ -170,6 +170,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private Vector3               _keepNormal;
 
 	private bool                  _isRotatingLeft;
+	private bool                  _isUpsideDown;
 	private Vector3               _rotateSidewaysTowards;
 	private float                 _keepNormalCounter;
 	public bool _wasInAir { get; set; }
@@ -182,8 +183,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	private float                 _groundingDelay;
 	public float _timeOnGround { get; set; }
-
-	private bool                  _canTurn = true;
+	[HideInInspector]
+	public List<bool>             _listOfCanTurns = new List<bool>();
 
 	#endregion
 	#endregion
@@ -358,7 +359,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Assigns the global variables for the current movement, since it's assigned at the end of a frame, changes between frames won't be counted when using this,
 		_speedMagnitude = _totalVelocity.magnitude;
-		Vector3 releVec = GetRelevantVec(_RB.velocity);
+		Vector3 releVec = GetRelevantVel(_RB.velocity);
 		_horizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
 	}
 
@@ -455,18 +456,21 @@ public class S_PlayerPhysics : MonoBehaviour
 
 
 		float deviationFromInput = 0;
-		if (_canTurn)
-		{
-			// Step 1) Determine angle between current lateral velocity and desired direction.
-			//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
 
-			deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
-			_inputVelocityDifference = deviationFromInput;
-			Quaternion lateralToInput = lateralVelocity.sqrMagnitude < 1
+
+		// Step 1) Determine angle between current lateral velocity and desired direction.
+		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
+
+		deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
+		_inputVelocityDifference = deviationFromInput;
+		Quaternion lateralToInput = lateralVelocity.sqrMagnitude < 1
 			? Quaternion.identity
 			: Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
 
 
+		//A list is used rather than a single boolean because if just one was used, anything that takes turning away would overlap. This way means all instances of turning being disabled must stop in order to regain control.
+		if (_listOfCanTurns.Count == 0)
+		{
 			// Step 2) Rotate lateral velocity towards the same velocity under the desired rotation.
 			//         The ammount rotated is determined by turn speed multiplied by turn rate (defined by the difference in angles, and current speed).
 			//	Turn speed will also increase if the difference in pure input (ignoring camera) is different, allowing precise movement with the camera.
@@ -488,8 +492,12 @@ public class S_PlayerPhysics : MonoBehaviour
 		//         The total change is decided by acceleration based on input and speed, then drag from the turn.
 
 		Vector3 setVelocity = lateralVelocity.sqrMagnitude > 0 ? lateralVelocity : inputDirection;
-		float accelRate = (_isRolling && _isGrounded ? _currentRollAccell : _currentRunAccell) * inputMagnitude;
-		accelRate *= _AccelBySlope_.Evaluate(_groundNormal.y);
+		float accelRate = 0;
+		if (deviationFromInput < _angleToAccelerate_ || _horizontalSpeedMagnitude < 10)
+		{
+			accelRate = (_isRolling && _isGrounded ? _currentRollAccell : _currentRunAccell) * inputMagnitude;
+			accelRate *= _AccelBySlope_.Evaluate(_groundNormal.y);
+		}
 		float dragRate = _DragByAngle_.Evaluate(deviationFromInput) * _curvePosDrag;
 		float speedChange = -(accelRate - (dragRate * _turnDrag_) * modifier.y);
 		setVelocity = Vector3.MoveTowards(setVelocity, Vector3.zero, speedChange);
@@ -669,7 +677,7 @@ public class S_PlayerPhysics : MonoBehaviour
 					}
 
 					// Adds velocity downwards to remain on the slope.
-					AddCoreVelocity(-newGroundNormal * 2, false); 
+					AddCoreVelocity(-newGroundNormal * 2, false);
 
 				}
 			}
@@ -764,16 +772,26 @@ public class S_PlayerPhysics : MonoBehaviour
 				//Upon counter ending, prepare to rotate to ground.
 				if (_keepNormalCounter >= _keepNormalForThis_)
 				{
-					// Going off the current rotation, can tell if needs to rotate right or left (rotate right if right side is higher than left), and prepare the angle to rotate around. 
-					if (localRight.y >= 0)
+					if (_keepNormal.y < _rotationResetThreshold_)
 					{
-						_isRotatingLeft = false;
-						_rotateSidewaysTowards = new Vector3 (_RB.velocity.x, 0, _RB.velocity.z).normalized * -1;
-					}
-					else
-					{
-						_isRotatingLeft = true;
-						_rotateSidewaysTowards = new Vector3 (_RB.velocity.x, 0, _RB.velocity.z).normalized;
+						//Disabled turning until all the way over to prevent velocity changing because of the unqiue camera movement.
+						if (!_isUpsideDown)
+						{
+							_isUpsideDown = true;
+							_listOfCanTurns.Add(false);
+						}
+
+						// Going off the current rotation, can tell if needs to rotate right or left (rotate right if right side is higher than left), and prepare the angle to rotate around. 
+						if (localRight.y >= 0)
+						{
+							_isRotatingLeft = false;
+							_rotateSidewaysTowards = new Vector3(_RB.velocity.x, 0, _RB.velocity.z).normalized * -1;
+						}
+						else
+						{
+							_isRotatingLeft = true;
+							_rotateSidewaysTowards = new Vector3(_RB.velocity.x, 0, _RB.velocity.z).normalized;
+						}
 					}
 				}
 			}
@@ -782,14 +800,12 @@ public class S_PlayerPhysics : MonoBehaviour
 				//If upside down, then the player must rotate sideways, and not forwards. This keeps them facing the same way while pointing down to the ground again.
 				if (_keepNormal.y < _rotationResetThreshold_)
 				{
-					//Disabled turning until all the way over to prevent velocity changing because of the unqiue camera movement.
-					_canTurn = false;
 
 					//If the player was set to rotating right, and their right side is still higher than their left, then they have not flipped over all the way yet. Same with rotating left and lower left. 
 					//Then get a cross product from preset rotating angle and transform up, then move in that direction.
 					if ((!_isRotatingLeft && localRight.y >= 0) || (_isRotatingLeft && localRight.y < 0))
 					{
-						
+
 						Vector3 cross = Vector3.Cross(_rotateSidewaysTowards, transform.up);
 						Debug.DrawRay(transform.position, cross, Color.red, 10f);
 
@@ -800,24 +816,33 @@ public class S_PlayerPhysics : MonoBehaviour
 					else
 					{
 						transform.right = new Vector3(transform.right.x, 0, transform.right.z).normalized;
-						_keepNormal = Vector3.up;	
+						_keepNormal = Vector3.up;
 						//_canTurn = true;			
 					}
 				}
 				//General rotation to face up again.
 				else
-				{		
+				{
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
-					if (transform.rotation == targetRot) { _canTurn = true; }
+					if (transform.rotation == targetRot && _isUpsideDown)
+					{
+						_isUpsideDown = false;
+						_listOfCanTurns.Remove(false);
+					}
 				}
 			}
 		}
 	}
 
 	//Called anywhere to get what the input velocity is in the player's local space.
-	public Vector3 GetRelevantVec ( Vector3 vec ) {
-		return transform.InverseTransformDirection(vec);
+	public Vector3 GetRelevantVel ( Vector3 vel, bool includeY = true ) {
+		vel = transform.InverseTransformDirection(vel);
+		if (!includeY)
+		{
+			vel.y = 0;
+		}
+		return vel;
 	}
 
 	//Since there's such a difference between being grounded and not, this is called whenever the value is changed to affect any other relevant variables at the same time.
@@ -832,7 +857,11 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 			else
 			{
-				_canTurn = true;
+				if (_isUpsideDown)
+				{
+					_isUpsideDown = false;
+					_listOfCanTurns.Remove(false);
+				}
 				_keepNormalCounter = 0;
 			}
 		}
@@ -840,11 +869,11 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//the following methods are called by other scripts when they want to affect the velocity. The changes are stored and applied in the SetTotalVelocity method.
-	public void AddTotalVelocity ( Vector3 force, bool shouldPrintForce = true ) {
+	public void AddTotalVelocity ( Vector3 force, bool shouldPrintForce = false ) {
 		_listOfVelocityToAddNextUpdate.Add(force);
 		if (shouldPrintForce) Debug.Log("Add Total FORCE");
 	}
-	public void AddCoreVelocity ( Vector3 force, bool shouldPrintForce = true ) {
+	public void AddCoreVelocity ( Vector3 force, bool shouldPrintForce = false ) {
 		_listOfCoreVelocityToAdd.Add(force);
 		if (shouldPrintForce) Debug.Log("ADD Core FORCE");
 	}
@@ -852,7 +881,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_externalCoreVelocity = force;
 		if (shouldPrintForce) Debug.Log("Set Core FORCE");
 	}
-	public void SetTotalVelocity ( Vector3 force, bool shouldPrintForce = true ) {
+	public void SetTotalVelocity ( Vector3 force, bool shouldPrintForce = false ) {
 		_externalSetVelocity = force;
 		if (shouldPrintForce) Debug.Log("Set Total FORCE");
 	}
@@ -869,6 +898,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_startRollAcceleration_ = _Tools.Stats.AccelerationStats.rollAccel;
 		_AccelBySpeed_ = _Tools.Stats.AccelerationStats.AccelBySpeed;
 		_AccelBySlope_ = _Tools.Stats.AccelerationStats.AccelBySlopeAngle;
+		_angleToAccelerate_ = _Tools.Stats.AccelerationStats.angleToAccelerate / 180;
 		_turnDrag_ = _Tools.Stats.TurningStats.turnDrag;
 		_turnSpeed_ = _Tools.Stats.TurningStats.turnSpeed;
 
@@ -903,7 +933,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		_landingConversionFactor_ = _Tools.Stats.SlopeStats.landingConversionFactor;
 		_rollingDownhillBoost_ = _Tools.Stats.RollingStats.rollingDownhillBoost;
 		_rollingUphillBoost_ = _Tools.Stats.RollingStats.rollingUphillBoost;
-		_rollingStartSpeed_ = _Tools.Stats.RollingStats.rollingStartSpeed;
 		_rollingTurningModifier_ = _Tools.Stats.RollingStats.rollingTurningModifier;
 		_rollingDecel_ = _Tools.Stats.DecelerationStats.rollingFlatDecell;
 		_UpHillByTime_ = _Tools.Stats.SlopeStats.UpHillEffectByTime;

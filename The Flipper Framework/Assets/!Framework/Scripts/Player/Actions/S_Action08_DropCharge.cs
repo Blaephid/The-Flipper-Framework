@@ -1,76 +1,121 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor;
 
-public class S_Action08_DropCharge : MonoBehaviour
+public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 {
-	S_CharacterTools Tools;
-	S_PlayerInput _Input;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
 
-	Animator CharacterAnimator;
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
+	private S_Handler_Camera _CamHandler;
+	private S_Control_PlayerSound _Sounds;
 
-	Transform feetPoint;
-	public float BallAnimationSpeedMultiplier;
+	private Animator CharacterAnimator;
+	private Transform feetPoint;
+	[HideInInspector]
+	public ParticleSystem _DropEffect;
+	private GameObject JumpBall;
+	#endregion
 
-	S_Handler_Camera Cam;
-	S_ActionManager Actions;
-	S_PlayerPhysics Player;
-	S_Control_PlayerSound sounds;
-	[HideInInspector] public ParticleSystem DropEffect;
-	GameObject JumpBall;
-	public float SpinDashChargedEffectAmm;
+	//General
+	#region General Properties
 
-	public bool DropDashAvailable { get; set; }
+	//Stats
+	#region Stats
+	[HideInInspector]
+	public float        _spinDashChargingSpeed_ = 0.3f;
+	[HideInInspector]
+	public float        _minimunCharge_ = 10;
+	[HideInInspector]
+	public float        _maximunCharge_ = 100;
+	#endregion
+
+	// Trackers
+	#region trackers
 
 	SkinnedMeshRenderer[] PlayerSkin;
+	private bool        _isCharging = true;
 
-
-	[HideInInspector] public float _spinDashChargingSpeed_ = 0.3f;
-	[HideInInspector] public float _minimunCharge_ = 10;
-	[HideInInspector] public float _maximunCharge_ = 100;
-	bool Charging = true;
-
-	[HideInInspector] public float charge;
+	[HideInInspector]
+	public float charge;
+	public float BallAnimationSpeedMultiplier;
+	public float SpinDashChargedEffectAmm;
 	bool isSpinDashing;
-	Vector3 RawPrevInput;
-	Quaternion CharRot;
-	RaycastHit floorHit;
-	Vector3 newForward;
+	private Vector3 RawPrevInput;
+	private Quaternion CharRot;
+	private RaycastHit floorHit;
+	private Vector3 newForward;
 
 	public float ReleaseShakeAmmount;
+	#endregion
 
-	void Awake () {
-		if (Player == null)
+	#endregion
+	#endregion
+
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
+
+	// Start is called before the first frame update
+	void Start () {
+
+	}
+
+	// Called when the script is enabled, but will only assign the tools and stats on the first time.
+	private void OnEnable () {
+		if (_PlayerPhys == null)
 		{
-			Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
-
 			AssignStats();
 		}
 	}
+	private void OnDisable () {
+		_DropEffect.Stop();
+	}
 
+	// Update is called once per frame
+	void Update () {
+		//Set Animator Parameters
+		CharacterAnimator.SetInteger("Action", 1);
+		CharacterAnimator.SetFloat("GroundSpeed", 100);
 
-	public void TryDropCharge () {
-		if (Player._RB.velocity.y < 40f && Actions.Action08 != null)
+		//Check if rolling
+		//if (Player.Grounded && Player.isRolling) { CharacterAnimator.SetInteger("Action", 1); }
+		//CharacterAnimator.SetBool("isRolling", Player.isRolling);
+
+		//Rotation
+
+		//Set Animation Angle
+		//if (!Player.Grounded)
 		{
-			//Debug.Log("Enter DropDash");
-			Actions.ChangeAction(S_Enums.PlayerStates.DropCharge);
+			Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
+			if (VelocityMod != Vector3.zero)
+			{
+				Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
+				CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * 200);
+			}
+		}
 
-			Actions.Action08.InitialEvents();
+		if (_PlayerPhys._isGrounded && _DropEffect.isPlaying)
+		{
+			_DropEffect.Stop();
 		}
 	}
 
-	public void InitialEvents ( float newCharge = 15 ) {
-		////Debug.Log ("startDropDash");
-		CharacterAnimator.SetInteger("Action", 1);
-		CharacterAnimator.SetBool("Grounded", false);
-
-		sounds.SpinDashSound();
-		charge = newCharge;
-		Charging = true;
-	}
-
-	void FixedUpdate () {
-		if (Charging)
+	private void FixedUpdate () {
+		if (_isCharging)
 		{
 			charge += _spinDashChargingSpeed_;
 
@@ -78,9 +123,9 @@ public class S_Action08_DropCharge : MonoBehaviour
 			// Cam.Cam.FollowDirection(3, 14f, -10,0);
 
 
-			if (DropEffect.isPlaying == false)
+			if (_DropEffect.isPlaying == false)
 			{
-				DropEffect.Play();
+				_DropEffect.Play();
 			}
 
 			// Player.rigidbody.velocity /= SpinDashStillForce;
@@ -92,10 +137,10 @@ public class S_Action08_DropCharge : MonoBehaviour
 				//    DropEffect.Stop();
 				//}
 
-				sounds.Source2.Stop();
+				_Sounds.Source2.Stop();
 
 
-				Charging = false;
+				_isCharging = false;
 				StartCoroutine(exitAction());
 			}
 
@@ -108,29 +153,29 @@ public class S_Action08_DropCharge : MonoBehaviour
 		{
 			if (_Input.RollPressed)
 			{
-				Charging = true;
+				_isCharging = true;
 				StopCoroutine(exitAction());
 			}
 		}
 
-		if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, Player._Groundmask_) || Vector3.Dot(Player._groundNormal, Vector3.up) > 0.99)
+		if (Physics.Raycast(feetPoint.position, -transform.up, out floorHit, 1.3f, _PlayerPhys._Groundmask_) || Vector3.Dot(_PlayerPhys._groundNormal, Vector3.up) > 0.99)
 		{
 
 			if (!_Input.JumpPressed)
 				Release();
 			else
 			{
-				Player._isRolling = true;
+				_Actions.Action00.SetIsRolling(true);
 				JumpBall.SetActive(false);
-				if (DropEffect.isPlaying == true)
+				if (_DropEffect.isPlaying == true)
 				{
-					DropEffect.Stop();
+					_DropEffect.Stop();
 				}
 			}
 
 			_Input.JumpPressed = false;
 			JumpBall.SetActive(false);
-			Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
 		}
 
 		else if (_Input.SpecialPressed && charge > _minimunCharge_)
@@ -139,16 +184,106 @@ public class S_Action08_DropCharge : MonoBehaviour
 		}
 	}
 
+	public bool AttemptAction () {
+		bool willChangeAction = false;
+		if (!_PlayerPhys._isGrounded && _Input.RollPressed)
+		{
+			_Actions.Action08.TryDropCharge();
+			willChangeAction = true;
+		}
+		return willChangeAction;
+	}
+
+	public void StartAction () {
+
+	}
+
+	public void StopAction () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+
+	public void HandleInputs () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+
+	#endregion
+
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
+
+	//Responsible for assigning objects and components from the tools script.
+	private void AssignTools () {
+		_Input = GetComponent<S_PlayerInput>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Actions = GetComponent<S_ActionManager>();
+		_CamHandler = GetComponent<S_Handler_Camera>();
+
+		CharacterAnimator = _Tools.CharacterAnimator;
+		_Sounds = _Tools.SoundControl;
+		_DropEffect = _Tools.DropEffect;
+
+		feetPoint = _Tools.FeetPoint;
+		JumpBall = _Tools.JumpBall;
+		PlayerSkin = _Tools.PlayerSkin;
+	}
+
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
+		_spinDashChargingSpeed_ = _Tools.Stats.DropChargeStats.chargingSpeed;
+		_minimunCharge_ = _Tools.Stats.DropChargeStats.minimunCharge;
+		_maximunCharge_ = _Tools.Stats.DropChargeStats.maximunCharge;
+	}
+	#endregion
+
+
+	public void TryDropCharge () {
+		if (_PlayerPhys._RB.velocity.y < 40f && _Actions.Action08 != null)
+		{
+			//Debug.Log("Enter DropDash");
+			_Actions.ChangeAction(S_Enums.PlayerStates.DropCharge);
+
+			_Actions.Action08.InitialEvents();
+		}
+	}
+
+	public void InitialEvents ( float newCharge = 15 ) {
+		////Debug.Log ("startDropDash");
+		CharacterAnimator.SetInteger("Action", 1);
+		CharacterAnimator.SetBool("Grounded", false);
+
+		_Sounds.SpinDashSound();
+		charge = newCharge;
+		_isCharging = true;
+	}
+
 	IEnumerator exitAction () {
 		yield return new WaitForSeconds(0.7f);
-		if (DropEffect.isPlaying == true)
+		if (_DropEffect.isPlaying == true)
 		{
-			DropEffect.Stop();
+			_DropEffect.Stop();
 		}
-		if (Actions.whatAction == S_Enums.PlayerStates.DropCharge)
+		if (_Actions.whatAction == S_Enums.PlayerStates.DropCharge)
 		{
 			JumpBall.SetActive(true);
-			Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+			_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 		}
 	}
 
@@ -162,9 +297,9 @@ public class S_Action08_DropCharge : MonoBehaviour
 		StartCoroutine(airDash());
 
 		Release();
-		if (GetComponent<S_Action11_JumpDash>() != null)
-			GetComponent<S_Action11_JumpDash>().AirDashParticle();
-		Charging = false;
+		if (GetComponent<S_Action11_AirDash>() != null)
+			GetComponent<S_Action11_AirDash>().AirDashParticle();
+		_isCharging = false;
 	}
 
 	IEnumerator airDash () {
@@ -173,21 +308,19 @@ public class S_Action08_DropCharge : MonoBehaviour
 
 		Debug.Log(time);
 
-		Player._isGravityOn = false;
+		_PlayerPhys._isGravityOn = false;
 		yield return new WaitForSeconds(time);
-		Player._isGravityOn = true;
+		_PlayerPhys._isGravityOn = true;
 		JumpBall.SetActive(false);
-		Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+		_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
 
 	}
 
 	void Release () {
 
-		if (Actions.eventMan != null) Actions.eventMan.dropChargesPerformed += 1;
+		if (_Actions.eventMan != null) _Actions.eventMan.dropChargesPerformed += 1;
 
 		JumpBall.SetActive(false);
-
-		DropDashAvailable = false;
 
 		//Vector3 newForward = Player.rb.velocity - transform.up * Vector3.Dot(Player.rb.velocity, transform.up);
 
@@ -207,9 +340,9 @@ public class S_Action08_DropCharge : MonoBehaviour
 		}
 
 
-		if (DropEffect.isPlaying == true)
+		if (_DropEffect.isPlaying == true)
 		{
-			DropEffect.Stop();
+			_DropEffect.Stop();
 		}
 
 		StartCoroutine(delayForce(charge, 1));
@@ -218,33 +351,33 @@ public class S_Action08_DropCharge : MonoBehaviour
 
 
 	void Launch ( float charge ) {
-		Cam._HedgeCam.ApplyCameraShake((ReleaseShakeAmmount * charge) / 100, 40);
-		sounds.SpinDashReleaseSound();
+		_CamHandler._HedgeCam.ApplyCameraShake((ReleaseShakeAmmount * charge) / 100, 40);
+		_Sounds.SpinDashReleaseSound();
 
-		Player.AlignToGround(Player._groundNormal, true);
+		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, true);
 
 		Vector3 newVec = charge *  newForward;
 
-		Actions.Action00.Curl();
-		Player._isRolling = true;
-		Actions.Action00.rollCounter = 0.005f;
+		_Actions.Action00.Curl();
+		_Actions.Action00.SetIsRolling(true);
+		_Actions.Action00._rollCounter = 0.005f;
 
 
-		Vector3 releVec = Player.GetRelevantVec(newVec);
+		Vector3 releVec = _PlayerPhys.GetRelevantVel(newVec);
 		float newSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
 
 		Debug.DrawRay(transform.position, newVec.normalized * 30, Color.red * 2, 20f);
 
-		if (newSpeedMagnitude > Player._horizontalSpeedMagnitude)
+		if (newSpeedMagnitude > _PlayerPhys._horizontalSpeedMagnitude)
 		{
-			Player.SetCoreVelocity( newVec);
+			_PlayerPhys.SetCoreVelocity( newVec);
 
-			Cam._HedgeCam.ChangeHeight(18, 25f);
+			_CamHandler._HedgeCam.ChangeHeight(18, 25f);
 		}
 		else
 		{
-			Player.SetCoreVelocity(newVec.normalized * (Player._horizontalSpeedMagnitude + (charge * 0.45f)));
-			Cam._HedgeCam.ChangeHeight(20, 15f);
+			_PlayerPhys.SetCoreVelocity(newVec.normalized * (_PlayerPhys._horizontalSpeedMagnitude + (charge * 0.45f)));
+			_CamHandler._HedgeCam.ChangeHeight(20, 15f);
 		}
 	}
 
@@ -258,48 +391,15 @@ public class S_Action08_DropCharge : MonoBehaviour
 	}
 
 	public float externalDash () {
-		Cam._HedgeCam.ApplyCameraShake((ReleaseShakeAmmount * charge) / 100, 30);
-		sounds.SpinDashReleaseSound();
+		_CamHandler._HedgeCam.ApplyCameraShake((ReleaseShakeAmmount * charge) / 100, 30);
+		_Sounds.SpinDashReleaseSound();
 		return charge;
 	}
 
-	void Update () {
-		//Set Animator Parameters
-		CharacterAnimator.SetInteger("Action", 1);
-		CharacterAnimator.SetFloat("GroundSpeed", 100);
-
-		//Check if rolling
-		//if (Player.Grounded && Player.isRolling) { CharacterAnimator.SetInteger("Action", 1); }
-		//CharacterAnimator.SetBool("isRolling", Player.isRolling);
-
-		//Rotation
-
-		//Set Animation Angle
-		//if (!Player.Grounded)
-		{
-			Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z);
-			if (VelocityMod != Vector3.zero)
-			{
-				Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-				CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * 200);
-			}
-		}
-
-		if (Player._isGrounded && DropEffect.isPlaying)
-		{
-			DropEffect.Stop();
-		}
-
-	}
-
-	private void OnDisable () {
-		DropEffect.Stop();
-	}
-
 	public void ResetSpinDashVariables () {
-		if (DropEffect.isPlaying == true)
+		if (_DropEffect.isPlaying == true)
 		{
-			DropEffect.Stop();
+			_DropEffect.Stop();
 		}
 		for (int i = 0 ; i < PlayerSkin.Length ; i++)
 		{
@@ -307,28 +407,5 @@ public class S_Action08_DropCharge : MonoBehaviour
 		}
 		//SpinDashBall.SetActive(false);
 		charge = 0;
-	}
-
-	private void AssignStats () {
-		_spinDashChargingSpeed_ = Tools.Stats.DropChargeStats.chargingSpeed;
-		_minimunCharge_ = Tools.Stats.DropChargeStats.minimunCharge;
-		_maximunCharge_ = Tools.Stats.DropChargeStats.maximunCharge;
-	}
-
-	private void AssignTools () {
-		Player = GetComponent<S_PlayerPhysics>();
-		Actions = GetComponent<S_ActionManager>();
-		Cam = GetComponent<S_Handler_Camera>();
-		_Input = GetComponent<S_PlayerInput>();
-
-		CharacterAnimator = Tools.CharacterAnimator;
-		sounds = Tools.SoundControl;
-		DropEffect = Tools.DropEffect;
-
-		feetPoint = Tools.FeetPoint;
-		JumpBall = Tools.JumpBall;
-		PlayerSkin = Tools.PlayerSkin;
-
-
 	}
 }

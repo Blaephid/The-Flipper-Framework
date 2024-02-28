@@ -5588,8 +5588,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6da8dadf30a2c64abf5847208a3b113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinRotationSpeed: 16
-  Rolling: 0
+  _skinRotationSpeed: 10
+  _isRolling: 0
   rollCounter: 0
 --- !u!114 &114873388628942606
 MonoBehaviour:
@@ -26919,21 +26919,25 @@ MonoBehaviour:
   _Actions: {fileID: 114870394340389206}
   _Input: {fileID: 114421511878716788}
   _PlayerTransformCopy: {fileID: 4591767841459208}
-  _TargetBase: {fileID: 5864465826205128439}
   _finalTarget: {fileID: 6355604061925188031}
   _TargetByInput: {fileID: 4616195427816144340}
   _TargetByAngle: {fileID: 3676360873521850425}
   _shouldSetHeightWhenMoving_: 0
   _cameraMaxDistance_: -11
   _lockCamAtSpeed_: 130
-  _rotateToBehindSpeed_: 0
   _startLockCam: 0
   _posY: 20
   _preY: 20
+  _isLocked: 0
   _canMove: 0
+  _isMasterLocked: 0
   _lookTimer: 0
   _lockedRotationSpeed: 0
   _isReversed: 0
+  _invertedX: 0
+  _invertedY: 0
+  _sensiX: 0
+  _sensiY: 0
 --- !u!114 &3746882815934870565
 MonoBehaviour:
   m_ObjectHideFlags: 0

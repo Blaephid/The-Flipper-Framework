@@ -57,7 +57,7 @@ public class S_Handler_quickstep : MonoBehaviour, ISubAction
 		_Tools = GetComponent<S_CharacterTools>();
 		_Actions = GetComponent<S_ActionManager>();
 		_MainSkin = _Tools.mainSkin;
-		_CamHandler = _Tools.GetComponent<S_Handler_Camera>();
+		_CamHandler = GetComponent<S_Handler_Camera>();
 		_Input = GetComponent<S_PlayerInput>();
 		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
 		_StepPlayermask_ = _Tools.Stats.QuickstepStats.StepLayerMask;
@@ -94,38 +94,45 @@ public class S_Handler_quickstep : MonoBehaviour, ISubAction
 
 
 	//Called when attempting to perform an action, checking and preparing inputs.
-	public void ReadyAction() {
-		
-		//Gets an input and makes it relevant to camera.
-		if (_Input.RightStepPressed)
-		{
-			PressRight();
-		}
-		else if (_Input.LeftStepPressed)
-		{
-			PressLeft();
-		}
+	public bool AttemptAction() {
+		bool willStartAction = false;
 
-		//Enable Quickstep right or left
+		//Enable Quickstep if a position to do so, otherwise end the function.
 		if (_PlayerPhys._horizontalSpeedMagnitude > 10f && !enabled)
 		{
+			//Gets an input and makes it relevant to camera, then start the action if it's still there.
 			if (_Input.RightStepPressed)
 			{
-				_isSteppingRight = true;
+				PressRight();
+				StartAction();
+				willStartAction = true;
 			}
-			else
+			else if (_Input.LeftStepPressed)
 			{
-				_isSteppingRight = false;
-			} 
-			enabled = true;
-			StartAction();
+				PressLeft();
+				StartAction();
+				willStartAction=true;
+			}
 		}
-		
+		return willStartAction;
 	}
 
 	//Called when the action is enabled and readies all variables for it to be performed.
 	public void StartAction() {
 
+		
+		if (_Input.RightStepPressed)
+		{
+			_isSteppingRight = true;
+		}
+		else
+		{
+			_isSteppingRight = false;
+		}
+		enabled = true;
+		
+
+		//Used for checking if the main action changes during the step.
 		_whatActionWasOn = _Actions.whatAction;
 
 		if (_Actions.eventMan != null) _Actions.eventMan.quickstepsPerformed += 1;
@@ -137,7 +144,7 @@ public class S_Handler_quickstep : MonoBehaviour, ISubAction
 		SetSpeedAndDistance();
 	}
 
-	public void EndAction() {
+	public void StopAction() {
 
 	}
 
