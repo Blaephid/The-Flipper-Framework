@@ -80,27 +80,27 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	void UpdateSpeed () {
-		if (Actions.whatAction == S_Enums.PlayerStates.Regular)
+		if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Default)
 		{
 			//DisplaySpeed = Player.SpeedMagnitude;
 			DisplaySpeed = Player._horizontalSpeedMagnitude;
 		}
 
-		else if (Actions.whatAction == S_Enums.PlayerStates.Rail)
+		else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail)
 		{
-			DisplaySpeed = Actions.Action05.PlayerSpeed;
+			DisplaySpeed = Actions.Action05._playerSpeed;
 		}
-		else if (Actions.whatAction == S_Enums.PlayerStates.WallRunning)
+		else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
 		{
-			if (Actions.Action12.RunningSpeed > Actions.Action12.ClimbingSpeed)
-				DisplaySpeed = Actions.Action12.RunningSpeed;
+			if (Actions.Action12._runningSpeed > Actions.Action12._climbingSpeed)
+				DisplaySpeed = Actions.Action12._runningSpeed;
 			else
-				DisplaySpeed = Actions.Action12.ClimbingSpeed;
+				DisplaySpeed = Actions.Action12._climbingSpeed;
 
 		}
-		else if (Actions.whatAction == S_Enums.PlayerStates.Path)
+		else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Path)
 		{
-			DisplaySpeed = Actions.Action10.PlayerSpeed;
+			DisplaySpeed = Actions.Action10._playerSpeed;
 		}
 		else
 		{
@@ -155,32 +155,32 @@ public class S_Interaction_Objects : MonoBehaviour
 
 			if (set)
 			{
-				if (Actions.Action05.PlayerSpeed < speed)
+				if (Actions.Action05._playerSpeed < speed)
 				{
-					Actions.Action05.PlayerSpeed = speed;
-					Actions.Action05.Boosted = true;
-					Actions.Action05.boostTime = 0.7f;
+					Actions.Action05._playerSpeed = speed;
+					Actions.Action05._isBoosted = true;
+					Actions.Action05._boostTime = 0.7f;
 
 				}
 				else
 					set = false;
 
 			}
-			else if (Actions.whatAction == S_Enums.PlayerStates.Rail)
+			else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail)
 			{
 
-				Actions.Action05.PlayerSpeed += addSpeed / 2;
-				Actions.Action05.Boosted = true;
-				Actions.Action05.boostTime = 0.7f;
+				Actions.Action05._playerSpeed += addSpeed / 2;
+				Actions.Action05._isBoosted = true;
+				Actions.Action05._boostTime = 0.7f;
 
 				i = 3;
 
 			}
 
 			if (backwards)
-				Actions.Action05.backwards = true;
+				Actions.Action05._isGoingBackwards = true;
 			else
-				Actions.Action05.backwards = false;
+				Actions.Action05._isGoingBackwards = false;
 		}
 
 	}
@@ -205,7 +205,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			if (pad.onRail)
 			{
 
-				if (Actions.whatAction != S_Enums.PlayerStates.Rail)
+				if (Actions.whatAction != S_Enums.PrimaryPlayerStates.Rail)
 				{
 					transform.position = col.GetComponent<S_Data_SpeedPad>().positionToLockTo.position;
 				}
@@ -258,7 +258,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				{
 
 					Actions.Action00.CancelCoyote();
-					Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+					Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 					CharacterAnimator.SetBool("Grounded", false);
 					CharacterAnimator.SetInteger("Action", 0);
 
@@ -359,7 +359,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			_CamHandler.ApplyCameraShake(_enemyHitShakeAmmount_, 30);
 			//Either triggers an attack on the enemy or takes damage.
-			if (Actions.whatAction == S_Enums.PlayerStates.SpinCharge || (Actions.whatAction == S_Enums.PlayerStates.Regular && Player._isRolling))
+			if (Actions.whatAction == S_Enums.PrimaryPlayerStates.SpinCharge || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && Player._isRolling))
 			{
 				attack.AttackThing(col, "SpinDash", "Enemy"); ;
 
@@ -397,7 +397,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			Actions.Action00.CancelCoyote();
 			Player._isGravityOn = true;
 
-			if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
+			if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
 				Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
 
 			JumpBall.SetActive(false);
@@ -431,7 +431,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					StartCoroutine(lockGravity(spring.lockGravity));
 				}
 
-				Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+				Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 
 
 				if (col.GetComponent<AudioSource>()) { col.GetComponent<AudioSource>().Play(); }
@@ -466,7 +466,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		else if (col.tag == "Bumper")
 		{
-			if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
+			if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
 				Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
 
 			JumpBall.SetActive(false);
@@ -483,12 +483,12 @@ public class S_Interaction_Objects : MonoBehaviour
 		//CancelHoming
 		else if (col.tag == "CancelHoming")
 		{
-			if (Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing)
+			if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
 			{
 
 				Vector3 newSpeed = new Vector3(1, 0, 1);
 
-				Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+				Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 				newSpeed = new Vector3(0, _homingBouncingPower_, 0);
 				////Debug.Log (newSpeed);
 				Player.SetTotalVelocity(newSpeed);
@@ -506,14 +506,14 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			if (col.GetComponent<S_Trigger_Updraft>())
 			{
-				if (Actions.whatAction == S_Enums.PlayerStates.Hovering)
+				if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Hovering)
 				{
 					Actions.Action13.updateHover(col.GetComponent<S_Trigger_Updraft>());
 				}
 				else
 				{
 					Actions.Action13.InitialEvents(col.GetComponent<S_Trigger_Updraft>());
-					Actions.ChangeAction(S_Enums.PlayerStates.Hovering);
+					Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
 				}
 			}
 
@@ -651,13 +651,13 @@ public class S_Interaction_Objects : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
-		Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+		Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		transform.position = position;
 		Player._RB.velocity = force;
 
 	}
 	public void DamagePlayer () {
-		if (!Actions.Action04Control.IsHurt && Actions.whatAction != S_Enums.PlayerStates.Hurt)
+		if (!Actions.Action04Control.IsHurt && Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
 		{
 
 			if (!S_Interaction_Monitors.HasShield)
@@ -667,7 +667,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					//LoseRings
 					Sounds.RingLossSound();
 					Actions.Action04Control.GetHurt();
-					Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
+					Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
 					Actions.Action04.InitialEvents();
 				}
 				if (RingAmount <= 0)
@@ -677,7 +677,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					{
 						Sounds.DieSound();
 						Actions.Action04Control.isDead = true;
-						Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
+						Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
 						Actions.Action04.InitialEvents();
 					}
 				}
@@ -687,7 +687,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				//Lose Shield
 				Sounds.SpikedSound();
 				S_Interaction_Monitors.HasShield = false;
-				Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
+				Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
 				Actions.Action04.InitialEvents();
 			}
 		}

@@ -954,7 +954,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.8
+        time: 0.4
         value: 0
         inSlope: 0
         outSlope: 0
@@ -1358,11 +1358,13 @@ MonoBehaviour:
     iconDistanceScaling: 0.2
     facingAmount: 0.91
   HomingStats:
+    CanBePerformedOnGround: 0
     canDashWhenFalling: 1
     attackSpeed: 100
     timerLimit: 1
     successDelay: 0.3
   DefaultHomingStats:
+    CanBePerformedOnGround: 0
     canDashWhenFalling: 1
     attackSpeed: 100
     timerLimit: 1

@@ -309,7 +309,7 @@ public class S_O_CameraStatsEditor : Editor
 
 		if (stats.InspectorTheme == null) { return; }
 		headerStyle = stats.InspectorTheme._MainHeaders;
-		ResetToDefaultButton = stats.InspectorTheme._DefaultButton;
+		ResetToDefaultButton = stats.InspectorTheme._ResetButton;
 	}
 
 	private void DrawInspector () {

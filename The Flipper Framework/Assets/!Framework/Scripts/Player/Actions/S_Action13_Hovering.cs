@@ -2,16 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class S_Action13_Hovering : MonoBehaviour
+public class S_Action13_Hovering : MonoBehaviour, IMainAction
 {
-	S_CharacterTools Tools;
-	S_PlayerPhysics PlayerPhys;
-	S_ActionManager Actions;
-	S_PlayerInput _Input;
-	Animator CharacterAnimator;
-	Transform PlayerSkin;
-	S_Control_PlayerSound Sounds;
 
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
+
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
+
+	Animator _CharacterAnimator;
+	Transform _PlayerSkin;
+	S_Control_PlayerSound Sounds;
+	S_Trigger_Updraft _hoverForce;
+	#endregion
+
+	//General
+	#region General Properties
+
+	//Stats
+	#region Stats
+	#endregion
+
+	// Trackers
+	#region trackers
 	float floatSpeed = 15;
 	public AnimationCurve forceFromSource;
 
@@ -19,77 +40,63 @@ public class S_Action13_Hovering : MonoBehaviour
 	float exitWindTimer;
 	float exitWind = 0.6f;
 	Vector3 forward;
+	#endregion
 
-	[HideInInspector] public float _skiddingStartPoint_;
-	float _airSkiddingIntensity_;
+	#endregion
+	#endregion
 
-	S_Trigger_Updraft hoverForce;
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
 
-	private void Awake () {
-		if (PlayerPhys == null)
+	// Start is called before the first frame update
+	void Start () {
+
+	}
+
+	// Called when the script is enabled, but will only assign the tools and stats on the first time.
+	private void OnEnable () {
+		if (_PlayerPhys == null)
 		{
-			Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
-
 			AssignStats();
 		}
-
+	}
+	private void OnDisable () {
+		_CharacterAnimator.SetInteger("Action", 1);
+		_PlayerSkin.forward = _CharacterAnimator.transform.forward;
+		_PlayerPhys._isGravityOn = true;
+		inWind = false;
 	}
 
-	private void AssignTools () {
-		PlayerPhys = GetComponent<S_PlayerPhysics>();
-		Actions = GetComponent<S_ActionManager>();
-		CharacterAnimator = Tools.CharacterAnimator;
-		PlayerSkin = Tools.PlayerSkinTransform;
-		_Input = GetComponent<S_PlayerInput>();
-
-		Sounds = Tools.SoundControl;
-	}
-
-	private void AssignStats () {
-		_skiddingStartPoint_ = Tools.Stats.SkiddingStats.angleToPerformSkid;
-		_airSkiddingIntensity_ = Tools.Stats.SkiddingStats.skiddingIntensity;
-	}
-
-	public void InitialEvents ( S_Trigger_Updraft up ) {
-		PlayerPhys._isGravityOn = false;
-		inWind = true;
-		forward = PlayerSkin.forward;
-
-		hoverForce = up;
-	}
-
-	public void updateHover ( S_Trigger_Updraft up ) {
-		inWind = true;
-		hoverForce = up;
-	}
-
-	private void Update () {
-		CharacterAnimator.SetInteger("Action", 13);
+	// Update is called once per frame
+	void Update () {
+		_CharacterAnimator.SetInteger("Action", 13);
 
 		//Do a homing attack
-		if (Actions.Action02._isHomingAvailable && Actions.Action02Control._HasTarget && _Input.HomingPressed)
+		if (_Actions.Action02._isHomingAvailable && _Actions.Action02Control._HasTarget && _Input.HomingPressed)
 		{
 
 			//Do a homing attack
-			if (Actions.Action02 != null && PlayerPhys._homingDelay_ <= 0)
+			if (_Actions.Action02 != null && _PlayerPhys._homingDelay_ <= 0)
 			{
-				if (Actions.Action02Control._isHomingAvailable)
+				if (_Actions.Action02Control._isHomingAvailable)
 				{
 					Sounds.HomingAttackSound();
-					Actions.ChangeAction(S_Enums.PlayerStates.Homing);
-					Actions.Action02.InitialEvents();
+					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Homing);
+					_Actions.Action02.InitialEvents();
 				}
 			}
 
 		}
 	}
 
-
-
 	private void FixedUpdate () {
 		updateModel();
-		PlayerPhys.SetIsGrounded(false);
+		_PlayerPhys.SetIsGrounded(false);
 
 		getForce();
 
@@ -97,9 +104,9 @@ public class S_Action13_Hovering : MonoBehaviour
 		{
 			exitWindTimer = 0;
 
-			if (PlayerPhys._RB.velocity.y < floatSpeed)
+			if (_PlayerPhys._RB.velocity.y < floatSpeed)
 			{
-				PlayerPhys.AddCoreVelocity(hoverForce.transform.up * floatSpeed);
+				_PlayerPhys.AddCoreVelocity(_hoverForce.transform.up * floatSpeed);
 			}
 
 		}
@@ -107,63 +114,116 @@ public class S_Action13_Hovering : MonoBehaviour
 		{
 			exitWindTimer += Time.deltaTime;
 
-			if (PlayerPhys._RB.velocity.y < floatSpeed)
+			if (_PlayerPhys._RB.velocity.y < floatSpeed)
 			{
-				PlayerPhys.AddCoreVelocity(hoverForce.transform.up * (floatSpeed * 0.35f));
+				_PlayerPhys.AddCoreVelocity(_hoverForce.transform.up * (floatSpeed * 0.35f));
 			}
 
 			if (exitWindTimer >= exitWind)
 			{
-				Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 			}
 		}
 
 		//Skidding
-		if ((PlayerPhys._inputVelocityDifference < -_skiddingStartPoint_) && !PlayerPhys._isGrounded)
-		{
-			if (PlayerPhys._speedMagnitude >= -(_airSkiddingIntensity_ * 0.8f)) PlayerPhys.AddCoreVelocity(PlayerPhys._RB.velocity.normalized * (_airSkiddingIntensity_ * 0.8f) * (PlayerPhys._isRolling ? 0.5f : 1));
+		_Actions.skid.AttemptAction();
+	}
 
+	public bool AttemptAction () {
+		bool willChangeAction = false;
+		willChangeAction = true;
+		return willChangeAction;
+	}
 
-			if (PlayerPhys._speedMagnitude < 4)
-			{
-				Actions.Action00.SetIsRolling(false);
-
-			}
-		}
-
+	public void StartAction () {
 
 	}
+
+	public void StopAction () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+
+	public void HandleInputs () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+
+	#endregion
+
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
+
+	//Responsible for assigning objects and components from the tools script.
+	private void AssignTools () {
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Actions = GetComponent<S_ActionManager>();
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_PlayerSkin = _Tools.PlayerSkinTransform;
+		_Input = GetComponent<S_PlayerInput>();
+
+		Sounds = _Tools.SoundControl;
+	}
+
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
+
+	}
+	#endregion
+
+	public void InitialEvents ( S_Trigger_Updraft up ) {
+		_PlayerPhys._isGravityOn = false;
+		inWind = true;
+		forward = _PlayerSkin.forward;
+
+		_hoverForce = up;
+	}
+
+	public void updateHover ( S_Trigger_Updraft up ) {
+		inWind = true;
+		_hoverForce = up;
+	}
+
 	void updateModel () {
 		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(PlayerPhys._RB.velocity.x, 0, PlayerPhys._RB.velocity.z);
+		Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
 		if (VelocityMod != Vector3.zero)
 		{
 			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-			CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * Actions.Action00._skinRotationSpeed);
+			_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _Actions.Action00._skinRotationSpeed);
 		}
-		PlayerSkin.forward = forward;
+		_PlayerSkin.forward = forward;
 	}
 
 	void getForce () {
-		float distance = transform.position.y - hoverForce.bottom.position.y;
-		float difference = distance / (hoverForce.top.position.y - hoverForce.bottom.position.y);
-		floatSpeed = forceFromSource.Evaluate(difference) * hoverForce.power;
+		float distance = transform.position.y - _hoverForce.bottom.position.y;
+		float difference = distance / (_hoverForce.top.position.y - _hoverForce.bottom.position.y);
+		floatSpeed = forceFromSource.Evaluate(difference) * _hoverForce.power;
 		Debug.Log(difference);
 
 		if (difference > 0.98)
 		{
-			floatSpeed = -Mathf.Clamp(PlayerPhys._RB.velocity.y, -100, 0);
+			floatSpeed = -Mathf.Clamp(_PlayerPhys._RB.velocity.y, -100, 0);
 		}
-		else if (PlayerPhys._RB.velocity.y > 0)
+		else if (_PlayerPhys._RB.velocity.y > 0)
 		{
-			floatSpeed = Mathf.Clamp(floatSpeed, 0.5f, PlayerPhys._RB.velocity.y);
+			floatSpeed = Mathf.Clamp(floatSpeed, 0.5f, _PlayerPhys._RB.velocity.y);
 		}
-	}
-
-	private void OnDisable () {
-		CharacterAnimator.SetInteger("Action", 1);
-		PlayerSkin.forward = CharacterAnimator.transform.forward;
-		PlayerPhys._isGravityOn = true;
-		inWind = false;
 	}
 }

@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
-public class S_Action11_AirDash : MonoBehaviour, IMainAction
+[RequireComponent(typeof(S_ActionManager))]
+public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -71,6 +73,9 @@ public class S_Action11_AirDash : MonoBehaviour, IMainAction
 			AssignTools();
 			AssignStats();
 		}
+
+
+		_Action02._isHomingAvailable = true;
 	}
 	private void OnDisable () {
 
@@ -132,30 +137,44 @@ public class S_Action11_AirDash : MonoBehaviour, IMainAction
 		if (_timer > _AirDashDuration_)
 		{
 			_JumpBall.SetActive(true);
-			_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 		}
 		else if (_PlayerPhys._isGrounded)
 		{
 			_CharacterAnimator.SetInteger("Action", 0);
 			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 	}
 
 	public bool AttemptAction () {
 		bool willChangeAction = false;
-		if (!_Actions.Action02._isHomingAvailable && _Input.SpecialPressed)
+
+		switch(_Actions.whatAction)
 		{
-			if (!_Actions.Action02Control._HasTarget)
+			//Regular requires a seperate check in addition to other actions.
+			case S_Enums.PrimaryPlayerStates.Default:
+				if (_Actions.Action00._CanDashDuringFall_)
+				{
+					CheckDash();
+				}
+				break;
+			default:
+				CheckDash();
+				break;
+		}
+		return willChangeAction;
+
+		//This is called no matter the action, so it used as function to check the always relevant data.
+		void CheckDash() {
+			if (!_PlayerPhys._isGrounded && !_Actions.lockJumpDash && _Actions.Action02._isHomingAvailable && _Input.SpecialPressed && !_Actions.Action02Control._HasTarget)
 			{
-				_Sounds.AirDashSound();
-				_Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);
+				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
 				InitialEvents();
 				willChangeAction = true;
 			}
 		}
-		return willChangeAction;
 	}
 
 	public void StartAction () {
@@ -200,6 +219,7 @@ public class S_Action11_AirDash : MonoBehaviour, IMainAction
 		_Actions = GetComponent<S_ActionManager>();
 		_Action02 = GetComponent<S_Action02_Homing>();
 		_CamHandler = GetComponent<S_Handler_Camera>();
+		_Sounds = _Tools.SoundControl;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_HomingTrailScript = _Tools.HomingTrailScript;
@@ -216,23 +236,10 @@ public class S_Action11_AirDash : MonoBehaviour, IMainAction
 	}
 	#endregion
 
-	void Awake () {
-		if (_PlayerPhys == null)
-		{
-			_Tools = GetComponent<S_CharacterTools>();
-			AssignTools();
-
-			AssignStats();
-		}
-
-		_Action02._isHomingAvailable = true;
-	}
-
 	public void InitialEvents () {
-		if (!_Actions.lockJumpDash)
-		{
-			if (_Action02._isHomingAvailable)
-			{
+		
+			
+				_Sounds.AirDashSound();
 
 				_HomingTrailScript.emitTime = _AirDashDuration_ + 0.5f;
 				_HomingTrailScript.emit = true;
@@ -261,12 +268,9 @@ public class S_Action11_AirDash : MonoBehaviour, IMainAction
 				//Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 40f, 0f);
 
 
-			}
-			else
-			{
-				//Action.ChangeAction(Action.PreviousAction);
-			}
-		}
+			
+		
+		
 
 	}
 

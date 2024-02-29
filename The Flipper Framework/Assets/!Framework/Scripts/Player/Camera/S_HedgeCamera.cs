@@ -380,7 +380,7 @@ public class S_HedgeCamera : MonoBehaviour
 		float verticalSpeed = _PlayerTransformReal.InverseTransformDirection(_PlayerPhys._RB.velocity).y;
 
 		//Making the camera face down when in the air for long enough.
-		bool isRightAction = _Actions.whatAction == S_Enums.PlayerStates.Jump || _Actions.whatAction == S_Enums.PlayerStates.Regular || _Actions.whatAction == S_Enums.PlayerStates.DropCharge;
+		bool isRightAction = _Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump || _Actions.whatAction == S_Enums.PrimaryPlayerStates.Default || _Actions.whatAction == S_Enums.PrimaryPlayerStates.DropCharge;
 		if (_shouldFaceDownWhenInAir_ && !_PlayerPhys._isGrounded && verticalSpeed < _fallSpeedThreshold_ && isRightAction)
 		{
 			//If isn't facing down yet, then check high enough in the air to warrent changing view.
@@ -426,7 +426,7 @@ public class S_HedgeCamera : MonoBehaviour
 				minSpeed = _lockCamAtSpeed_;
 				skipDelay = false;
 				break;
-			case S_Enums.PlayerStates.WallRunning:
+			case S_Enums.PrimaryPlayerStates.WallRunning:
 				minSpeed = 60;
 				skipDelay = true;
 				break;
@@ -572,7 +572,7 @@ public class S_HedgeCamera : MonoBehaviour
 			//A switch is used so it's less clutured than an if statement.
 			switch(_Actions.whatAction)
 			{
-				case S_Enums.PlayerStates.Rail:
+				case S_Enums.PrimaryPlayerStates.Rail:
 					break;
 				default:
 				{

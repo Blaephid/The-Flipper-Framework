@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Collections;
 
-public class S_Action06_Bounce : MonoBehaviour
+[RequireComponent(typeof(S_ActionManager))]
+public class S_Action06_Bounce : MonoBehaviour, IMainAction
 {
 
 	/// <summary>
@@ -33,7 +34,6 @@ public class S_Action06_Bounce : MonoBehaviour
 	[HideInInspector]
 	public List<float> _BounceUpSpeeds_;
 	private float _bounceUpMaxSpeed_;
-	private float _bounceConsecutiveFactor_;
 	private float _bounceHaltFactor_;
 	private float _bounceCoolDown_;
 	#endregion
@@ -106,7 +106,7 @@ public class S_Action06_Bounce : MonoBehaviour
 
 			//StartCoroutine(Action.lockBounceOnly(coolDown));
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 
 		else if ((groundhit && !HasBounced) || (!groundhit && _PlayerPhys._RB.velocity.y > _dropSpeed_ * 0.4f && !HasBounced))
@@ -128,7 +128,6 @@ public class S_Action06_Bounce : MonoBehaviour
 				}
 				else
 				{
-
 					Bounce(Vector3.up);
 				}
 			}
@@ -140,12 +139,15 @@ public class S_Action06_Bounce : MonoBehaviour
 
 	}
 
-	public void AttemptAction () {
+	public bool AttemptAction () {
+		bool willChangeAction = false;
 		if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f)
 		{
 			InitialEvents();
-			_Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Bounce);
+			willChangeAction = true;
 		}
+		return willChangeAction;
 	}
 
 	public void StartAction () {
@@ -204,7 +206,6 @@ public class S_Action06_Bounce : MonoBehaviour
 		}
 		_bounceUpMaxSpeed_ = _Tools.Stats.BounceStats.bounceUpMaxSpeed;
 		_bounceCoolDown_ = _Tools.Stats.BounceStats.bounceCoolDown;
-		_bounceConsecutiveFactor_ = _Tools.Stats.BounceStats.bounceConsecutiveFactor;
 		_bounceHaltFactor_ = _Tools.Stats.BounceStats.bounceHaltFactor;
 	}
 	#endregion

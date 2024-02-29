@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 //using Abertay.Analytics;
 
-public class levelEventHandler : MonoBehaviour
+public class S_LevelEventHandler : MonoBehaviour
 {
     public bool ActivelySendingEvents = false;
 

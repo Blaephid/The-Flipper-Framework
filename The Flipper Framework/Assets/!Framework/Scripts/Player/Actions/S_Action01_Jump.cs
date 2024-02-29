@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(S_ActionManager))]
 public class S_Action01_Jump : MonoBehaviour, IMainAction
 {
 	/// <summary>
@@ -16,7 +17,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera _CamHandler;
-	private S_Handler_quickstep _QuickStepManager;
+	private S_SubAction_Quickstep _QuickStepManager;
 	private S_Control_PlayerSound _Sounds;
 
 	private Animator CharacterAnimator;
@@ -47,29 +48,31 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	// Trackers
 	#region trackers
 
-	public float skinRotationSpeed;
-	public Vector3 InitialNormal { get; set; }
-	public float Counter { get; set; }
-	public float ControlCounter;
-	[HideInInspector] public int jumpCount;
-	[HideInInspector] public bool Jumping;
+	private int         _positionInActionList;
 
-	private float JumpDuration;
-	private float SlopedJumpDuration;
-	private float JumpSpeed;
+	public float	_skinRotationSpeed;
+	public Vector3	_initialNormal { get; set; }
+	public float	_counter { get; set; }
+	public float	_controlCounter;
+	[HideInInspector] 
+	public int	_jumpCount;
+	[HideInInspector] 
+	public bool	_isJumping;
 
-
-	float jumpSpeedModifier = 1f;
-	float jumpDurationModifier = 1f;
-
-
-	float jumpSlopeSpeed;
+	private float	_thisJumpDuration;
+	private float	_slopedJumpDuration;
+	private float	_thisJumpSpeed;
+	private float	_jumpSlopeSpeed;
 
 
-	[HideInInspector] public float timeJumping;
-	bool cancelled;
+	private float	_jumpSpeedModifier = 1f;
+	private float	_jumpDurationModifier = 1f;
+
+
+	[HideInInspector] 
+	public float	_timeJumping;
+	private bool	_isCancelled;
 	#endregion
-
 	#endregion
 	#endregion
 
@@ -88,9 +91,20 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private void OnEnable () {
 		if (_PlayerPhys == null)
 		{
+			//Assign all external values needed for gameplay.
 			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
+
+			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
+			{
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
+				{
+					_positionInActionList = i;
+					break;
+				}
+			}
 		}
 		JumpBall.SetActive(true);
 	}
@@ -104,154 +118,58 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	void Update () {
 		//Set Animator Parameters
 		_Actions.Action00.HandleAnimator(1);
-		_Actions.Action00.SetSkinRotation(skinRotationSpeed);
-
-		////Set Animation Angle
-		//Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-
-		//if (VelocityMod != Vector3.zero)
-		//{
-		//	Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-		//	CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
-		//}
+		_Actions.Action00.SetSkinRotation(_skinRotationSpeed);
 
 		//Actions
 		if (!_Actions.isPaused)
 		{
-			//If can homing attack pressed.
-			if (_Input.HomingPressed)
-			{
-				if (_Actions.Action02._isHomingAvailable && _Actions.Action02Control._HasTarget && !_PlayerPhys._isGrounded)
-				{
-
-					//Do a homing attack
-					if (_Actions.Action02 != null && _PlayerPhys._homingDelay_ <= 0)
-					{
-						if (_Actions.Action02Control._isHomingAvailable)
-						{
-							_Sounds.HomingAttackSound();
-							_Actions.ChangeAction(S_Enums.PlayerStates.Homing);
-							_Actions.Action02.InitialEvents();
-						}
-					}
-
-				}
-			}
-
-
-			//If no tgt, do air dash;
-			if (_Input.SpecialPressed)
-			{
-				if (_Actions.Action02._isHomingAvailable)
-				{
-					if (!_Actions.Action02Control._HasTarget)
-					{
-						_Sounds.AirDashSound();
-						_Actions.ChangeAction(S_Enums.PlayerStates.JumpDash);
-						_Actions.Action11.InitialEvents();
-					}
-				}
-			}
-
-
-
-			//Handle additional jumps. Can only be done if jump is over but jump button pressed.
-			if (!Jumping && _Input.JumpPressed)
-			{
-				//Do a double jump
-				if (jumpCount == 1 && _canDoubleJump_)
-				{
-
-					InitialEvents(Vector3.up);
-					_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
-				}
-
-				//Do a triple jump
-				else if (jumpCount == 2 && _canTripleJump_)
-				{
-					//Debug.Log("Do a triple jump");
-					InitialEvents(Vector3.up);
-					_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
-				}
-			}
-
-
-			//Do a Bounce Attack
-			if (_Input.BouncePressed)
-			{
-				if (_Actions.Action06.BounceAvailable && _PlayerPhys._RB.velocity.y < 35f)
-				{
-					_Actions.Action06.InitialEvents();
-					_Actions.ChangeAction(S_Enums.PlayerStates.Bounce);
-					//	Actions.Action06.ShouldStomp = false;
-				}
-
-			}
-
-			//Set Camera to back
-			if (_Input.CamResetPressed)
-			{
-				if (_Input.moveX == 0 && _Input.moveY == 0 && _PlayerPhys._horizontalSpeedMagnitude < 5f)
-					_CamHandler._HedgeCam.GoBehindCharacter(6, 20, false);
-			}
-
-
-
-			//Do a DropDash 
-
-			if (_Input.RollPressed)
-			{
-				_Actions.Action08.TryDropCharge();
-
-			}
-
-			_QuickStepManager.AttemptAction();
+			HandleInputs();
 		}
 	}
 
 	private void FixedUpdate () {
 		//Jump action
-		Counter += Time.fixedDeltaTime;
-		ControlCounter += Time.fixedDeltaTime;
-		timeJumping += Time.fixedDeltaTime;
+		_counter += Time.fixedDeltaTime;
+		_controlCounter += Time.fixedDeltaTime;
+		_timeJumping += Time.fixedDeltaTime;
 
 		//if (!Actions.JumpPressed && Counter < JumpDuration && Counter > 0.1f && Jumping)
-		if (!_Input.JumpPressed && Counter > 0.1f && Jumping)
+		if (!_Input.JumpPressed && _counter > 0.1f && _isJumping)
 		{
-			jumpCount++;
-			Counter = JumpDuration;
-			Jumping = false;
+			_jumpCount++;
+			_counter = _thisJumpDuration;
+			_isJumping = false;
 		}
-		else if (Counter > JumpDuration && Jumping && _Input.JumpPressed)
+		else if (_counter > _thisJumpDuration && _isJumping && _Input.JumpPressed)
 		{
-			jumpCount++;
-			Counter = JumpDuration;
-			Jumping = false;
+			_jumpCount++;
+			_counter = _thisJumpDuration;
+			_isJumping = false;
 			_Input.JumpPressed = false;
 		}
 		//Add Jump Speed
-		else if (Counter < JumpDuration && Jumping)
+		else if (_counter < _thisJumpDuration && _isJumping)
 		{
 			_Actions.Action00.SetIsRolling(false);
-			if (Counter < SlopedJumpDuration)
+			if (_counter < _slopedJumpDuration)
 			{
-				_PlayerPhys.AddCoreVelocity(InitialNormal * (JumpSpeed), false);
+				_PlayerPhys.AddCoreVelocity(_initialNormal * (_thisJumpSpeed), false);
 				//Debug.Log(InitialNormal);
 			}
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(new Vector3(0, 1, 0) * (JumpSpeed), false);
+				_PlayerPhys.AddCoreVelocity(new Vector3(0, 1, 0) * (_thisJumpSpeed), false);
 			}
 			//Extra speed
-			_PlayerPhys.AddCoreVelocity(new Vector3(0, 1, 0) * (jumpSlopeSpeed), false);
+			_PlayerPhys.AddCoreVelocity(new Vector3(0, 1, 0) * (_jumpSlopeSpeed), false);
 		}
 
 
 
 		//Cancel Jump
-		if (!cancelled && _PlayerPhys._RB.velocity.y > 0 && !Jumping && Counter > 0.1)
+		if (!_isCancelled && _PlayerPhys._RB.velocity.y > 0 && !_isJumping && _counter > 0.1)
 		{
-			cancelled = true;
+			_isCancelled = true;
 			//jumpCount = 1;
 			Vector3 Velocity = new Vector3(_PlayerPhys._RB.velocity.x, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z);
 			Velocity.y = Velocity.y - _stopYSpeedOnRelease_;
@@ -260,17 +178,17 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		}
 
 		//End Action
-		if (_PlayerPhys._isGrounded && Counter > SlopedJumpDuration)
+		if (_PlayerPhys._isGrounded && _counter > _slopedJumpDuration)
 		{
 
-			jumpCount = 0;
+			_jumpCount = 0;
 
 
 			_Input.JumpPressed = false;
 			JumpBall.SetActive(false);
 
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 			_Actions.Action06.BounceCount = 0;
 			//JumpBall.SetActive(false);
 		}
@@ -285,25 +203,25 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		{
 			switch(_Actions.whatAction)
 			{
-				default:
+				case S_Enums.PrimaryPlayerStates.Default:
 					//Normal grounded Jump
 					if (_PlayerPhys._isGrounded)
 					{
 						InitialEvents(_PlayerPhys._groundNormal, true, _PlayerPhys._RB.velocity.y);
-						_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+						_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 					}
 					//Jump from regular action due to coyote time
 					else if (_Actions.Action00._coyoteInEffect)
 					{
 						InitialEvents(_Actions.Action00._coyoteRememberDir, true, _Actions.Action00._coyoteRememberSpeed);
-						_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+						_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 					}
 					//Jump when in the air
 					else
 					{
-						jumpCount = 0;
+						_jumpCount = 0;
 						InitialEvents(Vector3.up);
-						_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+						_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 					}
 					willChangeAction = true;
 					break;
@@ -329,7 +247,14 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	#region private
 
 	public void HandleInputs () {
+		if(!_Actions.isPaused)
+		{
+			//Moving camera behind
+			_CamHandler.AttemptCameraReset();
 
+			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+			_Actions.HandleInputs(_positionInActionList);
+		}
 	}
 
 	#endregion
@@ -353,7 +278,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_Actions = GetComponent<S_ActionManager>();
 		_CamHandler = GetComponent<S_Handler_Camera>();
 
-		_QuickStepManager = GetComponent<S_Handler_quickstep>();
+		_QuickStepManager = GetComponent<S_SubAction_Quickstep>();
 		_Input = GetComponent<S_PlayerInput>();
 
 		CharacterAnimator = _Tools.CharacterAnimator;
@@ -386,12 +311,12 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		if (!_Actions.lockDoubleJump)
 		{
 			_Input.RollPressed = false;
-			cancelled = false;
-			Jumping = true;
-			Counter = 0;
-			ControlCounter = controlDelay;
-			jumpSlopeSpeed = 0;
-			timeJumping = 0f;
+			_isCancelled = false;
+			_isJumping = true;
+			_counter = 0;
+			_controlCounter = controlDelay;
+			_jumpSlopeSpeed = 0;
+			_timeJumping = 0f;
 			//Debug.Log(jumpCount);
 
 			_PlayerPhys.SetIsGrounded(false);
@@ -413,23 +338,23 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 				//Sets jump stats for this specific jump.
 
-				JumpSpeed = _startJumpSpeed_ * jumpSpeedModifier;
-				JumpDuration = _startJumpDuration_ * jumpDurationModifier;
-				SlopedJumpDuration = _startSlopedJumpDuration_ * jumpDurationModifier;
+				_thisJumpSpeed = _startJumpSpeed_ * _jumpSpeedModifier;
+				_thisJumpDuration = _startJumpDuration_ * _jumpDurationModifier;
+				_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 
 				//Number of jumps set to zero, allowing for double jumps.
-				jumpCount = 0;
+				_jumpCount = 0;
 
 				//Sets jump direction
-				InitialNormal = normaltoJump;
+				_initialNormal = normaltoJump;
 
 				//SnapOutOfGround to make sure you do jump
-				transform.position += (InitialNormal * 0.3f);
+				transform.position += (_initialNormal * 0.3f);
 
 				//Jump higher depending on the speed and the slope you're in
 				if (_PlayerPhys._RB.velocity.y > 0 && normaltoJump.y > 0)
 				{
-					jumpSlopeSpeed = _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_;
+					_jumpSlopeSpeed = _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_;
 				}
 
 			}
@@ -440,16 +365,16 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 				if (_Actions.eventMan != null) _Actions.eventMan.DoubleJumpsPerformed += 1;
 
 				//Increases jump count
-				if (jumpCount == 0)
-					jumpCount = 1;
+				if (_jumpCount == 0)
+					_jumpCount = 1;
 
 				//Sets jump direction
-				InitialNormal = normaltoJump;
+				_initialNormal = normaltoJump;
 
 				//Sets jump stats for this specific jump.
-				JumpSpeed = _doubleJumpSpeed_ * jumpSpeedModifier;
-				JumpDuration = _doubleJumpDuration_ * jumpDurationModifier;
-				SlopedJumpDuration = _doubleJumpDuration_ * jumpDurationModifier;
+				_thisJumpSpeed = _doubleJumpSpeed_ * _jumpSpeedModifier;
+				_thisJumpDuration = _doubleJumpDuration_ * _jumpDurationModifier;
+				_slopedJumpDuration = _doubleJumpDuration_ * _jumpDurationModifier;
 
 				JumpAgain();
 			}
@@ -470,7 +395,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//InitialNormal = CharacterAnimator.transform.up;
 
 		//SnapOutOfGround to make sure you do jump
-		transform.position += (InitialNormal * 0.3f);
+		transform.position += (_initialNormal * 0.3f);
 
 		Vector3 newVec;
 

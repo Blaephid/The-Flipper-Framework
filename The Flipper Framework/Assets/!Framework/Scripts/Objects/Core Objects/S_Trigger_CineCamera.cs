@@ -77,8 +77,8 @@ public class S_Trigger_CineCamera : MonoBehaviour
         {
             if(!isActive && Player != null)
             {
-                if ( Actions.whatAction == S_Enums.PlayerStates.Path || (Actions.whatAction == S_Enums.PlayerStates.Regular && RegularAction) || (Actions.whatAction == S_Enums.PlayerStates.Jump && JumpAction) 
-                    || (Actions.whatAction == S_Enums.PlayerStates.Rail && RailAction) || (Actions.whatAction == S_Enums.PlayerStates.WallRunning && wallRunAction) || (Actions.whatAction == S_Enums.PlayerStates.RingRoad && RingRoadAction))
+                if ( Actions.whatAction == S_Enums.PrimaryPlayerStates.Path || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) 
+                    || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction))
                 {
                     isActive = true;
                     hedgeCam = Player.GetComponent<S_Handler_Camera>()._VirtCam;
@@ -96,18 +96,13 @@ public class S_Trigger_CineCamera : MonoBehaviour
                         virCam.Follow = Player.transform;
                     }
 
-                    if (disableMove)
-                    {
-                        Player.GetComponent<S_ActionManager>().actionDisable();
-                    }
-
                 }
             }
             else
             {
                 if(!(
-                    Actions.whatAction == S_Enums.PlayerStates.Regular && RegularAction) && !(Actions.whatAction == S_Enums.PlayerStates.Jump && JumpAction) && 
-                    !(Actions.whatAction == S_Enums.PlayerStates.Rail && RailAction) && !(Actions.whatAction == S_Enums.PlayerStates.WallRunning && wallRunAction) && !(Actions.whatAction == S_Enums.PlayerStates.RingRoad && RingRoadAction) && onExit)
+                    Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) && !(Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) && 
+                    !(Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) && !(Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) && !(Actions.whatAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction) && onExit)
                 {
                     DeactivateCam(0);
                 }
@@ -162,10 +157,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
 
     public void DeactivateCam(float disableFor)
     {
-        if (disableMove)
-        {
-            Player.GetComponent<S_ActionManager>().actionEnable();
-        }
+ 
         if(setBehind)
         {
             Player.GetComponent<S_Handler_Camera>()._HedgeCam.SetBehind(0);

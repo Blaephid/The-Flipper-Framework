@@ -1,334 +1,383 @@
 ﻿using UnityEngine;
 using System.Collections;
-//using Luminosity.IO;
+using SplineMesh;
 
-namespace SplineMesh
+[RequireComponent(typeof(S_ActionManager))]
+public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 {
-    //[RequireComponent(typeof(Spline))]
-    public class S_Action10_FollowAutoPath : MonoBehaviour
-    {
-        S_CharacterTools Tools;
 
-        S_PlayerPhysics Player;
-        S_PlayerInput Input;
-        Animator CharacterAnimator;
-        S_Control_PlayerSound Sounds;
-        Quaternion CharRot;
-        S_Interaction_Pathers Path_Int;
-        S_ActionManager Actions;
-        S_HedgeCamera Cam;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
+
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
+	private S_Control_PlayerSound _Sounds;
+	private S_Interaction_Pathers _Path_Int;
+	private S_HedgeCamera	_CamHandler;
+
+	private CurveSample _Sample;
+	private Animator	_CharacterAnimator;
+	[HideInInspector]
+	public Collider	_PatherStarter;
+	private Transform	_Skin;
+	private Transform	_PathTransform;
+	#endregion
+
+	//General
+	#region General Properties
+
+	//Stats
+	#region Stats
+	#endregion
+
+	// Trackers
+	#region trackers
+	private Vector3	_OGSkinLocPos;
+
+	public float	_skinRotationSpeed;
+	public Vector3	_skinOffsetPos = new Vector3(0, -0.4f, 0);
+	public float	_offset = 2.05f;
+
+	private Quaternion	_charRot;
+
+	// Setting up Values
+	private float	_range = 0f;
+	[HideInInspector]
+	public float	_playerSpeed;
+	private float	_pathTopSpeed;
+	private bool	_isGoingBackwards;
+
+	//Camera testing
+	public float	_targetDistance = 10;
+	public float	_cameraLerp = 10;
+
+	[HideInInspector] 
+	public float	_originalRayToGroundRot;
+	[HideInInspector] 
+	public float	_originalRayToGround;
+	#endregion
+	#endregion
+	#endregion
+
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
+
+	// Start is called before the first frame update
+	void Start () {
+
+	}
+
+	// Called when the script is enabled, but will only assign the tools and stats on the first time.
+	private void OnEnable () {
+		if (_PlayerPhys == null)
+		{
+			_Tools = GetComponent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
+		}
+		_OGSkinLocPos = _Skin.transform.localPosition;
+	}
+	private void OnDisable () {
+		if (_Skin != null)
+		{
+			_Skin.transform.localPosition = _OGSkinLocPos;
+			_Skin.localRotation = Quaternion.identity;
+		}
+	}
+
+	// Update is called once per frame
+	void Update () {
+		//CameraFocus();
+
+		//Set Animator Parameters as player is always running
+
+		_CharacterAnimator.SetInteger("Action", 0);
+		_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
+		_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._RB.velocity.magnitude);
+		_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
 
-   
 
-        [Header("Skin Params")]
+		//Set Animation Angle
+		Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z);
+		Quaternion CharRot = Quaternion.LookRotation(VelocityMod, _Sample.up);
+		_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
+	}
 
-        Transform Skin;
-        Vector3 OGSkinLocPos;
+	private void FixedUpdate () {
+		_Input.LockInputForAWhile(1f, true);
+		PathMove();
+	}
 
-        public float skinRotationSpeed;
-        public Vector3 SkinOffsetPos = new Vector3(0, -0.4f, 0);
-        public float Offset = 2.05f;
-        
-    
+	public bool AttemptAction () {
+		bool willChangeAction = false;
+		willChangeAction = true;
+		return willChangeAction;
+	}
 
-        // Setting up Values
-        private float range = 0f;
-        Transform PathTransform;
-        [HideInInspector] public float PlayerSpeed;
-        float PathTopSpeed;
-        bool backwards;
+	public void StartAction () {
 
-        CurveSample sample;
-        
-        //float rotYFix;
-        //Quaternion rot;
-        Quaternion InitialRot;
+	}
 
-        //Camera testing
-        public float TargetDistance = 10;
-        public float CameraLerp = 10;
+	public void StopAction () {
 
-        [HideInInspector] public float OriginalRayToGroundRot;
-        [HideInInspector] public float OriginalRayToGround;
+	}
 
-        [HideInInspector] public Collider patherStarter;
+	#endregion
 
-        private void Awake()
-        {
-            if (Player == null)
-            {
-                Tools = GetComponent<S_CharacterTools>();
-                AssignTools();
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
 
-                AssignStats();
-            }
+	public void HandleInputs () {
 
-            OGSkinLocPos = Skin.transform.localPosition;
+	}
 
-        }
+	#endregion
 
-        private void OnDisable()
-        {  
-            if (Skin != null)
-            {
-                Skin.transform.localPosition = OGSkinLocPos;
-                Skin.localRotation = Quaternion.identity;
-            }
-        }
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
 
+	#endregion
 
-        public void InitialEvents(float Range, Transform PathPos, bool back, float speed, float pathspeed = 0f)
-        {
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
 
-            //Disable colliders to prevent jankiness
-            //Path_Int.playerCol.enabled = false;
+	//Responsible for assigning objects and components from the tools script.
+	private void AssignTools () {
+		_Actions = GetComponent<S_ActionManager>();
+		_Input = GetComponent<S_PlayerInput>();
+		_Path_Int = GetComponent<S_Interaction_Pathers>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_Sounds = _Tools.SoundControl;
+		_CamHandler = GetComponent<S_Handler_Camera>()._HedgeCam;
+		_Skin = _Tools.mainSkin;
+	}
 
-            Skin.transform.localPosition = Skin.transform.localPosition;
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
 
+	}
+	#endregion
 
-            //fix for camera jumping
-            //rotYFix = transform.rotation.eulerAngles.y;
-            //transform.rotation = Quaternion.identity;
 
-            if (transform.eulerAngles.y < -89)
-            {
-                Player.transform.eulerAngles = new Vector3(0, -89, 0);
-            }
+	public void InitialEvents ( float Range, Transform PathPos, bool back, float speed, float pathspeed = 0f ) {
 
+		//Disable colliders to prevent jankiness
+		//Path_Int.playerCol.enabled = false;
 
-            //Setting up the path to follow
-            range = Range;
-            PathTransform = PathPos;
 
-            PathTopSpeed = pathspeed;
+		_Skin.transform.localPosition = _Skin.transform.localPosition;
 
-            PlayerSpeed = Player._RB.velocity.magnitude;
 
-            if (PlayerSpeed < speed)
-                PlayerSpeed = speed;
-            
-            backwards = back;
+		//fix for camera jumping
+		//rotYFix = transform.rotation.eulerAngles.y;
+		//transform.rotation = Quaternion.identity;
 
-            InitialRot = transform.rotation;
-            CharacterAnimator.SetBool("Grounded", true);
+		if (transform.eulerAngles.y < -89)
+		{
+			_PlayerPhys.transform.eulerAngles = new Vector3(0, -89, 0);
+		}
 
-        }
 
+		//Setting up the path to follow
+		_range = Range;
+		_PathTransform = PathPos;
 
+		_pathTopSpeed = pathspeed;
 
-        void FixedUpdate()
-        {
-            Input.LockInputForAWhile(1f, true);
-            PathMove();
-        }
-
-        void Update()
-        {
-            //CameraFocus();
-
-            //Set Animator Parameters as player is always running
-
-            CharacterAnimator.SetInteger("Action", 0);
-            CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
-            CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
-            CharacterAnimator.SetBool("Grounded", Player._isGrounded);
-            
-
-            //Set Animation Angle
-            Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, Player._RB.velocity.y, Player._RB.velocity.z);
-            Quaternion CharRot = Quaternion.LookRotation(VelocityMod, sample.up);
-            CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+		_playerSpeed = _PlayerPhys._RB.velocity.magnitude;
 
+		if (_playerSpeed < speed)
+			_playerSpeed = speed;
 
-
-        }
+		_isGoingBackwards = back;
+		_CharacterAnimator.SetBool("Grounded", true);
 
+	}
 
-        public void PathMove()
-        {
-            //Increase the Amount of distance through the Spline by DeltaTime
-            float ammount = (Time.deltaTime * PlayerSpeed);
-
-            Player.AlignToGround(Player._groundNormal, Player._isGrounded);
-
-            //Slowly increases player speed.
-            if (PlayerSpeed < Player._currentTopSpeed || PlayerSpeed < PathTopSpeed)
-            {
-                if (PlayerSpeed < Player._currentTopSpeed * 0.7f)
-                    PlayerSpeed += .14f;
-                else
-                    PlayerSpeed += .07f;
-
-            }
-
-            //Simple Slope effects
-            if (Player._groundNormal.y < 1 && Player._groundNormal != Vector3.zero)
-            {
-                //UpHill
-                if (Player._RB.velocity.y > 0f)
-                {
-                    PlayerSpeed -= (1f - Player._groundNormal.y) * 0.1f;
-                }
-
-                //DownHill
-                if (Player._RB.velocity.y < 0f)
-                {
-                    PlayerSpeed += (1f - Player._groundNormal.y) * 0.1f;
-                }
-            }
-
-            //Leave path at low speed
-            if (PlayerSpeed < 10f)
-            {
-                ExitPath();
-            }
-
-            // Increase/Decrease Range depending on direction
-
-            if (!backwards)
-            {
-                //range += ammount / dist;
-                range += ammount;
-            }
-            else
-            {
-                //range -= ammount / dist;
-                range -= ammount;
-            }
-
-            //Check so for the size of the Spline
-            if (range < Path_Int.RailSpline.Length && range > 0)
-            {
-                //Get Sample of the Path to put player
-                sample = Path_Int.RailSpline.GetSampleAtDistance(range);
-
-                //Set player Position and rotation on Path
-                //Quaternion rot = (Quaternion.FromToRotation(Skin.transform.up, sample.Rotation * Vector3.up) * Skin.rotation);
-                //Skin.rotation = rot;
-                //CharacterAnimator.transform.rotation = rot;
-
-
-                if ((Physics.Raycast(sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + Tools.Stats.FindingGround.rayToGroundDistance, Player._Groundmask_)))
-                {
-                    //Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
-                    //transform.position = (hitRot.point + PathTransform.position) + FootPos;
-
-                    Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
-                    transform.position = ((sample.location) + PathTransform.position) + FootPos;
-                }
-                else
-                {
-                    Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
-                    transform.position = ((sample.location) + PathTransform.position) + FootPos;
-                }
-
-            
-
-                //Moves the player to the position of the Upreel
-                //Vector3 HandPos = transform.position - HandGripPoint.position;
-                //transform.position = currentUpreel.HandleGripPos.position + HandPos;
-
-
-                //Set Player Speed correctly for smoothness
-                if (!backwards)
-                {
-                    Player._RB.velocity = sample.tangent * (PlayerSpeed);
-
-
-                    //remove camera tracking at the end of the path to be safe from strange turns
-                    //if (range > Rail_int.RailSpline.Length * 0.9f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f;}
-                }
-                else
-                {
-                    Player._RB.velocity = -sample.tangent * (PlayerSpeed);
-
-                    //remove camera tracking at the end of the path to be safe from strange turns
-                    //if (range < 0.1f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f; }
-                }
-
-            }
-            else
-            {
-                //Check if the Spline is loop and resets position
-                if (Path_Int.RailSpline.IsLoop)
-                {
-                    if (!backwards)
-                    {
-                        range = range - Path_Int.RailSpline.Length;
-                        PathMove();
-                    }
-                    else
-                    {
-                        range = range + Path_Int.RailSpline.Length;
-                        PathMove();
-                    }
-                }
-                else
-                {
-                    ExitPath();
-                }
-            }
-
-        }
-
-        public void ExitPath()
-        {
-            
-
-            Player.AlignToGround(Player._groundNormal, Player._isGrounded);
-
-            //Set Player Speed correctly for smoothness
-            if (!backwards)
-            {
-                sample = Path_Int.RailSpline.GetSampleAtDistance(Path_Int.RailSpline.Length);
-                Player._RB.velocity = sample.tangent * (PlayerSpeed);
-
-            }
-            else
-            {
-                sample = Path_Int.RailSpline.GetSampleAtDistance(0);
-                Player._RB.velocity = -sample.tangent * (PlayerSpeed);
-
-            }
-
-            CharacterAnimator.transform.rotation = Quaternion.LookRotation(Player._RB.velocity, Player._HitGround.normal);
-
-            Player.GetComponent<S_Handler_Camera>()._HedgeCam.SetBehind(0);
-            Input.LockInputForAWhile(30f, true);
-
-            //Reenables Colliders
-            //Path_Int.playerCol.enabled = true;
-
-
-            //Deactivates any cinemachine that might be attached.
-            if (Path_Int.currentCam != null)
-            {
-                Path_Int.currentCam.DeactivateCam(18);
-                Path_Int.currentCam = null;
-            }
-
-            Actions.ChangeAction(S_Enums.PlayerStates.Regular);
-        }
-
-        void AssignStats()
-        {
-
-        }
-
-        void AssignTools()
-        {
-            Actions = GetComponent<S_ActionManager>();
-            Input = GetComponent<S_PlayerInput>();
-            Path_Int = GetComponent<S_Interaction_Pathers>();
-            Player = GetComponent<S_PlayerPhysics>();
-
-            CharacterAnimator = Tools.CharacterAnimator;
-            Sounds = Tools.SoundControl;
-            Cam = GetComponent<S_Handler_Camera>()._HedgeCam;
-            Skin = Tools.mainSkin;
-        }
-
-    }
-    
+
+	public void PathMove () {
+		//Increase the Amount of distance through the Spline by DeltaTime
+		float ammount = (Time.deltaTime * _playerSpeed);
+
+		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
+
+		//Slowly increases player speed.
+		if (_playerSpeed < _PlayerPhys._currentTopSpeed || _playerSpeed < _pathTopSpeed)
+		{
+			if (_playerSpeed < _PlayerPhys._currentTopSpeed * 0.7f)
+				_playerSpeed += .14f;
+			else
+				_playerSpeed += .07f;
+
+		}
+
+		//Simple Slope effects
+		if (_PlayerPhys._groundNormal.y < 1 && _PlayerPhys._groundNormal != Vector3.zero)
+		{
+			//UpHill
+			if (_PlayerPhys._RB.velocity.y > 0f)
+			{
+				_playerSpeed -= (1f - _PlayerPhys._groundNormal.y) * 0.1f;
+			}
+
+			//DownHill
+			if (_PlayerPhys._RB.velocity.y < 0f)
+			{
+				_playerSpeed += (1f - _PlayerPhys._groundNormal.y) * 0.1f;
+			}
+		}
+
+		//Leave path at low speed
+		if (_playerSpeed < 10f)
+		{
+			ExitPath();
+		}
+
+		// Increase/Decrease Range depending on direction
+
+		if (!_isGoingBackwards)
+		{
+			//range += ammount / dist;
+			_range += ammount;
+		}
+		else
+		{
+			//range -= ammount / dist;
+			_range -= ammount;
+		}
+
+		//Check so for the size of the Spline
+		if (_range < _Path_Int.RailSpline.Length && _range > 0)
+		{
+			//Get Sample of the Path to put player
+			_Sample = _Path_Int.RailSpline.GetSampleAtDistance(_range);
+
+			//Set player Position and rotation on Path
+			//Quaternion rot = (Quaternion.FromToRotation(Skin.transform.up, sample.Rotation * Vector3.up) * Skin.rotation);
+			//Skin.rotation = rot;
+			//CharacterAnimator.transform.rotation = rot;
+
+
+			if ((Physics.Raycast(_Sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + _Tools.Stats.FindingGround.rayToGroundDistance, _PlayerPhys._Groundmask_)))
+			{
+				//Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
+				//transform.position = (hitRot.point + PathTransform.position) + FootPos;
+
+				Vector3 FootPos = transform.position - _Path_Int.feetPoint.position;
+				transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
+			}
+			else
+			{
+				Vector3 FootPos = transform.position - _Path_Int.feetPoint.position;
+				transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
+			}
+
+
+
+			//Moves the player to the position of the Upreel
+			//Vector3 HandPos = transform.position - HandGripPoint.position;
+			//transform.position = currentUpreel.HandleGripPos.position + HandPos;
+
+
+			//Set Player Speed correctly for smoothness
+			if (!_isGoingBackwards)
+			{
+				_PlayerPhys._RB.velocity = _Sample.tangent * (_playerSpeed);
+
+
+				//remove camera tracking at the end of the path to be safe from strange turns
+				//if (range > Rail_int.RailSpline.Length * 0.9f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f;}
+			}
+			else
+			{
+				_PlayerPhys._RB.velocity = -_Sample.tangent * (_playerSpeed);
+
+				//remove camera tracking at the end of the path to be safe from strange turns
+				//if (range < 0.1f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f; }
+			}
+
+		}
+		else
+		{
+			//Check if the Spline is loop and resets position
+			if (_Path_Int.RailSpline.IsLoop)
+			{
+				if (!_isGoingBackwards)
+				{
+					_range = _range - _Path_Int.RailSpline.Length;
+					PathMove();
+				}
+				else
+				{
+					_range = _range + _Path_Int.RailSpline.Length;
+					PathMove();
+				}
+			}
+			else
+			{
+				ExitPath();
+			}
+		}
+
+	}
+
+	public void ExitPath () {
+
+
+		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
+
+		//Set Player Speed correctly for smoothness
+		if (!_isGoingBackwards)
+		{
+			_Sample = _Path_Int.RailSpline.GetSampleAtDistance(_Path_Int.RailSpline.Length);
+			_PlayerPhys._RB.velocity = _Sample.tangent * (_playerSpeed);
+
+		}
+		else
+		{
+			_Sample = _Path_Int.RailSpline.GetSampleAtDistance(0);
+			_PlayerPhys._RB.velocity = -_Sample.tangent * (_playerSpeed);
+
+		}
+
+		_CharacterAnimator.transform.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, _PlayerPhys._HitGround.normal);
+
+		_PlayerPhys.GetComponent<S_Handler_Camera>()._HedgeCam.SetBehind(0);
+		_Input.LockInputForAWhile(30f, true);
+
+		//Reenables Colliders
+		//Path_Int.playerCol.enabled = true;
+
+
+		//Deactivates any cinemachine that might be attached.
+		if (_Path_Int.currentCam != null)
+		{
+			_Path_Int.currentCam.DeactivateCam(18);
+			_Path_Int.currentCam = null;
+		}
+
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+	}
 }
+
+

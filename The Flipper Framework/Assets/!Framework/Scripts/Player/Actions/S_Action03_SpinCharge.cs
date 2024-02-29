@@ -24,7 +24,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private GameObject			_CharacterCapsule;
 
 	private S_ActionManager		_Actions;
-	private S_Handler_quickstep		_QuickstepManager;
+	private S_SubAction_Quickstep		_QuickstepManager;
 
 	private S_PlayerPhysics		_PlayerPhys;
 	private S_Control_PlayerSound		_Sounds;
@@ -110,7 +110,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			//At a slow enough speed and not on too sharp a slope.
 			if (_PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerPhys._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
 			{
-				_Actions.ChangeAction(S_Enums.PlayerStates.SpinCharge);
+				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.SpinCharge);
 				StartAction();
 				willChangeAction = true;
 			}
@@ -228,7 +228,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		{
 			_Sounds.Source2.Stop();
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 		else
 		{
@@ -252,7 +252,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			_Input.LockInputForAWhile(0, false);
 
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 
 	}
@@ -305,7 +305,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			else
 			{
 				_Actions.Action00.StartAction();
-				_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 			}
 
 		}
@@ -364,7 +364,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Actions = GetComponent<S_ActionManager>();
 		_CamHandler = GetComponent<S_Handler_Camera>();
 		_Input = GetComponent<S_PlayerInput>();
-		_QuickstepManager = GetComponent<S_Handler_quickstep>();
+		_QuickstepManager = GetComponent<S_SubAction_Quickstep>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_BallAnimator = _Tools.BallAnimator;

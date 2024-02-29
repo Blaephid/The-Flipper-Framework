@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Cinemachine.DocumentationSortingAttribute;
 
-public class S_Handler_Skidding : MonoBehaviour, ISubAction
+public class S_SubAction_Skid : MonoBehaviour, ISubAction
 {
 
 
@@ -44,7 +44,7 @@ public class S_Handler_Skidding : MonoBehaviour, ISubAction
 	// Trackers
 	#region trackers
 	public bool         _isSkidding;
-	private S_Enums.PlayerStates _whatCurrentAction;
+	private S_Enums.PrimaryPlayerStates _whatCurrentAction;
 	#endregion
 
 	#endregion
@@ -86,7 +86,7 @@ public class S_Handler_Skidding : MonoBehaviour, ISubAction
 		//Different actions require different skids, even though they all call this function.
 		switch (_Actions.whatAction)
 		{
-			case S_Enums.PlayerStates.Regular:
+			case S_Enums.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._isGrounded)
 				{
 					TryRegularSkid();
@@ -99,12 +99,12 @@ public class S_Handler_Skidding : MonoBehaviour, ISubAction
 				}
 				break;
 
-			case S_Enums.PlayerStates.Jump: 
+			case S_Enums.PrimaryPlayerStates.Jump: 
 				TryJumpSkid();
 				willStartAction = true;
 				break;
 
-			case S_Enums.PlayerStates.SpinCharge:
+			case S_Enums.PrimaryPlayerStates.SpinCharge:
 				TrySpinSkid();
 				willStartAction = true;
 				break;

@@ -89,7 +89,7 @@ public class S_Handler_Hurt : MonoBehaviour
 
         if(_Input.killBindPressed)
         {
-            if(Actions.whatAction != S_Enums.PlayerStates.Hurt)
+            if(Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
                 CharacterAnimator.SetTrigger("Damaged");
             isDead = true;
         }
@@ -114,8 +114,8 @@ public class S_Handler_Hurt : MonoBehaviour
     {
         faceHitCollider.transform.rotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, transform.up); ;
 
-        if((Actions.whatAction == 0 && Player._horizontalSpeedMagnitude > 50) || (Actions.whatAction == S_Enums.PlayerStates.Jump && Player._horizontalSpeedMagnitude > 40) || (Actions.whatAction == S_Enums.PlayerStates.JumpDash
-            && Player._horizontalSpeedMagnitude > 30) || (Actions.whatAction == S_Enums.PlayerStates.WallRunning && Actions.Action12.RunningSpeed > 5))
+        if((Actions.whatAction == 0 && Player._horizontalSpeedMagnitude > 50) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump && Player._horizontalSpeedMagnitude > 40) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.JumpDash
+            && Player._horizontalSpeedMagnitude > 30) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning && Actions.Action12._runningSpeed > 5))
         {
             if(Physics.SphereCast(transform.position, 0.3f, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, _BonkWall_))
             {
@@ -141,7 +141,7 @@ public class S_Handler_Hurt : MonoBehaviour
 
 
         _Input.enabled = false;
-        Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
+        Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
 		_Input._move = Vector3.zero;
         deadCounter += 1;
         //Debug.Log("DeathGroup");
@@ -284,7 +284,7 @@ public class S_Handler_Hurt : MonoBehaviour
     IEnumerator giveChanceToWallClimb()
     {
         Vector3 newDir = CharacterAnimator.transform.forward;
-        if (Actions.whatAction != S_Enums.PlayerStates.WallRunning)
+        if (Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning)
         {
             if(!Player._isGrounded)
             {
@@ -296,16 +296,16 @@ public class S_Handler_Hurt : MonoBehaviour
                 }
             }
             
-            if (Actions.whatAction != S_Enums.PlayerStates.WallRunning)
+            if (Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning)
             {
                 Actions.Action04.InitialEvents(true);
-                Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
+                Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
             }
         }
-        else if(Actions.Action12.RunningSpeed > 0)
+        else if(Actions.Action12._runningSpeed > 0)
         {
             Actions.Action04.InitialEvents(true);
-            Actions.ChangeAction(S_Enums.PlayerStates.Hurt);
+            Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
         }
     }
 

@@ -1,101 +1,103 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S_Action07_RingRoad : MonoBehaviour {
+[RequireComponent(typeof(S_ActionManager))]
+public class S_Action07_RingRoad : MonoBehaviour, IMainAction
+{
 
-	S_CharacterTools Tools;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
 
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
 
-	Animator CharacterAnimator;
-    Quaternion CharRot;
-	S_ActionManager Action;
-	GameObject HomingTrailContainer;
-	public GameObject HomingTrail;
-	public Vector3 trailOffSet = new Vector3(0,-3,0);
-	S_PlayerPhysics Player;
-	S_PlayerInput Inp;
+	public Transform	_Target;
+	private Animator	_CharacterAnimator;
+	private GameObject	_HomingTrailContainer;
+	public GameObject	_HomingTrail;
+	private GameObject	_JumpBall;
+	#endregion
 
+	//General
+	#region General Properties
 
-	GameObject JumpBall;
-	
-    public float skinRotationSpeed = 1;
-	public Transform Target { get; set; }
-	private float InitialVelocityMagnitude;
-	float Timer;
-	float Speed;
-	float Aspeed;
+	//Stats
+	#region Stats
+	private float	_dashSpeed_;
+	private float	_endingSpeedFactor_;
+	private float	_minimumEndingSpeed_;
+	#endregion
 
-	//[SerializeField] float DashingTimerLimit;
-	float _dashSpeed_;
-	float _endingSpeedFactor_;
-	float _minimumEndingSpeed_;
-	Vector3 direction;
+	// Trackers
+	#region trackers
+	public float	_skinRotationSpeed = 1;
+	public Vector3	_trailOffSet = new Vector3(0,-3,0);
+	private float	_initialVelocityMagnitude;
+	private Vector3	_direction;
+	#endregion
 
-	void Awake()
-	{
-		if (Player == null)
-        {
-			Tools = GetComponent<S_CharacterTools>();
+	#endregion
+	#endregion
+
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
+
+	// Start is called before the first frame update
+	void Start () {
+
+	}
+
+	// Called when the script is enabled, but will only assign the tools and stats on the first time.
+	private void OnEnable () {
+		if (_PlayerPhys == null)
+		{
+			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
-
 			AssignStats();
-        }
+		}
+	}
+	private void OnDisable () {
+
 	}
 
-
-    public void InitialEvents()
-	{
-		InitialVelocityMagnitude = Player._RB.velocity.magnitude;
-		Player._RB.velocity = Vector3.zero;
-
-		JumpBall.SetActive(false);
-		if (HomingTrailContainer.transform.childCount < 1) 
-		{
-			GameObject HomingTrailClone = Instantiate (HomingTrail, HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
-			HomingTrailClone.transform.parent = HomingTrailContainer.transform;
-			HomingTrailClone.transform.localPosition = trailOffSet;
-		}
-			
-		if (Action.Action07Control.HasTarget && Target != null)
-		{
-			Target = Action.Action07Control.TargetObject.transform;
-		}
-			
-	}
-
-	void Update()
-	{
-
+	// Update is called once per frame
+	void Update () {
 		//Set Animator Parameters
-		CharacterAnimator.SetInteger("Action", 7);
-		CharacterAnimator.SetFloat("YSpeed", Player._RB.velocity.y);
-		CharacterAnimator.SetFloat("GroundSpeed", Player._RB.velocity.magnitude);
-		CharacterAnimator.SetBool("Grounded", Player._isGrounded);
+		_CharacterAnimator.SetInteger("Action", 7);
+		_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
+		_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._RB.velocity.magnitude);
+		_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
 
 		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(Player._RB.velocity.x, Player._RB.velocity.y, Player._RB.velocity.z);
+		Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z);
 		if (VelocityMod != Vector3.zero)
 		{
 			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-			CharacterAnimator.transform.rotation = Quaternion.Lerp(CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+			_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
 		}
-	
-
 	}
 
-    void FixedUpdate()
-    {
-		
+	private void FixedUpdate () {
 		//Timer += 1;
 
-		Inp.LockInputForAWhile(1f, true);
+		_Input.LockInputForAWhile(1f, true);
 
 		//CharacterAnimator.SetInteger("Action", 1);
-		if (Action.Action07Control.TargetObject  != null) 
+		if (_Actions.Action07Control.TargetObject != null)
 		{
-			Target = Action.Action07Control.TargetObject.transform;
-			direction = Target.position - transform.position;
-			Player._RB.velocity = direction.normalized * _dashSpeed_;
+			_Target = _Actions.Action07Control.TargetObject.transform;
+			_direction = _Target.position - transform.position;
+			_PlayerPhys._RB.velocity = _direction.normalized * _dashSpeed_;
 
 			GetComponent<S_Handler_Camera>()._HedgeCam.GoBehindCharacter(7, 30f, true);
 		}
@@ -104,40 +106,102 @@ public class S_Action07_RingRoad : MonoBehaviour {
 		{
 			float EndingSpeedResult = 0;
 
-			EndingSpeedResult = Mathf.Max (_minimumEndingSpeed_, InitialVelocityMagnitude);
+			EndingSpeedResult = Mathf.Max(_minimumEndingSpeed_, _initialVelocityMagnitude);
 
-			Player._RB.velocity = Vector3.zero;
-			Player._RB.velocity = direction.normalized*EndingSpeedResult*_endingSpeedFactor_;
-		
+			_PlayerPhys._RB.velocity = Vector3.zero;
+			_PlayerPhys._RB.velocity = _direction.normalized * EndingSpeedResult * _endingSpeedFactor_;
+
 			//GetComponent<CameraControl>().Cam.SetCamera(direction.normalized, 2.5f, 20, 5f,10);
 
-			for(int i = HomingTrailContainer.transform.childCount-1; i>=0; i--)
-				Destroy(HomingTrailContainer.transform.GetChild(i).gameObject);
+			for (int i = _HomingTrailContainer.transform.childCount - 1 ; i >= 0 ; i--)
+				Destroy(_HomingTrailContainer.transform.GetChild(i).gameObject);
 
 			GetComponent<S_PlayerInput>().LockInputForAWhile(10, true);
 
-			CharacterAnimator.SetInteger("Action", 0);
-			Action.ChangeAction(S_Enums.PlayerStates.Regular);
+			_CharacterAnimator.SetInteger("Action", 0);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
-    }
+	}
 
-	private void AssignStats()
-    {
-		_dashSpeed_ = Tools.Stats.RingRoadStats.dashSpeed;
-		_endingSpeedFactor_ = Tools.Stats.RingRoadStats.endingSpeedFactor;
-		_minimumEndingSpeed_ = Tools.Stats.RingRoadStats.minimumEndingSpeed;
-    }
+	public bool AttemptAction () {
+		bool willChangeAction = false;
+		willChangeAction = true;
+		return willChangeAction;
+	}
 
-	private void AssignTools()
-    {
-		Player = GetComponent<S_PlayerPhysics>();
-		Action = GetComponent<S_ActionManager>();
-		Inp = GetComponent<S_PlayerInput>();
+	public void StartAction () {
 
-		HomingTrailContainer = Tools.HomingTrailContainer;
-		CharacterAnimator = Tools.CharacterAnimator;
-		JumpBall = Tools.JumpBall;
-		HomingTrail = Tools.HomingTrail;
+	}
+
+	public void StopAction () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+
+	public void HandleInputs () {
+
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+
+	#endregion
+
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
+
+	//Responsible for assigning objects and components from the tools script.
+	private void AssignTools () {
+		_Input = GetComponent<S_PlayerInput>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Actions = GetComponent<S_ActionManager>();
+		_Actions = GetComponent<S_ActionManager>();
+
+		_HomingTrailContainer = _Tools.HomingTrailContainer;
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_JumpBall = _Tools.JumpBall;
+		_HomingTrail = _Tools.HomingTrail;
+	}
+
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
+		_dashSpeed_ = _Tools.Stats.RingRoadStats.dashSpeed;
+		_endingSpeedFactor_ = _Tools.Stats.RingRoadStats.endingSpeedFactor;
+		_minimumEndingSpeed_ = _Tools.Stats.RingRoadStats.minimumEndingSpeed;
+	}
+	#endregion
+
+	public void InitialEvents () {
+		_initialVelocityMagnitude = _PlayerPhys._RB.velocity.magnitude;
+		_PlayerPhys._RB.velocity = Vector3.zero;
+
+		_JumpBall.SetActive(false);
+		if (_HomingTrailContainer.transform.childCount < 1)
+		{
+			GameObject HomingTrailClone = Instantiate (_HomingTrail, _HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
+			HomingTrailClone.transform.parent = _HomingTrailContainer.transform;
+			HomingTrailClone.transform.localPosition = _trailOffSet;
+		}
+
+		if (_Actions.Action07Control.HasTarget && _Target != null)
+		{
+			_Target = _Actions.Action07Control.TargetObject.transform;
+		}
+
 	}
 
 }

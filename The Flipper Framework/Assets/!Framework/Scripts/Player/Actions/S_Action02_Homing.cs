@@ -37,6 +37,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private float	_airDashDuration_;
 	private float	_homingTimerLimit_;
 	private float	_facingAmount;
+	private bool        _CanBePerformedOnGround_;
 	#endregion
 
 	// Trackers
@@ -108,7 +109,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Ends homing attack if in air for too long or target is lost
 		if (_Target == null || _timer > _homingTimerLimit_)
 		{
-			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 
 		//direction = Target.position - transform.position;
@@ -136,15 +137,18 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	public bool AttemptAction () {
 		bool willChangeAction = false;
-		if (_HomingControl._HasTarget && _Input.HomingPressed && _Actions.Action02._isHomingAvailable)
+		if(_PlayerPhys._isGrounded || _CanBePerformedOnGround_)
 		{
-			//Do a homing attack
-			if (_Actions.Action02 != null && _PlayerPhys._homingDelay_ <= 0)
-			{			
-				_Sounds.HomingAttackSound();
-				_Actions.ChangeAction(S_Enums.PlayerStates.Homing);
-				InitialEvents();
-				willChangeAction = true;
+			if (_HomingControl._HasTarget && _Input.HomingPressed && _Actions.Action02._isHomingAvailable)
+			{
+				//Do a homing attack
+				if (_Actions.Action02 != null && _PlayerPhys._homingDelay_ <= 0)
+				{
+					_Sounds.HomingAttackSound();
+					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Homing);
+					InitialEvents();
+					willChangeAction = true;
+				}
 			}
 		}
 		return willChangeAction;
@@ -206,6 +210,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_airDashSpeed_ = _Tools.Stats.JumpDashStats.dashSpeed;
 		_homingTimerLimit_ = _Tools.Stats.HomingStats.timerLimit;
 		_airDashDuration_ = _Tools.Stats.JumpDashStats.duration;
+		_CanBePerformedOnGround_ = _Tools.Stats.HomingStats.CanBePerformedOnGround;
 	}
 	#endregion
 

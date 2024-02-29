@@ -290,7 +290,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Sets the size of the ray to check for ground. If running on the ground then it is typically to avoid flying off the ground.
 		float _rayToGroundDistancecor = _rayToGroundDistance_;
-		if (_Action.whatAction == S_Enums.PlayerStates.Regular && _isGrounded)
+		if (_Action.whatAction == S_Enums.PrimaryPlayerStates.Default && _isGrounded)
 		{
 			_rayToGroundDistancecor = Mathf.Max(_rayToGroundDistance_ + (_horizontalSpeedMagnitude * _raytoGroundSpeedRatio_), _rayToGroundDistance_);
 			_rayToGroundDistancecor = Mathf.Min(_rayToGroundDistancecor, _raytoGroundSpeedMax_);
@@ -381,14 +381,14 @@ public class S_PlayerPhysics : MonoBehaviour
 		float airTurnMod = _airControlAmmount_.x;
 		switch (_Action.whatAction)
 		{
-			case S_Enums.PlayerStates.Jump:
-				if (_Action.Action01.ControlCounter < _jumpExtraControlThreshold_)
+			case S_Enums.PrimaryPlayerStates.Jump:
+				if (_Action.Action01._controlCounter < _jumpExtraControlThreshold_)
 				{
 					airAccelMod = _jumpAirControl_.y;
 					airTurnMod = _jumpAirControl_.x;
 				}
 				break;
-			case S_Enums.PlayerStates.Bounce:
+			case S_Enums.PrimaryPlayerStates.Bounce:
 				airAccelMod = _bounceAirControl_.y;
 				airTurnMod = _bounceAirControl_.x;
 				break;
@@ -415,7 +415,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	Vector3 HandleControlledVelocity ( Vector2 modifier ) {
 
 		//Certain actions control velocity in their own way.
-		if (_Action.whatAction == S_Enums.PlayerStates.JumpDash || _Action.whatAction == S_Enums.PlayerStates.WallRunning) { return _coreVelocity; }
+		if (_Action.whatAction == S_Enums.PrimaryPlayerStates.JumpDash || _Action.whatAction == S_Enums.PrimaryPlayerStates.WallRunning) { return _coreVelocity; }
 
 		//Original by Damizean, edited by Blaephid
 

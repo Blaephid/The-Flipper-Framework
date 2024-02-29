@@ -69,7 +69,7 @@ public class S_Handler_WallRunning : MonoBehaviour
             saveVec = Player._RB.velocity;
 
             //If High enough above ground and not at an odd rotation
-            if (enoughAboveGround() && (Actions.whatAction == S_Enums.PlayerStates.Regular || Actions.whatAction == S_Enums.PlayerStates.JumpDash || (Actions.whatAction == S_Enums.PlayerStates.Jump && GetComponent<S_Interaction_Pathers>().currentUpreel == null)))
+            if (enoughAboveGround() && (Actions.whatAction == S_Enums.PrimaryPlayerStates.Default || Actions.whatAction == S_Enums.PrimaryPlayerStates.JumpDash || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump && GetComponent<S_Interaction_Pathers>().currentUpreel == null)))
             {
                 
                 if(Inp._camMoveInput.sqrMagnitude > 0.8f)
@@ -127,7 +127,7 @@ public class S_Handler_WallRunning : MonoBehaviour
             //Enter wall run as a climb
             if (Actions.eventMan != null) Actions.eventMan.wallClimbsPerformed += 1;
             WallRun.InitialEvents(true, frontWallDetect, false, _wallCheckDistance_ * CheckModifier);
-            Actions.ChangeAction(S_Enums.PlayerStates.WallRunning);
+            Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
 
         }
     }
@@ -141,7 +141,7 @@ public class S_Handler_WallRunning : MonoBehaviour
             //Enter a wallrun with wall on left.
             WallRun.InitialEvents(false, leftWallDetect, false);
             if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
-            Actions.ChangeAction(S_Enums.PlayerStates.WallRunning);
+            Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
             
         }
     }
@@ -155,7 +155,7 @@ public class S_Handler_WallRunning : MonoBehaviour
             //Enter a wallrun with wall on right.
             WallRun.InitialEvents(false, rightWallDetect, true);
             if (Actions.eventMan != null) Actions.eventMan.wallRunsPerformed += 1;
-            Actions.ChangeAction(S_Enums.PlayerStates.WallRunning);
+            Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
             
         }
     }

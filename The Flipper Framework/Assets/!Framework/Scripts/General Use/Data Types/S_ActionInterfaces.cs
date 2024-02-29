@@ -21,3 +21,9 @@ public interface ISubAction : IAction
 {
 	
 }
+
+
+public interface IControlAction
+{
+
+}

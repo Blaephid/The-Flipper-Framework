@@ -85,7 +85,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
        
         _Input.LockInputForAWhile(20, true);
         StartCoroutine(Actions.lockAirMoves(20));
-        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+        Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 
         tools.HomingTrailScript.emitTime = 0;
         tools.HomingTrailScript.emit = false;
@@ -101,7 +101,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
       
 
         Player.SetTotalVelocity(characterTransform.forward * 2);
-        Actions.Action04.deadCounter = 0;
+        Actions.Action04._deadCounter = 0;
 
         Cam._HedgeCam._isReversed = false;
         Cam._HedgeCam.SetBehind(20);

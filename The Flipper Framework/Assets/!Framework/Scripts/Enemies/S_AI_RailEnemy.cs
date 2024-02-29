@@ -285,27 +285,27 @@ namespace SplineMesh
 
         void trackPlayer()
         {
-            if (playerRail.Rail_int.RailSpline == RailSpline)
+            if (playerRail._Rail_int.RailSpline == RailSpline)
             {
-                if (backwards == playerRail.backwards)
+                if (backwards == playerRail._isGoingBackwards)
                 {
                     if (backwards)
                     {
-                        playerDistance = range - playerRail.range;
+                        playerDistance = range - playerRail._range;
 
                     }
                     else
                     {
-                        playerDistance = playerRail.range - range;
+                        playerDistance = playerRail._range - range;
                     }
 
-                    playerSpeed = (playerRail.PlayerSpeed - currentSpeed) / playerRail._railmaxSpeed_;
+                    playerSpeed = (playerRail._playerSpeed - currentSpeed) / playerRail._railmaxSpeed_;
                     float changeSpeed = followSpeed * followBySpeedDif.Evaluate(Mathf.Abs(playerSpeed));
                     
 
                     if (playerDistance > 0)
                     {
-                        if (currentSpeed < playerRail.PlayerSpeed - 3)
+                        if (currentSpeed < playerRail._playerSpeed - 3)
                             currentSpeed += changeSpeed;
 
                         currentSpeed += followSpeed * followByDistance.Evaluate(Mathf.Abs(playerDistance));
@@ -314,7 +314,7 @@ namespace SplineMesh
                     else
                     {
 
-                        currentSpeed = Mathf.MoveTowards(currentSpeed, playerRail.PlayerSpeed - 2, changeSpeed);
+                        currentSpeed = Mathf.MoveTowards(currentSpeed, playerRail._playerSpeed - 2, changeSpeed);
                     }
 
 

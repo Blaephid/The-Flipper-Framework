@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class S_Handler_quickstep : MonoBehaviour, ISubAction
+public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 {
 
 
@@ -36,7 +36,7 @@ public class S_Handler_quickstep : MonoBehaviour, ISubAction
 
 	// Trackers
 	#region trackers
-	private S_Enums.PlayerStates _whatActionWasOn;
+	private S_Enums.PrimaryPlayerStates _whatActionWasOn;
 	private bool	_isSteppingRight;
 	private bool	_canStep;
 	private bool	_inAir;

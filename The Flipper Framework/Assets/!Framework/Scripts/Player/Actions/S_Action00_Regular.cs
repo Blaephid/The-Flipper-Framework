@@ -3,6 +3,7 @@ using System.Collections;
 using System.Security.Cryptography;
 using UnityEditor;
 
+[RequireComponent(typeof(S_ActionManager))]
 public class S_Action00_Regular : MonoBehaviour, IMainAction
 {
 
@@ -22,7 +23,7 @@ public class S_Action00_Regular : MonoBehaviour, IMainAction
 	private S_PlayerInput	_Input;
 	private S_ActionManager	_Actions;
 	private S_Handler_Camera	_CamHandler;
-	private S_Handler_quickstep	_QuickstepManager;
+	private S_SubAction_Quickstep	_QuickstepManager;
 	private S_Control_PlayerSound _Sounds;
 	private GameObject            _CharacterCapsule;
 	private GameObject            _RollingCapsule;
@@ -37,7 +38,8 @@ public class S_Action00_Regular : MonoBehaviour, IMainAction
 	//Stats
 	#region Stats
 	public float	_skinRotationSpeed = 2;
-	private bool	_CanDashDuringFall_;
+	[HideInInspector] 
+	public bool	_CanDashDuringFall_;
 	private AnimationCurve _CoyoteTimeBySpeed_;
 	private float       _rollingStartSpeed_;
 
@@ -45,6 +47,7 @@ public class S_Action00_Regular : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
+	private int         _positionInActionList;
 
 	private Quaternion	_CharRot;
 
@@ -73,9 +76,20 @@ public class S_Action00_Regular : MonoBehaviour, IMainAction
 	private void OnEnable () {
 		if (_PlayerPhys == null)
 		{
+			//Assign all external values needed for gameplay.
 			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
+
+			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+			for(int i = 0 ; i < _Actions._MainActions.Count ; i++)
+			{
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
+				{
+					_positionInActionList = i;
+					break;
+				}
+			}
 		}
 	}
 
@@ -125,54 +139,33 @@ public class S_Action00_Regular : MonoBehaviour, IMainAction
 	/// 
 	#region private
 	public void HandleInputs () {
-
-		//Grounded Actions
-		if (_PlayerPhys._isGrounded)
+		if (!_Actions.isPaused)
 		{
-			//Enter Rolling state, must have been rolling for a long enough time first.
-			if (_Input.RollPressed && _PlayerPhys._isGrounded && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
+			//Grounded Actions
+			if (_PlayerPhys._isGrounded)
 			{
-				Curl();
-			}
-			//Exit rolling state
-			if ((!_Input.RollPressed && _rollCounter > _minRollTime) || !_PlayerPhys._isGrounded)
-			{
-				UnCurl();
-			}
-			if (_PlayerPhys._isRolling)
-				_rollCounter += Time.deltaTime;
+				//Enter Rolling state, must have been rolling for a long enough time first.
+				if (_Input.RollPressed && _PlayerPhys._isGrounded && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
+				{
+					Curl();
+				}
+				//Exit rolling state
+				if ((!_Input.RollPressed && _rollCounter > _minRollTime) || !_PlayerPhys._isGrounded)
+				{
+					UnCurl();
+				}
+				if (_PlayerPhys._isRolling)
+					_rollCounter += Time.deltaTime;
 
-			//Jump
-			_Actions.Action01.AttemptAction();
+				//Moving camera behind
+				_CamHandler.AttemptCameraReset();
+			}
 
 			//Moving camera behind
 			_CamHandler.AttemptCameraReset();
 
-			//Spindash
-			_Actions.Action03.AttemptAction();
-
-			//Quickstep
-			_QuickstepManager.AttemptAction();
-		}
-
-		//Air actions	
-		else
-		{
-			//Homing Attack
-			_Actions.Action02.AttemptAction();
-
-			//Air dash;
-			if (_CanDashDuringFall_)
-				_Actions.Action11.AttemptAction();
-
-			//Double Jump
-			_Actions.Action01.AttemptAction();
-
-			//Bounce
-			_Actions.Action06.AttemptAction();
-
-			//Drop Charge
-			_Actions.Action08.AttemptAction();
+			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+			_Actions.HandleInputs(_positionInActionList);
 		}
 	}
 
@@ -324,7 +317,7 @@ public class S_Action00_Regular : MonoBehaviour, IMainAction
 		_Actions = GetComponent<S_ActionManager>();
 		_JumpAction = GetComponent<S_Action01_Jump>();
 		_CamHandler = GetComponent<S_Handler_Camera>();
-		_QuickstepManager = GetComponent<S_Handler_quickstep>();
+		_QuickstepManager = GetComponent<S_SubAction_Quickstep>();
 		_Sounds = _Tools.SoundControl;
 		_CharacterCapsule = _Tools.characterCapsule;
 		_CharacterAnimator = _Tools.CharacterAnimator;

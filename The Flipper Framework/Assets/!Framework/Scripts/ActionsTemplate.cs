@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace templates
 {
+	[RequireComponent(typeof(S_ActionManager))]
 	public class ActionsTemplate : MonoBehaviour, IMainAction
 	{
 		/// <summary>
@@ -29,6 +30,7 @@ namespace templates
 
 		// Trackers
 		#region trackers
+		private int         _positionInActionList;
 		#endregion
 
 		#endregion
@@ -49,9 +51,21 @@ namespace templates
 		private void OnEnable () {
 			if (_PlayerPhys == null)
 			{
+				//Assign all external values needed for gameplay.
 				_Tools = GetComponent<S_CharacterTools>();
 				AssignTools();
 				AssignStats();
+
+				//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+				for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
+				{
+					if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
+					{
+						Debug.Log("This is found at " + i);
+						_positionInActionList = i;
+						break;
+					}
+				}
 			}
 		}
 		private void OnDisable () {
@@ -90,7 +104,11 @@ namespace templates
 		#region private
 
 		public void HandleInputs () {
-
+			if (!_Actions.isPaused)
+			{
+				//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+				_Actions.HandleInputs(_positionInActionList);
+			}
 		}
 
 		#endregion

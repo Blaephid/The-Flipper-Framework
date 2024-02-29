@@ -71,7 +71,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
         _homingCount += 1;
 
-        if (_Actions.whatAction == S_Enums.PlayerStates.Homing)
+        if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing)
         {
             _isHomingAvailable = false;
             _homingCount = 0;
@@ -110,7 +110,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
         while (_isScanning)
         {
 
-            while (!_PlayerPhys._isGrounded && _Actions.whatAction != S_Enums.PlayerStates.Rail)
+            while (!_PlayerPhys._isGrounded && _Actions.whatAction != S_Enums.PrimaryPlayerStates.Rail)
             {
                 UpdateHomingTargets();
                 if (!_HasTarget)

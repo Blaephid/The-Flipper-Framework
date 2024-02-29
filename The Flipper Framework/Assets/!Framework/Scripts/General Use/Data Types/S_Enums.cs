@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class S_Enums
 {
-	public enum PlayerStates
+	public enum PrimaryPlayerStates
 	{
-		Regular,
+		Default,
 		Jump,
 		Homing,
 		SpinCharge,
@@ -19,6 +19,30 @@ public class S_Enums
 		JumpDash,
 		WallRunning,
 		Hovering
+	}
+
+	public enum PlayerControlledStates {
+		Jump,
+		Homing,
+		SpinCharge,
+		Bounce,
+		DropCharge,
+		JumpDash
+	}
+
+	public enum PlayerSituationalStates {
+		Default,
+		Hurt,
+		Rail,
+		RingRoad,
+		Path,
+		WallRunning,
+		Hovering,
+	}
+
+	public enum SubPlayerStates {
+		Skidding,
+		Quickstepping,
 	}
 
 	public enum SpinChargeAiming

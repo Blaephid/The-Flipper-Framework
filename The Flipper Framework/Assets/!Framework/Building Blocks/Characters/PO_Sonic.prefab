@@ -5230,6 +5230,7 @@ MonoBehaviour:
   _canBeGrounded: 1
   _isGravityOn: 1
   _currentFallGravity: {x: 0, y: 0, z: 0}
+  _listOfCanTurns: 
 --- !u!114 &8583335634310275265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5551,9 +5552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 795317e0a409ba3499067f99a8f5ed0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackingEvents: 0
   eventMan: {fileID: 0}
-  whatAction: 0
   Action00: {fileID: 114654845169286778}
   Action01: {fileID: 114873388628942606}
   Action02: {fileID: 114022693185401694}
@@ -5571,10 +5570,67 @@ MonoBehaviour:
   Action12: {fileID: 1384100291284439512}
   Action13: {fileID: 7294727757583443471}
   skid: {fileID: 2317282729712668892}
+  InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+  whatAction: 0
+  _addState: 7
+  _MainActions:
+  - State: 0
+    ConnectedStates: 000000000100000002000000030000000400000005000000
+    SituationalStates: 00000000010000000200000003000000040000000500000006000000
+    PerformableSubStates: 0000000001000000
+  - State: 1
+    ConnectedStates: 0000000001000000030000000400000005000000
+    SituationalStates: 00000000010000000200000003000000040000000500000006000000
+    PerformableSubStates: 0000000001000000
+  - State: 2
+    ConnectedStates: 04000000
+    SituationalStates: 000000000100000003000000
+    PerformableSubStates: 
+  - State: 3
+    ConnectedStates: 04000000
+    SituationalStates: 010000000000000002000000
+    PerformableSubStates: 0000000001000000
+  - State: 4
+    ConnectedStates: 
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
+  - State: 5
+    ConnectedStates: 00000000
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
+  - State: 6
+    ConnectedStates: 0400000005000000
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
+  - State: 7
+    ConnectedStates: 0000000001000000
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
+  - State: 8
+    ConnectedStates: 01000000
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
+  - State: 9
+    ConnectedStates: 
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
+  - State: 10
+    ConnectedStates: 0400000000000000
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
+  - State: 11
+    ConnectedStates: 0000000005000000
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
+  - State: 12
+    ConnectedStates: 
+    SituationalStates: 0100000000000000
+    PerformableSubStates: 
   lockBounce: 0
   lockHoming: 0
   lockJumpDash: 0
   lockDoubleJump: 0
+  _isTrackingEvents: 0
   isPaused: 0
 --- !u!114 &114654845169286778
 MonoBehaviour:
@@ -5589,8 +5645,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _skinRotationSpeed: 10
-  _isRolling: 0
-  rollCounter: 0
+  _CanDashDuringFall_: 0
+  _coyoteInEffect: 0
+  _coyoteRememberDir: {x: 0, y: 0, z: 0}
+  _coyoteRememberSpeed: 0
+  _rollCounter: 0
 --- !u!114 &114873388628942606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5603,21 +5662,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1313590d96251e46aaef7e509eb58d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinRotationSpeed: 4
-  ControlCounter: 0
-  jumpCount: 0
-  Jumping: 0
-  _startJumpDuration_: 0
-  _startSlopedJumpDuration_: 0
-  _startJumpSpeed_: 0
-  _jumpSlopeConversion_: 0
-  _stopYSpeedOnRelease_: 0
-  _rollingLandingBoost_: 0
-  JumpDuration: 0.11
-  SlopedJumpDuration: 0.09
-  JumpSpeed: 10
   _canDoubleJump_: 1
-  timeJumping: 0
+  _skinRotationSpeed: 5
+  _controlCounter: 0
+  _jumpCount: 0
+  _isJumping: 0
+  _timeJumping: 0
 --- !u!114 &114300969380773912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5644,12 +5694,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1a4862d66441f4f94e9a7d171185b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isAdditive_: 0
-  _homingAttackSpeed_: 0
-  _airDashSpeed_: 0
-  _airDashDuration_: 0
-  _homingTimerLimit_: 0
-  skinRotationSpeed: 10
+  _Target: {fileID: 0}
+  _lateSpeed: 0
+  _targetDirection: {x: 0, y: 0, z: 0}
+  _skinRotationSpeed: 0
+  _isHomingAvailable: 0
 --- !u!114 &114168122690048012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5662,12 +5711,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181222eb924ad744a9ab86e4790de666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BallAnimationSpeedMultiplier: 1
-  SpinDashChargedEffectAmm: 0.07
   _spinDashChargingSpeed_: 0.3
   _minimunCharge_: 10
   _maximunCharge_: 100
   _spinDashStillForce_: 20
+  _spinDashChargedEffectAmm: 0
+  _ballAnimationSpeedMultiplier: 0
 --- !u!114 &114016931776330826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5700,6 +5749,7 @@ MonoBehaviour:
   _knockbackUpwardsForce_: 10
   _resetSpeedOnHit_: 0
   _knockbackForce_: 10
+  _deadCounter: 0
 --- !u!114 &163950796223377526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5728,21 +5778,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b49af0d0f47fca44392a9c0940d9eb80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Rail_int: {fileID: 0}
-  isZipLine: 0
-  skinRotationSpeed: 20
-  railMask:
-    serializedVersion: 2
-    m_Bits: 8388608
+  _Rail_int: {fileID: 0}
+  _ConnectedRails: {fileID: 0}
+  _ZipHandle: {fileID: 0}
+  _ZipBody: {fileID: 0}
+  _skinRotationSpeed: 0
   _railmaxSpeed_: 0
-  range: 0
-  ConnectedRails: {fileID: 0}
-  PlayerSpeed: 0
-  backwards: 0
-  TargetDistance: 10
-  CameraLerp: 10
-  Boosted: 0
-  boostTime: 0
+  _RailMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _isOnZipLine: 0
+  _curvePosSlope: 0
+  _range: 0
+  _isOnRail: 0
+  _playerSpeed: 0
+  _isGoingBackwards: 0
+  _targetDistance: 10
+  _cameraLerp: 10
+  _isBoosted: 0
+  _boostTime: 0
 --- !u!114 &114329351316114260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5755,9 +5809,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ad0cea500f9334c8b1e2539e9bc2ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _BounceUpSpeeds_: []
   BounceAvailable: 1
   BounceCount: 0
-  BounceUpSpeeds: []
 --- !u!114 &114930033002771750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5784,10 +5838,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316796d67803e6b4f8719aa0db4b6204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HomingTrail: {fileID: 1638298306650436, guid: 6dc834f9492c95545b5a07e7fc167429,
-    type: 3}
-  trailOffSet: {x: 0, y: 0.3, z: 0.6}
-  skinRotationSpeed: 9
+  _Target: {fileID: 0}
+  _HomingTrail: {fileID: 0}
+  _skinRotationSpeed: 1
+  _trailOffSet: {x: 0, y: -3, z: 0}
 --- !u!114 &6634573134749074193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5800,13 +5854,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ea18ef60704e74ba507d7e1ade1a2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BallAnimationSpeedMultiplier: 0
-  DropEffect: {fileID: 339764373253515146}
-  SpinDashChargedEffectAmm: 0
+  _DropEffect: {fileID: 0}
   _spinDashChargingSpeed_: 0.3
   _minimunCharge_: 10
   _maximunCharge_: 100
   charge: 0
+  BallAnimationSpeedMultiplier: 0
+  SpinDashChargedEffectAmm: 0
   ReleaseShakeAmmount: 0
 --- !u!114 &4314005691558026853
 MonoBehaviour:
@@ -5820,15 +5874,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb68ae7e176fda245b8aebfcc653b81e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinRotationSpeed: 20
-  SkinOffsetPos: {x: 0, y: 0, z: 0}
-  Offset: 2.05
-  PlayerSpeed: 0
-  TargetDistance: 10
-  CameraLerp: 10
-  OriginalRayToGroundRot: 0
-  OriginalRayToGround: 0
-  patherStarter: {fileID: 0}
+  _PatherStarter: {fileID: 0}
+  _skinRotationSpeed: 0
+  _skinOffsetPos: {x: 0, y: -0.4, z: 0}
+  _offset: 2.05
+  _playerSpeed: 0
+  _targetDistance: 10
+  _cameraLerp: 10
+  _originalRayToGroundRot: 0
+  _originalRayToGround: 0
 --- !u!114 &1508866748744117450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5844,7 +5898,7 @@ MonoBehaviour:
   _isAdditive_: 0
   _AirDashSpeed_: 0
   _AirDashDuration_: 0
-  skinRotationSpeed: 30
+  _skinRotationSpeed: 0
 --- !u!114 &6755438600529197151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5872,9 +5926,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c4bcbabe54cf5449111d2ae80752cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinRotationSpeed: 20
-  ClimbingSpeed: 0
-  RunningSpeed: 0
+  _skinRotationSpeed: 0
+  _climbingSpeed: 0
+  _runningSpeed: 0
 --- !u!114 &114332006758487302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6057,7 +6111,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   inWind: 0
-  _skiddingStartPoint_: 0
 --- !u!114 &2317282729712668892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6070,9 +6123,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84f9c6d1025f5e74e8387e08a266035a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _regularSkiddingStartPoint_: 0
+  _regularSkidAngleStartPoint_: 0
   _regularSkiddingIntensity_: 0
-  _hasSked: 0
+  _isSkidding: 0
 --- !u!114 &6324398746597360212
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -39,7 +39,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 
         private void FixedUpdate () {
-                if (Actions.whatAction == S_Enums.PlayerStates.RingRoad)
+                if (Actions.whatAction == S_Enums.PrimaryPlayerStates.RingRoad)
                 {
                         Collider[] TargetsInRange = GetCloseTargets(_targetSearchDistance_);
 
@@ -57,7 +57,7 @@ public class S_Handler_RingRoad : MonoBehaviour
                         yield return new WaitForFixedUpdate();
 
 
-                        if (Actions.whatAction == S_Enums.PlayerStates.Jump || Actions.whatAction == S_Enums.PlayerStates.Regular)
+                        if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump || Actions.whatAction == S_Enums.PrimaryPlayerStates.Default)
                         {
                                 Collider[] TargetsInRange = GetCloseTargets(_targetSearchDistance_ * 1.45f);
 
@@ -79,11 +79,11 @@ public class S_Handler_RingRoad : MonoBehaviour
 
         void PerformRingRoad () {
                 //Do a LightDash Attack
-                if (Actions.whatAction != S_Enums.PlayerStates.RingRoad && _Input.InteractPressed && TargetObject != null)
+                if (Actions.whatAction != S_Enums.PrimaryPlayerStates.RingRoad && _Input.InteractPressed && TargetObject != null)
                 {
 			//Debug.Log("LightDash");
 			_Input.CamResetPressed = false;
-                        Actions.ChangeAction(S_Enums.PlayerStates.RingRoad);
+                        Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
                         Actions.Action07.InitialEvents();
                 }
         }

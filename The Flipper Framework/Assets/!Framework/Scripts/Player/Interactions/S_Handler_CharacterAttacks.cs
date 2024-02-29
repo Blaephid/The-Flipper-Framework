@@ -85,7 +85,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         Vector3 newSpeed = new Vector3(1, 0, 1);
 
         //From a Jump
-        if ((Actions.whatAction == S_Enums.PlayerStates.Jump || Actions.whatAction == S_Enums.PlayerStates.Regular) && CanHitAgain)
+        if ((Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump || Actions.whatAction == S_Enums.PrimaryPlayerStates.Default) && CanHitAgain)
         {
 
             AttackFromJump(newSpeed);
@@ -93,14 +93,14 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         }
 
         //From a Homing Attack
-        else if ((Actions.whatAction == S_Enums.PlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PlayerStates.Homing) && CanHitAgain)
+        else if ((Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing) && CanHitAgain)
         {
             AttackFromHoming(newSpeed);
         }
 
 
         //From a Bounce
-        else if (Actions.whatAction == S_Enums.PlayerStates.Bounce && CanHitAgain)
+        else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Bounce && CanHitAgain)
         {
             AttackFromBounce(newSpeed);
         }
@@ -175,7 +175,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
         }
         _Input.SpecialPressed = false;
         _Input.HomingPressed = false;
-        Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+        Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
     }
 
 	private IEnumerator ResetTriggerBool()

@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEditor;
 
+[RequireComponent(typeof(S_ActionManager))]
 public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 {
 	/// <summary>
@@ -175,7 +176,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 			_Input.JumpPressed = false;
 			JumpBall.SetActive(false);
-			_Actions.ChangeAction(S_Enums.PlayerStates.Regular);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 
 		else if (_Input.SpecialPressed && charge > _minimunCharge_)
@@ -258,7 +259,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		if (_PlayerPhys._RB.velocity.y < 40f && _Actions.Action08 != null)
 		{
 			//Debug.Log("Enter DropDash");
-			_Actions.ChangeAction(S_Enums.PlayerStates.DropCharge);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.DropCharge);
 
 			_Actions.Action08.InitialEvents();
 		}
@@ -280,10 +281,10 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		{
 			_DropEffect.Stop();
 		}
-		if (_Actions.whatAction == S_Enums.PlayerStates.DropCharge)
+		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.DropCharge)
 		{
 			JumpBall.SetActive(true);
-			_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 		}
 	}
 
@@ -297,8 +298,8 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		StartCoroutine(airDash());
 
 		Release();
-		if (GetComponent<S_Action11_AirDash>() != null)
-			GetComponent<S_Action11_AirDash>().AirDashParticle();
+		if (GetComponent<S_Action11_JumpDash>() != null)
+			GetComponent<S_Action11_JumpDash>().AirDashParticle();
 		_isCharging = false;
 	}
 
@@ -312,7 +313,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		yield return new WaitForSeconds(time);
 		_PlayerPhys._isGravityOn = true;
 		JumpBall.SetActive(false);
-		_Actions.ChangeAction(S_Enums.PlayerStates.Jump);
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 
 	}
 

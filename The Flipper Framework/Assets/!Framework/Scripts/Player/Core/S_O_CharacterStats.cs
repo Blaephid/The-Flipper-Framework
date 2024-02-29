@@ -613,6 +613,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucHomingAction SetStrucHomingAction () {
 		return new StrucHomingAction
 		{
+			CanBePerformedOnGround = false,
 			canDashWhenFalling = true,
 			attackSpeed = 100f,
 			timerLimit = 1f,
@@ -623,6 +624,7 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucHomingAction
 	{
+		public bool         CanBePerformedOnGround;
 		public bool               canDashWhenFalling;
 		public float    attackSpeed;
 		public float    timerLimit;
@@ -1075,7 +1077,7 @@ public class S_O_CharacterStatsEditor : Editor
 
 		if (stats.InspectorTheme == null) { return; }
 		headerStyle = stats.InspectorTheme._MainHeaders;
-		ResetToDefaultButton = stats.InspectorTheme._DefaultButton;
+		ResetToDefaultButton = stats.InspectorTheme._ResetButton;
 	}
 
 	private void DrawInspector () {
