@@ -198,8 +198,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 		startFall();
 
-		_Actions.skid.AttemptAction();
-
 		HandleInputs();
 	}
 
@@ -228,7 +226,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		{
 			_Sounds.Source2.Stop();
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 		else
 		{
@@ -245,14 +242,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 			_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._RB.velocity.magnitude);
 
-
-			_Actions.Action00.SetIsRolling(true);
-			_Actions.Action00._rollCounter = 0.3f;
-
 			_Input.LockInputForAWhile(0, false);
 
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 
 	}
@@ -305,7 +297,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			else
 			{
 				_Actions.Action00.StartAction();
-				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 			}
 
 		}

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S_AI_Health : MonoBehaviour {
+public class S_AI_Health : MonoBehaviour , IHealthSystem {
 
     public int MaxHealth = 1;
     int HP;
@@ -16,22 +16,25 @@ public class S_AI_Health : MonoBehaviour {
         HP = MaxHealth;
     }
 
-    public void DealDamage(int Damage)
+    public bool DealDamage(int Damage)
     {
         HP -= Damage;
-        if(HP <= 0)
-        {
-            if(SpawnReference != null)
-            {
-                SpawnReference.ResartSpawner();
-            }
-            GameObject.Instantiate(Explosion, transform.position,Quaternion.identity);
+		if (HP <= 0)
+		{
+			if (SpawnReference != null)
+			{
+				SpawnReference.ResartSpawner();
+			}
+			GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
 
-            if(destroy)
-                Destroy(gameObject);
-            else
-                gameObject.SetActive(false);
-        }
+			if (destroy)
+				Destroy(gameObject);
+			else
+				gameObject.SetActive(false);
+			return true;
+		}
+		else
+			return false;
     }
 
 }

@@ -18,7 +18,6 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer _HomingTrailScript;
-	private S_Action02_Homing	_Action02;
 	private S_Handler_Camera	_CamHandler;
 	private S_Control_PlayerSound	_Sounds;
 
@@ -75,7 +74,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		}
 
 
-		_Action02._isHomingAvailable = true;
+		_Actions._isHomingAvailable = true;
 	}
 	private void OnDisable () {
 
@@ -86,7 +85,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		//Set Animator Parameters
 		_Actions.Action00.HandleAnimator(11);
 
-		_Actions.Action00.SetSkinRotation(_skinRotationSpeed);
+		_Actions.Action00.SetSkinRotationToVelocity(_skinRotationSpeed);
 
 		//Set Animation Angle
 		//Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
@@ -144,7 +143,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 			_CharacterAnimator.SetInteger("Action", 0);
 			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+			_Actions.Action00.StartAction();
 		}
 	}
 
@@ -155,7 +154,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		{
 			//Regular requires a seperate check in addition to other actions.
 			case S_Enums.PrimaryPlayerStates.Default:
-				if (_Actions.Action00._CanDashDuringFall_)
+				if (_Actions.Action00._canDashDuringFall_)
 				{
 					CheckDash();
 				}
@@ -168,7 +167,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		//This is called no matter the action, so it used as function to check the always relevant data.
 		void CheckDash() {
-			if (!_PlayerPhys._isGrounded && !_Actions.lockJumpDash && _Actions.Action02._isHomingAvailable && _Input.SpecialPressed && !_Actions.Action02Control._HasTarget)
+			if (!_PlayerPhys._isGrounded && !_Actions.lockJumpDash && _Actions._isHomingAvailable && _Input.SpecialPressed && !_Actions.Action02Control._HasTarget)
 			{
 				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
 				InitialEvents();
@@ -217,7 +216,6 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_Input = GetComponent<S_PlayerInput>();
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_Actions = GetComponent<S_ActionManager>();
-		_Action02 = GetComponent<S_Action02_Homing>();
 		_CamHandler = GetComponent<S_Handler_Camera>();
 		_Sounds = _Tools.SoundControl;
 
@@ -249,7 +247,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 				_Input.HomingPressed = false;
 
 				_timer = 0;
-				_Action02._isHomingAvailable = false;
+				_Actions._isHomingAvailable = false;
 
 				_XZspeed = _PlayerPhys._horizontalSpeedMagnitude;
 

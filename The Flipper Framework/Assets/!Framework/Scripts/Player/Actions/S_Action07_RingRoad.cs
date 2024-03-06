@@ -118,8 +118,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 			GetComponent<S_PlayerInput>().LockInputForAWhile(10, true);
 
-			_CharacterAnimator.SetInteger("Action", 0);
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+			_Actions.Action00.StartAction();
 		}
 	}
 

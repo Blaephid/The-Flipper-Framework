@@ -376,6 +376,7 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			rollingLandingBoost = 1.4f,
 			rollingDownhillBoost = 1.9f,
+			minRollingTime = 0.3f,
 			rollingUphillBoost = 1.2f,
 			rollingStartSpeed = 5f,
 			rollingTurningModifier = 0.6f,
@@ -389,6 +390,7 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("Core: Multiplied by landing conversion factor to gain more force when landing on a slope and immediately rolling.")]
 		public float    rollingLandingBoost;
+		public float    minRollingTime;
 		[Tooltip("Core: Multiplies force for when rolling downhill..")]
 		public float    rollingDownhillBoost;
 		[Tooltip("Core: Multiplies force against when rolling uphill")]
@@ -411,7 +413,8 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			speedToStopAt = 10,
 			shouldSkiddingDisableTurning = true,
-			angleToPerformSkid = 5,
+			angleToPerformSkid = 160,
+			angleToPerformHomingSkid = 130,
 			skiddingIntensity = -5,
 			canSkidInAir = true,
 			skiddingIntensityInAir = -2.5f,
@@ -428,7 +431,8 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Surface: Whether the player can change their direction while skidding")]
 		public bool	shouldSkiddingDisableTurning;
 		[Tooltip("Surface: How precise the angle has to be against the character's movement. E.G. a value of 160 means the player's input should be between a 160 and 180 degrees angle from movement.")]
-		public float	angleToPerformSkid;
+		public int	angleToPerformSkid;
+		public int	angleToPerformHomingSkid;
 		[Range(-100, 0)]
 		[Tooltip("Surface: How much force to apply against the character per frame as they skid on the ground.")]
 		public float	skiddingIntensity;
@@ -461,7 +465,7 @@ public class S_O_CharacterStats : ScriptableObject
 			jumpSlopeConversion = 0.03f,
 			stopYSpeedOnRelease = 2.1f,
 			jumpRollingLandingBoost = 0f,
-			startJumpDuration = 0.2f,
+			startJumpDuration = new Vector2 (0.15f, 0.25f),
 			startSlopedJumpDuration = 0.2f,
 			startJumpSpeed = 4f,
 			speedLossOnJump = 0.99f,
@@ -478,7 +482,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    jumpSlopeConversion;
 		public float    stopYSpeedOnRelease;
 		public float    jumpRollingLandingBoost;
-		public float    startJumpDuration;
+		public Vector2    startJumpDuration;
 		public float    startSlopedJumpDuration;
 		public float    startJumpSpeed;
 		public float    speedLossOnJump;
@@ -495,9 +499,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucMultiJumps SetStrucMultiJumps () {
 		return new StrucMultiJumps
 		{
-			canDoubleJump = true,
-			canTripleJump = false,
-			jumpCount = 2,
+			maxJumpCount = 2,
 			doubleJumpSpeed = 4.5f,
 			doubleJumpDuration = 0.14f,
 			speedLossOnDoubleJump = 0.978f
@@ -511,7 +513,7 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		public bool         canDoubleJump;
 		public bool         canTripleJump;
-		public int          jumpCount;
+		public int          maxJumpCount;
 
 		public float        doubleJumpSpeed;
 		public float        doubleJumpDuration;
@@ -613,23 +615,43 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucHomingAction SetStrucHomingAction () {
 		return new StrucHomingAction
 		{
-			CanBePerformedOnGround = false,
+			canBePerformedOnGround = false,
+			canBeControlled = true,
 			canDashWhenFalling = true,
 			attackSpeed = 100f,
+			maximumSpeed = 140,
+			minimumSpeed = 60,
+			minimumSpeedOnHit = 60,
 			timerLimit = 1f,
-			successDelay = 0.3f
+			successDelay = 0.3f,
+			turnSpeed = 0.8f,
+			lerpToNewInputOnHit = 0.5f,
+			lerpToPreviousDirectionOnHit = 0,
+			deceleration = 55,
+			acceleration = 70,
+
 		};
 	}
 
 	[System.Serializable]
 	public struct StrucHomingAction
 	{
-		public bool         CanBePerformedOnGround;
-		public bool               canDashWhenFalling;
-		public float    attackSpeed;
-		public float    timerLimit;
-		public float    successDelay;
-
+		public bool         canBePerformedOnGround;
+		public bool         canBeControlled;
+		public bool         canDashWhenFalling;
+		public float	attackSpeed;
+		public int          maximumSpeed;
+		public int          minimumSpeed;
+		public int          minimumSpeedOnHit;
+		public float	timerLimit;
+		public float	successDelay;
+		public float	turnSpeed;
+		public int	deceleration;
+		public int	acceleration;
+		[Range(0, 1)]
+		public float        lerpToPreviousDirectionOnHit;
+		[Range(0, 1)]
+		public float        lerpToNewInputOnHit;
 	}
 
 	#endregion

@@ -73,6 +73,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private bool	_isWall;
 	private Vector3	_previDir;
 	private Vector3	_previLoc;
+
+	[HideInInspector]
+	public Vector3      _jumpAngle;
 	#endregion
 
 	#endregion
@@ -719,17 +722,16 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 
 		if (immediately && _Actions.whatAction != S_Enums.PrimaryPlayerStates.Jump)
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+			_Actions.Action00.StartAction();
 	}
 
 	void JumpfromWall () {
-		Vector3 jumpAngle;
 		Vector3 faceDir;
 
 		if (_switchToJump == 2)
 		{
 
-			jumpAngle = Vector3.Lerp(_wallToRun.normal, transform.up, 0.8f);
+			_jumpAngle = Vector3.Lerp(_wallToRun.normal, transform.up, 0.8f);
 
 			Vector3 wallNormal = _wallToRun.normal;
 			Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
@@ -767,7 +769,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			Debug.Log(Vector3.Dot(_wallToClimb.normal, _Input._camMoveInput));
 			Debug.Log(_climbingSpeed);
 
-			jumpAngle = Vector3.Lerp(_wallToClimb.normal, transform.up, 0.6f);
+			_jumpAngle = Vector3.Lerp(_wallToClimb.normal, transform.up, 0.6f);
 			faceDir = _wallToClimb.normal;
 
 			Debug.DrawRay(transform.position, faceDir, Color.red, 20);
@@ -780,8 +782,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 		_CharacterAnimator.transform.forward = faceDir;
 
-		//Actions.Action01.jumpCount = -1;
-		_Actions.Action01.InitialEvents(jumpAngle, true, 0, Mathf.Clamp(_climbingSpeed, 5, _climbingSpeed));
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 	}
 
@@ -812,7 +812,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 				else
 				{
 					if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.Jump)
-						_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+						_Actions.Action00.StartAction();
 					break;
 				}
 			}

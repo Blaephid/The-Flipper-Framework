@@ -45,7 +45,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	private bool HasBounced;
 
 	private float CurrentBounceAmount;
-	[HideInInspector] public int BounceCount;
 
 	private float memoriseSpeed;
 	private float nextSpeed;
@@ -106,7 +105,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 			//StartCoroutine(Action.lockBounceOnly(coolDown));
 			_Actions.Action00.StartAction();
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		}
 
 		else if ((groundhit && !HasBounced) || (!groundhit && _PlayerPhys._RB.velocity.y > _dropSpeed_ * 0.4f && !HasBounced))
@@ -241,13 +239,13 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		_Input.BouncePressed = false;
 		_PlayerPhys.SetIsGrounded(false);
-		_Actions.Action02._isHomingAvailable = true;
+		_Actions._isHomingAvailable = true;
 
 		HasBounced = true;
-		CurrentBounceAmount = _BounceUpSpeeds_[BounceCount];
+		CurrentBounceAmount = _BounceUpSpeeds_[_Actions._bounceCount];
 
 
-		CurrentBounceAmount = Mathf.Clamp(CurrentBounceAmount, _BounceUpSpeeds_[BounceCount], _bounceUpMaxSpeed_);
+		CurrentBounceAmount = Mathf.Clamp(CurrentBounceAmount, _BounceUpSpeeds_[_Actions._bounceCount], _bounceUpMaxSpeed_);
 
 		//HomingTrailScript.emitTime = (BounceCount +1) * 0.65f;
 		HomingTrailScript.emitTime = CurrentBounceAmount / 60f;
@@ -280,9 +278,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_CharacterAnimator.SetBool("isRolling", false);
 		jumpBall.SetActive(false);
 
-		if (BounceCount < _BounceUpSpeeds_.Count - 1)
+		if (_Actions._bounceCount < _BounceUpSpeeds_.Count - 1)
 		{
-			BounceCount++;
+			_Actions._bounceCount++;
 		}
 
 	}

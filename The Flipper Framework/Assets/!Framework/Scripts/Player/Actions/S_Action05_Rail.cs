@@ -25,7 +25,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	public S_AddOnRail		_ConnectedRails;
 	private S_HedgeCamera         _CamHandler;
 	private Transform             _RailTransform;
-	private CurveSample		_Sample;
+	public CurveSample		_Sample;
 
 	[HideInInspector]
 	public Transform		_ZipHandle;
@@ -201,10 +201,10 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			_CharacterAnimator.SetInteger("Action", 0);
 			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
 
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+			_Actions.Action00.StartAction();
 			if (_Actions.Action02 != null)
 			{
-				_Actions.Action02._isHomingAvailable = true;
+				_Actions._isHomingAvailable = true;
 			}
 		}
 	}
@@ -374,7 +374,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		// Check if was Homingattack
 		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing)
 		{
-			_playerSpeed = _Actions.Action02._lateSpeed;
+			_playerSpeed = _PlayerPhys._speedMagnitude;
 			dotdir = Vector3.Dot(_Actions.Action02._targetDirection.normalized, sample.tangent);
 		}
 		else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.DropCharge)
@@ -434,7 +434,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		if (_Input.JumpPressed)
 		{
-			//Cam.CamLagSet(0.8f, 0f);
 
 			Vector3 jumpCorrectedOffset = (_CharacterAnimator.transform.up * 1.5f); //Quaternion.LookRotation(Player.p_rigidbody.velocity, transform.up) * (transform.forward * 3.5f);
 
@@ -460,17 +459,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 			_isOnZipLine = false;
 
-
-			//Player.transform.rotation = InitialRot;
-
-			//Player.transform.eulerAngles = new Vector3(0,1,0);
-			_Actions.Action01._jumpCount = -1;
-			_Actions.Action01.InitialEvents(_Sample.up, true, _PlayerPhys._RB.velocity.y);
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
-
 			if (_Actions.Action02 != null)
 			{
-				_Actions.Action02._isHomingAvailable = true;
+				_Actions._isHomingAvailable = true;
 			}
 
 		}
@@ -742,14 +733,13 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			if (move < 0)
 				if (Physics.BoxCast(_CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), -_CharacterAnimator.transform.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
-					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
-					_CharacterAnimator.SetInteger("Action", 0);
+					_Actions.Action00.StartAction();
 				}
 				else
 				if (Physics.BoxCast(_CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), _CharacterAnimator.transform.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
-					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
-					_CharacterAnimator.SetInteger("Action", 0);
+
+					_Actions.Action00.StartAction();
 				}
 
 			_distanceToStep -= _stepSpeed_;
@@ -760,9 +750,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 				if (_distanceToStep <= 0)
 				{
-					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 					_isOnRail = false;
-					_CharacterAnimator.SetInteger("Action", 0);
+					_Actions.Action00.StartAction();
 				}
 
 			}

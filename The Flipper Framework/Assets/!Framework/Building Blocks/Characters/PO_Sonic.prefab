@@ -5231,6 +5231,7 @@ MonoBehaviour:
   _isGravityOn: 1
   _currentFallGravity: {x: 0, y: 0, z: 0}
   _listOfCanTurns: 
+  _listOfCanControl: 
 --- !u!114 &8583335634310275265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5572,12 +5573,13 @@ MonoBehaviour:
   skid: {fileID: 2317282729712668892}
   InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
   whatAction: 0
+  whatSubAction: 0
   _addState: 7
   _MainActions:
   - State: 0
     ConnectedStates: 000000000100000002000000030000000400000005000000
     SituationalStates: 00000000010000000200000003000000040000000500000006000000
-    PerformableSubStates: 0000000001000000
+    PerformableSubStates: 000000000100000002000000
   - State: 1
     ConnectedStates: 0000000001000000030000000400000005000000
     SituationalStates: 00000000010000000200000003000000040000000500000006000000
@@ -5585,7 +5587,7 @@ MonoBehaviour:
   - State: 2
     ConnectedStates: 04000000
     SituationalStates: 000000000100000003000000
-    PerformableSubStates: 
+    PerformableSubStates: 0100000000000000
   - State: 3
     ConnectedStates: 04000000
     SituationalStates: 010000000000000002000000
@@ -5626,6 +5628,9 @@ MonoBehaviour:
     ConnectedStates: 
     SituationalStates: 0100000000000000
     PerformableSubStates: 
+  _isHomingAvailable: 0
+  _bounceCount: 0
+  _actionTimeCounter: 0
   lockBounce: 0
   lockHoming: 0
   lockJumpDash: 0
@@ -5649,7 +5654,6 @@ MonoBehaviour:
   _coyoteInEffect: 0
   _coyoteRememberDir: {x: 0, y: 0, z: 0}
   _coyoteRememberSpeed: 0
-  _rollCounter: 0
 --- !u!114 &114873388628942606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5662,12 +5666,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1313590d96251e46aaef7e509eb58d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _canDoubleJump_: 1
   _skinRotationSpeed: 5
-  _controlCounter: 0
+  _upwardsDirection: {x: 0, y: 0, z: 0}
+  _counter: 0
   _jumpCount: 0
   _isJumping: 0
-  _timeJumping: 0
 --- !u!114 &114300969380773912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5695,10 +5698,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Target: {fileID: 0}
-  _lateSpeed: 0
+  _skinRotationSpeed: 12
   _targetDirection: {x: 0, y: 0, z: 0}
-  _skinRotationSpeed: 0
-  _isHomingAvailable: 0
 --- !u!114 &114168122690048012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5811,7 +5812,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _BounceUpSpeeds_: []
   BounceAvailable: 1
-  BounceCount: 0
 --- !u!114 &114930033002771750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5929,6 +5929,7 @@ MonoBehaviour:
   _skinRotationSpeed: 0
   _climbingSpeed: 0
   _runningSpeed: 0
+  _jumpAngle: {x: 0, y: 0, z: 0}
 --- !u!114 &114332006758487302
 MonoBehaviour:
   m_ObjectHideFlags: 0

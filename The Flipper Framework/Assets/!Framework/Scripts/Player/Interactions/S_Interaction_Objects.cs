@@ -21,7 +21,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	S_HedgeCamera _CamHandler;
 	Animator CharacterAnimator;
 	S_Control_PlayerSound Sounds;
-	S_ActionManager Actions;
+	S_ActionManager _Actions;
 	S_PlayerInput _Input;
 	S_Handler_CharacterAttacks attack;
 
@@ -80,27 +80,27 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	void UpdateSpeed () {
-		if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Default)
+		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Default)
 		{
 			//DisplaySpeed = Player.SpeedMagnitude;
 			DisplaySpeed = Player._horizontalSpeedMagnitude;
 		}
 
-		else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail)
+		else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail)
 		{
-			DisplaySpeed = Actions.Action05._playerSpeed;
+			DisplaySpeed = _Actions.Action05._playerSpeed;
 		}
-		else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
+		else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
 		{
-			if (Actions.Action12._runningSpeed > Actions.Action12._climbingSpeed)
-				DisplaySpeed = Actions.Action12._runningSpeed;
+			if (_Actions.Action12._runningSpeed > _Actions.Action12._climbingSpeed)
+				DisplaySpeed = _Actions.Action12._runningSpeed;
 			else
-				DisplaySpeed = Actions.Action12._climbingSpeed;
+				DisplaySpeed = _Actions.Action12._climbingSpeed;
 
 		}
-		else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Path)
+		else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Path)
 		{
-			DisplaySpeed = Actions.Action10._playerSpeed;
+			DisplaySpeed = _Actions.Action10._playerSpeed;
 		}
 		else
 		{
@@ -113,18 +113,18 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	void Update () {
 
-		if (updateTargets)
-		{
-			//HomingAttackControl.UpdateHomingTargets();
-			if (Actions.Action02 != null)
-			{
-				if (Actions.Action02 != null)
-				{
-					Actions.Action02._isHomingAvailable = true;
-				}
-			}
-			updateTargets = false;
-		}
+		//if (updateTargets)
+		//{
+		//	//HomingAttackControl.UpdateHomingTargets();
+		//	if (Actions.Action02 != null)
+		//	{
+		//		if (Actions.Action02 != null)
+		//		{
+		//			Actions._isHomingAvailable = true;
+		//		}
+		//	}
+		//	updateTargets = false;
+		//}
 
 
 
@@ -155,32 +155,32 @@ public class S_Interaction_Objects : MonoBehaviour
 
 			if (set)
 			{
-				if (Actions.Action05._playerSpeed < speed)
+				if (_Actions.Action05._playerSpeed < speed)
 				{
-					Actions.Action05._playerSpeed = speed;
-					Actions.Action05._isBoosted = true;
-					Actions.Action05._boostTime = 0.7f;
+					_Actions.Action05._playerSpeed = speed;
+					_Actions.Action05._isBoosted = true;
+					_Actions.Action05._boostTime = 0.7f;
 
 				}
 				else
 					set = false;
 
 			}
-			else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail)
+			else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail)
 			{
 
-				Actions.Action05._playerSpeed += addSpeed / 2;
-				Actions.Action05._isBoosted = true;
-				Actions.Action05._boostTime = 0.7f;
+				_Actions.Action05._playerSpeed += addSpeed / 2;
+				_Actions.Action05._isBoosted = true;
+				_Actions.Action05._boostTime = 0.7f;
 
 				i = 3;
 
 			}
 
 			if (backwards)
-				Actions.Action05._isGoingBackwards = true;
+				_Actions.Action05._isGoingBackwards = true;
 			else
-				Actions.Action05._isGoingBackwards = false;
+				_Actions.Action05._isGoingBackwards = false;
 		}
 
 	}
@@ -194,18 +194,18 @@ public class S_Interaction_Objects : MonoBehaviour
 			col.GetComponent<AudioSource>().Play();
 
 			JumpBall.SetActive(false);
-			if (Actions.Action08 != null)
+			if (_Actions.Action08 != null)
 			{
-				if (Actions.Action08._DropEffect.isPlaying == true)
+				if (_Actions.Action08._DropEffect.isPlaying == true)
 				{
-					Actions.Action08._DropEffect.Stop();
+					_Actions.Action08._DropEffect.Stop();
 				}
 			}
 
 			if (pad.onRail)
 			{
 
-				if (Actions.whatAction != S_Enums.PrimaryPlayerStates.Rail)
+				if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.Rail)
 				{
 					transform.position = col.GetComponent<S_Data_SpeedPad>().positionToLockTo.position;
 				}
@@ -220,7 +220,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			else if (!col.GetComponent<S_Data_SpeedPad>().path)
 			{
 
-				Actions.Action02._isHomingAvailable = true;
+				_Actions._isHomingAvailable = true;
 
 				transform.rotation = Quaternion.identity;
 				//ResetPlayerRotation
@@ -257,15 +257,14 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (pad.isDashRing)
 				{
 
-					Actions.Action00.CancelCoyote();
-					Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+					_Actions.Action00.CancelCoyote();
+					_Actions.Action00.StartAction();
 					CharacterAnimator.SetBool("Grounded", false);
-					CharacterAnimator.SetInteger("Action", 0);
 
 					if (pad.lockAirMoves)
 					{
-						StopCoroutine(Actions.lockAirMoves(pad.lockAirMovesTime));
-						StartCoroutine(Actions.lockAirMoves(pad.lockAirMovesTime));
+						StopCoroutine(_Actions.lockAirMoves(pad.lockAirMovesTime));
+						StartCoroutine(_Actions.lockAirMoves(pad.lockAirMovesTime));
 					}
 
 					if (pad.lockGravity != Vector3.zero)
@@ -343,11 +342,11 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (col.tag == "Hazard")
 		{
 			JumpBall.SetActive(false);
-			if (Actions.Action08 != null)
+			if (_Actions.Action08 != null)
 			{
-				if (Actions.Action08._DropEffect.isPlaying == true)
+				if (_Actions.Action08._DropEffect.isPlaying == true)
 				{
-					Actions.Action08._DropEffect.Stop();
+					_Actions.Action08._DropEffect.Stop();
 				}
 			}
 			DamagePlayer();
@@ -359,7 +358,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			_CamHandler.ApplyCameraShake(_enemyHitShakeAmmount_, 30);
 			//Either triggers an attack on the enemy or takes damage.
-			if (Actions.whatAction == S_Enums.PrimaryPlayerStates.SpinCharge || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && Player._isRolling))
+			if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.SpinCharge || (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && Player._isRolling))
 			{
 				attack.AttackThing(col, "SpinDash", "Enemy"); ;
 
@@ -367,7 +366,6 @@ public class S_Interaction_Objects : MonoBehaviour
 			//If in the rolling or jumpdash animation.
 			if (CharacterAnimator.GetInteger("Action") == 1 || CharacterAnimator.GetInteger("Action") == 11)
 			{
-				Debug.Log("Rolling");
 				attack.AttackThing(col, "SpinJump", "Enemy");
 			}
 			else
@@ -394,18 +392,20 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		if (col.tag == "Spring")
 		{
-			Actions.Action00.CancelCoyote();
+			_Actions.Action00.CancelCoyote();
 			Player._isGravityOn = true;
 
-			if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
-				Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
+			if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || _Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
+			{
+				_Actions.Action02.AddDelay(); 
+			}
 
 			JumpBall.SetActive(false);
-			if (Actions.Action08 != null)
+			if (_Actions.Action08 != null)
 			{
-				if (Actions.Action08._DropEffect.isPlaying == true)
+				if (_Actions.Action08._DropEffect.isPlaying == true)
 				{
-					Actions.Action08._DropEffect.Stop();
+					_Actions.Action08._DropEffect.Stop();
 				}
 			}
 
@@ -422,8 +422,8 @@ public class S_Interaction_Objects : MonoBehaviour
 
 				if (spring.lockAirMoves)
 				{
-					StopCoroutine(Actions.lockAirMoves(spring.lockAirMovesTime));
-					StartCoroutine(Actions.lockAirMoves(spring.lockAirMovesTime));
+					StopCoroutine(_Actions.lockAirMoves(spring.lockAirMovesTime));
+					StartCoroutine(_Actions.lockAirMoves(spring.lockAirMovesTime));
 				}
 
 				if (spring.lockGravity != Vector3.zero)
@@ -431,16 +431,15 @@ public class S_Interaction_Objects : MonoBehaviour
 					StartCoroutine(lockGravity(spring.lockGravity));
 				}
 
-				Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+				_Actions.Action00.StartAction();
 
 
 				if (col.GetComponent<AudioSource>()) { col.GetComponent<AudioSource>().Play(); }
-				CharacterAnimator.SetInteger("Action", 0);
 				CharacterAnimator.SetBool("Grounded", false);
 
-				if (Actions.Action02 != null)
+				if (_Actions.Action02 != null)
 				{
-					Actions.Action02._isHomingAvailable = true;
+					_Actions._isHomingAvailable = true;
 				}
 
 				if (spring.anim != null)
@@ -466,15 +465,14 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		else if (col.tag == "Bumper")
 		{
-			if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
-				Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
+			if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || _Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
 
 			JumpBall.SetActive(false);
-			if (Actions.Action08 != null)
+			if (_Actions.Action08 != null)
 			{
-				if (Actions.Action08._DropEffect.isPlaying == true)
+				if (_Actions.Action08._DropEffect.isPlaying == true)
 				{
-					Actions.Action08._DropEffect.Stop();
+					_Actions.Action08._DropEffect.Stop();
 				}
 			}
 
@@ -483,22 +481,19 @@ public class S_Interaction_Objects : MonoBehaviour
 		//CancelHoming
 		else if (col.tag == "CancelHoming")
 		{
-			if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
+			if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || _Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
 			{
 
 				Vector3 newSpeed = new Vector3(1, 0, 1);
 
-				Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+				_Actions.Action00.StartAction();
 				newSpeed = new Vector3(0, _homingBouncingPower_, 0);
-				////Debug.Log (newSpeed);
 				Player.SetTotalVelocity(newSpeed);
 				Player.transform.position = col.ClosestPoint(Player.transform.position);
-				if (Actions.Action02 != null)
+				if (_Actions.Action02 != null)
 				{
-					Actions.Action02._isHomingAvailable = true;
+					_Actions._isHomingAvailable = true;
 				}
-
-				Player._homingDelay_ = Tools.Stats.HomingStats.successDelay;
 			}
 		}
 
@@ -506,14 +501,14 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			if (col.GetComponent<S_Trigger_Updraft>())
 			{
-				if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Hovering)
+				if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Hovering)
 				{
-					Actions.Action13.updateHover(col.GetComponent<S_Trigger_Updraft>());
+					_Actions.Action13.updateHover(col.GetComponent<S_Trigger_Updraft>());
 				}
 				else
 				{
-					Actions.Action13.InitialEvents(col.GetComponent<S_Trigger_Updraft>());
-					Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
+					_Actions.Action13.InitialEvents(col.GetComponent<S_Trigger_Updraft>());
+					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
 				}
 			}
 
@@ -573,15 +568,15 @@ public class S_Interaction_Objects : MonoBehaviour
 				}
 
 
-				if (Actions.eventMan != null)
+				if (_Actions.eventMan != null)
 				{
-					foreach (GameObject HR in Actions.eventMan.hintRings)
+					foreach (GameObject HR in _Actions.eventMan.hintRings)
 					{
 						if (col.gameObject == HR)
 							return;
 					}
-					Actions.eventMan.hintRings.Add(col.gameObject);
-					Actions.eventMan.hintRingsHit += 1;
+					_Actions.eventMan.hintRings.Add(col.gameObject);
+					_Actions.eventMan.hintRingsHit += 1;
 				}
 
 			}
@@ -593,7 +588,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void OnTriggerExit ( Collider col ) {
 		if (col.tag == "Wind")
 		{
-			Actions.Action13.inWind = false;
+			_Actions.Action13.inWind = false;
 		}
 	}
 
@@ -651,13 +646,13 @@ public class S_Interaction_Objects : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
-		Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+		_Actions.Action00.StartAction();
 		transform.position = position;
 		Player._RB.velocity = force;
 
 	}
 	public void DamagePlayer () {
-		if (!Actions.Action04Control.IsHurt && Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
+		if (!_Actions.Action04Control.IsHurt && _Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
 		{
 
 			if (!S_Interaction_Monitors.HasShield)
@@ -666,19 +661,19 @@ public class S_Interaction_Objects : MonoBehaviour
 				{
 					//LoseRings
 					Sounds.RingLossSound();
-					Actions.Action04Control.GetHurt();
-					Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
-					Actions.Action04.InitialEvents();
+					_Actions.Action04Control.GetHurt();
+					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
+					_Actions.Action04.InitialEvents();
 				}
 				if (RingAmount <= 0)
 				{
 					//Die
-					if (!Actions.Action04Control.isDead)
+					if (!_Actions.Action04Control.isDead)
 					{
 						Sounds.DieSound();
-						Actions.Action04Control.isDead = true;
-						Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
-						Actions.Action04.InitialEvents();
+						_Actions.Action04Control.isDead = true;
+						_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
+						_Actions.Action04.InitialEvents();
 					}
 				}
 			}
@@ -687,8 +682,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				//Lose Shield
 				Sounds.SpikedSound();
 				S_Interaction_Monitors.HasShield = false;
-				Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
-				Actions.Action04.InitialEvents();
+				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
+				_Actions.Action04.InitialEvents();
 			}
 		}
 	}
@@ -703,7 +698,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void AssignTools () {
 		Player = GetComponent<S_PlayerPhysics>();
 		_CamHandler = GetComponent<S_Handler_Camera>()._HedgeCam;
-		Actions = GetComponent<S_ActionManager>();
+		_Actions = GetComponent<S_ActionManager>();
 		_Input = GetComponent<S_PlayerInput>();
 		attack = GetComponent<S_Handler_CharacterAttacks>();
 

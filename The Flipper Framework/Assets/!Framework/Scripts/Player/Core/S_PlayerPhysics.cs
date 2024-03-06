@@ -43,7 +43,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _startRollAcceleration_ = 4f;
 	private AnimationCurve        _AccelBySpeed_;
 	private AnimationCurve        _AccelBySlope_;
-	private float                   _angleToAccelerate_;
+	private float                 _angleToAccelerate_;
 
 	[HideInInspector]
 	public float                  _moveDeceleration_ = 1.3f;
@@ -81,8 +81,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	private bool                  _shouldStopAirMovementIfNoInput_ = false;
 	private float                 _keepNormalForThis_ = 0.083f;
 	private float                 _maxFallingSpeed_;
-	[HideInInspector]
-	public float                  _homingDelay_;
 	private Vector3               _gravityWhenMovingUp_;
 	[HideInInspector]
 	public Vector3                _startFallGravity_;
@@ -138,11 +136,15 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public RaycastHit             _HitGround;
 
-	public float _speedMagnitude { get; set; }
-	public float _horizontalSpeedMagnitude { get; set; }
+	[HideInInspector] 
+	public float		_speedMagnitude;
+	[HideInInspector] 
+	public float		_horizontalSpeedMagnitude;
 
-	public Vector3 _moveInput { get; set; }
-	public Vector3 _trackMoveInput { get; set; }
+	[HideInInspector]
+	public Vector3		_moveInput;
+	[HideInInspector]
+	public Vector3		_trackMoveInput;
 
 	[HideInInspector]
 	public float                  _currentTopSpeed;
@@ -152,39 +154,47 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _currentRollAccell;
 	public float                  curvePosAcell;
 	private float                 _curvePosDecell;
-	public float _curvePosDrag { get; set; }
-	public float _curvePosSlopePower { get; set; }
+	[HideInInspector] 
+	public float		_curvePosDrag;
+	[HideInInspector] 
+	public float		_curvePosSlopePower;
 	[HideInInspector]
 	public float                  _inputVelocityDifference = 1;
-	[Tooltip("A quick reference to the players current location")]
-	public Vector3 _playerPos { get; set; }
+	[HideInInspector, Tooltip("A quick reference to the players current location")]
+	public Vector3		_playerPos;
 
 	private float                 _timeUpHill;
 
-	[Tooltip("Used to check if the player is currently grounded. _isGrounded")]
-	public bool _isGrounded { get; set; }
+	[HideInInspector, Tooltip("Used to check if the player is currently grounded. _isGrounded")]
+	public bool		_isGrounded;
 	[HideInInspector]
 	public bool                   _canBeGrounded = true;
-	public Vector3 _groundNormal { get; set; }
-	public Vector3 _collisionPointsNormal { get; set; }
+	[HideInInspector]
+	public Vector3		_groundNormal;
+	[HideInInspector]
+	public Vector3                _collisionPointsNormal;
 	private Vector3               _keepNormal;
 
 	private bool                  _isRotatingLeft;
 	private bool                  _isUpsideDown;
 	private Vector3               _rotateSidewaysTowards;
 	private float                 _keepNormalCounter;
-	public bool _wasInAir { get; set; }
+	[HideInInspector] public bool _wasInAir;
 	[HideInInspector]
 	public bool                   _isGravityOn = true;
 	[HideInInspector]
 	public Vector3                _currentFallGravity;
 
-	public bool _isRolling { get; set; }
+	[HideInInspector]
+	public bool		_isRolling;
 
 	private float                 _groundingDelay;
-	public float _timeOnGround { get; set; }
+	[HideInInspector]
+	public float		_timeOnGround;
 	[HideInInspector]
 	public List<bool>             _listOfCanTurns = new List<bool>();
+	[HideInInspector]
+	public List<bool>             _listOfCanControl = new List<bool>();
 
 	#endregion
 	#endregion
@@ -208,11 +218,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	//On FixedUpdate,  call HandleGeneralPhysics if relevant.
 	void FixedUpdate () {
 		HandleGeneralPhysics();
-
-		if (_homingDelay_ > 0)
-		{
-			_homingDelay_ -= Time.deltaTime;
-		}
 	}
 
 	//Sets public variables relevant to other calculations 
@@ -271,6 +276,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			GroundMovement();
 		else
 			HandleAirMovement();
+
 		AlignToGround(_groundNormal, _isGrounded);
 
 		//After all other calculations are made across the scripts, the new velocities are applied to the rigidbody.
@@ -318,35 +324,35 @@ public class S_PlayerPhysics : MonoBehaviour
 	//This includes the core and environmental velocities, but also the others that have been added into lists using the addvelocity methods.
 	private void SetTotalVelocity () {
 
-		//If the total velocity has  been preset at a different point this frame, then apply that, if not, calculate it through core and enviornmental.
-		if (_externalSetVelocity != Vector3.zero)
+		//Core velocity that's been calculated across this script. Either assigns what it should be, or adds the stored force pushes.
+		if (_externalCoreVelocity != default(Vector3))
 		{
-			_totalVelocity = _externalSetVelocity;
-			_externalSetVelocity = Vector3.zero;
+			_coreVelocity = _externalCoreVelocity;
+			_externalCoreVelocity = default(Vector3);
 		}
 		else
 		{
-			//Core velocity that's been calculated across this script. Either assigns what it should be, or adds the stored force pushes.
-			if (_externalCoreVelocity != Vector3.zero)
+			foreach (Vector3 force in _listOfCoreVelocityToAdd)
 			{
-				_coreVelocity = _externalCoreVelocity;
-				_externalCoreVelocity = Vector3.zero;
+				_coreVelocity += force;
 			}
-			else
-			{
-				foreach (Vector3 force in _listOfCoreVelocityToAdd)
-				{
-					_coreVelocity += force;
-				}
-			}
+		}
 
+		//If the total velocity has  been preset at a different point this frame, then apply that, if not, calculate it through core and enviornmental.
+		if (_externalSetVelocity != default(Vector3))
+		{
+			_totalVelocity = _externalSetVelocity;
+			_externalSetVelocity = default(Vector3);
+			_coreVelocity = _totalVelocity;
+		}
+		else
+		{
 			//Calculate total velocity this frame.
 			_totalVelocity = _coreVelocity + _environmentalVelocity;
 			foreach (Vector3 force in _listOfVelocityToAddNextUpdate)
 			{
 				_totalVelocity += force;
 			}
-
 		}
 
 		//Clear the lists to prevent forces carrying over multiple frames.
@@ -382,7 +388,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		switch (_Action.whatAction)
 		{
 			case S_Enums.PrimaryPlayerStates.Jump:
-				if (_Action.Action01._controlCounter < _jumpExtraControlThreshold_)
+				if (_Action._actionTimeCounter < _jumpExtraControlThreshold_)
 				{
 					airAccelMod = _jumpAirControl_.y;
 					airTurnMod = _jumpAirControl_.x;
@@ -415,7 +421,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	Vector3 HandleControlledVelocity ( Vector2 modifier ) {
 
 		//Certain actions control velocity in their own way.
-		if (_Action.whatAction == S_Enums.PrimaryPlayerStates.JumpDash || _Action.whatAction == S_Enums.PrimaryPlayerStates.WallRunning) { return _coreVelocity; }
+		if (_listOfCanControl.Count != 0) { return _coreVelocity; }
 
 		//Original by Damizean, edited by Blaephid
 
@@ -455,14 +461,11 @@ public class S_PlayerPhysics : MonoBehaviour
 		float inputMagnitude = Mathf.Max(Mathf.Abs(input.x), Mathf.Abs(input.z));
 
 
-		float deviationFromInput = 0;
-
-
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
 
-		deviationFromInput = Vector3.Angle(lateralVelocity, inputDirection) / 180.0f;
-		_inputVelocityDifference = deviationFromInput;
+		_inputVelocityDifference = Vector3.Angle(lateralVelocity, inputDirection);
+		float deviationFromInput = _inputVelocityDifference  / 180.0f;
 		Quaternion lateralToInput = lateralVelocity.sqrMagnitude < 1
 			? Quaternion.identity
 			: Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
@@ -484,7 +487,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				_Input._prevInputWithoutCamera = _Input._inputWithoutCamera;
 				_trackMoveInput = inputDirection;
 			}
-			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Time.deltaTime * modifier.x, 0.0f);
+			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Mathf.Deg2Rad * modifier.x, 0.0f);
 		}
 
 		// Step 3) Get current velocity (if it's zero then use input)

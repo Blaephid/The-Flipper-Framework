@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4693321805120590}
   - component: {fileID: 198374007426477192}
   - component: {fileID: 199723923825816602}
-  - component: {fileID: 114212670547419390}
   m_Layer: 0
   m_Name: Pr_JumpDashParticle
   m_TagString: Untagged
@@ -4717,15 +4716,3 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &114212670547419390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1462817469197794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7faf53123d74c9a48b72f8495c0e688d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

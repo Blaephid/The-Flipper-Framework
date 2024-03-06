@@ -5,7 +5,7 @@ using UnityEditor;
 using System.Linq;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(S_Action00_Regular))]
+[RequireComponent(typeof(S_Action00_Default))]
 public class S_ActionManager : MonoBehaviour
 {
 
@@ -22,7 +22,7 @@ public class S_ActionManager : MonoBehaviour
 
 	//Action Scrips, Always leave them in the correct order;
 	[Header("Actions")]
-	public S_Action00_Regular Action00;
+	public S_Action00_Default Action00;
 	public S_Action01_Jump Action01;
 	public S_Action02_Homing Action02;
 	public S_Action03_SpinCharge Action03;
@@ -48,6 +48,7 @@ public class S_ActionManager : MonoBehaviour
 	#region trackers
 	//Tracking action in game
 	public S_Enums.PrimaryPlayerStates whatAction;
+	public S_Enums.SubPlayerStates whatSubAction;
 	public S_Enums.PrimaryPlayerStates whatPreviousAction { get; set; }
 
 	//Actions
@@ -55,7 +56,15 @@ public class S_ActionManager : MonoBehaviour
 	public List<S_Structs.StrucMainActionTracker> _MainActions;
 	public List<ISubAction> _SubActions;
 
+	//Specific action trackers
+	[HideInInspector]
+	public bool         _isHomingAvailable;
+	[HideInInspector] 
+	public int	_bounceCount;
+	[HideInInspector]
+	public float        _actionTimeCounter;
 
+	//Can perform actions
 	[HideInInspector]
 	public bool         lockBounce;
 	[HideInInspector]
@@ -84,19 +93,23 @@ public class S_ActionManager : MonoBehaviour
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_CharacterAnimator = GetComponent<S_CharacterTools>().CharacterAnimator;
 
-		ChangeAction(S_Enums.PrimaryPlayerStates.Default);
-
 		//Go through each struct and assign/add the scripts linked to that enum.
 		for (int i = 0 ; i < _MainActions.Count ; i++)
 		{
 			S_Structs.StrucMainActionTracker action = _MainActions[i];
 
-			//Makes a list of scripts matching what states are assigned for this state to transition to or activate.
+			//Makes lists of scripts matching what states are assigned for this state to transition to or activate.
 
 			action.ConnectedActions = new List<IMainAction>();
 			foreach (S_Enums.PlayerControlledStates connectedState in action.ConnectedStates)
 			{
 				action.ConnectedActions.Add(AssignControlledScriptByEnum(connectedState));
+			}
+
+			action.SituationalActions = new List<IMainAction>();
+			foreach (S_Enums.PlayerSituationalStates situationalState in action.SituationalStates)
+			{
+				action.SituationalActions.Add(AssignSituationalScriptByEnum(situationalState));
 			}
 
 			action.SubActions = new List<ISubAction>();
@@ -105,9 +118,15 @@ public class S_ActionManager : MonoBehaviour
 				action.SubActions.Add(AssignSubScript(subState));
 			}
 
+			//Assigns the script related to this state
+			action.Action = AssignMainActionScriptByEnum(action.State);
+
 			//Applies the changes directly to the struct element.
 			_MainActions[i] = action;
 		}
+
+
+		ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 	}
 
 	#endregion
@@ -118,21 +137,15 @@ public class S_ActionManager : MonoBehaviour
 	/// 
 	#region private
 	public void DeactivateAllActions () {
+
+
+		foreach (S_Structs.StrucMainActionTracker track in _MainActions)
+		{
+			track.Action.StopAction();
+		}
+
 		//Put all actions here
 		//Also put variables that you want re-set out of actions
-		if (Action00 != null)
-		{
-			Action00.enabled = false;
-		}
-		if (Action01 != null)
-		{
-			Action01.enabled = false;
-		}
-		if (Action02 != null)
-		{
-			Action02.enabled = false;
-			Action02.ResetHomingVariables();
-		}
 		if (Action03 != null)
 		{
 			Action03.enabled = false;
@@ -194,10 +207,12 @@ public class S_ActionManager : MonoBehaviour
 			performAction = mainAction.AttemptAction();
 			if (performAction) { break; }
 		}
+		performAction = false;
 		//Checks if the subaction should be performed ontop of the current action.
 		foreach (ISubAction subAction in _MainActions[currentAction].SubActions)
 		{
-			subAction.AttemptAction();
+			performAction = subAction.AttemptAction();
+			if (performAction) { break; }
 		}
 	}
 
@@ -207,12 +222,10 @@ public class S_ActionManager : MonoBehaviour
 		switch (ActionToChange)
 		{
 			case S_Enums.PrimaryPlayerStates.Default:
-				_CharacterAnimator.SetTrigger("ChangedState");
 				IsChangePossible(ActionToChange);
 				Action00.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.Jump:
-				_CharacterAnimator.SetTrigger("ChangedState");
 				if (!lockDoubleJump)
 				{
 					IsChangePossible(ActionToChange);
@@ -220,7 +233,6 @@ public class S_ActionManager : MonoBehaviour
 				}
 				break;
 			case S_Enums.PrimaryPlayerStates.Homing:
-				_CharacterAnimator.SetTrigger("ChangedState");
 				if (!lockHoming)
 				{
 					if (eventMan != null) eventMan.homingAttacksPerformed += 1;
@@ -229,7 +241,6 @@ public class S_ActionManager : MonoBehaviour
 				}
 				break;
 			case S_Enums.PrimaryPlayerStates.JumpDash:
-				_CharacterAnimator.SetTrigger("ChangedState");
 				if (!lockJumpDash)
 				{
 					if (eventMan != null) eventMan.jumpDashesPerformed += 1;
@@ -242,7 +253,6 @@ public class S_ActionManager : MonoBehaviour
 				Action03.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.Hurt:
-				_CharacterAnimator.SetTrigger("ChangedState");
 				IsChangePossible(ActionToChange);
 				Action04.enabled = true;
 				break;
@@ -252,7 +262,6 @@ public class S_ActionManager : MonoBehaviour
 				Action05.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.Bounce:
-				_CharacterAnimator.SetTrigger("ChangedState");
 				if (!lockBounce)
 				{
 					IsChangePossible(ActionToChange);
@@ -261,7 +270,6 @@ public class S_ActionManager : MonoBehaviour
 				}
 				break;
 			case S_Enums.PrimaryPlayerStates.RingRoad:
-				_CharacterAnimator.SetTrigger("ChangedState");
 				if (eventMan != null) eventMan.ringRoadsPerformed += 1;
 				IsChangePossible(ActionToChange);
 				Action07.enabled = true;
@@ -275,7 +283,6 @@ public class S_ActionManager : MonoBehaviour
 				Action10.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.WallRunning:
-				_CharacterAnimator.SetTrigger("ChangedState");
 				IsChangePossible(ActionToChange);
 				Action12.enabled = true;
 				break;
@@ -408,13 +415,13 @@ public class S_ActionManager : MonoBehaviour
 		{
 			//If the enum of the struct is set to Regular, then assign the jump script to it.
 			case S_Enums.PlayerSituationalStates.Default:
-				if (GetComponent<S_Action00_Regular>())
+				if (GetComponent<S_Action00_Default>())
 				{
-					return GetComponent<S_Action00_Regular>();
+					return GetComponent<S_Action00_Default>();
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action00_Regular>();
+					return gameObject.AddComponent<S_Action00_Default>();
 				}
 			case S_Enums.PlayerSituationalStates.Hurt:
 				if (GetComponent<S_Action04_Hurt>())
@@ -474,6 +481,133 @@ public class S_ActionManager : MonoBehaviour
 		return null;
 	}
 
+	public IMainAction AssignMainActionScriptByEnum ( S_Enums.PrimaryPlayerStates state ) {
+		switch (state)
+		{
+			//If the enum of the struct is set to Jump, then assign the jump script to it.
+			case S_Enums.PrimaryPlayerStates.Jump:
+				if (GetComponent<S_Action01_Jump>())
+				{
+					return GetComponent<S_Action01_Jump>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action01_Jump>();
+				}
+			case S_Enums.PrimaryPlayerStates.Homing:
+				if (GetComponent<S_Action02_Homing>())
+				{
+					return GetComponent<S_Action02_Homing>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action02_Homing>();
+				}
+			case S_Enums.PrimaryPlayerStates.SpinCharge:
+				if (GetComponent<S_Action03_SpinCharge>())
+				{
+					return GetComponent<S_Action03_SpinCharge>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action03_SpinCharge>();
+				}
+			case S_Enums.PrimaryPlayerStates.Bounce:
+				if (GetComponent<S_Action06_Bounce>())
+				{
+					return GetComponent<S_Action06_Bounce>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action06_Bounce>();
+				}
+			case S_Enums.PrimaryPlayerStates.DropCharge:
+				if (GetComponent<S_Action08_DropCharge>())
+				{
+					return GetComponent<S_Action08_DropCharge>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action08_DropCharge>();
+				}
+			case S_Enums.PrimaryPlayerStates.JumpDash:
+				if (GetComponent<S_Action11_JumpDash>())
+				{
+					return GetComponent<S_Action11_JumpDash>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action11_JumpDash>();
+				}
+
+			//If the enum of the struct is set to Regular, then assign the jump script to it.
+			case S_Enums.PrimaryPlayerStates.Default:
+				if (GetComponent<S_Action00_Default>())
+				{
+					return GetComponent<S_Action00_Default>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action00_Default>();
+				}
+			case S_Enums.PrimaryPlayerStates.Hurt:
+				if (GetComponent<S_Action04_Hurt>())
+				{
+					return GetComponent<S_Action04_Hurt>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action04_Hurt>();
+				}
+			case S_Enums.PrimaryPlayerStates.Rail:
+				if (GetComponent<S_Action05_Rail>())
+				{
+					return GetComponent<S_Action05_Rail>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action05_Rail>();
+				}
+			case S_Enums.PrimaryPlayerStates.RingRoad:
+				if (GetComponent<S_Action07_RingRoad>())
+				{
+					return GetComponent<S_Action07_RingRoad>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action07_RingRoad>();
+				}
+			case S_Enums.PrimaryPlayerStates.Path:
+				if (GetComponent<S_Action10_FollowAutoPath>())
+				{
+					return GetComponent<S_Action10_FollowAutoPath>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action10_FollowAutoPath>();
+				}
+			case S_Enums.PrimaryPlayerStates.WallRunning:
+				if (GetComponent<S_Action12_WallRunning>())
+				{
+					return GetComponent<S_Action12_WallRunning>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action12_WallRunning>();
+				}
+			case S_Enums.PrimaryPlayerStates.Hovering:
+				if (GetComponent<S_Action13_Hovering>())
+				{
+					return GetComponent<S_Action13_Hovering>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_Action13_Hovering>();
+				}
+		}
+		return null;
+	}
+
 	public ISubAction AssignSubScript ( S_Enums.SubPlayerStates state ) {
 		switch (state)
 		{
@@ -495,6 +629,15 @@ public class S_ActionManager : MonoBehaviour
 				else
 				{
 					return gameObject.AddComponent<S_SubAction_Quickstep>();
+				}
+			case S_Enums.SubPlayerStates.Rolling:
+				if (GetComponent<S_SubAction_Roll>())
+				{
+					return GetComponent<S_SubAction_Roll>();
+				}
+				else
+				{
+					return gameObject.AddComponent<S_SubAction_Roll>();
 				}
 		}
 		return null;

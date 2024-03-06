@@ -109,7 +109,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 				_Actions.Action01._jumpCount = 0;
 
 				_CharacterAnimator.SetInteger("Action", 0);
-				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+				_Actions.Action00.StartAction();
 				//Debug.Log("What");
 				_counter = 0;
 			}

@@ -76,22 +76,6 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	void Update () {
 		_CharacterAnimator.SetInteger("Action", 13);
 
-		//Do a homing attack
-		if (_Actions.Action02._isHomingAvailable && _Actions.Action02Control._HasTarget && _Input.HomingPressed)
-		{
-
-			//Do a homing attack
-			if (_Actions.Action02 != null && _PlayerPhys._homingDelay_ <= 0)
-			{
-				if (_Actions.Action02Control._isHomingAvailable)
-				{
-					Sounds.HomingAttackSound();
-					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Homing);
-					_Actions.Action02.InitialEvents();
-				}
-			}
-
-		}
 	}
 
 	private void FixedUpdate () {
@@ -121,12 +105,9 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 
 			if (exitWindTimer >= exitWind)
 			{
-				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+				_Actions.Action00.StartAction();
 			}
 		}
-
-		//Skidding
-		_Actions.skid.AttemptAction();
 	}
 
 	public bool AttemptAction () {

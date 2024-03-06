@@ -79,8 +79,6 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	//Called when attempting to perform an action, checking and preparing inputs.
 	public bool AttemptAction () {
 		bool willStartAction = false;
-
-		if (!enabled) { enabled = true; }
 		_whatCurrentAction = _Actions.whatAction;
 
 		//Different actions require different skids, even though they all call this function.
@@ -89,24 +87,23 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 			case S_Enums.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._isGrounded)
 				{
-					TryRegularSkid();
-					willStartAction = true;
+					willStartAction = TryRegularSkid();
 				}
 				else
 				{
-					TryJumpSkid();
-					willStartAction = true;
+					willStartAction = TryJumpSkid();
 				}
 				break;
 
-			case S_Enums.PrimaryPlayerStates.Jump: 
-				TryJumpSkid();
-				willStartAction = true;
+			case S_Enums.PrimaryPlayerStates.Jump:
+				willStartAction = TryJumpSkid();
 				break;
 
 			case S_Enums.PrimaryPlayerStates.SpinCharge:
-				TrySpinSkid();
-				willStartAction = true;
+				willStartAction = TrySpinSkid();
+				break;
+			case S_Enums.PrimaryPlayerStates.Homing:
+				willStartAction = GetComponent<S_Action02_Homing>().TryHomingSkid();
 				break;
 
 		}
@@ -117,7 +114,9 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	public void StartAction() {
 		if (!_isSkidding)
 		{
-			_Actions.Action00.SetIsRolling(false);
+			_Actions.whatSubAction = S_Enums.SubPlayerStates.Skidding;
+			if (!enabled) { enabled = true; }
+
 			_Sounds.SkiddingSound();
 
 			_Tools.CharacterAnimator.SetBool("Skidding", true);
@@ -146,7 +145,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	#region private
 
 	//Skidding when in the regular state and on the ground.
-	private void TryRegularSkid () {
+	private bool TryRegularSkid () {
 
 		//If the input direction is different enough to the current movement direction, then a skid should be performed.
 		if (_PlayerPhys._inputVelocityDifference > _regularSkidAngleStartPoint_ && !_Input._isInputLocked)
@@ -167,16 +166,17 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 				{
 					_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * _regularSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
-				return;
+				return true;
 			}	
 		}
-		StopAction();	
+		StopAction();
+		return false;
 	}
 
 	//Skidding when in the air.
-	private void TryJumpSkid () {
+	private bool TryJumpSkid () {
 
-		if(!_canSkidInAir_) { return; }
+		if(!_canSkidInAir_) { return false; }
 
 		//If the input direction is different enough to the current movement direction, then a skid should be performed. 
 		if ((_PlayerPhys._inputVelocityDifference > _regularSkidAngleStartPoint_) && !_Input._isInputLocked)
@@ -192,26 +192,23 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 				{
 					_PlayerPhys.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _airSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
-			
-
-			if (_PlayerPhys._speedMagnitude < 4)
-			{
-				_Actions.Action00.SetIsRolling(false);
-			}
+			return true;
 		}
 		//In case the player lost ground but was skidding before doing so.
 		StopAction();
+		return false;
 	}
 
 	//Skidding when charging a spin charge.
-	private void TrySpinSkid () {
+	private bool TrySpinSkid () {
 		
 			//Different start point from the other two skid types.
 		if (_PlayerPhys._inputVelocityDifference > _spinSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
-			Debug.Log("Spin Skid");
-			_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * _spinSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));		
+			_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * _spinSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
+			return true;
 		}
+		return false;
 	}
 	#endregion
 
@@ -233,9 +230,9 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		_regularSkiddingIntensity_ = _Tools.Stats.SkiddingStats.skiddingIntensity;
 		_airSkiddingIntensity_ = _Tools.Stats.SkiddingStats.skiddingIntensity;
 		_canSkidInAir_ = _Tools.Stats.SkiddingStats.canSkidInAir;
-		_regularSkidAngleStartPoint_ = _Tools.Stats.SkiddingStats.angleToPerformSkid / 180;
+		_regularSkidAngleStartPoint_ = _Tools.Stats.SkiddingStats.angleToPerformSkid;
 		_spinSkiddingIntensity_ = _Tools.Stats.SpinChargeStats.skidIntesity;
-		_spinSkidAngleStartPoint_ = _Tools.Stats.SpinChargeStats.angleToPerformSkid / 180;
+		_spinSkidAngleStartPoint_ = _Tools.Stats.SpinChargeStats.angleToPerformSkid;
 		_speedToStopAt_ = (int)_Tools.Stats.SkiddingStats.speedToStopAt;
 		_shouldSkiddingDisableTurning_ = _Tools.Stats.SkiddingStats.shouldSkiddingDisableTurning;
 	}

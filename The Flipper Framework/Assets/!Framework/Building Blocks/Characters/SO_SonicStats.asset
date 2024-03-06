@@ -1128,7 +1128,7 @@ MonoBehaviour:
   FindingGround:
     GroundMask:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 8193
     groundDifferenceLimit: 0.3
     rayToGroundDistance: 1.4
     raytoGroundSpeedRatio: 0.01
@@ -1149,12 +1149,14 @@ MonoBehaviour:
     upGravity: {x: 0, y: -1.45, z: 0}
   RollingStats:
     rollingLandingBoost: 1.4
+    minRollingTime: 0.3
     rollingDownhillBoost: 1.9
     rollingUphillBoost: 1.2
     rollingStartSpeed: 5
     rollingTurningModifier: 0.6
   DefaultRollingStats:
     rollingLandingBoost: 1.4
+    minRollingTime: 0.3
     rollingDownhillBoost: 1.9
     rollingUphillBoost: 1.2
     rollingStartSpeed: 5
@@ -1163,6 +1165,7 @@ MonoBehaviour:
     speedToStopAt: 10
     shouldSkiddingDisableTurning: 1
     angleToPerformSkid: 160
+    angleToPerformHomingSkid: 130
     skiddingIntensity: -5
     canSkidInAir: 1
     skiddingIntensityInAir: -2.5
@@ -1170,6 +1173,7 @@ MonoBehaviour:
     speedToStopAt: 10
     shouldSkiddingDisableTurning: 1
     angleToPerformSkid: 5
+    angleToPerformHomingSkid: 130
     skiddingIntensity: -5
     canSkidInAir: 1
     skiddingIntensityInAir: -2.5
@@ -1228,7 +1232,7 @@ MonoBehaviour:
     jumpSlopeConversion: 0.03
     stopYSpeedOnRelease: 2.1
     jumpRollingLandingBoost: 0
-    startJumpDuration: 0.2
+    startJumpDuration: {x: 0.15, y: 0.25}
     startSlopedJumpDuration: 0.2
     startJumpSpeed: 4
     speedLossOnJump: 0.99
@@ -1289,7 +1293,7 @@ MonoBehaviour:
     jumpSlopeConversion: 0.03
     stopYSpeedOnRelease: 2.1
     jumpRollingLandingBoost: 0
-    startJumpDuration: 0.2
+    startJumpDuration: {x: 0.15, y: 0.25}
     startSlopedJumpDuration: 0.2
     startJumpSpeed: 4
     speedLossOnJump: 0.99
@@ -1298,14 +1302,14 @@ MonoBehaviour:
   MultipleJumpStats:
     canDoubleJump: 1
     canTripleJump: 0
-    jumpCount: 2
+    maxJumpCount: 2
     doubleJumpSpeed: 4.5
     doubleJumpDuration: 0.14
     speedLossOnDoubleJump: 0.978
   DefaultMultipleJumpStats:
     canDoubleJump: 1
     canTripleJump: 0
-    jumpCount: 2
+    maxJumpCount: 2
     doubleJumpSpeed: 4.5
     doubleJumpDuration: 0.14
     speedLossOnDoubleJump: 0.978
@@ -1358,19 +1362,37 @@ MonoBehaviour:
     iconDistanceScaling: 0.2
     facingAmount: 0.91
   HomingStats:
-    CanBePerformedOnGround: 0
+    canBePerformedOnGround: 0
+    canBeControlled: 1
     canDashWhenFalling: 1
     attackSpeed: 100
-    timerLimit: 1
+    maximumSpeed: 140
+    minimumSpeed: 60
+    minimumSpeedOnHit: 60
+    timerLimit: 2
     successDelay: 0.3
+    turnSpeed: 7
+    deceleration: 55
+    acceleration: 70
+    lerpToPreviousDirectionOnHit: 1
+    lerpToNewInputOnHit: 0.146
   DefaultHomingStats:
-    CanBePerformedOnGround: 0
+    canBePerformedOnGround: 0
+    canBeControlled: 1
     canDashWhenFalling: 1
     attackSpeed: 100
+    maximumSpeed: 140
+    minimumSpeed: 60
+    minimumSpeedOnHit: 60
     timerLimit: 1
     successDelay: 0.3
+    turnSpeed: 0.8
+    deceleration: 55
+    acceleration: 70
+    lerpToPreviousDirectionOnHit: 0
+    lerpToNewInputOnHit: 0
   SpinChargeStats:
-    whatAimMethod: 1
+    whatAimMethod: 0
     chargingSpeed: 1.02
     minimunCharge: 20
     maximunCharge: 110

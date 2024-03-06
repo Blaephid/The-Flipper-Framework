@@ -166,7 +166,6 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 				Release();
 			else
 			{
-				_Actions.Action00.SetIsRolling(true);
 				JumpBall.SetActive(false);
 				if (_DropEffect.isPlaying == true)
 				{
@@ -176,7 +175,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 			_Input.JumpPressed = false;
 			JumpBall.SetActive(false);
-			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+			_Actions.Action00.StartAction();
 		}
 
 		else if (_Input.SpecialPressed && charge > _minimunCharge_)
@@ -358,10 +357,6 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, true);
 
 		Vector3 newVec = charge *  newForward;
-
-		_Actions.Action00.Curl();
-		_Actions.Action00.SetIsRolling(true);
-		_Actions.Action00._rollCounter = 0.005f;
 
 
 		Vector3 releVec = _PlayerPhys.GetRelevantVel(newVec);

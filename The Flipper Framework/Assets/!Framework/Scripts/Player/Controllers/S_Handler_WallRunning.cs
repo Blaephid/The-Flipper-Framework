@@ -7,7 +7,7 @@ public class S_Handler_WallRunning : MonoBehaviour
     S_CharacterTools Tools;
 
     S_Action01_Jump JumpAction;
-    S_Action00_Regular RegularAction;
+    S_Action00_Default RegularAction;
     S_PlayerPhysics Player;
     S_PlayerInput Inp;
     S_ActionManager Actions;

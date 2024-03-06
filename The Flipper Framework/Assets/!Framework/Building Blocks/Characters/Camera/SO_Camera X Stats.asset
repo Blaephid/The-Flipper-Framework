@@ -398,7 +398,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   TargetByAngleStats:
-    shouldMoveBasedOnAngle: 1
+    shouldMoveBasedOnAngle: 0
     moveUpByAngle:
       serializedVersion: 2
       m_Curve:
@@ -510,9 +510,9 @@ MonoBehaviour:
   RotateBehindStats:
     LockCamAtHighSpeed: 90
     afterMoveXDelay: 0.4
-    rotateToBehindSpeed: 4
+    rotateToBehindSpeed: 5
     rotateCharacterBeforeCameraFollows: 0.18
-    followFacingDirectionSpeed: 0.3
+    followFacingDirectionSpeed: 20
   DefaultClampingStats:
     yMinLimit: -90
     yMaxLimit: 90

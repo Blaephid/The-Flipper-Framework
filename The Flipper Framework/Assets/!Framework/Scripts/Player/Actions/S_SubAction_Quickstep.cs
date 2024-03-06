@@ -134,6 +134,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 
 		//Used for checking if the main action changes during the step.
 		_whatActionWasOn = _Actions.whatAction;
+		_Actions.whatSubAction = S_Enums.SubPlayerStates.Quickstepping;
 
 		if (_Actions.eventMan != null) _Actions.eventMan.quickstepsPerformed += 1;
 

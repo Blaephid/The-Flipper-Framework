@@ -43,11 +43,18 @@ public class S_Enums
 	public enum SubPlayerStates {
 		Skidding,
 		Quickstepping,
+		Rolling,
 	}
 
 	public enum SpinChargeAiming
 	{
 		Input,
 		Camera
+	}
+
+	public enum HomingRebounding {
+		BounceThrough,
+		bounceOff,
+		Rebound,
 	}
 }

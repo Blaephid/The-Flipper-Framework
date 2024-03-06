@@ -376,7 +376,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			_Path_Int.currentCam = null;
 		}
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+		_Actions.Action00.StartAction();
 	}
 }
 

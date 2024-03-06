@@ -14,7 +14,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
     Vector3 ResumeFace;
     public GameObject basePlayer;
     public Transform ResumeTransform;
-    S_ActionManager Actions;
+    S_ActionManager _Actions;
     S_PlayerPhysics Player;
     S_Handler_Camera Cam;
     S_PlayerInput _Input;
@@ -34,7 +34,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
     void Start () {
 
         Cam = basePlayer.GetComponent<S_Handler_Camera>();
-        Actions = basePlayer.GetComponent<S_ActionManager>();
+        _Actions = basePlayer.GetComponent<S_ActionManager>();
         Player = basePlayer.GetComponent<S_PlayerPhysics>();
         _Input = basePlayer.GetComponent<S_PlayerInput>();
         characterTransform = tools.mainSkin;
@@ -55,9 +55,9 @@ public class S_Manager_LevelProgress : MonoBehaviour {
             readyCount += Time.deltaTime;
             if(readyCount > 1.5f)
             {
-                Actions.Action04Control.enabled = false;
+                _Actions.Action04Control.enabled = false;
                 Color alpha = Color.black;
-                Actions.Action04Control.FadeOutImage.color = Color.Lerp(Actions.Action04Control.FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
+                _Actions.Action04Control.FadeOutImage.color = Color.Lerp(_Actions.Action04Control.FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
             }
             if(readyCount > 2.6f)
             {
@@ -84,8 +84,8 @@ public class S_Manager_LevelProgress : MonoBehaviour {
     {
        
         _Input.LockInputForAWhile(20, true);
-        StartCoroutine(Actions.lockAirMoves(20));
-        Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+        StartCoroutine(_Actions.lockAirMoves(20));
+        _Actions.Action00.StartAction();
 
         tools.HomingTrailScript.emitTime = 0;
         tools.HomingTrailScript.emit = false;
@@ -101,7 +101,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
       
 
         Player.SetTotalVelocity(characterTransform.forward * 2);
-        Actions.Action04._deadCounter = 0;
+        _Actions.Action04._deadCounter = 0;
 
         Cam._HedgeCam._isReversed = false;
         Cam._HedgeCam.SetBehind(20);
@@ -126,7 +126,7 @@ public class S_Manager_LevelProgress : MonoBehaviour {
         ResumeFace = position.forward;
         ResumeTransform = position;
 
-        if (Actions.eventMan != null) Actions.eventMan.AddDeathsPerCP();
+        if (_Actions.eventMan != null) _Actions.eventMan.AddDeathsPerCP();
     }
 
     public void OnTriggerEnter(Collider col)
@@ -138,9 +138,9 @@ public class S_Manager_LevelProgress : MonoBehaviour {
                 //Set Object
                 if (!col.GetComponent<S_Data_Checkpoint>().IsOn)
                 {
-                    if(Actions.eventMan != null)
+                    if(_Actions.eventMan != null)
                     {
-                        Actions.eventMan.LogEvents(false, col.GetComponent<S_Data_Checkpoint>().checkPointName);
+                        _Actions.eventMan.LogEvents(false, col.GetComponent<S_Data_Checkpoint>().checkPointName);
                     }
 
                     col.GetComponent<S_Data_Checkpoint>().IsOn = true;
@@ -159,9 +159,9 @@ public class S_Manager_LevelProgress : MonoBehaviour {
         }
         if (col.tag == "GoalRing")
         {
-            if (Actions.eventMan != null)
+            if (_Actions.eventMan != null)
             {
-                StartCoroutine(Actions.eventMan.logEndEvents());
+                StartCoroutine(_Actions.eventMan.logEndEvents());
          
             }
 

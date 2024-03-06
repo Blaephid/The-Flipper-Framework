@@ -419,30 +419,32 @@ public class S_HedgeCamera : MonoBehaviour
 
 		//Certain actions will have different requirements for the camera to move behind. The switch sets the requirements before the if statement checks against them.
 		float minSpeed;
-		bool skipDelay;
+		bool skipDelay = false;
 		switch (_Actions.whatAction)
 		{
 			default:
 				minSpeed = _lockCamAtSpeed_;
-				skipDelay = false;
 				break;
 			case S_Enums.PrimaryPlayerStates.WallRunning:
 				minSpeed = 60;
 				skipDelay = true;
 				break;
+			case S_Enums.PrimaryPlayerStates.Homing:
+				minSpeed = 0;
+				break;
 		}
 
 		float dif = Vector3.Angle(GetFaceDirection(transform.forward), _currentFaceDirection) / 180;
 
-		//If moving fast enough, the delay from moving the camera has expired, and the player is facing a different enough angle to the camera, then it will move behind.
-		if (_PlayerPhys._horizontalSpeedMagnitude > minSpeed && ((_backBehindTimer >= 0 && (dif >= _rotateCharacterBeforeCameraFollows_ || _isRotatingBehind)) || skipDelay))
+		//If moving fast enough, the delay from moving the camera has expired, and the player is facing a different enough angle to the camera, then it will move behind. MinSpeed at 0 means it won't happen.
+		if (_PlayerPhys._horizontalSpeedMagnitude > minSpeed && minSpeed > 0 && ((_backBehindTimer >= 0 && (dif >= _rotateCharacterBeforeCameraFollows_ || _isRotatingBehind)) || skipDelay))
 		{		
 				GoBehindCharacter(_rotateToBehindSpeed_, 0, false);
 		} 
 		//_CurrentFaceDirection is used to add a delay to rotating before the camera starts following. It moves towards the player rotation, and GoBehindCharacter sets isRotatingBehind to true until rotation is completed, resetting the delay.
 		if(!_isRotatingBehind) 
 		{
-			_currentFaceDirection = Vector3.RotateTowards(_currentFaceDirection, GetFaceDirection(_Skin.forward), _followFacingDirectionSpeed_, 0);
+			_currentFaceDirection = Vector3.RotateTowards(_currentFaceDirection, GetFaceDirection(_Skin.forward), Mathf.Deg2Rad * _followFacingDirectionSpeed_, 0);
 		}
 	}
 
