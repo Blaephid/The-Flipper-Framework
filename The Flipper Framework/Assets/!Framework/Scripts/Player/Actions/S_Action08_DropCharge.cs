@@ -185,13 +185,12 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		bool willChangeAction = false;
 		if (!_PlayerPhys._isGrounded && _Input.RollPressed)
 		{
 			_Actions.Action08.TryDropCharge();
-			willChangeAction = true;
+			return true;
 		}
-		return willChangeAction;
+		return false;
 	}
 
 	public void StartAction () {

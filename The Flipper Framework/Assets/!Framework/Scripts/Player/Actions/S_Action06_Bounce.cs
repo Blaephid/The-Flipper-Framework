@@ -239,7 +239,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		_Input.BouncePressed = false;
 		_PlayerPhys.SetIsGrounded(false);
-		_Actions._isHomingAvailable = true;
 
 		HasBounced = true;
 		CurrentBounceAmount = _BounceUpSpeeds_[_Actions._bounceCount];

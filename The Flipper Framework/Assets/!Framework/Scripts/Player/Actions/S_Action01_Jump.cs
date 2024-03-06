@@ -254,7 +254,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	}
 
 	public void StopAction () {
-		enabled = false;
+		this.enabled = false;
 	}
 
 	#endregion
@@ -303,7 +303,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
 		else
 			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, Mathf.Clamp(_PlayerPhys._RB.velocity.y * 0.1f, 0.1f, 5), _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
-		_PlayerPhys.SetTotalVelocity(newVec, true);
+		_PlayerPhys.SetCoreVelocity(newVec, true);
 
 		//Add particle effect during jump
 		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
@@ -327,7 +327,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	public void ReadyAction() {
+	public void ReadyAction () {
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.

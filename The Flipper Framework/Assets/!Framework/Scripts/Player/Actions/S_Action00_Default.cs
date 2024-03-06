@@ -30,7 +30,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	//General
 	#region General Properties
 
-	//Stats
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	public float                  _skinRotationSpeed = 2;
 	[HideInInspector]
@@ -41,17 +41,15 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;
-
-	private Quaternion  _charRot;
+	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
 	//Coyote
 	[HideInInspector]
-	public bool         _isCoyoteInEffect = false;
+	public bool         _isCoyoteInEffect = false;    //Enabled when ground is lost and tells if coyote time is happening.
 	[HideInInspector]
-	public Vector3      _coyoteRememberDirection;
+	public Vector3      _coyoteRememberDirection;     //Tracks the up direction of the floor when ground was lost
 	[HideInInspector]
-	public float        _coyoteRememberSpeed;
+	public float        _coyoteRememberSpeed;         //Tracks the world vertical speed when ground was lost.
 
 	#endregion
 	#endregion
@@ -140,10 +138,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			if (_PlayerPhys._isGrounded)
 			{
 				//Reset trackers for other actions.
-				if (_Actions.Action02 != null)
-				{
-					_Actions._isHomingAvailable = true;
-				}
 				if (_Actions._bounceCount > 0)
 				{
 					_Actions._bounceCount = 0;
@@ -183,16 +177,16 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		if (newForward.sqrMagnitude > 0.01f)
 		{
 			//Makes a rotation that only changes horizontally, never looking up or down.
-			_charRot = Quaternion.LookRotation(newForward, transform.up);
+			Quaternion charRot = Quaternion.LookRotation(newForward, transform.up);
 
 			//Move towards it, slower if in the air.
 			if (_PlayerPhys._isGrounded)
 			{
-				_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, _charRot, Time.deltaTime * rotateSpeed);
+				_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, charRot, Time.deltaTime * rotateSpeed);
 			}
 			else
 			{
-				_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, _charRot, Time.deltaTime * rotateSpeed * 0.75f);
+				_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, charRot, Time.deltaTime * rotateSpeed * 0.75f);
 			}
 		}
 	}

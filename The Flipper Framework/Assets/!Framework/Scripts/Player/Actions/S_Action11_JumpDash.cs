@@ -72,9 +72,6 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 			AssignTools();
 			AssignStats();
 		}
-
-
-		_Actions._isHomingAvailable = true;
 	}
 	private void OnDisable () {
 
@@ -167,7 +164,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		//This is called no matter the action, so it used as function to check the always relevant data.
 		void CheckDash() {
-			if (!_PlayerPhys._isGrounded && !_Actions.lockJumpDash && _Actions._isHomingAvailable && _Input.SpecialPressed && !_Actions.Action02Control._HasTarget)
+			if (!_PlayerPhys._isGrounded && !_Actions.lockJumpDash && _Actions._isAirDashAvailables && _Input.SpecialPressed)
 			{
 				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
 				InitialEvents();
@@ -247,7 +244,6 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 				_Input.HomingPressed = false;
 
 				_timer = 0;
-				_Actions._isHomingAvailable = false;
 
 				_XZspeed = _PlayerPhys._horizontalSpeedMagnitude;
 

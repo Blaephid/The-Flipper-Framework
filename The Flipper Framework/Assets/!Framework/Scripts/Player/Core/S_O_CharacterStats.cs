@@ -586,13 +586,19 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucHomingSearch
 		{
 			targetSearchDistance = 44f,
-			faceRange = 70f,
+			rangeInCameraDirection = 1.2f,
+			minimumTargetDistance = 15,
 			TargetLayer = new LayerMask(),
 			blockingLayers = new LayerMask(),
 
 			iconScale = 1.5f,
 			iconDistanceScaling = 0.2f,
-			facingAmount = 0.91f
+			facingAmount = 0.91f,
+			currentTargetPriority = 0.4f,
+			timeToKeepTarget = new Vector2 (0.2f, 0.3f),
+			timeBetweenScans = 0.12f,
+			radiusOfCameraTargetCheck = 15,
+			cameraDirectionPriority = 0.5f,
 		};
 	}
 
@@ -600,12 +606,20 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucHomingSearch
 	{
 		public float                  targetSearchDistance;
-		public float                  faceRange;
+		public float                  rangeInCameraDirection;
+		public int                    minimumTargetDistance;
 		public LayerMask              TargetLayer;
 		public LayerMask              blockingLayers;
 		public float                  iconScale;
 		public float                  iconDistanceScaling;
 		public float                  facingAmount;
+		[Range(0f, 1f)]
+		public float		currentTargetPriority;
+		public Vector2                timeToKeepTarget;
+		public float                  timeBetweenScans;
+		public int                    radiusOfCameraTargetCheck;
+		[Range(0f, 1f)]
+		public float                  cameraDirectionPriority;
 
 	}
 
@@ -629,6 +643,7 @@ public class S_O_CharacterStats : ScriptableObject
 			lerpToPreviousDirectionOnHit = 0,
 			deceleration = 55,
 			acceleration = 70,
+			homingCountLimit = 0,
 
 		};
 	}
@@ -652,6 +667,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float        lerpToPreviousDirectionOnHit;
 		[Range(0, 1)]
 		public float        lerpToNewInputOnHit;
+		[Range(0, 10)]
+		public int          homingCountLimit;
 	}
 
 	#endregion

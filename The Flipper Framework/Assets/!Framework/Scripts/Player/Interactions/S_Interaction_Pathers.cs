@@ -74,7 +74,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 			Input.LockInputForAWhile(20f, false);
 
 			currentUpreel = null;
-			Actions._isHomingAvailable = true;
+			Actions._isAirDashAvailables = true;
 
 			//CharacterAnimator.transform.rotation = Quaternion.LookRotation(-currentUpreel.transform.forward, transform.up);
 			CharacterAnimator.SetInteger("Action", 0);

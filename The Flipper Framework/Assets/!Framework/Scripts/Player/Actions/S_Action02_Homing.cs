@@ -21,14 +21,14 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
-	private S_VolumeTrailRenderer _HomingTrailScript;
+	private S_VolumeTrailRenderer  _HomingTrailScript;
 	private S_Handler_HomingAttack _HomingControl;
 	private S_Control_PlayerSound  _Sounds;
 
 	private GameObject            _HomingTrailContainer;
 	private GameObject            _JumpBall;
-	private Animator               _CharacterAnimator;
-	private Transform               _Skin;
+	private Animator              _CharacterAnimator;
+	private Transform             _Skin;
 	[HideInInspector]
 	public Transform              _Target;
 	#endregion
@@ -36,7 +36,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	//General
 	#region General Properties
 
-	//Stats
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	private float       _homingAttackSpeed_;
 	private bool        _canBeControlled_;
@@ -44,7 +44,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private float       _homingTurnSpeed_;
 	private bool        _CanBePerformedOnGround_;
 	private int         _homingSkidAngleStartPoint_;
-	private int	_homingDeceleration_;
+	private int         _homingDeceleration_;
 	private int         _homingAcceleration_;
 	private float       _homingBouncingPower_;
 	private int         _minSpeedGainOnHit_;
@@ -52,30 +52,32 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private float       _lerpToNewInput_;
 	private int         _maxHomingSpeed_;
 	private int         _minHomingSpeed_;
+	private int         _homingCountLimit_;
 	#endregion
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;
+	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
 	public float        _skinRotationSpeed;
 
-	private bool        _isHoming;
+	private bool        _isHoming;                    //If currently homing. The action has unique interactions that will turn this off, disabling actual homing in on targets.
 
-	private float       _speedBeforeAttack;
-	private Vector3     _directionBeforeAttack;
-	private float       _currentSpeed;
-	private float       _speedAtStart;
+	private float       _speedBeforeAttack;           //The movement speed before performing this action.
+	private Vector3     _directionBeforeAttack;       //The direction the player was moving before performing this action.
+	private float       _currentSpeed;                //The speed the homing attack moves at this frame. If skid is a possible action, this can be changed.
+	private float       _speedAtStart;                //The speed the homing attack happens at when performed, accelerating after decelerating will not exceed this.
 
 	[HideInInspector]
 	public Vector3      _targetDirection;             //Set at the start of the action to be used by other scripts on hit.
-	private float       _distanceFromTarget;
-	private Vector3     _currentDirection;
-	private Vector3     _horizontalDirection;
+	private float       _distanceFromTarget;          //Updated each frame as certain movements will be edited when close to the target
+	private Vector3     _currentDirection;            //Updated each frame to get the current direction
+	private Vector3     _horizontalDirection;         //Same as above but without vertical
 	private Vector3     _currentInput;
-	private float       _inputAngle;
+	private float       _inputAngle;                  //The angle difference between input and moving direction
 
 	private float       _timer;
+	private int         _homingCount;                 //Keeps track of how many homing attacks have been used before landing (or some more specific resets).
 	#endregion
 
 	#endregion
@@ -96,12 +98,17 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private void OnDisable () {
 		_timer = 0;
 		_HomingTrailContainer.transform.DetachChildren();
-		_Actions._isHomingAvailable = true;
 
 		//Removes one count of control being locked to counteract one being added when this action is start. This can also be done elsewhere but that will disable _isHoming
-		if (_PlayerPhys._listOfCanControl.Count > 0 && _isHoming)
+		if (_PlayerPhys._listOfCanControl.Count > 0)
 		{
 			_PlayerPhys._listOfCanControl.RemoveAt(0);
+		}
+
+		//if ended prematurely
+		if(_isHoming)
+		{
+			_Actions.AddDashDelay(_HomingControl._homingDelay_);
 		}
 	}
 
@@ -129,20 +136,25 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	//Called when checking if this action is to be performed, including inputs.
 	public bool AttemptAction () {
-
 		//Depending on stats, this can only be performed when grounded.
 		if (!_PlayerPhys._isGrounded || _CanBePerformedOnGround_)
 		{
-			//Must have a valid target.
-			if (_HomingControl._HasTarget && _HomingControl._TargetObject && _Input.HomingPressed)
+			_HomingControl._isScanning = true;
+
+			//Must have a valid target when pressed
+			if (_HomingControl._TargetObject && _Input.HomingPressed)
 			{
-				//Do a homing attack
-				if (_HomingControl._delayCounter <= 0 && _Actions._isHomingAvailable)
+				//Homing attack must be currently allowed
+				if (_Actions._isAirDashAvailables && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount))
 				{
 					StartAction();
 					return true;
 				}
 			}
+		}
+		else
+		{
+			_HomingControl._isScanning = false;
 		}
 		return false;
 	}
@@ -154,6 +166,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Setting private
 		_isHoming = true;
 		_inputAngle = 0; //The difference between movement direction and input
+		_homingCount++;
 
 		_timer = 0;
 		_speedBeforeAttack = _PlayerPhys._horizontalSpeedMagnitude; //Saved so it can be called back to on hit or end of action.
@@ -166,8 +179,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		//Setting public
 		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._canBeGrounded = false;
 		_JumpBall.SetActive(false);
-		_Actions._isHomingAvailable = false;
 		_PlayerPhys._listOfCanControl.Add(false);
 		_Input.JumpPressed = false;
 
@@ -182,7 +195,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_speedAtStart = Mathf.Max(_speedBeforeAttack * 0.9f, _homingAttackSpeed_);
 		_speedAtStart = Mathf.Min(_speedAtStart, _maxHomingSpeed_);
 		_currentSpeed = _speedAtStart;
-		
+
 
 		_speedBeforeAttack = Mathf.Max(_speedBeforeAttack, _minSpeedGainOnHit_);
 
@@ -190,6 +203,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	}
 
 	public void StopAction () {
+		_PlayerPhys._canBeGrounded = true;
 		enabled = false;
 	}
 
@@ -252,7 +266,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			_inputAngle = Vector3.Angle(_horizontalDirection, _currentInput);
 
 			//Will only add control if input is not pointing directily behind character as that will lead to zigzagging
-			if (_inputAngle < 130) 
+			if (_inputAngle < 130)
 			{
 				//Limit how different the input can be to the move direction (no more than x degrees).
 				Vector3 useInput = Vector3.RotateTowards(_horizontalDirection, _currentInput, Mathf.Deg2Rad * 80, 0);
@@ -293,25 +307,31 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	#region public 
 
 	//What happens to the character after they hit a target, the directions they bounce based on input, stats and target.
-	public void HittingTarget (S_Enums.HomingRebounding whatRebound) {
+	public void HittingTarget ( S_Enums.HomingRebounding whatRebound ) {
+		_isHoming = false; //Prevents the rest of the code in Update and FixedUpdate from happening.
 
 		_CharacterAnimator.SetInteger("Action", 1);
 
-		AddDelay();
+		_Actions.AddDashDelay(_HomingControl._homingDelay_);
 		Vector3 newSpeed = Vector3.zero;
 
-		switch(whatRebound)
+		switch (whatRebound)
 		{
 			case S_Enums.HomingRebounding.BounceThrough:
 				if (_Input.HomingPressed) { additiveHit(); }
 				else { bounceUpHit(); }
+
 				_PlayerPhys.SetCoreVelocity(newSpeed);
+				_PlayerPhys._canBeGrounded = true;
+				_PlayerPhys._isGravityOn = true;
+				_Actions.Action00.StartAction();
+
 				break;
 			case S_Enums.HomingRebounding.Rebound:
 				StartCoroutine(HittingObstacle());
 				return;
-			case S_Enums.HomingRebounding.bounceOff: 
-				bounceUpHit(); 
+			case S_Enums.HomingRebounding.bounceOff:
+				bounceUpHit();
 				break;
 		}
 
@@ -331,8 +351,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		}
 
-		void bounceUpHit()
-			{
+		void bounceUpHit () {
 			GetDirectionPostHit();
 			newSpeed.y = 0;
 			newSpeed.Normalize();
@@ -340,12 +359,12 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			newSpeed.y = _homingBouncingPower_; ;
 		}
 
-		void GetDirectionPostHit() {
+		void GetDirectionPostHit () {
 			//Get current movement direction
 			newSpeed = _PlayerPhys._RB.velocity.normalized;
 
 			//If trying to move in the direction taken by the attack at the end, then will move that way
-			if(Vector3.Angle(newSpeed, _PlayerPhys._moveInput) / 180 < _lerpToNewInput_)
+			if (Vector3.Angle(newSpeed, _PlayerPhys._moveInput) / 180 < _lerpToNewInput_)
 			{
 				//Rotate towards new input by percentage
 				float partDifference = Vector3.Angle(newSpeed, _PlayerPhys._moveInput) * _lerpToNewInput_;
@@ -366,7 +385,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		float duration = 0.6f * 55;
 
-		_isHoming = false; //Prevents the rest of the code in Update and FixedUpdate from happening.
+		_PlayerPhys._canBeGrounded = true;
 
 		//Gets a direction to make the player face and rebound away from. This is either the way they were already going, or slightly affected by what they hit.
 		Vector3 faceDirection = _PlayerPhys._RB.velocity.normalized;
@@ -393,7 +412,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		//Returns control partway through the rebound.
 		_PlayerPhys._isGravityOn = true;
-		if (enabled) {_PlayerPhys._listOfCanControl.RemoveAt(0); }
+		this.enabled = false;
 
 		for (int i = 0 ; i < duration * 0.8f && !_PlayerPhys._isGrounded ; i++)
 		{
@@ -423,10 +442,14 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	//Called upon successful attacks to set the counter (which will tick down when above 0)
-	public void AddDelay() {
-		_HomingControl._delayCounter = _HomingControl._homingDelay_;
+	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
+	public void EventOnGrounded () {
+		
+			_Actions._isAirDashAvailables = true;
+			_homingCount = 0;
+		
 	}
+
 
 	#endregion
 
@@ -457,36 +480,37 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input =		GetComponent<S_PlayerInput>();
-		_PlayerPhys =	GetComponent<S_PlayerPhysics>();
-		_Actions =	GetComponent<S_ActionManager>();
-		_HomingControl =	GetComponent<S_Handler_HomingAttack>();
-		_Sounds =		_Tools.SoundControl;
-		_Skin =		_Tools.mainSkin;
+		_Input = GetComponent<S_PlayerInput>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Actions = GetComponent<S_ActionManager>();
+		_HomingControl = GetComponent<S_Handler_HomingAttack>();
+		_Sounds = _Tools.SoundControl;
+		_Skin = _Tools.mainSkin;
 
-		_CharacterAnimator =	_Tools.CharacterAnimator;
-		_HomingTrailScript =	_Tools.HomingTrailScript;
-		_HomingTrailContainer =	_Tools.HomingTrailContainer;
-		_JumpBall =		_Tools.JumpBall;
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_HomingTrailScript = _Tools.HomingTrailScript;
+		_HomingTrailContainer = _Tools.HomingTrailContainer;
+		_JumpBall = _Tools.JumpBall;
 	}
 
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
-		_homingAttackSpeed_ =	_Tools.Stats.HomingStats.attackSpeed;
-		_homingTimerLimit_ =	_Tools.Stats.HomingStats.timerLimit;
-		_CanBePerformedOnGround_ =	_Tools.Stats.HomingStats.canBePerformedOnGround;
-		_homingTurnSpeed_ =		_Tools.Stats.HomingStats.turnSpeed;
+		_homingAttackSpeed_ = _Tools.Stats.HomingStats.attackSpeed;
+		_homingTimerLimit_ = _Tools.Stats.HomingStats.timerLimit;
+		_CanBePerformedOnGround_ = _Tools.Stats.HomingStats.canBePerformedOnGround;
+		_homingTurnSpeed_ = _Tools.Stats.HomingStats.turnSpeed;
 		_homingSkidAngleStartPoint_ = _Tools.Stats.SkiddingStats.angleToPerformHomingSkid;
-		_canBeControlled_ =		_Tools.Stats.HomingStats.canBeControlled;
-		_homingBouncingPower_ =	_Tools.Stats.EnemyInteraction.homingBouncingPower;
-		_minSpeedGainOnHit_ =	_Tools.Stats.HomingStats.minimumSpeedOnHit;
-		_lerpToPreviousDirection_ =	_Tools.Stats.HomingStats.lerpToPreviousDirectionOnHit;
-		_lerpToNewInput_ =		_Tools.Stats.HomingStats.lerpToNewInputOnHit;
-		_maxHomingSpeed_ =		_Tools.Stats.HomingStats.maximumSpeed;
-		_homingDeceleration_ =	_Tools.Stats.HomingStats.deceleration;
-		_homingAcceleration_ =	_Tools.Stats.HomingStats.acceleration;
-		_minHomingSpeed_ =		_Tools.Stats.HomingStats.minimumSpeed;
-}
+		_canBeControlled_ = _Tools.Stats.HomingStats.canBeControlled;
+		_homingBouncingPower_ = _Tools.Stats.EnemyInteraction.homingBouncingPower;
+		_minSpeedGainOnHit_ = _Tools.Stats.HomingStats.minimumSpeedOnHit;
+		_lerpToPreviousDirection_ = _Tools.Stats.HomingStats.lerpToPreviousDirectionOnHit;
+		_lerpToNewInput_ = _Tools.Stats.HomingStats.lerpToNewInputOnHit;
+		_maxHomingSpeed_ = _Tools.Stats.HomingStats.maximumSpeed;
+		_homingDeceleration_ = _Tools.Stats.HomingStats.deceleration;
+		_homingAcceleration_ = _Tools.Stats.HomingStats.acceleration;
+		_minHomingSpeed_ = _Tools.Stats.HomingStats.minimumSpeed;
+		_homingCountLimit_ = _Tools.Stats.HomingStats.homingCountLimit;
+	}
 	#endregion
 
 

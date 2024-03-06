@@ -1339,7 +1339,8 @@ MonoBehaviour:
     shouldUseCurrentSpeedAsMinimum: 1
   HomingSearch:
     targetSearchDistance: 44
-    faceRange: 70
+    rangeInCameraDirection: 1.2
+    minimumTargetDistance: 4
     TargetLayer:
       serializedVersion: 2
       m_Bits: 131072
@@ -1348,10 +1349,16 @@ MonoBehaviour:
       m_Bits: 1
     iconScale: 1.5
     iconDistanceScaling: 0.2
-    facingAmount: 0.91
+    facingAmount: 180
+    currentTargetPriority: 0.587
+    timeToKeepTarget: {x: 0.18, y: 0.3}
+    timeBetweenScans: 0.06
+    radiusOfCameraTargetCheck: 15
+    cameraDirectionPriority: 0.5
   DefaultHomingSearch:
     targetSearchDistance: 44
-    faceRange: 70
+    rangeInCameraDirection: 1.2
+    minimumTargetDistance: 15
     TargetLayer:
       serializedVersion: 2
       m_Bits: 0
@@ -1361,8 +1368,13 @@ MonoBehaviour:
     iconScale: 1.5
     iconDistanceScaling: 0.2
     facingAmount: 0.91
+    currentTargetPriority: 0.4
+    timeToKeepTarget: {x: 0.2, y: 0.3}
+    timeBetweenScans: 0.12
+    radiusOfCameraTargetCheck: 15
+    cameraDirectionPriority: 0.5
   HomingStats:
-    canBePerformedOnGround: 0
+    canBePerformedOnGround: 1
     canBeControlled: 1
     canDashWhenFalling: 1
     attackSpeed: 100
@@ -1376,6 +1388,7 @@ MonoBehaviour:
     acceleration: 70
     lerpToPreviousDirectionOnHit: 1
     lerpToNewInputOnHit: 0.146
+    homingCountLimit: 0
   DefaultHomingStats:
     canBePerformedOnGround: 0
     canBeControlled: 1
@@ -1391,6 +1404,7 @@ MonoBehaviour:
     acceleration: 70
     lerpToPreviousDirectionOnHit: 0
     lerpToNewInputOnHit: 0
+    homingCountLimit: 0
   SpinChargeStats:
     whatAimMethod: 0
     chargingSpeed: 1.02

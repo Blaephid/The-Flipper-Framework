@@ -202,10 +202,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
 
 			_Actions.Action00.StartAction();
-			if (_Actions.Action02 != null)
-			{
-				_Actions._isHomingAvailable = true;
-			}
 		}
 	}
 
@@ -459,10 +455,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 			_isOnZipLine = false;
 
-			if (_Actions.Action02 != null)
-			{
-				_Actions._isHomingAvailable = true;
-			}
 
 		}
 

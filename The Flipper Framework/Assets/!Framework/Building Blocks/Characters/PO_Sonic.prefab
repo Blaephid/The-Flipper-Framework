@@ -5211,8 +5211,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf837daebff4b9748af103d6635b5e0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _OnGrounded:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114022693185401694}
+        m_TargetAssemblyTypeName: S_Action02_Homing, Assembly-CSharp
+        m_MethodName: EventOnGrounded
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _RB: {fileID: 0}
   _moveDeceleration_: 1.3
-  _homingDelay_: 0
   _startFallGravity_: {x: 0, y: 0, z: 0}
   _negativeGHoverHeight_: 0.6115
   _Groundmask_:
@@ -5223,13 +5238,25 @@ MonoBehaviour:
   _environmentalVelocity: {x: 0, y: 0, z: 0}
   _totalVelocity: {x: 0, y: 0, z: 0}
   _prevTotalVelocity: {x: 0, y: 0, z: 0}
+  _speedMagnitude: 0
+  _horizontalSpeedMagnitude: 0
+  _moveInput: {x: 0, y: 0, z: 0}
+  _trackMoveInput: {x: 0, y: 0, z: 0}
   _currentTopSpeed: 0
   _currentMaxSpeed: 0
-  curvePosAcell: 0
+  _curvePosAcell: 0
+  _curvePosDrag: 0
+  _curvePosSlopePower: 0
   _inputVelocityDifference: 1
+  _playerPos: {x: 0, y: 0, z: 0}
+  _isGrounded: 0
   _canBeGrounded: 1
+  _groundNormal: {x: 0, y: 0, z: 0}
+  _timeOnGround: 0
+  _wasInAir: 0
   _isGravityOn: 1
   _currentFallGravity: {x: 0, y: 0, z: 0}
+  _isRolling: 0
   _listOfCanTurns: 
   _listOfCanControl: 
 --- !u!114 &8583335634310275265
@@ -5650,9 +5677,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _skinRotationSpeed: 10
-  _CanDashDuringFall_: 0
-  _coyoteInEffect: 0
-  _coyoteRememberDir: {x: 0, y: 0, z: 0}
+  _canDashDuringFall_: 0
+  _isCoyoteInEffect: 0
+  _coyoteRememberDirection: {x: 0, y: 0, z: 0}
   _coyoteRememberSpeed: 0
 --- !u!114 &114873388628942606
 MonoBehaviour:
@@ -5684,7 +5711,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _TargetObject: {fileID: 0}
-  _ListOfTgtDebugs: []
+  _homingDelay_: 0
+  _isScanning: 0
+  _delayCounter: 0
+  _isHomingAvailable: 0
 --- !u!114 &114022693185401694
 MonoBehaviour:
   m_ObjectHideFlags: 0

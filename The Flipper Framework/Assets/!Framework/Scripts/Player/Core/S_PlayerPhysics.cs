@@ -6,7 +6,9 @@ using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.Windows;
 using UnityEditor;
 using System.Linq;
+using UnityEngine.Events;
 
+[RequireComponent(typeof(Rigidbody))]
 public class S_PlayerPhysics : MonoBehaviour
 {
 
@@ -25,8 +27,10 @@ public class S_PlayerPhysics : MonoBehaviour
 	private S_PlayerInput         _Input;
 	private S_Handler_Camera      _camHandler;
 
+	public UnityEvent             _OnGrounded;        //Event called when isGrounded is set to true from false, remember to assign what methods to call in the editor.
+
 	[HideInInspector]
-	public Rigidbody _RB { get; set; }
+	public Rigidbody _RB;
 	private CapsuleCollider       _CharacterCapsule;
 	private Transform             _FeetTransform;
 	private Transform             _MainSkin;
@@ -35,8 +39,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	//General
 	#region General Members
 
-	//Stats
-	#region Stats
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
+	#region Stats 
 
 	[Header("Grounded Movement")]
 	private float                 _startAcceleration_ = 12f;
@@ -119,66 +123,76 @@ public class S_PlayerPhysics : MonoBehaviour
 	// Trackers
 	#region trackers
 	[HideInInspector]
-	public bool                   _arePhysicsOn = true;
+	public bool                   _arePhysicsOn = true;         //If false, no changes to velocity will be calculated or applied.
 
 	[HideInInspector]
-	public Vector3                _coreVelocity;
+	public Vector3                _coreVelocity;                //Core velocity is the velocity under the player's control. Whether it be through movement, actions or more. It cannot exceed maximum speed. Most calculations are based on this
 	[HideInInspector]
-	public Vector3                _environmentalVelocity;
+	public Vector3                _environmentalVelocity;       //Environmental velocity is the velocity applied by external forces, such as springs, fans and more.
 	[HideInInspector]
-	public Vector3                _totalVelocity;
-	public Vector3                _prevTotalVelocity;
-	private List<Vector3>         _listOfVelocityToAddNextUpdate = new List<Vector3>();
+	public Vector3                _totalVelocity;               //The combination of core and environmetal velocity determening actual movement direction and speed in game.
+	public Vector3                _prevTotalVelocity;           //The total velocity at the end of the previous frame, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
+
+	private List<Vector3>         _listOfVelocityToAddNextUpdate = new List<Vector3>(); //Rather than applied across all scripts, added forces are stored here and applied at the end of the frame.
 	private List<Vector3>         _listOfCoreVelocityToAdd= new List<Vector3>();
-	private Vector3               _externalSetVelocity;
+
+	private Vector3               _externalSetVelocity;         //Same as adding, but overwrites all other calculations.
 	private Vector3               _externalCoreVelocity;
 
 	[HideInInspector]
-	public RaycastHit             _HitGround;
-
-	[HideInInspector] 
-	public float		_speedMagnitude;
-	[HideInInspector] 
-	public float		_horizontalSpeedMagnitude;
+	public float                  _speedMagnitude;              //The speed of the player at the end of the frame.
+	[HideInInspector]
+	public float                  _horizontalSpeedMagnitude;    //The speed of the player relative to the character transform, so only shows running speed.
 
 	[HideInInspector]
-	public Vector3		_moveInput;
+	public Vector3                _moveInput;         //Assigned by the input script, the direction the player is trying to go.
 	[HideInInspector]
-	public Vector3		_trackMoveInput;
+	public Vector3                _trackMoveInput;    //Follows the input direction, and it is has changed but the controller input hasn't, that means the camera was moved to change direction.
 
 	[HideInInspector]
-	public float                  _currentTopSpeed;
+	public float                  _currentTopSpeed;   //Player cannot exceed this speed by just running on flat ground. May be changed across gameplay.
 	[HideInInspector]
-	public float                  _currentMaxSpeed;
+	public float                  _currentMaxSpeed;   //Player's core velocity can not exceed this by any means.
+
+	//Updated each frame to get current place on animation curves relevant to movement.
 	private float                 _currentRunAccell;
 	private float                 _currentRollAccell;
-	public float                  curvePosAcell;
+	public float                  _curvePosAcell;
 	private float                 _curvePosDecell;
-	[HideInInspector] 
-	public float		_curvePosDrag;
-	[HideInInspector] 
-	public float		_curvePosSlopePower;
 	[HideInInspector]
-	public float                  _inputVelocityDifference = 1;
-	[HideInInspector, Tooltip("A quick reference to the players current location")]
-	public Vector3		_playerPos;
+	public float                  _curvePosDrag;
+	[HideInInspector]
+	public float                  _curvePosSlopePower;
 
-	private float                 _timeUpHill;
 
-	[HideInInspector, Tooltip("Used to check if the player is currently grounded. _isGrounded")]
-	public bool		_isGrounded;
 	[HideInInspector]
-	public bool                   _canBeGrounded = true;
+	public float                  _inputVelocityDifference = 1; //Referenced by other scripts to get the angle between player input and movement direction
 	[HideInInspector]
-	public Vector3		_groundNormal;
-	[HideInInspector]
-	public Vector3                _collisionPointsNormal;
-	private Vector3               _keepNormal;
+	public Vector3                _playerPos;         //A quick reference to the players current location
 
-	private bool                  _isRotatingLeft;
-	private bool                  _isUpsideDown;
-	private Vector3               _rotateSidewaysTowards;
-	private float                 _keepNormalCounter;
+	private float                 _timeUpHill;        //Tracks how long a player has been running up hill. Decreases when going down hill or on flat ground.
+
+	//Ground tracking
+	[HideInInspector]
+	public bool                   _isGrounded;        //Used to check if the player is currently grounded. _isGrounded
+	[HideInInspector]
+	public bool                   _canBeGrounded = true;        //Set externally to prevent player's entering a grounded state.
+	[HideInInspector]
+	public RaycastHit             _HitGround;         //Used to check if there is ground under the player's feet, and gets data on it like the normal.
+	[HideInInspector]
+	public Vector3                _groundNormal;
+	private Vector3               _keepNormal;        //Used when in the air to remember up direction when the ground was lost.
+	private float                 _groundingDelay;    //Set when ground is lost and can't enter grounded state again until it's over.
+	[HideInInspector]
+	public float                  _timeOnGround;
+
+	//Rotating in air
+	private bool                  _isUpsideDown;                //Rotating to face up when upside down has a unique approach.
+	private bool                  _isRotatingLeft;              //Which way to rotate around to face up from upside down.
+	private Vector3               _rotateSidewaysTowards;       //The angle of rotation to follow when rotating from upside down
+	private float                 _keepNormalCounter;           //Tracks how before rotating can begin
+
+	//In air
 	[HideInInspector] public bool _wasInAir;
 	[HideInInspector]
 	public bool                   _isGravityOn = true;
@@ -186,11 +200,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3                _currentFallGravity;
 
 	[HideInInspector]
-	public bool		_isRolling;
+	public bool                   _isRolling;         //Set by the rolling subaction, certain controls are different when rolling.
 
-	private float                 _groundingDelay;
-	[HideInInspector]
-	public float		_timeOnGround;
+	//Disabling aspects of control. These are used as lists because if multiple things disable control, they all have to end it before that control is restored. If they just used single bools, multiple aspects taking control would overlap.
 	[HideInInspector]
 	public List<bool>             _listOfCanTurns = new List<bool>();
 	[HideInInspector]
@@ -240,7 +252,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (!_arePhysicsOn) { return; }
 
 		//Get curve positions, which will be used in calculations for this frame.
-		curvePosAcell = _AccelBySpeed_.Evaluate(_horizontalSpeedMagnitude / _currentTopSpeed);
+		_curvePosAcell = _AccelBySpeed_.Evaluate(_horizontalSpeedMagnitude / _currentTopSpeed);
 		_curvePosDecell = _DecelBySpeed_.Evaluate(_horizontalSpeedMagnitude / _currentMaxSpeed);
 		_curvePosDrag = _DragBySpeed_.Evaluate(_horizontalSpeedMagnitude / _currentMaxSpeed);
 		_curvePosSlopePower = _slopePowerBySpeed_.Evaluate(_horizontalSpeedMagnitude / _currentMaxSpeed);
@@ -499,6 +511,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (deviationFromInput < _angleToAccelerate_ || _horizontalSpeedMagnitude < 10)
 		{
 			accelRate = (_isRolling && _isGrounded ? _currentRollAccell : _currentRunAccell) * inputMagnitude;
+			accelRate *= _curvePosAcell;
 			accelRate *= _AccelBySlope_.Evaluate(_groundNormal.y);
 		}
 		float dragRate = _DragByAngle_.Evaluate(deviationFromInput) * _curvePosDrag;
@@ -852,23 +865,27 @@ public class S_PlayerPhysics : MonoBehaviour
 	public void SetIsGrounded ( bool value, float timer = 0 ) {
 		if (_isGrounded != value)
 		{
-			_isGrounded = value;
-			if (!_isGrounded)
+			//If changed to be in the air when was on the ground
+			if (!_isGrounded && _isGrounded != value)
 			{
 				_groundingDelay = timer;
 				_timeOnGround = 0;
 			}
-			else
+			//If changed to be on the ground when was in the air
+			else if (_isGrounded && _isGrounded != value)
 			{
+				//If hasn't completed aligning to face upwards when was upside down, then end that prematurely and retern turning.
 				if (_isUpsideDown)
 				{
 					_isUpsideDown = false;
 					_listOfCanTurns.Remove(false);
 				}
 				_keepNormalCounter = 0;
-			}
-		}
 
+				_OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
+			}
+			_isGrounded = value;
+		}
 	}
 
 	//the following methods are called by other scripts when they want to affect the velocity. The changes are stored and applied in the SetTotalVelocity method.

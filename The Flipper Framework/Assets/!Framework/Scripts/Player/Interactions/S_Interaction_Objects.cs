@@ -220,7 +220,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			else if (!col.GetComponent<S_Data_SpeedPad>().path)
 			{
 
-				_Actions._isHomingAvailable = true;
+				_Actions._isAirDashAvailables = true;
 
 				transform.rotation = Quaternion.identity;
 				//ResetPlayerRotation
@@ -395,11 +395,6 @@ public class S_Interaction_Objects : MonoBehaviour
 			_Actions.Action00.CancelCoyote();
 			Player._isGravityOn = true;
 
-			if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || _Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
-			{
-				_Actions.Action02.AddDelay(); 
-			}
-
 			JumpBall.SetActive(false);
 			if (_Actions.Action08 != null)
 			{
@@ -439,7 +434,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 				if (_Actions.Action02 != null)
 				{
-					_Actions._isHomingAvailable = true;
+					_Actions._isAirDashAvailables = true;
 				}
 
 				if (spring.anim != null)
@@ -492,7 +487,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				Player.transform.position = col.ClosestPoint(Player.transform.position);
 				if (_Actions.Action02 != null)
 				{
-					_Actions._isHomingAvailable = true;
+					_Actions._isAirDashAvailables = true;
 				}
 			}
 		}
@@ -662,8 +657,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					//LoseRings
 					Sounds.RingLossSound();
 					_Actions.Action04Control.GetHurt();
-					_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
-					_Actions.Action04.InitialEvents();
+					_Actions.Action04.AttemptAction();
 				}
 				if (RingAmount <= 0)
 				{
@@ -671,9 +665,8 @@ public class S_Interaction_Objects : MonoBehaviour
 					if (!_Actions.Action04Control.isDead)
 					{
 						Sounds.DieSound();
-						_Actions.Action04Control.isDead = true;
-						_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
-						_Actions.Action04.InitialEvents();
+						//_Actions.Action04Control.isDead = true;
+						_Actions.Action04.AttemptAction();
 					}
 				}
 			}
@@ -682,8 +675,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				//Lose Shield
 				Sounds.SpikedSound();
 				S_Interaction_Monitors.HasShield = false;
-				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
-				_Actions.Action04.InitialEvents();
+				_Actions.Action04.AttemptAction();
 			}
 		}
 	}
