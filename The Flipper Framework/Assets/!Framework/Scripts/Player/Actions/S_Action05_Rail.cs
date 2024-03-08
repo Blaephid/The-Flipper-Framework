@@ -197,11 +197,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 		else
 		{
-			_Actions.Action00.ReadyCoyote();
+			_Actions.ActionDefault.ReadyCoyote();
 			_CharacterAnimator.SetInteger("Action", 0);
 			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
 
-			_Actions.Action00.StartAction();
+			_Actions.ActionDefault.StartAction();
 		}
 	}
 
@@ -414,7 +414,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 
 		_PlayerPhys._RB.velocity = Vector3.zero;
-		_PlayerPhys.SetTotalVelocity(Vector3.zero);
+		_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0));
 
 	}
 
@@ -725,13 +725,13 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			if (move < 0)
 				if (Physics.BoxCast(_CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), -_CharacterAnimator.transform.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
-					_Actions.Action00.StartAction();
+					_Actions.ActionDefault.StartAction();
 				}
 				else
 				if (Physics.BoxCast(_CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), _CharacterAnimator.transform.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
 
-					_Actions.Action00.StartAction();
+					_Actions.ActionDefault.StartAction();
 				}
 
 			_distanceToStep -= _stepSpeed_;
@@ -743,7 +743,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				if (_distanceToStep <= 0)
 				{
 					_isOnRail = false;
-					_Actions.Action00.StartAction();
+					_Actions.ActionDefault.StartAction();
 				}
 
 			}

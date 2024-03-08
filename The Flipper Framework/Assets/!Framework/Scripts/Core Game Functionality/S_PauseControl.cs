@@ -131,12 +131,7 @@ public class S_PauseControl : MonoBehaviour {
     public void Quit()
     {
 		PauseToggle();
-		S_Interaction_Objects.RingAmount = 0;
 
-		if (S_Interaction_Monitors.HasShield) 
-		{
-			S_Interaction_Monitors.HasShield = false;
-		}
 		SceneManager.LoadScene (0);
     }
     public void OptionsToggle()

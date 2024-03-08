@@ -297,7 +297,7 @@ public class S_Handler_WallRunning : MonoBehaviour
         Actions = GetComponent<S_ActionManager>();
         WallRun = Actions.Action12;
         JumpAction = Actions.Action01;
-        RegularAction = Actions.Action00;
+        RegularAction = Actions.ActionDefault;
         Inp = GetComponent<S_PlayerInput>();
 
         CharacterAnimator = Tools.CharacterAnimator;

@@ -24,26 +24,23 @@ public class S_Interaction_Objects : MonoBehaviour
 	S_ActionManager _Actions;
 	S_PlayerInput _Input;
 	S_Handler_CharacterAttacks attack;
+	S_Handler_Hurt _HurtAndHealth;
 
 	GameObject JumpBall;
+
 
 	S_Data_Spring spring;
 	int springAmm;
 
+	public GameObject ShieldObject;
 
 	public GameObject RingCollectParticle;
 	public Material SpeedPadTrack;
 	public Material DashRingMaterial;
+	public Material NormalShieldMaterial;
 
-	[Header("Enemies")]
-
-
-	[HideInInspector] public float _homingBouncingPower_;
-
+	
 	public bool updateTargets { get; set; }
-
-	[HideInInspector] public float _enemyDamageShakeAmmount_;
-	[HideInInspector] public float _enemyHitShakeAmmount_;
 
 	[Header("UI objects")]
 
@@ -51,9 +48,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	public TextMeshProUGUI SpeedCounter;
 	public S_HintBox HintBox;
 
-
-	public static int RingAmount { get; set; }
-	[HideInInspector] public int CurrentRings;
 	[HideInInspector] public float DisplaySpeed;
 
 	S_Control_MovingPlatform Platform;
@@ -75,8 +69,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void LateUpdate () {
 		UpdateSpeed();
 
-		CurrentRings = RingAmount;
-		RingsCounter.text = ": " + RingAmount;
+		RingsCounter.text = ": " + _HurtAndHealth.RingAmount;
 	}
 
 	void UpdateSpeed () {
@@ -113,24 +106,10 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	void Update () {
 
-		//if (updateTargets)
-		//{
-		//	//HomingAttackControl.UpdateHomingTargets();
-		//	if (Actions.Action02 != null)
-		//	{
-		//		if (Actions.Action02 != null)
-		//		{
-		//			Actions._isHomingAvailable = true;
-		//		}
-		//	}
-		//	updateTargets = false;
-		//}
-
-
-
 		//Set speed pad trackpad's offset
 		SpeedPadTrack.SetTextureOffset("_MainTex", new Vector2(0, -Time.time) * 3);
 		DashRingMaterial.SetColor("_EmissionColor", (Mathf.Sin(Time.time * 15) * 1.3f) * DashRingLightsColor);
+		NormalShieldMaterial.SetTextureOffset("_MainTex", new Vector2(0, -Time.time) * 3);
 	}
 
 
@@ -257,8 +236,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (pad.isDashRing)
 				{
 
-					_Actions.Action00.CancelCoyote();
-					_Actions.Action00.StartAction();
+					_Actions.ActionDefault.CancelCoyote();
+					_Actions.ActionDefault.StartAction();
 					CharacterAnimator.SetBool("Grounded", false);
 
 					if (pad.lockAirMoves)
@@ -338,53 +317,11 @@ public class S_Interaction_Objects : MonoBehaviour
 			}
 		}
 
-		//Hazard
-		if (col.tag == "Hazard")
-		{
-			JumpBall.SetActive(false);
-			if (_Actions.Action08 != null)
-			{
-				if (_Actions.Action08._DropEffect.isPlaying == true)
-				{
-					_Actions.Action08._DropEffect.Stop();
-				}
-			}
-			DamagePlayer();
-			_CamHandler.ApplyCameraShake(_enemyDamageShakeAmmount_, 60);
-		}
-
-		//Enemies
-		if (col.tag == "Enemy")
-		{
-			_CamHandler.ApplyCameraShake(_enemyHitShakeAmmount_, 30);
-			//Either triggers an attack on the enemy or takes damage.
-			if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.SpinCharge || (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && Player._isRolling))
-			{
-				attack.AttackThing(col, "SpinDash", "Enemy"); ;
-
-			}
-			//If in the rolling or jumpdash animation.
-			if (CharacterAnimator.GetInteger("Action") == 1 || CharacterAnimator.GetInteger("Action") == 11)
-			{
-				attack.AttackThing(col, "SpinJump", "Enemy");
-			}
-			else
-			{
-				DamagePlayer();
-			}
-		}
-
 		////Monitors
 		if (col.tag == "Monitor")
 		{
-			if (CharacterAnimator.GetInteger("Action") == 1)
-			{
-				col.GetComponentInChildren<BoxCollider>().enabled = false;
-
-				attack.AttackThing(col, "SpinJump", "Monitor");
-			}
-
-
+			col.GetComponentInChildren<BoxCollider>().enabled = false;
+			attack.AttemptAttack(col, S_Enums.AttackTargets.Monitor);
 		}
 
 
@@ -392,7 +329,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		if (col.tag == "Spring")
 		{
-			_Actions.Action00.CancelCoyote();
+			_Actions.ActionDefault.CancelCoyote();
 			Player._isGravityOn = true;
 
 			JumpBall.SetActive(false);
@@ -426,7 +363,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					StartCoroutine(lockGravity(spring.lockGravity));
 				}
 
-				_Actions.Action00.StartAction();
+				_Actions.ActionDefault.StartAction();
 
 
 				if (col.GetComponent<AudioSource>()) { col.GetComponent<AudioSource>().Play(); }
@@ -473,24 +410,6 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		}
 
-		//CancelHoming
-		else if (col.tag == "CancelHoming")
-		{
-			if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || _Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
-			{
-
-				Vector3 newSpeed = new Vector3(1, 0, 1);
-
-				_Actions.Action00.StartAction();
-				newSpeed = new Vector3(0, _homingBouncingPower_, 0);
-				Player.SetTotalVelocity(newSpeed);
-				Player.transform.position = col.ClosestPoint(Player.transform.position);
-				if (_Actions.Action02 != null)
-				{
-					_Actions._isAirDashAvailables = true;
-				}
-			}
-		}
 
 		else if (col.tag == "Wind")
 		{
@@ -588,11 +507,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	public void OnTriggerStay ( Collider col ) {
-		//Hazard
-		if (col.tag == "Hazard")
-		{
-			DamagePlayer();
-		}
 
 		if (col.gameObject.tag == "MovingPlatform")
 		{
@@ -603,17 +517,32 @@ public class S_Interaction_Objects : MonoBehaviour
 			Platform = null;
 		}
 
+	}
 
+	public void TriggerMonitor ( Collider col ) {
+		//Monitors data
+		if (col.GetComponent<S_Data_Monitor>().Type == MonitorType.Ring)
+		{
 
+			GetComponent<S_Handler_Hurt>().RingAmount += col.GetComponent<S_Data_Monitor>().RingAmount;
+			col.GetComponent<S_Data_Monitor>().DestroyMonitor();
+
+		}
+		else if (col.GetComponent<S_Data_Monitor>().Type == MonitorType.Shield)
+		{
+			_HurtAndHealth.SetShield(true);
+			col.GetComponent<S_Data_Monitor>().DestroyMonitor();
+
+		}
 	}
 
 	private IEnumerator IncreaseRing () {
-		int ThisFramesRingCount = RingAmount;
-		RingAmount++;
+		int ThisFramesRingCount = _HurtAndHealth.RingAmount;
+		_HurtAndHealth.RingAmount++;
 		yield return new WaitForEndOfFrame();
-		if (RingAmount > ThisFramesRingCount + 1)
+		if (_HurtAndHealth.RingAmount > ThisFramesRingCount + 1)
 		{
-			RingAmount--;
+			_HurtAndHealth.RingAmount--;
 		}
 
 	}
@@ -641,50 +570,15 @@ public class S_Interaction_Objects : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
-		_Actions.Action00.StartAction();
+		_Actions.ActionDefault.StartAction();
 		transform.position = position;
 		Player._RB.velocity = force;
 
 	}
-	public void DamagePlayer () {
-		if (!_Actions.Action04Control.IsHurt && _Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
-		{
-
-			if (!S_Interaction_Monitors.HasShield)
-			{
-				if (RingAmount > 0)
-				{
-					//LoseRings
-					Sounds.RingLossSound();
-					_Actions.Action04Control.GetHurt();
-					_Actions.Action04.AttemptAction();
-				}
-				if (RingAmount <= 0)
-				{
-					//Die
-					if (!_Actions.Action04Control.isDead)
-					{
-						Sounds.DieSound();
-						//_Actions.Action04Control.isDead = true;
-						_Actions.Action04.AttemptAction();
-					}
-				}
-			}
-			if (S_Interaction_Monitors.HasShield)
-			{
-				//Lose Shield
-				Sounds.SpikedSound();
-				S_Interaction_Monitors.HasShield = false;
-				_Actions.Action04.AttemptAction();
-			}
-		}
-	}
 
 
 	private void AssignStats () {
-		_homingBouncingPower_ = Tools.Stats.EnemyInteraction.homingBouncingPower;
-		_enemyDamageShakeAmmount_ = Tools.Stats.EnemyInteraction.enemyDamageShakeAmmount;
-		_enemyHitShakeAmmount_ = Tools.Stats.EnemyInteraction.enemyHitShakeAmmount;
+
 	}
 
 	private void AssignTools () {
@@ -693,6 +587,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions = GetComponent<S_ActionManager>();
 		_Input = GetComponent<S_PlayerInput>();
 		attack = GetComponent<S_Handler_CharacterAttacks>();
+		_HurtAndHealth = GetComponent<S_Handler_Hurt>();
 
 		CharacterAnimator = Tools.CharacterAnimator;
 		Sounds = Tools.SoundControl;

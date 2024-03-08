@@ -175,7 +175,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 			_Input.JumpPressed = false;
 			JumpBall.SetActive(false);
-			_Actions.Action00.StartAction();
+			_Actions.ActionDefault.StartAction();
 		}
 
 		else if (_Input.SpecialPressed && charge > _minimunCharge_)

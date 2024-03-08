@@ -278,7 +278,7 @@ MonoBehaviour:
     inputPredictonDistance: 1.5
     cameraMoveToInputSpeed: 3
   LookAheadStats:
-    shouldMoveInInputDirection: 1
+    shouldMoveInInputDirection: 0
     inputPredictonDistance: 0.9
     cameraMoveToInputSpeed: 2.2
   DefaultInputStats:

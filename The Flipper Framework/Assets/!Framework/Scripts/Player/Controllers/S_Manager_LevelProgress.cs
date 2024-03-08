@@ -3,192 +3,173 @@ using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class S_Manager_LevelProgress : MonoBehaviour {
+public class S_Manager_LevelProgress : MonoBehaviour
+{
 
-    public static event EventHandler onReset;
-
-
-    public S_CharacterTools tools;
-    public Vector3 ResumePosition { get; set; }
-    public Quaternion ResumeRotation { get; set; }
-    Vector3 ResumeFace;
-    public GameObject basePlayer;
-    public Transform ResumeTransform;
-    S_ActionManager _Actions;
-    S_PlayerPhysics Player;
-    S_Handler_Camera Cam;
-    S_PlayerInput _Input;
-    public GameObject CurrentCheckPoint { get; set; }
-
-    Transform characterTransform;
-    //public Material LampDone;
-    public int LevelToGoNext = 0;
-    public string NextLevelNameLeft;
-    public string NextLevelNameRight;
-    public AudioClip GoalRingTouchingSound;
-
-    bool readyForNextStage = false;
-    float readyCount = 0;
+	public static event EventHandler onReset;
 
 
-    void Start () {
+	private S_CharacterTools _Tools;
+	private S_Handler_Hurt _HealthAndHurt;
 
-        Cam = basePlayer.GetComponent<S_Handler_Camera>();
-        _Actions = basePlayer.GetComponent<S_ActionManager>();
-        Player = basePlayer.GetComponent<S_PlayerPhysics>();
-        _Input = basePlayer.GetComponent<S_PlayerInput>();
-        characterTransform = tools.mainSkin;
-        ResumePosition = characterTransform.position;
-        ResumeRotation = characterTransform.rotation;
-        ResumeFace = characterTransform.forward;
+	public Vector3 ResumePosition { get; set; }
+	public Quaternion ResumeRotation { get; set; }
+	Vector3 ResumeFace;
+	public GameObject basePlayer;
+	public Transform ResumeTransform;
+	S_ActionManager _Actions;
+	S_PlayerPhysics _PlayerPhys;
+	S_Handler_Camera Cam;
+	S_PlayerInput _Input;
+	public GameObject CurrentCheckPoint { get; set; }
 
-    }
+	Transform characterTransform;
+	//public Material LampDone;
+	public int LevelToGoNext = 0;
+	public string NextLevelNameLeft;
+	public string NextLevelNameRight;
+	public AudioClip GoalRingTouchingSound;
 
-    void Update()
-    {
-        //LampDone.SetTextureOffset("_MainTex", new Vector2(0, -Time.time) * 3);
-        //LampDone.SetTextureOffset("_EmissionMap", new Vector2(0, -Time.time) * 3);
+	bool readyForNextStage = false;
+	float readyCount = 0;
 
-        if (readyForNextStage)
-        {
-            _Input._move = Vector3.zero;
-            readyCount += Time.deltaTime;
-            if(readyCount > 1.5f)
-            {
-                _Actions.Action04Control.enabled = false;
-                Color alpha = Color.black;
-                _Actions.Action04Control.FadeOutImage.color = Color.Lerp(_Actions.Action04Control.FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
-            }
-            if(readyCount > 2.6f)
-            {
-                LoadingScreenControl.StageName1 = NextLevelNameLeft;
-                LoadingScreenControl.StageName2 = NextLevelNameRight;
-                SceneManager.LoadScene(2);
-            }
-        }
-    }
 
-    void LateUpdate()
-    {
-        //if (!firstime)
-        //{
-        //    ResumePosition = transform.position;
-        //    ResumeRotation = transform.rotation;
-        //    ResumeFace = transform.forward;
-        //    firstime = true;
-        //}
-    }
+	void Start () {
+		_Tools = GetComponent<S_CharacterTools>();
+		Cam = basePlayer.GetComponent<S_Handler_Camera>();
+		_Actions = basePlayer.GetComponent<S_ActionManager>();
+		_PlayerPhys = basePlayer.GetComponent<S_PlayerPhysics>();
+		_Input = basePlayer.GetComponent<S_PlayerInput>();
+		_HealthAndHurt = GetComponent<S_Handler_Hurt>();
+		characterTransform = _Tools.mainSkin;
+		ResumePosition = characterTransform.position;
+		ResumeRotation = characterTransform.rotation;
+		ResumeFace = characterTransform.forward;
 
-    
-    public void ResetToCheckPoint()
-    {
-       
-        _Input.LockInputForAWhile(20, true);
-        StartCoroutine(_Actions.lockAirMoves(20));
-        _Actions.Action00.StartAction();
+	}
 
-        tools.HomingTrailScript.emitTime = 0;
-        tools.HomingTrailScript.emit = false;
+	void Update () {
+		//LampDone.SetTextureOffset("_MainTex", new Vector2(0, -Time.time) * 3);
+		//LampDone.SetTextureOffset("_EmissionMap", new Vector2(0, -Time.time) * 3);
 
-        if (S_Interaction_Monitors.HasShield) 
+		if (readyForNextStage)
 		{
-			S_Interaction_Monitors.HasShield = false;
+			_Input._move = Vector3.zero;
+			readyCount += Time.deltaTime;
+			if (readyCount > 1.5f)
+			{
+				_Actions.Action04Control.enabled = false;
+				Color alpha = Color.black;
+				_Actions.Action04Control._FadeOutImage.color = Color.Lerp(_Actions.Action04Control._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
+			}
+			if (readyCount > 2.6f)
+			{
+				LoadingScreenControl.StageName1 = NextLevelNameLeft;
+				LoadingScreenControl.StageName2 = NextLevelNameRight;
+				SceneManager.LoadScene(2);
+			}
+		}
+	}
+
+
+	public void ResetToCheckPoint () {
+
+		_Input.LockInputForAWhile(20, true);
+		StartCoroutine(_Actions.lockAirMoves(20));
+		_Actions.ActionDefault.StartAction();
+
+		_Tools.HomingTrailScript.emitTime = 0;
+		_Tools.HomingTrailScript.emit = false;
+
+		if (_HealthAndHurt.HasShield)
+		{
+			_HealthAndHurt.SetShield(false);
 		}
 
-        transform.position = ResumePosition;
-        //transform.rotation = ResumeRotation;
-        characterTransform.forward = ResumeFace;
-      
+		transform.position = ResumePosition;
+		//transform.rotation = ResumeRotation;
+		characterTransform.forward = ResumeFace;
 
-        Player.SetTotalVelocity(characterTransform.forward * 2);
-        _Actions.Action04._deadCounter = 0;
 
-        Cam._HedgeCam._isReversed = false;
-        Cam._HedgeCam.SetBehind(20);
+		_PlayerPhys.SetTotalVelocity(characterTransform.forward * 2, new Vector2(1, 0));
+		_Actions.ActionHurt._deadCounter = 0;
 
-    }
+		Cam._HedgeCam._isReversed = false;
+		Cam._HedgeCam.SetBehind(20);
 
-    public void RespawnObjects()
-    {
+	}
 
-        if(onReset != null)
-        {
-            Debug.LogWarning("Has begun respawning");
-            onReset.Invoke(this, EventArgs.Empty);
-        }
-            
-    }
+	public void RespawnObjects () {
 
-    public void SetCheckPoint(Transform position)
-    {
-        ResumePosition = position.position;
-        //ResumeRotation = position.rotation;
-        ResumeFace = position.forward;
-        ResumeTransform = position;
+		if (onReset != null)
+		{
+			Debug.LogWarning("Has begun respawning");
+			onReset.Invoke(this, EventArgs.Empty);
+		}
 
-        if (_Actions.eventMan != null) _Actions.eventMan.AddDeathsPerCP();
-    }
+	}
 
-    public void OnTriggerEnter(Collider col)
-    {
-        if(col.tag == "Checkpoint")
-        {
-            if (col.GetComponent<S_Data_Checkpoint>() != null)
-            {
-                //Set Object
-                if (!col.GetComponent<S_Data_Checkpoint>().IsOn)
-                {
-                    if(_Actions.eventMan != null)
-                    {
-                        _Actions.eventMan.LogEvents(false, col.GetComponent<S_Data_Checkpoint>().checkPointName);
-                    }
+	public void SetCheckPoint ( Transform position ) {
+		ResumePosition = position.position;
+		//ResumeRotation = position.rotation;
+		ResumeFace = position.forward;
+		ResumeTransform = position;
 
-                    col.GetComponent<S_Data_Checkpoint>().IsOn = true;
-                    col.GetComponent<AudioSource>().Play();
-                    foreach (Animator anim in col.GetComponent<S_Data_Checkpoint>().Animators)
-                    {
-                        anim.SetTrigger("Open");
-                    }
-                    col.GetComponent<S_Data_Checkpoint>().Laser.SetActive(false);
-                    SetCheckPoint(col.GetComponent<S_Data_Checkpoint>().CheckPos);
-                    CurrentCheckPoint = col.gameObject;
-                    //CurrentCheckPointTimer = GameTimer;
-                }
+		if (_Actions.eventMan != null) _Actions.eventMan.AddDeathsPerCP();
+	}
 
-            }
-        }
-        if (col.tag == "GoalRing")
-        {
-            if (_Actions.eventMan != null)
-            {
-                StartCoroutine(_Actions.eventMan.logEndEvents());
-         
-            }
-
-            readyForNextStage = true;
-			S_Interaction_Objects.RingAmount = 0;
-
-			if (S_Interaction_Monitors.HasShield) 
+	public void OnTriggerEnter ( Collider col ) {
+		if (col.tag == "Checkpoint")
+		{
+			if (col.GetComponent<S_Data_Checkpoint>() != null)
 			{
-				S_Interaction_Monitors.HasShield = false;
+				//Set Object
+				if (!col.GetComponent<S_Data_Checkpoint>().IsOn)
+				{
+					if (_Actions.eventMan != null)
+					{
+						_Actions.eventMan.LogEvents(false, col.GetComponent<S_Data_Checkpoint>().checkPointName);
+					}
+
+					col.GetComponent<S_Data_Checkpoint>().IsOn = true;
+					col.GetComponent<AudioSource>().Play();
+					foreach (Animator anim in col.GetComponent<S_Data_Checkpoint>().Animators)
+					{
+						anim.SetTrigger("Open");
+					}
+					col.GetComponent<S_Data_Checkpoint>().Laser.SetActive(false);
+					SetCheckPoint(col.GetComponent<S_Data_Checkpoint>().CheckPos);
+					CurrentCheckPoint = col.gameObject;
+					//CurrentCheckPointTimer = GameTimer;
+				}
+
+			}
+		}
+		if (col.tag == "GoalRing")
+		{
+			if (_Actions.eventMan != null)
+			{
+				StartCoroutine(_Actions.eventMan.logEndEvents());
+
 			}
 
-            StartCoroutine(endLevel(col));
-			
-        }
-    }
+			readyForNextStage = true;
 
-    IEnumerator endLevel(Collider col)
-    {
-        for(int i = 0; i == 2; i++)
-        {
-            yield return new WaitForFixedUpdate();
-        }
-  
-        SceneManager.LoadScene("Sc_StageCompleteScreen");
-        //	StageConpleteControl.LevelToGoNext = SceneManager.GetActiveScene ().buildIndex + 1;
-        col.GetComponent<AudioSource>().clip = GoalRingTouchingSound;
-        col.GetComponent<AudioSource>().loop = false;
-        col.GetComponent<AudioSource>().Play();
-    }
+			StartCoroutine(endLevel(col));
+
+		}
+	}
+
+	IEnumerator endLevel ( Collider col ) {
+		for (int i = 0 ; i == 2 ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+
+		SceneManager.LoadScene("Sc_StageCompleteScreen");
+		//	StageConpleteControl.LevelToGoNext = SceneManager.GetActiveScene ().buildIndex + 1;
+		col.GetComponent<AudioSource>().clip = GoalRingTouchingSound;
+		col.GetComponent<AudioSource>().loop = false;
+		col.GetComponent<AudioSource>().Play();
+	}
 }

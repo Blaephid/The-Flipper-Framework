@@ -25,8 +25,8 @@ public class S_CharacterTools : MonoBehaviour
 
     [Header("Homing")]
     public GameObject homingIcons;
-    public GameObject normalIcon;
-    public GameObject weakIcon;
+    public GameObject NormalIcon;
+    public GameObject DamageIcon;
     public GameObject dropShadow;
 
     [Header("Camera")]

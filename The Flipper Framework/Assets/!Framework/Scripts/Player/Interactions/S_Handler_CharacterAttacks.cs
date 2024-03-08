@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class S_Handler_CharacterAttacks : MonoBehaviour
 {
-	S_PlayerPhysics Player;
-	S_Interaction_Objects obj_Int;
-	S_ActionManager Actions;
+	S_PlayerPhysics _PlayerPhys;
+	S_Interaction_Objects _ObjectInteraction;
+	S_ActionManager _Actions;
 	S_CharacterTools Tools;
 	S_PlayerInput _Input;
 
@@ -31,94 +31,95 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		AssignStats();
 	}
 
-	public void AttackThing ( Collider col, string AttackType = "", string Target = "Enemy", int damage = 1 ) {
-		switch (Target)
+	public bool AttemptAttack ( Collider other, S_Enums.AttackTargets target ) {
+		switch (_Actions.whatAction)
 		{
-			case "Monitor":
-				if (AttackType == "SpinJump" || AttackType == "HomingAttack")
-					MonitorAttack(AttackType);
+			case S_Enums.PrimaryPlayerStates.Default:
+				if (_PlayerPhys._isRolling) { AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target); }
+				return true;
+			case S_Enums.PrimaryPlayerStates.SpinCharge:
+				AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target);
+				return true;
+			case S_Enums.PrimaryPlayerStates.Jump:
+				AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
+				return true;
+			case S_Enums.PrimaryPlayerStates.JumpDash:
+				AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
+				return true;
+			case S_Enums.PrimaryPlayerStates.Homing:
+				AttackThing(other, S_Enums.PlayerAttackTypes.HomingAttack, target);
+				return true;
+		}
+		return false;
+	}
+
+	private void AttackThing ( Collider col, S_Enums.PlayerAttackTypes attackType, S_Enums.AttackTargets target, int damage = 1 ) {
+		switch (target)
+		{
+			case S_Enums.AttackTargets.Monitor:
+				MonitorAttack(col, attackType);
 				break;
 
-			case "Enemy":
-				EnemyAttack(AttackType, col, damage);
+			case S_Enums.AttackTargets.Enemy:
+				EnemyAttack(attackType, col, damage);
 				break;
 		}
 
 	}
 
-	private void EnemyAttack ( string AttackType, Collider col, int damage ) {
-		if (AttackType == "SpinDash")
+	private void EnemyAttack ( S_Enums.PlayerAttackTypes attackType, Collider col, int damage = 1 ) {
+		bool wasDestroyed = true;
+
+		if (col.transform.parent.GetComponent<S_AI_Health>() != null && CanHitAgain)
 		{
-			col.transform.parent.GetComponent<S_AI_Health>().DealDamage(1);
-			obj_Int.updateTargets = true;
+			wasDestroyed = col.transform.parent.GetComponent<S_AI_Health>().DealDamage(damage);
 		}
 
-		else if (AttackType == "SpinJump")
+		BounceAfterAttack(wasDestroyed, attackType);
+	}
+
+	private void MonitorAttack ( Collider col, S_Enums.PlayerAttackTypes attackType ) {
+		_ObjectInteraction.TriggerMonitor(col);
+
+		BounceAfterAttack(true, attackType);
+
+	}
+
+	private void BounceAfterAttack ( bool wasDestroyed, S_Enums.PlayerAttackTypes attackType ) {
+		switch (attackType)
 		{
-			if (col.transform.parent.GetComponent<S_AI_Health>() != null)
-			{
-				if (!Player._isRolling)
-				{
-					bool wasDestroyed = col.transform.parent.GetComponent<S_AI_Health>().DealDamage(damage);
-					airAttack(wasDestroyed);
-				}
-			}
+			case S_Enums.PlayerAttackTypes.Rolling:
+				break;
+
+			case S_Enums.PlayerAttackTypes.SpinJump:
+				AttackFromJump();
+				break;
+			case S_Enums.PlayerAttackTypes.HomingAttack:
+				AttackFromHoming(wasDestroyed);
+				break;
 		}
 	}
 
-	private void MonitorAttack ( string AttackType ) {
-		if (AttackType == "SpinJump")
-		{
-			if (!Player._isRolling)
-			{
-				airAttack(true);
-			}
-		}
-	}
-
-	private void airAttack (bool wasDestroyed) {
-		Vector3 newSpeed = new Vector3(1, 0, 1);
-
-		//From a Jump
-		if ((Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump || Actions.whatAction == S_Enums.PrimaryPlayerStates.Default) && CanHitAgain)
-		{
-			AttackFromJump(newSpeed);
-		}
-
-		//From a Homing Attack
-		else if ((Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing) && CanHitAgain)
-		{
-			AttackFromHoming(wasDestroyed);
-		}
-
-
-		//From a Bounce
-		else if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Bounce && CanHitAgain)
-		{
-			AttackFromBounce(newSpeed);
-		}
-	}
-
-	void AttackFromJump ( Vector3 newSpeed ) {
+	void AttackFromJump () {
 		StartCoroutine(DelayAttacks());
 
-		newSpeed = new Vector3(Player._RB.velocity.x, 0, Player._RB.velocity.z);
-		newSpeed.y = _bouncingPower_ + Mathf.Abs(Player._RB.velocity.y);
-		if (newSpeed.y > Player._RB.velocity.y * 1.5f)
-			newSpeed.y = Player._RB.velocity.y * 1.5f;
+		Vector3 newSpeed = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
+		newSpeed.y = _bouncingPower_ + Mathf.Abs(_PlayerPhys._RB.velocity.y);
+		if (newSpeed.y > _PlayerPhys._RB.velocity.y * 1.5f)
+			newSpeed.y = _PlayerPhys._RB.velocity.y * 1.5f;
 
-		Player.SetTotalVelocity(newSpeed);
+		_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(1, 0));
 	}
 
 	private void AttackFromHoming ( bool wasDestroyed ) {
 		StartCoroutine(DelayAttacks());
 
-		if(wasDestroyed)
+		if (wasDestroyed)
 		{
-			Actions.Action02.HittingTarget(S_Enums.HomingRebounding.BounceThrough);
+			_Actions.Action02.HittingTarget(S_Enums.HomingRebounding.BounceThrough);
 		}
 		else
-			Actions.Action02.HittingTarget(S_Enums.HomingRebounding.Rebound);
+			_Actions.Action02.HittingTarget(S_Enums.HomingRebounding.Rebound);
 	}
 
 	private void AttackFromBounce ( Vector3 newSpeed ) {
@@ -126,9 +127,9 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 		newSpeed = new Vector3(1, 0, 1);
 
-		newSpeed = Vector3.Scale(Player._RB.velocity, newSpeed);
+		newSpeed = Vector3.Scale(_PlayerPhys._RB.velocity, newSpeed);
 		newSpeed.y = _homingBouncingPower_ * 1.8f;
-		Player.SetTotalVelocity(newSpeed);
+		_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(1, 0));
 	}
 
 	private IEnumerator DelayAttacks () {
@@ -138,18 +139,18 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 
 	private void AssignStats () {
-		_bouncingPower_ =			Tools.Stats.EnemyInteraction.bouncingPower;
-		_homingBouncingPower_ =		Tools.Stats.EnemyInteraction.homingBouncingPower;
+		_bouncingPower_ = Tools.Stats.EnemyInteraction.bouncingPower;
+		_homingBouncingPower_ = Tools.Stats.EnemyInteraction.homingBouncingPower;
 		_enemyHomingStoppingPowerWhenAdditive_ = Tools.Stats.EnemyInteraction.enemyHomingStoppingPowerWhenAdditive;
-		_shouldStopOnHomingAttackHit_ =	Tools.Stats.EnemyInteraction.shouldStopOnHomingAttackHit;
-		_shouldStopOnHit_ =			Tools.Stats.EnemyInteraction.shouldStopOnHit;
+		_shouldStopOnHomingAttackHit_ = Tools.Stats.EnemyInteraction.shouldStopOnHomingAttackHit;
+		_shouldStopOnHit_ = Tools.Stats.EnemyInteraction.shouldStopOnHit;
 
 	}
 
 	private void AssignTools () {
-		Player = GetComponent<S_PlayerPhysics>();
-		obj_Int = GetComponent<S_Interaction_Objects>();
-		Actions = GetComponent<S_ActionManager>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_ObjectInteraction = GetComponent<S_Interaction_Objects>();
+		_Actions = GetComponent<S_ActionManager>();
 		_Input = GetComponent<S_PlayerInput>();
 
 		JumpBall = Tools.JumpBall;

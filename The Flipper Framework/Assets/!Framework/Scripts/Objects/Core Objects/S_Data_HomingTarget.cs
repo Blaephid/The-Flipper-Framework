@@ -2,27 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class S_Data_HomingTarget : MonoBehaviour {
+public class S_Data_HomingTarget : MonoBehaviour
+{
 
-    public Transform center;
-    public Vector3 offset = Vector3.up;
+	public Vector3 _offset = Vector3.up;
+	public Color drawColour = Color.red;
+	public TargetType type = TargetType.destroy;
 
-    private void Start()
-    {
-        offset = transform.rotation * offset;
-    }
+	public enum TargetType { normal, destroy}
+
+	private void Start () {
+		_offset = transform.rotation * _offset;
+	}
 
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        if (center == null)
-        {
-            Gizmos.DrawWireSphere(transform.position + (transform.rotation * offset), 2);
-        } else
-        {
-            Gizmos.DrawWireSphere(transform.position + (center.position - transform.position), 2);
-        }
-    }
+	private void OnDrawGizmosSelected () {
+		Gizmos.color = drawColour;
+		Gizmos.DrawWireSphere(transform.position + (transform.rotation * _offset), 2);
+	}
 
 }

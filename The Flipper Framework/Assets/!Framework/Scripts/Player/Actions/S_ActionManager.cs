@@ -25,12 +25,12 @@ public class S_ActionManager : MonoBehaviour
 
 	//Action Scrips, Always leave them in the correct order;
 	[Header("Actions")]
-	public S_Action00_Default Action00;
+	public S_Action00_Default ActionDefault;
 	public S_Action01_Jump Action01;
 	public S_Action02_Homing Action02;
 	public S_Action03_SpinCharge Action03;
 	public S_Handler_HomingAttack Action02Control;
-	public S_Action04_Hurt Action04;
+	public S_Action04_Hurt ActionHurt;
 	public S_Handler_Hurt Action04Control;
 	public S_Action05_Rail Action05;
 	public S_Action06_Bounce Action06;
@@ -59,6 +59,7 @@ public class S_ActionManager : MonoBehaviour
 	public List<S_Structs.StrucMainActionTracker> _MainActions;
 	public List<ISubAction> _SubActions;
 
+
 	//Specific action trackers
 	[HideInInspector]
 	public bool         _isAirDashAvailables = true;
@@ -66,6 +67,8 @@ public class S_ActionManager : MonoBehaviour
 	public int          _bounceCount;
 	[HideInInspector]
 	public float        _actionTimeCounter;
+	[HideInInspector]
+	public int          _jumpCount;
 
 	public float _dashDelayCounter;
 
@@ -95,8 +98,10 @@ public class S_ActionManager : MonoBehaviour
 	void Start () {
 
 		_Tools = GetComponent<S_CharacterTools>();
+		ActionDefault = GetComponent<S_Action00_Default>();
+		ActionHurt = GetComponent<S_Action04_Hurt>();
 
-		if(_isTrackingEvents)
+		if (_isTrackingEvents)
 		{
 			eventMan = FindObjectOfType<S_LevelEventHandler>();
 		}
@@ -158,23 +163,16 @@ public class S_ActionManager : MonoBehaviour
 	#region private
 	public void DeactivateAllActions () {
 
-
 		foreach (S_Structs.StrucMainActionTracker track in _MainActions)
 		{
-			track.Action.StopAction();
+			if(track.State != whatAction)
+			{
+				track.Action.StopAction();
+			}
 		}
 
 		//Put all actions here
 		//Also put variables that you want re-set out of actions
-		if (Action03 != null)
-		{
-			Action03.enabled = false;
-			Action03.ResetSpinDashVariables();
-		}
-		if (Action04 != null)
-		{
-			Action04.enabled = false;
-		}
 		if (Action05 != null)
 		{
 			Action05.enabled = false;
@@ -225,9 +223,7 @@ public class S_ActionManager : MonoBehaviour
 		foreach (IMainAction mainAction in _MainActions[currentAction].ConnectedActions)
 		{
 			performAction = mainAction.AttemptAction();
-			if (performAction) 
-			{ 
-				break; }
+			if (performAction) { break; }
 		}
 		performAction = false;
 		//Checks if the subaction should be performed ontop of the current action.
@@ -247,7 +243,7 @@ public class S_ActionManager : MonoBehaviour
 		{
 			case S_Enums.PrimaryPlayerStates.Default:
 				IsChangePossible(ActionToChange);
-				Action00.enabled = true;
+				ActionDefault.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.Jump:
 				if (!lockDoubleJump)
@@ -278,7 +274,7 @@ public class S_ActionManager : MonoBehaviour
 				break;
 			case S_Enums.PrimaryPlayerStates.Hurt:
 				IsChangePossible(ActionToChange);
-				Action04.enabled = true;
+				ActionHurt.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.Rail:
 				if (eventMan != null) eventMan.RailsGrinded += 1;
@@ -321,13 +317,6 @@ public class S_ActionManager : MonoBehaviour
 
 	private void IsChangePossible ( S_Enums.PrimaryPlayerStates newAction ) {
 		whatPreviousAction = whatAction;
-
-		switch (whatPreviousAction)
-		{
-			case S_Enums.PrimaryPlayerStates.Homing:
-				_PlayerPhys._isGravityOn = true;
-				break;
-		}
 
 		whatAction = newAction;
 		DeactivateAllActions();

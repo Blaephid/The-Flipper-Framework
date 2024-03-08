@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(S_Handler_Hurt))]
 public class S_Action04_Hurt : MonoBehaviour, IMainAction
 {
 
@@ -86,7 +87,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		_CharacterAnimator.SetInteger("Action", 4);
 
 		//Dead
-		if (_Actions.Action04Control.isDead)
+		if (_Actions.Action04Control._isDead)
 		{
 			_deadCounter += Time.deltaTime;
 			if (_PlayerPhys._isGrounded && _deadCounter > 0.3f)
@@ -102,14 +103,13 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 		if ((_PlayerPhys._isGrounded && _counter > _lockedForInGround) || _counter > _lockedForInAir)
 		{
-			if (!_Actions.Action04Control.isDead)
+			if (!_Actions.Action04Control._isDead)
 			{
 
 				_Actions.Action02Control._isHomingAvailable = true;
-				_Actions.Action01._jumpCount = 0;
 
 				_CharacterAnimator.SetInteger("Action", 0);
-				_Actions.Action00.StartAction();
+				_Actions.ActionDefault.StartAction();
 				//Debug.Log("What");
 				_counter = 0;
 			}
@@ -127,7 +127,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	}
 
 	public void StopAction () {
-
+		if (enabled) enabled = false;
+		else return;
 	}
 
 	#endregion
@@ -206,7 +207,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			if (_PlayerPhys._isGrounded)
 				newSpeed.y *= 2;
 			//Player._RB.velocity = newSpeed;
-			_PlayerPhys.SetTotalVelocity(newSpeed);
+			_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(0.5f,0.5f));
 
 			_lockedForInAir = _bonkLockAir_;
 			_lockedForInGround = _bonkLock_;
@@ -217,7 +218,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			Vector3 newSpeed = new Vector3((_PlayerPhys._RB.velocity.x / 2), _knockbackUpwardsForce_, (_PlayerPhys._RB.velocity.z / 2));
 			newSpeed.y = _knockbackUpwardsForce_;
 			//Player._RB.velocity = newSpeed;
-			_PlayerPhys.SetTotalVelocity(newSpeed);
+			_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(0.5f, 0.5f));
 			_lockedForInAir = _recoilAir_;
 			_lockedForInGround = _recoilGround_;
 		}
@@ -226,7 +227,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			Vector3 newSpeed = -_CharacterAnimator.transform.forward * _knockbackForce_;
 			newSpeed.y = _knockbackUpwardsForce_;
 			//Player._RB.velocity = newSpeed;
-			_PlayerPhys.SetTotalVelocity(newSpeed);
+			_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(0.5f, 0.5f));
 			_lockedForInAir = _recoilAir_ * 1.4f;
 			_lockedForInGround = _recoilGround_ * 1.4f;
 		}

@@ -376,7 +376,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			_Path_Int.currentCam = null;
 		}
 
-		_Actions.Action00.StartAction();
+		_Actions.ActionDefault.StartAction();
 	}
 }
 

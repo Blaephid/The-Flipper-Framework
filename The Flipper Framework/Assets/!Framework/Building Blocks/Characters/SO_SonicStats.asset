@@ -72,8 +72,8 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 3
+        time: -0.006248474
+        value: 1.9942513
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -81,8 +81,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.22
-        value: 2.5
+        time: 0.120001525
+        value: 1.6618729
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -90,17 +90,26 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.6
-        value: 0.1
+        time: 0.3
+        value: 0.95674723
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
+      - serializedVersion: 3
+        time: 0.8685568
+        value: 0.63556993
+        inSlope: -1.0202535
+        outSlope: -1.0202535
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.5262741
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.02
+        value: 0.10012391
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -413,7 +422,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   TurningStats:
     turnSpeed: 3
-    turnDrag: 7.5
+    turnDrag: 7
     TurnRateByAngle:
       serializedVersion: 2
       m_Curve:
@@ -607,8 +616,26 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.45
-        value: 0.06
+        time: 0.25274396
+        value: 0.058351442
+        inSlope: 0.02946472
+        outSlope: 0.02946472
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.9322114
+      - serializedVersion: 3
+        time: 0.62149245
+        value: 0.059110105
+        inSlope: 0.011488936
+        outSlope: 0.011488936
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.831247
+        value: 0.08225311
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -616,26 +643,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.75
-        value: 0.08
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.85
-        value: 0.14
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0.22
+        time: 0.9886627
+        value: 0.096670836
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1349,9 +1358,9 @@ MonoBehaviour:
       m_Bits: 1
     iconScale: 1.5
     iconDistanceScaling: 0.2
-    facingAmount: 180
-    currentTargetPriority: 0.587
-    timeToKeepTarget: {x: 0.18, y: 0.3}
+    facingAmount: 100
+    currentTargetPriority: 0.418
+    timeToKeepTarget: {x: 0.18, y: 0.4}
     timeBetweenScans: 0.06
     radiusOfCameraTargetCheck: 15
     cameraDirectionPriority: 0.5
@@ -1386,8 +1395,8 @@ MonoBehaviour:
     turnSpeed: 7
     deceleration: 55
     acceleration: 70
-    lerpToPreviousDirectionOnHit: 1
-    lerpToNewInputOnHit: 0.146
+    lerpToPreviousDirectionOnHit: 0.869
+    lerpToNewInputOnHit: 0.18
     homingCountLimit: 0
   DefaultHomingStats:
     canBePerformedOnGround: 0
@@ -1405,12 +1414,14 @@ MonoBehaviour:
     lerpToPreviousDirectionOnHit: 0
     lerpToNewInputOnHit: 0
     homingCountLimit: 0
-  SpinChargeStats:
+  SpinChargeStat:
     whatAimMethod: 0
     chargingSpeed: 1.02
+    tappingBonus: 2.5
+    delayBeforeLaunch: 20
     minimunCharge: 20
     maximunCharge: 110
-    forceAgainstMovement: 0.015
+    forceAgainstMovement: 1.2
     maximumSpeedPerformedAt: 200
     maximumSlopePerformedAt: -1
     releaseShakeAmmount: 1.5
@@ -1498,6 +1509,75 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 1
         value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    LerpRotationByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.15
+        value: 0.85
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.25
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.65
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.85
+        value: 0.9
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.9
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1578,9 +1658,11 @@ MonoBehaviour:
       m_RotationOrder: 4
     angleToPerformSkid: 160
     skidIntesity: -3
-  BasicSpinChargeStats:
+  DefaultSpinChargeStat:
     whatAimMethod: 1
     chargingSpeed: 1.02
+    tappingBonus: 2.5
+    delayBeforeLaunch: 20
     minimunCharge: 20
     maximunCharge: 110
     forceAgainstMovement: 0.015
@@ -1671,6 +1753,75 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 1
         value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    LerpRotationByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.15
+        value: 0.85
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.25
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.65
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.85
+        value: 0.9
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.9
         inSlope: 0
         outSlope: 0
         tangentMode: 0

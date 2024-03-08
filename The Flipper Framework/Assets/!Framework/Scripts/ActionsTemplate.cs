@@ -24,7 +24,7 @@ namespace templates
 		//General
 		#region General Properties
 
-		//Stats
+		//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 		#region Stats
 		#endregion
 
@@ -49,24 +49,7 @@ namespace templates
 
 		// Called when the script is enabled, but will only assign the tools and stats on the first time.
 		private void OnEnable () {
-			if (_PlayerPhys == null)
-			{
-				//Assign all external values needed for gameplay.
-				_Tools = GetComponent<S_CharacterTools>();
-				AssignTools();
-				AssignStats();
-
-				//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-				for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-				{
-					if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
-					{
-						Debug.Log("This is found at " + i);
-						_positionInActionList = i;
-						break;
-					}
-				}
-			}
+			ReadyAction();
 		}
 		private void OnDisable () {
 			
@@ -92,7 +75,8 @@ namespace templates
 		}
 
 		public void StopAction () {
-
+			if (enabled) enabled = false;
+			else return;
 		}
 
 		#endregion
@@ -125,6 +109,28 @@ namespace templates
 		/// Assigning ----------------------------------------------------------------------------------
 		/// </summary>
 		#region Assigning
+
+		//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
+		public void ReadyAction () {
+			if (_PlayerPhys == null)
+			{
+
+				//Assign all external values needed for gameplay.
+				_Tools = GetComponent<S_CharacterTools>();
+				AssignTools();
+				AssignStats();
+
+				//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+				for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
+				{
+					if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Homing)
+					{
+						_positionInActionList = i;
+						break;
+					}
+				}
+			}
+		}
 
 		//Responsible for assigning objects and components from the tools script.
 		private void AssignTools () {

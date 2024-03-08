@@ -16,13 +16,18 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	//Unity
 	#region Unity Specific Properties
 
+	private Animator              _CurrentAnimator;
 	private Animator              _CharacterAnimator;
+	private Animator              _BallAnimator;
 	private Transform             _MainSkin;
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
+
+	private SkinnedMeshRenderer[]           _PlayerSkin;
+	private SkinnedMeshRenderer             _SpinDashBall;
 
 
 	#endregion
@@ -51,6 +56,9 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	[HideInInspector]
 	public float        _coyoteRememberSpeed;         //Tracks the world vertical speed when ground was lost.
 
+	[HideInInspector]
+	public int          _animationAction = 0;
+
 	#endregion
 	#endregion
 	#endregion
@@ -69,31 +77,24 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	// Update is called once per frame
 	void Update () {
 
-		HandleAnimator(0);
+		HandleAnimator(_animationAction);
 		SetSkinRotationToVelocity(_skinRotationSpeed);
 		HandleInputs();
 	}
 
 	private void FixedUpdate () {
-
-		//Coyote time refers to the short time after losing ground where a player can still jump as if they were still on it.
-		if (_PlayerPhys._isGrounded)
-		{
-			ReadyCoyote();
-
-		}
-		else if (!_isCoyoteInEffect)
-		{
-			StartCoroutine(CoyoteTime());
-		}
 	}
 
 	//Called when the current action should be set to this.
 	public void StartAction () {
 		ReadyAction();
 
+		//Set private
+		_isCoyoteInEffect = _PlayerPhys._isGrounded;
+
+		//Set Public
 		StartCoroutine(ApplyWhenGrounded());
-		_CharacterAnimator.SetInteger("Action", 0);
+		_CharacterAnimator.SetInteger("Action", _animationAction);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 	}
@@ -102,7 +103,8 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		return true;
 	}
 	public void StopAction () {
-		enabled = false;
+		if (enabled) enabled = false;
+		else return;
 	}
 
 	#endregion
@@ -157,16 +159,23 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	//Updates the animator with relevant data so it can perform the correct animations.
 	public void HandleAnimator ( int action ) {
 
-		//Action
-		_CharacterAnimator.SetInteger("Action", action);
-		//Vertical speed
-		_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
-		//Horizontal speed
-		_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._horizontalSpeedMagnitude);
-		//Horizontal Input
-		_CharacterAnimator.SetFloat("HorizontalInput", Mathf.Max(_Input.moveX, _Input.moveY));
-		//Is grounded
-		_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
+		if(_CurrentAnimator == _CharacterAnimator)
+		{
+			//Action
+			_CharacterAnimator.SetInteger("Action", action);
+			//Vertical speed
+			_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
+			//Horizontal speed
+			_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._horizontalSpeedMagnitude);
+			//Horizontal Input
+			_CharacterAnimator.SetFloat("HorizontalInput", Mathf.Max(_Input.moveX, _Input.moveY));
+			//Is grounded
+			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
+		}
+		else if (_CurrentAnimator == _BallAnimator)
+		{
+			_BallAnimator.SetInteger("Action", action);
+		}
 	}
 
 	//Points the player visuals (model, effects, etc) in the direction of movement.
@@ -191,6 +200,26 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		}
 	}
 
+	//Switches from one character model to another, typically used to switch between the spinball and the proper character.
+	public void SwitchSkin(bool setMainSkin) {
+		for (int i = 0 ; i < _PlayerSkin.Length ; i++)
+		{
+			_PlayerSkin[i].enabled = setMainSkin;
+		}
+		_SpinDashBall.enabled = !setMainSkin;
+
+		if(_SpinDashBall.enabled) { 
+			_CurrentAnimator = _BallAnimator;
+			_CharacterAnimator.speed = 0;
+		}
+		else { 
+			_CurrentAnimator = _CharacterAnimator;
+			_CharacterAnimator.speed = 1;
+		}
+	}
+
+	//Coyote time refers to the short time after losing ground where a player can still jump as if they were still on it.
+
 	//When grounded, tracks the current floor so it can be used for coyote time if the ground is lost next frame.
 	public void ReadyCoyote () {
 		_isCoyoteInEffect = true;
@@ -214,6 +243,20 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_isCoyoteInEffect = false;
 		StopCoroutine(CoyoteTime());
 	}
+
+	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
+	public void EventOnGrounded() {
+		if (_animationAction == 1)
+			_CharacterAnimator.SetTrigger("ChangedState");
+		_animationAction = 0;
+		ReadyCoyote();
+	}
+
+
+	public void EventOnLoseGround () {
+		if(enabled) { StartCoroutine(CoyoteTime()); }
+	}
+
 	#endregion
 
 	/// <summary>
@@ -224,6 +267,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	public void ReadyAction () {
 		if (_PlayerPhys == null)
 		{
+
 			//Assign all external values needed for gameplay.
 			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
@@ -251,8 +295,13 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_Input = GetComponent<S_PlayerInput>();
 		_Actions = GetComponent<S_ActionManager>();
 		_CamHandler = GetComponent<S_Handler_Camera>();
+
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_BallAnimator = _Tools.BallAnimator;
+		_CurrentAnimator = _CharacterAnimator;
 		_MainSkin = _Tools.mainSkin;
+		_PlayerSkin = _Tools.PlayerSkin;
+		_SpinDashBall = _Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
 
 		_CharacterAnimator.SetBool("isRolling", false);
 	}

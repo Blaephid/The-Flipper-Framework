@@ -80,9 +80,9 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	// Update is called once per frame
 	void Update () {
 		//Set Animator Parameters
-		_Actions.Action00.HandleAnimator(11);
+		_Actions.ActionDefault.HandleAnimator(11);
 
-		_Actions.Action00.SetSkinRotationToVelocity(_skinRotationSpeed);
+		_Actions.ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
 
 		//Set Animation Angle
 		//Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
@@ -139,8 +139,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		{
 			_CharacterAnimator.SetInteger("Action", 0);
 			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
-			_Actions.Action00.StartAction();
-			_Actions.Action00.StartAction();
+			_Actions.ActionDefault.StartAction();
+			_Actions.ActionDefault.StartAction();
 		}
 	}
 
@@ -151,7 +151,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		{
 			//Regular requires a seperate check in addition to other actions.
 			case S_Enums.PrimaryPlayerStates.Default:
-				if (_Actions.Action00._canDashDuringFall_)
+				if (_Actions.ActionDefault._canDashDuringFall_)
 				{
 					CheckDash();
 				}

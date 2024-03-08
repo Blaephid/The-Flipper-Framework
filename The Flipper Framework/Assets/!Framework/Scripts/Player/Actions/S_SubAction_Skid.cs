@@ -231,8 +231,8 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		_airSkiddingIntensity_ = _Tools.Stats.SkiddingStats.skiddingIntensity;
 		_canSkidInAir_ = _Tools.Stats.SkiddingStats.canSkidInAir;
 		_regularSkidAngleStartPoint_ = _Tools.Stats.SkiddingStats.angleToPerformSkid;
-		_spinSkiddingIntensity_ = _Tools.Stats.SpinChargeStats.skidIntesity;
-		_spinSkidAngleStartPoint_ = _Tools.Stats.SpinChargeStats.angleToPerformSkid;
+		_spinSkiddingIntensity_ = _Tools.Stats.SpinChargeStat.skidIntesity;
+		_spinSkidAngleStartPoint_ = _Tools.Stats.SpinChargeStat.angleToPerformSkid;
 		_speedToStopAt_ = (int)_Tools.Stats.SkiddingStats.speedToStopAt;
 		_shouldSkiddingDisableTurning_ = _Tools.Stats.SkiddingStats.shouldSkiddingDisableTurning;
 	}

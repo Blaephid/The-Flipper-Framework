@@ -1,163 +1,336 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 
+[RequireComponent(typeof(S_Action04_Hurt))]
 public class S_Handler_Hurt : MonoBehaviour
 {
-	S_CharacterTools Tools;
 
-	S_ActionManager Actions;
-	S_PlayerInput _Input;
-	S_Manager_LevelProgress Level;
-	S_PlayerPhysics Player;
-	S_Interaction_Objects Objects;
-	S_Handler_Camera Cam;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
 
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
+	private S_Manager_LevelProgress _LevelHandler;
+	private S_Interaction_Objects _Objects;
+	private S_Handler_Camera	_CamHandler;
+	private S_Control_PlayerSound _Sounds;
+	private S_Handler_CharacterAttacks _Attacks;
 
-	S_Control_PlayerSound Sounds;
-	GameObject JumpBall;
-	Animator CharacterAnimator;
-	Transform faceHitCollider;
-	float faceHitSize;
+	private GameObject		_JumpBall;
+	private Animator		_CharacterAnimator;
+	private SkinnedMeshRenderer[] _SonicSkins;
 
-	[HideInInspector] public int _invincibilityTime_;
-	int counter;
-	public bool IsHurt { get; set; }
-	public bool IsInvencible { get; set; }
-	float flickerCount;
-	float _flickerSpeed_;
+	private Transform	_FaceHitCollider;
+	private GameObject	_WallToBonk;
 
-	LayerMask _BonkWall_;
-	GameObject WallToBonk;
-	Vector3 previDir;
+	[HideInInspector]
+	public Image        _FadeOutImage;
 
-	SkinnedMeshRenderer[] SonicSkins;
+	private GameObject	_MovingRing;
+	private GameObject	_ReleaseDirection;
+	#endregion
 
-	GameObject MovingRing;
-	GameObject releaseDirection;
-	[HideInInspector] public int _maxRingLoss_;
-	[HideInInspector] public float _ringReleaseSpeed_;
-	[HideInInspector] public float _ringArcSpeed_;
-	bool releasingRings = false;
-	int RingsToRelease;
+	//General
+	#region General Properties
 
-	public bool isDead { get; set; }
-	int deadCounter = 0;
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
+	#region Stats
+	private int	_maxRingLoss_;
+	private float	_ringReleaseSpeed_;
+	private float	_ringArcSpeed_;
+	private int	_invincibilityTime_;
+	private float	_flickerSpeed_;
+	[HideInInspector] public float _damageShakeAmmount_;
+	[HideInInspector] public float _enemyHitShakeAmmount_;
 
-	[HideInInspector] public Image FadeOutImage;
-	Vector3 InitialDir;
-	float previousSpeed;
+	private LayerMask	_BonkWall_;
+	#endregion
+	// Trackers
+	#region trackers
 
-	void Awake () {
-		if (Player == null)
-		{
-			Tools = GetComponent<S_CharacterTools>();
-			AssignTools();
+	//Health
+	[HideInInspector]
+	public int RingAmount;
 
-			AssignStats();
-		}
-		InitialDir = transform.forward;
-		counter = _invincibilityTime_;
-		releaseDirection = new GameObject();
-		previDir = transform.forward;
-		this.enabled = true;
+	//States
+	public bool	_isHurt;
+	public bool         _isInvincible ;
+	public bool	_isDead;
+	public bool	HasShield = false;
+
+	//Counters
+	private int         _counter;
+	private float	_flickerCounter;
+	private int	_deadCounter = 0;
+
+	//Release rings on hurt
+	private bool	_isReleasingRings = false;
+	private int	_ringsToRelease;
+
+	private float       _previousSpeed;
+	private Vector3	_previousDirection;
+	private Vector3	_initialDirection;
+	#endregion
+	#endregion
+	#endregion
+
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
+
+	// Start is called before the first frame update
+	void Start () {
+
 	}
 
+	// Called when the script is enabled, but will only assign the tools and stats on the first time.
+	private void OnEnable () {
+		ReadyScript();
+	}
+	private void OnDisable () {
 
+	}
 
-	void FixedUpdate () {
+	// Update is called once per frame
+	void Update () {
 
-		counter += 1;
-		if (counter < _invincibilityTime_)
+	}
+
+	private void FixedUpdate () {
+		HandleDamaged();
+
+		HandleDeath();
+
+		HandleBonk();
+	}
+
+	public void OnTriggerEnter(Collider other) {
+
+		switch (other.tag)
 		{
-			IsInvencible = true;
+			case "Hazard":
+				_JumpBall.SetActive(false);
+				if (_Actions.Action08 != null)
+				{
+					if (_Actions.Action08._DropEffect.isPlaying == true)
+					{
+						_Actions.Action08._DropEffect.Stop();
+					}
+				}
+				DamagePlayer();
+				_CamHandler._HedgeCam.ApplyCameraShake(_damageShakeAmmount_, 60);
+				return;
+
+			case "Enemy":
+				_CamHandler._HedgeCam.ApplyCameraShake(_enemyHitShakeAmmount_, 30);
+
+				if (!_Attacks.AttemptAttack(other, S_Enums.AttackTargets.Enemy))
+				{
+					DamagePlayer();
+				}
+				return;
+			case "Pit":
+				_Sounds.DieSound();
+				_isDead = true;
+				return;
+		}
+
+		//Debug.Log(Player.HorizontalSpeedMagnitude);
+		//Debug.Log(WallToBonk);
+		if (other.gameObject == _WallToBonk)
+		{
+
+			//Debug.Log("Attempt Bonk");
+			if (!Physics.Raycast(transform.position + (_CharacterAnimator.transform.up * 1.5f), _previousDirection, 10f, _BonkWall_) && !_PlayerPhys._isGrounded)
+			{
+				transform.position = transform.position + (_CharacterAnimator.transform.up * 1.5f);
+			}
+			else if (!Physics.Raycast(transform.position + (-_CharacterAnimator.transform.up * 1.5f), _previousDirection, 10f, _BonkWall_) && !_PlayerPhys._isGrounded)
+			{
+				transform.position = transform.position + (-_CharacterAnimator.transform.up * 1.5f);
+			}
+			else if (_previousSpeed / 1.6f > _PlayerPhys._RB.velocity.sqrMagnitude || !_PlayerPhys._isGrounded)
+			{
+				StartCoroutine(giveChanceToWallClimb());
+			}
+
+
+		}
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+
+	public void DamagePlayer () {
+		if (!_isHurt && !_Actions.ActionHurt.enabled)
+		{
+
+			if (!HasShield)
+			{
+				if (RingAmount > 0)
+				{
+					//LoseRings
+					_Sounds.RingLossSound();
+					_Actions.Action04Control.GetHurt();
+					_Actions.ActionHurt.AttemptAction();
+				}
+				if (RingAmount <= 0)
+				{
+					//Die
+					if (!_Actions.Action04Control._isDead)
+					{
+						_Sounds.DieSound();
+						//_Actions.Action04Control.isDead = true;
+						_Actions.ActionHurt.AttemptAction();
+					}
+				}
+			}
+			if (HasShield)
+			{
+				//Lose Shield
+				_Sounds.SpikedSound();
+				SetShield(false);
+				_Actions.ActionHurt.AttemptAction();
+			}
+		}
+	}
+
+	private void HandleDamaged() {
+		_counter += 1;
+		if (_counter < _invincibilityTime_)
+		{
+			_isInvincible = true;
 			SkinFlicker();
 		}
 		else
 		{
-			IsInvencible = false;
-			IsHurt = false;
-			ToggleSkin(true);
+			_isInvincible = false;
+			_isHurt = false;
+			//ToggleSkin(true);
 		}
 
-		if (releasingRings)
+		if (_isReleasingRings)
 		{
-			if (RingsToRelease > 30) { RingsToRelease = 30; }
+			if (_ringsToRelease > 30) { _ringsToRelease = 30; }
 			RingLoss();
 		}
+	}
 
+	private void HandleDeath() {
 		if (_Input.killBindPressed)
 		{
-			if (Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
-				CharacterAnimator.SetTrigger("Damaged");
-			isDead = true;
+			if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
+				_CharacterAnimator.SetTrigger("Damaged");
+			_isDead = true;
 		}
 
 		//IsDead things
-		if (isDead == true)
+		if (_isDead == true)
 		{
-			Death();
+			Die();
 		}
-		else if (counter > 30)
+		else if (_counter > 30)
 		{
 			Color alpha = Color.black;
 			alpha.a = 0;
-			FadeOutImage.color = Color.Lerp(FadeOutImage.color, alpha, 0.5f);
+			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, alpha, 0.5f);
 		}
-
-		Bonk();
-
 	}
 
-	void Bonk () {
-		faceHitCollider.transform.rotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, transform.up); ;
+	private void HandleBonk () {
+		_FaceHitCollider.transform.rotation = Quaternion.LookRotation(_CharacterAnimator.transform.forward, transform.up); ;
 
-		if ((Actions.whatAction == 0 && Player._horizontalSpeedMagnitude > 50) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump && Player._horizontalSpeedMagnitude > 40) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.JumpDash
-		    && Player._horizontalSpeedMagnitude > 30) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning && Actions.Action12._runningSpeed > 5))
+		if ((_Actions.whatAction == 0 && _PlayerPhys._horizontalSpeedMagnitude > 50) || (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump && _PlayerPhys._horizontalSpeedMagnitude > 40) || (_Actions.whatAction == S_Enums.PrimaryPlayerStates.JumpDash
+		    && _PlayerPhys._horizontalSpeedMagnitude > 30) || (_Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning && _Actions.Action12._runningSpeed > 5))
 		{
-			if (Physics.SphereCast(transform.position, 0.3f, CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, _BonkWall_))
+			if (Physics.SphereCast(transform.position, 0.3f, _CharacterAnimator.transform.forward, out RaycastHit tempHit, 10f, _BonkWall_))
 			{
 
-				if (Vector3.Dot(CharacterAnimator.transform.forward, tempHit.normal) < -0.7f)
+				if (Vector3.Dot(_CharacterAnimator.transform.forward, tempHit.normal) < -0.7f)
 				{
-					WallToBonk = tempHit.collider.gameObject;
-					previDir = CharacterAnimator.transform.forward;
+					_WallToBonk = tempHit.collider.gameObject;
+					_previousDirection = _CharacterAnimator.transform.forward;
 					return;
 				}
 			}
 		}
-		WallToBonk = null;
-		previousSpeed = Player._RB.velocity.sqrMagnitude;
+		_WallToBonk = null;
+		_previousSpeed = _PlayerPhys._RB.velocity.sqrMagnitude;
 	}
 
-	void Death () {
+	IEnumerator giveChanceToWallClimb () {
+		Vector3 newDir = _CharacterAnimator.transform.forward;
+		if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning)
+		{
+			if (!_PlayerPhys._isGrounded)
+			{
+				for (int i = 0 ; i < 3 ; i++)
+				{
+					yield return new WaitForFixedUpdate();
+					_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0));
+					_CharacterAnimator.transform.forward = newDir;
+				}
+			}
 
-		S_Interaction_Objects.RingAmount = 0;
+			if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning)
+			{
+				_Actions.ActionHurt.InitialEvents(true);
+				_Actions.ActionHurt.AttemptAction();
+			}
+		}
+		else if (_Actions.Action12._runningSpeed > 0)
+		{
+			_Actions.ActionHurt.InitialEvents(true);
+			_Actions.ActionHurt.AttemptAction();
+		}
+	}
 
-		JumpBall.SetActive(false);
+	private void Die () {
+
+		RingAmount = 0;
+
+		_JumpBall.SetActive(false);
 
 
 		_Input.enabled = false;
-		Actions.Action04.AttemptAction();
+		_Actions.ActionHurt.AttemptAction();
 		_Input._move = Vector3.zero;
-		deadCounter += 1;
+		_deadCounter += 1;
 		//Debug.Log("DeathGroup");
 
-		if (deadCounter > 70)
+		if (_deadCounter > 70)
 		{
 			Color alpha = Color.black;
 			alpha.a = 1;
-			FadeOutImage.color = Color.Lerp(FadeOutImage.color, alpha, 0.51f);
+			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, alpha, 0.51f);
 		}
-		if (deadCounter == 120)
+		if (_deadCounter == 120)
 		{
-			Level.RespawnObjects();
+			_LevelHandler.RespawnObjects();
 		}
-		else if (deadCounter == 170)
+		else if (_deadCounter == 170)
 		{
-			CharacterAnimator.SetBool("Dead", false);
+			_CharacterAnimator.SetBool("Dead", false);
 
-			if (Level.CurrentCheckPoint)
+			if (_LevelHandler.CurrentCheckPoint)
 			{
 				//Cam.Cam.SetCamera(Level.CurrentCheckPoint.transform.forward, 2,10,10);
 			}
@@ -167,161 +340,139 @@ public class S_Handler_Hurt : MonoBehaviour
 			}
 
 			_Input.enabled = true;
-			Level.ResetToCheckPoint();
+			_LevelHandler.ResetToCheckPoint();
 			//Debug.Log("CallingReset");
-			isDead = false;
-			deadCounter = 0;
-			counter = 0;
+			_isDead = false;
+			_deadCounter = 0;
+			_counter = 0;
 
-			if (Actions.eventMan != null) Actions.eventMan.Death();
+			if (_Actions.eventMan != null) _Actions.eventMan.Death();
 		}
 	}
 
-	void SkinFlicker () {
-		flickerCount += _flickerSpeed_;
-		if (flickerCount < 0)
+	private void SkinFlicker () {
+		_flickerCounter += _flickerSpeed_;
+		if (_flickerCounter < 0)
 		{
-			ToggleSkin(false);
+			
 		}
 		else
 		{
-			ToggleSkin(true);
+			
 		}
-		if (flickerCount > 10)
+		if (_flickerCounter > 10)
 		{
-			flickerCount = -10;
+			_flickerCounter = -10;
 		}
 	}
 
-	void RingLoss () {
-		S_Interaction_Objects.RingAmount = 0;
+	private void RingLoss () {
+		RingAmount = 0;
 
-		if (RingsToRelease > 0)
+		if (_ringsToRelease > 0)
 		{
 			Vector3 pos = transform.position;
 			pos.y += 1;
 			GameObject movingRing;
-			movingRing = Instantiate(MovingRing, pos, Quaternion.identity);
+			movingRing = Instantiate(_MovingRing, pos, Quaternion.identity);
 			movingRing.transform.parent = null;
 			movingRing.GetComponent<Rigidbody>().velocity = Vector3.zero;
-			movingRing.GetComponent<Rigidbody>().AddForce((releaseDirection.transform.forward * _ringReleaseSpeed_), ForceMode.Acceleration);
-			releaseDirection.transform.Rotate(0, _ringArcSpeed_, 0);
-			RingsToRelease -= 1;
+			movingRing.GetComponent<Rigidbody>().AddForce((_ReleaseDirection.transform.forward * _ringReleaseSpeed_), ForceMode.Acceleration);
+			_ReleaseDirection.transform.Rotate(0, _ringArcSpeed_, 0);
+			_ringsToRelease -= 1;
 
 			//		Player.GetComponent<Rigidbody> ().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
 		}
 		else
 		{
-			releasingRings = false;
+			_isReleasingRings = false;
 			//	Player.GetComponent<Rigidbody> ().freezeRotation = false;
 		}
 	}
 
-	public void ToggleSkin ( bool on ) {
-		for (int i = 0 ; i < SonicSkins.Length ; i++)
-		{
-			SonicSkins[i].enabled = on;
-		}
-	}
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
 
 	public void GetHurt () {
-		IsHurt = true;
-		counter = 0;
+		_isHurt = true;
+		_counter = 0;
 
-		if (S_Interaction_Objects.RingAmount > 0 && !releasingRings)
+		if (RingAmount > 0 && !_isReleasingRings)
 		{
-			RingsToRelease = S_Interaction_Objects.RingAmount;
-			releasingRings = true;
+			_ringsToRelease = RingAmount;
+			_isReleasingRings = true;
 		}
 	}
 
 	public void OnTriggerStay ( Collider col ) {
 		if (col.tag == "Pit")
 		{
-			Cam._HedgeCam.SetCameraNoLook(100);
-		}
-	}
-	public void OnTriggerEnter ( Collider col ) {
-		if (col.tag == "Pit")
-		{
-			Sounds.DieSound();
-			isDead = true;
-		}
-
-		//Debug.Log(Player.HorizontalSpeedMagnitude);
-		//Debug.Log(WallToBonk);
-		if (col.gameObject == WallToBonk)
-		{
-
-			//Debug.Log("Attempt Bonk");
-			if (!Physics.Raycast(transform.position + (CharacterAnimator.transform.up * 1.5f), previDir, 10f, _BonkWall_) && !Player._isGrounded)
-			{
-				transform.position = transform.position + (CharacterAnimator.transform.up * 1.5f);
-			}
-			else if (!Physics.Raycast(transform.position + (-CharacterAnimator.transform.up * 1.5f), previDir, 10f, _BonkWall_) && !Player._isGrounded)
-			{
-				transform.position = transform.position + (-CharacterAnimator.transform.up * 1.5f);
-			}
-			else if (previousSpeed / 1.6f > Player._RB.velocity.sqrMagnitude || !Player._isGrounded)
-			{
-				StartCoroutine(giveChanceToWallClimb());
-			}
-
-
+			_CamHandler._HedgeCam.SetCameraNoLook(100);
 		}
 	}
 
-	IEnumerator giveChanceToWallClimb () {
-		Vector3 newDir = CharacterAnimator.transform.forward;
-		if (Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning)
-		{
-			if (!Player._isGrounded)
-			{
-				for (int i = 0 ; i < 3 ; i++)
-				{
-					yield return new WaitForFixedUpdate();
-					Player.SetTotalVelocity(Vector3.zero);
-					CharacterAnimator.transform.forward = newDir;
-				}
-			}
+	public void SetShield(bool isOn) {
+		HasShield = isOn;
+		_Objects.ShieldObject.SetActive(isOn);
+	}
+	#endregion
 
-			if (Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning)
-			{
-				Actions.Action04.InitialEvents(true);
-				Actions.Action04.AttemptAction();
-			}
-		}
-		else if (Actions.Action12._runningSpeed > 0)
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
+
+	//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
+	public void ReadyScript () {
+		if (_PlayerPhys == null)
 		{
-			Actions.Action04.InitialEvents(true);
-			Actions.Action04.AttemptAction();
+			//Assign all external values needed for gameplay.
+			_Tools = GetComponent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
+
+			_initialDirection = transform.forward;
+			_counter = _invincibilityTime_;
+			_ReleaseDirection = new GameObject();
+			_previousDirection = transform.forward;
 		}
 	}
 
-	private void AssignStats () {
-		_invincibilityTime_ = Tools.Stats.WhenHurt.invincibilityTime;
-		_maxRingLoss_ = Tools.Stats.WhenHurt.maxRingLoss;
-		_ringReleaseSpeed_ = Tools.Stats.WhenHurt.ringReleaseSpeed;
-		_ringArcSpeed_ = Tools.Stats.WhenHurt.ringArcSpeed;
-		_flickerSpeed_ = Tools.Stats.WhenHurt.flickerSpeed;
-		_BonkWall_ = Tools.Stats.WhenBonked.BonkOnWalls;
-	}
-
+	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		Player = GetComponent<S_PlayerPhysics>();
-		Level = GetComponent<S_Manager_LevelProgress>();
-		Actions = GetComponent<S_ActionManager>();
-		Objects = GetComponent<S_Interaction_Objects>();
-		Cam = GetComponent<S_Handler_Camera>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_LevelHandler = GetComponent<S_Manager_LevelProgress>();
+		_Actions = GetComponent<S_ActionManager>();
+		_Objects = GetComponent<S_Interaction_Objects>();
+		_CamHandler = GetComponent<S_Handler_Camera>();
 		_Input = GetComponent<S_PlayerInput>();
+		_Attacks = GetComponent<S_Handler_CharacterAttacks>();
 
-		faceHitCollider = Tools.faceHit.transform;
-		JumpBall = Tools.JumpBall;
-		Sounds = Tools.SoundControl;
-		CharacterAnimator = Tools.CharacterAnimator;
-		SonicSkins = Tools.PlayerSkin;
-		MovingRing = Tools.movingRing;
-		FadeOutImage = Tools.FadeOutImage;
+		_FaceHitCollider = _Tools.faceHit.transform;
+		_JumpBall = _Tools.JumpBall;
+		_Sounds = _Tools.SoundControl;
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_SonicSkins = _Tools.PlayerSkin;
+		_MovingRing = _Tools.movingRing;
+		_FadeOutImage = _Tools.FadeOutImage;
 	}
+
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
+		_invincibilityTime_ = _Tools.Stats.WhenHurt.invincibilityTime;
+		_maxRingLoss_ = _Tools.Stats.WhenHurt.maxRingLoss;
+		_ringReleaseSpeed_ = _Tools.Stats.WhenHurt.ringReleaseSpeed;
+		_ringArcSpeed_ = _Tools.Stats.WhenHurt.ringArcSpeed;
+		_flickerSpeed_ = _Tools.Stats.WhenHurt.flickerSpeed;
+		_BonkWall_ = _Tools.Stats.WhenBonked.BonkOnWalls;
+		_damageShakeAmmount_ = _Tools.Stats.EnemyInteraction.damageShakeAmmount;
+		_enemyHitShakeAmmount_ = _Tools.Stats.EnemyInteraction.hitShakeAmmount;
+	}
+	#endregion
 }

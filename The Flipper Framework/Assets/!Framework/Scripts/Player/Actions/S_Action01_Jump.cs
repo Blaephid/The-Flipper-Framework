@@ -26,7 +26,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	//General
 	#region General Properties
 
-	//Stats
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	//Main jump
 	private float       _maxJumpTime_;
@@ -46,23 +46,22 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	// Trackers
 	#region trackers
 
-	private int         _positionInActionList;
+	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
 	public float        _skinRotationSpeed;
-	[HideInInspector]
-	public Vector3      _upwardsDirection;
-	[HideInInspector]
-	public float        _counter;
-	[HideInInspector]
-	public int          _jumpCount;
-	[HideInInspector]
-	public bool         _isJumping;
-	private bool        _isJumpingFromGround;
 
-	private float       _thisJumpDuration;
-	private float       _slopedJumpDuration;
-	private float       _thisJumpSpeed;
-	private float       _jumpSlopeSpeed;
+	[HideInInspector]
+	public Vector3      _upwardsDirection;	//The direction the jump will move in. If on the ground, follows the normal of the floor, otherwise is upwards.
+	[HideInInspector]
+	public float        _counter;		//Tracks how long is jumping for
+	[HideInInspector]
+	public bool         _isJumping;	//Will only apply force if this is true, when false, it means another jump can now be performed
+	private bool        _isJumpingFromGround;	//Seperates grounded and air jumps
+
+	private float       _thisJumpDuration;		//Cancels jump when counter exceeds this. Affected by stats and situation
+	private float       _slopedJumpDuration;	//When exceeded, jump will only move upwards, even if started on a slope.	
+	private float       _thisJumpSpeed;		
+	private float       _jumpSlopeSpeed;		//Jump speed is different on slopes, determined by upwards speed and conversion stat
 
 
 	private float       _jumpSpeedModifier = 1f;
@@ -97,8 +96,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	// Update is called once per frame
 	void Update () {
 		//Set Animator Parameters
-		_Actions.Action00.HandleAnimator(1);
-		_Actions.Action00.SetSkinRotationToVelocity(_skinRotationSpeed);
+		_Actions.ActionDefault.HandleAnimator(1);
+		_Actions.ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
 
 		//Actions
 		if (!_Actions.isPaused)
@@ -112,47 +111,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_counter += Time.fixedDeltaTime;
 		_Actions._actionTimeCounter += Time.fixedDeltaTime;
 
-		//Ending Jump Early
-		if (!_Input.JumpPressed && _counter > _minJumpTime_ && _isJumping)
-		{
-			_jumpCount++;
-			_counter = _thisJumpDuration;
-			_isJumping = false;
-		}
-		//Ending jump after max duration
-		else if (_counter > _thisJumpDuration && _isJumping && _Input.JumpPressed)
-		{
-			_jumpCount++;
-			_counter = _thisJumpDuration;
-			_isJumping = false;
-			_Input.JumpPressed = false;
-		}
-		//Add Jump Speed
-		else if (_isJumping)
-		{
-			//Jump move at angle
-			if (_counter < _slopedJumpDuration)
-			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed * 0.75f), false);
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.25f), false); //Extra speed to ballance out direction
-			}
-			//Move straight up in world.
-			else
-			{
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_thisJumpSpeed), false);
-			}
-		}
+		ApplyForce();
 
-		//End Action on landing. Has to have been in the air for some time first though to prevent immediately becoming grounded.
-		if (_PlayerPhys._isGrounded && _counter > _slopedJumpDuration)
-		{
-			_jumpCount = 0;
-
-			//Prevents holding jump to keep doing so forever.
-			_Input.JumpPressed = false;
-
-			_Actions.Action00.StartAction();
-		}
+		CheckShouldEndAction();
 	}
 
 	//Called when checking if this action is to be performed, including inputs.
@@ -161,7 +122,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		{
 			switch (_Actions.whatAction)
 			{
-				default:
+				case S_Enums.PrimaryPlayerStates.Default:
 					//Normal grounded Jump
 					if (_PlayerPhys._isGrounded)
 					{
@@ -169,27 +130,25 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 						StartAction();
 					}
 					//Jump from regular action due to coyote time
-					else if (_Actions.Action00.enabled && _Actions.Action00._isCoyoteInEffect)
+					else if (_Actions.ActionDefault.enabled && _Actions.ActionDefault._isCoyoteInEffect)
 					{
-						AssignStartValues(_Actions.Action00._coyoteRememberDirection, true);
+						AssignStartValues(_Actions.ActionDefault._coyoteRememberDirection, true);
 						StartAction();
 					}
 					//Jump when in the air
-					else if (_jumpCount < _maxJumps_ && !_Actions.lockDoubleJump)
+					else if (_Actions._jumpCount < _maxJumps_ && !_Actions.lockDoubleJump)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
 					}
 					return true;
-
 				case S_Enums.PrimaryPlayerStates.Jump:
-					if (!_isJumping && _jumpCount < _maxJumps_ && !_Actions.lockDoubleJump)
+					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && !_Actions.lockDoubleJump)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
 					}
 					return true;
-
 				case S_Enums.PrimaryPlayerStates.Rail:
 					AssignStartValues(transform.up, true);
 					StartAction();
@@ -220,6 +179,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_CharacterAnimator.SetInteger("Action", 1);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_Sounds.JumpSound();
+		_Actions.ActionDefault.SwitchSkin(false);
 
 		//Snap off of ground to make sure you do jump
 		transform.position += (_upwardsDirection * 0.3f);
@@ -234,9 +194,18 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			_thisJumpDuration = _maxJumpTime_ * _jumpDurationModifier;
 			_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 
-			//Number of jumps set to zero, allowing for double jumps.
-			_jumpCount = 0;
+			//Jump higher depending on the speed and the slope you're in
+			if (_PlayerPhys._RB.velocity.y > 5 && _upwardsDirection.y > 1)
+			{
+				_jumpSlopeSpeed = _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_;
+			}
+			else if (Mathf.Abs(_upwardsDirection.y) < 0.1f && _PlayerPhys._RB.velocity.y < -5)
+			{
+				_upwardsDirection.y = 4;
+				_upwardsDirection.Normalize();
+			}
 
+			_Actions._jumpCount = 1; //Number of jumps set to 1, allowing for double jumps.
 		}
 		else
 		{
@@ -247,6 +216,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			_thisJumpDuration = _doubleJumpDuration_ * _jumpDurationModifier;
 			_slopedJumpDuration = _doubleJumpDuration_ * _jumpDurationModifier;
 
+			_jumpSlopeSpeed = 0;
+
+			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount + 1, 1, _Actions._jumpCount + 1); //Track this new jump
+
 			JumpInAir();
 		}
 
@@ -254,7 +227,15 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	}
 
 	public void StopAction () {
-		this.enabled = false;
+		if (enabled) enabled = false;
+		else return;
+
+		_Actions.ActionDefault.SwitchSkin(true);
+	}
+
+	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
+	public void EventOnGrounded() {
+		_Actions._jumpCount = 0;
 	}
 
 	#endregion
@@ -270,16 +251,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
 			normaltoJump = Vector3.up;
 
-
 		//Sets jump direction
 		_upwardsDirection = normaltoJump;
-
-		//Jump higher depending on the speed and the slope you're in
-		if (fromGround && _PlayerPhys._RB.velocity.y > 0 && normaltoJump.y > 0)
-		{
-			_jumpSlopeSpeed = _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_;
-		}
-
 		_isJumpingFromGround = fromGround;
 	}
 
@@ -302,14 +275,57 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		if (_PlayerPhys._RB.velocity.y > 10)
 			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
 		else
-			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, Mathf.Clamp(_PlayerPhys._RB.velocity.y * 0.1f, 0.1f, 5), _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
-		_PlayerPhys.SetCoreVelocity(newVec, true);
+			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, 0, _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
+		_PlayerPhys.SetCoreVelocity(newVec, false, true);
 
 		//Add particle effect during jump
 		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
 		JumpDashParticleClone.transform.position = _Tools.FeetPoint.position;
 		JumpDashParticleClone.transform.rotation = Quaternion.LookRotation(Vector3.up);
 
+	}
+
+	private void ApplyForce() {
+		//Ending Jump Early
+		if (!_Input.JumpPressed && _counter > _minJumpTime_ && _isJumping)
+		{
+			_counter = _thisJumpDuration;
+			_isJumping = false;
+		}
+		//Ending jump after max duration
+		else if (_counter > _thisJumpDuration && _isJumping && _Input.JumpPressed)
+		{
+			_counter = _thisJumpDuration;
+			_isJumping = false;
+			_Input.JumpPressed = false;
+		}
+		//Add Jump Speed
+		else if (_isJumping)
+		{
+			//Jump move at angle
+			if (_counter < _slopedJumpDuration && _jumpSlopeSpeed > 0)
+			{
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.75f), false);
+				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.25f), false); //Extra speed to ballance out direction
+			}
+			//Move straight up in world.
+			else
+			{
+				_PlayerPhys.AddCoreVelocity(Vector3.up * (_thisJumpSpeed), false);
+			}
+		}
+	}
+
+	private void CheckShouldEndAction() {
+		//End Action on landing. Has to have been in the air for some time first though to prevent immediately becoming grounded.
+		if (_PlayerPhys._isGrounded && _counter > _slopedJumpDuration)
+		{ 
+
+			//Prevents holding jump to keep doing so forever.
+			_Input.JumpPressed = false;
+
+			_Actions.ActionDefault.StartAction();
+		}
 	}
 
 	#endregion

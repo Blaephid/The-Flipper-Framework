@@ -588,6 +588,7 @@ public class S_O_CharacterStats : ScriptableObject
 			targetSearchDistance = 44f,
 			rangeInCameraDirection = 1.2f,
 			minimumTargetDistance = 15,
+			maximumTargetDistance = 80,
 			TargetLayer = new LayerMask(),
 			blockingLayers = new LayerMask(),
 
@@ -608,6 +609,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float                  targetSearchDistance;
 		public float                  rangeInCameraDirection;
 		public int                    minimumTargetDistance;
+		public int                    maximumTargetDistance;
 		public LayerMask              TargetLayer;
 		public LayerMask              blockingLayers;
 		public float                  iconScale;
@@ -678,14 +680,16 @@ public class S_O_CharacterStats : ScriptableObject
 	#region spin Charge
 	//-------------------------------------------------------------------------------------------------
 
-	public StrucSpinCharge SpinChargeStats = SetStrucSpinCharge();
-	public StrucSpinCharge BasicSpinChargeStats = SetStrucSpinCharge();
+	public StrucSpinCharge SpinChargeStat = SetStrucSpinCharge();
+	public StrucSpinCharge DefaultSpinChargeStat = SetStrucSpinCharge();
 
 	static StrucSpinCharge SetStrucSpinCharge () {
 		return new StrucSpinCharge
 		{
 			whatAimMethod = S_Enums.SpinChargeAiming.Camera,
 			chargingSpeed = 1.02f,
+			tappingBonus = 2.5f,
+			delayBeforeLaunch = 20,
 			minimunCharge = 20f,
 			maximunCharge = 110f,
 			forceAgainstMovement = 0.015f,
@@ -717,6 +721,16 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.75f, 0.15f),
 				new Keyframe(1f, 0f),
 			}),
+			LerpRotationByAngle = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 1f),
+				new Keyframe(0.1f, 1f),
+				new Keyframe(0.15f, 0.85f),
+				new Keyframe(0.25f, 0.7f),
+				new Keyframe(0.65f, 0.7f),
+				new Keyframe(0.85f, 0.9f),
+				new Keyframe(1f, 0.9f),
+			}),
 			angleToPerformSkid = 10f,
 			skidIntesity = 3f
 		};
@@ -727,6 +741,8 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		public S_Enums.SpinChargeAiming whatAimMethod;
 		public float              chargingSpeed;
+		public float                  tappingBonus;
+		public int                    delayBeforeLaunch;
 		public float              minimunCharge;
 		public float              maximunCharge;
 		public float              forceAgainstMovement;
@@ -735,6 +751,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float              releaseShakeAmmount;
 		public AnimationCurve     SpeedLossByTime;
 		public AnimationCurve     ForceGainByAngle;
+		public AnimationCurve     LerpRotationByAngle;
 		public AnimationCurve     ForceGainByCurrentSpeed;
 		public float              angleToPerformSkid;
 		public float              skidIntesity;
@@ -847,8 +864,8 @@ public class S_O_CharacterStats : ScriptableObject
 			enemyHomingStoppingPowerWhenAdditive = 40f,
 			shouldStopOnHomingAttackHit = true,
 			shouldStopOnHit = true,
-			enemyDamageShakeAmmount = 0.5f,
-			enemyHitShakeAmmount = 1.2f
+			damageShakeAmmount = 0.5f,
+			hitShakeAmmount = 1.2f
 		};
 	}
 
@@ -862,8 +879,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float      enemyHomingStoppingPowerWhenAdditive;
 		public bool       shouldStopOnHomingAttackHit;
 		public bool       shouldStopOnHit;
-		public float      enemyDamageShakeAmmount;
-		public float      enemyHitShakeAmmount;
+		public float      damageShakeAmmount;
+		public float      hitShakeAmmount;
 	}
 	#endregion
 
@@ -1402,12 +1419,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region SpinCharge
 		void DrawSpinCharge () {
 			EditorGUILayout.Space();
-			DrawProperty("SpinChargeStats", "Spin Charge");
+			DrawProperty("SpinChargeStat", "Spin Charge");
 
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.SpinChargeStats = stats.BasicSpinChargeStats;
+				stats.SpinChargeStat = stats.DefaultSpinChargeStat;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

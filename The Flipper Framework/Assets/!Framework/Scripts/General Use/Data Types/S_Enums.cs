@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class S_Enums
 {
+	//Actions
 	public enum PrimaryPlayerStates
 	{
 		Default,
@@ -46,6 +47,20 @@ public class S_Enums
 		Rolling,
 	}
 
+	//Interaction
+
+	public enum PlayerAttackTypes {
+		Rolling,
+		SpinJump,
+		HomingAttack,
+	}
+
+	public enum AttackTargets {
+		Enemy,
+		Monitor
+	}
+
+	//Action specific
 	public enum SpinChargeAiming
 	{
 		Input,

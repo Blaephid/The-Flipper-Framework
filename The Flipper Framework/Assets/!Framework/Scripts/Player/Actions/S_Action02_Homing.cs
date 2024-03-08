@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.EventSystems;
-using Unity.VisualScripting;
-using UnityEditor;
-using System.Threading;
 
 [RequireComponent(typeof(S_ActionManager))]
 [RequireComponent(typeof(S_Handler_HomingAttack))]
@@ -118,10 +114,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		if (_isHoming)
 		{
 			//Set Animator Parameters
-			_Actions.Action00.HandleAnimator(1);
+			_Actions.ActionDefault.HandleAnimator(1);
 
 			//Set Animation Angle
-			_Actions.Action00.SetSkinRotationToVelocity(_skinRotationSpeed);
+			_Actions.ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
 
 			HandleInputs();
 		}
@@ -152,14 +148,11 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				}
 			}
 		}
-		else
-		{
-			_HomingControl._isScanning = false;
-		}
 		return false;
 	}
 
 	public void StartAction () {
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Homing);
 
 		ReadyAction();
 
@@ -175,11 +168,12 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Gets the direction to move in, rotate a lot faster than normal for the first frame.
 		_Target = _HomingControl._TargetObject.transform;
 		_targetDirection = _Target.position - transform.position;
-		_currentDirection = Vector3.RotateTowards(_Skin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 3, 0.0f);
+		_currentDirection = Vector3.RotateTowards(_Skin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
 
 		//Setting public
 		_PlayerPhys._isGravityOn = false;
 		_PlayerPhys._canBeGrounded = false;
+		_PlayerPhys.SetIsGrounded(false);
 		_JumpBall.SetActive(false);
 		_PlayerPhys._listOfCanControl.Add(false);
 		_Input.JumpPressed = false;
@@ -190,6 +184,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_Sounds.HomingAttackSound();
 		_HomingTrailScript.emitTime = _homingTimerLimit_ + 0.06f;
 		_HomingTrailScript.emit = true;
+		_Actions.ActionDefault.SwitchSkin(false);
 
 		//Get speed of attack and speed to return to on hit.		
 		_speedAtStart = Mathf.Max(_speedBeforeAttack * 0.9f, _homingAttackSpeed_);
@@ -199,12 +194,26 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		_speedBeforeAttack = Mathf.Max(_speedBeforeAttack, _minSpeedGainOnHit_);
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Homing);
 	}
 
 	public void StopAction () {
+		if (enabled) enabled = false;
+		else return;
+
+		_Actions.ActionDefault.SwitchSkin(true);
 		_PlayerPhys._canBeGrounded = true;
-		enabled = false;
+	}
+
+	private void OnCollisionEnter ( Collision collision ) {
+		if(!enabled) { return; }
+		Debug.Log("Collision in homing");
+
+		//If something is blocking the way, bounce off it.
+		if (Physics.Linecast(transform.position, collision.contacts[0].point, out RaycastHit hit, _PlayerPhys._Groundmask_))
+		{
+			Debug.Log("Rebound");
+			StartCoroutine(HittingObstacle(hit.normal));
+		}
 	}
 
 	#endregion
@@ -222,7 +231,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Ends homing attack if in air for too long or target is lost
 		if ((_Target == null || _timer > _homingTimerLimit_))
 		{
-			_Actions.Action00.StartAction();
+			_Actions.ActionDefault._animationAction = 0;
+			_Actions.ActionDefault.StartAction();
 			return;
 		}
 
@@ -237,11 +247,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			transform.position = _Target.transform.position;
 			return;
 		}
-		//If something is blocking the way, bounce off it.
-		else if (Physics.Raycast(transform.position, newDirection, out RaycastHit hit, ((_currentSpeed / 10) + 1) * 2, _PlayerPhys._Groundmask_))
-		{
-			StartCoroutine(HittingObstacle(hit.normal));
-		}
 		//Turn faster when close to target and fast to make missing very hard.
 		else
 		{
@@ -250,6 +255,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			if (_currentSpeed > 90)
 				thisTurn *= 1.3f;
 		}
+
 
 		//If there is input, then alter direction slightly to left or right.
 		if (_PlayerPhys._moveInput.sqrMagnitude > 0.2f && _canBeControlled_ && _timer > 0.02f)
@@ -264,6 +270,9 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			_horizontalDirection.y = 0;
 
 			_inputAngle = Vector3.Angle(_horizontalDirection, _currentInput);
+
+			Debug.DrawRay(transform.position, _horizontalDirection * 4, Color.red);
+			Debug.DrawRay(transform.position, _currentInput * 4, Color.yellow);
 
 			//Will only add control if input is not pointing directily behind character as that will lead to zigzagging
 			if (_inputAngle < 130)
@@ -285,7 +294,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				newDirection = temp.normalized;
 			}
 		}
-
 		_currentDirection = Vector3.RotateTowards(_currentDirection, newDirection, Mathf.Deg2Rad * thisTurn, 0.0f);
 		_PlayerPhys.SetCoreVelocity(_currentDirection * _currentSpeed);
 	}
@@ -309,10 +317,18 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	//What happens to the character after they hit a target, the directions they bounce based on input, stats and target.
 	public void HittingTarget ( S_Enums.HomingRebounding whatRebound ) {
 		_isHoming = false; //Prevents the rest of the code in Update and FixedUpdate from happening.
+		_HomingControl._TargetObject = null;
+		_HomingControl._PreviousTarget = null;
+
+		//Effects
+		_HomingTrailScript.emitTime = 0.1f;
+
+		if (_Actions._jumpCount > 0) 
+			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount - 1, 1, _Actions._jumpCount); //Allows double jumping again after a hit
 
 		_CharacterAnimator.SetInteger("Action", 1);
 
-		_Actions.AddDashDelay(_HomingControl._homingDelay_);
+		_Actions.AddDashDelay(_HomingControl._homingDelay_); //Add delay before it can be used again.
 		Vector3 newSpeed = Vector3.zero;
 
 		switch (whatRebound)
@@ -321,10 +337,11 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				if (_Input.HomingPressed) { additiveHit(); }
 				else { bounceUpHit(); }
 
+				//Restore control and switch to default action
 				_PlayerPhys.SetCoreVelocity(newSpeed);
-				_PlayerPhys._canBeGrounded = true;
 				_PlayerPhys._isGravityOn = true;
-				_Actions.Action00.StartAction();
+				_Actions.ActionDefault._animationAction = 1;
+				_Actions.ActionDefault.StartAction();
 
 				break;
 			case S_Enums.HomingRebounding.Rebound:
@@ -351,6 +368,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		}
 
+		//Basic hit that only moves upwards, allowing time to aim at the next target.
 		void bounceUpHit () {
 			GetDirectionPostHit();
 			newSpeed.y = 0;
@@ -362,13 +380,16 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		void GetDirectionPostHit () {
 			//Get current movement direction
 			newSpeed = _PlayerPhys._RB.velocity.normalized;
+			Vector3 horizontalDirection = new Vector3(newSpeed.x, newSpeed.z);
 
-			//If trying to move in the direction taken by the attack at the end, then will move that way
-			if (Vector3.Angle(newSpeed, _PlayerPhys._moveInput) / 180 < _lerpToNewInput_)
+			if (_PlayerPhys._moveInput.sqrMagnitude < 0.1)
 			{
-				//Rotate towards new input by percentage
-				float partDifference = Vector3.Angle(newSpeed, _PlayerPhys._moveInput) * _lerpToNewInput_;
-				newSpeed = Vector3.RotateTowards(newSpeed, _PlayerPhys._moveInput, partDifference * Mathf.Deg2Rad, 0);
+				newSpeed = _PlayerPhys._RB.velocity.normalized;
+			}
+			//If trying to move in the direction taken by the attack at the end, then will move that way
+			else if (Vector3.Angle(horizontalDirection, _PlayerPhys._moveInput) / 180 < _lerpToNewInput_)
+			{
+				newSpeed = horizontalDirection;
 			}
 			//otherwise will move in previous direction.
 			else
@@ -394,7 +415,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			faceDirection = Vector3.Lerp(faceDirection, wallNormal, 0.5f);
 		}
 
-		_PlayerPhys.SetTotalVelocity(Vector3.up * 2, true);
+		_PlayerPhys.SetTotalVelocity(Vector3.up * 2, new Vector2(1, 0), true);
 		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
 		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
 
@@ -422,7 +443,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			yield return new WaitForFixedUpdate();
 		}
 
-		_Actions.Action00.StartAction();
+		_Actions.ActionDefault._animationAction = 1;
+		_Actions.ActionDefault.StartAction();
 	}
 
 	//Called only by the skid subaction script, and only if this state is stet to have skidding as a subaction.
@@ -443,11 +465,9 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
-	public void EventOnGrounded () {
-		
+	public void EventOnGrounded () {		
 			_Actions._isAirDashAvailables = true;
-			_homingCount = 0;
-		
+			_homingCount = 0;		
 	}
 
 
@@ -461,6 +481,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	public void ReadyAction () {
 		if (_PlayerPhys == null)
 		{
+
 			//Assign all external values needed for gameplay.
 			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
@@ -469,7 +490,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Homing)
 				{
 					_positionInActionList = i;
 					break;

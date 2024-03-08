@@ -153,7 +153,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				}
 			}
 
-			if (!Actions.Action04Control.isDead)
+			if (!Actions.Action04Control._isDead)
 			{
 				//Sets the player to the rail grind action, and sets their position and what spline to follow.
 				Actions.Action05.InitialEvents(Range, RailSpline.transform.parent, false, offSet, addOn);
@@ -238,7 +238,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 			CharacterAnimator.SetTrigger("HitRail");
 
 			currentUpreel.RetractPulley();
-			Actions.Action00.StartAction();
+			Actions.ActionDefault.StartAction();
 		}
 
 		//Automatic Paths

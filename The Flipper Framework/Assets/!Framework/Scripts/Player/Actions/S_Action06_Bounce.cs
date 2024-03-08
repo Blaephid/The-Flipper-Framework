@@ -104,7 +104,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			//coolDown = Mathf.Clamp(coolDown, 3, 6);
 
 			//StartCoroutine(Action.lockBounceOnly(coolDown));
-			_Actions.Action00.StartAction();
+			_Actions.ActionDefault.StartAction();
 		}
 
 		else if ((groundhit && !HasBounced) || (!groundhit && _PlayerPhys._RB.velocity.y > _dropSpeed_ * 0.4f && !HasBounced))

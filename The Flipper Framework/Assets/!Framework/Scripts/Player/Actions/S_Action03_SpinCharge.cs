@@ -15,30 +15,26 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools		_Tools;
 	private S_PlayerInput		_Input;
+	private S_ActionManager                 _Actions;
+	private S_PlayerPhysics                 _PlayerPhys;
+	private S_Control_PlayerSound           _Sounds;
+	private S_Control_EffectsPlayer         _Effects;
 
 	private Animator			_CharacterAnimator;
 	private Animator			_BallAnimator;
 	private S_Handler_Camera		_CamHandler;
+	private Transform                       _MainSkin;
 
 	private GameObject			_LowerCapsule;
 	private GameObject			_CharacterCapsule;
 
-	private S_ActionManager		_Actions;
-	private S_SubAction_Quickstep		_QuickstepManager;
-
-	private S_PlayerPhysics		_PlayerPhys;
-	private S_Control_PlayerSound		_Sounds;
-	private S_Control_EffectsPlayer	_Effects;
-
-	private SkinnedMeshRenderer[]		_PlayerSkin;
-	private SkinnedMeshRenderer		_SpinDashBall;
 	private Transform			_PlayerSkinTransform;
 	#endregion
 
 	//General
 	#region General Properties
 
-	//Stats
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	[HideInInspector] 
 	public float		_spinDashChargingSpeed_ = 0.3f;
@@ -52,23 +48,27 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private float		_MaximumSlopeForSpinDash_;
 	private AnimationCurve	_speedLossByTime_;
 	private AnimationCurve	_forceGainByAngle_;
+	private AnimationCurve        _turnAmountByAngle_;
 	private AnimationCurve	_gainBySpeed_;
 	private float                 _releaseShakeAmmount_;
 	private S_Enums.SpinChargeAiming _whatControl_;
+	private float                 _tappingBonus_;
+	private int                   _delayBeforeLaunch_;
 	#endregion
 
 	// Trackers
 	#region trackers
-	private bool		_wasTapped = false;
-	private bool                  _isPressedCurrently = true;
+	private int         _positionInActionList;
 
-	private float		_currentCharge;
-	public float		_spinDashChargedEffectAmm;
+	private bool                  _isPressedCurrently = true;		//Involed in mashing. Reflects whether the button is pressed, if false, start exiting, if false when button is true, reset exiting.	
+
+	private float		_currentCharge;			//Tracks how much power gained this use of the action,  starting from minimum.
+	public float		_spinDashChargedEffectAmm;		//How active the spin dash particle effect should be
 	public float		_ballAnimationSpeedMultiplier;
 
-	private float		_time = 0;
+	private float		_counter = 0;	//Tracks how long in this state for
 
-	private Quaternion		_CharRot;
+	private Quaternion		_characterRotation;		//This has unique rotation properties different to most actions, so this tracks what rotation the character should have
 
 	#endregion
 
@@ -83,13 +83,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
-		if (_PlayerPhys == null)
-		{
-			_Tools = GetComponent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-		}
+		ReadyAction();
 	}
 
 	// Update is called once per frame
@@ -99,44 +93,48 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	private void FixedUpdate () {
 		ChargeSpin();
+		AffectMovement();
 	}
 
 	//Checks if this action can currently be performed, based on the input and environmental factors.
 	public bool AttemptAction () {
-		bool willChangeAction = false;
 		//Pressed on the ground
 		if (_Input.spinChargePressed && _PlayerPhys._isGrounded)
 		{
-			//At a slow enough speed and not on too sharp a slope.
+			//At a slow enough speed and not on too sharp of a slope.
 			if (_PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerPhys._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
 			{
-				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.SpinCharge);
 				StartAction();
-				willChangeAction = true;
+				return true;
 			}
 		}
-		return willChangeAction;
+		return false;
 	}
 
 	//Called when the action should be enabled.
 	public void StartAction () {
-		//Play sound
-		_Sounds.SpinDashSound();
-
-		//Ready trackers
+		//Setting private
 		_currentCharge = 20;
-		_time = 0;
+		_counter = 0;
 		_isPressedCurrently = true;
-		_wasTapped = true;
 
-		//Change size and visual
+		//Setting public
 		_LowerCapsule.SetActive(true);
 		_CharacterCapsule.SetActive(false);
-		_SpinDashBall.enabled = true;
+
+		//Visuals & Effects
+		_Actions.ActionDefault.SwitchSkin(false);
+		_Sounds.SpinDashSound();
+
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.SpinCharge);
 	}
 
+	//Called by the action manager whenever action is changing. Will only perform if enabled right now. Similar to OnDisable.
 	public void StopAction() {
+		if (enabled) enabled = false;
+		else return;
 
+		_Actions.ActionDefault.SwitchSkin(true); //Make character model visible again
 	}
 
 	#endregion
@@ -147,28 +145,22 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	/// 
 	#region private
 
+	public void HandleInputs () {
+		if (!_Actions.isPaused)
+		{
+			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+			_Actions.HandleInputs(_positionInActionList);
+		}
+	}
+
+	//Increases power in the spin for release
 	private void ChargeSpin () {
 		_currentCharge += _spinDashChargingSpeed_;
-		_time += Time.deltaTime;
+		_counter += Time.deltaTime;
 
-		//Lock camera on behind
-		//Cam.Cam.FollowDirection(3, 14f, -10, 0);
-		_Input._isCamLocked = false;
-		_CamHandler._HedgeCam._lookTimer = 0;
-
-
+		//Effects
 		_Effects.DoSpindash(1, _spinDashChargedEffectAmm * _currentCharge, _currentCharge,
 		_Effects.GetSpinDashDust(), _maximunCharge_);
-
-		_Input._move *= 0.4f;
-		float stillForce = (_spinDashStillForce_ * _speedLossByTime_.Evaluate(_time)) + 1;
-		if (stillForce * 4 < _PlayerPhys._horizontalSpeedMagnitude)
-		{
-			_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * -stillForce, false);
-		}
-
-		//Counter to exit after not pressing button for a bit;
-
 
 		//If not pressed, sets the player as exiting
 		if (!_Input.spinChargePressed)
@@ -183,8 +175,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		{
 			if (!_isPressedCurrently)
 			{
-				_wasTapped = false;
-				_currentCharge += (_spinDashChargingSpeed_ * 2.5f);
+				_currentCharge += (_spinDashChargingSpeed_ * _tappingBonus_);
 			}
 
 			_isPressedCurrently = true;
@@ -196,16 +187,29 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			_currentCharge = _maximunCharge_;
 		}
 
-		startFall();
-
 		HandleInputs();
 	}
 
-	private IEnumerator DelayRelease () {
-		int waitFor = 14;
-		if (_wasTapped)
-			waitFor = 8;
+	//Changes how the player moves when in this state.
+	private void AffectMovement () {
 
+		_Input._move *= 0.5f; //Limits input, lessening turning and deceleration
+
+		//Apply a force against the player movement to decrease speed.
+		float stillForce = _spinDashStillForce_ * _speedLossByTime_.Evaluate(_counter);
+		if (stillForce * 4 < _PlayerPhys._horizontalSpeedMagnitude)
+		{
+			_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * -stillForce, false);
+		}
+	}
+
+	//Once button is release, wait for a bit before launching, checking each frame for if the button is pressed again.
+	private IEnumerator DelayRelease () {
+		//Get time to delay, if only just started the action then delay will be shorter
+		int waitFor = _delayBeforeLaunch_;
+		if (_counter < 0.1f) waitFor /= 2;
+
+		//Checks every frame for if the button is pressed
 		for (int s = 0 ; s < waitFor ; s++)
 		{
 			yield return new WaitForFixedUpdate();
@@ -217,90 +221,107 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		Release();
 	}
 
+	//Launches player forwards at speed.
 	private void Release () {
 		if (_Actions.eventMan != null) _Actions.eventMan.SpinChargesPeformed += 1;
 
+		//Effects
 		_Effects.EndSpinDash();
 		_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount_ * _currentCharge) / 10, 40);
+
+		//Only launches forwards if charged long enough.
 		if (_currentCharge < _minimunCharge_)
 		{
 			_Sounds.Source2.Stop();
-			_Actions.Action00.StartAction();
+			_Actions.ActionDefault.StartAction();
 		}
 		else
 		{
+			//Effects
 			_Sounds.SpinDashReleaseSound();
 
-			Vector3 newForce = _currentCharge * (_PlayerSkinTransform.forward);
-			float dif = Vector3.Dot(newForce.normalized, _PlayerPhys._RB.velocity.normalized);
+			//New speed to gain is determined by charge but affected by -
+			Vector3 addForce = _PlayerSkinTransform.forward;
+			float speed = _currentCharge;
 
+			//The angle between movement direction and this new force (typically higher with bigger angles)
+			float dif = Vector3.Dot(addForce.normalized, _PlayerPhys._RB.velocity.normalized);
 			if (_PlayerPhys._horizontalSpeedMagnitude > 20)
-				newForce *= _forceGainByAngle_.Evaluate(dif);
-			newForce *= _gainBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
+				speed *= _forceGainByAngle_.Evaluate(dif);
 
-			_PlayerPhys.AddCoreVelocity(newForce, false);
+			//And the current speed (typically lower when at higher speed)
+			speed *= _gainBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
+			addForce *= speed; //Adds speed to direction to get the force
 
-			_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._RB.velocity.magnitude);
+			_PlayerPhys.AddCoreVelocity(addForce, false);
 
-			_Input.LockInputForAWhile(0, false);
+			//Adding velocity is more natural/realistic, but for accuracy in aiming, there is also a rotation towards the new direction.
+			Vector3 newSpeed = _PlayerPhys.GetRelevantVel(_PlayerPhys._RB.velocity);
+			newSpeed.Normalize();
+			dif = Vector3.Angle(_MainSkin.forward, newSpeed);
+			dif *= _turnAmountByAngle_.Evaluate(dif);
+			newSpeed = Vector3.RotateTowards(newSpeed, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
+			_PlayerPhys.SetCoreVelocity(newSpeed * _PlayerPhys._horizontalSpeedMagnitude, false);
 
-			_Actions.Action00.StartAction();
+			_CharacterAnimator.SetFloat("GroundSpeed", speed);
+
+			//_Input.LockInputForAWhile(8, false);	//
+
+			_Actions.ActionDefault.StartAction();
 		}
 
 	}
 
+	//Handles the ball animations and set the direction the character faces, by extent aims the direction of the dash on release.
 	private void SetAnimatorAndRotation () {
 
 		//Handle animator, both regular and ball ones.
-		_Actions.Action00.HandleAnimator(3);
+		_Actions.ActionDefault.HandleAnimator(3);
 		_BallAnimator.SetInteger("Action", 3);
 		_BallAnimator.SetFloat("SpinCharge", _currentCharge * _ballAnimationSpeedMultiplier);
-		//_BallAnimator.speed = _currentCharge * _ballAnimationSpeedMultiplier;
 
 		//Configured to either rotate towards where the camera is facing, or to rotate to where the player is moving.
 		switch (_whatControl_)
 		{
 			case S_Enums.SpinChargeAiming.Camera:
-				if (_Input._move.sqrMagnitude > 0.1f)
-				{
-					_CharRot = Quaternion.LookRotation(_Tools.MainCamera.transform.forward - _PlayerPhys._groundNormal * Vector3.Dot(_Tools.MainCamera.transform.forward, _PlayerPhys._groundNormal), transform.up);
-				}
+				//Since it requires camera movement, if the camera can't be moved, instead aims by input.
+				if (_CamHandler._HedgeCam._isLocked)
+					FaceByInput();
+				else
+					FaceByCamera();
 				break;
 
 			case S_Enums.SpinChargeAiming.Input:
-				if (_PlayerPhys._RB.velocity != Vector3.zero)
-				{
-					_CharRot = Quaternion.LookRotation(_PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity), transform.up);
-				}
+				FaceByInput();		
 				break;
 		}
 
-		_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, _CharRot, Time.deltaTime * _Actions.Action00._skinRotationSpeed);
-
-
-		for (int i = 0 ; i < _PlayerSkin.Length ; i++)
-		{
-			_PlayerSkin[i].enabled = false;
-		}
-	}
-
-	private void startFall () {
-		//Stop if not grounded
-		if (!_PlayerPhys._isGrounded)
-		{
-			_Input.SpecialPressed = false;
-			_Effects.EndSpinDash();
-			if (_Input.RollPressed)
+		//Moves independant of movement and always rotates to have back to the camera.
+		void FaceByCamera () {
+			if (_Input._move.sqrMagnitude > 0.1f)
 			{
-				_Actions.Action08.TryDropCharge();
+				_characterRotation = Quaternion.LookRotation(_Tools.MainCamera.transform.forward - _PlayerPhys._groundNormal * Vector3.Dot(_Tools.MainCamera.transform.forward, _PlayerPhys._groundNormal), transform.up);
 			}
-			else
+		}
+
+		//Follows movement with a slight lerp towards input (since turning is not instant)
+		void FaceByInput () {
+			Vector3 faceDirection = _PlayerPhys._RB.velocity.sqrMagnitude > 1 ? _PlayerPhys._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
+
+			//Rotate slightly to player input
+			if (_PlayerPhys._moveInput.sqrMagnitude > 0.2)
 			{
-				_Actions.Action00.StartAction();
+				Vector3 inputDirection = transform.TransformDirection(_PlayerPhys._moveInput.normalized);
+				faceDirection = Vector3.RotateTowards(faceDirection, inputDirection, Mathf.Deg2Rad * 100, 0);
 			}
 
+			_characterRotation = Quaternion.LookRotation(faceDirection, transform.up);
 		}
+
+		//Rotate towards this new direction.
+		_MainSkin.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, _characterRotation, Time.deltaTime * _Actions.ActionDefault._skinRotationSpeed);
 	}
+
 
 	#endregion
 
@@ -310,62 +331,84 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	/// 
 	#region public 
 
+	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player leaves or loses the ground
+	public void EventOnGroundLost () {
+		_Input.SpecialPressed = false; // Ensures an action like a jump dash won't be performed immediately.
+		_Effects.EndSpinDash();
+
+		StartCoroutine(DelayOnFall());
+	}
+
+	//Allows time for certain aerial actions to be performed when falling off the ground
+	private IEnumerator DelayOnFall() {
+		yield return new WaitForSeconds(0.2f);
+		if(enabled)
+		{
+			_Actions.ActionDefault.StartAction();
+		}
+	}
+
 	#endregion
 
 	/// <summary>
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Assigning
-
-	#endregion
-
-
-
-	public void HandleInputs () {
-		_QuickstepManager.AttemptAction();
-	}
-
-
-	
-
-	public void ResetSpinDashVariables () {
-		for (int i = 0 ; i < _PlayerSkin.Length ; i++)
+	//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
+	public void ReadyAction () {
+		if (_PlayerPhys == null)
 		{
-			_PlayerSkin[i].enabled = true;
+
+			//Assign all external values needed for gameplay.
+			_Tools = GetComponent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
+
+			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
+			{
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.SpinCharge)
+				{
+					_positionInActionList = i;
+					break;
+				}
+			}
 		}
-		_SpinDashBall.enabled = false;
-		_currentCharge = 0;
 	}
 
 	private void AssignStats () {
-		_spinDashChargingSpeed_ = _Tools.Stats.SpinChargeStats.chargingSpeed;
-		_minimunCharge_ = _Tools.Stats.SpinChargeStats.minimunCharge;
-		_maximunCharge_ = _Tools.Stats.SpinChargeStats.maximunCharge;
-		_spinDashStillForce_ = _Tools.Stats.SpinChargeStats.forceAgainstMovement;
-		_speedLossByTime_ = _Tools.Stats.SpinChargeStats.SpeedLossByTime;
-		_forceGainByAngle_ = _Tools.Stats.SpinChargeStats.ForceGainByAngle;
-		_gainBySpeed_ = _Tools.Stats.SpinChargeStats.ForceGainByCurrentSpeed;
-		_releaseShakeAmmount_ = _Tools.Stats.SpinChargeStats.releaseShakeAmmount;
-		_MaximumSlopeForSpinDash_ = _Tools.Stats.SpinChargeStats.maximumSlopePerformedAt;
-		_MaximumSpeedForSpinDash_ = _Tools.Stats.SpinChargeStats.maximumSpeedPerformedAt;
-		_whatControl_ = _Tools.Stats.SpinChargeStats.whatAimMethod;
-}
+		_spinDashChargingSpeed_ = _Tools.Stats.SpinChargeStat.chargingSpeed;
+		_minimunCharge_ = _Tools.Stats.SpinChargeStat.minimunCharge;
+		_maximunCharge_ = _Tools.Stats.SpinChargeStat.maximunCharge;
+		_spinDashStillForce_ = _Tools.Stats.SpinChargeStat.forceAgainstMovement;
+		_speedLossByTime_ = _Tools.Stats.SpinChargeStat.SpeedLossByTime;
+		_forceGainByAngle_ = _Tools.Stats.SpinChargeStat.ForceGainByAngle;
+		_turnAmountByAngle_ = _Tools.Stats.SpinChargeStat.LerpRotationByAngle;
+		_gainBySpeed_ = _Tools.Stats.SpinChargeStat.ForceGainByCurrentSpeed;
+		_releaseShakeAmmount_ = _Tools.Stats.SpinChargeStat.releaseShakeAmmount;
+		_MaximumSlopeForSpinDash_ = _Tools.Stats.SpinChargeStat.maximumSlopePerformedAt;
+		_MaximumSpeedForSpinDash_ = _Tools.Stats.SpinChargeStat.maximumSpeedPerformedAt;
+		_whatControl_ = _Tools.Stats.SpinChargeStat.whatAimMethod;
+		_tappingBonus_ = _Tools.Stats.SpinChargeStat.tappingBonus;
+		_delayBeforeLaunch_ = _Tools.Stats.SpinChargeStat.delayBeforeLaunch;
+	}
 	private void AssignTools () {
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_Actions = GetComponent<S_ActionManager>();
 		_CamHandler = GetComponent<S_Handler_Camera>();
 		_Input = GetComponent<S_PlayerInput>();
-		_QuickstepManager = GetComponent<S_SubAction_Quickstep>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
 		_BallAnimator = _Tools.BallAnimator;
 		_Sounds = _Tools.SoundControl;
 		_Effects = _Tools.EffectsControl;
 
-		_PlayerSkin = _Tools.PlayerSkin;
 		_PlayerSkinTransform = _Tools.PlayerSkinTransform;
-		_SpinDashBall = _Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
 		_LowerCapsule = _Tools.crouchCapsule;
 		_CharacterCapsule = _Tools.characterCapsule;
 	}
+
+	#endregion
+
 }

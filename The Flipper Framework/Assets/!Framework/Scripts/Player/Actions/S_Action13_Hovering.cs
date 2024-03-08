@@ -105,7 +105,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 
 			if (exitWindTimer >= exitWind)
 			{
-				_Actions.Action00.StartAction();
+				_Actions.ActionDefault.StartAction();
 			}
 		}
 	}
@@ -187,7 +187,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 		if (VelocityMod != Vector3.zero)
 		{
 			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-			_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _Actions.Action00._skinRotationSpeed);
+			_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _Actions.ActionDefault._skinRotationSpeed);
 		}
 		_PlayerSkin.forward = forward;
 	}

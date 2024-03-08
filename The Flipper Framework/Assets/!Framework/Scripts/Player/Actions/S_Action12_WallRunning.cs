@@ -722,7 +722,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 
 		if (immediately && _Actions.whatAction != S_Enums.PrimaryPlayerStates.Jump)
-			_Actions.Action00.StartAction();
+			_Actions.ActionDefault.StartAction();
 	}
 
 	void JumpfromWall () {
@@ -812,7 +812,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 				else
 				{
 					if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.Jump)
-						_Actions.Action00.StartAction();
+						_Actions.ActionDefault.StartAction();
 					break;
 				}
 			}

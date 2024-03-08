@@ -66,10 +66,14 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	}
 
 	private void FixedUpdate () {
-		if ((!_PlayerPhys._isGrounded && _PlayerPhys._isRolling) || (_Actions.whatSubAction != S_Enums.SubPlayerStates.Rolling))
+
+		//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
+		if ((!_PlayerPhys._isGrounded && _PlayerPhys._isRolling) || (_Actions.whatSubAction != S_Enums.SubPlayerStates.Rolling) || _whatCurrentAction != _Actions.whatAction)
 		{
 			UnCurl();
 		}
+
+		//While isRolling is set externally, the counter tracks when it is.
 		else if (_PlayerPhys._isRolling)
 			_rollCounter += Time.deltaTime;
 
@@ -77,19 +81,20 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	public bool AttemptAction () {
-		bool willStartAction = false;
-
 		switch(_Actions.whatAction)
 		{
+			//Any action with this on
 			default:
+				//Must be on the ground to roll
 				if (_PlayerPhys._isGrounded)
 				{
 					//Enter Rolling state, must have been rolling for a long enough time first.
 					if (_Input.RollPressed && _PlayerPhys._isGrounded && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
-						_Actions.whatSubAction = S_Enums.SubPlayerStates.Rolling;
+						_whatCurrentAction = _Actions.whatAction; //If the current action stops matching this, then the player has switched actions while rolling
+						_Actions.whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
 						Curl();
-						willStartAction = true;
+						return true;
 					}
 					//Exit rolling state
 					if ((!_Input.RollPressed && _rollCounter > _minRollTime_) || !_PlayerPhys._isGrounded)
@@ -99,7 +104,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 				}
 				break;
 		}
-		return willStartAction;
+		return false;
 	}
 
 	public void StartAction () {
@@ -140,22 +145,30 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	//Called whenever IsRolling is to be changed, since multiple things should change whenever this does.
 	public void SetIsRolling ( bool value ) {
+		//If changing from true to false or vice versa
 		if (value != _PlayerPhys._isRolling)
 		{
-			_PlayerPhys._isRolling = value;
+			//Set to rolling from not
 			if (value)
 			{
 				_CharacterAnimator.SetBool("isRolling", true);
+
+				//Make shorter to slide under spaces
 				_RollingCapsule.SetActive(true);
 				_CharacterCapsule.SetActive(false);
 			}
+			//Set to not rolling from was
 			else
 			{
 				_CharacterAnimator.SetBool("isRolling", false);
+
+				//Make taller again to slide under spaces
 				_CharacterCapsule.SetActive(true);
 				_RollingCapsule.SetActive(false);
 				_rollCounter = 0f;
 			}
+
+			_PlayerPhys._isRolling = value; //The physics script handles all of the movement differences while rolling.
 		}
 	}
 	#endregion
@@ -172,7 +185,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		_Input = GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
 		_Actions = GetComponent<S_ActionManager>();
-		_Action00 = _Actions.Action00;
+		_Action00 = _Actions.ActionDefault;
 		_CharacterCapsule = _Tools.characterCapsule;
 		_RollingCapsule = _Tools.crouchCapsule;
 		_CharacterAnimator = _Tools.CharacterAnimator;

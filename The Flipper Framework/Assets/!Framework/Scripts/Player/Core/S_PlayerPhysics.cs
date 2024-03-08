@@ -28,6 +28,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private S_Handler_Camera      _camHandler;
 
 	public UnityEvent             _OnGrounded;        //Event called when isGrounded is set to true from false, remember to assign what methods to call in the editor.
+	public UnityEvent             _OnLoseGround;        //Event called when isGrounded is set to false from true.
 
 	[HideInInspector]
 	public Rigidbody _RB;
@@ -135,9 +136,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	private List<Vector3>         _listOfVelocityToAddNextUpdate = new List<Vector3>(); //Rather than applied across all scripts, added forces are stored here and applied at the end of the frame.
 	private List<Vector3>         _listOfCoreVelocityToAdd= new List<Vector3>();
-
-	private Vector3               _externalSetVelocity;         //Same as adding, but overwrites all other calculations.
-	private Vector3               _externalCoreVelocity;
+	private Vector3               _externalCoreVelocity;	//Replaces core velocity this frame instead of just add to it.
+	private bool                  _isOverwritingCoreVelocity;   //Set to true if core velocity should be completely replaced, including any aditions that would be made. If false, added forces will still be applied.
 
 	[HideInInspector]
 	public float                  _speedMagnitude;              //The speed of the player at the end of the frame.
@@ -342,7 +342,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			_coreVelocity = _externalCoreVelocity;
 			_externalCoreVelocity = default(Vector3);
 		}
-		else
+		if(!_isOverwritingCoreVelocity)
 		{
 			foreach (Vector3 force in _listOfCoreVelocityToAdd)
 			{
@@ -350,26 +350,19 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 		}
 
-		//If the total velocity has  been preset at a different point this frame, then apply that, if not, calculate it through core and enviornmental.
-		if (_externalSetVelocity != default(Vector3))
+	
+		//Calculate total velocity this frame.
+		_totalVelocity = _coreVelocity + _environmentalVelocity;
+		foreach (Vector3 force in _listOfVelocityToAddNextUpdate)
 		{
-			_totalVelocity = _externalSetVelocity;
-			_externalSetVelocity = default(Vector3);
-			_coreVelocity = _totalVelocity;
+			_totalVelocity += force;
 		}
-		else
-		{
-			//Calculate total velocity this frame.
-			_totalVelocity = _coreVelocity + _environmentalVelocity;
-			foreach (Vector3 force in _listOfVelocityToAddNextUpdate)
-			{
-				_totalVelocity += force;
-			}
-		}
+		
 
 		//Clear the lists to prevent forces carrying over multiple frames.
 		_listOfCoreVelocityToAdd.Clear();
 		_listOfVelocityToAddNextUpdate.Clear();
+		_isOverwritingCoreVelocity = false;
 
 		//Sets rigidbody, this should be the only line in the player scripts to do so.
 		_RB.velocity = _totalVelocity;
@@ -515,8 +508,8 @@ public class S_PlayerPhysics : MonoBehaviour
 			accelRate *= _AccelBySlope_.Evaluate(_groundNormal.y);
 		}
 		float dragRate = _DragByAngle_.Evaluate(deviationFromInput) * _curvePosDrag;
-		float speedChange = -(accelRate - (dragRate * _turnDrag_) * modifier.y);
-		setVelocity = Vector3.MoveTowards(setVelocity, Vector3.zero, speedChange);
+		float speedChange = accelRate - (dragRate * _turnDrag_) * modifier.y;
+		setVelocity = Vector3.MoveTowards(setVelocity, Vector3.zero, -speedChange);
 
 
 		//Step 4) If the change is still under the current top speed, or the change is a decrease in total, then apply it.
@@ -866,13 +859,14 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (_isGrounded != value)
 		{
 			//If changed to be in the air when was on the ground
-			if (!_isGrounded && _isGrounded != value)
+			if (_isGrounded && _isGrounded != value)
 			{
 				_groundingDelay = timer;
 				_timeOnGround = 0;
+				_OnLoseGround.Invoke();
 			}
 			//If changed to be on the ground when was in the air
-			else if (_isGrounded && _isGrounded != value)
+			else if (!_isGrounded && _isGrounded != value)
 			{
 				//If hasn't completed aligning to face upwards when was upside down, then end that prematurely and retern turning.
 				if (_isUpsideDown)
@@ -894,15 +888,21 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (shouldPrintForce) Debug.Log("Add Total FORCE");
 	}
 	public void AddCoreVelocity ( Vector3 force, bool shouldPrintForce = false ) {
+
 		_listOfCoreVelocityToAdd.Add(force);
 		if (shouldPrintForce) Debug.Log("ADD Core FORCE");
 	}
-	public void SetCoreVelocity ( Vector3 force, bool shouldPrintForce = false ) {
+	public void SetCoreVelocity ( Vector3 force, bool willOverwrite = true, bool shouldPrintForce = false ) {
+		if (_isOverwritingCoreVelocity && !willOverwrite) { return; } //If a previous call set isoverwriting to true, then if this isn't doing the same it will be ignored.
+
+		if (willOverwrite) { _isOverwritingCoreVelocity = true; } //If true, core velocity will be fully replaced, including additions. 
+
 		_externalCoreVelocity = force;
 		if (shouldPrintForce) Debug.Log("Set Core FORCE");
 	}
-	public void SetTotalVelocity ( Vector3 force, bool shouldPrintForce = false ) {
-		_externalSetVelocity = force;
+	public void SetTotalVelocity ( Vector3 force, Vector2 split, bool shouldPrintForce = false ) {
+		_externalCoreVelocity = force * split.x;
+		_environmentalVelocity = force * split.y;
 		if (shouldPrintForce) Debug.Log("Set Total FORCE");
 	}
 
