@@ -218,7 +218,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 			_jumpSlopeSpeed = 0;
 
-			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount + 1, 1, _Actions._jumpCount + 1); //Track this new jump
+			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount + 1, 2, _Actions._jumpCount + 1); //Track this new jump, and it must be 2 or higher to track grounded jump as being skipped.
 
 			JumpInAir();
 		}

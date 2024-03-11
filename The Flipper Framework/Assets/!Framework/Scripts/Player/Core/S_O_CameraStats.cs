@@ -74,6 +74,7 @@ public class S_O_CameraStats : ScriptableObject
 		return new StrucDistance
 		{
 			CameraMaxDistance = 8,
+			affectDistancebySpeed = true,
 			cameraDistanceBySpeed = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0, 0.8f),
@@ -94,6 +95,7 @@ public class S_O_CameraStats : ScriptableObject
 	public struct StrucDistance
 	{
 		public float CameraMaxDistance;
+		public bool affectDistancebySpeed;
 		public AnimationCurve cameraDistanceBySpeed;
 		public LayerMask CollidableLayers;
 	}

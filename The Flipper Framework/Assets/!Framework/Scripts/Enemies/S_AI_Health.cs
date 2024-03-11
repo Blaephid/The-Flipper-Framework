@@ -1,25 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S_AI_Health : MonoBehaviour , IHealthSystem {
+public class S_AI_Health : MonoBehaviour, IHealthSystem
+{
 
-    public int MaxHealth = 1;
-    int HP;
+	public int _maxHealth = 1;
+	int _currentHealth;
 
-    public GameObject Explosion;
-    public S_Spawn_Enemy_Eternal SpawnReference { get; set; }
+	public GameObject Explosion;
+	public S_Spawn_Enemy_Eternal SpawnReference { get; set; }
 
-    public bool destroy = true;
+	public bool _willDestroy = true;
 
-    void Awake()
-    {
-        HP = MaxHealth;
-    }
+	void Awake () {
+		_currentHealth = _maxHealth;
+	}
 
-    public bool DealDamage(int Damage)
-    {
-        HP -= Damage;
-		if (HP <= 0)
+	public bool DealDamage ( int Damage ) {
+		_currentHealth -= Damage;
+		if (_currentHealth <= 0)
 		{
 			if (SpawnReference != null)
 			{
@@ -27,7 +26,7 @@ public class S_AI_Health : MonoBehaviour , IHealthSystem {
 			}
 			GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
 
-			if (destroy)
+			if (_willDestroy)
 				Destroy(gameObject);
 			else
 				gameObject.SetActive(false);
@@ -35,6 +34,6 @@ public class S_AI_Health : MonoBehaviour , IHealthSystem {
 		}
 		else
 			return false;
-    }
+	}
 
 }

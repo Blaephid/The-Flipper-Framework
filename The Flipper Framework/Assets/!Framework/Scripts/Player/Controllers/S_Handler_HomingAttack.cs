@@ -98,7 +98,6 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 	// Update is called once per frame
 	void Update () {
-		Debug.Log(_TargetObject);
 	}
 
 
@@ -167,7 +166,6 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, _radiusOfCameraTargetCheck_, _MainCamera.forward, _faceRange_ * radius, TargetMask);
 		if (NewTargetsInRange.Length > 0)
 		{
-			Debug.Log("Camera Target");
 			foreach (RaycastHit hit in NewTargetsInRange)
 			{
 				float distance = hit.distance;
@@ -189,7 +187,6 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, radius, TargetMask);
 		if(TargetsInRange.Length > 0)
 		{
-			Debug.Log("General Target");
 			foreach (Collider hit in TargetsInRange)
 			{
 				float distance = Vector3.Distance(transform.position, hit.transform.position);

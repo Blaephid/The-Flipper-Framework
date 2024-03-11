@@ -202,6 +202,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		_Actions.ActionDefault.SwitchSkin(true);
 		_PlayerPhys._canBeGrounded = true;
+		_PlayerPhys._isGravityOn = true;
 	}
 
 	private void OnCollisionEnter ( Collision collision ) {

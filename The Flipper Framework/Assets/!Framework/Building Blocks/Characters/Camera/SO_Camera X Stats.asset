@@ -19,7 +19,7 @@ MonoBehaviour:
     HeightToLock: 10
     afterMoveYDelay: 0.4
   LockHeightStats:
-    LockHeight: 1
+    LockHeight: 0
     LockHeightSpeed: 0.8
     HeightToLock: 10
     afterMoveYDelay: 0.4
@@ -35,6 +35,7 @@ MonoBehaviour:
     HeightFollowSpeed: 7
   DefaultDistanceStats:
     CameraMaxDistance: 8
+    affectDistancebySpeed: 1
     cameraDistanceBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -126,7 +127,8 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
   DistanceStats:
-    CameraMaxDistance: 8
+    CameraMaxDistance: 7
+    affectDistancebySpeed: 1
     cameraDistanceBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -246,9 +248,9 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   AligningStats:
-    angleThresholdUpwards: 0.4
+    angleThresholdUpwards: 0.5
     angleThresholdDownwards: 0.8
-    CameraVerticalRotationSpeed: 11
+    CameraVerticalRotationSpeed: 4
     vertFollowSpeedByAngle:
       serializedVersion: 2
       m_Curve:
@@ -262,8 +264,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
-        value: 1.5
+        time: 0.98750305
+        value: 1.0187492
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -278,7 +280,7 @@ MonoBehaviour:
     inputPredictonDistance: 1.5
     cameraMoveToInputSpeed: 3
   LookAheadStats:
-    shouldMoveInInputDirection: 0
+    shouldMoveInInputDirection: 1
     inputPredictonDistance: 0.9
     cameraMoveToInputSpeed: 2.2
   DefaultInputStats:
@@ -292,7 +294,7 @@ MonoBehaviour:
     InputYSpeed: 55
     InputSensi: 1
     InputMouseSensi: 0.035
-    stationaryCamIncrease: 1.35
+    stationaryCamIncrease: 1.05
   DefaultTargetByAngleStats:
     shouldMoveBasedOnAngle: 1
     moveUpByAngle:
@@ -398,7 +400,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   TargetByAngleStats:
-    shouldMoveBasedOnAngle: 0
+    shouldMoveBasedOnAngle: 1
     moveUpByAngle:
       serializedVersion: 2
       m_Curve:
@@ -508,7 +510,7 @@ MonoBehaviour:
     rotateCharacterBeforeCameraFollows: 0.2
     followFacingDirectionSpeed: 0.5
   RotateBehindStats:
-    LockCamAtHighSpeed: 90
+    LockCamAtHighSpeed: 300
     afterMoveXDelay: 0.4
     rotateToBehindSpeed: 5
     rotateCharacterBeforeCameraFollows: 0.18

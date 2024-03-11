@@ -1350,6 +1350,7 @@ MonoBehaviour:
     targetSearchDistance: 44
     rangeInCameraDirection: 1.2
     minimumTargetDistance: 4
+    maximumTargetDistance: 80
     TargetLayer:
       serializedVersion: 2
       m_Bits: 131072
@@ -1368,6 +1369,7 @@ MonoBehaviour:
     targetSearchDistance: 44
     rangeInCameraDirection: 1.2
     minimumTargetDistance: 15
+    maximumTargetDistance: 80
     TargetLayer:
       serializedVersion: 2
       m_Bits: 0
@@ -1422,6 +1424,7 @@ MonoBehaviour:
     minimunCharge: 20
     maximunCharge: 110
     forceAgainstMovement: 1.2
+    shouldSetRolling: 1
     maximumSpeedPerformedAt: 200
     maximumSlopePerformedAt: -1
     releaseShakeAmmount: 1.5
@@ -1666,6 +1669,7 @@ MonoBehaviour:
     minimunCharge: 20
     maximunCharge: 110
     forceAgainstMovement: 0.015
+    shouldSetRolling: 1
     maximumSpeedPerformedAt: 200
     maximumSlopePerformedAt: -1
     releaseShakeAmmount: 1.5
@@ -1958,16 +1962,16 @@ MonoBehaviour:
     enemyHomingStoppingPowerWhenAdditive: 40
     shouldStopOnHomingAttackHit: 1
     shouldStopOnHit: 1
-    enemyDamageShakeAmmount: 0.5
-    enemyHitShakeAmmount: 1.2
+    damageShakeAmmount: 0.5
+    hitShakeAmmount: 1.2
   DefaultEnemyInteraction:
     bouncingPower: 45
     homingBouncingPower: 40
     enemyHomingStoppingPowerWhenAdditive: 40
     shouldStopOnHomingAttackHit: 1
     shouldStopOnHit: 1
-    enemyDamageShakeAmmount: 0.5
-    enemyHitShakeAmmount: 1.2
+    damageShakeAmmount: 0.5
+    hitShakeAmmount: 1.2
   ItemPulling:
     RadiusBySpeed:
       serializedVersion: 2
@@ -2084,10 +2088,11 @@ MonoBehaviour:
     BonkOnWalls:
       serializedVersion: 2
       m_Bits: 4097
-    bonkUpwardsForce: 16
-    bonkBackwardsForce: 18
+    bonkUpwardsForce: 20
+    bonkBackwardsForce: 30
     bonkControlLock: 20
     bonkControlLockAir: 40
+    bonkTime: 35
   DefaultWhenBonked:
     BonkOnWalls:
       serializedVersion: 2
@@ -2096,34 +2101,145 @@ MonoBehaviour:
     bonkBackwardsForce: 18
     bonkControlLock: 20
     bonkControlLockAir: 40
+    bonkTime: 100
   WhenHurt:
     invincibilityTime: 90
     maxRingLoss: 20
-    knockbackUpwardsForce: 30
-    shouldResetSpeedOnHit: 0
-    recoilFrom:
-      serializedVersion: 2
-      m_Bits: 1
-    knockbackForce: 25
     ringReleaseSpeed: 550
     ringArcSpeed: 250
-    flickerSpeed: 3
-    hurtControlLock: 15
-    hurtControlLockAir: 30
+    flickerTimes: {x: 5, y: 10}
+    respawnAfter: {x: 90, y: 100, z: 170}
+    RingsLostInSpawnByAmount:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 30
+        value: 2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 50
+        value: 3
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 75
+        value: 4
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 100
+        value: 5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   DefaultWhenHurt:
     invincibilityTime: 90
     maxRingLoss: 20
+    ringReleaseSpeed: 550
+    ringArcSpeed: 250
+    flickerTimes: {x: 5, y: 10}
+    respawnAfter: {x: 90, y: 120, z: 170}
+    RingsLostInSpawnByAmount:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 30
+        value: 2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 50
+        value: 3
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 75
+        value: 4
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 100
+        value: 5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  KnockbackStats:
+    whatResponse: 0
     knockbackUpwardsForce: 30
-    shouldResetSpeedOnHit: 0
+    recoilFrom:
+      serializedVersion: 2
+      m_Bits: 4097
+    knockbackForce: 25
+    hurtControlLock: 30
+    hurtControlLockAir: 30
+    stateLengthWithKnockback: 20
+    stateLengthWithoutKnockback: 40
+  DefaultKnockBackStats:
+    whatResponse: 0
+    knockbackUpwardsForce: 30
     recoilFrom:
       serializedVersion: 2
       m_Bits: 0
     knockbackForce: 25
-    ringReleaseSpeed: 550
-    ringArcSpeed: 250
-    flickerSpeed: 3
     hurtControlLock: 15
     hurtControlLockAir: 30
+    stateLengthWithKnockback: 130
+    stateLengthWithoutKnockback: 90
   RailStats:
     railMaxSpeed: 125
     railTopSpeed: 80

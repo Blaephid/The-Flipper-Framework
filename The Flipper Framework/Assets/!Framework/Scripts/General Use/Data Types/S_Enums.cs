@@ -72,4 +72,11 @@ public class S_Enums
 		bounceOff,
 		Rebound,
 	}
+
+	public enum HurtResponse {
+		Normal,
+		ResetSpeed,
+		Frontiers,
+		FrontiersWithoutDeathDelay
+	}
 }

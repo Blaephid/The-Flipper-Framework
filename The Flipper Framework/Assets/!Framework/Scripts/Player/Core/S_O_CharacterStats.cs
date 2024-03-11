@@ -693,6 +693,7 @@ public class S_O_CharacterStats : ScriptableObject
 			minimunCharge = 20f,
 			maximunCharge = 110f,
 			forceAgainstMovement = 0.015f,
+			shouldSetRolling = true,
 			maximumSpeedPerformedAt = 200f,
 			maximumSlopePerformedAt = -1f,
 			releaseShakeAmmount = 1.5f,
@@ -746,6 +747,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float              minimunCharge;
 		public float              maximunCharge;
 		public float              forceAgainstMovement;
+		public bool                   shouldSetRolling;
 		public float              maximumSpeedPerformedAt; //The max amount of speed you can be at to perform a Spin Dash
 		public float              maximumSlopePerformedAt; //The highest slope you can be on to Spin Dash
 		public float              releaseShakeAmmount;
@@ -865,7 +867,7 @@ public class S_O_CharacterStats : ScriptableObject
 			shouldStopOnHomingAttackHit = true,
 			shouldStopOnHit = true,
 			damageShakeAmmount = 0.5f,
-			hitShakeAmmount = 1.2f
+			hitShakeAmmount = 1.2f,
 		};
 	}
 
@@ -874,13 +876,13 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucEnemyInteract
 	{
-		public float      bouncingPower;
-		public float      homingBouncingPower;
-		public float      enemyHomingStoppingPowerWhenAdditive;
-		public bool       shouldStopOnHomingAttackHit;
-		public bool       shouldStopOnHit;
-		public float      damageShakeAmmount;
-		public float      hitShakeAmmount;
+		public float		bouncingPower;
+		public float		homingBouncingPower;
+		public float		enemyHomingStoppingPowerWhenAdditive;
+		public bool		shouldStopOnHomingAttackHit;
+		public bool		shouldStopOnHit;
+		public float		damageShakeAmmount;
+		public float		hitShakeAmmount;
 	}
 	#endregion
 
@@ -930,7 +932,8 @@ public class S_O_CharacterStats : ScriptableObject
 			bonkUpwardsForce = 16f,
 			bonkBackwardsForce = 18f,
 			bonkControlLock = 20f,
-			bonkControlLockAir = 40f
+			bonkControlLockAir = 40f,
+			bonkTime = 100
 		};
 	}
 
@@ -942,6 +945,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float                  bonkBackwardsForce;
 		public float                  bonkControlLock;
 		public float                  bonkControlLockAir;
+		public int                    bonkTime;
 
 	}
 	#endregion
@@ -958,15 +962,18 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			invincibilityTime = 90,
 			maxRingLoss = 20,
-			knockbackUpwardsForce = 30f,
-			shouldResetSpeedOnHit = false,
-			recoilFrom = new LayerMask(),
-			knockbackForce = 25f,
 			ringReleaseSpeed = 550f,
+			respawnAfter = new Vector3(90, 120, 170),
 			ringArcSpeed = 250f,
-			flickerSpeed = 3f,
-			hurtControlLock = 15f,
-			hurtControlLockAir = 30f
+			flickerTimes = new Vector2 (5, 10),
+			RingsLostInSpawnByAmount = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 1f),
+				new Keyframe(30f, 2f),
+				new Keyframe(50f, 3f),
+				new Keyframe(75, 4f),
+				new Keyframe(100f, 5f),
+			}),
 		};
 	}
 
@@ -976,15 +983,42 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		public int              invincibilityTime;
 		public int              maxRingLoss;
-		public float            knockbackUpwardsForce;
-		public bool             shouldResetSpeedOnHit;
-		public LayerMask        recoilFrom;
-		public float            knockbackForce;
 		public float            ringReleaseSpeed;
 		public float            ringArcSpeed;
-		public float            flickerSpeed;
+		public Vector2            flickerTimes;
+		public Vector3                respawnAfter;
+		public AnimationCurve         RingsLostInSpawnByAmount;
+
+	}
+
+	public StrucRebound KnockbackStats = SetStrucRebound();
+	public StrucRebound DefaultKnockBackStats = SetStrucRebound();
+
+	static StrucRebound SetStrucRebound () {
+		return new StrucRebound
+		{
+			whatResponse = S_Enums.HurtResponse.Normal,
+			knockbackUpwardsForce = 30f,
+			recoilFrom = new LayerMask(),
+			knockbackForce = 25f,
+			hurtControlLock = 15f,
+			hurtControlLockAir = 30f,
+			stateLengthWithKnockback = 130,
+			stateLengthWithoutKnockback = 90,
+		};
+	}
+
+	[System.Serializable]
+	public struct StrucRebound
+	{
+		public S_Enums.HurtResponse whatResponse;
+		public float            knockbackUpwardsForce;
+		public LayerMask        recoilFrom;
+		public float            knockbackForce;
 		public float            hurtControlLock;
 		public float            hurtControlLockAir;
+		public int         stateLengthWithKnockback;
+		public int         stateLengthWithoutKnockback;
 
 	}
 	#endregion
@@ -1201,6 +1235,7 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawItemPulling();
 		DrawWhenBonked();
 		DrawWhenHurt();
+		DrawKnockback();
 
 		void DrawProperty ( string property, string outputName ) {
 			GUILayout.BeginHorizontal();
@@ -1571,16 +1606,32 @@ public class S_O_CharacterStatsEditor : Editor
 		}
 		#endregion
 
-		//WhenHurt       
+		//Health      
 		#region WhenHurt
 		void DrawWhenHurt () {
 			EditorGUILayout.Space();
-			DrawProperty("WhenHurt", "When Hurt");
+			DrawProperty("WhenHurt", "Health interactions");
 
 			Undo.RecordObject(stats, "set to defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
 				stats.WhenHurt = stats.DefaultWhenHurt;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
+		#endregion
+
+		//WhenHurt       
+		#region Knockback
+		void DrawKnockback () {
+			EditorGUILayout.Space();
+			DrawProperty("KnockbackStats", "Knockback");
+
+			Undo.RecordObject(stats, "set to defaults");
+			if (GUILayout.Button("Default", ResetToDefaultButton))
+			{
+				stats.KnockbackStats = stats.DefaultKnockBackStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1633,12 +1684,7 @@ public class S_O_CharacterStatsEditor : Editor
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
 		}
-		#endregion
-
-
-
-
-		//DrawDefaultInspector();       
+		#endregion    
 	}
 
 }

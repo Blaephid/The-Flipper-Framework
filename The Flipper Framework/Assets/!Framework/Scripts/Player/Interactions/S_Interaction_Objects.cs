@@ -69,7 +69,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void LateUpdate () {
 		UpdateSpeed();
 
-		RingsCounter.text = ": " + _HurtAndHealth.RingAmount;
+		RingsCounter.text = ": " + _HurtAndHealth._ringAmount;
 	}
 
 	void UpdateSpeed () {
@@ -284,16 +284,15 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			Instantiate(RingCollectParticle, col.transform.position, Quaternion.identity);
 			Destroy(col.gameObject);
-			StartCoroutine(IncreaseRing());
+			StartCoroutine(_HurtAndHealth.GainRing());
 
 
 		}
 		else if (col.tag == "Ring Road")
 		{
-			//Actions.Action07Control.UpdateHomingTargets();
 			Instantiate(RingCollectParticle, col.transform.position, Quaternion.identity);
 			Destroy(col.gameObject);
-			StartCoroutine(IncreaseRing());
+			StartCoroutine(_HurtAndHealth.GainRing());
 		}
 		else if (col.tag == "MovingRing")
 		{
@@ -301,7 +300,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			{
 				if (col.GetComponent<S_MovingRing>().colectable)
 				{
-					StartCoroutine(IncreaseRing());
+					StartCoroutine(_HurtAndHealth.GainRing());
 					Instantiate(RingCollectParticle, col.transform.position, Quaternion.identity);
 					Destroy(col.gameObject);
 				}
@@ -321,7 +320,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (col.tag == "Monitor")
 		{
 			col.GetComponentInChildren<BoxCollider>().enabled = false;
-			attack.AttemptAttack(col, S_Enums.AttackTargets.Monitor);
+			attack.AttemptAttackOnContact(col, S_Enums.AttackTargets.Monitor);
 		}
 
 
@@ -524,7 +523,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (col.GetComponent<S_Data_Monitor>().Type == MonitorType.Ring)
 		{
 
-			GetComponent<S_Handler_Hurt>().RingAmount += col.GetComponent<S_Data_Monitor>().RingAmount;
+			GetComponent<S_Handler_Hurt>()._ringAmount += col.GetComponent<S_Data_Monitor>().RingAmount;
 			col.GetComponent<S_Data_Monitor>().DestroyMonitor();
 
 		}
@@ -534,17 +533,6 @@ public class S_Interaction_Objects : MonoBehaviour
 			col.GetComponent<S_Data_Monitor>().DestroyMonitor();
 
 		}
-	}
-
-	private IEnumerator IncreaseRing () {
-		int ThisFramesRingCount = _HurtAndHealth.RingAmount;
-		_HurtAndHealth.RingAmount++;
-		yield return new WaitForEndOfFrame();
-		if (_HurtAndHealth.RingAmount > ThisFramesRingCount + 1)
-		{
-			_HurtAndHealth.RingAmount--;
-		}
-
 	}
 
 	private IEnumerator lockGravity ( Vector3 newGrav ) {

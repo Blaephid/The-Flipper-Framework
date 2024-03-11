@@ -23,6 +23,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	[HideInInspector] public bool _shouldStopOnHit_;
 
 	private bool CanHitAgain = true;
+	private bool _hasHitThisFrame = false; //Prevents multiple attacks from being calculated in one frame
 
 	private void Start () {
 		Tools = GetComponent<S_CharacterTools>();
@@ -31,26 +32,43 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		AssignStats();
 	}
 
-	public bool AttemptAttack ( Collider other, S_Enums.AttackTargets target ) {
-		switch (_Actions.whatAction)
+	private void FixedUpdate () {
+		_hasHitThisFrame = false;
+	}
+
+	public bool AttemptAttackOnContact ( Collider other, S_Enums.AttackTargets target ) {
+		if(!_hasHitThisFrame)
 		{
-			case S_Enums.PrimaryPlayerStates.Default:
-				if (_PlayerPhys._isRolling) { AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target); }
-				return true;
-			case S_Enums.PrimaryPlayerStates.SpinCharge:
-				AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target);
-				return true;
-			case S_Enums.PrimaryPlayerStates.Jump:
-				AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
-				return true;
-			case S_Enums.PrimaryPlayerStates.JumpDash:
-				AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
-				return true;
-			case S_Enums.PrimaryPlayerStates.Homing:
-				AttackThing(other, S_Enums.PlayerAttackTypes.HomingAttack, target);
-				return true;
+			switch (_Actions.whatAction)
+			{
+				case S_Enums.PrimaryPlayerStates.Default:
+					if (_PlayerPhys._isRolling)
+					{
+						AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target);
+						_hasHitThisFrame = true;
+						break;
+					}
+					_hasHitThisFrame = false;
+					break;
+				case S_Enums.PrimaryPlayerStates.SpinCharge:
+					AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target);
+					_hasHitThisFrame = true;
+					break;
+				case S_Enums.PrimaryPlayerStates.Jump:
+					AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
+					_hasHitThisFrame = true;
+					break;
+				case S_Enums.PrimaryPlayerStates.JumpDash:
+					AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
+					_hasHitThisFrame = true;
+					break;
+				case S_Enums.PrimaryPlayerStates.Homing:
+					AttackThing(other, S_Enums.PlayerAttackTypes.HomingAttack, target);
+					_hasHitThisFrame = true;
+					break;
+			}
 		}
-		return false;
+		return _hasHitThisFrame;
 	}
 
 	private void AttackThing ( Collider col, S_Enums.PlayerAttackTypes attackType, S_Enums.AttackTargets target, int damage = 1 ) {

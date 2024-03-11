@@ -45,7 +45,7 @@ public class S_Handler_Camera : MonoBehaviour
 					case TriggerType.justEffect:
 						changeDistance(cameraData);
 						if (cameraData.changeAltitude)
-							_HedgeCam.SetCameraNoLook(cameraData.CameraAltitude);
+							_HedgeCam.SetCameraHeightOnly(cameraData.CameraAltitude, cameraData.FaceSpeed, cameraData.duration);
 						break;
 
 

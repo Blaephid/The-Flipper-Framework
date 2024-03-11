@@ -48,6 +48,7 @@ public class S_HedgeCamera : MonoBehaviour
 	[HideInInspector]
 	public float                  _cameraMaxDistance_ = 11;
 	private AnimationCurve        _cameraDistanceBySpeed_;
+	private bool                  _shouldAffectDistanceBySpeed_;
 	private Vector3               _angleThreshold_;
 
 	private float                 _cameraVerticalRotationSpeed_ = 10;
@@ -322,8 +323,12 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Sets the camera a distance away from the player, either by adjusting the cinemachine or placing manually.
 	void HandleCameraDistance () {
-		float targetDistance = _cameraDistanceBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
-		_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.04f);
+		_distanceModifier = 1;
+		if(_shouldAffectDistanceBySpeed_)
+		{
+			float targetDistance = _cameraDistanceBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
+			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.04f);
+		}
 
 		float dist = _cameraMaxDistance_ * _distanceModifier;
 
@@ -497,7 +502,9 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Causes the camera to turn around to face a designated vector direction in world space.
 	public void RotateDirection ( Vector3 dir, float speed, float height, bool changeHeight ) {
-		
+
+		dir = dir == Vector3.zero ? transform.forward : dir;
+
 		//Get a rotation based off the look direction without compensating player's current up.	
 		Vector3 newDirection = _PlayerTransformCopy.InverseTransformDirection(dir);
 		Quaternion localDirection = Quaternion.LookRotation(newDirection, _PlayerTransformCopy.up);
@@ -644,8 +651,9 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	//Only changes height
-	public void SetCameraNoLook ( float heightSet ) {
-		_lookTimer = 1;
+	public void SetCameraHeightOnly ( float heightSet, float speed, float duration = 1 ) {
+		_lookTimer = duration > 0 ? -duration : 1;
+		_lockedRotationSpeed = speed;
 		_heightToLook = heightSet;
 	}
 
@@ -701,6 +709,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 		_cameraMaxDistance_ = _Tools.camStats.DistanceStats.CameraMaxDistance;
 		_cameraDistanceBySpeed_ = _Tools.camStats.DistanceStats.cameraDistanceBySpeed;
+		_shouldAffectDistanceBySpeed_ = _Tools.camStats.DistanceStats.affectDistancebySpeed;
 		_virtualCamera.GetComponent<CinemachineCollider>().m_CollideAgainst = _Tools.camStats.DistanceStats.CollidableLayers;
 		_CollidableLayers_ = _Tools.camStats.DistanceStats.CollidableLayers;
 

@@ -81,21 +81,20 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_Tools.HomingTrailScript.emitTime = 0;
 		_Tools.HomingTrailScript.emit = false;
 
-		if (_HealthAndHurt.HasShield)
+		if (_HealthAndHurt._hasShield)
 		{
 			_HealthAndHurt.SetShield(false);
 		}
 
-		transform.position = ResumePosition;
-		//transform.rotation = ResumeRotation;
-		characterTransform.forward = ResumeFace;
-
 
 		_PlayerPhys.SetTotalVelocity(characterTransform.forward * 2, new Vector2(1, 0));
-		_Actions.ActionHurt._deadCounter = 0;
 
 		Cam._HedgeCam._isReversed = false;
 		Cam._HedgeCam.SetBehind(20);
+
+		transform.position = ResumePosition;
+		//transform.rotation = ResumeRotation;
+		characterTransform.forward = ResumeFace;
 
 	}
 

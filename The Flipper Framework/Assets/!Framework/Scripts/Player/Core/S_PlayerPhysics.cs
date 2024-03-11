@@ -132,17 +132,21 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3                _environmentalVelocity;       //Environmental velocity is the velocity applied by external forces, such as springs, fans and more.
 	[HideInInspector]
 	public Vector3                _totalVelocity;               //The combination of core and environmetal velocity determening actual movement direction and speed in game.
-	public Vector3                _prevTotalVelocity;           //The total velocity at the end of the previous frame, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
+	private Vector3               prevVec;
+	[HideInInspector]
+	public List<Vector3>          _prevTotalVelocities = new List<Vector3>() {Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
 
 	private List<Vector3>         _listOfVelocityToAddNextUpdate = new List<Vector3>(); //Rather than applied across all scripts, added forces are stored here and applied at the end of the frame.
 	private List<Vector3>         _listOfCoreVelocityToAdd= new List<Vector3>();
-	private Vector3               _externalCoreVelocity;	//Replaces core velocity this frame instead of just add to it.
+	private Vector3               _externalCoreVelocity;        //Replaces core velocity this frame instead of just add to it.
 	private bool                  _isOverwritingCoreVelocity;   //Set to true if core velocity should be completely replaced, including any aditions that would be made. If false, added forces will still be applied.
 
 	[HideInInspector]
 	public float                  _speedMagnitude;              //The speed of the player at the end of the frame.
 	[HideInInspector]
 	public float                  _horizontalSpeedMagnitude;    //The speed of the player relative to the character transform, so only shows running speed.
+	[HideInInspector]
+	public List<float>            _previousHorizontalSpeed = new List<float>() {1f, 2f, 3f }; //The horizontal speeds across the last few frames. Useful for collision checks.
 
 	[HideInInspector]
 	public Vector3                _moveInput;         //Assigned by the input script, the direction the player is trying to go.
@@ -263,23 +267,25 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If the rigidbody velocity is smaller than it was last frame (such as from hitting a wall),
 		//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 		Vector3 newVelocity = _RB.velocity;
-		if (newVelocity.sqrMagnitude <= _prevTotalVelocity.sqrMagnitude && _prevTotalVelocity.sqrMagnitude > 1)
+		Vector3 velocity1FrameAgo = _prevTotalVelocities[0];
+
+		if (newVelocity.sqrMagnitude <= velocity1FrameAgo.sqrMagnitude && velocity1FrameAgo.sqrMagnitude > 1)
 		{
-			float angleChange = Vector3.Angle(newVelocity, _prevTotalVelocity) / 180;
+			float angleChange = Vector3.Angle(newVelocity, velocity1FrameAgo) / 180;
 			float sizeDifference = Mathf.Abs(newVelocity.magnitude - _speedMagnitude);
 			float newSpeed = _RB.velocity.sqrMagnitude;
 			// If the change is just making the player bounce off upwards into the air, then set it to zero.
-			if (angleChange > 0.45 || (angleChange > 0.1 && Vector3.Angle(newVelocity, transform.up) < Vector3.Angle(_prevTotalVelocity, transform.up)))
+			if (angleChange > 0.45 || (angleChange > 0.1 && Vector3.Angle(newVelocity, transform.up) < Vector3.Angle(velocity1FrameAgo, transform.up)))
 			{
 				_RB.velocity = Vector3.zero;
 			}
 			//But if the difference in speed is minor(such as lightly colliding with a slope when going up), then ignore the change.
 			else if (sizeDifference < 10 && newSpeed > Mathf.Pow(15, 2))
 			{
-				_RB.velocity = _prevTotalVelocity;
+				_RB.velocity = velocity1FrameAgo;
 			}
 
-			Vector3 vectorDifference = _prevTotalVelocity - newVelocity;
+			Vector3 vectorDifference = velocity1FrameAgo - newVelocity;
 			_coreVelocity -= vectorDifference;
 		}
 
@@ -342,7 +348,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			_coreVelocity = _externalCoreVelocity;
 			_externalCoreVelocity = default(Vector3);
 		}
-		if(!_isOverwritingCoreVelocity)
+		if (!_isOverwritingCoreVelocity)
 		{
 			foreach (Vector3 force in _listOfCoreVelocityToAdd)
 			{
@@ -350,14 +356,12 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 		}
 
-	
 		//Calculate total velocity this frame.
 		_totalVelocity = _coreVelocity + _environmentalVelocity;
 		foreach (Vector3 force in _listOfVelocityToAddNextUpdate)
 		{
 			_totalVelocity += force;
 		}
-		
 
 		//Clear the lists to prevent forces carrying over multiple frames.
 		_listOfCoreVelocityToAdd.Clear();
@@ -366,12 +370,20 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Sets rigidbody, this should be the only line in the player scripts to do so.
 		_RB.velocity = _totalVelocity;
-		_prevTotalVelocity = _totalVelocity;
+		prevVec = _totalVelocity;
+
+		//Adds this new velocity to a list of 2, tracking the last 2 frames.
+		_prevTotalVelocities.Insert(0, _totalVelocity);
+		_prevTotalVelocities.RemoveAt(2);
 
 		//Assigns the global variables for the current movement, since it's assigned at the end of a frame, changes between frames won't be counted when using this,
 		_speedMagnitude = _totalVelocity.magnitude;
-		Vector3 releVec = GetRelevantVel(_RB.velocity);
-		_horizontalSpeedMagnitude = new Vector3(releVec.x, 0f, releVec.z).magnitude;
+		Vector3 releVec = GetRelevantVel(_RB.velocity, false);
+		_horizontalSpeedMagnitude = releVec.magnitude;
+
+		//Adds this new speed to a list of 3
+		_previousHorizontalSpeed.Insert(0, _horizontalSpeedMagnitude);
+		_previousHorizontalSpeed.RemoveAt(2);
 	}
 
 	//Calls all the methods involved in managing coreVelocity on the ground, such as normal control (with normal modifiers), sticking to the ground, and effects from slopes.
@@ -437,8 +449,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		//Apply changes to the lateral velocity based on input.
-		lateralVelocity = HandleTurningAndAcceleration(lateralVelocity, _moveInput, modifier);
-		lateralVelocity = HandleDecel(lateralVelocity, _moveInput, _isGrounded);
+		lateralVelocity = AccelerateAndTurn(lateralVelocity, _moveInput, modifier);
+		lateralVelocity = Decelerate(lateralVelocity, _moveInput);
 
 		// Clamp horizontal running speed. coreVelocity can never exceed the player moving laterally faster than this.
 		localVelocity = lateralVelocity + verticalVelocity;
@@ -459,7 +471,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//This handles increasing the speed while changing the direction of the player's controlled velocity.
 	//It will not allow speed to increase if over topSpeed, but will only decrease if there is enough drag from the turn.
-	Vector3 HandleTurningAndAcceleration ( Vector3 lateralVelocity, Vector3 input, Vector2 modifier ) {
+	Vector3 AccelerateAndTurn ( Vector3 lateralVelocity, Vector3 input, Vector2 modifier ) {
 
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;
@@ -524,12 +536,12 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles decreasing the magnitude of the player's controlled velocity, usually only if there is no input, but other circumstances may decrease speed as well.
 	//Deceleration is calculated, then applied at the end of the method.
-	private Vector3 HandleDecel ( Vector3 lateralVelocity, Vector3 input, bool isGrounded ) {
+	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier = 1 ) {
 		float decelAmount = 0;
 		//If there is no input, ready conventional deceleration.
 		if (Mathf.Approximately(input.sqrMagnitude, 0))
 		{
-			if (isGrounded)
+			if (_isGrounded)
 			{
 				decelAmount = _moveDeceleration_ * _curvePosDecell;
 			}
@@ -544,13 +556,13 @@ public class S_PlayerPhysics : MonoBehaviour
 			decelAmount = _rollingDecel_ * _curvePosDecell;
 		}
 		//If in air, a constant deceleration is applied in addition to any others.
-		if (!isGrounded && _horizontalSpeedMagnitude > 14)
+		if (!_isGrounded && _horizontalSpeedMagnitude > 14)
 		{
 			decelAmount += _constantAirDecel_;
 		}
 
 		//Apply calculated deceleration
-		return Vector3.MoveTowards(lateralVelocity, Vector3.zero, decelAmount);
+		return Vector3.MoveTowards(lateralVelocity, Vector3.zero, decelAmount * modifier);
 	}
 
 	//Handles interactions with slopes (non flat ground), both positive and negative, relative to the player's current rotation.
@@ -584,7 +596,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (_horizontalSpeedMagnitude < _SlopeSpeedLimitByAngle_.Evaluate(_groundNormal.y))
 		{
 			SetIsGrounded(false, 1f);
-			AddTotalVelocity(_groundNormal * 5f);
+			AddCoreVelocity(_groundNormal * 5f);
 			_keepNormalCounter = _keepNormalForThis_ - 0.1f;
 		}
 
@@ -816,24 +828,22 @@ public class S_PlayerPhysics : MonoBehaviour
 					{
 
 						Vector3 cross = Vector3.Cross(_rotateSidewaysTowards, transform.up);
-						Debug.DrawRay(transform.position, cross, Color.red, 10f);
 
 						Quaternion targetRot = Quaternion.FromToRotation(transform.up, cross) * transform.rotation;
-						transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
+						transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 7f);
 					}
 					//When flipped over, set y value of the right side to zero to ensure not tilted anymore, and ready main rotation to sort any remaining rotation differences.
 					else
 					{
 						transform.right = new Vector3(transform.right.x, 0, transform.right.z).normalized;
-						_keepNormal = Vector3.up;
-						//_canTurn = true;			
+						_keepNormal = Vector3.up;		
 					}
 				}
 				//General rotation to face up again.
 				else
 				{
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
-					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 10f);
+					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 5f);
 					if (transform.rotation == targetRot && _isUpsideDown)
 					{
 						_isUpsideDown = false;
@@ -883,10 +893,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//the following methods are called by other scripts when they want to affect the velocity. The changes are stored and applied in the SetTotalVelocity method.
-	public void AddTotalVelocity ( Vector3 force, bool shouldPrintForce = false ) {
-		_listOfVelocityToAddNextUpdate.Add(force);
-		if (shouldPrintForce) Debug.Log("Add Total FORCE");
-	}
 	public void AddCoreVelocity ( Vector3 force, bool shouldPrintForce = false ) {
 
 		_listOfCoreVelocityToAdd.Add(force);
@@ -904,6 +910,14 @@ public class S_PlayerPhysics : MonoBehaviour
 		_externalCoreVelocity = force * split.x;
 		_environmentalVelocity = force * split.y;
 		if (shouldPrintForce) Debug.Log("Set Total FORCE");
+	}
+
+	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.
+	public IEnumerator LockFunctionForTime ( List<bool> function, float seconds )
+	{
+		function.Add(false);
+		yield return new WaitForSeconds(seconds);
+		function.RemoveAt(0);
 	}
 
 	#endregion

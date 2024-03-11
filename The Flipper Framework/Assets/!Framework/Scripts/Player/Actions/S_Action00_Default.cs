@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Security.Cryptography;
 using UnityEditor;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(S_ActionManager))]
 public class S_Action00_Default : MonoBehaviour, IMainAction
@@ -28,6 +29,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	private SkinnedMeshRenderer[]           _PlayerSkin;
 	private SkinnedMeshRenderer             _SpinDashBall;
+	private List<SkinnedMeshRenderer>       _CurrentSkins = new List<SkinnedMeshRenderer>();
 
 
 	#endregion
@@ -202,19 +204,32 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	//Switches from one character model to another, typically used to switch between the spinball and the proper character.
 	public void SwitchSkin(bool setMainSkin) {
+		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
+
+		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
 		for (int i = 0 ; i < _PlayerSkin.Length ; i++)
 		{
 			_PlayerSkin[i].enabled = setMainSkin;
+			if (_PlayerSkin[i].enabled) { _CurrentSkins.Add(_PlayerSkin[i]); }
 		}
-		_SpinDashBall.enabled = !setMainSkin;
 
+		_SpinDashBall.enabled = !setMainSkin;
+		//If ball enabled, disable the animator so its sounds don't overlap.
 		if(_SpinDashBall.enabled) { 
 			_CurrentAnimator = _BallAnimator;
 			_CharacterAnimator.speed = 0;
+			_CurrentSkins.Add(_SpinDashBall);
 		}
 		else { 
 			_CurrentAnimator = _CharacterAnimator;
 			_CharacterAnimator.speed = 1;
+		}
+	}
+
+	public void HideCurrentSkins(bool hide) {
+		foreach (SkinnedMeshRenderer sk in _CurrentSkins)
+		{
+			sk.enabled = hide;
 		}
 	}
 
@@ -246,14 +261,17 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
 	public void EventOnGrounded() {
-		if (_animationAction == 1)
+		//May be in a ball even in this state (like after a homing attack), so change that on land
+		if(_animationAction == 1)
+		{
+			_animationAction = 0;
 			_CharacterAnimator.SetTrigger("ChangedState");
-		_animationAction = 0;
+		}
 		ReadyCoyote();
 	}
 
 
-	public void EventOnLoseGround () {
+	public void EventOnGroundLost () {
 		if(enabled) { StartCoroutine(CoyoteTime()); }
 	}
 

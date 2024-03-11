@@ -54,6 +54,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private S_Enums.SpinChargeAiming _whatControl_;
 	private float                 _tappingBonus_;
 	private int                   _delayBeforeLaunch_;
+	private bool                  _shouldSetRolling_;
 	#endregion
 
 	// Trackers
@@ -134,6 +135,10 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		if (enabled) enabled = false;
 		else return;
 
+		//Setting public
+		_LowerCapsule.SetActive(false);
+		_CharacterCapsule.SetActive(true);
+		_PlayerPhys._isRolling = false;
 		_Actions.ActionDefault.SwitchSkin(true); //Make character model visible again
 	}
 
@@ -193,7 +198,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	//Changes how the player moves when in this state.
 	private void AffectMovement () {
 
-		_Input._move *= 0.5f; //Limits input, lessening turning and deceleration
+		_Input._move *= 0.75f; //Limits input, lessening turning and deceleration
+		
+		if(_shouldSetRolling_) _PlayerPhys._isRolling = true; // set every frame to counterballanced the rolling subaction
 
 		//Apply a force against the player movement to decrease speed.
 		float stillForce = _spinDashStillForce_ * _speedLossByTime_.Evaluate(_counter);
@@ -256,10 +263,14 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			_PlayerPhys.AddCoreVelocity(addForce, false);
 
 			//Adding velocity is more natural/realistic, but for accuracy in aiming, there is also a rotation towards the new direction.
-			Vector3 newSpeed = _PlayerPhys.GetRelevantVel(_PlayerPhys._RB.velocity);
+			Vector3 newSpeed = _PlayerPhys._RB.velocity;
 			newSpeed.Normalize();
 			dif = Vector3.Angle(_MainSkin.forward, newSpeed);
 			dif *= _turnAmountByAngle_.Evaluate(dif);
+
+			Debug.DrawRay(transform.position, newSpeed * 5, Color.red, 20);
+			Debug.DrawRay(transform.position, _MainSkin.forward * 5, Color.yellow, 20);
+
 			newSpeed = Vector3.RotateTowards(newSpeed, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
 			_PlayerPhys.SetCoreVelocity(newSpeed * _PlayerPhys._horizontalSpeedMagnitude, false);
 
@@ -391,6 +402,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_whatControl_ = _Tools.Stats.SpinChargeStat.whatAimMethod;
 		_tappingBonus_ = _Tools.Stats.SpinChargeStat.tappingBonus;
 		_delayBeforeLaunch_ = _Tools.Stats.SpinChargeStat.delayBeforeLaunch;
+		_shouldSetRolling_ = _Tools.Stats.SpinChargeStat.shouldSetRolling;
 	}
 	private void AssignTools () {
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
