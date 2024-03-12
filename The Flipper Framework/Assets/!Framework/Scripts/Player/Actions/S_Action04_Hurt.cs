@@ -25,12 +25,10 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	private Animator		_CharacterAnimator;
 	#endregion
 
-	//General
-	#region General Properties
 
-	//Stats
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	LayerMask		_RecoilFrom_;
+	LayerMask           _RecoilFrom_;
 	[HideInInspector]
 	public float	_knockbackUpwardsForce_ = 10;
 
@@ -53,16 +51,17 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private float       _lockInStateFor;
-	private int	_counter;
-	[HideInInspector]
-	public float        _deadCounter;
+	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
+
+	private float       _lockInStateFor;		//When the action starts, set how long should be in it for.
+	private int	_counter;			//Tracks how long the state has been active for.
+	private int         _keepLockingControlUntil;	//How long to lose control for, a lot of overlap with lock in state for
 
 	[HideInInspector]
-	public Vector3      _knockbackDirection;
+	public Vector3      _knockbackDirection;	//Set externally when the action starts. The direction to be flung, if it's zero it means there should be no knockback.
 	[HideInInspector]
-	public bool         _wasHit;
-	#endregion
+	public bool         _wasHit;			//Set externally when the action starts, determines if this is a harmless bonk or damage was taken.
+	private bool        _isEndingAction;		//Set false at start, set true when it ends, allowing a one frame delay to check this the next frame before actually ending action.
 	#endregion
 	#endregion
 
@@ -86,21 +85,16 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-		//Set Animator Parameters
-		_Actions.ActionDefault.HandleAnimator(4);
+		HandleInputs();
 	}
 
 	private void FixedUpdate () {
 		_counter += 1;
 
-		//How long to be performing this action. When the counter is up, return to the default state.
-		if (_counter > _lockInStateFor)
-		{
-			if (!_Actions.Action04Control._isDead)
-			{
-				_Actions.ActionDefault.StartAction();
-			}
-		}
+		LockControl();
+		TrackEndAction();
+		AffectMovement();
+		
 	}
 
 	public bool AttemptAction () {
@@ -113,17 +107,17 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		_Sounds.PainVoicePlay();
 
 		//Animator
-		_CharacterAnimator.SetInteger("Action", 4);
 		_CharacterAnimator.SetTrigger("ChangedState");
+		_CharacterAnimator.SetInteger("Action", 4);
 
-		//Set public
-
+		//Set private
+		_isEndingAction = false;
 		float lockControlFor;
 
 		//For checking for a wall. 
 		Vector3 boxSize = new Vector3(_CharacterCapsule.radius, _CharacterCapsule.height, _CharacterCapsule.radius); //Based on player collider size
-		float checkDistance = _PlayerPhys._previousHorizontalSpeed[1] * Time.deltaTime * 3; //Direction and speed are obtained from previous frames because there has now been a collision that may have affected them this frame.
-		Vector3 checkDirection = _PlayerPhys._prevTotalVelocities[1].normalized;
+		float checkDistance = _PlayerPhys._previousHorizontalSpeeds[3] * Time.deltaTime * 3; //Direction and speed are obtained from previous frames because there has now been a collision that may have affected them this frame.
+		Vector3 checkDirection = _PlayerPhys._previousVelocities[3].normalized;
 
 		Debug.DrawRay(transform.position, checkDirection * checkDistance, Color.blue, 20f);
 
@@ -142,7 +136,9 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		//Speed should be reset.
 		else
 		{
-			transform.position -= checkDirection * 2; //Places character back the way they were moving to avoid weird collisions.
+			Vector3 movePlacement = -_PlayerPhys._previousVelocities[3] * Time.deltaTime * 2;
+			movePlacement += transform.up;
+			transform.position += movePlacement; //Places character back the way they were moving to avoid weird collisions.
 
 			//Get a new direction if this was triggered because something was blocking the previous option
 			_knockbackDirection = _knockbackDirection == Vector3.zero ? -checkDirection : _knockbackDirection;
@@ -152,7 +148,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			float force = _knockbackForce_;
 			float upForce = _knockbackUpwardsForce_;
 			lockControlFor = _PlayerPhys._isGrounded ? _recoilGround_ * 1.5f: _recoilAir_ * 1.5f;
-			_lockInStateFor = _stateLengthWithKnockback_;
+			_lockInStateFor = Mathf.Max(_stateLengthWithKnockback_, lockControlFor);
 
 
 			//If was hit is false, then this was action was trigged by something not meant to be an attack, so apply bonk stats rather than damage response stats.
@@ -161,7 +157,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 				force = _bonkBackForce_;
 				upForce = _bonkUpForce_;
 				lockControlFor = _PlayerPhys._isGrounded ? _bonkLock_ : _bonkLockAir_;
-				_lockInStateFor = _bonkLength_;
+				_lockInStateFor = Mathf.Max(_bonkLength_, lockControlFor);
 			}
 			//Increase upwards force if grounded so the player properly leaves it.
 			if (_PlayerPhys._isGrounded) { upForce *= 1.25f; }
@@ -177,19 +173,20 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			newSpeed = transform.TransformDirection(newSpeed);
 			_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(1f, 0f));
 
-			Debug.Log(newSpeed + "  -  " +newSpeed.magnitude);
-			StartCoroutine(_PlayerPhys.LockFunctionForTime(_PlayerPhys._listOfCanControl, _lockInStateFor / 55));
+			Debug.DrawRay(transform.position, newSpeed.normalized * 4, Color.white, 30f);
 		}
-
-		_Input.LockInputForAWhile(lockControlFor, false);
+		_keepLockingControlUntil = (int)lockControlFor;
 		_Input._move = Vector3.zero; //Locks input as nothing being input, preventing skidding against the knockback until unlocked.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
 	}
 
-	public void StopAction () {
-		if (enabled) enabled = false;
-		else return;
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
+
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		_counter = 0;
 	}
@@ -203,9 +200,61 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	#region private
 
 	public void HandleInputs () {
-
+		if (!_Actions.isPaused)
+		{
+			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+			_Actions.HandleInputs(_positionInActionList);
+		}
 	}
 
+	private void LockControl() {
+		//Since the lock input here may be interupted, keep setting to lock for one frame until this is up.
+		if (_counter <= _keepLockingControlUntil)
+		{
+			_Input.LockInputForAWhile(_keepLockingControlUntil, false);
+			StartCoroutine(_PlayerPhys.LockFunctionForTime(_PlayerPhys._listOfCanControl, Time.fixedDeltaTime));
+		}
+	}
+
+	private void AffectMovement() {
+		//If given feedback and doesn't have control right now.
+		if (!_HurtControl._wasHurtWithoutKnockback && _PlayerPhys._listOfCanControl.Count > 0)
+		{
+			//If on the ground, use the decelerate method (which is currently disabled normally) to decrease horizontal movement.
+			if (_PlayerPhys._isGrounded && _counter > 10)
+			{
+				//Get local horizontal vector
+				Vector3 newVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity);
+				float keepY = newVelocity.y;
+				newVelocity.y = 0;
+
+				//Decrease speed
+				newVelocity = _PlayerPhys.Decelerate(newVelocity, Vector3.zero, 0.8f);
+
+				//Return vertical velocity and interpret as world space again
+				newVelocity.y = keepY;
+				newVelocity = transform.TransformDirection(newVelocity);
+
+				_PlayerPhys.SetCoreVelocity(newVelocity, false);
+			}
+		}
+	}
+
+	private void TrackEndAction () {
+		//This will happen on the frame after the next if statement happens. This is to add a one frame delay for the animator to properly switch.
+		if (_isEndingAction)
+		{
+			_Actions.ActionDefault.StartAction();
+		}
+		//How long to be performing this action. When the counter is up, return to the default state. But if input is still locked or player is dead, don't change.
+		else if (_counter > _lockInStateFor && !_Input._isInputLocked && !_HurtControl._isDead)
+		{
+			_isEndingAction = true;
+			_CharacterAnimator.SetInteger("Action", 0);
+			_CharacterAnimator.SetBool("Dead", false);
+			_CharacterAnimator.SetFloat("GroundSpeed", 0);
+		}
+	}
 	#endregion
 
 	/// <summary>
@@ -229,10 +278,13 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			{
 				_Actions.ActionDefault.StartAction();
 			}
+			//If meant to hit the ground heavily and fall over
 			else
 			{
-				//On landing, greatly decrease time in state; 
-				_lockInStateFor /= 2;
+				//On landing, greatly decrease time in state, with a minimum time to allow grounded animation. 
+				_lockInStateFor = Mathf.Max(_lockInStateFor /  3f, 20);
+				_keepLockingControlUntil = Mathf.Max(_keepLockingControlUntil / 3, 20);
+				_CharacterAnimator.SetBool("Dead", true);
 			}
 		}
 	}
@@ -244,14 +296,25 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//If not assigned already, sets the tools and stats.
+	//Assigns all external elements of the action.
 	public void ReadyAction () {
 		if (_PlayerPhys == null)
 		{
+
 			//Assign all external values needed for gameplay.
 			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
+
+			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
+			{
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
+				{
+					_positionInActionList = i;
+					break;
+				}
+			}
 		}
 	}
 

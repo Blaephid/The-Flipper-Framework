@@ -145,10 +145,6 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		SetSpeedAndDistance();
 	}
 
-	public void StopAction() {
-
-	}
-
 	#endregion
 
 	/// <summary>

@@ -131,7 +131,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 
 	//Called by the action manager whenever action is changing. Will only perform if enabled right now. Similar to OnDisable.
-	public void StopAction() {
+	public void StopAction(bool isFirstTime = false ) {
 		if (enabled) enabled = false;
 		else return;
 
@@ -330,7 +330,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		}
 
 		//Rotate towards this new direction.
-		_MainSkin.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, _characterRotation, Time.deltaTime * _Actions.ActionDefault._skinRotationSpeed);
+		_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, _characterRotation, Time.deltaTime * _Actions.ActionDefault._skinRotationSpeed);
 	}
 
 

@@ -20,6 +20,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	public Transform	_Target;
 	private Animator	_CharacterAnimator;
+	private Transform   _MainSkin;
 	private GameObject	_HomingTrailContainer;
 	public GameObject	_HomingTrail;
 	private GameObject	_JumpBall;
@@ -83,7 +84,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		if (VelocityMod != Vector3.zero)
 		{
 			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-			_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
+			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
 		}
 	}
 
@@ -132,8 +133,12 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	}
 
-	public void StopAction () {
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
 	#endregion
@@ -172,6 +177,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
 		_JumpBall = _Tools.JumpBall;
 		_HomingTrail = _Tools.HomingTrail;
 	}

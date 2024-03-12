@@ -5,6 +5,8 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using SplineMesh;
+using templates;
 
 namespace SplineMesh
 {
@@ -23,10 +25,6 @@ namespace SplineMesh
 		private GameObject generated;
 		private Spline _Spline = null;
 		private bool toUpdate = false;
-
-
-		public bool UpdateAll = false;
-		public bool UpdateThis = false;
 
 		[Tooltip("Mesh to bend along the spline.")]
 		public Mesh mesh;
@@ -70,8 +68,6 @@ namespace SplineMesh
 			generated = generatedTranform != null ? generatedTranform.gameObject : UOUtility.Create(generatedName, gameObject);
 
 			_Spline = GetComponentInParent<Spline>();
-			Debug.Log(_Spline);
-
 
 			toUpdate = true;
 		}
@@ -85,24 +81,6 @@ namespace SplineMesh
 			// we can prevent the generated content to be updated during playmode to preserve baked data saved in the scene
 			if (!updateInPlayMode && Application.isPlaying) return;
 
-			if (UpdateAll)
-			{
-
-				S_SplineMeshTiling[] railsMeshes = FindObjectsOfType<S_SplineMeshTiling>();
-				foreach (S_SplineMeshTiling mesh in railsMeshes)
-				{
-					mesh.rebuild();
-				}
-				UpdateAll = false;
-
-			}
-
-			else if (UpdateThis)
-			{
-				rebuild();
-				UpdateThis = false;
-			}
-
 			if (toUpdate)
 			{
 				toUpdate = false;
@@ -110,15 +88,7 @@ namespace SplineMesh
 			}
 		}
 
-		//void rebuild()
-		//{
-		//    curveSpace = !curveSpace;
-		//    CreateMeshes();
-		//    curveSpace = !curveSpace;
-		//    CreateMeshes();
-		//}
-
-		void rebuild () {
+		public void rebuild () {
 			//curveSpace = !curveSpace;
 			//CreateMeshes();
 			//curveSpace = !curveSpace;
@@ -234,229 +204,80 @@ namespace SplineMesh
 			mb.Mode = mode;
 			return res;
 		}
+
+		public S_O_CustomInspectorStyle _InspectorTheme;
 	}
 }
 
+#if UNITY_EDITOR
+[CustomEditor(typeof(S_SplineMeshTiling))]
+public class SplineMeshEditor : Editor
+{
+	S_SplineMeshTiling Owner;
+	GUIStyle headerStyle;
+	GUIStyle ButtonStyle;
+	float spaceSize;
+
+	public override void OnInspectorGUI () {
+		DrawInspector();
+	}
+	private void OnEnable () {
+		//Setting variables
+		Owner = (S_SplineMeshTiling)target;
+
+		if (Owner._InspectorTheme == null) { return; }
+		UpdateTheme();
+	}
+
+	private void UpdateTheme () {
+		headerStyle = Owner._InspectorTheme._MainHeaders;
+		ButtonStyle = Owner._InspectorTheme._GeneralButton;
+		spaceSize = Owner._InspectorTheme._spaceSize;
+	}
+
+	private void DrawInspector () {
+
+		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
+		EditorGUI.BeginChangeCheck();
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("_InspectorTheme"), new GUIContent("Inspector Theme"));
+		serializedObject.ApplyModifiedProperties();
+		if (EditorGUI.EndChangeCheck())
+		{
+			UpdateTheme();
+		}
+
+		//Will only happen if above is attatched and has a theme.
+		if (Owner == null || Owner._InspectorTheme == null) return;
+
+		serializedObject.Update();
+
+		//Order of Drawing
+		EditorGUILayout.Space(spaceSize);
+		DrawButtons();
 
 
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using UnityEngine;
-//using UnityEditor;
-//using System.Collections;
+		void DrawButtons () {
+			EditorGUILayout.Space(spaceSize);
+			EditorGUILayout.BeginHorizontal();
 
-//namespace SplineMesh {
+			Undo.RecordObject(Owner, "Update Spline Meshes");
+			if (GUILayout.Button("Update This", ButtonStyle))
+			{
+				Owner.rebuild();
+			}
+			if (GUILayout.Button("Update All", ButtonStyle))
+			{
+				S_SplineMeshTiling[] railsMeshes = FindObjectsOfType<S_SplineMeshTiling>();
+				foreach (S_SplineMeshTiling mesh in railsMeshes)
+				{
+					mesh.rebuild();
+				}
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
 
-//    /// <summary>
-//    /// Deform a mesh and place it along a spline, given various parameters.
-//    /// 
-//    /// This class intend to cover the most common situations of mesh bending. It can be used as-is in your project,
-//    /// or can serve as a source of inspiration to write your own procedural generator.
-//    /// </summary>
-//    [ExecuteInEditMode]
-//    [SelectionBase]
-//    [DisallowMultipleComponent]
-//    public class SplineMeshTiling : MonoBehaviour {
-//        private GameObject generated;
-//        private Spline spline = null;
-//        private bool toUpdate = false;
-
-
-//        public bool UpdateAll = false;
-
-//        [Tooltip("Mesh to bend along the spline.")]
-//        public Mesh mesh;
-//        public Mesh[] meshSeries;
-//        [Tooltip("Material to apply on the bent mesh.")]
-//        public Material material;
-//        [Tooltip("Physic material to apply on the bent mesh.")]
-//        public PhysicMaterial physicMaterial;
-//        [Tooltip("Translation to apply on the mesh before bending it.")]
-//        public Vector3 translation;
-//        [Tooltip("Rotation to apply on the mesh before bending it.")]
-//        public Vector3 rotation;
-//        [Tooltip("Scale to apply on the mesh before bending it.")]
-//        public Vector3 scale = Vector3.one;
-
-//        public bool DeactivateOnStart;
-
-//        [Tooltip("If true, the mesh will be bent on play mode. If false, the bent mesh will be kept from the editor mode, allowing lighting baking.")]
-//        public bool updateInPlayMode;
-
-//        [Tooltip("If true, a mesh will be placed on each curve of the spline. If false, a single mesh will be placed for the whole spline.")]
-//        public bool curveSpace = false;
-
-//        public bool enableCollider = true;
-//        public bool enableVisual = true;
-//        public string ObjTag = "Rail";
-//        public int ObjLayer = 23;
-
-//        public GameObject refDir;
-//        public bool showEndDir;
-//        public bool showStartDir;
-
-
-//        [Tooltip("The mode to use to fill the choosen interval with the bent mesh.")]
-//        public MeshBender.FillingMode mode = MeshBender.FillingMode.StretchToInterval;
-
-//        private void OnEnable() {
-//            // tip : if you name all generated content in the same way, you can easily find all of it
-//            // at once in the scene view, with a single search.
-//            string generatedName = "generated by " + GetType().Name;
-//            var generatedTranform = transform.Find(generatedName);
-//            generated = generatedTranform != null ? generatedTranform.gameObject : UOUtility.Create(generatedName, gameObject);
-
-//            spline = GetComponentInParent<Spline>();
-
-//            toUpdate = true;
-//        }
-
-//        private void OnValidate() {
-//            if (spline == null) return;
-//            toUpdate = true;
-//        }
-
-//        private void Update() {
-//            // we can prevent the generated content to be updated during playmode to preserve baked data saved in the scene
-//            if (!updateInPlayMode && Application.isPlaying) return;
-
-//            if(UpdateAll)
-//            {
-
-//                SplineMeshTiling[] railsMeshes = FindObjectsOfType<SplineMeshTiling>();
-//                foreach(SplineMeshTiling mesh in railsMeshes)
-//                {
-//                    mesh.rebuild();
-//                }
-//                UpdateAll = false;
-
-//            }
-
-//            if (toUpdate) {
-//                toUpdate = false;
-//                CreateMeshes();
-//            }
-//        }
-
-//        void rebuild()
-//        {
-//            //curveSpace = !curveSpace;
-//            //CreateMeshes();
-//            //curveSpace = !curveSpace;
-//            if (curveSpace)
-//            {
-//                int i = 0;
-//                foreach (var curve in spline.curves)
-//                {
-//                    var go = FindOrCreate("segment " + i++ + " mesh");
-//                    DestroyImmediate(go);
-//                }
-//            }
-//            else
-//            {
-//                var go = FindOrCreate("segment 1 mesh");
-//                DestroyImmediate(go);
-//            }
-
-//            CreateMeshes();
-//        }
-
-//        public void CreateMeshes() {
-//            var used = new List<GameObject>();
-
-//            if (curveSpace) {
-//                int i = 0;
-//                foreach(var curve in spline.curves) {
-//                    var go = FindOrCreate("segment " + i++ + " mesh");
-//                    go.GetComponent<MeshBender>().SetInterval(curve);
-//                    used.Add(go);
-//                }
-//            } else {
-//                var go = FindOrCreate("segment 1 mesh");
-//                go.GetComponent<MeshBender>().SetInterval(spline, 0);
-//                used.Add(go);
-//            }
-
-//            // we destroy the unused objects. This is classic pooling to recycle game objects.
-//            foreach (var go in generated.transform
-//                .Cast<Transform>()
-//                .Select(child => child.gameObject).Except(used)) {
-//                UOUtility.Destroy(go);
-//            }
-
-//            if (showEndDir && refDir != null)
-//            {
-//                GameObject go = Instantiate(refDir, generated.transform);
-
-//                CurveSample sample = spline.GetSampleAtDistance(spline.Length);
-
-
-//                go.transform.localPosition = sample.location;
-//                go.transform.rotation = Quaternion.LookRotation(sample.up, sample.tangent);
-
-//            }
-
-//            if (showStartDir && refDir != null)
-//            {
-//                GameObject go = Instantiate(refDir, generated.transform);
-
-//                CurveSample sample = spline.GetSampleAtDistance(0);
-
-//                go.transform.localPosition = sample.location;
-//                go.transform.rotation = Quaternion.LookRotation(sample.up, sample.tangent);
-
-//            }
-//        }
-
-//        private GameObject FindOrCreate(string name) {
-//            var childTransform = generated.transform.Find(name);
-//            GameObject res;
-
-//            //Creates a GameObject with the following components
-//            if (childTransform == null) {
-//                res = UOUtility.Create(name,
-//                    generated,
-//                    typeof(MeshFilter),
-//                    typeof(MeshRenderer),
-//                    typeof(MeshBender),
-//                    typeof(DeactivateOnStart),
-//                    typeof(MeshCollider));  
-//                res.isStatic = true;
-//            } else {
-//                res = childTransform.gameObject;
-//            }
-//            //Sets variabls of the components
-//            res.GetComponent<MeshRenderer>().material = material;
-//            res.GetComponent<MeshCollider>().material = physicMaterial;
-//            res.GetComponent<MeshCollider>().enabled = enableCollider;
-//            res.GetComponent<MeshRenderer>().enabled = enableVisual;
-//            if(res.GetComponent<DeactivateOnStart>())
-//               res.GetComponent<DeactivateOnStart>().enabled = DeactivateOnStart;
-//            res.tag = ObjTag;
-//            res.layer = ObjLayer;
-
-
-
-
-//            MeshBender mb = res.GetComponent<MeshBender>();
-
-//            if(meshSeries.Length < 1)
-//            {
-//                mb.SetSingle(this);
-//            }
-//            else
-//            {
-//                mb.SetMulti(this);
-//            }
-
-//            //mb.Source. = SourceMesh.Build(mesh)
-//            //    .Translate(translation)
-//            //    .Rotate(Quaternion.Euler(rotation))
-//            //    .Scale(scale);
-//            mb.Mode = mode;
-//            return res;
-//        }
-//    }
-//}
+		DrawDefaultInspector();
+	}
+}
+#endif

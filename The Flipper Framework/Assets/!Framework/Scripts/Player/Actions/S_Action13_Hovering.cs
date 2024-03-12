@@ -19,8 +19,9 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	private S_ActionManager       _Actions;
 
 	Animator _CharacterAnimator;
+	private Transform   _MainSkin;
 	Transform _PlayerSkin;
-	S_Control_PlayerSound Sounds;
+	S_Control_PlayerSound _Sounds;
 	S_Trigger_Updraft _hoverForce;
 	#endregion
 
@@ -67,7 +68,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	}
 	private void OnDisable () {
 		_CharacterAnimator.SetInteger("Action", 1);
-		_PlayerSkin.forward = _CharacterAnimator.transform.forward;
+		_PlayerSkin.forward = _MainSkin.forward;
 		_PlayerPhys._isGravityOn = true;
 		inWind = false;
 	}
@@ -120,8 +121,12 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 
 	}
 
-	public void StopAction () {
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
 	#endregion
@@ -155,11 +160,12 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_Actions = GetComponent<S_ActionManager>();
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_PlayerSkin = _Tools.PlayerSkinTransform;
 		_Input = GetComponent<S_PlayerInput>();
 
-		Sounds = _Tools.SoundControl;
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
+		_PlayerSkin = _Tools.PlayerSkinTransform;
+		_Sounds = _Tools.SoundControl;
 	}
 
 	//Reponsible for assigning stats from the stats script.
@@ -187,7 +193,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 		if (VelocityMod != Vector3.zero)
 		{
 			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-			_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _Actions.ActionDefault._skinRotationSpeed);
+			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, CharRot, Time.deltaTime * _Actions.ActionDefault._skinRotationSpeed);
 		}
 		_PlayerSkin.forward = forward;
 	}

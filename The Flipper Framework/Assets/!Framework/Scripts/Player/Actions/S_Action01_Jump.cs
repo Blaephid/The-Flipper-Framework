@@ -226,9 +226,12 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 	}
 
-	public void StopAction () {
-		if (enabled) enabled = false;
-		else return;
+	public void StopAction (bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
+
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		_Actions.ActionDefault.SwitchSkin(true);
 	}
@@ -270,13 +273,13 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	//Additional effects if a jump is being made from in the air.
 	private void JumpInAir () {
 
-		//Take some horizontal speed on jump and remove vertical speed to ensure jump has an upwards force.
+		//Take some horizontal speed on jump and remove vertical speed to ensure jump is an upwards force.
 		Vector3 newVec;
 		if (_PlayerPhys._RB.velocity.y > 10)
 			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
 		else
 			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, 0, _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
-		_PlayerPhys.SetCoreVelocity(newVec, false, true);
+		_PlayerPhys.SetCoreVelocity(newVec, false, false);
 
 		//Add particle effect during jump
 		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;

@@ -128,7 +128,7 @@ Material:
     - _BumpScale: 1
     - _Bump_Power: 1
     - _CenterPower: 15.8
-    - _Center_Power: 6
+    - _Center_Power: 14.18
     - _Cull: 2
     - _CullShadowPass: 3
     - _Cutoff: 0.5
@@ -196,14 +196,14 @@ Material:
     - _Center_Modifier: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color2: {r: 1, g: 1, b: 1, a: 1}
-    - _Dif_Color: {r: 0.5188679, g: 0.05745163, b: 0.031817384, a: 0}
+    - _Dif_Color: {r: 0.5176471, g: 0.22511244, b: 0.03137255, a: 0}
     - _DiffuseScatteringCol: {r: 0.5147059, g: 0.5147059, b: 0.5147059, a: 0}
     - _DiffuseScatteringCol2: {r: 0, g: 0, b: 0, a: 0}
     - _DifuseColor: {r: 0.3339998, g: 0.09418789, b: 0, a: 0}
     - _EmissionColor: {r: 0.625, g: 0.47844827, b: 0, a: 1}
     - _ReflectColor: {r: 1, g: 0.93103445, b: 0, a: 0.5}
     - _RimColor: {r: 1, g: 0.6827587, b: 0, a: 0}
-    - _Rim_Color: {r: 0.7058824, g: 0.20905954, b: 0.02352939, a: 0}
+    - _Rim_Color: {r: 0.7058824, g: 0.36562616, b: 0.02352939, a: 0}
     - _Rim_Modifier: {r: 1, g: 1, b: 1, a: 1}
     - _SnowAccumulation: {r: 0, g: 1, b: 0, a: 0}
     - _SnowDetailTiling: {r: 4, g: 4, b: 0, a: 0}

@@ -4,7 +4,7 @@ using UnityEngine;
 using SplineMesh;
 
 [ExecuteInEditMode]
-public class S_PulleyBasePlacement : MonoBehaviour
+public class S_ZiplineBasePlacement : MonoBehaviour
 {
     public Spline Rail;
     public bool isEnd = false,isAlign = false;
@@ -21,7 +21,9 @@ public class S_PulleyBasePlacement : MonoBehaviour
         {
             if (Rail == null) GetComponentInParent<Spline>();
             CurveSample sample = (!isEnd) ? Rail.GetSampleAtDistance(Range) : Rail.GetSampleAtDistance(Rail.Length - Range);
-            transform.position = sample.location + Rail.transform.position;
+            transform.position = Rail.transform.position + (Rail.transform.rotation * sample.location);
+
+
             Vector3 dir = Vector3.zero;
             if (isEnd)
             {
@@ -32,8 +34,8 @@ public class S_PulleyBasePlacement : MonoBehaviour
                 dir = Rail.GetSampleAtDistance(Range + 1).location - Rail.GetSampleAtDistance(Range).location;
             }
             dir.y = 0;
-            if (ChangeRotation)transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
-            if (isAlign) transform.rotation = sample.Rotation;
+            if (ChangeRotation)transform.rotation = Rail.transform.rotation * Quaternion.LookRotation(dir, Vector3.up);
+            if (isAlign) transform.rotation = Rail.transform.rotation * sample.Rotation;
             if(ChangeRotation)transform.rotation = Quaternion.Euler(XZ.x, Rotate, XZ.y) * transform.rotation;
         }
 #endif

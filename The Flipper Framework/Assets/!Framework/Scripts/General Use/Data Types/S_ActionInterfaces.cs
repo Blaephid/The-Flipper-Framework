@@ -8,13 +8,13 @@ public interface IAction
 	bool AttemptAction ();
 
 	void StartAction ();
-
-	void StopAction ();
 }
 
 public interface IMainAction : IAction
 {
 	void HandleInputs ();
+
+	void StopAction ( bool isFirstTime = false ) ;
 }
 
 public interface ISubAction : IAction

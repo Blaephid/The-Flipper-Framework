@@ -24,6 +24,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	private CurveSample _Sample;
 	private Animator	_CharacterAnimator;
+	private Transform   _MainSkin;
 	[HideInInspector]
 	public Collider	_PatherStarter;
 	private Transform	_Skin;
@@ -110,7 +111,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		//Set Animation Angle
 		Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z);
 		Quaternion CharRot = Quaternion.LookRotation(VelocityMod, _Sample.up);
-		_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
+		_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
 	}
 
 	private void FixedUpdate () {
@@ -128,8 +129,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	}
 
-	public void StopAction () {
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
 	#endregion
@@ -167,6 +172,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
 		_Sounds = _Tools.SoundControl;
 		_CamHandler = GetComponent<S_Handler_Camera>()._HedgeCam;
 		_Skin = _Tools.mainSkin;
@@ -267,10 +273,10 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		}
 
 		//Check so for the size of the Spline
-		if (_range < _Path_Int.RailSpline.Length && _range > 0)
+		if (_range < _Path_Int._PathSpline.Length && _range > 0)
 		{
 			//Get Sample of the Path to put player
-			_Sample = _Path_Int.RailSpline.GetSampleAtDistance(_range);
+			_Sample = _Path_Int._PathSpline.GetSampleAtDistance(_range);
 
 			//Set player Position and rotation on Path
 			//Quaternion rot = (Quaternion.FromToRotation(Skin.transform.up, sample.Rotation * Vector3.up) * Skin.rotation);
@@ -283,12 +289,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 				//Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
 				//transform.position = (hitRot.point + PathTransform.position) + FootPos;
 
-				Vector3 FootPos = transform.position - _Path_Int.feetPoint.position;
+				Vector3 FootPos = transform.position - _Path_Int._FeetTransform.position;
 				transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
 			}
 			else
 			{
-				Vector3 FootPos = transform.position - _Path_Int.feetPoint.position;
+				Vector3 FootPos = transform.position - _Path_Int._FeetTransform.position;
 				transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
 			}
 
@@ -320,16 +326,16 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		else
 		{
 			//Check if the Spline is loop and resets position
-			if (_Path_Int.RailSpline.IsLoop)
+			if (_Path_Int._PathSpline.IsLoop)
 			{
 				if (!_isGoingBackwards)
 				{
-					_range = _range - _Path_Int.RailSpline.Length;
+					_range = _range - _Path_Int._PathSpline.Length;
 					PathMove();
 				}
 				else
 				{
-					_range = _range + _Path_Int.RailSpline.Length;
+					_range = _range + _Path_Int._PathSpline.Length;
 					PathMove();
 				}
 			}
@@ -349,18 +355,18 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		//Set Player Speed correctly for smoothness
 		if (!_isGoingBackwards)
 		{
-			_Sample = _Path_Int.RailSpline.GetSampleAtDistance(_Path_Int.RailSpline.Length);
+			_Sample = _Path_Int._PathSpline.GetSampleAtDistance(_Path_Int._PathSpline.Length);
 			_PlayerPhys._RB.velocity = _Sample.tangent * (_playerSpeed);
 
 		}
 		else
 		{
-			_Sample = _Path_Int.RailSpline.GetSampleAtDistance(0);
+			_Sample = _Path_Int._PathSpline.GetSampleAtDistance(0);
 			_PlayerPhys._RB.velocity = -_Sample.tangent * (_playerSpeed);
 
 		}
 
-		_CharacterAnimator.transform.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, _PlayerPhys._HitGround.normal);
+		_MainSkin.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, _PlayerPhys._HitGround.normal);
 
 		_PlayerPhys.GetComponent<S_Handler_Camera>()._HedgeCam.SetBehind(0);
 		_Input.LockInputForAWhile(30f, true);
@@ -370,10 +376,10 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 
 		//Deactivates any cinemachine that might be attached.
-		if (_Path_Int.currentCam != null)
+		if (_Path_Int._currentExternalCamera != null)
 		{
-			_Path_Int.currentCam.DeactivateCam(18);
-			_Path_Int.currentCam = null;
+			_Path_Int._currentExternalCamera.DeactivateCam(18);
+			_Path_Int._currentExternalCamera = null;
 		}
 
 		_Actions.ActionDefault.StartAction();

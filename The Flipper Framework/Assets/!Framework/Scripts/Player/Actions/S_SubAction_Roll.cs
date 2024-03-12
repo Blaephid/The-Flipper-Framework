@@ -111,10 +111,6 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	}
 
-	public void StopAction () {
-
-	}
-
 
 	#endregion
 

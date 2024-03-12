@@ -41,12 +41,10 @@ public class S_Handler_Hurt : MonoBehaviour
 	private GameObject  _ReleaseDirection;
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private S_Enums.HurtResponse _whatResponse;
+	private S_Enums.HurtResponse _whatResponse_;
 	private int         _maxRingLoss_;
 	private float       _ringReleaseSpeed_;
 	private float       _ringArcSpeed_;
@@ -84,7 +82,6 @@ public class S_Handler_Hurt : MonoBehaviour
 	private int         _ringsToLose;       //Tracks how many rings to be shot out, doesn't decrease 1 per ring spawned, but does decrease.
 	#endregion
 	#endregion
-	#endregion
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -100,14 +97,6 @@ public class S_Handler_Hurt : MonoBehaviour
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyScript();
-	}
-	private void OnDisable () {
-
-	}
-
-	// Update is called once per frame
-	void Update () {
-
 	}
 
 	private void FixedUpdate () {
@@ -146,6 +135,17 @@ public class S_Handler_Hurt : MonoBehaviour
 		}
 	}
 
+	public void OnCollisionEnter ( Collision collision ) {
+		
+		switch (collision.collider.tag)
+		{
+			case "Hazard":
+				DamagePlayer();
+				_CamHandler._HedgeCam.ApplyCameraShake(_damageShakeAmmount_, 60);
+				return;
+		}
+	}
+
 	//Called every frame when overlapping a trigger
 	public void OnTriggerStay ( Collider col ) {
 		//Pits force the camera to look down from above
@@ -178,7 +178,6 @@ public class S_Handler_Hurt : MonoBehaviour
 			_isInvincible = false;
 			_Actions.ActionDefault.HideCurrentSkins(true);
 		}
-
 
 		//When rings are lost, this is enabled to unleash rings from character each frame.
 		if (_isReleasingRings)
@@ -219,12 +218,13 @@ public class S_Handler_Hurt : MonoBehaviour
 			pos.y += 1;
 
 			//Spawn a ring based on the moving ring prefab and shoot it out away from the player
-			GameObject movingRing;
-			movingRing = Instantiate(_MovingRing, pos, Quaternion.identity);
+			GameObject movingRing = Instantiate(_MovingRing, pos, Quaternion.identity);
 			movingRing.transform.parent = null;
 			movingRing.GetComponent<Rigidbody>().velocity = Vector3.zero;
-			movingRing.GetComponent<Rigidbody>().AddForce(_ReleaseDirection.transform.forward * _ringReleaseSpeed_, ForceMode.Acceleration); //Apply force out from player
-			movingRing.GetComponent<Rigidbody>().AddForce(_HurtAction._knockbackDirection * 2, ForceMode.Acceleration); // Apply additional force towards where player is beng sent
+
+			Vector3 launchDirection = _ReleaseDirection.transform.forward * _ringReleaseSpeed_;
+			launchDirection += new Vector3 (_HurtAction._knockbackDirection.x, 0, _HurtAction._knockbackDirection.z) * 850;// Apply additional force towards where player is beng sent
+			movingRing.GetComponent<Rigidbody>().AddForce(launchDirection, ForceMode.Acceleration); //Apply force out from player
 
 			_ReleaseDirection.transform.Rotate(0, _ringArcSpeed_, 0); //Change the direction to fire ring in next spawn.
 
@@ -256,7 +256,7 @@ public class S_Handler_Hurt : MonoBehaviour
 
 			//Enter the hurt action until respawn
 			StartCoroutine(TrackDeath());
-			if (!_HurtAction.enabled) _HurtAction.AttemptAction();
+			if (!_HurtAction.enabled) _HurtAction.StartAction();
 		}
 	}
 
@@ -269,23 +269,6 @@ public class S_Handler_Hurt : MonoBehaviour
 
 			_Input._move = Vector3.zero;
 			_deadCounter += 1;
-			
-			//If on the ground, use the decelerate method (which is currently disabled normally) to decrease horizontal movement.
-			if(_PlayerPhys._isGrounded && _deadCounter > 15) {
-				//Get local horizontal vector
-				Vector3 newVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity);
-				float keepY = newVelocity.y;
-				newVelocity.y = 0;
-
-				//Decrease speed
-				newVelocity = _PlayerPhys.Decelerate(newVelocity, Vector3.zero, 0.8f);
-
-				//Return vertical velocity and interpret as world space again
-				newVelocity.y = keepY;
-				newVelocity = transform.TransformDirection(newVelocity);
-
-				_PlayerPhys.SetCoreVelocity(newVelocity, false);
-			}
 
 			//Start fading out the screen
 			if (_deadCounter > _respawnAfter_.x && _deadCounter < _respawnAfter_.y)
@@ -389,13 +372,13 @@ public class S_Handler_Hurt : MonoBehaviour
 
 	//Since wall climbing and running are based on running into walls, this gives those a chance before bonking.
 	IEnumerator DelayBonk () {
-		Vector3 rememberDirection = _CharacterAnimator.transform.forward; //Saves the direction so the player can't rotate from it until bonk is over
+		Vector3 rememberDirection = _MainSkin.forward; //Saves the direction so the player can't rotate from it until bonk is over
 		float rememberSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 
 		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
 		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
 		{
-			_HurtAction._knockbackDirection = -_PlayerPhys._prevTotalVelocities[1].normalized;
+			_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 			_HurtAction._wasHit = false;
 			_Actions.ActionHurt.StartAction();
 		}
@@ -405,15 +388,18 @@ public class S_Handler_Hurt : MonoBehaviour
 			for (int i = 0 ; i < 3 ; i++)
 			{
 				yield return new WaitForFixedUpdate();
-				_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0));
+
+				if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
+
+					_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0));
 				_PlayerPhys._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
-				_CharacterAnimator.transform.forward = rememberDirection;
+				_MainSkin.forward = rememberDirection;
 			}
 
-			//If still not in a wallrunning state, then rebound off the wall.
-			if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning)
+			//If still not in a wallrunning state or been hurt, then rebound off the wall.
+			if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning && _Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
 			{
-				_HurtAction._knockbackDirection = -_PlayerPhys._prevTotalVelocities[1].normalized;
+				_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 				_HurtAction._wasHit = false;
 				_Actions.ActionHurt.StartAction();
 			}
@@ -435,9 +421,8 @@ public class S_Handler_Hurt : MonoBehaviour
 
 		if (!_Actions.ActionHurt.enabled)
 		{
-
 			//The different responses determine when the player takes damage, either immdieately, or upon landing in the hurt state.
-			switch (_whatResponse)
+			switch (_whatResponse_)
 			{
 				//Damaged immediately but won't be knocked back or have velocity greatly changed.
 				case S_Enums.HurtResponse.Normal:
@@ -456,21 +441,22 @@ public class S_Handler_Hurt : MonoBehaviour
 				//Won't be damaged until the EventOnGrounded action in the hurt script. This will then call the CheckHealth script
 				case S_Enums.HurtResponse.Frontiers:
 					_inHurtStateBeforeDamage = true;
-					_HurtAction._knockbackDirection = -_PlayerPhys._prevTotalVelocities[1].normalized;
+					_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
 				//Same as frontiers response, but if should die, will do so immediately.
 				case S_Enums.HurtResponse.FrontiersWithoutDeathDelay:
+					_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
+					_HurtAction._wasHit = true;
 					if (_ringAmount > 0 || _hasShield)
 					{
 						_inHurtStateBeforeDamage = true;
-						_HurtAction._knockbackDirection = -_PlayerPhys._prevTotalVelocities[1].normalized;
-						_HurtAction._wasHit = true;
 						_HurtAction.StartAction();
 					}
 					else
 					{
+						_HurtAction._knockbackDirection.y = -0.5f;
 						Die();
 					}
 					break;
@@ -597,6 +583,8 @@ public class S_Handler_Hurt : MonoBehaviour
 		_respawnAfter_ = _Tools.Stats.WhenHurt.respawnAfter;
 
 		_BonkWall_ = _Tools.Stats.WhenBonked.BonkOnWalls;
+
+		_whatResponse_ = _Tools.Stats.KnockbackStats.whatResponse;
 	}
 	#endregion
 }

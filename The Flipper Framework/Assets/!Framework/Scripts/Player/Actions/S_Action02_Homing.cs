@@ -29,8 +29,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	public Transform              _Target;
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
@@ -59,8 +57,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	private bool        _isHoming;                    //If currently homing. The action has unique interactions that will turn this off, disabling actual homing in on targets.
 
-	private float       _speedBeforeAttack;           //The movement speed before performing this action.
-	private Vector3     _directionBeforeAttack;       //The direction the player was moving before performing this action.
+	[HideInInspector]
+	public float       _speedBeforeAttack;           //The movement speed before performing this action.
+	[HideInInspector]
+	public Vector3     _directionBeforeAttack;       //The direction the player was moving before performing this action.
 	private float       _currentSpeed;                //The speed the homing attack moves at this frame. If skid is a possible action, this can be changed.
 	private float       _speedAtStart;                //The speed the homing attack happens at when performed, accelerating after decelerating will not exceed this.
 
@@ -76,7 +76,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private int         _homingCount;                 //Keeps track of how many homing attacks have been used before landing (or some more specific resets).
 	#endregion
 
-	#endregion
 	#endregion
 
 	/// <summary>
@@ -173,6 +172,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Setting public
 		_PlayerPhys._isGravityOn = false;
 		_PlayerPhys._canBeGrounded = false;
+		_PlayerPhys._canBeGrounded = false;
 		_PlayerPhys.SetIsGrounded(false);
 		_JumpBall.SetActive(false);
 		_PlayerPhys._listOfCanControl.Add(false);
@@ -196,9 +196,12 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	}
 
-	public void StopAction () {
-		if (enabled) enabled = false;
-		else return;
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
+
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		_Actions.ActionDefault.SwitchSkin(true);
 		_PlayerPhys._canBeGrounded = true;

@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 54931367892921060}
   - component: {fileID: 1498009955498955373}
   m_Layer: 12
-  m_Name: Pulley
+  m_Name: Pr_Zipline
   m_TagString: ZipLine
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -5301,15 +5301,18 @@ MonoBehaviour:
   _coreVelocity: {x: 0, y: 0, z: 0}
   _environmentalVelocity: {x: 0, y: 0, z: 0}
   _totalVelocity: {x: 0, y: 0, z: 0}
-  _prevTotalVelocities:
+  _previousVelocities:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   _speedMagnitude: 0
   _horizontalSpeedMagnitude: 0
-  _previousHorizontalSpeed:
+  _previousHorizontalSpeeds:
   - 1
   - 2
   - 3
+  - 4
   _moveInput: {x: 0, y: 0, z: 0}
   _trackMoveInput: {x: 0, y: 0, z: 0}
   _currentTopSpeed: 0
@@ -5671,19 +5674,19 @@ MonoBehaviour:
   InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
   whatAction: 0
   whatSubAction: 0
-  _addState: 7
+  _addState: 5
   _MainActions:
   - State: 0
     ConnectedStates: 000000000100000002000000030000000400000005000000
-    SituationalStates: 00000000010000000200000003000000040000000500000006000000
+    SituationalStates: 00000000010000000300000004000000050000000600000002000000
     PerformableSubStates: 000000000100000002000000
   - State: 1
     ConnectedStates: 0000000001000000030000000400000005000000
-    SituationalStates: 00000000010000000200000003000000040000000500000006000000
+    SituationalStates: 00000000010000000300000004000000050000000600000002000000
     PerformableSubStates: 0000000001000000
   - State: 2
     ConnectedStates: 04000000
-    SituationalStates: 000000000100000003000000
+    SituationalStates: 00000000010000000300000002000000
     PerformableSubStates: 0100000000000000
   - State: 3
     ConnectedStates: 04000000
@@ -5695,7 +5698,7 @@ MonoBehaviour:
     PerformableSubStates: 
   - State: 5
     ConnectedStates: 00000000
-    SituationalStates: 0100000000000000
+    SituationalStates: 010000000000000002000000
     PerformableSubStates: 
   - State: 6
     ConnectedStates: 0400000005000000
@@ -5854,7 +5857,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _knockbackUpwardsForce_: 10
   _knockbackForce_: 10
-  _deadCounter: 0
   _knockbackDirection: {x: 0, y: 0, z: 0}
   _wasHit: 0
 --- !u!114 &163950796223377526
@@ -5869,10 +5871,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd931b89b64ec84fa70a94de2d5ef5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentCam: {fileID: 0}
-  DistanceIncrements: 0.05
-  currentUpreel: {fileID: 0}
-  feetPoint: {fileID: 8412749811221693294}
+  _currentExternalCamera: {fileID: 0}
+  _PathSpline: {fileID: 0}
+  _currentUpreel: {fileID: 0}
+  _FeetTransform: {fileID: 0}
+  _canGrindOnRail: 0
+  _isFollowingPath: 0
 --- !u!114 &114433309075840560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5891,13 +5895,9 @@ MonoBehaviour:
   _ZipBody: {fileID: 0}
   _skinRotationSpeed: 0
   _railmaxSpeed_: 0
-  _RailMask:
-    serializedVersion: 2
-    m_Bits: 0
-  _isOnZipLine: 0
+  _whatKindOfRail: 0
   _curvePosSlope: 0
-  _range: 0
-  _isOnRail: 0
+  _pointOnSpline: 0
   _playerSpeed: 0
   _isGoingBackwards: 0
   _targetDistance: 10
@@ -15784,7 +15784,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &518689081796588515
 Transform:
   m_ObjectHideFlags: 0
@@ -17077,7 +17077,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1087169364711392279
 Transform:
   m_ObjectHideFlags: 0

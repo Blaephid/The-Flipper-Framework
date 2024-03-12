@@ -285,18 +285,18 @@ namespace SplineMesh
 
         void trackPlayer()
         {
-            if (playerRail._Rail_int.RailSpline == RailSpline)
+            if (playerRail._Rail_int._PathSpline == RailSpline)
             {
                 if (backwards == playerRail._isGoingBackwards)
                 {
                     if (backwards)
                     {
-                        playerDistance = range - playerRail._range;
+                        playerDistance = range - playerRail._pointOnSpline;
 
                     }
                     else
                     {
-                        playerDistance = playerRail._range - range;
+                        playerDistance = playerRail._pointOnSpline - range;
                     }
 
                     playerSpeed = (playerRail._playerSpeed - currentSpeed) / playerRail._railmaxSpeed_;

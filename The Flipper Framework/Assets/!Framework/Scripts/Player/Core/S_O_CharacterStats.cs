@@ -1114,6 +1114,27 @@ public class S_O_CharacterStats : ScriptableObject
 	}
 	#endregion
 
+	#region objects
+	public StrucInteractions ObjectInteractions = SetStrucInteractions ();
+	public StrucInteractions DefaultObjectInteractions = SetStrucInteractions ();
+
+	static StrucInteractions SetStrucInteractions () {
+		return new StrucInteractions
+		{
+			UpreelSpeedKeptAfter = 0.5f,
+		};
+	}
+
+
+	[System.Serializable]
+	public struct StrucInteractions
+	{
+		[Range(0,1)]
+		public float UpreelSpeedKeptAfter;
+
+	}
+	#endregion
+
 	#region WallRules
 	//-------------------------------------------------------------------------------------------------
 
@@ -1232,6 +1253,7 @@ public class S_O_CharacterStatsEditor : Editor
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Interactions", headerStyle);
 		DrawEnemyInteraction();
+		DrawObjectInteraction();
 		DrawItemPulling();
 		DrawWhenBonked();
 		DrawWhenHurt();
@@ -1664,6 +1686,22 @@ public class S_O_CharacterStatsEditor : Editor
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
 				stats.RailPosition = stats.DefaultRailPosition;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
+		#endregion
+
+		//Object Interaction
+		#region Object
+		void DrawObjectInteraction () {
+			EditorGUILayout.Space();
+			DrawProperty("ObjectInteractions", "Interactions");
+
+			Undo.RecordObject(stats, "set to defaults");
+			if (GUILayout.Button("Default", ResetToDefaultButton))
+			{
+				stats.ObjectInteractions = stats.DefaultObjectInteractions;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

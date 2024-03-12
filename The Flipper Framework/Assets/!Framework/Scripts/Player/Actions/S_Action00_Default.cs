@@ -96,7 +96,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 		//Set Public
 		StartCoroutine(ApplyWhenGrounded());
-		_CharacterAnimator.SetInteger("Action", _animationAction);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 	}
@@ -104,9 +103,12 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 		return true;
 	}
-	public void StopAction () {
-		if (enabled) enabled = false;
-		else return;
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
+
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
 	#endregion
@@ -120,10 +122,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	public void HandleInputs () {
 		if (!_Actions.isPaused)
 		{
-			//Moving camera behind
-			_CamHandler.AttemptCameraReset();
-
-
 			//Moving camera behind
 			_CamHandler.AttemptCameraReset();
 

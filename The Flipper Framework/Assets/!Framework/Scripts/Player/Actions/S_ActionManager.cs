@@ -58,6 +58,7 @@ public class S_ActionManager : MonoBehaviour
 	public S_Enums.PrimaryPlayerStates _addState;
 	public List<S_Structs.StrucMainActionTracker> _MainActions;
 	public List<ISubAction> _SubActions;
+	private S_Structs.StrucMainActionTracker _currentAction;
 
 
 	//Specific action trackers
@@ -140,7 +141,8 @@ public class S_ActionManager : MonoBehaviour
 			_MainActions[i] = action;
 		}
 
-
+		_currentAction = _MainActions[0];
+		DeactivateAllActions(true);
 		ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 	}
 
@@ -152,6 +154,11 @@ public class S_ActionManager : MonoBehaviour
 			_dashDelayCounter -= Time.deltaTime;
 			if (_dashDelayCounter <= 0) { _isAirDashAvailables = true; }
 		}
+	
+		foreach (IMainAction situationAction in _currentAction.SituationalActions)
+		{
+			situationAction.AttemptAction();
+		}
 	}
 
 	#endregion
@@ -161,51 +168,16 @@ public class S_ActionManager : MonoBehaviour
 	/// </summary>
 	/// 
 	#region private
-	public void DeactivateAllActions () {
+	//Go through every action attached to this manager and call the inherited StopAction method (because interface).
+	public void DeactivateAllActions (bool firstTime = false) {
 
 		foreach (S_Structs.StrucMainActionTracker track in _MainActions)
 		{
 			if(track.State != whatAction)
 			{
-				track.Action.StopAction();
+				track.Action.StopAction(firstTime); //The stop action methods should all contain the same check if enabled and then disable the script if so.
 			}
 		}
-
-		//Put all actions here
-		//Also put variables that you want re-set out of actions
-		if (Action05 != null)
-		{
-			Action05.enabled = false;
-		}
-		if (Action06 != null)
-		{
-			Action06.enabled = false;
-		}
-		if (Action07 != null)
-		{
-			Action07.enabled = false;
-		}
-		if (Action08 != null)
-		{
-			Action08.enabled = false;
-		}
-		if (Action10 != null)
-		{
-			Action10.enabled = false;
-		}
-		if (Action11 != null)
-		{
-			Action11.enabled = false;
-		}
-		if (Action12 != null)
-		{
-			Action12.enabled = false;
-		}
-		if (Action13 != null)
-		{
-			Action13.enabled = false;
-		}
-
 	}
 	#endregion
 
@@ -216,18 +188,22 @@ public class S_ActionManager : MonoBehaviour
 	#region public 
 
 	//Called by action scripts to go through all of the actions they can possibly transition to.
-	public void HandleInputs ( int currentAction ) {
+	public void HandleInputs ( int currentActionInList ) {
 		bool performAction;
+
+		_currentAction = _MainActions[currentActionInList];
+
 		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
 		//When one returns true, it is being switched to, so end the loop.
-		foreach (IMainAction mainAction in _MainActions[currentAction].ConnectedActions)
+		foreach (IMainAction mainAction in _currentAction.ConnectedActions)
 		{
 			performAction = mainAction.AttemptAction();
 			if (performAction) { break; }
 		}
+
 		performAction = false;
 		//Checks if the subaction should be performed ontop of the current action.
-		foreach (ISubAction subAction in _MainActions[currentAction].SubActions)
+		foreach (ISubAction subAction in _currentAction.SubActions)
 		{
 			performAction = subAction.AttemptAction();
 			if (performAction) { break; }

@@ -22,6 +22,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private S_Control_PlayerSound	_Sounds;
 
 	private Animator	_CharacterAnimator;
+	private Transform   _MainSkin;
 	private GameObject	_HomingTrailContainer;
 	private GameObject	_JumpDashParticle;
 	private GameObject	_JumpBall;
@@ -89,7 +90,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		//if (VelocityMod != Vector3.zero)
 		//{
 		//	Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-		//	_CharacterAnimator.transform.rotation = Quaternion.Lerp(_CharacterAnimator.transform.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
+		//	_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
 		//}
 	}
 
@@ -101,8 +102,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 			if (_timer > 0.03)
 			{
 
-				Vector3 FaceDir = _CharacterAnimator.transform.position - _CamHandler._HedgeCam.transform.position;
-				bool Facing = Vector3.Dot(_CharacterAnimator.transform.forward, FaceDir.normalized) < 0f;
+				Vector3 FaceDir = _MainSkin.position - _CamHandler._HedgeCam.transform.position;
+				bool Facing = Vector3.Dot(_MainSkin.forward, FaceDir.normalized) < 0f;
 				if (Facing)
 				{
 					_Input._inputWithoutCamera.x = -_Input._inputWithoutCamera.x;
@@ -110,7 +111,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 
 				//Direction = CharacterAnimator.transform.forward;
-				_direction = Vector3.RotateTowards(new Vector3(_direction.x, 0, _direction.z), _CharacterAnimator.transform.right, Mathf.Clamp(_Input._inputWithoutCamera.x * 4, -2.5f, 2.5f) * Time.deltaTime, 0f);
+				_direction = Vector3.RotateTowards(new Vector3(_direction.x, 0, _direction.z), _MainSkin.right, Mathf.Clamp(_Input._inputWithoutCamera.x * 4, -2.5f, 2.5f) * Time.deltaTime, 0f);
 			}
 
 			//Direction.y = Player.fallGravity.y * 0.1f;
@@ -177,8 +178,12 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 	}
 
-	public void StopAction () {
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
 	#endregion
@@ -217,6 +222,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_Sounds = _Tools.SoundControl;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
 		_HomingTrailScript = _Tools.HomingTrailScript;
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_JumpBall = _Tools.JumpBall;
@@ -258,7 +264,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 					_aSpeed = _XZspeed;
 				}
 
-				_direction = _CharacterAnimator.transform.forward;
+				_direction = _MainSkin.forward;
 				//Direction = Vector3.RotateTowards(Direction, lateralToInput * Direction, turnRate * 40f, 0f);
 
 

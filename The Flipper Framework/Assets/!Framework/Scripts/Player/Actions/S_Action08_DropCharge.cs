@@ -197,8 +197,12 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 	}
 
-	public void StopAction () {
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
 	#endregion

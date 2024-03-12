@@ -134,7 +134,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3                _totalVelocity;               //The combination of core and environmetal velocity determening actual movement direction and speed in game.
 	private Vector3               prevVec;
 	[HideInInspector]
-	public List<Vector3>          _prevTotalVelocities = new List<Vector3>() {Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
+	public List<Vector3>          _previousVelocities = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
 
 	private List<Vector3>         _listOfVelocityToAddNextUpdate = new List<Vector3>(); //Rather than applied across all scripts, added forces are stored here and applied at the end of the frame.
 	private List<Vector3>         _listOfCoreVelocityToAdd= new List<Vector3>();
@@ -146,7 +146,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public float                  _horizontalSpeedMagnitude;    //The speed of the player relative to the character transform, so only shows running speed.
 	[HideInInspector]
-	public List<float>            _previousHorizontalSpeed = new List<float>() {1f, 2f, 3f }; //The horizontal speeds across the last few frames. Useful for collision checks.
+	public List<float>            _previousHorizontalSpeeds = new List<float>() {1f, 2f, 3f, 4 }; //The horizontal speeds across the last few frames. Useful for collision checks.
 
 	[HideInInspector]
 	public Vector3                _moveInput;         //Assigned by the input script, the direction the player is trying to go.
@@ -267,7 +267,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If the rigidbody velocity is smaller than it was last frame (such as from hitting a wall),
 		//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 		Vector3 newVelocity = _RB.velocity;
-		Vector3 velocity1FrameAgo = _prevTotalVelocities[0];
+		Vector3 velocity1FrameAgo = _previousVelocities[0];
 
 		if (newVelocity.sqrMagnitude <= velocity1FrameAgo.sqrMagnitude && velocity1FrameAgo.sqrMagnitude > 1)
 		{
@@ -373,8 +373,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		prevVec = _totalVelocity;
 
 		//Adds this new velocity to a list of 2, tracking the last 2 frames.
-		_prevTotalVelocities.Insert(0, _totalVelocity);
-		_prevTotalVelocities.RemoveAt(2);
+		_previousVelocities.Insert(0, _totalVelocity);
+		_previousVelocities.RemoveAt(4);
 
 		//Assigns the global variables for the current movement, since it's assigned at the end of a frame, changes between frames won't be counted when using this,
 		_speedMagnitude = _totalVelocity.magnitude;
@@ -382,8 +382,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		_horizontalSpeedMagnitude = releVec.magnitude;
 
 		//Adds this new speed to a list of 3
-		_previousHorizontalSpeed.Insert(0, _horizontalSpeedMagnitude);
-		_previousHorizontalSpeed.RemoveAt(2);
+		_previousHorizontalSpeeds.Insert(0, _horizontalSpeedMagnitude);
+		_previousHorizontalSpeeds.RemoveAt(4);
 	}
 
 	//Calls all the methods involved in managing coreVelocity on the ground, such as normal control (with normal modifiers), sticking to the ground, and effects from slopes.
@@ -399,30 +399,37 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Calls methods relevant to general control and gravity, while applying the turn and accelleration modifiers depending on a number of factors while in the air.
 	private void HandleAirMovement () {
 
-		//Gets the air control modifiers.
-		float airAccelMod = _airControlAmmount_.y;
-		float airTurnMod = _airControlAmmount_.x;
-		switch (_Action.whatAction)
-		{
-			case S_Enums.PrimaryPlayerStates.Jump:
-				if (_Action._actionTimeCounter < _jumpExtraControlThreshold_)
-				{
-					airAccelMod = _jumpAirControl_.y;
-					airTurnMod = _jumpAirControl_.x;
-				}
-				break;
-			case S_Enums.PrimaryPlayerStates.Bounce:
-				airAccelMod = _bounceAirControl_.y;
-				airTurnMod = _bounceAirControl_.x;
-				break;
-		}
-		if (_horizontalSpeedMagnitude < 20)
-		{
-			airAccelMod += 0.5f;
-		}
+		//In order to change horizontal movement in the air, the player must not be inputting into a wall. Because moving into a slanted wall can lead to the player sliding up it while still not being grounded.
+		Vector3 spherePosition = transform.position - transform.up;
+		Vector3 direction = GetRelevantVel(_moveInput, false);
 
-		//Handles lateral velocity.
-		_coreVelocity = HandleControlledVelocity(new Vector2(airTurnMod, airAccelMod));
+		if (!Physics.SphereCast(transform.position - transform.up, _CharacterCapsule.radius, direction, out RaycastHit hit, 5, _Groundmask_))
+		{
+			//Gets the air control modifiers.
+			float airAccelMod = _airControlAmmount_.y;
+			float airTurnMod = _airControlAmmount_.x;
+			switch (_Action.whatAction)
+			{
+				case S_Enums.PrimaryPlayerStates.Jump:
+					if (_Action._actionTimeCounter < _jumpExtraControlThreshold_)
+					{
+						airAccelMod = _jumpAirControl_.y;
+						airTurnMod = _jumpAirControl_.x;
+					}
+					break;
+				case S_Enums.PrimaryPlayerStates.Bounce:
+					airAccelMod = _bounceAirControl_.y;
+					airTurnMod = _bounceAirControl_.x;
+					break;
+			}
+			if (_horizontalSpeedMagnitude < 20)
+			{
+				airAccelMod += 0.5f;
+			}
+
+			//Handles lateral velocity.
+			_coreVelocity = HandleControlledVelocity(new Vector2(airTurnMod, airAccelMod));
+		}
 
 		//Apply Gravity (vertical velocity)
 		if (_isGravityOn)
@@ -570,31 +577,22 @@ public class S_PlayerPhysics : MonoBehaviour
 	private Vector3 HandleSlopePhysics ( Vector3 worldVelocity ) {
 		Vector3 slopeVelocity = Vector3.zero;
 
-		//If just landed
-		//Then apply additional speed dependant on slope angle.
+		//If just landed, apply additional speed dependant on slope angle.
 		if (_wasInAir)
 		{
-			Vector3 addVelocity;
-			if (!_isRolling)
-			{
-				addVelocity = _groundNormal * _landingConversionFactor_;
-				addVelocity = AlignWithNormal(addVelocity, _groundNormal, _landingConversionFactor_);
-			}
-			else
-			{
-				addVelocity = (_groundNormal * _landingConversionFactor_) * _rollingLandingBoost_;
-				addVelocity = AlignWithNormal(addVelocity, _groundNormal, _rollingLandingBoost_ * _landingConversionFactor_);
-				_SoundController.SpinningSound();
-			}
-			//addVelocity.y = 0;
-			slopeVelocity += addVelocity;
+			//Get magnitude,higher if rolling.
+			float force = _isRolling ?  _landingConversionFactor_ * _rollingLandingBoost_ :  _landingConversionFactor_;
+			//Make a vector taking the direction of the ground when projected on itself (meaning downwards), with the magnitude of force.
+			Vector3 addVelocity = AlignWithNormal(_groundNormal, _groundNormal, force);
+
+			slopeVelocity += addVelocity; //Apply
 			_wasInAir = false;
 		}
 
 		//If moving too slow compared to the limit
-		//Then fall off and away from the slope.
 		if (_horizontalSpeedMagnitude < _SlopeSpeedLimitByAngle_.Evaluate(_groundNormal.y))
 		{
+			//Then fall off and away from the slope.
 			SetIsGrounded(false, 1f);
 			AddCoreVelocity(_groundNormal * 5f);
 			_keepNormalCounter = _keepNormalForThis_ - 0.1f;
@@ -602,38 +600,36 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Slope power
 		//If slope angle is less than limit, meaning on a slope
-		//Then add a force directly downwards. This force is acquired through a number of calculations based on rolling, uphill or downhill, current speed, steepness, and more.
-		//This force is then added to the current velocity, leading to a more realistic and natural effect than just changing speed.
 		if (_groundNormal.y < _slopeEffectLimit_ && _horizontalSpeedMagnitude > 5)
 		{
+			//Get force to always apply whether up or down hill
 			Vector3 force = new Vector3(0, -_curvePosSlopePower, 0);
 			force *= _generalHillMultiplier_;
-			force *= ((1 - (Mathf.Abs(_groundNormal.y) / 10)) + 1);
+			force *= ((1 - (Mathf.Abs(_groundNormal.y) / 10)) + 1); //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
 
+			//If moving uphill
 			if (worldVelocity.y > _upHillThreshold)
 			{
-				_timeUpHill += Time.fixedDeltaTime;
-				force *= _uphillMultiplier_;
+				//Increase time uphill so after force can be more after a while.
+				_timeUpHill += Time.fixedDeltaTime; 
 				force *= _UpHillByTime_.Evaluate(_timeUpHill);
-				if (!_isRolling)
-				{
-					force *= _rollingUphillBoost_;
-				}
-				if (_horizontalSpeedMagnitude < _currentTopSpeed)
-				{
-					force *= 1.5f;
-				}
+
+				force *= _uphillMultiplier_; //Affect by unique stat for uphill.
+				force = _isRolling ? force * _rollingUphillBoost_ : force; //Add more force if rolling.
 			}
+			//If moving downhill
 			else if (worldVelocity.y < _downHillThreshold_)
 			{
-				_timeUpHill -= Mathf.Clamp(_timeUpHill - (Time.fixedDeltaTime * 0.7f), 0, _timeUpHill);
-				force *= _downhillMultiplier_;
-				if (!_isRolling)
-				{
-					force *= _rollingDownhillBoost_;
-				}
+				//Decrease timeUpHill.
+				float decreaseTimeUpHillBy = Time.fixedDeltaTime * 0.5f; //not as quickly as how it increases so zigzagging down and up won't work.
+				decreaseTimeUpHillBy *= 1 + (_RB.velocity.normalized.y); //Decrease more depending on how downwards is moving. If going straight downwards, then this becomes x2, making it equal to any uphill.
+
+				_timeUpHill -= Mathf.Clamp(_timeUpHill - decreaseTimeUpHillBy, 0, _timeUpHill); //Apply, but can't go under 0
+				force *= _downhillMultiplier_; //Affect by unique stat for downhill
+				force = _isRolling ? force * _rollingDownhillBoost_ : force; //Add more force if rolling.
 			}
-			//Force aims slightly towards down the slope (rather than just straight down). 
+
+			//This force is then added to the current velocity. but aimed towrds down the slope, leading to a more realistic and natural effect than just changing speed.
 			Vector3 downSlopeForce = AlignWithNormal(new Vector3(_groundNormal.x, 0, _groundNormal.y), _groundNormal, force.y);
 			force = Vector3.Lerp(force, downSlopeForce, 0.35f);
 
@@ -898,10 +894,10 @@ public class S_PlayerPhysics : MonoBehaviour
 		_listOfCoreVelocityToAdd.Add(force);
 		if (shouldPrintForce) Debug.Log("ADD Core FORCE");
 	}
-	public void SetCoreVelocity ( Vector3 force, bool willOverwrite = true, bool shouldPrintForce = false ) {
+	public void SetCoreVelocity ( Vector3 force, bool willOverwrite = true, bool shouldPrintForce = false) {
 		if (_isOverwritingCoreVelocity && !willOverwrite) { return; } //If a previous call set isoverwriting to true, then if this isn't doing the same it will be ignored.
 
-		if (willOverwrite) { _isOverwritingCoreVelocity = true; } //If true, core velocity will be fully replaced, including additions. 
+		if (willOverwrite) { _isOverwritingCoreVelocity = true; } //If true, core velocity will be fully replaced, including additions. Sets to true rather than same bool, because setting to false would overwrite this.
 
 		_externalCoreVelocity = force;
 		if (shouldPrintForce) Debug.Log("Set Core FORCE");

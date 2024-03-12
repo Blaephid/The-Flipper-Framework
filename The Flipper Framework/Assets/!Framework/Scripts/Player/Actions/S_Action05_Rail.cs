@@ -15,6 +15,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
+	//Scripts
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_PlayerInput         _Input;
@@ -22,24 +23,27 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private S_Control_PlayerSound _Sounds;
 	[HideInInspector]
 	public S_Interaction_Pathers  _Rail_int;
-	public S_AddOnRail		_ConnectedRails;
+	public S_AddOnRail            _ConnectedRails;
 	private S_HedgeCamera         _CamHandler;
-	private Transform             _RailTransform;
-	public CurveSample		_Sample;
 
+	//Current rail
+	private Transform             _RailTransform;
+	public CurveSample            _Sample;
+
+	//ZipLine
 	[HideInInspector]
-	public Transform		_ZipHandle;
+	public Transform              _ZipHandle;
 	[HideInInspector]
-	public Rigidbody		_ZipBody;
+	public Rigidbody              _ZipBody;
+
+	//Effects
 	private GameObject            _JumpBall;
-	private Quaternion            _CharRot;
 	private Animator              _CharacterAnimator;
+	private Transform             _MainSkin;
 	#endregion
 
-	//General
-	#region General Properties
 
-	//Stats
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	[Header("Skin Rail Params")]
 
@@ -47,76 +51,74 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private float                 _offsetRail_ = 2.05f;
 	private float                 _offsetZip_ = -2.05f;
 
-	[HideInInspector] 
-	public float		_railmaxSpeed_;
-	private float		_railTopSpeed_;
-	private float		_decaySpeedLow_;
-	private float		_decaySpeedHigh_;
-	private float		_minStartSpeed_ = 60f;
-	private float		_pushFowardmaxSpeed_ = 80f;
-	private float		_pushFowardIncrements_ = 15f;
-	private float		_pushFowardDelay_ = 0.5f;
-	private float		_slopePower_ = 2.5f;
-	private float		_upHillMultiplier_ = 0.25f;
-	private float		_downHillMultiplier_ = 0.35f;
-	private float		_upHillMultiplierCrouching_ = 0.4f;
-	private float		_downHillMultiplierCrouching_ = 0.6f;
-	private float		_dragVal_ = 0.0001f;
-	private float		_playerBrakePower_ = 0.95f;
-	private float		_hopDelay_;
-	private float		_hopDistance_ = 12;
-	private float		_decayTime_;
-	private AnimationCurve	_accelBySpeed_;
-	private float		_decaySpeed_;
+	[HideInInspector]
+	public float                  _railmaxSpeed_;
+	private float                 _railTopSpeed_;
+	private float                 _decaySpeedLow_;
+	private float                 _decaySpeedHigh_;
+	private float                 _minStartSpeed_ = 60f;
+	private float                 _pushFowardmaxSpeed_ = 80f;
+	private float                 _pushFowardIncrements_ = 15f;
+	private float                 _pushFowardDelay_ = 0.5f;
+	private float                 _generalHillModifier = 2.5f;
+	private float                 _upHillMultiplier_ = 0.25f;
+	private float                 _downHillMultiplier_ = 0.35f;
+	private float                 _upHillMultiplierCrouching_ = 0.4f;
+	private float                 _downHillMultiplierCrouching_ = 0.6f;
+	private float                 _dragVal_ = 0.0001f;
+	private float                 _playerBrakePower_ = 0.95f;
+	private float                 _hopDelay_;
+	private float                 _hopDistance_ = 12;
+	private float                 _decayTime_;
+	private AnimationCurve        _accelBySpeed_;
+	private float                 _decaySpeed_;
 	#endregion
 
 	// Trackers
 	#region trackers
-	public LayerMask		_RailMask;
+	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
+
 	[HideInInspector]
-	public bool                   _isOnZipLine;
+	public S_Interaction_Pathers.PathTypes _whatKindOfRail;     //Set when entering the action, deciding if this is a zipline, rail or later added type
+
 	private float                 _pulleyRotate;
 	[HideInInspector]
-	public float		_curvePosSlope;
+	public float                  _curvePosSlope;
 
-	// Setting up Values
-	private float		_timer = 0f;
-	[HideInInspector] 
-	public float		_range = 0f;
+
+	private float                 _timer = 0f;
 	[HideInInspector]
-	public bool                   _isOnRail ;
-	[HideInInspector] 
-	public float		_playerSpeed;
-	[HideInInspector] 
-	public bool		_isGoingBackwards;
+	public float                  _pointOnSpline = 0f;
+	[HideInInspector]
+	public float                  _playerSpeed;
+	[HideInInspector]
+	public bool                   _isGoingBackwards;
+	private int                   _movingDirection;
 	private bool                  _isCrouching;
+	private bool                   isBraking;
 
-	//Sounds
-	private int		_railSound = 1;
-	private bool		_playingRailContactSound, isBraking, isSwitching;
+	private Vector3               _sampleForwards;
 
 	//Quaternion rot;
-	private Quaternion		_initialRot;
-	private Vector3		_setOffSet;
+	private Vector3               _setOffSet;
 
 	//Camera testing
-	public float		_targetDistance = 10;
-	public float		_cameraLerp = 10;
+	public float                  _targetDistance = 10;
+	public float                  _cameraLerp = 10;
 
 	//Stepping
-	private bool	_canInput = true;
-	private bool	_canHop = false;
-	private float	_distanceToStep;
-	private float	_stepSpeed_ = 3.5f;
-	private bool	_isSteppingRight;
-	private bool	_isFacingRight = true;
+	private bool        _canInput = true;
+	private bool        _canHop = false;
+	private float       _distanceToStep;
+	private float       _stepSpeed_ = 3.5f;
+	private bool        _isSteppingRight;
+	private bool        _isFacingRight = true;
 
 	//Boosters
-	[HideInInspector] 
-	public bool	_isBoosted;
-	[HideInInspector] 
-	public float	_boostTime;
-	#endregion
+	[HideInInspector]
+	public bool         _isBoosted;
+	[HideInInspector]
+	public float        _boostTime;
 	#endregion
 	#endregion
 
@@ -133,90 +135,165 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
-		if (_PlayerPhys == null)
-		{
-			_Tools = GetComponent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-		}
-		_playingRailContactSound = false;
-	}
-	private void OnDisable () {
-		if (!transform.parent.gameObject.activeSelf)
-			return;
-
-		_PlayerPhys._isGravityOn = true;
-
-		_isOnRail = false;
-		_isOnZipLine = false;
-		_ZipBody = null;
-		isBraking = false;
-		_playingRailContactSound = false;
-		StartCoroutine(DelayCollision());
-
-		////////Sounds.RailSoundStop();
-		///
-
-		_Input.RollPressed = false;
-		_Input.SpecialPressed = false;
-		_Input.BouncePressed = false;
-
-		transform.rotation = Quaternion.identity;
-
-		if (_PlayerPhys._RB.velocity != Vector3.zero)
-			_CharacterAnimator.transform.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, Vector3.up);
-
-		//if (Skin != null)
-		//{
-		//    Skin.transform.localPosition = OGSkinLocPos;
-		//    Skin.localRotation = Quaternion.identity;
-		//}
+		ReadyAction();
 	}
 
 	// Update is called once per frame
 	void Update () {
-		SoundControl();
-		//CameraFocus();
-		//Set Animator Parameters
-		//CharacterAnimator.SetFloat("YSpeed", Player.rb.velocity.y);
-		_CharacterAnimator.SetFloat("GroundSpeed", _playerSpeed / _PlayerPhys._currentMaxSpeed);
-		_CharacterAnimator.SetBool("Grounded", false);
+		if (_Rail_int._isFollowingPath)
+		{
+			SoundControl();
+			//Set Animator Parameters
+			_Actions.ActionDefault.HandleAnimator(10);
+		}
 
 		// Actions Go Here
-		if (!_Actions.isPaused && _canInput)
+		if (_canInput)
 		{
-			InputHandling();
+			HandleInputs();
 		}
 	}
 
 	private void FixedUpdate () {
-		if (_isOnRail)
+		//If on a rail.
+		if (_Rail_int._isFollowingPath)
 		{
 			_CharacterAnimator.SetBool("GrindRight", _isFacingRight);
 			RailGrind();
 		}
+		//If no longer on a path, then exit the action and return to regular state.
 		else
 		{
+			//End action
 			_Actions.ActionDefault.ReadyCoyote();
-			_CharacterAnimator.SetInteger("Action", 0);
-			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
-
 			_Actions.ActionDefault.StartAction();
 		}
 	}
 
 	public bool AttemptAction () {
-		bool willChangeAction = false;
-		willChangeAction = true;
-		return willChangeAction;
+		_Rail_int._canGrindOnRail = true; //The pathers interaction will check if this is true when hitting a rail. If it is, then enter this action, but it will usually be false.
+		return false;
 	}
 
 	public void StartAction () {
+		//Prevents raill hopping temporarily
+		StartCoroutine(DelayHopOnLanding());
 
+		//ignore further rail collisions
+		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, true);
+
+		//Set private 
+		_canInput = true;
+		_timer = _pushFowardDelay_;
+
+		_isCrouching = false;
+		_pulleyRotate = 0f;
+
+		_isBoosted = false;
+		_boostTime = 0;
+
+		//Set controls
+		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfCanControl.Add(false);
+		_Input.JumpPressed = false;
+
+		//Animator
+		_CharacterAnimator.SetTrigger("ChangedState");
+		switch (_whatKindOfRail)
+		{
+			case S_Interaction_Pathers.PathTypes.rail:
+				_CharacterAnimator.SetBool("GrindRight", _isFacingRight);
+				_CharacterAnimator.SetInteger("Action", 10);
+				break;
+			case S_Interaction_Pathers.PathTypes.zipline:
+				_ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false;
+				_CharacterAnimator.SetInteger("Action", 9);
+				break;
+		}
+
+		//If got onto this rail from anything except a rail hop, set speed to physics.
+		_playerSpeed = _PlayerPhys._speedMagnitude;
+
+		//Get how much the character is facing the same way as the point.
+		CurveSample sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
+		_sampleForwards = _RailTransform.rotation * sample.tangent;
+		float facingDot = Vector3.Dot(_PlayerPhys._RB.velocity.normalized, _sampleForwards);
+
+		//What action before this one.
+		switch (_Actions.whatAction)
+		{
+			// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
+			case S_Enums.PrimaryPlayerStates.Homing:
+				facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _sampleForwards);
+				_playerSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
+				break;
+			//If it was a drop charge, add speed from the charge to the grind speed.
+			case S_Enums.PrimaryPlayerStates.DropCharge:
+				float charge = _Actions.Action08.externalDash();
+				_playerSpeed = Mathf.Clamp(charge, _playerSpeed + (charge / 6), 160);
+				break;
+
+		}
+
+		// Get Direction for the Rail
+		_isGoingBackwards = facingDot < 0;
+
+		Debug.DrawRay(transform.position, _sampleForwards, Color.yellow, 20f);
+		Debug.DrawRay(transform.position, _PlayerPhys._RB.velocity.normalized, Color.red, 20f);
+		Debug.Log(_playerSpeed);
+
+		// Apply minimum speed
+		_playerSpeed = Mathf.Max(_playerSpeed, _minStartSpeed_);
+
+		_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
+
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Rail);
 	}
 
-	public void StopAction () {
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+
+		//If left this action to perform a jump,
+		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump)
+		{
+			switch (_whatKindOfRail)
+			{
+				case S_Interaction_Pathers.PathTypes.zipline:
+					_PlayerPhys.SetCoreVelocity(_sampleForwards * _playerSpeed, true);  //Ensure player carries on momentum
+					_PlayerPhys._groundNormal = Vector3.up; // Fix rotation
+
+					//After a delay, restore zipline collisions and physics
+					StartCoroutine(_Rail_int.JumpFromZipLine(_ZipHandle, 1));
+					_ZipBody.isKinematic = true;
+					break;
+			}
+		}
+
+		//Restore Control
+		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfCanControl.RemoveAt(0);
+
+		//To prevent instant actions
+		_Input.RollPressed = false;
+		_Input.SpecialPressed = false;
+		_Input.BouncePressed = false;
+
+		//Local values
+		_Rail_int._isFollowingPath = false;
+		//_ZipBody = null;
+		//isBraking = false;
+		//_playingRailContactSound = false;
+
+		StartCoroutine(DelayCollision());
+
+		//transform.rotation = Quaternion.identity;
+
+		//if (_PlayerPhys._RB.velocity != Vector3.zero)
+		//	_MainSkin.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, Vector3.up);
 	}
 
 	#endregion
@@ -227,24 +304,441 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	/// 
 	#region private
 
-	public void HandleInputs () {
+	//Physics
+
+	public void RailGrind () {
+
+		//Increase/decrease the Amount of distance travelled on the Spline by DeltaTime and direction
+		float travelAmount = (Time.deltaTime * _playerSpeed);
+		_movingDirection = _isGoingBackwards ? -1 : 1;
+
+		_pointOnSpline += travelAmount * _movingDirection;
+
+		HandleRailSpeed(); //Make changes to player speed based on angle
+
+		//If this point is on the spline.
+		if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
+		{
+			//Get the data of the spline at that point along it (rotation, location, etc)
+			_Sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
+			_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
+
+			//Set player Position and rotation on Rail
+			switch (_whatKindOfRail)
+			{
+				//Place character in world space on point in rail
+				case S_Interaction_Pathers.PathTypes.rail:
+
+					_MainSkin.rotation = Quaternion.LookRotation(_sampleForwards, _Sample.up);
+
+					Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
+
+					//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
+					Vector3 newPos = _RailTransform.position + ( _RailTransform.rotation * _Sample.location);
+					newPos += (_Sample.up * _offsetRail_) + relativeOffset;
+					transform.position = newPos;
+					break;
+
+				case S_Interaction_Pathers.PathTypes.zipline:
+
+					//Set ziphandle rotation to follow sample
+					_ZipHandle.rotation = _Sample.Rotation;
+
+					//Since the handle and by extent the player can be tilted up to the sides (not changing forward direction), adjust the eueler angles to reflect this.
+					//_pulleyRotate is handled in input, but applied here.
+					_ZipHandle.eulerAngles.Set(_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f);
+					_MainSkin.eulerAngles.Set(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _MainSkin.eulerAngles.z + _pulleyRotate * 70f);
+
+					//Similar to on rail, but place handle first, and player relevant to that.
+					newPos = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
+					newPos += _setOffSet;
+					_ZipHandle.transform.position = newPos;
+					transform.position = newPos + (_ZipHandle.transform.up * _offsetZip_);
+					break;
+			}
+
+			if (isBraking && _playerSpeed > _minStartSpeed_) _playerSpeed *= _playerBrakePower_;
+
+			//Set Player Speed correctly so that it becomes smooth grinding
+			_PlayerPhys.SetCoreVelocity(_sampleForwards * _playerSpeed);
+			if (_ZipBody) { _ZipBody.velocity = _sampleForwards * _playerSpeed; }
+		}
+		else
+		{
+			//Since has gone beyond the spline, treat the player as leaving on the very end to make consistent calculations.
+			if (!_isGoingBackwards)
+				_Sample = _Rail_int._PathSpline.GetSampleAtDistance(_Rail_int._PathSpline.Length - 1);
+			else
+				_Sample = _Rail_int._PathSpline.GetSampleAtDistance(0);
+
+			_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
+			LoseRail();
+		}
+	}
+
+	void LoseRail () {
+		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, true);
+
+		//If the spline loops around then just move place on length back to the start or end.
+		if (_Rail_int._PathSpline.IsLoop)
+		{
+			_pointOnSpline = _pointOnSpline + (_Rail_int._PathSpline.Length * -_movingDirection);
+			return;
+		}
+
+		//Or if this rail has either a next rail or previous rail attached.
+		else if (_ConnectedRails != null)
+		{
+			//If going forwards, and the rail has a rail off the end, then go onto it.
+			if (!_isGoingBackwards && _ConnectedRails.nextRail != null && _ConnectedRails.nextRail.isActiveAndEnabled)
+			{
+				//Set point on spline to be how much over this grind went over the current rail.
+				_pointOnSpline = Mathf.Max(0, _pointOnSpline - _Rail_int._PathSpline.Length);
+
+				//The data storing next and previous rails is changed to the one for the new rail, meaning this rail will now become PrevRail.
+				_ConnectedRails = _ConnectedRails.nextRail;
+
+				//Change the offset to match this rail (since may go from a rail offset from a spline, straight onto rail directily on a different spline)
+				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
+
+				//Set path and positions to follow.
+				_Rail_int._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
+				_RailTransform = _Rail_int._PathSpline.transform.parent;
+				return;
+			}
+			//If going backwards, and the rail has a rail off the end, then go onto it.
+			else if (_isGoingBackwards && _ConnectedRails.PrevRail != null && _ConnectedRails.PrevRail.isActiveAndEnabled)
+			{
+				//Set data first, because will need to affect point by new length.
+				_ConnectedRails = _ConnectedRails.PrevRail;
+
+				// Change offset to match the new rail.
+				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
+
+				//Set path and positions to follow.
+				_Rail_int._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
+				_RailTransform = _Rail_int._PathSpline.transform.parent;
+
+				//Since coming onto this new rail from the end of it, must have a reference to its length. This is why the point is acquired at the end of this if flow, rather than the start.
+				_pointOnSpline = _pointOnSpline + _Rail_int._PathSpline.Length;
+				_pointOnSpline = _Rail_int._PathSpline.Length;
+				return;
+			}
+		}
+		//If hasn't returned yet, then there is nothing to follow, so actually leave the rail.
+
+		_Input.LockInputForAWhile(5f, false); //Prevent instant turning off the end of the rail
+		_distanceToStep = 0; //Stop a step that might be happening
+
+		switch (_whatKindOfRail)
+		{
+			case S_Interaction_Pathers.PathTypes.zipline:
+
+				//If the end of a zipline, then the handle must go flying off the end, so disable trigger for player and homing target, but renable collider with world.
+				_ZipHandle.GetComponent<CapsuleCollider>().enabled = false;
+				if (_ZipHandle.GetComponentInChildren<MeshCollider>()) { _ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; }
+				GameObject target = _ZipHandle.transform.GetComponent<S_Control_Zipline>().homingtgt;
+				target.SetActive(false);
+
+				_PlayerPhys.SetCoreVelocity(_ZipBody.velocity); //Make sure zip handle flies off
+
+				//Make player face upwards again rather than tilted to the side from rotating handle
+				Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
+				if (VelocityMod != Vector3.zero)
+				{
+					_MainSkin.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
+				}
+				_PlayerPhys.SetCoreVelocity(_sampleForwards * _playerSpeed); //Make sure player flies off the end of the rail consitantly.
+				break;
+
+			case S_Interaction_Pathers.PathTypes.rail:
+				_PlayerPhys.SetCoreVelocity(_sampleForwards * _playerSpeed); //Make sure player flies off the end of the rail consitantly.
+
+				VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
+				if (VelocityMod != Vector3.zero)
+				{
+					_MainSkin.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
+				}
+				break;
+		}
+
+		//Prevent instant stepping.
+		_Input.LeftStepPressed = false;
+		_Input.RightStepPressed = false;
+
+		//Next frame will return to default state
+		_Rail_int._isFollowingPath = false;
 
 	}
 
+	//Prevent colliding with rails until slightly after losing the current rail.
+	IEnumerator DelayCollision () {
+		yield return new WaitForSeconds(0.3f);
+		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
+	}
+
+	void HandleRailSpeed () {
+		ApplyBoost();
+		HandleSlopes();
+
+		//Decreased speed down if over max or top speed on the rail.
+		if (_playerSpeed > _railmaxSpeed_)
+			_playerSpeed -= _decaySpeedHigh_;
+		else if (_playerSpeed > _railTopSpeed_)
+			_playerSpeed -= _decaySpeedLow_;
+
+		_playerSpeed = Mathf.Clamp(_playerSpeed, 10, _PlayerPhys._currentMaxSpeed);
+	}
+
+	//Set to true outside of this script. But when boosted on a rail will gain a bunch of speed at once before having some of it quickly drop off.
+	void ApplyBoost () {
+		//If currently being boosted
+		if (_isBoosted)
+		{
+			//When boost starts, boost time is set to positive, so when it goes below 0 it should start losing speed.
+			_boostTime -= Time.fixedDeltaTime;
+			if (_boostTime < 0)
+			{		
+				if (_playerSpeed > 60) { _playerSpeed -= _decaySpeed_; } //Speed can never decay to go under 60.
+
+				//Keep losing speed until _decayTime_ amount of time has passed.
+				if (_boostTime < -_decayTime_)
+				{
+					_isBoosted = false;
+					_boostTime = 0;
+				}
+			}
+		}
+	}
+
+	void HandleSlopes () {
+		//Start a force to apply based on the curve position and general modifier for all slopes handled in physics script 
+		float force = _generalHillModifier;
+		force *= ((1 - (Mathf.Abs(transform.up.y) / 10)) + 1); //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
+		float AbsYPow = Mathf.Abs(_PlayerPhys._RB.velocity.normalized.y * _PlayerPhys._RB.velocity.normalized.y);
+
+		//use player vertical speed to find if player is going up or down
+		//if going uphill on rail
+		if (_PlayerPhys._RB.velocity.y > 0.05f)
+		{
+			//Get main modifier and multiply by position on curve and general hill modifer used for other slope physics.
+			force *= _isCrouching ? _upHillMultiplierCrouching_ : _upHillMultiplier_;
+			force *= -1;
+		}
+		else if (_PlayerPhys._RB.velocity.y < -0.05f)
+		{
+			//Downhill
+			force *=_isCrouching ? _downHillMultiplierCrouching_ : _downHillMultiplier_;
+		}
+		force = (AbsYPow * force) + (_dragVal_ * _playerSpeed);
+		//Apply to moving speed (if uphill will be a negative/
+		_playerSpeed += force;
+	}
+
+	//Inputs
+	public void HandleInputs () {
+		if (!_Actions.isPaused)
+		{
+			HandleUniqueInputs();
+
+			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+			_Actions.HandleInputs(_positionInActionList);
+		}
+	}
+
+	void HandleUniqueInputs () {
+		_timer += Time.deltaTime;
+
+		//Certain types of rail have unique controls / subactions to them.
+		switch (_whatKindOfRail)
+		{
+			case S_Interaction_Pathers.PathTypes.rail:
+
+				//Crouching, relevant to slope physics.
+				_isCrouching = _Input.RollPressed;
+				_CharacterAnimator.SetBool("isRolling", _isCrouching);
+
+				//RailTrick to accelerate, but only after delay
+				if (_Input.SpecialPressed && _timer > _pushFowardDelay_)
+				{	
+					//Will only increase speed if under the max trick speed.
+					if (_playerSpeed < _pushFowardmaxSpeed_)
+					{
+						_playerSpeed += _pushFowardIncrements_ + _accelBySpeed_.Evaluate(_playerSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
+					}
+					_isFacingRight = !_isFacingRight; //This will cause the animator to perform a small hop and face the other way.
+					_timer = 0f; //Resets timer so delay must be exceeded again.
+					_Input.SpecialPressed = false; //Prevents it being spammed by holding		
+				}
+
+				CheckHopping();
+				break;
+
+			case S_Interaction_Pathers.PathTypes.zipline:
+				float aimForRotation = 0;
+				if (_Input.RightStepPressed) { aimForRotation = 1; }
+				else if (_Input.LeftStepPressed) { aimForRotation = -1; }
+
+				//_pulleyRotate is used in the RailGrind method, so here lerp towards the new goal rather than make it instant.
+				_pulleyRotate = Mathf.MoveTowards(_pulleyRotate, aimForRotation, 3.5f * Time.deltaTime);
+
+				//Make sure not to lose forward direction
+				_MainSkin.rotation = Quaternion.LookRotation(_RailTransform.rotation *_sampleForwards, _Sample.up);
+				break;
+		}
+
+		//Breaking
+		isBraking = _Input.BouncePressed;
+	}
+
+	void CheckHopping () {
+		if (_canInput && _canHop)
+		{
+			//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
+			if (_Input.RightStepPressed)
+			{
+				Vector3 Direction = _MainSkin.position - _CamHandler.transform.position;
+				bool Facing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < -0.5f;
+				if (Facing)
+				{
+					_Input.RightStepPressed = false;
+					_Input.LeftStepPressed = true;
+				}
+			}
+			else if (_Input.LeftStepPressed)
+			{
+				Vector3 Direction = _MainSkin.position - _CamHandler.transform.position;
+				bool Facing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < -0.5f;
+				if (Facing)
+				{
+					_Input.RightStepPressed = true;
+					_Input.LeftStepPressed = false;
+				}
+			}
+
+			if (_Input.RightStepPressed)
+			{
+
+				_distanceToStep = _hopDistance_;
+				_canInput = false;
+				_isSteppingRight = true;
+				_Input.RightStepPressed = false;
+				PerformHop();
+				return;
+
+			}
+			else if (_Input.LeftStepPressed)
+			{
+
+
+				_distanceToStep = _hopDistance_;
+				_canInput = false;
+				_isSteppingRight = false;
+				_Input.LeftStepPressed = false;
+				PerformHop();
+				return;
+			}
+		}
+
+		PerformHop();
+	}
+
+	void PerformHop () {
+		if (_distanceToStep > 0)
+		{
+			float move = _stepSpeed_;
+
+			if (_isSteppingRight)
+				move = -move;
+			if (_isGoingBackwards)
+				move = -move;
+
+			move = Mathf.Clamp(move, -_distanceToStep, _distanceToStep);
+
+			_setOffSet.Set(_setOffSet.x + move, _setOffSet.y, _setOffSet.z);
+
+			if (move < 0)
+				if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), -_MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
+				{
+					_Actions.ActionDefault.StartAction();
+				}
+				else
+				if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), _MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
+				{
+
+					_Actions.ActionDefault.StartAction();
+				}
+
+			_distanceToStep -= _stepSpeed_;
+
+			if (_distanceToStep < 6)
+			{
+				Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
+
+				if (_distanceToStep <= 0)
+				{
+					_Rail_int._isFollowingPath = false;
+					_Actions.ActionDefault.StartAction();
+				}
+
+			}
+		}
+	}
+
+	//Make it so can't rail hop until being on a rail for long enough. This includes hopping from one rail to another.
+	IEnumerator DelayHopOnLanding () {
+		_canHop = false;
+		yield return new WaitForSeconds(_hopDelay_);
+		_canHop = true;
+	}
+
+	//Effects
+	void SoundControl () {
+		//Player Rail Sound
+
+	}
 	#endregion
 
-	/// <summary>
-	/// Public ----------------------------------------------------------------------------------
-	/// </summary>
-	/// 
-	#region public 
+	//Called by the pathers interaction script to ready important stats gained from the collision. This is seperate to startAction because startAction is inherited from an interface.
+	public void AssignForThisGrind ( float range, Transform Rail, S_Interaction_Pathers.PathTypes type, Vector3 thisOffset, S_AddOnRail AddOn ) {
 
-	#endregion
+		_setOffSet = -thisOffset; //Offset is obtianed from the offset on the collider, and will be followed consitantly to allow folowing different rails on the same spline.
+
+		_whatKindOfRail = type; //Zipline or rail
+
+		//Setting up Rails
+		_pointOnSpline = range; //Starts at this position along the spline.
+		_RailTransform = Rail; //Player position must add this as spline positions are in local space.
+		_Rail_int._isFollowingPath = true;
+
+		_ConnectedRails = AddOn; //Will be used to go onto subsequent rails without recalculating collisions.
+	}
 
 	/// <summary>
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Assigning
+
+	//Assigns all external elements of the action.
+	public void ReadyAction () {
+		if (_PlayerPhys == null)
+		{
+			//Assign all external values needed for gameplay.
+			_Tools = GetComponent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
+
+			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
+			{
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Rail)
+				{
+					_positionInActionList = i;
+					break;
+				}
+			}
+		}
+	}
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
@@ -255,6 +749,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_CamHandler = GetComponent<S_Handler_Camera>()._HedgeCam;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
 		_Sounds = _Tools.SoundControl;
 
 		_JumpBall = _Tools.JumpBall;
@@ -270,7 +765,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_pushFowardmaxSpeed_ = _Tools.Stats.RailStats.RailPushFowardmaxSpeed;
 		_pushFowardIncrements_ = _Tools.Stats.RailStats.RailPushFowardIncrements;
 		_pushFowardDelay_ = _Tools.Stats.RailStats.RailPushFowardDelay;
-		_slopePower_ = _Tools.Stats.SlopeStats.generalHillMultiplier;
+		_generalHillModifier = _Tools.Stats.SlopeStats.generalHillMultiplier;
 		_upHillMultiplier_ = _Tools.Stats.RailStats.RailUpHillMultiplier;
 		_downHillMultiplier_ = _Tools.Stats.RailStats.RailDownHillMultiplier;
 		_upHillMultiplierCrouching_ = _Tools.Stats.RailStats.RailUpHillMultiplierCrouching;
@@ -288,675 +783,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_decayTime_ = _Tools.Stats.RailStats.railBoostDecayTime;
 	}
 	#endregion
-
-	IEnumerator DelayCollision () {
-		yield return new WaitForSeconds(0.1f);
-		Physics.IgnoreLayerCollision(8, 23, false);
-	}
-
-	public void InitialEvents ( float Range, Transform RailPos, bool isZip, Vector3 thisOffset, S_AddOnRail addOn ) {
-		StartCoroutine(allowHop());
-
-		//ignore further railcollisions
-		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, true);
-
-		_canInput = true;
-		_setOffSet = -thisOffset;
-
-		_ConnectedRails = addOn;
-		_JumpBall.SetActive(false);
-		_Input.JumpPressed = false;
-
-		_isOnZipLine = isZip;
-		_timer = _pushFowardDelay_;
-		_playingRailContactSound = false;
-
-		_isBoosted = false;
-		_boostTime = 0;
-
-		_PlayerPhys._isGravityOn = false;
-		// Player.p_rigidbody.useGravity = false;
-
-		//Animations and Skin Changes
-		//CharacterAnimator.SetTrigger("GenericT");
-
-		if (!_isOnZipLine)
-		{
-			_CharacterAnimator.SetBool("GrindRight", _isFacingRight);
-			_CharacterAnimator.SetInteger("Action", 10);
-
-
-		}
-		else
-		{
-			_ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false;
-			_CharacterAnimator.SetInteger("Action", 9);
-
-		}
-
-		_CharacterAnimator.SetTrigger("HitRail");
-
-		//fix for camera jumping
-		//rotYFix = transform.rotation.eulerAngles.y;
-		//transform.rotation = Quaternion.identity;
-		if (transform.eulerAngles.y < -89)
-		{
-			_PlayerPhys.transform.eulerAngles = new Vector3(0, -89, 0);
-		}
-
-
-		//Setting up Rails
-		_range = Range;
-		_RailTransform = RailPos;
-		_isOnRail = true;
-
-		if (_distanceToStep <= 0)
-			_playerSpeed = _PlayerPhys._speedMagnitude;
-
-
-
-		CurveSample sample = _Rail_int.RailSpline.GetSampleAtDistance(_range);
-		float dotdir = Vector3.Dot(_PlayerPhys._RB.velocity.normalized, sample.tangent);
-		_isCrouching = false;
-		_pulleyRotate = 0f;
-
-		_initialRot = transform.rotation;
-
-		//Vector3 dir = sample.tangent;
-		//Cam.SetCamera(dir, 2.5f, 20f, 1f);
-		//Cam.Locked = false;
-
-
-		// Check if was Homingattack
-		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing)
-		{
-			_playerSpeed = _PlayerPhys._speedMagnitude;
-			dotdir = Vector3.Dot(_Actions.Action02._targetDirection.normalized, sample.tangent);
-		}
-		else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.DropCharge)
-		{
-			//dotdir = Vector3.Dot(Player.rb.velocity.normalized, sample.tangent);
-
-			float charge = _Actions.Action08.externalDash();
-
-
-			_playerSpeed = Mathf.Clamp(charge, _playerSpeed + (charge / 6), 160);
-		}
-
-		//Cam.CamLagSet(4);
-		////////Cam.OverrideTarget.position = Skin.position;
-
-		// make sure that Player wont have a shitty Speed...
-		if ((dotdir > 0.85f || dotdir < -.85f) && _distanceToStep > 0)
-		{
-			_playerSpeed = Mathf.Abs(_playerSpeed * 1);
-		}
-		else if (dotdir < 0.5 && dotdir > -.5f)
-		{
-			_playerSpeed = Mathf.Abs(_playerSpeed * 0.8f);
-		}
-		_playerSpeed = Mathf.Max(_playerSpeed, _minStartSpeed_);
-
-		// Get Direction for the Rail
-		if (dotdir > 0)
-		{
-			_isGoingBackwards = false;
-
-			if (_isOnZipLine && _range > _Rail_int.RailSpline.Length - 5)
-				_isGoingBackwards = true;
-		}
-		else
-		{
-			_isGoingBackwards = true;
-			if (_isOnZipLine && _range < 5)
-				_isGoingBackwards = false;
-		}
-
-
-		_PlayerPhys._RB.velocity = Vector3.zero;
-		_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0));
-
-	}
-
-
-	IEnumerator allowHop () {
-		_canHop = false;
-		yield return new WaitForSeconds(_hopDelay_);
-		_canHop = true;
-	}
-
-	void InputHandling () {
-		_timer += Time.deltaTime;
-
-		if (_Input.JumpPressed)
-		{
-
-			Vector3 jumpCorrectedOffset = (_CharacterAnimator.transform.up * 1.5f); //Quaternion.LookRotation(Player.p_rigidbody.velocity, transform.up) * (transform.forward * 3.5f);
-
-
-			if (_isOnZipLine)
-			{
-				if (!_isGoingBackwards)
-					_PlayerPhys._RB.velocity = _Sample.tangent * _playerSpeed;
-				else
-					_PlayerPhys._RB.velocity = -_Sample.tangent * _playerSpeed;
-
-				jumpCorrectedOffset = -jumpCorrectedOffset;
-				_ZipBody.isKinematic = true;
-				_PlayerPhys._groundNormal = Vector3.up;
-
-				StartCoroutine(_Rail_int.JumpFromZipLine(_ZipHandle, 1));
-
-			}
-
-			transform.position += jumpCorrectedOffset;
-
-			_isOnRail = false;
-
-			_isOnZipLine = false;
-
-
-		}
-
-
-		if (_Input.RollPressed && !_isOnZipLine)
-		{
-			//Crouch
-			_isCrouching = true;
-			_CharacterAnimator.SetBool("isRolling", true);
-		}
-		else
-		{
-			_isCrouching = false;
-			_CharacterAnimator.SetBool("isRolling", false);
-		}
-
-		if (_Input.SpecialPressed && !_isOnZipLine)
-		{
-			//ChangeSide
-
-			if (_timer > _pushFowardDelay_)
-			{
-				//Sounds.RailSoundStop();
-				isSwitching = true;
-				if (_playerSpeed < _pushFowardmaxSpeed_)
-				{
-					_playerSpeed += _pushFowardIncrements_ + _accelBySpeed_.Evaluate(_playerSpeed / _pushFowardmaxSpeed_);
-				}
-				_isFacingRight = !_isFacingRight;
-				_timer = 0f;
-				_Input.SpecialPressed = false;
-			}
-		}
-		isSwitching = (_timer < _pushFowardDelay_);
-
-		//If above a certain speed, the player breaks depending it they're presseing the skid button.
-		if (Time.timeScale != 0 && !_isOnZipLine)
-		{
-			isBraking = _Input.BouncePressed;
-
-		}
-		else
-		{
-			isBraking = false;
-		}
-
-	}
-
-	public void RailGrind () {
-
-		//Increase the Amount of distance trought the Spline by DeltaTime
-		float ammount = (Time.deltaTime * _playerSpeed);
-		// Increase/Decrease Range depending on direction
-
-		SlopePhys();
-
-		if (!_isGoingBackwards)
-		{
-			//range += ammount / dist;
-			_range += ammount;
-		}
-		else
-		{
-			//range -= ammount / dist;
-			_range -= ammount;
-		}
-
-		//Check so for the size of the Spline
-		if (_range < _Rail_int.RailSpline.Length && _range > 0)
-		{
-			//Get Sample of the Rail to put player
-			_Sample = _Rail_int.RailSpline.GetSampleAtDistance(_range);
-
-			//Set player Position and rotation on Rail
-			if (!_isOnZipLine)
-			{
-				if (_isGoingBackwards)
-				{
-					_CharacterAnimator.transform.rotation = Quaternion.LookRotation(-_Sample.tangent, _Sample.up);
-				}
-				else
-				{
-					_CharacterAnimator.transform.rotation = Quaternion.LookRotation(_Sample.tangent, _Sample.up);
-				}
-
-				Vector3 binormal = Vector3.zero;
-
-				if (_setOffSet != Vector3.zero)
-				{
-					//binormal = sample.tangent;
-					//binormal = Quaternion.LookRotation(Vector3.right, Vector3.up) * binormal;
-					binormal += _Sample.Rotation * -_setOffSet;
-				}
-				transform.position = (_Sample.location + _RailTransform.position + (_Sample.up * _offsetRail_)) + binormal;
-
-				if (_canHop)
-				{
-					railHopping();
-				}
-
-			}
-			else
-			{
-				float rotatePoint = 0;
-				if (_Input.RightStepPressed)
-				{
-					_Input.LeftStepPressed = false;
-					rotatePoint = 1;
-				}
-				else if (_Input.LeftStepPressed)
-				{
-					_Input.RightStepPressed = false;
-					rotatePoint = -1;
-				}
-
-				if (!_isGoingBackwards)
-				{
-					_pulleyRotate = Mathf.MoveTowards(_pulleyRotate, rotatePoint, 3.5f * Time.deltaTime);
-					_CharacterAnimator.transform.rotation = Quaternion.LookRotation(_Sample.tangent, _Sample.up);
-				}
-				else
-				{
-					_pulleyRotate = Mathf.MoveTowards(_pulleyRotate, rotatePoint, 3.5f * Time.deltaTime);
-					_CharacterAnimator.transform.rotation = Quaternion.LookRotation(-_Sample.tangent, _Sample.up);
-				}
-
-				_ZipHandle.rotation = _Sample.Rotation;
-				_ZipHandle.eulerAngles = new Vector3(_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f);
-
-				_CharacterAnimator.transform.eulerAngles = new Vector3(_CharacterAnimator.transform.eulerAngles.x, _CharacterAnimator.transform.eulerAngles.y, _CharacterAnimator.transform.eulerAngles.z + _pulleyRotate * 70f);
-
-
-
-
-				// Cam.FollowDirection(0.8f, 14, -5, 0.1f, true);
-				//CameraTarget.position = sample.location + RailTransform.position;
-				// CameraTarget.localRotation = Quaternion.LookRotation(CharacterAnimator.transform.forward, Vector3.up);
-
-
-
-				_ZipHandle.transform.position = (_Sample.location + _RailTransform.position) + _setOffSet;
-				transform.position = _ZipHandle.transform.position + (_ZipHandle.transform.up * _offsetZip_);
-
-
-			}
-
-			if (isBraking && _playerSpeed > _minStartSpeed_) _playerSpeed *= _playerBrakePower_;
-
-			//Set Player Speed correctly so that it becomes smooth grinding
-			if (!_isGoingBackwards)
-			{
-
-				if (_isOnZipLine && _ZipBody != null)
-				{
-					_ZipBody.velocity = _Sample.tangent * (_playerSpeed);
-					_PlayerPhys._RB.velocity = _Sample.tangent;
-				}
-				else
-					_PlayerPhys._RB.velocity = _Sample.tangent * (_playerSpeed);
-
-				//remove camera tracking at the end of the rail to be safe from strange turns
-				//if (range > Rail_int.RailSpline.Length * 0.9f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f;}
-				if (_range > _Rail_int.RailSpline.Length * 0.9f)
-				{
-					// Cam.lockCamFor(0.5f);
-				}
-			}
-			else
-			{
-
-				if (_isOnZipLine && _ZipBody != null)
-				{
-					_ZipBody.velocity = -_Sample.tangent * (_playerSpeed);
-					_PlayerPhys._RB.velocity = -_Sample.tangent;
-				}
-				else
-					_PlayerPhys._RB.velocity = -_Sample.tangent * (_playerSpeed);
-				//remove camera tracking at the end of the rail to be safe from strange turns
-				//if (range < 0.1f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f; }
-				if (_range > _Rail_int.RailSpline.Length * 0.9f)
-				{
-					//  Cam.lockCamFor(0.5f);
-				}
-			}
-
-		}
-		else
-		{
-			if (!_isGoingBackwards)
-				_Sample = _Rail_int.RailSpline.GetSampleAtDistance(_Rail_int.RailSpline.Length - 1);
-			else
-				_Sample = _Rail_int.RailSpline.GetSampleAtDistance(0);
-
-			LoseRail();
-		}
-
-	}
-
-	void railHopping () {
-		if (_canInput)
-		{
-			//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
-			if (_Input.RightStepPressed)
-			{
-				Vector3 Direction = _CharacterAnimator.transform.position - _CamHandler.transform.position;
-				bool Facing = Vector3.Dot(_CharacterAnimator.transform.forward, Direction.normalized) < -0.5f;
-				if (Facing)
-				{
-					_Input.RightStepPressed = false;
-					_Input.LeftStepPressed = true;
-				}
-			}
-			else if (_Input.LeftStepPressed)
-			{
-				Vector3 Direction = _CharacterAnimator.transform.position - _CamHandler.transform.position;
-				bool Facing = Vector3.Dot(_CharacterAnimator.transform.forward, Direction.normalized) < -0.5f;
-				if (Facing)
-				{
-					_Input.RightStepPressed = true;
-					_Input.LeftStepPressed = false;
-				}
-			}
-
-			Debug.DrawRay(transform.position - (_Sample.up * 2) + (_CharacterAnimator.transform.right * 3), _CharacterAnimator.transform.right * 10, Color.red);
-			Debug.DrawRay(transform.position - (_Sample.up * 2) + (_CharacterAnimator.transform.right * 3), -_CharacterAnimator.transform.right * 10, Color.red);
-
-			if (_Input.RightStepPressed)
-			{
-
-				_distanceToStep = _hopDistance_;
-				_canInput = false;
-				_isSteppingRight = true;
-				_Input.RightStepPressed = false;
-				performStep();
-				return;
-
-			}
-			else if (_Input.LeftStepPressed)
-			{
-
-
-				_distanceToStep = _hopDistance_;
-				_canInput = false;
-				_isSteppingRight = false;
-				_Input.LeftStepPressed = false;
-				performStep();
-				return;
-			}
-		}
-
-		performStep();
-	}
-
-	void performStep () {
-		if (_distanceToStep > 0)
-		{
-			float move = _stepSpeed_;
-
-			if (_isSteppingRight)
-				move = -move;
-			if (_isGoingBackwards)
-				move = -move;
-
-			move = Mathf.Clamp(move, -_distanceToStep, _distanceToStep);
-
-			_setOffSet.Set(_setOffSet.x + move, _setOffSet.y, _setOffSet.z);
-
-			if (move < 0)
-				if (Physics.BoxCast(_CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), -_CharacterAnimator.transform.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
-				{
-					_Actions.ActionDefault.StartAction();
-				}
-				else
-				if (Physics.BoxCast(_CharacterAnimator.transform.position, new Vector3(1.3f, 3f, 1.3f), _CharacterAnimator.transform.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
-				{
-
-					_Actions.ActionDefault.StartAction();
-				}
-
-			_distanceToStep -= _stepSpeed_;
-
-			if (_distanceToStep < 6)
-			{
-				Physics.IgnoreLayerCollision(8, 23, false);
-
-				if (_distanceToStep <= 0)
-				{
-					_isOnRail = false;
-					_Actions.ActionDefault.StartAction();
-				}
-
-			}
-		}
-	}
-
-	void LoseRail () {
-		_distanceToStep = 0;
-		Physics.IgnoreLayerCollision(8, 23, true);
-
-		Debug.Log("The Rail Is Over");
-
-		//Check if the Spline is loop and resets position
-		if (_Rail_int.RailSpline.IsLoop)
-		{
-			if (!_isGoingBackwards)
-			{
-				_range = _range - _Rail_int.RailSpline.Length;
-				RailGrind();
-			}
-			else
-			{
-				_range = _range + _Rail_int.RailSpline.Length;
-				RailGrind();
-			}
-		}
-		else if (_ConnectedRails != null && ((!_isGoingBackwards && _ConnectedRails.nextRail != null && _ConnectedRails.nextRail.isActiveAndEnabled) || (_isGoingBackwards && _ConnectedRails.PrevRail != null && _ConnectedRails.PrevRail.isActiveAndEnabled)))
-		{
-			if (!_isGoingBackwards && _ConnectedRails.nextRail != null)
-			{
-				Debug.Log("On to Next Rail With = " + _range);
-				//Debug.Log("Set by " + ConnectedRails.nextRail);
-
-				_range = _range - _Rail_int.RailSpline.Length;
-				_range = 0;
-
-				_ConnectedRails.Announce();
-
-				_ConnectedRails = _ConnectedRails.nextRail;
-				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
-
-				_Rail_int.RailSpline = _ConnectedRails.GetComponentInParent<Spline>();
-				_RailTransform = _Rail_int.RailSpline.transform.parent;
-
-				Debug.Log("Then With = " + _range);
-			}
-			else if (_isGoingBackwards && _ConnectedRails.PrevRail != null)
-			{
-
-				Debug.Log("Back To Previous Rail");
-
-				S_AddOnRail temp = _ConnectedRails;
-				_ConnectedRails = _ConnectedRails.PrevRail;
-				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
-
-				_Rail_int.RailSpline = _ConnectedRails.GetComponentInParent<Spline>();
-				_RailTransform = _Rail_int.RailSpline.transform.parent;
-
-				_range = _range + _Rail_int.RailSpline.Length;
-				_range = _Rail_int.RailSpline.Length;
-
-			}
-
-
-			//RailGrind();
-		}
-		else
-		{
-			_Input.LockInputForAWhile(5f, false);
-
-			if (_isOnZipLine)
-			{
-				_ZipHandle.GetComponent<CapsuleCollider>().enabled = false;
-				GameObject target = _ZipHandle.transform.GetComponent<S_Control_PulleyObject>().homingtgt;
-				target.SetActive(false);
-
-				if (_isGoingBackwards)
-				{
-					_PlayerPhys._RB.velocity = _ZipBody.velocity;
-				}
-				else
-				{
-					_PlayerPhys._RB.velocity = _ZipBody.velocity;
-				}
-
-				Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-				if (VelocityMod != Vector3.zero)
-				{
-					_CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
-				}
-
-			}
-			else
-			{
-
-				if (_isGoingBackwards)
-					_PlayerPhys._RB.velocity = -_Sample.tangent * _playerSpeed;
-				else
-					_PlayerPhys._RB.velocity = _Sample.tangent * _playerSpeed;
-
-				Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-				if (VelocityMod != Vector3.zero)
-				{
-					_CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
-				}
-			}
-
-			_Input.LeftStepPressed = false;
-			_Input.RightStepPressed = false;
-
-			_isOnRail = false;
-		}
-	}
-	void SlopePhys () {
-		if (_isBoosted)
-		{
-			if (_playerSpeed > 60)
-			{
-				_boostTime -= Time.fixedDeltaTime;
-				if (_boostTime < 0)
-				{
-					_playerSpeed -= _decaySpeed_;
-					if (_boostTime < -_decayTime_)
-					{
-						_isBoosted = false;
-						_boostTime = 0;
-					}
-				}
-			}
-			else
-				_isBoosted = false;
-		}
-
-		//slope curve from Bhys
-		_curvePosSlope = _PlayerPhys._curvePosSlopePower;
-		//use player vertical speed to find if player is going up or down
-		//Debug.Log(Player.p_rigidbody.velocity.normalized.y);
-
-		//if (Player.rb.velocity.y >= -3f)
-		if (_PlayerPhys._RB.velocity.y > 0.05f)
-		{
-			//uphill and straight
-			float lean = _upHillMultiplier_;
-			if (_isCrouching) { lean = _upHillMultiplierCrouching_; }
-			//Debug.Log("UpHill : *" + lean);
-			float force = (_slopePower_ * _curvePosSlope) * lean;
-			//Debug.Log(Mathf.Abs(Player.p_rigidbody.velocity.normalized.y - 1));
-			float AbsYPow = Mathf.Abs(_PlayerPhys._RB.velocity.normalized.y * _PlayerPhys._RB.velocity.normalized.y);
-			//Debug.Log( "Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
-			force = (AbsYPow * force) + (_dragVal_ * _playerSpeed);
-			//Debug.Log(force);
-			force = Mathf.Clamp(force, -0.3f, 0.3f);
-			_playerSpeed += force;
-
-			//Enforce max Speed
-			if (_playerSpeed > _PlayerPhys._currentMaxSpeed)
-			{
-				_playerSpeed = _PlayerPhys._currentMaxSpeed;
-			}
-		}
-		else if (_PlayerPhys._RB.velocity.y < -0.05f)
-		{
-			//Downhill
-			float lean = _downHillMultiplier_;
-			if (_isCrouching) { lean = _downHillMultiplierCrouching_; }
-			//Debug.Log("DownHill : *" + lean);
-			float force = (_slopePower_ * _curvePosSlope) * lean;
-			//Debug.Log(Mathf.Abs(Player.p_rigidbody.velocity.normalized.y));
-			float AbsYPow = Mathf.Abs(_PlayerPhys._RB.velocity.normalized.y * _PlayerPhys._RB.velocity.normalized.y);
-			//Debug.Log("Val" + Player.p_rigidbody.velocity.normalized.y + "Pow" + AbsYPow);
-			force = (AbsYPow * force) - (_dragVal_ * _playerSpeed);
-			//Debug.Log(force);
-			_playerSpeed -= force;
-
-			//Enforce max Speed
-			if (_playerSpeed > _PlayerPhys._currentMaxSpeed)
-			{
-				_playerSpeed = _PlayerPhys._currentMaxSpeed;
-			}
-		}
-		else
-		{
-			//Decay
-			if (_playerSpeed > _railmaxSpeed_)
-				_playerSpeed -= _decaySpeedHigh_;
-
-			else if (_playerSpeed > _railTopSpeed_)
-				_playerSpeed -= _decaySpeedLow_;
-		}
-
-
-
-	}
-
-	void SoundControl () {
-		//Player Rail Sound
-
-		//If Entring Rail
-		if (!_playingRailContactSound)
-		{
-			_railSound = !(_isOnZipLine) ? 0 : 10;
-			_playingRailContactSound = true;
-		}
-		else
-		{
-			_railSound = !(_isOnZipLine) ? 1 : 11;
-		}
-
-		if (!isSwitching)
-		{
-			//Sounds.RailSound(RailSound);
-		}
-	}
 
 }
 

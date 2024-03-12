@@ -22,6 +22,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	private S_VolumeTrailRenderer HomingTrailScript;
 
 	private Animator _CharacterAnimator;
+	private Transform   _MainSkin;
 	private GameObject jumpBall;
 	#endregion
 
@@ -152,8 +153,12 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	}
 
-	public void StopAction () {
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
 	#endregion
@@ -190,6 +195,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_Actions = GetComponent<S_ActionManager>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
 		_Sounds = _Tools.SoundControl;
 		HomingTrailScript = _Tools.HomingTrailScript;
 		jumpBall = _Tools.JumpBall;
@@ -256,7 +262,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		if (_PlayerPhys._horizontalSpeedMagnitude < 20)
 		{
-			newVec = _CharacterAnimator.transform.forward;
+			newVec = _MainSkin.forward;
 			newVec *= 20;
 		}
 		else if (nextSpeed > _PlayerPhys._horizontalSpeedMagnitude)

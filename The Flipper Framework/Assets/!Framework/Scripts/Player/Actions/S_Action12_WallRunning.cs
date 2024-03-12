@@ -28,6 +28,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private CapsuleCollider	_CoreCollider;
 	private GameObject		_CurrentWall;
 	private Animator		_CharacterAnimator;
+	private Transform             _MainSkin;
 	private Transform		_CharacterTransform;
 	#endregion
 
@@ -175,8 +176,12 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	}
 
-	public void StopAction () {
+	public void StopAction ( bool isFirstTime = false ) {
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 
+		enabled = false;
+
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
 	#endregion
@@ -215,6 +220,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_Control = GetComponent<S_Handler_WallRunning>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
 		_CharacterTransform = _Tools.PlayerSkinTransform;
 		_Sounds = _Tools.SoundControl;
 		_JumpBall = _Tools.JumpBall;
@@ -271,7 +277,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	bool inputtingToWall ( Vector3 wallDirection ) {
 		Vector3 transformedInput;
-		transformedInput = (_CharacterAnimator.transform.rotation * _Input._inputWithoutCamera);
+		transformedInput = (_MainSkin.rotation * _Input._inputWithoutCamera);
 		transformedInput = transform.InverseTransformDirection(transformedInput);
 		transformedInput.y = 0.0f;
 		//Debug.DrawRay(transform.position, transformedInput * 10, Color.red);
@@ -327,7 +333,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		//Set animations
 		_CharacterAnimator.SetInteger("Action", 1);
 		//CharacterAnimator.SetBool("Grounded", true);
-		_CharacterAnimator.transform.rotation = Quaternion.LookRotation(-_wallToClimb.normal, _CharacterAnimator.transform.up);
+		_MainSkin.rotation = Quaternion.LookRotation(-_wallToClimb.normal, _MainSkin.up);
 	}
 
 	void RunningSetup ( RaycastHit wallHit, bool wallRight ) {
@@ -354,11 +360,11 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			//CharacterAnimator.transform.right = wallDirection.normalized;
 
 			Vector3 wallForward = Vector3.Cross(wallHit.normal, transform.up);
-			if ((_CharacterAnimator.transform.forward - wallForward).sqrMagnitude > (_CharacterAnimator.transform.forward - -wallForward).sqrMagnitude)
+			if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
 				wallForward = -wallForward;
 
 			//Set direction facing
-			_CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
+			_MainSkin.rotation = Quaternion.LookRotation(wallForward, transform.up);
 			//characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
 		}
 		//If running with the wall on the left
@@ -367,11 +373,11 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			_isWallOnRight = false;
 			//CharacterAnimator.transform.right = wallDirection.normalized;
 			Vector3 wallForward = Vector3.Cross(wallHit.normal, transform.up);
-			if ((_CharacterAnimator.transform.forward - wallForward).sqrMagnitude > (_CharacterAnimator.transform.forward - -wallForward).sqrMagnitude)
+			if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
 				wallForward = -wallForward;
 
 			//Set direction facing
-			_CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
+			_MainSkin.rotation = Quaternion.LookRotation(wallForward, transform.up);
 			//characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
 		}
 
@@ -379,7 +385,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 newCamPos = _CamTarget.position + (wallHit.normal.normalized * 1.8f);
 		newCamPos.y += 3f;
 		_CamTarget.position = newCamPos;
-		_CamHandler._HedgeCam.SetCamera(_CharacterAnimator.transform.forward, 2f, 0, 0.001f, 1.1f);
+		_CamHandler._HedgeCam.SetCamera(_MainSkin.forward, 2f, 0, 0.001f, 1.1f);
 		//Cam._HedgeCam._cameraMaxDistance_ = Cam._initialDistance - 2f;
 
 	}
@@ -395,20 +401,20 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 		//Updates the status of the wall being climbed.
 		if (_counter < 0.3f)
-			_isWall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), _CharacterAnimator.transform.forward, out _wallToClimb, _climbWallDistance * 1.3f, _wallLayerMask_);
+			_isWall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), _MainSkin.forward, out _wallToClimb, _climbWallDistance * 1.3f, _wallLayerMask_);
 		else
-			_isWall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), _CharacterAnimator.transform.forward, out _wallToClimb, 3f, _wallLayerMask_);
+			_isWall = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), _MainSkin.forward, out _wallToClimb, 3f, _wallLayerMask_);
 
 		//If they reach the top of the wall
 		if (!_isWall)
 		{
 			Debug.Log("Lost Wall");
-			Debug.DrawRay(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), _CharacterAnimator.transform.forward * _climbWallDistance * 1.3f, Color.red, 20f);
+			Debug.DrawRay(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), _MainSkin.forward * _climbWallDistance * 1.3f, Color.red, 20f);
 			_CharacterAnimator.SetInteger("Action", 0);
 			_CharacterAnimator.SetBool("Grounded", false);
 
 			//Bounces the player up to keep momentum
-			StartCoroutine(JumpOverWall(_CharacterAnimator.transform.rotation));
+			StartCoroutine(JumpOverWall(_MainSkin.rotation));
 
 			//Vector3 VelocityMod = new Vector3(Player.p_rigidbody.velocity.x, 0, Player.p_rigidbody.velocity.z);
 			//CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, -Player.Gravity.normalized);
@@ -418,8 +424,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 			_isHoldingWall = inputtingToWall(_wallToClimb.point - transform.position);
 			//Esnures the player faces the wall
-			_CharacterAnimator.transform.rotation = Quaternion.LookRotation(-_wallToClimb.normal, _CharacterAnimator.transform.up);
-			_previDir = _CharacterAnimator.transform.forward;
+			_MainSkin.rotation = Quaternion.LookRotation(-_wallToClimb.normal, _MainSkin.up);
+			_previDir = _MainSkin.forward;
 			_CurrentWall = _wallToClimb.collider.gameObject;
 		}
 
@@ -449,29 +455,29 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		if (_isWallOnRight)
 		{
 			if (_counter < 0.3f)
-				_isWall = Physics.Raycast(transform.position, _CharacterAnimator.transform.right, out _wallToRun, _wallCheckDistance_ * 2.5f, _wallLayerMask_);
+				_isWall = Physics.Raycast(transform.position, _MainSkin.right, out _wallToRun, _wallCheckDistance_ * 2.5f, _wallLayerMask_);
 			else
 			{
-				_isWall = Physics.Raycast(transform.position, _CharacterAnimator.transform.right, out _wallToRun, _wallCheckDistance_ * 1.6f, _wallLayerMask_);
+				_isWall = Physics.Raycast(transform.position, _MainSkin.right, out _wallToRun, _wallCheckDistance_ * 1.6f, _wallLayerMask_);
 
 				if (!_isWall)
 				{
 					Vector3 backPos = Vector3.Lerp(transform.position, _previLoc, 0.7f);
-					_isWall = Physics.Raycast(backPos, _CharacterAnimator.transform.right, out _wallToRun, _wallCheckDistance_ * 2.1f, _wallLayerMask_);
+					_isWall = Physics.Raycast(backPos, _MainSkin.right, out _wallToRun, _wallCheckDistance_ * 2.1f, _wallLayerMask_);
 				}
 			}
 		}
 		else
 		{
 			if (_counter < 0.3f)
-				_isWall = Physics.Raycast(transform.position, -_CharacterAnimator.transform.right, out _wallToRun, _wallCheckDistance_ * 2.5f, _wallLayerMask_);
+				_isWall = Physics.Raycast(transform.position, -_MainSkin.right, out _wallToRun, _wallCheckDistance_ * 2.5f, _wallLayerMask_);
 			else
 			{
-				_isWall = Physics.Raycast(transform.position, -_CharacterAnimator.transform.right, out _wallToRun, _wallCheckDistance_ * 1.6f, _wallLayerMask_);
+				_isWall = Physics.Raycast(transform.position, -_MainSkin.right, out _wallToRun, _wallCheckDistance_ * 1.6f, _wallLayerMask_);
 				if (!_isWall)
 				{
 					Vector3 backPos = Vector3.Lerp(transform.position, _previLoc, 0.8f);
-					_isWall = Physics.Raycast(backPos, -_CharacterAnimator.transform.right, out _wallToRun, _wallCheckDistance_ * 2.1f, _wallLayerMask_);
+					_isWall = Physics.Raycast(backPos, -_MainSkin.right, out _wallToRun, _wallCheckDistance_ * 2.1f, _wallLayerMask_);
 				}
 			}
 
@@ -486,9 +492,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 			//Debug.Log("Lost the Wall");
 			if (_isWallOnRight)
-				Debug.DrawRay(transform.position, _CharacterAnimator.transform.right * _wallCheckDistance_ * 2f, Color.blue, 20f);
+				Debug.DrawRay(transform.position, _MainSkin.right * _wallCheckDistance_ * 2f, Color.blue, 20f);
 			else
-				Debug.DrawRay(transform.position, -_CharacterAnimator.transform.right * _wallCheckDistance_ * 2f, Color.blue, 20f);
+				Debug.DrawRay(transform.position, -_MainSkin.right * _wallCheckDistance_ * 2f, Color.blue, 20f);
 
 		}
 		else
@@ -522,17 +528,17 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		{
 
 			//After being on the wall for too long.
-			if (_climbingSpeed < -5f || Physics.Raycast(transform.position, _CharacterAnimator.transform.up, 5, _wallLayerMask_))
+			if (_climbingSpeed < -5f || Physics.Raycast(transform.position, _MainSkin.up, 5, _wallLayerMask_))
 			{
 				_CharacterAnimator.SetInteger("Action", 0);
 				//Debug.Log("Out of Speed");
 
 				//Drops and send the player back a bit.
 				Vector3 newVec = new Vector3(0f, _climbingSpeed, 0f);
-				newVec += (-_CharacterAnimator.transform.forward * 6f);
+				newVec += (-_MainSkin.forward * 6f);
 				_PlayerPhys.SetCoreVelocity(newVec);
 
-				_CharacterAnimator.transform.rotation = Quaternion.LookRotation(-_wallToClimb.normal, Vector3.up);
+				_MainSkin.rotation = Quaternion.LookRotation(-_wallToClimb.normal, Vector3.up);
 				//Input.LockInputForAWhile(10f, true);
 
 				ExitWall(true);
@@ -541,7 +547,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			else
 			{
 				Vector3 newVec = new Vector3(0f, _climbingSpeed, 0f);
-				newVec += (_CharacterAnimator.transform.forward * 20f);
+				newVec += (_MainSkin.forward * 20f);
 				_PlayerPhys.SetCoreVelocity(newVec);
 			}
 
@@ -580,9 +586,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 				_isSwitchingToGround = true;
 
 				//Set rotation to put feet on ground.
-				Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), _CharacterAnimator.transform.forward, out _wallToClimb, _climbWallDistance, _wallLayerMask_);
+				Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), _MainSkin.forward, out _wallToClimb, _climbWallDistance, _wallLayerMask_);
 				Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-				_CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, _wallToClimb.normal);
+				_MainSkin.rotation = Quaternion.LookRotation(VelocityMod, _wallToClimb.normal);
 			}
 
 		}
@@ -591,7 +597,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		else
 		{
 			Vector3 newVec = new Vector3(0f, _scrapingSpeed, 0f);
-			if (_CharacterAnimator.transform.rotation == Quaternion.LookRotation(-_wallToClimb.normal, Vector3.up))
+			if (_MainSkin.rotation == Quaternion.LookRotation(-_wallToClimb.normal, Vector3.up))
 				newVec += (-_wallToClimb.normal * 45f);
 			//else
 			//    newVec = (wallToClimb.normal * 4f);
@@ -611,12 +617,12 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 
 		//Set rotation to put feet on ground.
-		Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), -_CharacterAnimator.transform.up, out _wallToClimb, _climbWallDistance, _wallLayerMask_);
+		Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z), -_MainSkin.up, out _wallToClimb, _climbWallDistance, _wallLayerMask_);
 		Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-		_CharacterAnimator.transform.rotation = Quaternion.LookRotation(VelocityMod, _wallToClimb.normal);
+		_MainSkin.rotation = Quaternion.LookRotation(VelocityMod, _wallToClimb.normal);
 
 		//Set velocity to move along and push down to the ground
-		Vector3 newVec = _CharacterAnimator.transform.forward * (_climbingSpeed);
+		Vector3 newVec = _MainSkin.forward * (_climbingSpeed);
 		newVec += -_wallToClimb.normal * 10f;
 
 		_PlayerPhys.SetCoreVelocity(newVec);
@@ -629,14 +635,14 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
 
 
-		if ((_CharacterAnimator.transform.forward - wallForward).sqrMagnitude > (_CharacterAnimator.transform.forward - -wallForward).sqrMagnitude)
+		if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
 			wallForward = -wallForward;
 
 		_previDir = wallForward;
 		_previLoc = transform.position;
 
 		//Set direction facing
-		_CharacterAnimator.transform.rotation = Quaternion.LookRotation(wallForward, transform.up);
+		_MainSkin.rotation = Quaternion.LookRotation(wallForward, transform.up);
 		//characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallNormal, 0.2f));
 
 
@@ -697,7 +703,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 newVec = _previDir * _runningSpeed;
 		yield return null;
 
-		_CharacterAnimator.transform.forward = newVec.normalized;
+		_MainSkin.forward = newVec.normalized;
 		_PlayerPhys.SetCoreVelocity(newVec);
 		ExitWall(true);
 	}
@@ -712,9 +718,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_PlayerPhys._isGravityOn = true;
 		_CamHandler._HedgeCam._shouldSetHeightWhenMoving_ = true;
 		//camTarget.position = constantTarget.position;
-		_CharacterAnimator.transform.rotation = Quaternion.identity;
+		_MainSkin.rotation = Quaternion.identity;
 		if (_previDir != Vector3.zero)
-			_CharacterAnimator.transform.forward = _previDir;
+			_MainSkin.forward = _previDir;
 		//characterTransform.up = CharacterAnimator.transform.up;
 
 		_CharacterTransform.localEulerAngles = Vector3.zero;
@@ -737,7 +743,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
 
 
-			if ((_CharacterAnimator.transform.forward - wallForward).sqrMagnitude > (_CharacterAnimator.transform.forward - -wallForward).sqrMagnitude)
+			if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
 				wallForward = -wallForward;
 
 
@@ -747,15 +753,15 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			//Debug.Log(jumpAngle);
 			if (_isWallOnRight)
 			{
-				newVec = Vector3.Lerp(newVec, -_CharacterAnimator.transform.right, 0.25f);
-				faceDir = Vector3.Lerp(newVec, -_CharacterAnimator.transform.right, 0.1f);
+				newVec = Vector3.Lerp(newVec, -_MainSkin.right, 0.25f);
+				faceDir = Vector3.Lerp(newVec, -_MainSkin.right, 0.1f);
 				newVec *= _runningSpeed;
 				//newVec += (-CharacterAnimator.transform.right * 0.3f);
 			}
 			else
 			{
-				newVec = Vector3.Lerp(newVec, _CharacterAnimator.transform.right, 0.25f);
-				faceDir = Vector3.Lerp(newVec, _CharacterAnimator.transform.right, 0.1f);
+				newVec = Vector3.Lerp(newVec, _MainSkin.right, 0.25f);
+				faceDir = Vector3.Lerp(newVec, _MainSkin.right, 0.1f);
 				newVec *= _runningSpeed;
 				//newVec += (CharacterAnimator.transform.right * 0.3f);
 			}
@@ -780,7 +786,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_switchToJump = 0;
 		ExitWall(false);
 
-		_CharacterAnimator.transform.forward = faceDir;
+		_MainSkin.forward = faceDir;
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 	}
@@ -789,7 +795,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		float jumpSpeed = _PlayerPhys._RB.velocity.y * 0.6f;
 		if (jumpSpeed < 5) jumpSpeed = 5;
 
-		_PlayerPhys.SetCoreVelocity(_CharacterAnimator.transform.up * jumpSpeed);
+		_PlayerPhys.SetCoreVelocity(_MainSkin.up * jumpSpeed);
 
 		ExitWall(false);
 		_Input.LockInputForAWhile(25f, false);
@@ -797,12 +803,12 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		while (true)
 		{
 			jumpOverCounter += 1;
-			_CharacterAnimator.transform.rotation = originalRotation;
+			_MainSkin.rotation = originalRotation;
 			yield return new WaitForSeconds(0.0f);
-			if ((!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.6f, transform.position.z), _CharacterAnimator.transform.forward, out _wallToClimb, _climbWallDistance * 1.3f, _wallLayerMask_)) || jumpOverCounter == 40)
+			if ((!Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.6f, transform.position.z), _MainSkin.forward, out _wallToClimb, _climbWallDistance * 1.3f, _wallLayerMask_)) || jumpOverCounter == 40)
 			{
 				//Vector3 newVec = Player.p_rigidbody.velocity + CharacterAnimator.transform.forward * (ClimbingSpeed * 0.1f);
-				_PlayerPhys.AddCoreVelocity(_CharacterAnimator.transform.forward * 8);
+				_PlayerPhys.AddCoreVelocity(_MainSkin.forward * 8);
 				if (_Input.RollPressed)
 				{
 					_Actions.Action08.TryDropCharge();

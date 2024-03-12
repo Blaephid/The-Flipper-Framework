@@ -21,8 +21,7 @@ namespace templates
 		private S_ActionManager       _Actions;
 		#endregion
 
-		//General
-		#region General Properties
+
 
 		//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 		#region Stats
@@ -31,8 +30,6 @@ namespace templates
 		// Trackers
 		#region trackers
 		private int         _positionInActionList;
-		#endregion
-
 		#endregion
 		#endregion
 
@@ -74,9 +71,12 @@ namespace templates
 
 		}
 
-		public void StopAction () {
-			if (enabled) enabled = false;
-			else return;
+		public void StopAction ( bool isFirstTime = false ) {
+			if (!enabled) { return; } //If already disabled, return as nothing needs to change.
+
+			enabled = false;
+
+			if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 		}
 
 		#endregion

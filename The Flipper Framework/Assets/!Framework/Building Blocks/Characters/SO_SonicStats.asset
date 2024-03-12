@@ -421,7 +421,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   TurningStats:
-    turnSpeed: 3
+    turnSpeed: 4
     turnDrag: 7
     TurnRateByAngle:
       serializedVersion: 2
@@ -436,8 +436,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.05
-        value: 0.6
+        time: 0.0625
+        value: 0.6875
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -445,8 +445,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.5
-        value: 1.3
+        time: 0.49375153
+        value: 1.3699996
         inSlope: 0.8307073
         outSlope: 0.8307073
         tangentMode: 0
@@ -488,7 +488,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 5
+        value: 2
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -496,8 +496,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.02
-        value: 1
+        time: 0.1
+        value: 2
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2219,15 +2219,15 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   KnockbackStats:
-    whatResponse: 0
-    knockbackUpwardsForce: 30
+    whatResponse: 3
+    knockbackUpwardsForce: 20
     recoilFrom:
       serializedVersion: 2
       m_Bits: 4097
-    knockbackForce: 25
-    hurtControlLock: 30
-    hurtControlLockAir: 30
-    stateLengthWithKnockback: 20
+    knockbackForce: 30
+    hurtControlLock: 70
+    hurtControlLockAir: 100
+    stateLengthWithKnockback: 140
     stateLengthWithoutKnockback: 40
   DefaultKnockBackStats:
     whatResponse: 0
@@ -2392,6 +2392,10 @@ MonoBehaviour:
     offsetRail: 1.3
     offsetZip: -6.7
     upreel: 0.3
+  ObjectInteractions:
+    UpreelSpeedKeptAfter: 0.5
+  DefaultObjectInteractions:
+    UpreelSpeedKeptAfter: 0.5
   WallRunningStats:
     wallCheckDistance: 1.2
     minHeight: 5

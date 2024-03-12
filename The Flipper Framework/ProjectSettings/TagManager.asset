@@ -5,9 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Rail
-  - CancelHoming
   - Spring
-  - PulleyHandle
   - Wind
   - Hazard
   - ZipLine
@@ -28,6 +26,7 @@ TagManager:
   - Bumper
   - Pit
   - MovingPlatform
+  - Upreel
   layers:
   - Default
   - TransparentFX

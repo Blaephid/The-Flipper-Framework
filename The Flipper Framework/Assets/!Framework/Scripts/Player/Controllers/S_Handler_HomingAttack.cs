@@ -22,6 +22,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private AudioSource           _IconSound;
 	private Animator              _IconAnim;
 	private Animator              _CharacterAnimator;
+	private Transform             _MainSkin;
 
 	private Transform             _MainCamera;
 
@@ -221,7 +222,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		
 		//Make sure Sonic is facing the target enough
 		Vector3 direction = (newTarget.position - transform.position).normalized;
-		float angle = Vector3.Angle(new Vector3(_CharacterAnimator.transform.forward.x, 0, _CharacterAnimator.transform.forward.z), new Vector3 (direction.x, 0, direction.z));
+		float angle = Vector3.Angle(new Vector3(_MainSkin.forward.x, 0, _MainSkin.forward.z), new Vector3 (direction.x, 0, direction.z));
 		bool isFacing = angle < facingAmount;
 		
 		bool isOnScreen = true;
@@ -356,6 +357,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		_Actions = GetComponent<S_ActionManager>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.mainSkin;
 		_MainCamera = _Tools.MainCamera;
 		_IconTransform = _Tools.homingIcons.transform;
 		_NormalIcon = _Tools.NormalIcon;
