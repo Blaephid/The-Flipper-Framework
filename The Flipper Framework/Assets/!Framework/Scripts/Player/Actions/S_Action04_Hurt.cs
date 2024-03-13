@@ -211,7 +211,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		//Since the lock input here may be interupted, keep setting to lock for one frame until this is up.
 		if (_counter <= _keepLockingControlUntil)
 		{
-			_Input.LockInputForAWhile(_keepLockingControlUntil, false);
+			_Input.LockInputForAWhile(1, false);
 			StartCoroutine(_PlayerPhys.LockFunctionForTime(_PlayerPhys._listOfCanControl, Time.fixedDeltaTime));
 		}
 	}
@@ -281,10 +281,19 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			//If meant to hit the ground heavily and fall over
 			else
 			{
-				//On landing, greatly decrease time in state, with a minimum time to allow grounded animation. 
-				_lockInStateFor = Mathf.Max(_lockInStateFor /  3f, 20);
-				_keepLockingControlUntil = Mathf.Max(_keepLockingControlUntil / 3, 20);
-				_CharacterAnimator.SetBool("Dead", true);
+				if (_wasHit)
+				{
+					//On landing, if took damage greatly decrease time in state, with a minimum time to allow grounded animation. 
+					_lockInStateFor = Mathf.Max(_lockInStateFor / 1.8f, 70);
+					_keepLockingControlUntil = (int) Mathf.Max(_keepLockingControlUntil / 1.8f, 80);
+					_CharacterAnimator.SetBool("Dead", true);
+				}
+				else
+				{
+					//If from a bonk, decrease lock control all the way.
+					_lockInStateFor = 0;
+					_keepLockingControlUntil = 0;
+				}
 			}
 		}
 	}

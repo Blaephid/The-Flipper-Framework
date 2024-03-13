@@ -54,19 +54,18 @@ public class S_Interaction_Pathers : MonoBehaviour
 	// Trackers
 	#region trackers
 
-	private bool                  _canEnterAutoPath = false;	//Set to false when enterring a path trigger, and true when leaving it. Prevents multiple collisions with the same trigger, and allows entering a trigger to start OR end.
+	private bool                  _canEnterAutoPath = false;    //Set to false when enterring a path trigger, and true when leaving it. Prevents multiple collisions with the same trigger, and allows entering a trigger to start OR end.
 	[HideInInspector]
-	public bool                   _canGrindOnRail;		//Set to false every frame, but then to true if in the AttemptAction method of the grind action.
+	public bool                   _canGrindOnRail;              //Set to false every frame, but then to true if in the AttemptAction method of the grind action.
 
 	[HideInInspector]
-	public bool                   _isFollowingPath ;		//If currently on a rail, zipline or automated path. Even if in the grind script, this won't always be true.
+	public bool                   _isFollowingPath ;            //If currently on a rail, zipline or automated path. Even if in the grind script, this won't always be true.
 
 	//Upreel
-	private float                 _speedBeforeUpreel;		//Gets running speed before an upreel and returns partly to it after finishing the action.
+	private float                 _speedBeforeUpreel;           //Gets running speed before an upreel and returns partly to it after finishing the action.
 	#endregion
 
-	public enum PathTypes
-	{
+	public enum PathTypes {
 		rail,
 		zipline,
 		upreel,
@@ -83,17 +82,12 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 	// Start is called before the first frame update
 	void Start () {
-
+		StartCoroutine(DisablingGrindingOnRailAtIntervals());
 	}
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyScript();
-	}
-
-	// Update is called once per frame
-	void LateUpdate () {
-		_canGrindOnRail = false; //Set true in the grinding action script whenever attempt action is called. This will mean currently in an action that can enter grind rails. 
 	}
 
 	private void FixedUpdate () {
@@ -106,7 +100,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 			case "Rail":
 				//Can only enter a rail if not already on one and in an action with grinding set as a situational action in the action manager.
-				if (_isFollowingPath || !_canGrindOnRail) { return; }
+				if (!_canGrindOnRail) { return; }
 
 				//The different sizes of the rail collider have different minimum speeds. This is to allow less accuracy required at high speed.
 				switch (col.GetComponent<CapsuleCollider>().radius)
@@ -132,7 +126,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 			case "ZipLine":
 				//Can only enter a zipline if not already on one and in an action with grinding set as a situational action in the action manager.
-				if (_isFollowingPath || !_canGrindOnRail) { return; }
+				if (!_canGrindOnRail) { return; }
 
 				if (col.transform.GetComponent<S_Control_Zipline>())
 				{
@@ -172,6 +166,18 @@ public class S_Interaction_Pathers : MonoBehaviour
 	/// </summary>
 	/// 
 	#region private
+
+
+	//This will constantly run in the background, disabling canGrindOnRail, which is enabled in the grinding script AttemptAction method. These two counterballance, meaning as long as AttemptAction is being called, this will be true, but when it stops, this will be false
+	private IEnumerator DisablingGrindingOnRailAtIntervals () {
+		while (true)
+		{
+			yield return new WaitForSeconds(0.04f);
+			yield return new WaitForFixedUpdate();
+			yield return new WaitForEndOfFrame();
+			_canGrindOnRail = false; //Set true in the grinding action script whenever attempt action is called. This will mean currently in an action that can enter grind rails. 
+		}
+	}
 
 	//Readies all the stats needed to move up an upreel over the next few updates.
 	private void SetOnUpreel(Collider col) {
@@ -309,7 +315,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 		zipbody.isKinematic = false;
 
 		float Range = GetClosestPos(zipbody.position, _PathSpline); //Gets place on rail closest to collision point.
-		Debug.Log(Range + "FROM " + zipbody.position);
 
 		//Disables the homing target so it isn't a presence if homing attack can be performed in the grind action
 		GameObject target = col.transform.GetComponent<S_Control_Zipline>().homingtgt;

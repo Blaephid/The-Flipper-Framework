@@ -142,9 +142,21 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	void Update () {
 		if (_Rail_int._isFollowingPath)
 		{
+			PlaceOnRail();
+			PerformHop();
+
 			SoundControl();
-			//Set Animator Parameters
-			_Actions.ActionDefault.HandleAnimator(10);
+			//Handle animations
+			switch (_whatKindOfRail)
+			{
+				case S_Interaction_Pathers.PathTypes.rail:
+					_Actions.ActionDefault.HandleAnimator(10);
+					_CharacterAnimator.SetBool("GrindRight", _isFacingRight);
+					break;
+				case S_Interaction_Pathers.PathTypes.zipline:
+					_Actions.ActionDefault.HandleAnimator(9);
+					break;
+			}
 		}
 
 		// Actions Go Here
@@ -158,8 +170,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//If on a rail.
 		if (_Rail_int._isFollowingPath)
 		{
-			_CharacterAnimator.SetBool("GrindRight", _isFacingRight);
-			RailGrind();
+			MoveOnRail();
 		}
 		//If no longer on a path, then exit the action and return to regular state.
 		else
@@ -176,6 +187,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	public void StartAction () {
+		if (enabled) { _PlayerPhys._listOfCanControl.RemoveAt(0); } //Because this action can transfer into itself through rail hopping, undo the lock that would usually be undone in StopAction.
+
 		//Prevents raill hopping temporarily
 		StartCoroutine(DelayHopOnLanding());
 
@@ -185,6 +198,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//Set private 
 		_canInput = true;
 		_timer = _pushFowardDelay_;
+		_distanceToStep = 0; //Ensure not immediately stepping when called
+
+		_Rail_int._canGrindOnRail = false; //Prevents calling this multiple times in one update
 
 		_isCrouching = false;
 		_pulleyRotate = 0f;
@@ -238,10 +254,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		// Get Direction for the Rail
 		_isGoingBackwards = facingDot < 0;
 
-		Debug.DrawRay(transform.position, _sampleForwards, Color.yellow, 20f);
-		Debug.DrawRay(transform.position, _PlayerPhys._RB.velocity.normalized, Color.red, 20f);
-		Debug.Log(_playerSpeed);
-
 		// Apply minimum speed
 		_playerSpeed = Mathf.Max(_playerSpeed, _minStartSpeed_);
 
@@ -251,7 +263,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
-		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
+		if (!enabled) { return; }
 
 		enabled = false;
 
@@ -284,16 +296,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		//Local values
 		_Rail_int._isFollowingPath = false;
-		//_ZipBody = null;
-		//isBraking = false;
-		//_playingRailContactSound = false;
 
 		StartCoroutine(DelayCollision());
-
-		//transform.rotation = Quaternion.identity;
-
-		//if (_PlayerPhys._RB.velocity != Vector3.zero)
-		//	_MainSkin.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, Vector3.up);
 	}
 
 	#endregion
@@ -305,16 +309,14 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	#region private
 
 	//Physics
-
-	public void RailGrind () {
+	//Gets new location on rail, changing position and rotation to match. Called in update in order to ensure the character matches the rail in real time.
+	public void PlaceOnRail () {
 
 		//Increase/decrease the Amount of distance travelled on the Spline by DeltaTime and direction
 		float travelAmount = (Time.deltaTime * _playerSpeed);
 		_movingDirection = _isGoingBackwards ? -1 : 1;
 
 		_pointOnSpline += travelAmount * _movingDirection;
-
-		HandleRailSpeed(); //Make changes to player speed based on angle
 
 		//If this point is on the spline.
 		if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
@@ -329,7 +331,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				//Place character in world space on point in rail
 				case S_Interaction_Pathers.PathTypes.rail:
 
-					_MainSkin.rotation = Quaternion.LookRotation(_sampleForwards, _Sample.up);
+					transform.up = transform.rotation * (_RailTransform.rotation * _Sample.up);
+					_MainSkin.rotation = Quaternion.LookRotation(_sampleForwards, transform.up);
 
 					Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
 
@@ -342,12 +345,14 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				case S_Interaction_Pathers.PathTypes.zipline:
 
 					//Set ziphandle rotation to follow sample
-					_ZipHandle.rotation = _Sample.Rotation;
+					_ZipHandle.rotation = _RailTransform.rotation * _Sample.Rotation;
+					transform.up = transform.rotation * (_RailTransform.rotation * _Sample.up);
+					_MainSkin.rotation = Quaternion.LookRotation(_sampleForwards, transform.up);
 
 					//Since the handle and by extent the player can be tilted up to the sides (not changing forward direction), adjust the eueler angles to reflect this.
 					//_pulleyRotate is handled in input, but applied here.
-					_ZipHandle.eulerAngles.Set(_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f);
-					_MainSkin.eulerAngles.Set(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _MainSkin.eulerAngles.z + _pulleyRotate * 70f);
+					_ZipHandle.eulerAngles = new Vector3 (_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f);
+					_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _MainSkin.eulerAngles.z + _pulleyRotate * 70f);
 
 					//Similar to on rail, but place handle first, and player relevant to that.
 					newPos = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
@@ -356,8 +361,17 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					transform.position = newPos + (_ZipHandle.transform.up * _offsetZip_);
 					break;
 			}
+		}
+		
+	}
+	//Takes the data from the previous method but handles physics for smoothing and applying if lost rail.
+	public void MoveOnRail () {
 
-			if (isBraking && _playerSpeed > _minStartSpeed_) _playerSpeed *= _playerBrakePower_;
+		HandleRailSpeed(); //Make changes to player speed based on angle
+
+		//If this point is on the spline.
+		if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
+		{
 
 			//Set Player Speed correctly so that it becomes smooth grinding
 			_PlayerPhys.SetCoreVelocity(_sampleForwards * _playerSpeed);
@@ -444,10 +458,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 				//Make player face upwards again rather than tilted to the side from rotating handle
 				Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-				if (VelocityMod != Vector3.zero)
-				{
-					_MainSkin.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
-				}
+				if (VelocityMod != Vector3.zero) { _MainSkin.rotation = Quaternion.LookRotation(VelocityMod, transform.up); }
 				_PlayerPhys.SetCoreVelocity(_sampleForwards * _playerSpeed); //Make sure player flies off the end of the rail consitantly.
 				break;
 
@@ -455,10 +466,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				_PlayerPhys.SetCoreVelocity(_sampleForwards * _playerSpeed); //Make sure player flies off the end of the rail consitantly.
 
 				VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-				if (VelocityMod != Vector3.zero)
-				{
-					_MainSkin.rotation = Quaternion.LookRotation(VelocityMod, transform.up);
-				}
+				if (VelocityMod != Vector3.zero) { _MainSkin.rotation = Quaternion.LookRotation(VelocityMod, transform.up); }
 				break;
 		}
 
@@ -478,10 +486,12 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	void HandleRailSpeed () {
+		if (isBraking && _playerSpeed > _minStartSpeed_) _playerSpeed *= _playerBrakePower_;
+
 		ApplyBoost();
 		HandleSlopes();
 
-		//Decreased speed down if over max or top speed on the rail.
+		//Decrease speed if over max or top speed on the rail.
 		if (_playerSpeed > _railmaxSpeed_)
 			_playerSpeed -= _decaySpeedHigh_;
 		else if (_playerSpeed > _railTopSpeed_)
@@ -500,7 +510,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			if (_boostTime < 0)
 			{		
 				if (_playerSpeed > 60) { _playerSpeed -= _decaySpeed_; } //Speed can never decay to go under 60.
-
 				//Keep losing speed until _decayTime_ amount of time has passed.
 				if (_boostTime < -_decayTime_)
 				{
@@ -581,12 +590,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 				//_pulleyRotate is used in the RailGrind method, so here lerp towards the new goal rather than make it instant.
 				_pulleyRotate = Mathf.MoveTowards(_pulleyRotate, aimForRotation, 3.5f * Time.deltaTime);
-
-				//Make sure not to lose forward direction
-				_MainSkin.rotation = Quaternion.LookRotation(_RailTransform.rotation *_sampleForwards, _Sample.up);
 				break;
 		}
-
 		//Breaking
 		isBraking = _Input.BouncePressed;
 	}
@@ -595,59 +600,39 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (_canInput && _canHop)
 		{
 			//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
-			if (_Input.RightStepPressed)
-			{
-				Vector3 Direction = _MainSkin.position - _CamHandler.transform.position;
-				bool Facing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < -0.5f;
-				if (Facing)
-				{
-					_Input.RightStepPressed = false;
-					_Input.LeftStepPressed = true;
-				}
-			}
-			else if (_Input.LeftStepPressed)
-			{
-				Vector3 Direction = _MainSkin.position - _CamHandler.transform.position;
-				bool Facing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < -0.5f;
-				if (Facing)
-				{
-					_Input.RightStepPressed = true;
-					_Input.LeftStepPressed = false;
-				}
-			}
-
-			if (_Input.RightStepPressed)
-			{
-
-				_distanceToStep = _hopDistance_;
-				_canInput = false;
-				_isSteppingRight = true;
+			Vector3 Direction = _MainSkin.position - _CamHandler.transform.position;
+			bool isFacing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < -0.5f;
+			if (_Input.RightStepPressed && isFacing)
+			{	
 				_Input.RightStepPressed = false;
-				PerformHop();
-				return;
-
+				_Input.LeftStepPressed = true;	
 			}
-			else if (_Input.LeftStepPressed)
+			else if (_Input.LeftStepPressed && isFacing)
 			{
+				_Input.RightStepPressed = true;
+				_Input.LeftStepPressed = false;			
+			}
 
-
+			//If there is still an input, set the distance to step, which will be taken and handled in PerformHop();
+			if (_Input.RightStepPressed || _Input.LeftStepPressed)
+			{
 				_distanceToStep = _hopDistance_;
+				_isSteppingRight = _Input.RightStepPressed; //Right step has priority over left
+
+				//Disable inputs until the hop is over
 				_canInput = false;
-				_isSteppingRight = false;
+				_Input.RightStepPressed = false;
 				_Input.LeftStepPressed = false;
-				PerformHop();
-				return;
 			}
 		}
-
-		PerformHop();
 	}
 
 	void PerformHop () {
+		//If this is set to over zero in checkHopping, then the player should be moved off the rail accordingly.
 		if (_distanceToStep > 0)
 		{
-			float move = _stepSpeed_;
-
+			//Get how far to move this frame and in which direction.
+			float move = _stepSpeed_ * Time.deltaTime;
 			if (_isSteppingRight)
 				move = -move;
 			if (_isGoingBackwards)
@@ -655,32 +640,35 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 			move = Mathf.Clamp(move, -_distanceToStep, _distanceToStep);
 
+			//To show hopping off a rail, change the offset, this means the player will still follow the rail during the hop.
 			_setOffSet.Set(_setOffSet.x + move, _setOffSet.y, _setOffSet.z);
 
+			//If moving, check for walls, and if there's a collision, end state.
 			if (move < 0)
 				if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), -_MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
 					_Actions.ActionDefault.StartAction();
 				}
-				else
-				if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), _MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
+				else if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), _MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
-
 					_Actions.ActionDefault.StartAction();
 				}
 
-			_distanceToStep -= _stepSpeed_;
+			//Decrease how far to move by how far has moved.
+			_distanceToStep -= Mathf.Abs(move);
 
+			//Near the end of a step, renable collision so can collide again with grind on them instead.
 			if (_distanceToStep < 6)
 			{
+				AttemptAction();
 				Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
 
+				//Once a step is over and the player hasn't started this action through collisions, exit state.
 				if (_distanceToStep <= 0)
 				{
 					_Rail_int._isFollowingPath = false;
 					_Actions.ActionDefault.StartAction();
 				}
-
 			}
 		}
 	}

@@ -9,7 +9,7 @@ public class S_Control_Zipline : MonoBehaviour
 	public Spline Rail;
 	CapsuleCollider sphcol;
 	[SerializeField]
-	bool placeOnEnd;
+	bool placeFromEnd;
 	[SerializeField]
 	float offset = 0.5f;
 	public GameObject homingtgt;
@@ -54,19 +54,10 @@ public class S_Control_Zipline : MonoBehaviour
 	}
 
 	void PlaceOnRope () {
-		CurveSample sample = (placeOnEnd) ? Rail.GetSampleAtDistance(Rail.Length - offset) : Rail.GetSampleAtDistance(offset);
+		CurveSample sample = (placeFromEnd) ? Rail.GetSampleAtDistance(Rail.Length - offset) : Rail.GetSampleAtDistance(1 + offset);
 		transform.position =  Rail.transform.position + (Rail.transform.rotation * sample.location);
 
-		//Vector3 dir = Rail.GetSampleAtDistance(1).location - Rail.GetSampleAtDistance(0).location;
-		Vector3 dir;
-		if (placeOnEnd)
-		{
-			dir = Rail.GetSampleAtDistance(Rail.Length - offset).location - Rail.GetSampleAtDistance(Rail.Length - 1 - offset).location;
-		}
-		else
-		{
-			dir = Rail.GetSampleAtDistance(1 + offset).location - Rail.GetSampleAtDistance(offset).location;
-		}
-		transform.rotation = transform.rotation * Quaternion.LookRotation(dir, sample.up);
+		Vector3 dir = Rail.transform.rotation * sample.tangent;
+		transform.rotation = Quaternion.LookRotation(dir, Rail.transform.rotation * sample.up);
 	}
 }

@@ -136,7 +136,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public List<Vector3>          _previousVelocities = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
 
-	private List<Vector3>         _listOfVelocityToAddNextUpdate = new List<Vector3>(); //Rather than applied across all scripts, added forces are stored here and applied at the end of the frame.
+	private List<Vector3>         _listOfVelocityToAddThisUpdate = new List<Vector3>(); //Rather than applied across all scripts, added forces are stored here and applied at the end of the frame.
 	private List<Vector3>         _listOfCoreVelocityToAdd= new List<Vector3>();
 	private Vector3               _externalCoreVelocity;        //Replaces core velocity this frame instead of just add to it.
 	private bool                  _isOverwritingCoreVelocity;   //Set to true if core velocity should be completely replaced, including any aditions that would be made. If false, added forces will still be applied.
@@ -358,14 +358,14 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Calculate total velocity this frame.
 		_totalVelocity = _coreVelocity + _environmentalVelocity;
-		foreach (Vector3 force in _listOfVelocityToAddNextUpdate)
+		foreach (Vector3 force in _listOfVelocityToAddThisUpdate)
 		{
 			_totalVelocity += force;
 		}
 
 		//Clear the lists to prevent forces carrying over multiple frames.
 		_listOfCoreVelocityToAdd.Clear();
-		_listOfVelocityToAddNextUpdate.Clear();
+		_listOfVelocityToAddThisUpdate.Clear();
 		_isOverwritingCoreVelocity = false;
 
 		//Sets rigidbody, this should be the only line in the player scripts to do so.
@@ -907,6 +907,14 @@ public class S_PlayerPhysics : MonoBehaviour
 		_environmentalVelocity = force * split.y;
 		if (shouldPrintForce) Debug.Log("Set Total FORCE");
 	}
+
+	//Bear in mind velocity added in this method will only last this frame, as the velocity will be recalclated without it next fixedUpdate.
+	public void AddGeneralVelocity ( Vector3 force, bool shouldPrintForce = false ) {
+		_listOfVelocityToAddThisUpdate.Add(force);
+		if (shouldPrintForce) Debug.Log("ADD Total FORCE");
+	}
+
+
 
 	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.
 	public IEnumerator LockFunctionForTime ( List<bool> function, float seconds )

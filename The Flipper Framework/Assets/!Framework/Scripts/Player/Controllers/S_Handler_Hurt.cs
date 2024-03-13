@@ -364,8 +364,9 @@ public class S_Handler_Hurt : MonoBehaviour
 			_CharacterCapsule.radius / 1.5f, movingDirection, out RaycastHit wallHit, distance, _BonkWall_))
 		{
 			float directionAngle = Vector3.Angle(movingDirection, wallHit.point - transform.position); //Difference between moving direction and direction of collision
+			float intoAngle = Vector3.Angle(movingDirection, wallHit.normal); //Difference between the player movement direction and wall they're going into. 180 means running straight into a wall facing directily flat on.
 			float surfaceAngle = Vector3.Angle(transform.up, wallHit.normal); //Difference between character upwards direction and surface upwards direction
-			if (directionAngle < 30 && surfaceAngle > 45)
+			if (directionAngle < 35 && surfaceAngle > 50 && intoAngle > 158)
 				StartCoroutine(DelayBonk());
 		}
 	}

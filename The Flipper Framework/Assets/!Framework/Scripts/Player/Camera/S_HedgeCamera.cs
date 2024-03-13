@@ -24,6 +24,7 @@ public class S_HedgeCamera : MonoBehaviour
 	public S_PlayerInput          _Input;
 
 	public Transform              _PlayerTransformCopy;
+	public Transform              _baseTarget;
 	public Transform               _finalTarget;
 	public Transform               _TargetByInput;
 	public Transform               _TargetByAngle;
@@ -253,11 +254,11 @@ public class S_HedgeCamera : MonoBehaviour
 		_PlayerTransformCopy.position = _PlayerTransformReal.position; ;
 
 		//Gets the players current input direction and moves the target in that direction.
-		if(_shouldMoveInInputDirection_)
+		if (_shouldMoveInInputDirection_)
 		{
 			Vector3 inputDirection = (_PlayerPhys._moveInput);
 			_predictAheadPosition = Vector3.MoveTowards(_predictAheadPosition, inputDirection * _inputPredictonDistance_, _cameraMoveToInputSpeed_ * Time.deltaTime);
-			_TargetByInput.localPosition = _predictAheadPosition;
+
 		}
 
 		//Moves the target slightly away from the character when looking left, right, up or down.
@@ -268,8 +269,8 @@ public class S_HedgeCamera : MonoBehaviour
 
 			//Get how far to move away from the character based on difference between camera and character direction, looping it back down if it goes inn front of the player.
 			float angle = Vector3.Angle(GetFaceDirection(transform.forward), GetFaceDirection(_Skin.forward)) / 90;
-			if(angle > 1) { angle = 2 - angle; }
-			else if (angle < -1) { angle = -2 - angle;}
+			if (angle > 1) { angle = 2 - angle; }
+			else if (angle < -1) { angle = -2 - angle; }
 
 			//Get which direction (clockwise or counterclockwise) the camera has rotated from the character, and makes the angle negative or positive.
 			Vector3 crossProduct = Vector3.Cross(new Vector3 (transform.forward.x, 0, transform.forward.z).normalized, _Skin.forward);
@@ -283,6 +284,25 @@ public class S_HedgeCamera : MonoBehaviour
 			_AngleOffset = Vector3.Lerp(_AngleOffset, goal, 0.1f);
 			_TargetByAngle.localPosition = _AngleOffset;
 		}
+
+
+		//The final target is the actual anchor point for the camera, and should not be changed, as it is a child of the other targets. 
+		_finalTarget.localPosition = Vector3.zero;
+
+		Vector3 targetOffset = _finalTarget.position - _baseTarget.position;
+		float targetOffsetDistance = Vector3.Distance(_finalTarget.position , _baseTarget.position) + 0.2f;
+		//But to prevent the target going through surfaces (and by extent the camera) move it if there would be a collision closer to the centre.
+		if (Physics.Raycast(_baseTarget.position, targetOffset, out RaycastHit hit, targetOffsetDistance, _CollidableLayers_))
+		{
+			_finalTarget.position = Vector3.LerpUnclamped(hit.point, _baseTarget.position, 0.8f);
+		}
+		//If no wall to block the target, then apply the calculations.
+		else
+		{
+			_TargetByInput.localPosition = _predictAheadPosition;
+			_TargetByAngle.localPosition = _AngleOffset;
+		}
+
 	}
 
 	//Handles the PlayerTransformCopy, making it match the actual player, or its own angle. This will later be used as a reference for the camera to rotate around.
@@ -324,10 +344,12 @@ public class S_HedgeCamera : MonoBehaviour
 	//Sets the camera a distance away from the player, either by adjusting the cinemachine or placing manually.
 	void HandleCameraDistance () {
 		_distanceModifier = 1;
+
+		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
 		if(_shouldAffectDistanceBySpeed_)
 		{
 			float targetDistance = _cameraDistanceBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
-			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.04f);
+			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.1f);
 		}
 
 		float dist = _cameraMaxDistance_ * _distanceModifier;
@@ -340,6 +362,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//If not, position is calculated by distance and if there is a wall in the way.
 		else
 		{
+			//Check for a wall by moving from anchor towards camera.
 			if (Physics.Raycast(_finalTarget.position, -transform.forward, out RaycastHit hitWall, -dist, _CollidableLayers_))
 			{
 				dist = (-hitWall.distance);
@@ -350,6 +373,7 @@ public class S_HedgeCamera : MonoBehaviour
 				_hitNormal = Vector3.zero;
 			}
 
+			//Get position by moving from the camera anchor in a backwards direction relative to the overall rotation.
 			var position = _lerpedRot * new Vector3(0, 0, dist + 0.3f);
 			transform.position = _finalTarget.position + position + _hitNormal;
 		}

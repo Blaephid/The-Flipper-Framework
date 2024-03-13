@@ -2257,7 +2257,7 @@ MonoBehaviour:
     RailDragVal: 0.0001
     RailPlayerBrakePower: 0.97
     hopDelay: 0.3
-    hopSpeed: 3.5
+    hopSpeed: 70
     hopDistance: 12
     RailAccelerationBySpeed:
       serializedVersion: 2

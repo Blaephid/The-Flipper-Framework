@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.ProBuilder.Shapes;
 using UnityEngine.UIElements;
 
 public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
@@ -67,7 +68,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 
 	// Update is called once per frame
 	void Update () {
-
+		
 	}
 
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
@@ -155,38 +156,23 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	//Called every frame to move the character to the left or right.
 	private void PerformStep () {
 
-		float ToTravel = _quickStepSpeed_ * Time.fixedDeltaTime;
-		float dir = 1;
-		Vector3 positionTo = Vector3.zero;
+		float toTravel = _quickStepSpeed_;
 
 		//Get placement from step and direction of it.
-		if (_isSteppingRight)
-		{
-			positionTo = transform.position + (_MainSkin.transform.right * _distanceToStep_);
-			dir = 1;
-		}
-		else
-		{
-			positionTo = transform.position + (-_MainSkin.right * _distanceToStep_);
-			dir = -1;
-		}
+		float dir = _isSteppingRight ? 1 : -1;
 
 		//Check sides based on step direction for if there's a wall preventing the step. If there isn't, change position.
 		if (!Physics.BoxCast(transform.position, new Vector3(0, _CharacterCapsule.height / 2, _CharacterCapsule.radius), _MainSkin.right * dir, _MainSkin.rotation, 1.5f, _StepPlayermask_) && _canStep)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, positionTo, ToTravel);
+			_PlayerPhys.AddGeneralVelocity(_MainSkin.transform.right * dir * toTravel); //This will add velocity to this frame, that will be ignored next update.
+			
 		}
 		else
 			enabled = false;
 
 		//Decrease distance by how far moved, this is used to track when the step ends.
-		if (_distanceToStep_ - ToTravel <= 0)
-		{
-			ToTravel = _distanceToStep_;
-			_distanceToStep_ = 0;
-		}
-
-		_distanceToStep_ -= ToTravel;
+		toTravel = Mathf.Clamp(toTravel * Time.fixedDeltaTime, 0, _distanceToStep_);
+		_distanceToStep_ -= toTravel;
 	}
 
 
