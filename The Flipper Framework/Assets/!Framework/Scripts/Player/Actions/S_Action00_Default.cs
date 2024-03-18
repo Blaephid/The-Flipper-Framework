@@ -71,6 +71,10 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
+	private void Start () {
+		SwitchSkin(true);
+	}
+
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyAction();
@@ -94,9 +98,9 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		//Set private
 		_isCoyoteInEffect = _PlayerPhys._isGrounded;
 
-		//Set Public
-		StartCoroutine(ApplyWhenGrounded());
-		_CharacterAnimator.SetTrigger("ChangedState");
+		//Set Effects
+		_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
+
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 	}
 
@@ -120,33 +124,11 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	#region private
 	//Responsible for taking in inputs the player performs to switch or activate other actions, or other effects.
 	public void HandleInputs () {
-		if (!_Actions.isPaused)
-		{
-			//Moving camera behind
-			_CamHandler.AttemptCameraReset();
+		//Moving camera behind
+		if (!_Actions.isPaused) _CamHandler.AttemptCameraReset();
 
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);
-		}
-	}
-
-	//Called when the action begins, but wont apply the effects until grounded.
-	IEnumerator ApplyWhenGrounded () {
-		while (true)
-		{
-			yield return new WaitForFixedUpdate();
-			yield return new WaitForFixedUpdate();
-
-			if (_PlayerPhys._isGrounded)
-			{
-				//Reset trackers for other actions.
-				if (_Actions._bounceCount > 0)
-				{
-					_Actions._bounceCount = 0;
-				}
-				break;
-			}
-		}
+		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+		_Actions.HandleInputs(_positionInActionList);	
 	}
 	#endregion
 
@@ -200,8 +182,9 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		}
 	}
 
-	//Switches from one character model to another, typically used to switch between the spinball and the proper character.
+	//Switches from one character model to another, typically used to switch between the spinball and the proper character. Every action should call this when started, and not when stopped.
 	public void SwitchSkin(bool setMainSkin) {
+
 		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
 
 		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
@@ -260,11 +243,12 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
 	public void EventOnGrounded() {
 		//May be in a ball even in this state (like after a homing attack), so change that on land
-		if(_animationAction == 1)
+		if(_animationAction != 0 && enabled)
 		{
 			_animationAction = 0;
 			_CharacterAnimator.SetTrigger("ChangedState");
 		}
+		_Actions.ActionDefault.SwitchSkin(true);
 		ReadyCoyote();
 	}
 

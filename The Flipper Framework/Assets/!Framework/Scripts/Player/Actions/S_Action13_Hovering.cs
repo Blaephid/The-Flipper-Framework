@@ -21,7 +21,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	Animator _CharacterAnimator;
 	private Transform   _MainSkin;
 	Transform _PlayerSkin;
-	S_Control_PlayerSound _Sounds;
+	S_Control_SoundsPlayer _Sounds;
 	S_Trigger_Updraft _hoverForce;
 	#endregion
 

@@ -17,7 +17,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
-	private S_Control_PlayerSound _Sounds;
+	private S_Control_SoundsPlayer _Sounds;
 
 	private Animator              _CharacterAnimator;
 	private GameObject            _JumpBall;
@@ -63,7 +63,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private float       _thisJumpSpeed;		
 	private float       _jumpSlopeSpeed;		//Jump speed is different on slopes, determined by upwards speed and conversion stat
 
-
+	//Edit the relevant values when jump starts, currently set to 1 but can be changed externally depending on other interacitons.
 	private float       _jumpSpeedModifier = 1f;
 	private float       _jumpDurationModifier = 1f;
 
@@ -173,7 +173,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//Setting public
 		_Input.RollPressed = false;
 		_Actions._actionTimeCounter = 0;
+
+		//Physics
 		_PlayerPhys.SetIsGrounded(false);
+		_PlayerPhys._canBeGrounded = false; //Prevents being set to grounded if jumping because it would lead to weird interactions going up through platforms or triggering on grounded events
 
 		//Effects
 		_CharacterAnimator.SetInteger("Action", 1);
@@ -181,7 +184,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_Sounds.JumpSound();
 		_Actions.ActionDefault.SwitchSkin(false);
 
-		//Snap off of ground to make sure you do jump
+		//Snap off of ground to make sure player jumps
 		transform.position += (_upwardsDirection * 0.3f);
 
 		//If performing a grounded jump. JumpCount may be changed externally to allow for this.
@@ -199,6 +202,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			{
 				_jumpSlopeSpeed = _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_;
 			}
+			//If jump would aim down, then greatly increase the upwards direction to point more up.
 			else if (Mathf.Abs(_upwardsDirection.y) < 0.1f && _PlayerPhys._RB.velocity.y < -5)
 			{
 				_upwardsDirection.y = 4;
@@ -233,7 +237,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		_Actions.ActionDefault.SwitchSkin(true);
+		_Actions.ActionDefault._animationAction = 0; //Ensures player will land properly in the correct animation when entering default action.
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
@@ -260,14 +264,11 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	}
 
 	public void HandleInputs () {
-		if (!_Actions.isPaused)
-		{
-			//Moving camera behind
-			_CamHandler.AttemptCameraReset();
+		//Moving camera behind
+		if (!_Actions.isPaused) _CamHandler.AttemptCameraReset();
 
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);
-		}
+		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+		_Actions.HandleInputs(_positionInActionList);
 	}
 
 	//Additional effects if a jump is being made from in the air.
@@ -292,17 +293,19 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//Ending Jump Early
 		if (!_Input.JumpPressed && _counter > _minJumpTime_ && _isJumping)
 		{
-			_counter = _thisJumpDuration;
-			_isJumping = false;
+			EndJumpForce();
 		}
 		//Ending jump after max duration
 		else if (_counter > _thisJumpDuration && _isJumping && _Input.JumpPressed)
 		{
-			_counter = _thisJumpDuration;
-			_isJumping = false;
-			_Input.JumpPressed = false;
+			EndJumpForce();
 		}
-		//Add Jump Speed
+		//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
+		else if(_PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
+		{
+			EndJumpForce();
+		}
+		//If there are no interuptions, apply jump force.
 		else if (_isJumping)
 		{
 			//Jump move at angle
@@ -317,6 +320,18 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 				_PlayerPhys.AddCoreVelocity(Vector3.up * (_thisJumpSpeed), false);
 			}
 		}
+		//If jumping is over, the player can be grounded again, which will set them back to the default action.
+		else
+		{
+			_PlayerPhys._canBeGrounded = true;
+		}
+	}
+
+	//Called when the jump should stop applying force, but before exiting the state.
+	private void EndJumpForce () {
+		_counter = _thisJumpDuration;
+		_isJumping = false;
+		_Input.JumpPressed = false;
 	}
 
 	private void CheckShouldEndAction() {

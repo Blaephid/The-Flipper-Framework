@@ -31,11 +31,10 @@ public class S_ActionManager : MonoBehaviour
 	public S_Action03_SpinCharge Action03;
 	public S_Handler_HomingAttack Action02Control;
 	public S_Action04_Hurt ActionHurt;
-	public S_Handler_Hurt Action04Control;
+	public S_Handler_HealthAndHurt Action04Control;
 	public S_Action05_Rail Action05;
 	public S_Action06_Bounce Action06;
 	public S_Action07_RingRoad Action07;
-	public S_Handler_RingRoad Action07Control;
 	public S_Action08_DropCharge Action08;
 	public S_Action10_FollowAutoPath Action10;
 	public S_Action11_JumpDash Action11;
@@ -189,6 +188,8 @@ public class S_ActionManager : MonoBehaviour
 
 	//Called by action scripts to go through all of the actions they can possibly transition to.
 	public void HandleInputs ( int currentActionInList ) {
+		if (isPaused) { return; }
+
 		bool performAction;
 
 		_currentAction = _MainActions[currentActionInList];
@@ -258,12 +259,9 @@ public class S_ActionManager : MonoBehaviour
 				Action05.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.Bounce:
-				if (!lockBounce)
-				{
-					IsChangePossible(ActionToChange);
-					if (eventMan != null) eventMan.BouncesPerformed += 1;
-					Action06.enabled = true;
-				}
+				IsChangePossible(ActionToChange);
+				if (eventMan != null) eventMan.BouncesPerformed += 1;
+				Action06.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.RingRoad:
 				if (eventMan != null) eventMan.ringRoadsPerformed += 1;

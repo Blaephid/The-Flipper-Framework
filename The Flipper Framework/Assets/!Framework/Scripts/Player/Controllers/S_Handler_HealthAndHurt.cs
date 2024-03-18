@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 
 [RequireComponent(typeof(S_Action04_Hurt))]
-public class S_Handler_Hurt : MonoBehaviour
+public class S_Handler_HealthAndHurt : MonoBehaviour
 {
 
 	/// <summary>
@@ -24,7 +24,7 @@ public class S_Handler_Hurt : MonoBehaviour
 	private S_Manager_LevelProgress _LevelHandler;
 	private S_Interaction_Objects _Objects;
 	private S_Handler_Camera      _CamHandler;
-	private S_Control_PlayerSound _Sounds;
+	private S_Control_SoundsPlayer _Sounds;
 	private S_Handler_CharacterAttacks      _Attacks;
 	private S_Action04_Hurt                 _HurtAction;
 
@@ -62,7 +62,7 @@ public class S_Handler_Hurt : MonoBehaviour
 
 	//Health
 	[HideInInspector]
-	public int _ringAmount; //The amount of health the player has. Goes down on hit, up on gaining rings.
+	public float _ringAmount; //The amount of health the player has. Goes down on hit, up on gaining rings.
 
 	//States
 	public bool         _isHurt;
@@ -489,13 +489,13 @@ public class S_Handler_Hurt : MonoBehaviour
 	}
 
 	//Sets values when hurt, and readies rings to be fired out.
-	public void LoseRings ( int damage = 0 ) {
+	public void LoseRings ( float damage = 0 ) {
 		//Gets how many rings to lose. This will typically me the max ring loss, but if that's set to zero, it will be all rings instead.
 		damage = damage <= 0 ? _maxRingLoss_ : damage;
 		damage = damage <= 0 ? _ringAmount : damage;
 		damage = Mathf.Clamp(damage, 0, _ringAmount);
 
-		_ringAmount -= damage;
+		_ringAmount = (int) _ringAmount - damage; //Ensures it will be decreased to a whole number, not a decimal.
 
 		//Set time to be in hurt state
 		_counter = 0;
@@ -506,19 +506,21 @@ public class S_Handler_Hurt : MonoBehaviour
 		//Readies the rings being spawned as objects in the world
 		if (!_isReleasingRings)
 		{
-			_ringsToLose = damage;
+			_ringsToLose = (int)damage;
 			_isReleasingRings = true;
 		}
 	}
 
 
 	//Called when a ring is picked up. Doesn't apply it until the end of the frame to ensure that only one ring is gained per frame, ignoring potential multiple collisions.
-	public IEnumerator GainRing () {
-		int ThisFramesRingCount = _ringAmount;
+	public IEnumerator GainRing (float amount, Collider col, GameObject Particle) {
+		Instantiate(Particle, col.transform.position, Quaternion.identity);
+		Destroy(col.gameObject);
+
+		float ThisFramesRingCount = _ringAmount;
 		yield return new WaitForEndOfFrame();
 
-		_ringAmount = ThisFramesRingCount + 1; 
-
+		_ringAmount = Mathf.Clamp(ThisFramesRingCount + amount, _ringAmount, ThisFramesRingCount + 100); 
 	}
 
 	//Called whenever the player should gain or lose a shield, which blocks one hit.

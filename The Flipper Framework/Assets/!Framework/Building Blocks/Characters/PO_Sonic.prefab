@@ -5086,7 +5086,7 @@ GameObject:
   - component: {fileID: 114300969380773912}
   - component: {fileID: 114022693185401694}
   - component: {fileID: 114168122690048012}
-  - component: {fileID: 114016931776330826}
+  - component: {fileID: 6410403612535179251}
   - component: {fileID: 114508106957425794}
   - component: {fileID: 163950796223377526}
   - component: {fileID: 114433309075840560}
@@ -5252,6 +5252,18 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 114873388628942606}
         m_TargetAssemblyTypeName: S_Action01_Jump, Assembly-CSharp
+        m_MethodName: EventOnGrounded
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 114329351316114260}
+        m_TargetAssemblyTypeName: S_Action06_Bounce, Assembly-CSharp
         m_MethodName: EventOnGrounded
         m_Mode: 1
         m_Arguments:
@@ -5659,11 +5671,10 @@ MonoBehaviour:
   Action03: {fileID: 114168122690048012}
   Action02Control: {fileID: 114300969380773912}
   ActionHurt: {fileID: 0}
-  Action04Control: {fileID: 114016931776330826}
+  Action04Control: {fileID: 0}
   Action05: {fileID: 114433309075840560}
   Action06: {fileID: 114329351316114260}
   Action07: {fileID: 114394647838053544}
-  Action07Control: {fileID: 114930033002771750}
   Action08: {fileID: 6634573134749074193}
   Action10: {fileID: 4314005691558026853}
   Action11: {fileID: 1508866748744117450}
@@ -5750,7 +5761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6da8dadf30a2c64abf5847208a3b113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _skinRotationSpeed: 10
+  _skinRotationSpeed: 20
   _canDashDuringFall_: 0
   _isCoyoteInEffect: 0
   _coyoteRememberDirection: {x: 0, y: 0, z: 0}
@@ -5768,7 +5779,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1313590d96251e46aaef7e509eb58d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _skinRotationSpeed: 5
+  _skinRotationSpeed: 8
   _upwardsDirection: {x: 0, y: 0, z: 0}
   _counter: 0
   _isJumping: 0
@@ -5824,7 +5835,7 @@ MonoBehaviour:
   _spinDashStillForce_: 20
   _spinDashChargedEffectAmm: 0
   _ballAnimationSpeedMultiplier: 0
---- !u!114 &114016931776330826
+--- !u!114 &6410403612535179251
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5833,7 +5844,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1979695856965714}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90121fd0e1ac3c647ab1807e022fa5c6, type: 3}
+  m_Script: {fileID: 11500000, guid: e3f5ef85eb390c04bb495406b01b98b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _FadeOutImage: {fileID: 0}
@@ -5897,12 +5908,9 @@ MonoBehaviour:
   _skinRotationSpeed: 0
   _railmaxSpeed_: 0
   _whatKindOfRail: 0
-  _curvePosSlope: 0
   _pointOnSpline: 0
   _playerSpeed: 0
   _isGoingBackwards: 0
-  _targetDistance: 10
-  _cameraLerp: 10
   _isBoosted: 0
   _boostTime: 0
 --- !u!114 &114329351316114260
@@ -5918,7 +5926,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _BounceUpSpeeds_: []
-  BounceAvailable: 1
 --- !u!114 &114930033002771750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5931,8 +5938,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7da38614258ea5d49bfeeaa31bf99fff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Targets: []
-  TgtDebug: []
+  _TargetRing: {fileID: 0}
+  _Targets: []
+  _hasTarget: 0
+  _isScanning: 0
 --- !u!114 &114394647838053544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17186,8 +17195,8 @@ MonoBehaviour:
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 1
   m_XDamping: 0.2
-  m_YDamping: 0.07
-  m_ZDamping: 0.16
+  m_YDamping: 0
+  m_ZDamping: 0.35
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
   m_ScreenY: 0.5
@@ -17197,9 +17206,9 @@ MonoBehaviour:
   m_DeadZoneDepth: 0.1
   m_UnlimitedSoftZone: 0
   m_SoftZoneWidth: 0.25
-  m_SoftZoneHeight: 0.2
+  m_SoftZoneHeight: 0.549
   m_BiasX: 0
-  m_BiasY: 0
+  m_BiasY: 0.03700004
   m_CenterOnActivate: 1
   m_GroupFramingMode: 2
   m_AdjustmentMode: 0

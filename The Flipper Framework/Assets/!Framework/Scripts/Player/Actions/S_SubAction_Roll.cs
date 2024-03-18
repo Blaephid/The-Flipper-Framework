@@ -18,7 +18,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_CharacterTools      _Tools;
 	private S_PlayerInput         _Input;
-	private S_Control_PlayerSound _Sounds;
+	private S_Control_SoundsPlayer _Sounds;
 	private S_ActionManager       _Actions;
 	private S_Action00_Default    _Action00;
 

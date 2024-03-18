@@ -10,7 +10,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 
 	private S_CharacterTools _Tools;
-	private S_Handler_Hurt _HealthAndHurt;
+	private S_Handler_HealthAndHurt _HealthAndHurt;
 
 	public Vector3 ResumePosition { get; set; }
 	public Quaternion ResumeRotation { get; set; }
@@ -40,7 +40,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_Actions = basePlayer.GetComponent<S_ActionManager>();
 		_PlayerPhys = basePlayer.GetComponent<S_PlayerPhysics>();
 		_Input = basePlayer.GetComponent<S_PlayerInput>();
-		_HealthAndHurt = GetComponent<S_Handler_Hurt>();
+		_HealthAndHurt = GetComponent<S_Handler_HealthAndHurt>();
 		characterTransform = _Tools.mainSkin;
 		ResumePosition = characterTransform.position;
 		ResumeRotation = characterTransform.rotation;

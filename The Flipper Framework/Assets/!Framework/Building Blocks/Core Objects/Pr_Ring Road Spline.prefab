@@ -41,9 +41,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 853586103888125666}
-  - component: {fileID: 4899720668742864800}
-  - component: {fileID: 3617762599319094144}
+  - component: {fileID: 7680299148072347651}
   - component: {fileID: 553594820864921953}
+  - component: {fileID: 3617762599319094144}
   m_Layer: 0
   m_Name: Spline
   m_TagString: Untagged
@@ -66,7 +66,91 @@ Transform:
   m_Father: {fileID: 4998489574652392}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4899720668742864800
+--- !u!114 &7680299148072347651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752959267358373740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bdec4da60e9d6244bd256a2fee1226b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodes:
+  - position: {x: 5, y: 0, z: 0}
+    direction: {x: 5, y: 0, z: 52.144028}
+    up: {x: 0, y: 1, z: 0}
+    scale: {x: 1, y: 1}
+    roll: 0
+  - position: {x: 7.5468674, y: 19.395668, z: 63.300434}
+    direction: {x: 7.5468674, y: 19.395668, z: 98.6812}
+    up: {x: 0, y: 1, z: 0}
+    scale: {x: 1, y: 1}
+    roll: 0
+  - position: {x: -28.379631, y: 26.90572, z: 87.66801}
+    direction: {x: -47.45292, y: 29.61678, z: 85.85498}
+    up: {x: 0, y: 1, z: 0}
+    scale: {x: 1, y: 1}
+    roll: 0
+  - position: {x: -9.122971, y: 38.88997, z: 48.839024}
+    direction: {x: 32.532692, y: 47.07739, z: 51.242428}
+    up: {x: 0, y: 1, z: 0}
+    scale: {x: 1, y: 1}
+    roll: 0
+  curves:
+  - n1:
+      position: {x: 5, y: 0, z: 0}
+      direction: {x: 5, y: 0, z: 52.144028}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    n2:
+      position: {x: 7.5468674, y: 19.395668, z: 63.300434}
+      direction: {x: 7.5468674, y: 19.395668, z: 98.6812}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    Changed:
+      m_PersistentCalls:
+        m_Calls: []
+  - n1:
+      position: {x: 7.5468674, y: 19.395668, z: 63.300434}
+      direction: {x: 7.5468674, y: 19.395668, z: 98.6812}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    n2:
+      position: {x: -28.379631, y: 26.90572, z: 87.66801}
+      direction: {x: -47.45292, y: 29.61678, z: 85.85498}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    Changed:
+      m_PersistentCalls:
+        m_Calls: []
+  - n1:
+      position: {x: -28.379631, y: 26.90572, z: 87.66801}
+      direction: {x: -47.45292, y: 29.61678, z: 85.85498}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    n2:
+      position: {x: -9.122971, y: 38.88997, z: 48.839024}
+      direction: {x: 32.532692, y: 47.07739, z: 51.242428}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    Changed:
+      m_PersistentCalls:
+        m_Calls: []
+  Length: 194.30981
+  isLoop: 0
+  CurveChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &553594820864921953
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,7 +159,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1752959267358373740}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 480c444dc6606644898a8ba231ff029f, type: 3}
+  m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UpdateThis: 0
@@ -84,10 +168,10 @@ MonoBehaviour:
   none: 0
   onEnd: 0
   prefab: {fileID: 1543253352267630, guid: 8f33dd768b24bc44084c70b4c9605d8f, type: 3}
-  asPrefab: 0
+  asPrefab: 1
   scale: 1
   scaleRange: 0
-  spacing: 4
+  spacing: 8
   spacingRange: 0
   offset: 0
   offsetRange: 0
@@ -110,11 +194,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
+  isRings: 1
   spawnDistance: 400
-  respawnAuto: 0
+  respawnAuto: 1
   respawnTime: 15
-  respawnOnDeath: 0
+  respawnOnDeath: 1
   isBooster: 0
   speed: 0
   setRailSpeed: 0
@@ -126,47 +210,3 @@ MonoBehaviour:
   lockGravity: {x: 0, y: -1.5, z: 0}
   lockAirMoves: 1
   lockAirMovesTime: 30
---- !u!114 &553594820864921953
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1752959267358373740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a18f8048288fd7948b9280a4e56b2043, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nodes:
-  - position: {x: -2.803071, y: 0, z: -0.075032234}
-    direction: {x: 0.53261185, y: 0, z: -0.060032368}
-    up: {x: 0, y: 1, z: 0}
-    scale: {x: 1, y: 1}
-    roll: 0
-  - position: {x: 13.2625265, y: 0, z: 0}
-    direction: {x: 17.161068, y: 0, z: 0.099223375}
-    up: {x: 0, y: 1, z: 0}
-    scale: {x: 1, y: 1}
-    roll: 0
-  curves:
-  - n1:
-      position: {x: -2.803071, y: 0, z: -0.075032234}
-      direction: {x: 0.53261185, y: 0, z: -0.060032368}
-      up: {x: 0, y: 1, z: 0}
-      scale: {x: 1, y: 1}
-      roll: 0
-    n2:
-      position: {x: 13.2625265, y: 0, z: 0}
-      direction: {x: 17.161068, y: 0, z: 0.099223375}
-      up: {x: 0, y: 1, z: 0}
-      scale: {x: 1, y: 1}
-      roll: 0
-    Changed:
-      m_PersistentCalls:
-        m_Calls: []
-  Length: 16.066048
-  isLoop: 0
-  CurveChanged:
-    m_PersistentCalls:
-      m_Calls: []

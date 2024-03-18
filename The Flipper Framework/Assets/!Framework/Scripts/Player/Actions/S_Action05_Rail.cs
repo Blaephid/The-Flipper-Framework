@@ -20,7 +20,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
-	private S_Control_PlayerSound _Sounds;
+	private S_Control_SoundsPlayer _Sounds;
 	[HideInInspector]
 	public S_Interaction_Pathers  _Rail_int;
 	public S_AddOnRail            _ConnectedRails;
@@ -52,26 +52,32 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private float                 _offsetZip_ = -2.05f;
 
 	[HideInInspector]
+	private float                 _minStartSpeed_ = 60f;
 	public float                  _railmaxSpeed_;
 	private float                 _railTopSpeed_;
+	private float                 _playerBrakePower_ = 0.95f;
+	private AnimationCurve        _accelBySpeed_;
+
 	private float                 _decaySpeedLow_;
 	private float                 _decaySpeedHigh_;
-	private float                 _minStartSpeed_ = 60f;
+
 	private float                 _pushFowardmaxSpeed_ = 80f;
 	private float                 _pushFowardIncrements_ = 15f;
 	private float                 _pushFowardDelay_ = 0.5f;
+
 	private float                 _generalHillModifier = 2.5f;
 	private float                 _upHillMultiplier_ = 0.25f;
 	private float                 _downHillMultiplier_ = 0.35f;
 	private float                 _upHillMultiplierCrouching_ = 0.4f;
 	private float                 _downHillMultiplierCrouching_ = 0.6f;
 	private float                 _dragVal_ = 0.0001f;
-	private float                 _playerBrakePower_ = 0.95f;
+
+	private float                 _boostDecayTime_;
+	private float                 _boostDecaySpeed_;
+
+	private float		_hopSpeed_ = 3.5f;
 	private float                 _hopDelay_;
 	private float                 _hopDistance_ = 12;
-	private float                 _decayTime_;
-	private AnimationCurve        _accelBySpeed_;
-	private float                 _decaySpeed_;
 	#endregion
 
 	// Trackers
@@ -81,38 +87,31 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	[HideInInspector]
 	public S_Interaction_Pathers.PathTypes _whatKindOfRail;     //Set when entering the action, deciding if this is a zipline, rail or later added type
 
-	private float                 _pulleyRotate;
-	[HideInInspector]
-	public float                  _curvePosSlope;
+	private float                 _pulleyRotate;	//Set by inputs and incorperated into position and rotation on spline when using a zipline. Decides how much to tilt the handle and player.
 
+	private float                 _pushTimer = 0f;	//Constantly goes up, is set to zzero after pushing forward. Implements the delay to prevent constant pushing.
+	[HideInInspector]
+	public float                  _pointOnSpline = 0f; //The actual place on the spline being travelled. The number is how many units along the length of the spline it is (not affected by spline length).
+	[HideInInspector]
+	public float                  _playerSpeed;	//How fast along the spline the player is moving. Used every frame to get the next point on spline.
+	[HideInInspector]
+	public bool                   _isGoingBackwards;	//Is the player going up or down on the spline points.
+	private int                   _movingDirection;	//A 1 or -1 based on going backwards or not. Used in calculations.
+	private bool                  _isCrouching;	//Set by input, will change slope calculations
+	private bool                   _isBraking;	//Set by input, if true will decrease speed.
 
-	private float                 _timer = 0f;
-	[HideInInspector]
-	public float                  _pointOnSpline = 0f;
-	[HideInInspector]
-	public float                  _playerSpeed;
-	[HideInInspector]
-	public bool                   _isGoingBackwards;
-	private int                   _movingDirection;
-	private bool                  _isCrouching;
-	private bool                   isBraking;
-
-	private Vector3               _sampleForwards;
+	private Vector3               _sampleForwards;	//The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
 
 	//Quaternion rot;
-	private Vector3               _setOffSet;
-
-	//Camera testing
-	public float                  _targetDistance = 10;
-	public float                  _cameraLerp = 10;
+	private Vector3               _setOffSet;	//Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
 
 	//Stepping
-	private bool        _canInput = true;
-	private bool        _canHop = false;
-	private float       _distanceToStep;
-	private float       _stepSpeed_ = 3.5f;
-	private bool        _isSteppingRight;
-	private bool        _isFacingRight = true;
+	private bool        _canInput = true;	//Set true when entering a rail, but set false when rail hopping. Must be two to perform any actions.
+	private bool        _canHop = false;	//Set false when entering a rail, but true after a moment.
+	private float       _distanceToStep;	//Set when starting a hop and will go down by distance traveled every frame, ending action when zero.
+	private bool        _isSteppingRight;	//Hopping to a rail on the right or on the left.
+
+	private bool        _isFacingRight = true;	//Used by the animator, changed on push forward.
 
 	//Boosters
 	[HideInInspector]
@@ -197,7 +196,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		//Set private 
 		_canInput = true;
-		_timer = _pushFowardDelay_;
+		_pushTimer = _pushFowardDelay_;
 		_distanceToStep = 0; //Ensure not immediately stepping when called
 
 		_Rail_int._canGrindOnRail = false; //Prevents calling this multiple times in one update
@@ -214,15 +213,16 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_Input.JumpPressed = false;
 
 		//Animator
+		_Actions.ActionDefault.SwitchSkin(true);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		switch (_whatKindOfRail)
 		{
 			case S_Interaction_Pathers.PathTypes.rail:
-				_CharacterAnimator.SetBool("GrindRight", _isFacingRight);
+				_CharacterAnimator.SetBool("GrindRight", _isFacingRight);	//Sets which direction the character animation is facing. Tracked between rails to hopping doesn't change it.
 				_CharacterAnimator.SetInteger("Action", 10);
 				break;
 			case S_Interaction_Pathers.PathTypes.zipline:
-				_ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false;
+				_ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; //Ensures there won't be weird collisions along the zipline.
 				_CharacterAnimator.SetInteger("Action", 9);
 				break;
 		}
@@ -486,7 +486,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	void HandleRailSpeed () {
-		if (isBraking && _playerSpeed > _minStartSpeed_) _playerSpeed *= _playerBrakePower_;
+		if (_isBraking && _playerSpeed > _minStartSpeed_) _playerSpeed *= _playerBrakePower_;
 
 		ApplyBoost();
 		HandleSlopes();
@@ -509,9 +509,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			_boostTime -= Time.fixedDeltaTime;
 			if (_boostTime < 0)
 			{		
-				if (_playerSpeed > 60) { _playerSpeed -= _decaySpeed_; } //Speed can never decay to go under 60.
+				if (_playerSpeed > 60) { _playerSpeed -= _boostDecaySpeed_; } //Speed can never decay to go under 60.
 				//Keep losing speed until _decayTime_ amount of time has passed.
-				if (_boostTime < -_decayTime_)
+				if (_boostTime < -_boostDecayTime_)
 				{
 					_isBoosted = false;
 					_boostTime = 0;
@@ -546,17 +546,14 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	//Inputs
 	public void HandleInputs () {
-		if (!_Actions.isPaused)
-		{
-			HandleUniqueInputs();
+		if (!_Actions.isPaused) HandleUniqueInputs();
 
 			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 			_Actions.HandleInputs(_positionInActionList);
-		}
 	}
 
 	void HandleUniqueInputs () {
-		_timer += Time.deltaTime;
+		_pushTimer += Time.deltaTime;
 
 		//Certain types of rail have unique controls / subactions to them.
 		switch (_whatKindOfRail)
@@ -568,7 +565,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				_CharacterAnimator.SetBool("isRolling", _isCrouching);
 
 				//RailTrick to accelerate, but only after delay
-				if (_Input.SpecialPressed && _timer > _pushFowardDelay_)
+				if (_Input.SpecialPressed && _pushTimer > _pushFowardDelay_)
 				{	
 					//Will only increase speed if under the max trick speed.
 					if (_playerSpeed < _pushFowardmaxSpeed_)
@@ -576,7 +573,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 						_playerSpeed += _pushFowardIncrements_ + _accelBySpeed_.Evaluate(_playerSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
 					}
 					_isFacingRight = !_isFacingRight; //This will cause the animator to perform a small hop and face the other way.
-					_timer = 0f; //Resets timer so delay must be exceeded again.
+					_pushTimer = 0f; //Resets timer so delay must be exceeded again.
 					_Input.SpecialPressed = false; //Prevents it being spammed by holding		
 				}
 
@@ -593,7 +590,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				break;
 		}
 		//Breaking
-		isBraking = _Input.BouncePressed;
+		_isBraking = _Input.BouncePressed;
 	}
 
 	void CheckHopping () {
@@ -632,7 +629,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (_distanceToStep > 0)
 		{
 			//Get how far to move this frame and in which direction.
-			float move = _stepSpeed_ * Time.deltaTime;
+			float move = _hopSpeed_ * Time.deltaTime;
 			if (_isSteppingRight)
 				move = -move;
 			if (_isGoingBackwards)
@@ -687,6 +684,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 	#endregion
 
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public
 	//Called by the pathers interaction script to ready important stats gained from the collision. This is seperate to startAction because startAction is inherited from an interface.
 	public void AssignForThisGrind ( float range, Transform Rail, S_Interaction_Pathers.PathTypes type, Vector3 thisOffset, S_AddOnRail AddOn ) {
 
@@ -701,6 +703,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		_ConnectedRails = AddOn; //Will be used to go onto subsequent rails without recalculating collisions.
 	}
+
+	#endregion
 
 	/// <summary>
 	/// Assigning ----------------------------------------------------------------------------------
@@ -761,14 +765,14 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_dragVal_ = _Tools.Stats.RailStats.RailDragVal;
 		_playerBrakePower_ = _Tools.Stats.RailStats.RailPlayerBrakePower;
 		_hopDelay_ = _Tools.Stats.RailStats.hopDelay;
-		_stepSpeed_ = _Tools.Stats.RailStats.hopSpeed;
+		_hopSpeed_ = _Tools.Stats.RailStats.hopSpeed;
 		_hopDistance_ = _Tools.Stats.RailStats.hopDistance;
 		_accelBySpeed_ = _Tools.Stats.RailStats.RailAccelerationBySpeed;
 
 		_offsetRail_ = _Tools.Stats.RailPosition.offsetRail;
 		_offsetZip_ = _Tools.Stats.RailPosition.offsetZip;
-		_decaySpeed_ = _Tools.Stats.RailStats.railBoostDecaySpeed;
-		_decayTime_ = _Tools.Stats.RailStats.railBoostDecayTime;
+		_boostDecaySpeed_ = _Tools.Stats.RailStats.railBoostDecaySpeed;
+		_boostDecayTime_ = _Tools.Stats.RailStats.railBoostDecayTime;
 	}
 	#endregion
 

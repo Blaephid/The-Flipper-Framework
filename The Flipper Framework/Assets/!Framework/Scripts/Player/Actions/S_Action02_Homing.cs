@@ -18,8 +18,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer  _HomingTrailScript;
-	private S_Handler_HomingAttack _HomingControl;
-	private S_Control_PlayerSound  _Sounds;
+	private S_Handler_HomingAttack _HomingHandler;
+	private S_Control_SoundsPlayer  _Sounds;
 
 	private GameObject            _HomingTrailContainer;
 	private GameObject            _JumpBall;
@@ -103,7 +103,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//if ended prematurely
 		if(_isHoming)
 		{
-			_Actions.AddDashDelay(_HomingControl._homingDelay_);
+			_Actions.AddDashDelay(_HomingHandler._homingDelay_);
 		}
 	}
 
@@ -134,10 +134,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Depending on stats, this can only be performed when grounded.
 		if (!_PlayerPhys._isGrounded || _CanBePerformedOnGround_)
 		{
-			_HomingControl._isScanning = true;
+			_HomingHandler._isScanning = true;
 
 			//Must have a valid target when pressed
-			if (_HomingControl._TargetObject && _Input.HomingPressed)
+			if (_HomingHandler._TargetObject && _Input.HomingPressed)
 			{
 				//Homing attack must be currently allowed
 				if (_Actions._isAirDashAvailables && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount))
@@ -165,7 +165,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_directionBeforeAttack = _PlayerPhys._RB.velocity.normalized;
 
 		//Gets the direction to move in, rotate a lot faster than normal for the first frame.
-		_Target = _HomingControl._TargetObject.transform;
+		_Target = _HomingHandler._TargetObject.transform;
 		_targetDirection = _Target.position - transform.position;
 		_currentDirection = Vector3.RotateTowards(_Skin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
 
@@ -203,7 +203,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		_Actions.ActionDefault.SwitchSkin(true);
 		_PlayerPhys._canBeGrounded = true;
 		_PlayerPhys._isGravityOn = true;
 	}
@@ -303,11 +302,9 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	}
 
 	public void HandleInputs () {
-		if (!_Actions.isPaused)
-		{
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);
-		}
+
+		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+		_Actions.HandleInputs(_positionInActionList);	
 	}
 
 	#endregion
@@ -321,8 +318,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	//What happens to the character after they hit a target, the directions they bounce based on input, stats and target.
 	public void HittingTarget ( S_Enums.HomingRebounding whatRebound ) {
 		_isHoming = false; //Prevents the rest of the code in Update and FixedUpdate from happening.
-		_HomingControl._TargetObject = null;
-		_HomingControl._PreviousTarget = null;
+		_HomingHandler._TargetObject = null;
+		_HomingHandler._PreviousTarget = null;
 
 		//Effects
 		_HomingTrailScript.emitTime = 0.1f;
@@ -332,7 +329,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		_CharacterAnimator.SetInteger("Action", 1);
 
-		_Actions.AddDashDelay(_HomingControl._homingDelay_); //Add delay before it can be used again.
+		_Actions.AddDashDelay(_HomingHandler._homingDelay_); //Add delay before it can be used again.
 		Vector3 newSpeed = Vector3.zero;
 
 		switch (whatRebound)
@@ -508,7 +505,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_Input = GetComponent<S_PlayerInput>();
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_Actions = GetComponent<S_ActionManager>();
-		_HomingControl = GetComponent<S_Handler_HomingAttack>();
+		_HomingHandler = GetComponent<S_Handler_HomingAttack>();
 		_Sounds = _Tools.SoundControl;
 		_Skin = _Tools.mainSkin;
 

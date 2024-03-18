@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class S_Control_PlayerSound : MonoBehaviour {
+public class S_Control_SoundsPlayer : MonoBehaviour {
 
     public S_PlayerPhysics Player;
 

@@ -18,7 +18,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera _CamHandler;
-	private S_Control_PlayerSound _Sounds;
+	private S_Control_SoundsPlayer _Sounds;
 
 	private Animator CharacterAnimator;
 	private Transform feetPoint;

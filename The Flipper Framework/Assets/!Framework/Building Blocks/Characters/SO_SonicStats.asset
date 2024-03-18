@@ -1907,14 +1907,14 @@ MonoBehaviour:
     angleToPerformSkid: 10
     skidIntesity: 3
   BounceStats:
-    dropSpeed: 100
+    dropSpeed: -100
     BounceMaxSpeed: 140
     listOfBounceSpeeds:
     - 40
     - 42
     - 44
     bounceHaltFactor: 0.7
-    bounceCoolDown: 8
+    bounceCoolDown: 0.4
     bounceUpMaxSpeed: 75
     bounceConsecutiveFactor: 1.05
     bounceAirControl: {x: 1.4, y: 1.1}

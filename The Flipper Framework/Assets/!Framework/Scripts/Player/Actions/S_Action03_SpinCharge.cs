@@ -17,7 +17,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private S_PlayerInput		_Input;
 	private S_ActionManager                 _Actions;
 	private S_PlayerPhysics                 _PlayerPhys;
-	private S_Control_PlayerSound           _Sounds;
+	private S_Control_SoundsPlayer           _Sounds;
 	private S_Control_EffectsPlayer         _Effects;
 
 	private Animator			_CharacterAnimator;
@@ -139,7 +139,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_LowerCapsule.SetActive(false);
 		_CharacterCapsule.SetActive(true);
 		_PlayerPhys._isRolling = false;
-		_Actions.ActionDefault.SwitchSkin(true); //Make character model visible again
 	}
 
 	#endregion
@@ -151,11 +150,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	#region private
 
 	public void HandleInputs () {
-		if (!_Actions.isPaused)
-		{
 			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 			_Actions.HandleInputs(_positionInActionList);
-		}
 	}
 
 	//Increases power in the spin for release
@@ -235,6 +231,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		//Effects
 		_Effects.EndSpinDash();
 		_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount_ * _currentCharge) / 10, 40);
+		_Actions.ActionDefault.SwitchSkin(true);
 
 		//Only launches forwards if charged long enough.
 		if (_currentCharge < _minimunCharge_)
@@ -268,15 +265,12 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			dif = Vector3.Angle(_MainSkin.forward, newSpeed);
 			dif *= _turnAmountByAngle_.Evaluate(dif);
 
-			Debug.DrawRay(transform.position, newSpeed * 5, Color.red, 20);
-			Debug.DrawRay(transform.position, _MainSkin.forward * 5, Color.yellow, 20);
-
 			newSpeed = Vector3.RotateTowards(newSpeed, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
 			_PlayerPhys.SetCoreVelocity(newSpeed * _PlayerPhys._horizontalSpeedMagnitude, false);
 
 			_CharacterAnimator.SetFloat("GroundSpeed", speed);
 
-			//_Input.LockInputForAWhile(8, false);	//
+			//_Input.LockInputForAWhile(8, false);
 
 			_Actions.ActionDefault.StartAction();
 		}

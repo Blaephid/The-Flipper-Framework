@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(S_Handler_Hurt))]
+[RequireComponent(typeof(S_Handler_HealthAndHurt))]
 public class S_Action04_Hurt : MonoBehaviour, IMainAction
 {
 
@@ -17,8 +17,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
-	private S_Control_PlayerSound	_Sounds;
-	private S_Handler_Hurt	_HurtControl;
+	private S_Control_SoundsPlayer	_Sounds;
+	private S_Handler_HealthAndHurt	_HurtControl;
 
 	private CapsuleCollider       _CharacterCapsule;
 	private GameObject            _JumpBall;
@@ -107,6 +107,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		_Sounds.PainVoicePlay();
 
 		//Animator
+		_Actions.ActionDefault.SwitchSkin(true);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_CharacterAnimator.SetInteger("Action", 4);
 
@@ -118,8 +119,6 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		Vector3 boxSize = new Vector3(_CharacterCapsule.radius, _CharacterCapsule.height, _CharacterCapsule.radius); //Based on player collider size
 		float checkDistance = _PlayerPhys._previousHorizontalSpeeds[3] * Time.deltaTime * 3; //Direction and speed are obtained from previous frames because there has now been a collision that may have affected them this frame.
 		Vector3 checkDirection = _PlayerPhys._previousVelocities[3].normalized;
-
-		Debug.DrawRay(transform.position, checkDirection * checkDistance, Color.blue, 20f);
 
 		//Knockback direction will have been set to zero in the hurt handler if not resetting speed on hit. If there isn't a solid object infront, the dont bounce back.
 		if (_knockbackDirection == Vector3.zero && !Physics.BoxCast(transform.position, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
@@ -200,11 +199,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	#region private
 
 	public void HandleInputs () {
-		if (!_Actions.isPaused)
-		{
 			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 			_Actions.HandleInputs(_positionInActionList);
-		}
 	}
 
 	private void LockControl() {
@@ -332,7 +328,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		_Input = GetComponent<S_PlayerInput>();
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_Actions = GetComponent<S_ActionManager>();
-		_HurtControl = GetComponent<S_Handler_Hurt>();
+		_HurtControl = GetComponent<S_Handler_HealthAndHurt>();
 
 		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
 		_JumpBall = _Tools.JumpBall;

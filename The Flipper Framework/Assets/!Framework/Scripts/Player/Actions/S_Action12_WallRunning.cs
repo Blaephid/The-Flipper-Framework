@@ -16,7 +16,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private S_PlayerPhysics		_PlayerPhys;
 	private S_PlayerInput		_Input;
 	private S_ActionManager		_Actions;
-	private S_Control_PlayerSound		_Sounds;
+	private S_Control_SoundsPlayer		_Sounds;
 	private S_Handler_HomingAttack	_HomingControl;
 	private S_Handler_Camera		_CamHandler;
 	private S_Handler_WallRunning		_Control;

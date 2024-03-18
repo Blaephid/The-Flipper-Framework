@@ -18,7 +18,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
-	private S_Control_PlayerSound _Sounds;
+	private S_Control_SoundsPlayer _Sounds;
 	private S_Interaction_Pathers _Path_Int;
 	private S_HedgeCamera	_CamHandler;
 

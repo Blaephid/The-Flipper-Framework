@@ -88,11 +88,8 @@ namespace templates
 		#region private
 
 		public void HandleInputs () {
-			if (!_Actions.isPaused)
-			{
-				//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-				_Actions.HandleInputs(_positionInActionList);
-			}
+			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+			_Actions.HandleInputs(_positionInActionList);
 		}
 
 		#endregion

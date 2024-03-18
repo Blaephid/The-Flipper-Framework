@@ -13,7 +13,7 @@ public class S_Handler_WallRunning : MonoBehaviour
     S_ActionManager Actions;
 
 
-    S_Control_PlayerSound sounds;
+    S_Control_SoundsPlayer sounds;
     Animator CharacterAnimator;
     public float skinRotationSpeed;
     GameObject JumpBall;

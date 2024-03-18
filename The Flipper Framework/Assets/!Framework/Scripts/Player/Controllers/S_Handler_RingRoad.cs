@@ -4,152 +4,178 @@ using System.Collections;
 public class S_Handler_RingRoad : MonoBehaviour
 {
 
-        S_CharacterTools Tools;
-        S_PlayerPhysics player;
-        public bool HasTarget { get; set; }
-        public GameObject TargetObject { get; set; }
-        S_ActionManager Actions;
-	S_PlayerInput _Input;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
 
-        float _targetSearchDistance_ = 10;
-        Transform Icon;
-        float _iconScale_;
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
 
-        [HideInInspector] public GameObject[] Targets;
-        [HideInInspector] public GameObject[] TgtDebug;
+	[HideInInspector]
+	public GameObject		_TargetRing;
+	[HideInInspector] 
+	public GameObject[]		_Targets;
+	#endregion
 
-        LayerMask _Layer_;
-        Transform MainCamera;
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
+	#region Stats
 
+	private float	_targetSearchDistance_ = 10;
+	private LayerMask	_Layer_;
+	#endregion
 
-        void Awake () {
-                if (Actions == null)
-                {
-                        Tools = GetComponent<S_CharacterTools>();
-                        AssignTools();
-                        AssignStats();
-                }
+	// Trackers
+	#region trackers
+	[HideInInspector]
+	public bool	_hasTarget;
+	[HideInInspector]
+	public bool         _isScanning;
+	#endregion
+	#endregion
 
-        }
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
 
-        void Start () {
+	// Start is called before the first frame update
+	void Start () {
+		ReadyScript();
+		StartCoroutine(ScanForTargets());
+	}
 
-                StartCoroutine(ScanForTargets());
-        }
+	// Update is called once per frame
+	void Update () {
 
+	}
 
-        private void FixedUpdate () {
-                if (Actions.whatAction == S_Enums.PrimaryPlayerStates.RingRoad)
-                {
-                        Collider[] TargetsInRange = GetCloseTargets(_targetSearchDistance_);
+	private void FixedUpdate () {
+		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.RingRoad)
+		{
+			Collider[] TargetsInRange = GetCloseTargets(_targetSearchDistance_);
 
-                        if (TargetsInRange.Length > 0)
-                        {
-                                //yield return new WaitForFixedUpdate();
-                                TargetObject = GetClosestTarget(TargetsInRange);
-                        }
-                }
-        }
+			if (TargetsInRange.Length > 0)
+			{
+				//yield return new WaitForFixedUpdate();
+				_TargetRing = GetClosestTarget(TargetsInRange);
+			}
+		}
+	}
 
-        private IEnumerator ScanForTargets () {
-                while (true)
-                {
-                        yield return new WaitForFixedUpdate();
+	#endregion
 
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+	private IEnumerator ScanForTargets () {
+		while (true)
+		{
+			yield return new WaitForFixedUpdate();
+			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
+			if (_isScanning)
+			{
+				Collider[] TargetsInRange = GetCloseTargets(_targetSearchDistance_);
 
-                        if (Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump || Actions.whatAction == S_Enums.PrimaryPlayerStates.Default)
-                        {
-                                Collider[] TargetsInRange = GetCloseTargets(_targetSearchDistance_ * 1.45f);
+				//If any are found, wait another frame for efficiency, then sort them.
+				if (TargetsInRange.Length > 0)
+				{
+					yield return new WaitForFixedUpdate();
+					_TargetRing = GetClosestTarget(TargetsInRange);
 
-                                if (TargetsInRange.Length > 0)
-                                {
-                                        yield return new WaitForFixedUpdate();
-                                        TargetObject = GetClosestTarget(TargetsInRange);
-                                        PerformRingRoad();
-                                }
+				}
+			}
+			_isScanning = false; //Set to false every frame but will be counteracted in Action RingRoad's AttemptAction()
+		}
 
-                        }
-                        else
-                        {
-                                yield return new WaitForFixedUpdate();
-                        }
-                }
+	}
 
-        }
+	//Returns any triggers of the correct layers (rings or ring roads), if in the given range.
+	Collider[] GetCloseTargets ( float maxDistance ) {
+		Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, maxDistance, _Layer_, QueryTriggerInteraction.Collide);
+		return TargetsInRange;
+	}
 
-        void PerformRingRoad () {
-                //Do a LightDash Attack
-                if (Actions.whatAction != S_Enums.PrimaryPlayerStates.RingRoad && _Input.InteractPressed && TargetObject != null)
-                {
-			//Debug.Log("LightDash");
-			_Input.CamResetPressed = false;
-                        Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
-                        Actions.Action07.InitialEvents();
-                }
-        }
+	GameObject GetClosestTarget ( Collider[] TargetsInRange ) {
+		_hasTarget = false;
 
-        Collider[] GetCloseTargets ( float maxDistance ) {
-                Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, maxDistance, _Layer_, QueryTriggerInteraction.Collide);
-                return TargetsInRange;
-        }
+		int checkLimit = 0;
+		Transform closestTarget = null;
+		foreach (Collider t in TargetsInRange)
+		{
+			if (t != null) //Called in case the collider was lost since scanned (like if the ring was picked up).
+			{
+				Transform target = t.transform;
+				closestTarget = CheckTarget(target, closestTarget);
 
-        GameObject GetClosestTarget ( Collider[] TargetsInRange ) {
-                HasTarget = false;
+				checkLimit++;
+				if (checkLimit > 3)
+					break;
+			}
 
-                int checkLimit = 0;
-                Transform closestTarget = null;
-                foreach (Collider t in TargetsInRange)
-                {
-                        if (t != null)
-                        {
-                                Transform target = t.transform;
-                                closestTarget = CheckTarget(target, closestTarget);
+		}
+		if (closestTarget != null)
+			return closestTarget.gameObject;
+		else
+			return null;
+	}
 
-                                checkLimit++;
-                                if (checkLimit > 3)
-                                        break;
-                        }
+	Transform CheckTarget ( Transform thisTarget, Transform current ) {
+		float dis = Vector3.Distance(transform.position, thisTarget.position); 
 
-                }
-                if (closestTarget != null)
-                        return closestTarget.gameObject;
-                else
-                        return null;
-        }
+		if (current == null)
+			return thisTarget;
+		else
+		{
+			float closDis = Vector3.Distance(transform.position, current.position);
+			if (closDis > dis)
+			{
+				_hasTarget = true;
+				return thisTarget;
+			}
 
-        Transform CheckTarget ( Transform thisTarget, Transform current ) {
-                float dis = Vector3.Distance(transform.position, thisTarget.position);
+		}
 
-                if (current == null)
-                        return thisTarget;
-                else
-                {
-                        float closDis = Vector3.Distance(transform.position, current.position);
-                        if (closDis > dis)
-                        {
-                                HasTarget = true;
-                                return thisTarget;
-                        }
+		return current;
+	}
+	#endregion
 
-                }
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
 
-                return current;
-        }
+	//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
+	public void ReadyScript () {
+		if (_PlayerPhys == null)
+		{
 
-        void AssignStats () {
-                _targetSearchDistance_ = Tools.Stats.RingRoadStats.SearchDistance;
-                _iconScale_ = Tools.Stats.RingRoadStats.iconScale;
-                _Layer_ = Tools.Stats.RingRoadStats.RingRoadLayer;
-        }
+			//Assign all external values needed for gameplay.
+			_Tools = GetComponent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
+		}
+	}
 
-        void AssignTools () {
-                Actions = GetComponent<S_ActionManager>();
-                player = GetComponent<S_PlayerPhysics>();
+	//Responsible for assigning objects and components from the tools script.
+	private void AssignTools () {
 		_Input = GetComponent<S_PlayerInput>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Actions = GetComponent<S_ActionManager>();
+	}
 
-                Icon = Tools.homingIcons.GetComponent<Transform>();
-                MainCamera = Tools.MainCamera;
-        }
-
-
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
+		_targetSearchDistance_ = _Tools.Stats.RingRoadStats.SearchDistance;
+		_Layer_ = _Tools.Stats.RingRoadStats.RingRoadLayer;
+	}
+	#endregion
 }

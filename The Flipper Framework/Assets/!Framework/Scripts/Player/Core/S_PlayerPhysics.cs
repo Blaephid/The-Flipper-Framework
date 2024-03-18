@@ -22,7 +22,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	#region Unity Specific Members
 	private S_ActionManager       _Action;
 	private S_CharacterTools      _Tools;
-	private S_Control_PlayerSound _SoundController;
+	private S_Control_SoundsPlayer _SoundController;
 	static public S_PlayerPhysics s_MasterPlayer;
 	private S_PlayerInput         _Input;
 	private S_Handler_Camera      _camHandler;
@@ -313,16 +313,15 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (!_canBeGrounded) { return; }
 
 		//Sets the size of the ray to check for ground. If running on the ground then it is typically to avoid flying off the ground.
-		float _rayToGroundDistancecor = _rayToGroundDistance_;
+		float rayToGroundDistancecor = _rayToGroundDistance_;
 		if (_Action.whatAction == S_Enums.PrimaryPlayerStates.Default && _isGrounded)
 		{
-			_rayToGroundDistancecor = Mathf.Max(_rayToGroundDistance_ + (_horizontalSpeedMagnitude * _raytoGroundSpeedRatio_), _rayToGroundDistance_);
-			_rayToGroundDistancecor = Mathf.Min(_rayToGroundDistancecor, _raytoGroundSpeedMax_);
-
+			rayToGroundDistancecor = Mathf.Max(_rayToGroundDistance_ + (_horizontalSpeedMagnitude * _raytoGroundSpeedRatio_), _rayToGroundDistance_);
+			rayToGroundDistancecor = Mathf.Min(rayToGroundDistancecor, _raytoGroundSpeedMax_);
 		}
 
 		//Uses the ray to check for ground, if found, sets grounded to true and takes the normal.
-		if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out RaycastHit hitGroundTemp, 2f + _rayToGroundDistancecor, _Groundmask_))
+		if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out RaycastHit hitGroundTemp, 2f + rayToGroundDistancecor, _Groundmask_))
 		{
 			if (Vector3.Angle(_groundNormal, hitGroundTemp.normal) / 180 < _groundDifferenceLimit_)
 			{
@@ -355,6 +354,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				_coreVelocity += force;
 			}
 		}
+
 
 		//Calculate total velocity this frame.
 		_totalVelocity = _coreVelocity + _environmentalVelocity;
@@ -702,16 +702,9 @@ public class S_PlayerPhysics : MonoBehaviour
 		return velocity;
 	}
 
-	//Makes a vector relative to a normal. Such as a forward direction being affected by the ground.
-	Vector3 AlignWithNormal ( Vector3 vector, Vector3 normal, float magnitude ) {
-		Vector3 tangent = Vector3.Cross(normal, vector);
-		Vector3 newVector = -Vector3.Cross(normal, tangent);
-		vector = newVector.normalized * magnitude;
-		return vector;
-	}
 
 	//Handles stepping up onto slightly raised surfaces without losing momentum, rather than bouncing off them. Requires multiple checks into the situation to avoid clipping or unnecesary stepping.
-	void StepOver ( Vector3 raycastStartPosition, Vector3 rayCastDirection, Vector3 newGroundNormal ) {
+	private void StepOver ( Vector3 raycastStartPosition, Vector3 rayCastDirection, Vector3 newGroundNormal ) {
 
 		//Shoots a boxcast rather than a raycast to check for steps slightly to the side as well as directly infront.
 		if (Physics.BoxCast(raycastStartPosition, new Vector3(0.15f, 0.05f, 0.01f), rayCastDirection, out RaycastHit hitSticking,
@@ -766,6 +759,14 @@ public class S_PlayerPhysics : MonoBehaviour
 	/// </summary>
 	/// 
 	#region public 
+	//Makes a vector relative to a normal. Such as a forward direction being affected by the ground.
+	public Vector3 AlignWithNormal ( Vector3 vector, Vector3 normal, float magnitude ) {
+		Vector3 tangent = Vector3.Cross(normal, vector);
+		Vector3 newVector = -Vector3.Cross(normal, tangent);
+		vector = newVector.normalized * magnitude;
+		return vector;
+	}
+
 	//Changes the character's rotation to match the current situation. This includes when on a slope, when in the air, or transitioning between the two.
 	public void AlignToGround ( Vector3 normal, bool isGrounded ) {
 
@@ -892,7 +893,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public void AddCoreVelocity ( Vector3 force, bool shouldPrintForce = false ) {
 
 		_listOfCoreVelocityToAdd.Add(force);
-		if (shouldPrintForce) Debug.Log("ADD Core FORCE");
+		if (shouldPrintForce) Debug.Log("ADD Core FORCE  "  +force);
 	}
 	public void SetCoreVelocity ( Vector3 force, bool willOverwrite = true, bool shouldPrintForce = false) {
 		if (_isOverwritingCoreVelocity && !willOverwrite) { return; } //If a previous call set isoverwriting to true, then if this isn't doing the same it will be ignored.

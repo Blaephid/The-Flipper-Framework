@@ -771,13 +771,17 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucBounce
 		{
 			dropSpeed = 100f,
-			BounceMaxSpeed = 140f,
-			listOfBounceSpeeds = new List<float> { 40f, 42f, 44f },
 			bounceHaltFactor = 0.7f,
-			bounceCoolDown = 8f,
-			bounceUpMaxSpeed = 75f,
-			bounceConsecutiveFactor = 1.05f,
 			bounceAirControl = new Vector2(1.4f, 1.1f),
+			horizontalSpeedDecay = new Vector2(0.1f, 0.001f),
+
+			listOfBounceSpeeds = new List<float> { 40f, 42f, 44f },
+			minimumPushForce = 30,
+			bounceUpMaxSpeed = 75f,
+			lerpTowardsInput = 0.5f,
+
+			bounceCoolDown = 8f,
+			coolDownModiferBySpeed = 0.005f,
 		};
 	}
 
@@ -785,14 +789,19 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucBounce
 	{
+		[Header("Movement")]
 		public float              dropSpeed;
-		public float              BounceMaxSpeed;
-		public List<float>        listOfBounceSpeeds;
 		public float              bounceHaltFactor;
-		public float              bounceCoolDown;
-		public float              bounceUpMaxSpeed;
-		public float              bounceConsecutiveFactor;
+		public Vector2                horizontalSpeedDecay;
 		public Vector2      bounceAirControl;
+		[Header("Bounces")]
+		public List<float>        listOfBounceSpeeds;
+		public float              bounceUpMaxSpeed;
+		public float                  minimumPushForce;
+		public float                  lerpTowardsInput;
+		[Header("Cooldown")]
+		public float              bounceCoolDown;
+		public float              coolDownModiferBySpeed;
 
 	}
 	#endregion

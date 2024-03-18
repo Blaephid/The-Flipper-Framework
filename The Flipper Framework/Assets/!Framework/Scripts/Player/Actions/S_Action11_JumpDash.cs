@@ -19,7 +19,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer _HomingTrailScript;
 	private S_Handler_Camera	_CamHandler;
-	private S_Control_PlayerSound	_Sounds;
+	private S_Control_SoundsPlayer	_Sounds;
 
 	private Animator	_CharacterAnimator;
 	private Transform   _MainSkin;

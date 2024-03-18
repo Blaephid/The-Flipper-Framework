@@ -55,7 +55,7 @@ public class S_CharacterTools : MonoBehaviour
     [Header("Control")]
     public Animator BallAnimator;
     public Animator CharacterAnimator;
-    public S_Control_PlayerSound SoundControl;
+    public S_Control_SoundsPlayer SoundControl;
     public S_Control_EffectsPlayer EffectsControl;
 
     [Header("Particles")]

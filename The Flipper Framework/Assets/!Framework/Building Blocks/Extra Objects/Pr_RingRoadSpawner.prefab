@@ -119,5 +119,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 1
-  Des: 0
+  _whatAction: 0

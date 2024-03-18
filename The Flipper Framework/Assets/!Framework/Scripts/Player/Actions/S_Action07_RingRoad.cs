@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(S_Handler_RingRoad))]
 [RequireComponent(typeof(S_ActionManager))]
 public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 {
@@ -17,6 +18,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
+	private S_Handler_RingRoad	_RoadHandler;
 
 	public Transform	_Target;
 	private Animator	_CharacterAnimator;
@@ -94,9 +96,9 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_Input.LockInputForAWhile(1f, true);
 
 		//CharacterAnimator.SetInteger("Action", 1);
-		if (_Actions.Action07Control.TargetObject != null)
+		if (_RoadHandler._TargetRing != null)
 		{
-			_Target = _Actions.Action07Control.TargetObject.transform;
+			_Target = _RoadHandler._TargetRing.transform;
 			_direction = _Target.position - transform.position;
 			_PlayerPhys._RB.velocity = _direction.normalized * _dashSpeed_;
 
@@ -124,13 +126,37 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		bool willChangeAction = false;
-		willChangeAction = true;
-		return willChangeAction;
+		_RoadHandler._isScanning = true;
+
+		if (_Input.InteractPressed && _RoadHandler._TargetRing != null)
+		{
+			StartAction();
+			return true;
+		}
+
+		return false;
 	}
 
 	public void StartAction () {
+		_initialVelocityMagnitude = _PlayerPhys._RB.velocity.magnitude;
+		_PlayerPhys._RB.velocity = Vector3.zero;
 
+		_Input.CamResetPressed = false;
+
+		_JumpBall.SetActive(false);
+		if (_HomingTrailContainer.transform.childCount < 1)
+		{
+			GameObject HomingTrailClone = Instantiate (_HomingTrail, _HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
+			HomingTrailClone.transform.parent = _HomingTrailContainer.transform;
+			HomingTrailClone.transform.localPosition = _trailOffSet;
+		}
+
+		if (_RoadHandler._hasTarget && _Target != null)
+		{
+			_Target = _RoadHandler._TargetRing.transform;
+		}
+
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -174,6 +200,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_Actions = GetComponent<S_ActionManager>();
 		_Actions = GetComponent<S_ActionManager>();
+		_RoadHandler = GetComponent<S_Handler_RingRoad>();
 
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_CharacterAnimator = _Tools.CharacterAnimator;
@@ -189,24 +216,5 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_minimumEndingSpeed_ = _Tools.Stats.RingRoadStats.minimumEndingSpeed;
 	}
 	#endregion
-
-	public void InitialEvents () {
-		_initialVelocityMagnitude = _PlayerPhys._RB.velocity.magnitude;
-		_PlayerPhys._RB.velocity = Vector3.zero;
-
-		_JumpBall.SetActive(false);
-		if (_HomingTrailContainer.transform.childCount < 1)
-		{
-			GameObject HomingTrailClone = Instantiate (_HomingTrail, _HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
-			HomingTrailClone.transform.parent = _HomingTrailContainer.transform;
-			HomingTrailClone.transform.localPosition = _trailOffSet;
-		}
-
-		if (_Actions.Action07Control.HasTarget && _Target != null)
-		{
-			_Target = _Actions.Action07Control.TargetObject.transform;
-		}
-
-	}
 
 }

@@ -7,7 +7,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class S_CameraFacing : MonoBehaviour
+public class S_FaceCamera : MonoBehaviour
 {
 	public Camera _ReferenceCamera;
 
