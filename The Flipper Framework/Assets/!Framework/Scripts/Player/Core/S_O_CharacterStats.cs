@@ -813,11 +813,12 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucRingRoad SetStrucRingRoad () {
 		return new StrucRingRoad
 		{
+			willCarrySpeed = true,
 			dashSpeed = 100f,
-			endingSpeedFactor = 1.23f,
 			minimumEndingSpeed = 60f,
+			speedGained = 1.2f,
+
 			SearchDistance = 8f,
-			iconScale = 0f,
 			RingRoadLayer = new LayerMask()
 		};
 	}
@@ -827,11 +828,14 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucRingRoad
 	{
+		[Header ("Performing")]
+		public bool	willCarrySpeed;
 		public float    dashSpeed;
-		public float    endingSpeedFactor;
 		public float    minimumEndingSpeed;
+		[Range (0, 2)]
+		public float        speedGained;
+		[Header ("Scanning")]
 		public float    SearchDistance;
-		public float    iconScale;
 		public LayerMask          RingRoadLayer;
 	}
 	#endregion

@@ -5939,8 +5939,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _TargetRing: {fileID: 0}
-  _Targets: []
-  _hasTarget: 0
+  _ListOfHitTargets: []
+  _ListOfCloseTargets: []
   _isScanning: 0
 --- !u!114 &114394647838053544
 MonoBehaviour:
@@ -5954,9 +5954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316796d67803e6b4f8719aa0db4b6204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Target: {fileID: 0}
-  _HomingTrail: {fileID: 0}
-  _skinRotationSpeed: 1
+  _skinRotationSpeed: 20
   _trailOffSet: {x: 0, y: -3, z: 0}
 --- !u!114 &6634573134749074193
 MonoBehaviour:
@@ -16324,8 +16322,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.621, z: -10}
+  m_LocalRotation: {x: 0.018125912, y: 0.9617801, z: -0.06573666, w: 0.26519662}
+  m_LocalPosition: {x: 4.6496744, y: 4.873985, z: 63.887592}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17195,7 +17193,7 @@ MonoBehaviour:
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 1
   m_XDamping: 0.2
-  m_YDamping: 0
+  m_YDamping: 1.11
   m_ZDamping: 0.35
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
@@ -17206,9 +17204,9 @@ MonoBehaviour:
   m_DeadZoneDepth: 0.1
   m_UnlimitedSoftZone: 0
   m_SoftZoneWidth: 0.25
-  m_SoftZoneHeight: 0.549
+  m_SoftZoneHeight: 0.053
   m_BiasX: 0
-  m_BiasY: 0.03700004
+  m_BiasY: 0.03699874
   m_CenterOnActivate: 1
   m_GroupFramingMode: 2
   m_AdjustmentMode: 0

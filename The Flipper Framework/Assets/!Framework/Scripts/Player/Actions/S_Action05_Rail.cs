@@ -351,7 +351,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 					//Since the handle and by extent the player can be tilted up to the sides (not changing forward direction), adjust the eueler angles to reflect this.
 					//_pulleyRotate is handled in input, but applied here.
-					_ZipHandle.eulerAngles = new Vector3 (_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f);
+					_ZipHandle.eulerAngles = new Vector3 (_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f * _movingDirection);
 					_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _MainSkin.eulerAngles.z + _pulleyRotate * 70f);
 
 					//Similar to on rail, but place handle first, and player relevant to that.

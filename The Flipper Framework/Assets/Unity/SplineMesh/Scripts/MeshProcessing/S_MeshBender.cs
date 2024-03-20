@@ -172,7 +172,7 @@ namespace SplineMesh
 		/// </summary>
 		private void Compute () {
 			isDirty = false;
-
+			if(source == null || source.Vertices == null) { return; }
 			_bentVerticies = new List<MeshVertex>(source.Vertices.Count);
 			switch (Mode)
 			{

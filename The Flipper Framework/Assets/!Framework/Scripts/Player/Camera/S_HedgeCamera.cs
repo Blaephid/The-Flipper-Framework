@@ -29,7 +29,9 @@ public class S_HedgeCamera : MonoBehaviour
 	public Transform               _TargetByInput;
 	public Transform               _TargetByAngle;
 	private Transform              _PlayerTransformReal;
-	private CinemachineVirtualCamera _virtualCamera;
+
+	private CinemachineVirtualCamera	_VirtualCamera;
+	private CinemachineFramingTransposer	_Transposer;
 	#endregion
 
 	//General
@@ -51,6 +53,9 @@ public class S_HedgeCamera : MonoBehaviour
 	private AnimationCurve        _cameraDistanceBySpeed_;
 	private bool                  _shouldAffectDistanceBySpeed_;
 	private Vector3               _angleThreshold_;
+
+	private Vector3               _dampingBehind_;
+	private Vector3               _dampingInFront_;
 
 	private float                 _cameraVerticalRotationSpeed_ = 10;
 	private AnimationCurve        _VerticalFollowSpeedByAngle_;
@@ -164,13 +169,9 @@ public class S_HedgeCamera : MonoBehaviour
 	//Start is called before the first frame update
 	//Since this script is on the camera, not character, important components are assigned in the editor.
 	void Start () {
-		_virtualCamera = GetComponent<CinemachineVirtualCamera>();
 
+		SetTools();
 		SetStats();
-
-		_PlayerTransformReal = _PlayerPhys.transform;
-		_PlayerTransformCopy.rotation = _PlayerTransformReal.rotation;
-		_currentFaceDirection = GetFaceDirection(_Skin.forward);
 
 		//Deals with cursor 
 		Cursor.visible = false;
@@ -188,6 +189,7 @@ public class S_HedgeCamera : MonoBehaviour
 		ApplyCameraEffects();
 
 		ConfirmCameraChanges();
+		ChangeBasedOnFacing();
 		HandleCameraDistance();
 	}
 
@@ -341,6 +343,32 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 	}
 
+	//Changes variables and elements to the camera movement depinding if the player is moving towards or away from it.
+	void ChangeBasedOnFacing () {
+		//Get player and camera direction without vertical since vertical damping is not used.
+		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerPhys._RB.velocity);
+		playerVelocity.y = 0;
+		Vector3 cameraDirectionWithoutY = _PlayerTransformCopy.InverseTransformDirection(transform.forward);
+		cameraDirectionWithoutY.y = 0;
+
+		float angle = Vector3.Angle(playerVelocity, cameraDirectionWithoutY);
+
+		//If camera is facing same way as player, following behind.
+		if(angle < 90)
+		{
+			_Transposer.m_XDamping = _dampingBehind_.x;
+			_Transposer.m_ZDamping = _dampingBehind_.z;
+			_Transposer.m_YDamping = _dampingBehind_.y;
+		}
+		//If player is facing the camera, and moving towards it.
+		else
+		{
+			_Transposer.m_XDamping = _dampingInFront_.x;
+			_Transposer.m_ZDamping = _dampingInFront_.z;
+			_Transposer.m_YDamping = _dampingInFront_.y;
+		}
+	}
+
 	//Sets the camera a distance away from the player, either by adjusting the cinemachine or placing manually.
 	void HandleCameraDistance () {
 		_distanceModifier = 1;
@@ -355,9 +383,9 @@ public class S_HedgeCamera : MonoBehaviour
 		float dist = _cameraMaxDistance_ * _distanceModifier;
 
 		//If the object has a virtual camera set to framing transposer, then that will handle placement on its own.
-		if(_virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>() && _virtualCamera.enabled)
+		if(_Transposer && _VirtualCamera.enabled)
 		{
-			_virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_CameraDistance = dist;
+			_Transposer.m_CameraDistance = dist;
 		}
 		//If not, position is calculated by distance and if there is a wall in the way.
 		else
@@ -719,6 +747,15 @@ public class S_HedgeCamera : MonoBehaviour
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Assigning
+	private void SetTools () {
+
+		_VirtualCamera = GetComponent<CinemachineVirtualCamera>();
+		_PlayerTransformReal = _PlayerPhys.transform;
+		_PlayerTransformCopy.rotation = _PlayerTransformReal.rotation;
+		_currentFaceDirection = GetFaceDirection(_Skin.forward);
+		_Transposer = _VirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+	}
+
 	void SetStats () {
 		_isLocked = false;
 		_canMove = true;
@@ -734,8 +771,15 @@ public class S_HedgeCamera : MonoBehaviour
 		_cameraMaxDistance_ = _Tools.camStats.DistanceStats.CameraMaxDistance;
 		_cameraDistanceBySpeed_ = _Tools.camStats.DistanceStats.cameraDistanceBySpeed;
 		_shouldAffectDistanceBySpeed_ = _Tools.camStats.DistanceStats.affectDistancebySpeed;
-		_virtualCamera.GetComponent<CinemachineCollider>().m_CollideAgainst = _Tools.camStats.DistanceStats.CollidableLayers;
+		_VirtualCamera.GetComponent<CinemachineCollider>().m_CollideAgainst = _Tools.camStats.DistanceStats.CollidableLayers;
 		_CollidableLayers_ = _Tools.camStats.DistanceStats.CollidableLayers;
+
+		_dampingBehind_ = _Tools.camStats.cinemachineStats.dampingBehind;
+		_dampingInFront_ = _Tools.camStats.cinemachineStats.dampingInFront;
+		_Transposer.m_SoftZoneHeight = _Tools.camStats.cinemachineStats.softZone.y;
+		_Transposer.m_SoftZoneWidth = _Tools.camStats.cinemachineStats.softZone.x;
+		_Transposer.m_DeadZoneHeight = _Tools.camStats.cinemachineStats.deadZone.y;
+		_Transposer.m_DeadZoneWidth = _Tools.camStats.cinemachineStats.deadZone.x;
 
 		_angleThreshold_.x = _Tools.camStats.AligningStats.angleThresholdUpwards;
 		_angleThreshold_.y = _Tools.camStats.AligningStats.angleThresholdDownwards;
@@ -759,7 +803,6 @@ public class S_HedgeCamera : MonoBehaviour
 
 	         _shakeDampen_ = _Tools.camStats.EffectsStats.ShakeDampen;
 
-
 		_inputPredictonDistance_ = _Tools.camStats.LookAheadStats.inputPredictonDistance;
 		_cameraMoveToInputSpeed_ = _Tools.camStats.LookAheadStats.cameraMoveToInputSpeed;
 		_shouldMoveInInputDirection_ = _Tools.camStats.LookAheadStats.shouldMoveInInputDirection;
@@ -771,10 +814,4 @@ public class S_HedgeCamera : MonoBehaviour
 		_startLockCam = _lockCamAtSpeed_;
 	}
 	#endregion
-
-
 }
-
-
-
-

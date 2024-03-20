@@ -101,6 +101,33 @@ public class S_O_CameraStats : ScriptableObject
 	}
 	#endregion
 
+	#region cinemachine
+	//-------------------------------------------------------------------------------------------------
+
+	public StrucCinemachine DefaultCinemachineStats = SetStruccinemachine();
+	public StrucCinemachine cinemachineStats = SetStruccinemachine();
+
+	static StrucCinemachine SetStruccinemachine () {
+		return new StrucCinemachine
+		{
+			dampingBehind = new Vector3(0.2f, 0, 0.35f),
+			dampingInFront = new Vector3(0.1f, 0, 0.1f),
+			softZone = new Vector2(0.25f, 0.5f),
+			deadZone = new Vector2(0, 0.1f),
+
+		};
+	}
+
+	[System.Serializable]
+	public struct StrucCinemachine
+	{
+		public Vector3      dampingBehind;
+		public Vector3      dampingInFront;
+		public Vector2      softZone;
+		public Vector2      deadZone;
+	}
+	#endregion
+
 	#region aligning
 	//-------------------------------------------------------------------------------------------------
 
@@ -331,6 +358,7 @@ public class S_O_CameraStatsEditor : Editor
 		DrawInput();
 
 		DrawDistance();
+		DrawCinemachine();
 		DrawAligning();
 		DrawLockHeight();
 		DrawRotateBehind();
@@ -357,6 +385,22 @@ public class S_O_CameraStatsEditor : Editor
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
 				stats.DistanceStats = stats.DefaultDistanceStats;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
+		#endregion
+
+		//cinemachine
+		#region cinemachine
+		void DrawCinemachine () {
+			EditorGUILayout.Space();
+			DrawProperty("cinemachineStats", "Cinemachine framing transposer");
+
+			Undo.RecordObject(stats, "set to defaults");
+			if (GUILayout.Button("Default", ResetToDefaultButton))
+			{
+				stats.cinemachineStats = stats.DefaultCinemachineStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

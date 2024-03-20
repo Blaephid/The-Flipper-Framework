@@ -219,6 +219,16 @@ MonoBehaviour:
     CollidableLayers:
       serializedVersion: 2
       m_Bits: 1
+  DefaultCinemachineStats:
+    dampingBehind: {x: 0.2, y: 0.35, z: 0.35}
+    dampingInFront: {x: 0.1, y: 0.1, z: 0.1}
+    softZone: {x: 0.25, y: 0.5}
+    deadZone: {x: 0, y: 0.1}
+  cinemachineStats:
+    dampingBehind: {x: 0.2, y: 0, z: 0.35}
+    dampingInFront: {x: 0.1, y: 0, z: 0.1}
+    softZone: {x: 0, y: 0.5}
+    deadZone: {x: 0, y: 0.1}
   DefaultAligningStats:
     angleThresholdUpwards: 0.4
     angleThresholdDownwards: 0.8
@@ -400,7 +410,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   TargetByAngleStats:
-    shouldMoveBasedOnAngle: 1
+    shouldMoveBasedOnAngle: 0
     moveUpByAngle:
       serializedVersion: 2
       m_Curve:

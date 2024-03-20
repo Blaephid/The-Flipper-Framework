@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 198000010160681614}
   - component: {fileID: 199000012875083348}
   - component: {fileID: 82000010318864316}
+  - component: {fileID: 9051259168261039089}
   m_Layer: 0
   m_Name: Pr_TeleportSparkle
   m_TagString: Untagged
@@ -4962,3 +4963,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &9051259168261039089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010740309330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _whatAction: 1
+  _delayInSeconds: 1

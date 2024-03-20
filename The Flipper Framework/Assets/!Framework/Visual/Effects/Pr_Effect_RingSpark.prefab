@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4000013243605202}
   - component: {fileID: 198000011180078728}
   - component: {fileID: 199000013925769050}
-  - component: {fileID: 114000014166685200}
   - component: {fileID: 82000014000380926}
+  - component: {fileID: 5031896867106735944}
   m_Layer: 0
   m_Name: Pr_Effect_RingSpark
   m_TagString: Untagged
@@ -4790,19 +4790,6 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &114000014166685200
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000011339303976}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c29b2b1ee5e8f65478c733f5440b4bf5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Lifetime: 0.5
 --- !u!82 &82000014000380926
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4900,3 +4887,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &5031896867106735944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000011339303976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _whatAction: 1
+  _delayInSeconds: 1

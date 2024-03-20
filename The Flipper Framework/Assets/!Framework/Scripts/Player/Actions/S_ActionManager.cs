@@ -153,7 +153,7 @@ public class S_ActionManager : MonoBehaviour
 			_dashDelayCounter -= Time.deltaTime;
 			if (_dashDelayCounter <= 0) { _isAirDashAvailables = true; }
 		}
-	
+
 		foreach (IMainAction situationAction in _currentAction.SituationalActions)
 		{
 			situationAction.AttemptAction();

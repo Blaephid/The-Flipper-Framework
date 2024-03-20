@@ -174,7 +174,9 @@ public class S_PlayerInput : MonoBehaviour
 	/// 
 	#region public 
 	//Called by other scripts to set the input to locked for a time limit.
-	public void LockInputForAWhile ( float duration, bool lockCam ) {
+	public void LockInputForAWhile ( float duration, bool lockCam, Vector3 newInput ) {
+		_move = newInput;
+
 		if (_isInputLocked)
 			_lockedTime = Mathf.Max(duration, _lockedTime);
 		else

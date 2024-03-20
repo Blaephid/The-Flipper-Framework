@@ -821,7 +821,7 @@ MonoBehaviour:
     topSpeed: 90
     maxSpeed: 160
   SpeedStats:
-    topSpeed: 100
+    topSpeed: 90
     maxSpeed: 160
   BasicSlopeStats:
     slopeEffectLimit: 0.85
@@ -1908,43 +1908,49 @@ MonoBehaviour:
     skidIntesity: 3
   BounceStats:
     dropSpeed: -100
-    BounceMaxSpeed: 140
+    bounceHaltFactor: 0.7
+    horizontalSpeedDecay: {x: 0.1, y: 0.001}
+    bounceAirControl: {x: 1.4, y: 1.1}
     listOfBounceSpeeds:
     - 40
     - 42
     - 44
-    bounceHaltFactor: 0.7
-    bounceCoolDown: 0.4
     bounceUpMaxSpeed: 75
-    bounceConsecutiveFactor: 1.05
-    bounceAirControl: {x: 1.4, y: 1.1}
+    minimumPushForce: 30
+    lerpTowardsInput: 0.5
+    bounceCoolDown: 0.4
+    coolDownModiferBySpeed: 0.005
   DefaultBounceStats:
     dropSpeed: 100
-    BounceMaxSpeed: 140
+    bounceHaltFactor: 0.7
+    horizontalSpeedDecay: {x: 0.1, y: 0.001}
+    bounceAirControl: {x: 1.4, y: 1.1}
     listOfBounceSpeeds:
     - 40
     - 42
     - 44
-    bounceHaltFactor: 0.7
-    bounceCoolDown: 8
     bounceUpMaxSpeed: 75
-    bounceConsecutiveFactor: 1.05
-    bounceAirControl: {x: 1.4, y: 1.1}
+    minimumPushForce: 30
+    lerpTowardsInput: 0.5
+    bounceCoolDown: 8
+    coolDownModiferBySpeed: 0.005
   RingRoadStats:
-    dashSpeed: 100
-    endingSpeedFactor: 1.23
-    minimumEndingSpeed: 60
-    SearchDistance: 8
-    iconScale: 0
+    willCarrySpeed: 1
+    dashSpeed: 160
+    minimumEndingSpeed: 80
+    speedGained: 1.374
+    SearchDistance: 12.29
+    facingPriority: 0.712
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 262144
   DefaultRingRoadStats:
+    willCarrySpeed: 1
     dashSpeed: 100
-    endingSpeedFactor: 1.23
     minimumEndingSpeed: 60
+    speedGained: 1.2
     SearchDistance: 8
-    iconScale: 0
+    facingPriority: 0.5
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 0

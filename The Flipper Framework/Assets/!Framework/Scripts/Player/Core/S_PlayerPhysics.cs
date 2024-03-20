@@ -488,7 +488,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
 
-		_inputVelocityDifference = Vector3.Angle(lateralVelocity, inputDirection);
+		_inputVelocityDifference = lateralVelocity.sqrMagnitude < 1 ? 0 : Vector3.Angle(lateralVelocity, inputDirection);
 		float deviationFromInput = _inputVelocityDifference  / 180.0f;
 		Quaternion lateralToInput = lateralVelocity.sqrMagnitude < 1
 			? Quaternion.identity

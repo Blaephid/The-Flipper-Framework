@@ -5,6 +5,7 @@ public class S_DeactivateOnStart : MonoBehaviour
 {
 
 	public enumDeactivate _whatAction = enumDeactivate.Deactivate;
+	public float _delayInSeconds;
 
 	public enum enumDeactivate
 	{
@@ -13,7 +14,16 @@ public class S_DeactivateOnStart : MonoBehaviour
 		Deactivate
 	}
 
-	void Start () {
+	void OnEnable () {
+		StartCoroutine(Delay());
+	}
+
+	IEnumerator Delay() {
+		yield return new WaitForSeconds(_delayInSeconds);
+		Deactivate();
+	}
+
+	void Deactivate () {
 
 		switch (_whatAction)
 		{
@@ -27,7 +37,6 @@ public class S_DeactivateOnStart : MonoBehaviour
 				Destroy(gameObject);
 				break;
 		}
-
 	}
 
 }
