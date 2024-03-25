@@ -74,7 +74,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 	public void ResetToCheckPoint () {
 
-		_Input.LockInputForAWhile(20, true);
+		_Input.LockInputForAWhile(20, true, Vector3.zero);
 		StartCoroutine(_Actions.lockAirMoves(20));
 		_Actions.ActionDefault.StartAction();
 
@@ -110,11 +110,8 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 	public void SetCheckPoint ( Transform position ) {
 		ResumePosition = position.position;
-		//ResumeRotation = position.rotation;
 		ResumeFace = position.forward;
 		ResumeTransform = position;
-
-		if (_Actions.eventMan != null) _Actions.eventMan.AddDeathsPerCP();
 	}
 
 	public void OnTriggerEnter ( Collider col ) {
@@ -125,10 +122,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 				//Set Object
 				if (!col.GetComponent<S_Data_Checkpoint>().IsOn)
 				{
-					if (_Actions.eventMan != null)
-					{
-						_Actions.eventMan.LogEvents(false, col.GetComponent<S_Data_Checkpoint>().checkPointName);
-					}
 
 					col.GetComponent<S_Data_Checkpoint>().IsOn = true;
 					col.GetComponent<AudioSource>().Play();
@@ -146,11 +139,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		}
 		if (col.tag == "GoalRing")
 		{
-			if (_Actions.eventMan != null)
-			{
-				StartCoroutine(_Actions.eventMan.logEndEvents());
-
-			}
 
 			readyForNextStage = true;
 

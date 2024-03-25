@@ -149,12 +149,12 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 						StartAction();
 					}
 					return true;
-				case S_Enums.PrimaryPlayerStates.Rail:
-					AssignStartValues(transform.up, true);
-					StartAction();
-					return true;
 				case S_Enums.PrimaryPlayerStates.WallRunning:
 					AssignStartValues(_Actions.Action12._jumpAngle, true);
+					StartAction();
+					return true;
+				default:
+					AssignStartValues(transform.up, _PlayerPhys._isGrounded);
 					StartAction();
 					return true;
 			}
@@ -190,8 +190,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//If performing a grounded jump. JumpCount may be changed externally to allow for this.
 		if (_isJumpingFromGround)
 		{
-			if (_Actions.eventMan != null) _Actions.eventMan.JumpsPerformed += 1;
-
 			//Sets jump stats for this specific jump.
 			_thisJumpSpeed = _startJumpSpeed_ * _jumpSpeedModifier;
 			_thisJumpDuration = _maxJumpTime_ * _jumpDurationModifier;
@@ -213,8 +211,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		}
 		else
 		{
-			if (_Actions.eventMan != null) _Actions.eventMan.DoubleJumpsPerformed += 1;
-
 			//Sets jump stats for this specific jump.
 			_thisJumpSpeed = _doubleJumpSpeed_ * _jumpSpeedModifier;
 			_thisJumpDuration = _doubleJumpDuration_ * _jumpDurationModifier;
@@ -238,6 +234,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		_Actions.ActionDefault._animationAction = 0; //Ensures player will land properly in the correct animation when entering default action.
+		_PlayerPhys._canBeGrounded = true;
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.

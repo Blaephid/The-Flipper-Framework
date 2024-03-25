@@ -207,8 +207,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		//Since the lock input here may be interupted, keep setting to lock for one frame until this is up.
 		if (_counter <= _keepLockingControlUntil)
 		{
-			_Input.LockInputForAWhile(1, false);
-			StartCoroutine(_PlayerPhys.LockFunctionForTime(_PlayerPhys._listOfCanControl, Time.fixedDeltaTime));
+			_Input.LockInputForAWhile(1, false, Vector3.zero);
+			StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, Time.fixedDeltaTime));
 		}
 	}
 

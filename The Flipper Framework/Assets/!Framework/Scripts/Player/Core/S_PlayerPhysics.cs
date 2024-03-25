@@ -20,7 +20,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Members
-	private S_ActionManager       _Action;
+	private S_ActionManager       _Actions;
 	private S_CharacterTools      _Tools;
 	private S_Control_SoundsPlayer _SoundController;
 	static public S_PlayerPhysics s_MasterPlayer;
@@ -199,18 +199,47 @@ public class S_PlayerPhysics : MonoBehaviour
 	//In air
 	[HideInInspector] public bool _wasInAir;
 	[HideInInspector]
-	public bool                   _isGravityOn = true;
-	[HideInInspector]
 	public Vector3                _currentFallGravity;
 
 	[HideInInspector]
 	public bool                   _isRolling;         //Set by the rolling subaction, certain controls are different when rolling.
+
+	//Disabling options
+	[HideInInspector]
+	public bool                   _isGravityOn = true;
 
 	//Disabling aspects of control. These are used as lists because if multiple things disable control, they all have to end it before that control is restored. If they just used single bools, multiple aspects taking control would overlap.
 	[HideInInspector]
 	public List<bool>             _listOfCanTurns = new List<bool>();
 	[HideInInspector]
 	public List<bool>             _listOfCanControl = new List<bool>();
+	[HideInInspector]
+	public List<bool>             _listOfCanDecelerates = new List<bool>();
+
+	public enum EnumControlLimitations
+	{
+		canTurn,
+		canControl,
+		canDecelerate,
+	}
+
+	private static StructControlOptions SetControlOptionsAsLists () {
+		return new StructControlOptions()
+		{
+			_listOfCanTurns = new List<bool>(),
+			_listOfCanControl = new List<bool>(),
+			_listOfCanDecelerates = new List<bool>(),
+		};
+	}
+
+	public struct StructControlOptions {
+		[HideInInspector]
+		public List<bool>             _listOfCanTurns;
+		[HideInInspector]
+		public List<bool>             _listOfCanControl;
+		[HideInInspector]
+		public List<bool>             _listOfCanDecelerates;
+	}
 
 	#endregion
 	#endregion
@@ -314,7 +343,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Sets the size of the ray to check for ground. If running on the ground then it is typically to avoid flying off the ground.
 		float rayToGroundDistancecor = _rayToGroundDistance_;
-		if (_Action.whatAction == S_Enums.PrimaryPlayerStates.Default && _isGrounded)
+		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && _isGrounded)
 		{
 			rayToGroundDistancecor = Mathf.Max(_rayToGroundDistance_ + (_horizontalSpeedMagnitude * _raytoGroundSpeedRatio_), _rayToGroundDistance_);
 			rayToGroundDistancecor = Mathf.Min(rayToGroundDistancecor, _raytoGroundSpeedMax_);
@@ -408,10 +437,10 @@ public class S_PlayerPhysics : MonoBehaviour
 			//Gets the air control modifiers.
 			float airAccelMod = _airControlAmmount_.y;
 			float airTurnMod = _airControlAmmount_.x;
-			switch (_Action.whatAction)
+			switch (_Actions.whatAction)
 			{
 				case S_Enums.PrimaryPlayerStates.Jump:
-					if (_Action._actionTimeCounter < _jumpExtraControlThreshold_)
+					if (_Actions._actionTimeCounter < _jumpExtraControlThreshold_)
 					{
 						airAccelMod = _jumpAirControl_.y;
 						airTurnMod = _jumpAirControl_.x;
@@ -544,6 +573,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Handles decreasing the magnitude of the player's controlled velocity, usually only if there is no input, but other circumstances may decrease speed as well.
 	//Deceleration is calculated, then applied at the end of the method.
 	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier = 1 ) {
+		if(_listOfCanDecelerates.Count != 0) { 
+			return lateralVelocity; }
+
 		float decelAmount = 0;
 		//If there is no input, ready conventional deceleration.
 		if (Mathf.Approximately(input.sqrMagnitude, 0))
@@ -918,12 +950,43 @@ public class S_PlayerPhysics : MonoBehaviour
 
 
 	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.
-	public IEnumerator LockFunctionForTime ( List<bool> function, float seconds )
+	public IEnumerator LockFunctionForTime ( EnumControlLimitations whatToLimit, float seconds, int frames = 0 )
 	{
-		function.Add(false);
-		yield return new WaitForSeconds(seconds);
-		function.RemoveAt(0);
+		//Add lock to a list based on enum input
+		switch (whatToLimit)
+		{
+			case EnumControlLimitations.canControl:
+				_listOfCanControl.Add(false);
+				break;
+			case EnumControlLimitations.canTurn:
+				_listOfCanTurns.Add(false);
+				break;
+			case EnumControlLimitations.canDecelerate:
+				_listOfCanDecelerates.Add(false);
+				break;
+		}
+
+		//Add a delay, either based on real time or by number of frames(55 = 1 second ideally)
+		if(seconds > 0)
+			yield return new WaitForSeconds(seconds);
+		else
+			for (int i = 0; i < frames; i++) { yield return new WaitForFixedUpdate(); }
+
+		//Remove lock from the list
+		switch (whatToLimit)
+		{
+			case EnumControlLimitations.canControl:
+				_listOfCanControl.RemoveAt(0);
+				break;
+			case EnumControlLimitations.canTurn:
+				_listOfCanTurns.RemoveAt(0);
+				break;
+			case EnumControlLimitations.canDecelerate:
+				_listOfCanDecelerates.RemoveAt(0);
+				break;
+		}
 	}
+
 
 	#endregion
 
@@ -1009,7 +1072,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private void AssignTools () {
 		s_MasterPlayer = this;
 		_RB = GetComponent<Rigidbody>();
-		_Action = GetComponent<S_ActionManager>();
+		_Actions = GetComponent<S_ActionManager>();
 		_SoundController = _Tools.SoundControl;
 		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
 		_FeetTransform = _Tools.FeetPoint;

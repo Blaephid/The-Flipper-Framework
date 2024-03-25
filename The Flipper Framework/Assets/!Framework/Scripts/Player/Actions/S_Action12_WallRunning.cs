@@ -397,7 +397,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	void ClimbingInteraction () {
 		//Prevents normal movement in input and physics
-		_Input.LockInputForAWhile(0f, false);
+		_Input.LockInputForAWhile(0f, false, Vector3.zero);
 
 		//Updates the status of the wall being climbed.
 		if (_counter < 0.3f)
@@ -446,7 +446,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	void RunningInteraction () {
 		//Prevents normal movement in input and physics
-		_Input.LockInputForAWhile(0f, false);
+		_Input.LockInputForAWhile(0f, false, Vector3.zero);
 
 		_CharacterAnimator.SetFloat("GroundSpeed", _runningSpeed);
 		_CharacterAnimator.SetBool("WallRight", _isWallOnRight);
@@ -798,7 +798,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_PlayerPhys.SetCoreVelocity(_MainSkin.up * jumpSpeed);
 
 		ExitWall(false);
-		_Input.LockInputForAWhile(25f, false);
+		_Input.LockInputForAWhile(25f, false, _MainSkin.forward);
 
 		while (true)
 		{
@@ -809,18 +809,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			{
 				//Vector3 newVec = Player.p_rigidbody.velocity + CharacterAnimator.transform.forward * (ClimbingSpeed * 0.1f);
 				_PlayerPhys.AddCoreVelocity(_MainSkin.forward * 8);
-				if (_Input.RollPressed)
-				{
-					_Actions.Action08.TryDropCharge();
-					break;
-				}
-
-				else
-				{
 					if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.Jump)
 						_Actions.ActionDefault.StartAction();
-					break;
-				}
+
 			}
 
 		}

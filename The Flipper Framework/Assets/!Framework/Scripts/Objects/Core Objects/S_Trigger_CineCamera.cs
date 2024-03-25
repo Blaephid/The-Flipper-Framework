@@ -138,7 +138,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
         hedgeCam = Player.GetComponent<S_Handler_Camera>()._VirtCam;
         hedgeCam.gameObject.SetActive(false);
         if(disableFor > 0)
-            Player.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true);
+            Player.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true, Player.GetComponent<S_PlayerPhysics>()._moveInput);
 
         if(timeDelay != 0)
         {
@@ -169,6 +169,6 @@ public class S_Trigger_CineCamera : MonoBehaviour
         hedgeCam.gameObject.SetActive(true);
         attachedCam.SetActive(false);
         if(disableFor > 0)
-            Player.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true);
+            Player.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true, Player.GetComponent<S_PlayerPhysics>()._moveInput);
     }
 }

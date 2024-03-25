@@ -67,6 +67,13 @@ public class S_Enums
 		Camera
 	}
 
+	public enum JumpDashType {
+		ControlledDash,
+		Push,
+		AngledPush,
+		ArcedDash,
+	}
+
 	public enum HomingRebounding {
 		BounceThrough,
 		bounceOff,

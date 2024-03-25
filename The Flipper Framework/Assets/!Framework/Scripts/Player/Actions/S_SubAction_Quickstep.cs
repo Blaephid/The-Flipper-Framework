@@ -119,9 +119,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	}
 
 	//Called when the action is enabled and readies all variables for it to be performed.
-	public void StartAction() {
-
-		
+	public void StartAction() {	
 		if (_Input.RightStepPressed)
 		{
 			_isSteppingRight = true;
@@ -132,15 +130,14 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		}
 		enabled = true;
 		
-
 		//Used for checking if the main action changes during the step.
 		_whatActionWasOn = _Actions.whatAction;
 		_Actions.whatSubAction = S_Enums.SubPlayerStates.Quickstepping;
 
-		if (_Actions.eventMan != null) _Actions.eventMan.quickstepsPerformed += 1;
-
+		//Prevents buttons from being held to spam.
 		_Input.RightStepPressed = false;
 		_Input.LeftStepPressed = false;
+
 		_canStep = true;
 
 		SetSpeedAndDistance();
@@ -212,9 +209,9 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 
 	//Takes in the input and makes it relevant to the camera, flipping the input so right is always to the right.
 	public void PressRight () {
-		Vector3 Direction = _MainSkin.position - _CamHandler._HedgeCam.transform.position;
-		bool Facing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < 0f;
-		if (Facing)
+		Vector3 direction = _MainSkin.position - _CamHandler._HedgeCam.transform.position;
+		bool _isFacing = Vector3.Dot(_MainSkin.forward, direction.normalized) < 0f;
+		if (_isFacing)
 		{
 			_Input.RightStepPressed = false;
 			_Input.LeftStepPressed = true;

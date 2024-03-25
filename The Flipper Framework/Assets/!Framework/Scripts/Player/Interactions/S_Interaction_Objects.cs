@@ -263,7 +263,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 					if (pad.LockControl)
 					{
-						_Input.LockInputForAWhile(pad.LockControlTime, true);
+						_Input.LockInputForAWhile(pad.LockControlTime, true, col.transform.forward);
 						if (pad.setInputForwards)
 						{
 							_Input.moveX = 0;
@@ -307,7 +307,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 					if (spring.LockControl)
 					{
-						_Input.LockInputForAWhile(spring.LockTime, false);
+						_Input.LockInputForAWhile(spring.LockTime, false, Vector3.zero);
 					}
 
 					if (spring.lockAirMoves)
@@ -425,18 +425,6 @@ public class S_Interaction_Objects : MonoBehaviour
 								break;
 
 						}
-					}
-
-
-					if (_Actions.eventMan != null)
-					{
-						foreach (GameObject HR in _Actions.eventMan.hintRings)
-						{
-							if (col.gameObject == HR)
-								return;
-						}
-						_Actions.eventMan.hintRings.Add(col.gameObject);
-						_Actions.eventMan.hintRingsHit += 1;
 					}
 
 				}

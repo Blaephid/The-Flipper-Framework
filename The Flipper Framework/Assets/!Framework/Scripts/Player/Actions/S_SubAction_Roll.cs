@@ -124,7 +124,6 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	public void Curl () {
 		if (!_PlayerPhys._isRolling)
 		{
-			if (_Actions.eventMan != null) _Actions.eventMan.RollsPerformed += 1;
 			_Sounds.SpinningSound();
 		}
 		SetIsRolling(true);

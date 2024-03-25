@@ -19,7 +19,6 @@ public class S_ActionManager : MonoBehaviour
 	//Unity
 	#region Unity Specific Properties
 	S_PlayerPhysics _PlayerPhys;
-	public S_LevelEventHandler eventMan;
 
 	private S_CharacterTools      _Tools;
 
@@ -101,10 +100,6 @@ public class S_ActionManager : MonoBehaviour
 		ActionDefault = GetComponent<S_Action00_Default>();
 		ActionHurt = GetComponent<S_Action04_Hurt>();
 
-		if (_isTrackingEvents)
-		{
-			eventMan = FindObjectOfType<S_LevelEventHandler>();
-		}
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_CharacterAnimator = _Tools.CharacterAnimator;
 
@@ -232,7 +227,6 @@ public class S_ActionManager : MonoBehaviour
 			case S_Enums.PrimaryPlayerStates.Homing:
 				if (!lockHoming)
 				{
-					if (eventMan != null) eventMan.homingAttacksPerformed += 1;
 					IsChangePossible(ActionToChange);
 					Action02.enabled = true;
 				}
@@ -240,7 +234,6 @@ public class S_ActionManager : MonoBehaviour
 			case S_Enums.PrimaryPlayerStates.JumpDash:
 				if (!lockJumpDash)
 				{
-					if (eventMan != null) eventMan.jumpDashesPerformed += 1;
 					IsChangePossible(ActionToChange);
 					Action11.enabled = true;
 				}
@@ -254,17 +247,14 @@ public class S_ActionManager : MonoBehaviour
 				ActionHurt.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.Rail:
-				if (eventMan != null) eventMan.RailsGrinded += 1;
 				IsChangePossible(ActionToChange);
 				Action05.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.Bounce:
 				IsChangePossible(ActionToChange);
-				if (eventMan != null) eventMan.BouncesPerformed += 1;
 				Action06.enabled = true;
 				break;
 			case S_Enums.PrimaryPlayerStates.RingRoad:
-				if (eventMan != null) eventMan.ringRoadsPerformed += 1;
 				IsChangePossible(ActionToChange);
 				Action07.enabled = true;
 				break;

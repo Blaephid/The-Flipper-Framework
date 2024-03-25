@@ -149,12 +149,14 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		Destroy(_CreatedSpline.gameObject); //Since it's purpose is filled, remove it to save space.
+		Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
 
 		//Here to ensure this is always called no matter why the action ends.
-		_Input.LockInputForAWhile(10, false); //Lock for a moment.
+		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
+
 		_PlayerPhys._listOfCanControl.RemoveAt(0); //Remove lock on control before this, but add a new delay before control returns.
-		_PlayerPhys.LockFunctionForTime(_PlayerPhys._listOfCanControl, 0.2f);
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f));
 
 		//End effects
 		for (int i = _HomingTrailContainer.transform.childCount - 1 ; i >= 0 ; i--)

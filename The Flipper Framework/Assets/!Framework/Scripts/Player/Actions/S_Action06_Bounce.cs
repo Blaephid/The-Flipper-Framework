@@ -110,10 +110,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	}
 
 	public void StartAction () {
+		_hasBounced = false; //Tracks when to end the action.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
-
-		_hasBounced = false; //Tracks when to end the action.
 
 		_memorisedSpeed = _PlayerPhys._horizontalSpeedMagnitude; //Stores the running speed the player was before bouncing.
 		_nextSpeed = _memorisedSpeed; //This will decrease as the action goes on, then resetting the player's movement to it after completing the bounce.
@@ -175,12 +174,11 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		//If no longer hitting the ground but did earlier, then has bounced and won't be grounded immediately, so end action.
 		if (!isGroundHit && _hasBounced && _PlayerPhys._coreVelocity.y > 0f)
 		{
-			_hasBounced = false;
 			_Actions.ActionDefault.StartAction();
 		}
 
 		//If there is ground and hasn't bounced yet
-		else if (isGroundHit && !_hasBounced)
+		if (isGroundHit && !_hasBounced)
 		{
 			Bounce(UseHit.normal);			
 		}
@@ -201,8 +199,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 			float vertSpeed = _PlayerPhys._RB.velocity.y;
 			//If fall speed has been decreased this much, then something must be in the way so end the action.
-			 if (vertSpeed > -5)
+			 if (vertSpeed > 1)
 			{
+				Debug.Log("END action");
 				_Actions.ActionDefault.StartAction();
 			}
 		}

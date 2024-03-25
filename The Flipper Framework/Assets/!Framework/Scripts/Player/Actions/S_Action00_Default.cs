@@ -214,21 +214,17 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		}
 	}
 
-	//Coyote time refers to the short time after losing ground where a player can still jump as if they were still on it.
-
-	//When grounded, tracks the current floor so it can be used for coyote time if the ground is lost next frame.
-	public void ReadyCoyote () {
-		_isCoyoteInEffect = true;
-
-		_coyoteRememberDirection = _PlayerPhys._groundNormal;
-		_coyoteRememberSpeed = _PlayerPhys._RB.velocity.y;
-	}
-
 	//Called when the ground is lost but before coyote is in effect, this confirms it's being tracked and end it after a while.
-	IEnumerator CoyoteTime () {
-		_isCoyoteInEffect = true;
-		float waitFor = _coyoteTimeBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / 100);
+	public IEnumerator CoyoteTime () {
 
+		_isCoyoteInEffect = true; //Checked externally, mainly in the jump action.
+
+		//Remember upwards direction and angle downwards of floor before it was lost;
+		_coyoteRememberDirection = transform.up;
+		_coyoteRememberSpeed = _PlayerPhys._RB.velocity.y;
+
+		//Length of coyote time dependant on speed.
+		float waitFor = _coyoteTimeBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / 100);
 		yield return new WaitForSeconds(waitFor);
 
 		_isCoyoteInEffect = false;
@@ -242,14 +238,17 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
 	public void EventOnGrounded() {
-		//May be in a ball even in this state (like after a homing attack), so change that on land
-		if(_animationAction != 0 && enabled)
+		if (enabled)
 		{
-			_animationAction = 0;
-			_CharacterAnimator.SetTrigger("ChangedState");
+			//May be in a ball even in this state (like after a homing attack), so change that on land
+			if (_animationAction != 0)
+			{
+				_animationAction = 0;
+				_CharacterAnimator.SetTrigger("ChangedState");
+			}
+			CancelCoyote();
 		}
 		_Actions.ActionDefault.SwitchSkin(true);
-		ReadyCoyote();
 	}
 
 

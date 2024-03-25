@@ -115,7 +115,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	}
 
 	private void FixedUpdate () {
-		_Input.LockInputForAWhile(1f, true);
+		_Input.LockInputForAWhile(1f, true, Vector3.zero);
 		PathMove();
 	}
 
@@ -369,7 +369,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_MainSkin.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, _PlayerPhys._HitGround.normal);
 
 		_PlayerPhys.GetComponent<S_Handler_Camera>()._HedgeCam.SetBehind(0);
-		_Input.LockInputForAWhile(30f, true);
+		_Input.LockInputForAWhile(30f, true, _MainSkin.forward);
 
 		//Reenables Colliders
 		//Path_Int.playerCol.enabled = true;

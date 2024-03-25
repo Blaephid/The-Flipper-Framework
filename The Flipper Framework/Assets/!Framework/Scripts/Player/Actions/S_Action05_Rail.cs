@@ -175,7 +175,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		else
 		{
 			//End action
-			_Actions.ActionDefault.ReadyCoyote();
+			StartCoroutine(_Actions.ActionDefault.CoyoteTime());
 			_Actions.ActionDefault.StartAction();
 		}
 	}
@@ -245,7 +245,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				break;
 			//If it was a drop charge, add speed from the charge to the grind speed.
 			case S_Enums.PrimaryPlayerStates.DropCharge:
-				float charge = _Actions.Action08.externalDash();
+				float charge = _Actions.Action08.GetCharge();
 				_playerSpeed = Mathf.Clamp(charge, _playerSpeed + (charge / 6), 160);
 				break;
 
@@ -367,12 +367,13 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	//Takes the data from the previous method but handles physics for smoothing and applying if lost rail.
 	public void MoveOnRail () {
 
+		_PlayerPhys._isGrounded = true;
+
 		HandleRailSpeed(); //Make changes to player speed based on angle
 
 		//If this point is on the spline.
 		if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
 		{
-
 			//Set Player Speed correctly so that it becomes smooth grinding
 			_PlayerPhys.SetCoreVelocity(_sampleForwards * _playerSpeed);
 			if (_ZipBody) { _ZipBody.velocity = _sampleForwards * _playerSpeed; }
@@ -441,7 +442,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 		//If hasn't returned yet, then there is nothing to follow, so actually leave the rail.
 
-		_Input.LockInputForAWhile(5f, false); //Prevent instant turning off the end of the rail
+		_Input.LockInputForAWhile(5f, false, _sampleForwards); //Prevent instant turning off the end of the rail
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 10));
 		_distanceToStep = 0; //Stop a step that might be happening
 
 		switch (_whatKindOfRail)

@@ -213,7 +213,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				//Deactives player control and freezes movemnt to keep them in line with the upreel.
 
 				_PlayerPhys._RB.velocity = Vector3.zero;
-				_Input.LockInputForAWhile(0f, false);
+				_Input.LockInputForAWhile(0f, false, Vector3.zero);
 
 				//Moves the player to the position of the Upreel
 				Vector3 HandPos = transform.position - _HandGripTransform.position;
@@ -225,7 +225,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 			else
 			{
 				//Restores control but prevents input for a moment
-				_Input.LockInputForAWhile(20f, false);
+				_Input.LockInputForAWhile(20f, false, _MainSkin.forward);
 				_PlayerPhys._listOfCanControl.RemoveAt(0);
 				_PlayerPhys._isGravityOn = true;
 

@@ -226,8 +226,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	//Launches player forwards at speed.
 	private void Release () {
-		if (_Actions.eventMan != null) _Actions.eventMan.SpinChargesPeformed += 1;
-
 		//Effects
 		_Effects.EndSpinDash();
 		_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount_ * _currentCharge) / 10, 40);

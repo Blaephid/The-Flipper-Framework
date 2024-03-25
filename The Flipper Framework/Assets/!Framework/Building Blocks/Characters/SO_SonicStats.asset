@@ -764,7 +764,7 @@ MonoBehaviour:
   DecelerationStats:
     moveDeceleration: 4
     airDecel: 1.5
-    rollingFlatDecell: 1.004
+    rollingFlatDecell: 0.5
     DecelBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -1940,7 +1940,6 @@ MonoBehaviour:
     minimumEndingSpeed: 80
     speedGained: 1.374
     SearchDistance: 12.29
-    facingPriority: 0.712
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 262144
@@ -1950,18 +1949,19 @@ MonoBehaviour:
     minimumEndingSpeed: 60
     speedGained: 1.2
     SearchDistance: 8
-    facingPriority: 0.5
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 0
   DropChargeStats:
-    chargingSpeed: 1.2
+    chargingSpeed: 120
     minimunCharge: 40
     maximunCharge: 150
+    minimumHeightToDropCharge: 2
   DefaultDropChargeStats:
     chargingSpeed: 1.2
     minimunCharge: 40
     maximunCharge: 150
+    minimumHeightToDropCharge: 5
   EnemyInteraction:
     bouncingPower: 45
     homingBouncingPower: 40
@@ -2225,7 +2225,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   KnockbackStats:
-    whatResponse: 3
+    whatResponse: 0
     knockbackUpwardsForce: 20
     recoilFrom:
       serializedVersion: 2

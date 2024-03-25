@@ -563,18 +563,27 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucAirDash
 		{
 			dashSpeed = 80f,
-			duration = 0.3f,
-			shouldUseCurrentSpeedAsMinimum = true
+			maxDuration = 0.3f,
+			minDuration = 0.15f,
+			turnSpeed = 8,
+			dashIncrease = 15,
+			verticalAngle = 0,
+			horizontalAngle = 90,
 		};
 	}
 
 	[System.Serializable]
 	public struct StrucAirDash
 	{
+		public S_Enums.JumpDashType	behaviour;
 		public float        dashSpeed;
-		public float        duration;
-		public bool         shouldUseCurrentSpeedAsMinimum;
-
+		public float        dashIncrease;
+		public float        turnSpeed;
+		public float        maxDuration;
+		public float        minDuration;
+		[Range(-180, 180)]
+		public int          verticalAngle;
+		public int          horizontalAngle;
 	}
 
 	#region homing
@@ -851,7 +860,8 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			chargingSpeed = 1.2f,
 			minimunCharge = 40f,
-			maximunCharge = 150f
+			maximunCharge = 150f,
+			minimumHeightToDropCharge = 5,
 		};
 	}
 
@@ -863,6 +873,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float      chargingSpeed;
 		public float      minimunCharge;
 		public float      maximunCharge;
+		public float      minimumHeightToDropCharge;
 	}
 	#endregion
 

@@ -5274,6 +5274,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 6634573134749074193}
+        m_TargetAssemblyTypeName: S_Action08_DropCharge, Assembly-CSharp
+        m_MethodName: EventOnGrounded
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _OnLoseGround:
     m_PersistentCalls:
       m_Calls:
@@ -5338,11 +5350,12 @@ MonoBehaviour:
   _groundNormal: {x: 0, y: 0, z: 0}
   _timeOnGround: 0
   _wasInAir: 0
-  _isGravityOn: 1
   _currentFallGravity: {x: 0, y: 0, z: 0}
   _isRolling: 0
+  _isGravityOn: 1
   _listOfCanTurns: 
   _listOfCanControl: 
+  _listOfCanDecelerates: 
 --- !u!114 &8583335634310275265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5664,7 +5677,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 795317e0a409ba3499067f99a8f5ed0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventMan: {fileID: 0}
   ActionDefault: {fileID: 0}
   Action01: {fileID: 114873388628942606}
   Action02: {fileID: 114022693185401694}
@@ -5711,7 +5723,7 @@ MonoBehaviour:
     SituationalStates: 0100000000000000
     PerformableSubStates: 
   - State: 6
-    ConnectedStates: 0400000005000000
+    ConnectedStates: 040000000500000000000000
     SituationalStates: 0100000000000000
     PerformableSubStates: 
   - State: 7
@@ -5954,7 +5966,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316796d67803e6b4f8719aa0db4b6204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _skinRotationSpeed: 20
   _trailOffSet: {x: 0, y: -3, z: 0}
 --- !u!114 &6634573134749074193
 MonoBehaviour:
@@ -5972,10 +5983,10 @@ MonoBehaviour:
   _spinDashChargingSpeed_: 0.3
   _minimunCharge_: 10
   _maximunCharge_: 100
-  charge: 0
-  BallAnimationSpeedMultiplier: 0
-  SpinDashChargedEffectAmm: 0
-  ReleaseShakeAmmount: 0
+  _charge: 0
+  _ballAnimationSpeedMultiplier: 0
+  _spinDashChargedEffectAmm: 0
+  _releaseShakeAmmount: 0
 --- !u!114 &4314005691558026853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16322,8 +16333,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
-  m_LocalRotation: {x: 0.018125912, y: 0.9617801, z: -0.06573666, w: 0.26519662}
-  m_LocalPosition: {x: 4.6496744, y: 4.873985, z: 63.887592}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.621, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16713,7 +16724,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6420733220765619769}
   - component: {fileID: 3378010807672333325}
-  - component: {fileID: 2238742859101206529}
   - component: {fileID: 8843731562761789782}
   - component: {fileID: 2033352984286159667}
   - component: {fileID: 4087892316188066615}
@@ -16762,21 +16772,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2238742859101206529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3563295224368580408}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc4a1287a40ed6a4b83fadc6d3bc57b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TargetPosition: {fileID: 4242608932995106}
-  _RB: {fileID: 54570756177764238}
-  Offset: {x: 0, y: 0, z: 0}
 --- !u!82 &8843731562761789782
 AudioSource:
   m_ObjectHideFlags: 0
@@ -16939,7 +16934,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74f28489717e83546aadfe6e2c5110e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 114945863342939534}
+  _PlayerPhys: {fileID: 114945863342939534}
+  _Tools: {fileID: 2061662532465713779}
+  _CamHandler: {fileID: 114332006758487302}
   RunningDust: {fileID: 4695595894096340087}
   SpeedLines: {fileID: 864949301854616318}
   SpinDashDust: {fileID: 580622908006863174}
@@ -16948,9 +16945,9 @@ MonoBehaviour:
   SpeedLinesThreshold: 10000
   RailsSparks1: {fileID: 0}
   RailsSparks2: {fileID: 0}
-  Head: {fileID: 0}
-  LeftMouth: {fileID: 0}
-  RightMouth: {fileID: 0}
+  _Head: {fileID: 3939103226326160823}
+  LeftMouth: {fileID: 7020078753121730294}
+  RightMouth: {fileID: 6819438881665587160}
   MouthsToHide: []
   Eyelids: {fileID: 0}
 --- !u!1 &4036578040479717124
@@ -27569,7 +27566,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8634919063075442617}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0, y: 1.127, z: 0.2}
+  m_LocalPosition: {x: 0, y: 0.663, z: 0.072}
   m_LocalScale: {x: 1.5303, y: 1.5303, z: 1.5303}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -32492,7 +32489,7 @@ SkinnedMeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8820683988619853210}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -32559,7 +32556,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1764732933454054073
 Transform:
   m_ObjectHideFlags: 0
@@ -33499,6 +33496,21 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -827001806542614657, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
       propertyPath: m_Layer
@@ -33679,6 +33691,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 2672850238911251433, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2674563381101781825, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
       propertyPath: m_Layer
@@ -33823,6 +33840,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5820605286163640495, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
@@ -34047,9 +34079,27 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1218619214033973157}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &3939103226326160823 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6466071527313769966, guid: e67537df6fb33e345a2680d3479af749,
+    type: 3}
+  m_PrefabInstance: {fileID: 1218619214033973157}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &4563331150787594344 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -5783375950500681779, guid: e67537df6fb33e345a2680d3479af749,
+    type: 3}
+  m_PrefabInstance: {fileID: 1218619214033973157}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6819438881665587160 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
+    type: 3}
+  m_PrefabInstance: {fileID: 1218619214033973157}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7020078753121730294 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
     type: 3}
   m_PrefabInstance: {fileID: 1218619214033973157}
   m_PrefabAsset: {fileID: 0}
