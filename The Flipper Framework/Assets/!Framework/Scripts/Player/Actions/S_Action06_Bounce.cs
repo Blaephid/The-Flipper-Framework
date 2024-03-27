@@ -22,10 +22,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	private S_Control_SoundsPlayer _Sounds;
 	private S_VolumeTrailRenderer _HomingTrailScript;
 
-	private Animator	_CharacterAnimator;
 	private Animator    _BallAnimator;
 	private Transform   _MainSkin;
-	private GameObject	_JumpBall;
 	private CapsuleCollider _CharacterCapsule;
 	#endregion
 
@@ -101,7 +99,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 
 		//Can only bounce if it isn't locked in the actionManager, and not moving too fast up.
-		if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f && !_Actions.lockBounce && _isBounceAvailable)
+		if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f && !_Actions._isBounceLocked && _isBounceAvailable)
 		{
 			StartAction();
 			return true;
@@ -113,6 +111,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_hasBounced = false; //Tracks when to end the action.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
+		this.enabled = true;
 
 		_memorisedSpeed = _PlayerPhys._horizontalSpeedMagnitude; //Stores the running speed the player was before bouncing.
 		_nextSpeed = _memorisedSpeed; //This will decrease as the action goes on, then resetting the player's movement to it after completing the bounce.
@@ -126,7 +125,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_PlayerPhys.AddCoreVelocity(new Vector3(0, _dropSpeed_, 0), false); // Apply downward force, this is instant rather than  ramp up like gravity.
 
 		//Effects
-		_Actions.ActionDefault.SwitchSkin(false); //Ball animation rather than character ones.
+		_Actions._ActionDefault.SwitchSkin(false); //Ball animation rather than character ones.
 		_BallAnimator.SetInteger("Action", 1); //Ensures it is set to jump first, because it will then transition from that to bounce.
 
 		_Sounds.BounceStartSound();
@@ -174,7 +173,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		//If no longer hitting the ground but did earlier, then has bounced and won't be grounded immediately, so end action.
 		if (!isGroundHit && _hasBounced && _PlayerPhys._coreVelocity.y > 0f)
 		{
-			_Actions.ActionDefault.StartAction();
+			_Actions._ActionDefault.StartAction();
 		}
 
 		//If there is ground and hasn't bounced yet
@@ -202,7 +201,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			 if (vertSpeed > 1)
 			{
 				Debug.Log("END action");
-				_Actions.ActionDefault.StartAction();
+				_Actions._ActionDefault.StartAction();
 			}
 		}
 	}
@@ -231,8 +230,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		//Set animations back to jump shape, ensuring the player is still in a ball since they'd be set to normal when grounded.
 		_BallAnimator.SetInteger("Action", 1);
-		_Actions.ActionDefault._animationAction = 1;
-		_Actions.ActionDefault.SwitchSkin(false);
+		_Actions._ActionDefault._animationAction = 1;
+		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Physics
 		Vector3 newDir= _PlayerPhys._coreVelocity.normalized;
@@ -252,10 +251,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			newSpeed = _nextSpeed;
 		}
 
-		Debug.DrawRay(transform.position, _PlayerPhys._moveInput * 5, Color.green, 20f);
-		Debug.DrawRay(transform.position + _PlayerPhys._moveInput * 5, _PlayerPhys.GetRelevantVel(_PlayerPhys._moveInput) *2, Color.yellow, 20f);
+		Vector3 input = transform.TransformDirection(_PlayerPhys._moveInput);
 
-		newDir = Vector3.Lerp(newDir, _PlayerPhys._moveInput, _lerpTowardsInput_);
+		newDir = Vector3.Lerp(newDir, input, _lerpTowardsInput_);
 
 		//Makes the player's movement relevant to the surface and removes vertical speed.
 		Vector3 setVel = _PlayerPhys.AlignWithNormal(newDir, normal, newSpeed);
@@ -322,11 +320,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_Actions = GetComponent<S_ActionManager>();
 
-		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.mainSkin;
 		_Sounds = _Tools.SoundControl;
 		_HomingTrailScript = _Tools.HomingTrailScript;
-		_JumpBall = _Tools.JumpBall;
 		_BallAnimator = _Tools.BallAnimator;
 		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
 	}

@@ -99,7 +99,10 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
-		_PlayerPhys._moveInput = _move;
+		if (!_isInputLocked)
+		{
+			_PlayerPhys._moveInput = _move;
+		}
 	}
 
 	#endregion
@@ -151,8 +154,6 @@ public class S_PlayerInput : MonoBehaviour
 
 	//Prevents changing input when input is locked, but counts up the frames until timer has expired.
 	private void HandleLockedInput () {
-
-		_move = Vector3.zero;
 		_lockedCounter += 1;
 
 		//Sets the camera behind if locked when input is.

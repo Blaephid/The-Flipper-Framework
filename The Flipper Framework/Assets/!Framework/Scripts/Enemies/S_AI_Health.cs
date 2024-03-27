@@ -8,7 +8,7 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 	int _currentHealth;
 
 	public GameObject Explosion;
-	public S_Spawn_Enemy_Eternal SpawnReference { get; set; }
+	public S_Spawn_Enemy SpawnReference { get; set; }
 
 	public bool _willDestroy = true;
 
@@ -22,7 +22,7 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 		{
 			if (SpawnReference != null)
 			{
-				SpawnReference.ResartSpawner();
+				SpawnReference.RestartSpawner();
 			}
 			GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
 

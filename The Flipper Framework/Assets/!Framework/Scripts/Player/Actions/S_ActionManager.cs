@@ -18,69 +18,58 @@ public class S_ActionManager : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Properties
-	S_PlayerPhysics _PlayerPhys;
-
+	private S_PlayerPhysics	_PlayerPhys;
 	private S_CharacterTools      _Tools;
 
-	//Action Scrips, Always leave them in the correct order;
+	//Action Scrips, These ones are required, any others will be handled through the interface list.
 	[Header("Actions")]
-	public S_Action00_Default ActionDefault;
-	public S_Action01_Jump Action01;
-	public S_Action02_Homing Action02;
-	public S_Action03_SpinCharge Action03;
-	public S_Handler_HomingAttack Action02Control;
-	public S_Action04_Hurt ActionHurt;
-	public S_Handler_HealthAndHurt Action04Control;
-	public S_Action05_Rail Action05;
-	public S_Action06_Bounce Action06;
-	public S_Action07_RingRoad Action07;
-	public S_Action08_DropCharge Action08;
+	public S_Action00_Default _ActionDefault;
+	public S_Action04_Hurt _ActionHurt;
 	public S_Action10_FollowAutoPath Action10;
 	public S_Action11_JumpDash Action11;
 	public S_Action12_WallRunning Action12;
-	public S_Action13_Hovering Action13;
-	public S_SubAction_Skid skid;
-
-	private Animator _CharacterAnimator;
-	public S_O_CustomInspectorStyle InspectorTheme;
 	#endregion
 
 	// Trackers
 	#region trackers
-	//Tracking action in game
-	public S_Enums.PrimaryPlayerStates whatAction;
-	public S_Enums.SubPlayerStates whatSubAction;
-	public S_Enums.PrimaryPlayerStates whatPreviousAction { get; set; }
+	//Tracking states in game
+	public S_Enums.PrimaryPlayerStates	_whatAction;
+	public S_Enums.SubPlayerStates	_whatSubAction;
+	public S_Enums.PrimaryPlayerStates	_whatPreviousAction { get; set; }
 
 	//Actions
-	public S_Enums.PrimaryPlayerStates _addState;
-	public List<S_Structs.StrucMainActionTracker> _MainActions;
-	public List<ISubAction> _SubActions;
-	private S_Structs.StrucMainActionTracker _currentAction;
 
+	public List<S_Structs.StrucMainActionTracker>	_MainActions; //This list of structs will cover each action currently available to the player (set in inspector), along with what actions it can enter through input or situation.	
+	private S_Structs.StrucMainActionTracker	_currentAction; //Which struct in the above list is currently active.
+
+	//Inspector
+	public S_O_CustomInspectorStyle		InspectorTheme; // Will decide the apperance in the inspector.
+	public S_Enums.PrimaryPlayerStates                _addState; //Used only by the inspector in order to add states for other states to transition into.
 
 	//Specific action trackers
 	[HideInInspector]
-	public bool         _isAirDashAvailables = true;
+	public bool         _isAirDashAvailables = true; //Govers whether homing attacks and jump dashes can be performed.
 	[HideInInspector]
-	public int          _bounceCount;
+	public int          _bounceCount;		//Tracks the number of bounces before landing are performed.
 	[HideInInspector]
-	public float        _actionTimeCounter;
+	public float        _actionTimeCounter;		//Used by multiple different actions to track how long has been in it.
 	[HideInInspector]
-	public int          _jumpCount;
-
-	public float _dashDelayCounter;
+	public int          _jumpCount;                   //Tracks how many jumps have been performed before landing. Will be used in handling multi jumps.
+	[HideInInspector]
+	public float	_dashDelayCounter;		//Used by homing attacks and jump dashes to set as able or not.
 
 	//Can perform actions
+
+	//THe bellow are all temporarily locked under certain situations, like using a spring.
 	[HideInInspector]
-	public bool         lockBounce;
+	public bool         _isBounceLocked;
 	[HideInInspector]
-	public bool         lockHoming;
+	public bool         _isHomingLocked;
 	[HideInInspector]
-	public bool         lockJumpDash;
+	public bool         _isJumpDashLocked;
 	[HideInInspector]
-	public bool         lockDoubleJump;
-	public bool         _isTrackingEvents;
+	public bool         _isJumpLocked;
+
 	[HideInInspector]
 	public bool         isPaused;
 	#endregion
@@ -96,12 +85,11 @@ public class S_ActionManager : MonoBehaviour
 	// Start is called before the first frame update
 	void Start () {
 
+		//Assigning
 		_Tools = GetComponent<S_CharacterTools>();
-		ActionDefault = GetComponent<S_Action00_Default>();
-		ActionHurt = GetComponent<S_Action04_Hurt>();
-
+		_ActionDefault = GetComponent<S_Action00_Default>();
+		_ActionHurt = GetComponent<S_Action04_Hurt>();
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_CharacterAnimator = _Tools.CharacterAnimator;
 
 		//Go through each struct and assign/add the scripts linked to that enum.
 		for (int i = 0 ; i < _MainActions.Count ; i++)
@@ -135,9 +123,11 @@ public class S_ActionManager : MonoBehaviour
 			_MainActions[i] = action;
 		}
 
+		//Set player to start in default action.
 		_currentAction = _MainActions[0];
 		DeactivateAllActions(true);
 		ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+		_ActionDefault.enabled = true;
 	}
 
 	private void FixedUpdate () {
@@ -149,6 +139,7 @@ public class S_ActionManager : MonoBehaviour
 			if (_dashDelayCounter <= 0) { _isAirDashAvailables = true; }
 		}
 
+		//Current action is set when  handle inputs is called, this goes through each situation action and calls methods that should allow them to be checked. Meaning it can only be enetered if it's called this frame
 		foreach (IMainAction situationAction in _currentAction.SituationalActions)
 		{
 			situationAction.AttemptAction();
@@ -167,7 +158,7 @@ public class S_ActionManager : MonoBehaviour
 
 		foreach (S_Structs.StrucMainActionTracker track in _MainActions)
 		{
-			if(track.State != whatAction)
+			if(track.State != _whatAction)
 			{
 				track.Action.StopAction(firstTime); //The stop action methods should all contain the same check if enabled and then disable the script if so.
 			}
@@ -181,13 +172,13 @@ public class S_ActionManager : MonoBehaviour
 	/// 
 	#region public 
 
-	//Called by action scripts to go through all of the actions they can possibly transition to.
+	//Called by action scripts to go through all of the actions they can possibly transition to. Each primary action should call this on Update
 	public void HandleInputs ( int currentActionInList ) {
-		if (isPaused) { return; }
+		if (isPaused) { return; } //Can only change state if game isn't paused.
 
-		bool performAction;
+		bool performAction; //This will be set to true if an action attempt succeeds, stopping the checks after one does so.
 
-		_currentAction = _MainActions[currentActionInList];
+		_currentAction = _MainActions[currentActionInList]; //This will allow the update method to check situation actions
 
 		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
 		//When one returns true, it is being switched to, so end the loop.
@@ -197,7 +188,8 @@ public class S_ActionManager : MonoBehaviour
 			if (performAction) { break; }
 		}
 
-		performAction = false;
+		performAction = false; //Allows check to be made again with the same variable.
+
 		//Checks if the subaction should be performed ontop of the current action.
 		foreach (ISubAction subAction in _currentAction.SubActions)
 		{
@@ -206,92 +198,21 @@ public class S_ActionManager : MonoBehaviour
 		}
 	}
 
-	//Call this function to change the action
-	public void ChangeAction ( S_Enums.PrimaryPlayerStates ActionToChange ) {
-
-
-		//Put an case for all your actions here
-		switch (ActionToChange)
-		{
-			case S_Enums.PrimaryPlayerStates.Default:
-				IsChangePossible(ActionToChange);
-				ActionDefault.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.Jump:
-				if (!lockDoubleJump)
-				{
-					IsChangePossible(ActionToChange);
-					Action01.enabled = true;
-				}
-				break;
-			case S_Enums.PrimaryPlayerStates.Homing:
-				if (!lockHoming)
-				{
-					IsChangePossible(ActionToChange);
-					Action02.enabled = true;
-				}
-				break;
-			case S_Enums.PrimaryPlayerStates.JumpDash:
-				if (!lockJumpDash)
-				{
-					IsChangePossible(ActionToChange);
-					Action11.enabled = true;
-				}
-				break;
-			case S_Enums.PrimaryPlayerStates.SpinCharge:
-				IsChangePossible(ActionToChange);
-				Action03.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.Hurt:
-				IsChangePossible(ActionToChange);
-				ActionHurt.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.Rail:
-				IsChangePossible(ActionToChange);
-				Action05.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.Bounce:
-				IsChangePossible(ActionToChange);
-				Action06.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.RingRoad:
-				IsChangePossible(ActionToChange);
-				Action07.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.DropCharge:
-				IsChangePossible(ActionToChange);
-				Action08.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.Path:
-				IsChangePossible(ActionToChange);
-				Action10.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.WallRunning:
-				IsChangePossible(ActionToChange);
-				Action12.enabled = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.Hovering:
-				IsChangePossible(ActionToChange);
-				Action13.enabled = true;
-				break;
-
-		}
-
-	}
-
-	private void IsChangePossible ( S_Enums.PrimaryPlayerStates newAction ) {
-		whatPreviousAction = whatAction;
-
-		whatAction = newAction;
+	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.
+	public void ChangeAction ( S_Enums.PrimaryPlayerStates ActionToChange) {
+		_whatPreviousAction = _whatAction;
+		_whatAction = ActionToChange;
 		DeactivateAllActions();
 	}
 
+	//Called externally to prevent certain actions from being performed until time is up.
 	public IEnumerator lockAirMoves ( float time ) {
-		lockBounce = true;
-		lockJumpDash = true;
-		lockHoming = true;
-		lockDoubleJump = true;
+		_isBounceLocked = true;
+		_isJumpDashLocked = true;
+		_isHomingLocked = true;
+		_isJumpLocked = true;
 
+		//Apply delay, in frames.
 		for (int s = 0 ; s < time ; s++)
 		{
 			yield return new WaitForFixedUpdate();
@@ -299,10 +220,10 @@ public class S_ActionManager : MonoBehaviour
 				break;
 		}
 
-		lockBounce = false;
-		lockJumpDash = false;
-		lockHoming = false;
-		lockDoubleJump = false;
+		_isBounceLocked = false;
+		_isJumpDashLocked = false;
+		_isHomingLocked = false;
+		_isJumpLocked = false;
 
 	}
 

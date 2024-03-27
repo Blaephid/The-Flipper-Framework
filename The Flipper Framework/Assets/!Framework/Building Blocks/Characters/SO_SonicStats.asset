@@ -1339,13 +1339,35 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
   JumpDashStats:
+    behaviour: 0
     dashSpeed: 80
-    duration: 0.3
-    shouldUseCurrentSpeedAsMinimum: 1
+    dashIncrease: 15
+    turnSpeed: 8
+    maxDuration: 0.3
+    minDuration: 0.15
+    forceUpwards: 20
+    horizontalAngle: 45
+    faceDownwardsSpeed: 0.1
+    maxDownwardsSpeed: 0
+    lockMoveInputOnEnd: 0
+    lockMoveInputOnStart: 0
+    speedAfterDash: 0
+    framesToChangeSpeed: 5
   DefaultJumpDashStats:
+    behaviour: 0
     dashSpeed: 80
-    duration: 0.3
-    shouldUseCurrentSpeedAsMinimum: 1
+    dashIncrease: 15
+    turnSpeed: 8
+    maxDuration: 0.3
+    minDuration: 0.15
+    forceUpwards: 0
+    horizontalAngle: 90
+    faceDownwardsSpeed: 0.02
+    maxDownwardsSpeed: -5
+    lockMoveInputOnEnd: 0
+    lockMoveInputOnStart: 0
+    speedAfterDash: 0
+    framesToChangeSpeed: 5
   HomingSearch:
     targetSearchDistance: 44
     rangeInCameraDirection: 1.2
@@ -2391,8 +2413,8 @@ MonoBehaviour:
     railBoostDecaySpeed: 0.45
     railBoostDecayTime: 0.45
   RailPosition:
-    offsetRail: 1.3
-    offsetZip: -6.7
+    offsetRail: 2
+    offsetZip: -6
     upreel: 0.3
   DefaultRailPosition:
     offsetRail: 1.3

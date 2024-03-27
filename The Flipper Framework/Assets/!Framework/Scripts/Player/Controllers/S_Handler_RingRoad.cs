@@ -76,7 +76,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 		{
 			//For efficiency, there must be a gap between scans. This will only be a frame if currently performing the action (as this needs to be smoothly updated).
 			//Ring road is currently not here because it will call ScanForRings seperately.
-			switch (_Actions.whatAction)
+			switch (_Actions._whatAction)
 			{
 				default:
 					yield return new WaitForSeconds(0.05f);
@@ -203,7 +203,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
-		_targetSearchDistance_ = _Tools.Stats.RingRoadStats.SearchDistance;
+		_targetSearchDistance_ = _Tools.Stats.RingRoadStats.searchDistance;
 		_Layer_ = _Tools.Stats.RingRoadStats.RingRoadLayer;
 	}
 	#endregion

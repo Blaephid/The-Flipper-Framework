@@ -124,10 +124,11 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_CharacterCapsule.SetActive(false);
 
 		//Visuals & Effects
-		_Actions.ActionDefault.SwitchSkin(false);
+		_Actions._ActionDefault.SwitchSkin(false);
 		_Sounds.SpinDashSound();
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.SpinCharge);
+		this.enabled = true;
 	}
 
 	//Called by the action manager whenever action is changing. Will only perform if enabled right now. Similar to OnDisable.
@@ -194,7 +195,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	//Changes how the player moves when in this state.
 	private void AffectMovement () {
 
-		_Input._move *= 0.75f; //Limits input, lessening turning and deceleration
+		_PlayerPhys._moveInput *= 0.75f; //Limits input, lessening turning and deceleration
 		
 		if(_shouldSetRolling_) _PlayerPhys._isRolling = true; // set every frame to counterballanced the rolling subaction
 
@@ -229,13 +230,13 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		//Effects
 		_Effects.EndSpinDash();
 		_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount_ * _currentCharge) / 10, 40);
-		_Actions.ActionDefault.SwitchSkin(true);
+		_Actions._ActionDefault.SwitchSkin(true);
 
 		//Only launches forwards if charged long enough.
 		if (_currentCharge < _minimunCharge_)
 		{
 			_Sounds.Source2.Stop();
-			_Actions.ActionDefault.StartAction();
+			_Actions._ActionDefault.StartAction();
 		}
 		else
 		{
@@ -270,7 +271,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 			//_Input.LockInputForAWhile(8, false);
 
-			_Actions.ActionDefault.StartAction();
+			_Actions._ActionDefault.StartAction();
 		}
 
 	}
@@ -279,7 +280,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private void SetAnimatorAndRotation () {
 
 		//Handle animator, both regular and ball ones.
-		_Actions.ActionDefault.HandleAnimator(3);
+		_Actions._ActionDefault.HandleAnimator(3);
 		_BallAnimator.SetInteger("Action", 3);
 		_BallAnimator.SetFloat("SpinCharge", _currentCharge * _ballAnimationSpeedMultiplier);
 
@@ -322,7 +323,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		}
 
 		//Rotate towards this new direction.
-		_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, _characterRotation, Time.deltaTime * _Actions.ActionDefault._skinRotationSpeed);
+		_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, _characterRotation, Time.deltaTime * _Actions._ActionDefault._skinRotationSpeed);
 	}
 
 
@@ -347,7 +348,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		yield return new WaitForSeconds(0.2f);
 		if(enabled)
 		{
-			_Actions.ActionDefault.StartAction();
+			_Actions._ActionDefault.StartAction();
 		}
 	}
 

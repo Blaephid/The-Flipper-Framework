@@ -58,9 +58,9 @@ public class S_Manager_LevelProgress : MonoBehaviour
 			readyCount += Time.deltaTime;
 			if (readyCount > 1.5f)
 			{
-				_Actions.Action04Control.enabled = false;
 				Color alpha = Color.black;
-				_Actions.Action04Control._FadeOutImage.color = Color.Lerp(_Actions.Action04Control._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
+				S_Handler_HealthAndHurt HurtControl = GetComponent<S_Handler_HealthAndHurt>();
+				HurtControl._FadeOutImage.color = Color.Lerp(HurtControl._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
 			}
 			if (readyCount > 2.6f)
 			{
@@ -76,7 +76,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 		_Input.LockInputForAWhile(20, true, Vector3.zero);
 		StartCoroutine(_Actions.lockAirMoves(20));
-		_Actions.ActionDefault.StartAction();
+		_Actions._ActionDefault.StartAction();
 
 		_Tools.HomingTrailScript.emitTime = 0;
 		_Tools.HomingTrailScript.emit = false;

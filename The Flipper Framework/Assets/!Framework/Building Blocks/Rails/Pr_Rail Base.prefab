@@ -168,11 +168,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
   isBooster: 0
   speed: 0
   setRailSpeed: 0
@@ -238,7 +245,7 @@ MonoBehaviour:
   asPrefab: 0
   scale: 1
   scaleRange: 0
-  spacing: 12
+  spacing: 10
   spacingRange: 0
   offset: 0
   offsetRange: 0
@@ -261,11 +268,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
   isBooster: 0
   speed: 0
   setRailSpeed: 0
@@ -321,8 +335,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 174367e175762fb48ba55d6171e99990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateAll: 0
-  UpdateThis: 0
   mesh: {fileID: 4300000, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
   material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
   physicMaterial: {fileID: 0}
@@ -340,6 +352,7 @@ MonoBehaviour:
   showEndDir: 0
   showStartDir: 0
   mode: 1
+  _InspectorTheme: {fileID: 0}
 --- !u!1 &1746248924027914671
 GameObject:
   m_ObjectHideFlags: 0

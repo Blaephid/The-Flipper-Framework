@@ -343,7 +343,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Sets the size of the ray to check for ground. If running on the ground then it is typically to avoid flying off the ground.
 		float rayToGroundDistancecor = _rayToGroundDistance_;
-		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && _isGrounded)
+		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Default && _isGrounded)
 		{
 			rayToGroundDistancecor = Mathf.Max(_rayToGroundDistance_ + (_horizontalSpeedMagnitude * _raytoGroundSpeedRatio_), _rayToGroundDistance_);
 			rayToGroundDistancecor = Mathf.Min(rayToGroundDistancecor, _raytoGroundSpeedMax_);
@@ -423,6 +423,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		_coreVelocity = HandleControlledVelocity(new Vector2(1, 1));
 		_coreVelocity = StickToGround(_coreVelocity);
 		_coreVelocity = HandleSlopePhysics(_coreVelocity);
+
+		Debug.DrawRay(transform.position, _coreVelocity.normalized * 8, Color.magenta);
 	}
 
 	//Calls methods relevant to general control and gravity, while applying the turn and accelleration modifiers depending on a number of factors while in the air.
@@ -432,12 +434,12 @@ public class S_PlayerPhysics : MonoBehaviour
 		Vector3 spherePosition = transform.position - transform.up;
 		Vector3 direction = GetRelevantVel(_moveInput, false);
 
-		if (!Physics.SphereCast(transform.position - transform.up, _CharacterCapsule.radius, direction, out RaycastHit hit, 5, _Groundmask_))
+		if (!Physics.SphereCast(spherePosition, _CharacterCapsule.radius, direction, out RaycastHit hit, 5, _Groundmask_))
 		{
 			//Gets the air control modifiers.
 			float airAccelMod = _airControlAmmount_.y;
 			float airTurnMod = _airControlAmmount_.x;
-			switch (_Actions.whatAction)
+			switch (_Actions._whatAction)
 			{
 				case S_Enums.PrimaryPlayerStates.Jump:
 					if (_Actions._actionTimeCounter < _jumpExtraControlThreshold_)
@@ -523,9 +525,14 @@ public class S_PlayerPhysics : MonoBehaviour
 			? Quaternion.identity
 			: Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
 
+		//If standing still, should immediately move in required direction, rather than rotate velocity from zero towards it.
+		if(lateralVelocity.sqrMagnitude < 1)
+		{
+			lateralVelocity = inputDirection * inputMagnitude;
+		}
 
 		//A list is used rather than a single boolean because if just one was used, anything that takes turning away would overlap. This way means all instances of turning being disabled must stop in order to regain control.
-		if (_listOfCanTurns.Count == 0)
+		else if (_listOfCanTurns.Count == 0)
 		{
 			// Step 2) Rotate lateral velocity towards the same velocity under the desired rotation.
 			//         The ammount rotated is determined by turn speed multiplied by turn rate (defined by the difference in angles, and current speed).
@@ -1046,7 +1053,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_stickingLerps_ = _Tools.Stats.GreedysStickToGround.stickingLerps;
 		_stickingNormalLimit_ = _Tools.Stats.GreedysStickToGround.stickingNormalLimit;
 		_stickCastAhead_ = _Tools.Stats.GreedysStickToGround.stickCastAhead;
-		_negativeGHoverHeight_ = _Tools.Stats.GreedysStickToGround.negativeGHoverHeight;
+		_negativeGHoverHeight_ = _Tools.Stats.GreedysStickToGround.groundBuffer;
 		_rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;
 		_raytoGroundSpeedRatio_ = _Tools.Stats.FindingGround.raytoGroundSpeedRatio;
 		_raytoGroundSpeedMax_ = _Tools.Stats.FindingGround.raytoGroundSpeedMax;

@@ -80,7 +80,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		else if (!_inAir && !_PlayerPhys._isGrounded)
 			_inAir = true;
 		//If changed action during the step, end the step.
-		if (_whatActionWasOn != _Actions.whatAction)
+		if (_whatActionWasOn != _Actions._whatAction)
 			enabled = false;
 
 		if (_distanceToStep_ > 0)
@@ -131,8 +131,8 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		enabled = true;
 		
 		//Used for checking if the main action changes during the step.
-		_whatActionWasOn = _Actions.whatAction;
-		_Actions.whatSubAction = S_Enums.SubPlayerStates.Quickstepping;
+		_whatActionWasOn = _Actions._whatAction;
+		_Actions._whatSubAction = S_Enums.SubPlayerStates.Quickstepping;
 
 		//Prevents buttons from being held to spam.
 		_Input.RightStepPressed = false;

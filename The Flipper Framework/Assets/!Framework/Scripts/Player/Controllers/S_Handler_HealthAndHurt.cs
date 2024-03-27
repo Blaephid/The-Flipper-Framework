@@ -176,7 +176,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		else if(_isInvincible)
 		{
 			_isInvincible = false;
-			_Actions.ActionDefault.HideCurrentSkins(true);
+			_Actions._ActionDefault.HideCurrentSkins(true);
 		}
 
 		//When rings are lost, this is enabled to unleash rings from character each frame.
@@ -193,12 +193,12 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		//Skins aren't visible for flicker time y
 		if (_flickerCounter < 0)
 		{
-			_Actions.ActionDefault.HideCurrentSkins(true);
+			_Actions._ActionDefault.HideCurrentSkins(true);
 		}
 		//Skins are visible for flicker time x
 		else
 		{
-			_Actions.ActionDefault.HideCurrentSkins(false);
+			_Actions._ActionDefault.HideCurrentSkins(false);
 		}
 		//When enough time spent visible, set to time invisible
 		if (_flickerCounter > _flickerTime_.x)
@@ -338,7 +338,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Bonking refers to rebounding off solid surfaces when moving into them at high speed.
 	//Depending on the current state, will check if should bonk against walls based on speed
 	private void CheckBonk () {
-		switch (_Actions.whatAction)
+		switch (_Actions._whatAction)
 		{
 			case S_Enums.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._horizontalSpeedMagnitude > 50) TryBonk();
@@ -355,8 +355,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Checks walls infront of the character, ready to rebound off if too close.
 	private void TryBonk () {
 
-		Vector3 movingDirection = Vector3.ProjectOnPlane(_PlayerPhys._RB.velocity.normalized, transform.up); //Project on plane makes direction relevant to transform so it will only check in front of player, not below or above
-		float distance = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * Time.deltaTime * 2f, 2); //Uses timme.delta time to check where the character should probably be next frame.
+		Vector3 movingDirection = _PlayerPhys._RB.velocity.normalized; //Project on plane makes direction relevant to transform so it will only check in front of player, not below or above
+		float distance = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * Time.deltaTime * 2.5f, 2); //Uses timme.delta time to check where the character should probably be next frame.
 		Vector3 sphereStartOffset = transform.up * (_CharacterCapsule.height / 2); // Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
 
 		//Checks for a wall, and if the direction of it is similar to movement direction, ready bonk.
@@ -377,11 +377,11 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		float rememberSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 
 		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
-		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
+		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
 		{
 			_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 			_HurtAction._wasHit = false;
-			_Actions.ActionHurt.StartAction();
+			_Actions._ActionHurt.StartAction();
 		}
 		else
 		{
@@ -390,7 +390,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			{
 				yield return new WaitForFixedUpdate();
 
-				if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
+				if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
 
 					_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0));
 				_PlayerPhys._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
@@ -398,11 +398,11 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			}
 
 			//If still not in a wallrunning state or been hurt, then rebound off the wall.
-			if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.WallRunning && _Actions.whatAction != S_Enums.PrimaryPlayerStates.Hurt)
+			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.WallRunning && _Actions._whatAction != S_Enums.PrimaryPlayerStates.Hurt)
 			{
-				_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
+				_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[3].normalized;
 				_HurtAction._wasHit = false;
-				_Actions.ActionHurt.StartAction();
+				_Actions._ActionHurt.StartAction();
 			}
 		}
 	}
@@ -420,7 +420,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 		if(_isInvincible) { return; }
 
-		if (!_Actions.ActionHurt.enabled)
+		if (!_Actions._ActionHurt.enabled)
 		{
 			//The different responses determine when the player takes damage, either immdieately, or upon landing in the hurt state.
 			switch (_whatResponse_)

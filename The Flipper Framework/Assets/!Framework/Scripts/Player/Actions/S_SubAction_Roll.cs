@@ -68,7 +68,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	private void FixedUpdate () {
 
 		//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
-		if ((!_PlayerPhys._isGrounded && _PlayerPhys._isRolling) || (_Actions.whatSubAction != S_Enums.SubPlayerStates.Rolling) || _whatCurrentAction != _Actions.whatAction)
+		if ((!_PlayerPhys._isGrounded && _PlayerPhys._isRolling) || (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling) || _whatCurrentAction != _Actions._whatAction)
 		{
 			UnCurl();
 		}
@@ -81,7 +81,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	public bool AttemptAction () {
-		switch(_Actions.whatAction)
+		switch(_Actions._whatAction)
 		{
 			//Any action with this on
 			default:
@@ -91,8 +91,8 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 					//Enter Rolling state, must have been rolling for a long enough time first.
 					if (_Input.RollPressed && _PlayerPhys._isGrounded && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
-						_whatCurrentAction = _Actions.whatAction; //If the current action stops matching this, then the player has switched actions while rolling
-						_Actions.whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
+						_whatCurrentAction = _Actions._whatAction; //If the current action stops matching this, then the player has switched actions while rolling
+						_Actions._whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
 						Curl();
 						return true;
 					}
@@ -180,7 +180,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		_Input = GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
 		_Actions = GetComponent<S_ActionManager>();
-		_Action00 = _Actions.ActionDefault;
+		_Action00 = _Actions._ActionDefault;
 		_CharacterCapsule = _Tools.characterCapsule;
 		_RollingCapsule = _Tools.crouchCapsule;
 		_CharacterAnimator = _Tools.CharacterAnimator;

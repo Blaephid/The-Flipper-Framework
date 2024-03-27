@@ -113,10 +113,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		if (_isHoming)
 		{
 			//Set Animator Parameters
-			_Actions.ActionDefault.HandleAnimator(1);
+			_Actions._ActionDefault.HandleAnimator(1);
 
 			//Set Animation Angle
-			_Actions.ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
+			_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
 
 			HandleInputs();
 		}
@@ -152,6 +152,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	public void StartAction () {
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Homing);
+		this.enabled = true;
 
 		ReadyAction();
 
@@ -184,7 +185,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_Sounds.HomingAttackSound();
 		_HomingTrailScript.emitTime = _homingTimerLimit_ + 0.06f;
 		_HomingTrailScript.emit = true;
-		_Actions.ActionDefault.SwitchSkin(false);
+		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Get speed of attack and speed to return to on hit.		
 		_speedAtStart = Mathf.Max(_speedBeforeAttack * 0.9f, _homingAttackSpeed_);
@@ -234,8 +235,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Ends homing attack if in air for too long or target is lost
 		if ((_Target == null || _timer > _homingTimerLimit_))
 		{
-			_Actions.ActionDefault._animationAction = 0;
-			_Actions.ActionDefault.StartAction();
+			_Actions._ActionDefault._animationAction = 0;
+			_Actions._ActionDefault.StartAction();
 			return;
 		}
 
@@ -264,7 +265,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		if (_PlayerPhys._moveInput.sqrMagnitude > 0.2f && _canBeControlled_ && _timer > 0.02f)
 		{
 			//Get horizontal input
-			_currentInput = _PlayerPhys._moveInput;
+			_currentInput =  transform.TransformDirection(_PlayerPhys._moveInput);
 			_currentInput.y = 0;
 
 			//Get current horizontal direction
@@ -341,8 +342,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				//Restore control and switch to default action
 				_PlayerPhys.SetCoreVelocity(newSpeed);
 				_PlayerPhys._isGravityOn = true;
-				_Actions.ActionDefault._animationAction = 1;
-				_Actions.ActionDefault.StartAction();
+				_Actions._ActionDefault._animationAction = 1;
+				_Actions._ActionDefault.StartAction();
 
 				break;
 			case S_Enums.HomingRebounding.Rebound:
@@ -350,6 +351,11 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				return;
 			case S_Enums.HomingRebounding.bounceOff:
 				bounceUpHit();
+				//Restore control and switch to default action
+				_PlayerPhys.SetCoreVelocity(newSpeed);
+				_PlayerPhys._isGravityOn = true;
+				_Actions._ActionDefault._animationAction = 1;
+				_Actions._ActionDefault.StartAction();
 				break;
 		}
 
@@ -444,8 +450,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			yield return new WaitForFixedUpdate();
 		}
 
-		_Actions.ActionDefault._animationAction = 1;
-		_Actions.ActionDefault.StartAction();
+		_Actions._ActionDefault._animationAction = 1;
+		_Actions._ActionDefault.StartAction();
 	}
 
 	//Called only by the skid subaction script, and only if this state is stet to have skidding as a subaction.

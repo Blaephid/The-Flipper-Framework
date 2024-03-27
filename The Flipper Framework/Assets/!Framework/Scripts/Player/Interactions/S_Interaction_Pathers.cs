@@ -198,7 +198,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 			_PlayerPhys._isGravityOn = false;
 
 			_currentUpreel.RetractPulley(); //This method is in a script on the upreel rather than the player
-			_Actions.ActionDefault.StartAction();
+			_Actions._ActionDefault.StartAction();
 		}
 	}
 
@@ -234,7 +234,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				//Enter standard animation
 				_CharacterAnimator.SetInteger("Action", 0);
 
-				StartCoroutine(exitPulley(_currentUpreel.transform));
+				StartCoroutine(ExitPulley(_currentUpreel.transform));
 
 				//Ends updates on this until a new upreel is set.
 				_currentUpreel = null;
@@ -243,7 +243,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	//When leaving pulley, player is bounced up and forwards after a momment, allowing them to clear the wall without issue.
-	IEnumerator exitPulley (Transform Upreel) {
+	IEnumerator ExitPulley (Transform Upreel) {
 		_PlayerPhys.SetTotalVelocity(Upreel.up * 60, new Vector2(1, 0)); //Apply force up relative to upreel (therefore the direction the player was moving).
 
 		yield return new WaitForSeconds(.2f);
@@ -296,7 +296,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 				if(addOn.nextRail == null && addOn.PrevRail == null) { addOn = null; }
 			}
 
-
 			//Sets the player to the rail grind action, and sets their position and what spline to follow.
 			_RailAction.AssignForThisGrind(Range, _PathSpline.transform, PathTypes.rail, offSet, addOn);
 			_RailAction.StartAction();		
@@ -329,7 +328,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		_canEnterAutoPath = true;
 
 		//If the player is already on a path, then hitting this trigger will end it.
-		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Path || col.gameObject.name == "End")
+		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Path || col.gameObject.name == "End")
 		{
 			//See MoveAlongPath for more
 			_Actions.Action10.ExitPath();
@@ -426,7 +425,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 				CurrentDist = dist;
 				closestSample = n;
 			}
-
 		}
 		return closestSample;
 	}
@@ -441,6 +439,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 		yield return new WaitForSeconds(time);
 
+		//Reenables
 		zipHandle.GetComponent<CapsuleCollider>().enabled = true;
 		target.SetActive(true);
 		zipHandle.GetComponentInChildren<MeshCollider>().enabled = true;

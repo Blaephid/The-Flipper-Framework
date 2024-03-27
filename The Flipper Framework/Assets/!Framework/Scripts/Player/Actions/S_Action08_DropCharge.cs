@@ -31,11 +31,12 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	//General
 	#region General Properties
 
-	//Stats
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	private float        _spinDashChargingSpeed_ = 0.3f;
 	private float        _minimunCharge_ = 10;
 	private float        _maximunCharge_ = 100;
+
 	private float       _minimumHeightToDropCharge_;
 	#endregion
 
@@ -78,8 +79,8 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	// Update is called once per frame
 	void Update () {
 		//Set Animator Parameters
-		_Actions.ActionDefault.HandleAnimator(1);
-		_Actions.ActionDefault.SetSkinRotationToVelocity(_Actions.ActionDefault._skinRotationSpeed);
+		_Actions._ActionDefault.HandleAnimator(1);
+		_Actions._ActionDefault.SetSkinRotationToVelocity(_Actions._ActionDefault._skinRotationSpeed);
 
 		HandleInputs();
 	}
@@ -104,12 +105,13 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	public void StartAction () {
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.DropCharge);
+		this.enabled = true;
 
 		//Effects
 		//Animator
 		_CharacterAnimator.SetInteger("Action", 1);
 		_CharacterAnimator.SetBool("Grounded", false);
-		_Actions.ActionDefault.SwitchSkin(false); //Ensures player is a ball
+		_Actions._ActionDefault.SwitchSkin(false); //Ensures player is a ball
 						  //Sound
 		_Sounds.SpinDashSound();
 
@@ -178,10 +180,10 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		yield return new WaitForSeconds(0.45f);
 
 		//If coroutine is not stopped or interupted, then end the action
-		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.DropCharge)
+		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.DropCharge)
 		{
-			_Actions.ActionDefault._animationAction = 1;
-			_Actions.ActionDefault.StartAction();
+			_Actions._ActionDefault._animationAction = 1;
+			_Actions._ActionDefault.StartAction();
 		}
 	}
 
@@ -267,7 +269,6 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		//Make force relevant to character's current rotation
 		Vector3 releVec = _PlayerPhys.GetRelevantVel(force, false);
 		float mag = force.magnitude;
-		Debug.Log("Launch with    " +mag);
 
 		//If the new total force is higher than current speed, then apply it. Uses sqrs because it's faster with comparing magnitudes
 		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerPhys._horizontalSpeedMagnitude + _charge * 0.1f, 2))
@@ -282,7 +283,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 			_CamHandler._HedgeCam.ChangeHeight(20, 15f); //Ensures camera will go behind the player as they launch forwards from falling.
 		}
 
-		_Actions.ActionDefault.StartAction();
+		_Actions._ActionDefault.StartAction();
 	}
 
 	#endregion
@@ -312,7 +313,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		while (true)
 		{
 			yield return new WaitForFixedUpdate();
-			if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.DropCharge)
+			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.DropCharge)
 			{
 				_charge = 0;
 			}
@@ -368,7 +369,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		_spinDashChargingSpeed_ = _Tools.Stats.DropChargeStats.chargingSpeed;
 		_minimunCharge_ = _Tools.Stats.DropChargeStats.minimunCharge;
 		_maximunCharge_ = _Tools.Stats.DropChargeStats.maximunCharge;
-		_minimumHeightToDropCharge_ = _Tools.Stats.DropChargeStats.minimumHeightToDropCharge;
+		_minimumHeightToDropCharge_ = _Tools.Stats.DropChargeStats.minimumHeightToPerform;
 	}
 	#endregion
 }

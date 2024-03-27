@@ -382,7 +382,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			_Path_Int._currentExternalCamera = null;
 		}
 
-		_Actions.ActionDefault.StartAction();
+		_Actions._ActionDefault.StartAction();
 	}
 }
 

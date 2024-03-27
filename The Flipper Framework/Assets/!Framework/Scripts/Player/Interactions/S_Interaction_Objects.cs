@@ -73,31 +73,18 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	void UpdateSpeed () {
-		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Default)
+		switch (_Actions._whatAction)
 		{
-			//DisplaySpeed = Player.SpeedMagnitude;
-			DisplaySpeed = Player._horizontalSpeedMagnitude;
-		}
+			default:
+				DisplaySpeed = Player._horizontalSpeedMagnitude;
+				break;
 
-		else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail)
-		{
-			DisplaySpeed = _Actions.Action05._playerSpeed;
-		}
-		else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
-		{
-			if (_Actions.Action12._runningSpeed > _Actions.Action12._climbingSpeed)
-				DisplaySpeed = _Actions.Action12._runningSpeed;
-			else
-				DisplaySpeed = _Actions.Action12._climbingSpeed;
-
-		}
-		else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Path)
-		{
-			DisplaySpeed = _Actions.Action10._playerSpeed;
-		}
-		else
-		{
-			DisplaySpeed = Player._horizontalSpeedMagnitude;
+			case S_Enums.PrimaryPlayerStates.WallRunning:
+				if (_Actions.Action12._runningSpeed > _Actions.Action12._climbingSpeed)
+					DisplaySpeed = _Actions.Action12._runningSpeed;
+				else
+					DisplaySpeed = _Actions.Action12._climbingSpeed;
+				break;
 		}
 
 		if (SpeedCounter != null && Player._speedMagnitude > 10f) SpeedCounter.text = DisplaySpeed.ToString("F0");
@@ -127,43 +114,6 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	}
 
-	IEnumerator setRailSpeed ( float speed, bool set, float addSpeed, bool backwards ) {
-		for (int i = 0 ; i < 3 ; i++)
-		{
-			yield return new WaitForFixedUpdate();
-
-			if (set)
-			{
-				if (_Actions.Action05._playerSpeed < speed)
-				{
-					_Actions.Action05._playerSpeed = speed;
-					_Actions.Action05._isBoosted = true;
-					_Actions.Action05._boostTime = 0.7f;
-
-				}
-				else
-					set = false;
-
-			}
-			else if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail)
-			{
-
-				_Actions.Action05._playerSpeed += addSpeed / 2;
-				_Actions.Action05._isBoosted = true;
-				_Actions.Action05._boostTime = 0.7f;
-
-				i = 3;
-
-			}
-
-			if (backwards)
-				_Actions.Action05._isGoingBackwards = true;
-			else
-				_Actions.Action05._isGoingBackwards = false;
-		}
-
-	}
-
 	public void OnTriggerEnter ( Collider col ) {
 
 		switch(col.tag)
@@ -173,25 +123,16 @@ public class S_Interaction_Objects : MonoBehaviour
 
 				col.GetComponent<AudioSource>().Play();
 
-				JumpBall.SetActive(false);
-				if (_Actions.Action08 != null)
-				{
-					if (_Actions.Action08._DropEffect.isPlaying == true)
-					{
-						_Actions.Action08._DropEffect.Stop();
-					}
-				}
-
 				if (pad.onRail)
 				{
 
-					if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.Rail)
+					if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.Rail)
 					{
 						transform.position = col.GetComponent<S_Data_SpeedPad>().positionToLockTo.position;
 					}
 					else
 					{
-						StartCoroutine(setRailSpeed(pad.Speed, pad.setSpeed, pad.addSpeed, pad.railBackwards));
+						StartCoroutine(GetComponent<S_Action05_Rail>().ApplyBoost(pad.Speed, pad.setSpeed, pad.addSpeed, pad.railBackwards));
 					}
 					return;
 				}
@@ -237,8 +178,8 @@ public class S_Interaction_Objects : MonoBehaviour
 					if (pad.isDashRing)
 					{
 
-						_Actions.ActionDefault.CancelCoyote();
-						_Actions.ActionDefault.StartAction();
+						_Actions._ActionDefault.CancelCoyote();
+						_Actions._ActionDefault.StartAction();
 						CharacterAnimator.SetBool("Grounded", false);
 
 						if (pad.lockAirMoves)
@@ -287,17 +228,10 @@ public class S_Interaction_Objects : MonoBehaviour
 				}
 				break;
 			case "Spring":
-				_Actions.ActionDefault.CancelCoyote();
+				_Actions._ActionDefault.CancelCoyote();
 				Player._isGravityOn = true;
 
 				JumpBall.SetActive(false);
-				if (_Actions.Action08 != null)
-				{
-					if (_Actions.Action08._DropEffect.isPlaying == true)
-					{
-						_Actions.Action08._DropEffect.Stop();
-					}
-				}
 
 
 				if (col.GetComponent<S_Data_Spring>() != null)
@@ -321,16 +255,14 @@ public class S_Interaction_Objects : MonoBehaviour
 						StartCoroutine(lockGravity(spring.lockGravity));
 					}
 
-					_Actions.ActionDefault.StartAction();
+					_Actions._ActionDefault.StartAction();
 
 
 					if (col.GetComponent<AudioSource>()) { col.GetComponent<AudioSource>().Play(); }
 					CharacterAnimator.SetBool("Grounded", false);
 
-					if (_Actions.Action02 != null)
-					{
-						_Actions._isAirDashAvailables = true;
-					}
+					_Actions._isAirDashAvailables = true;
+					
 
 					if (spring.anim != null)
 						spring.anim.SetTrigger("Hit");
@@ -354,27 +286,20 @@ public class S_Interaction_Objects : MonoBehaviour
 				break;
 
 			case "Bumper":
-				if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Homing || _Actions.whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
+				if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Homing || _Actions._whatPreviousAction == S_Enums.PrimaryPlayerStates.Homing)
 
 					JumpBall.SetActive(false);
-				if (_Actions.Action08 != null)
-				{
-					if (_Actions.Action08._DropEffect.isPlaying == true)
-					{
-						_Actions.Action08._DropEffect.Stop();
-					}
-				}
 				break;
 			case "Wind":
 				if (col.GetComponent<S_Trigger_Updraft>())
 				{
-					if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Hovering)
+					if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Hovering)
 					{
-						_Actions.Action13.updateHover(col.GetComponent<S_Trigger_Updraft>());
+						GetComponent<S_Action13_Hovering>().updateHover(col.GetComponent<S_Trigger_Updraft>());
 					}
 					else
 					{
-						_Actions.Action13.InitialEvents(col.GetComponent<S_Trigger_Updraft>());
+						GetComponent<S_Action13_Hovering>().InitialEvents(col.GetComponent<S_Trigger_Updraft>());
 						_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
 					}
 				}
@@ -457,7 +382,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void OnTriggerExit ( Collider col ) {
 		if (col.tag == "Wind")
 		{
-			_Actions.Action13.inWind = false;
+			GetComponent<S_Action13_Hovering>().inWind = false;
 		}
 	}
 
@@ -514,7 +439,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
-		_Actions.ActionDefault.StartAction();
+		_Actions._ActionDefault.StartAction();
 		transform.position = position;
 		Player._RB.velocity = force;
 

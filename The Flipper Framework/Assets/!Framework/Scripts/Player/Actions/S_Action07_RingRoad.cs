@@ -82,7 +82,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	// Update is called once per frame
 	void Update () {
 		//Set Animator Parameters
-		_Actions.ActionDefault.HandleAnimator(7);
+		_Actions._ActionDefault.HandleAnimator(7);
 
 		HandleInputs();
 		PlaceOnCreatedPath();
@@ -110,6 +110,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		//Physics
 		_PlayerPhys.SetTotalVelocity(Vector3.zero, Vector2.right); //Prevent character moving outside of the path.
 		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
+		_PlayerPhys._canBeGrounded = false;
 
 		//Effects
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -140,6 +141,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
+		this.enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -154,6 +156,8 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		//Here to ensure this is always called no matter why the action ends.
 		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
+
+		_PlayerPhys._canBeGrounded = true;
 
 		_PlayerPhys._listOfCanControl.RemoveAt(0); //Remove lock on control before this, but add a new delay before control returns.
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f));
@@ -245,7 +249,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		float differentSpeedOnExit = _dashSpeed - endingSpeedResult;
 		if(differentSpeedOnExit > 0) { StartCoroutine(LoseTemporarySpeedOverTime(differentSpeedOnExit)); }
 
-		_Actions.ActionDefault.StartAction();
+		_Actions._ActionDefault.StartAction();
 	}
 
 	//For a period of frames, adds a force (that doesn't carry over to the next frame) to fake there still being speed from the dash, but decrease it down to the actual speed.

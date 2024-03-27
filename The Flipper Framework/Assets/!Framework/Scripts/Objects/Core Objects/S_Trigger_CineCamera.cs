@@ -77,8 +77,8 @@ public class S_Trigger_CineCamera : MonoBehaviour
         {
             if(!isActive && Player != null)
             {
-                if ( Actions.whatAction == S_Enums.PrimaryPlayerStates.Path || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) 
-                    || (Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) || (Actions.whatAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction))
+                if ( Actions._whatAction == S_Enums.PrimaryPlayerStates.Path || (Actions._whatAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) || (Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) 
+                    || (Actions._whatAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) || (Actions._whatAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) || (Actions._whatAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction))
                 {
                     isActive = true;
                     hedgeCam = Player.GetComponent<S_Handler_Camera>()._VirtCam;
@@ -101,8 +101,8 @@ public class S_Trigger_CineCamera : MonoBehaviour
             else
             {
                 if(!(
-                    Actions.whatAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) && !(Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) && 
-                    !(Actions.whatAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) && !(Actions.whatAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) && !(Actions.whatAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction) && onExit)
+                    Actions._whatAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) && !(Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) && 
+                    !(Actions._whatAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) && !(Actions._whatAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) && !(Actions._whatAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction) && onExit)
                 {
                     DeactivateCam(0);
                 }

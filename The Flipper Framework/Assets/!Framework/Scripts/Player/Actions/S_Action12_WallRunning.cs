@@ -727,8 +727,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 
 
-		if (immediately && _Actions.whatAction != S_Enums.PrimaryPlayerStates.Jump)
-			_Actions.ActionDefault.StartAction();
+		if (immediately && _Actions._whatAction != S_Enums.PrimaryPlayerStates.Jump)
+			_Actions._ActionDefault.StartAction();
 	}
 
 	void JumpfromWall () {
@@ -809,8 +809,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			{
 				//Vector3 newVec = Player.p_rigidbody.velocity + CharacterAnimator.transform.forward * (ClimbingSpeed * 0.1f);
 				_PlayerPhys.AddCoreVelocity(_MainSkin.forward * 8);
-					if (_Actions.whatAction != S_Enums.PrimaryPlayerStates.Jump)
-						_Actions.ActionDefault.StartAction();
+					if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.Jump)
+						_Actions._ActionDefault.StartAction();
 
 			}
 

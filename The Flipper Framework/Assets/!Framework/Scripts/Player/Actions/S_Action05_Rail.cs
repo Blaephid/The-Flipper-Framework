@@ -149,11 +149,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			switch (_whatKindOfRail)
 			{
 				case S_Interaction_Pathers.PathTypes.rail:
-					_Actions.ActionDefault.HandleAnimator(10);
+					_Actions._ActionDefault.HandleAnimator(10);
 					_CharacterAnimator.SetBool("GrindRight", _isFacingRight);
 					break;
 				case S_Interaction_Pathers.PathTypes.zipline:
-					_Actions.ActionDefault.HandleAnimator(9);
+					_Actions._ActionDefault.HandleAnimator(9);
 					break;
 			}
 		}
@@ -175,8 +175,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		else
 		{
 			//End action
-			StartCoroutine(_Actions.ActionDefault.CoyoteTime());
-			_Actions.ActionDefault.StartAction();
+			StartCoroutine(_Actions._ActionDefault.CoyoteTime());
+			_Actions._ActionDefault.StartAction();
 		}
 	}
 
@@ -213,7 +213,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_Input.JumpPressed = false;
 
 		//Animator
-		_Actions.ActionDefault.SwitchSkin(true);
+		_Actions._ActionDefault.SwitchSkin(true);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		switch (_whatKindOfRail)
 		{
@@ -236,7 +236,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		float facingDot = Vector3.Dot(_PlayerPhys._RB.velocity.normalized, _sampleForwards);
 
 		//What action before this one.
-		switch (_Actions.whatAction)
+		switch (_Actions._whatAction)
 		{
 			// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
 			case S_Enums.PrimaryPlayerStates.Homing:
@@ -245,7 +245,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				break;
 			//If it was a drop charge, add speed from the charge to the grind speed.
 			case S_Enums.PrimaryPlayerStates.DropCharge:
-				float charge = _Actions.Action08.GetCharge();
+				float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
 				_playerSpeed = Mathf.Clamp(charge, _playerSpeed + (charge / 6), 160);
 				break;
 
@@ -260,6 +260,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Rail);
+		this.enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -270,7 +271,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		//If left this action to perform a jump,
-		if (_Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump)
+		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump)
 		{
 			switch (_whatKindOfRail)
 			{
@@ -490,7 +491,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	void HandleRailSpeed () {
 		if (_isBraking && _playerSpeed > _minStartSpeed_) _playerSpeed *= _playerBrakePower_;
 
-		ApplyBoost();
+		HandleBoost();
 		HandleSlopes();
 
 		//Decrease speed if over max or top speed on the rail.
@@ -503,7 +504,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	//Set to true outside of this script. But when boosted on a rail will gain a bunch of speed at once before having some of it quickly drop off.
-	void ApplyBoost () {
+	void HandleBoost () {
 		//If currently being boosted
 		if (_isBoosted)
 		{
@@ -522,7 +523,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 	}
 
-	void HandleSlopes () {
+	private void HandleSlopes () {
 		//Start a force to apply based on the curve position and general modifier for all slopes handled in physics script 
 		float force = _generalHillModifier;
 		force *= ((1 - (Mathf.Abs(transform.up.y) / 10)) + 1); //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
@@ -554,7 +555,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			_Actions.HandleInputs(_positionInActionList);
 	}
 
-	void HandleUniqueInputs () {
+	private void HandleUniqueInputs () {
 		_pushTimer += Time.deltaTime;
 
 		//Certain types of rail have unique controls / subactions to them.
@@ -595,7 +596,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_isBraking = _Input.BouncePressed;
 	}
 
-	void CheckHopping () {
+	private void CheckHopping () {
 		if (_canInput && _canHop)
 		{
 			//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
@@ -626,7 +627,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 	}
 
-	void PerformHop () {
+	private void PerformHop () {
 		//If this is set to over zero in checkHopping, then the player should be moved off the rail accordingly.
 		if (_distanceToStep > 0)
 		{
@@ -646,11 +647,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			if (move < 0)
 				if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), -_MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
-					_Actions.ActionDefault.StartAction();
+					_Actions._ActionDefault.StartAction();
 				}
 				else if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), _MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
-					_Actions.ActionDefault.StartAction();
+					_Actions._ActionDefault.StartAction();
 				}
 
 			//Decrease how far to move by how far has moved.
@@ -666,14 +667,14 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				if (_distanceToStep <= 0)
 				{
 					_Rail_int._isFollowingPath = false;
-					_Actions.ActionDefault.StartAction();
+					_Actions._ActionDefault.StartAction();
 				}
 			}
 		}
 	}
 
 	//Make it so can't rail hop until being on a rail for long enough. This includes hopping from one rail to another.
-	IEnumerator DelayHopOnLanding () {
+	private IEnumerator DelayHopOnLanding () {
 		_canHop = false;
 		yield return new WaitForSeconds(_hopDelay_);
 		_canHop = true;
@@ -704,6 +705,45 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_Rail_int._isFollowingPath = true;
 
 		_ConnectedRails = AddOn; //Will be used to go onto subsequent rails without recalculating collisions.
+	}
+
+	//Called externally when entering a booster on a rail. Changes speed. 
+	public IEnumerator ApplyBoost ( float speed, bool set, float addSpeed, bool backwards ) {
+		//Rather than apply boost immediately, stretch it over three frames for smoothness and to ensure player proerly enters rail.
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+
+			//Set means completely changing the speed to a specific value.
+			if (set)
+			{
+				if (_playerSpeed < speed)
+				{
+					_playerSpeed = speed;
+					_isBoosted = true;
+					_boostTime = 0.9f; //How long the boost lasts before decaying.
+
+				}
+				else
+					set = false; //If speed higher than what will be set, go through the other option instead.
+			}
+			//Keep checking if on a rail before applying this.
+			if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Rail)
+			{
+				_playerSpeed += addSpeed;
+				_isBoosted = true;
+				_boostTime = 0.7f; //How long the boost lasts before decaying.
+
+				break; //Since speed has now been applied, can end checking for if on rail.
+
+			}
+			
+			//Changes which direction to grind in.
+			if (backwards)
+				_isGoingBackwards = true;
+			else
+				_isGoingBackwards = false;
+		}
 	}
 
 	#endregion

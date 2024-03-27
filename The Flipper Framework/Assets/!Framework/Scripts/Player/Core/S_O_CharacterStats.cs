@@ -35,16 +35,18 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucAcceleration
 	{
+		[Header("Base Values")]
 		[Tooltip("Surface: Decides the average acceleration when running or in the air. How much speed to be added per frame.")]
 		public float              runAcceleration;
 		[Tooltip("Surface: Decides the average acceleration when curled in a ball on the ground. How much speed to be added per frame")]
 		public float              rollAccel;
+		[Tooltip("Core: If the angle between current direction and input direction is greater than this, then the player will not gain speed")]
+		public float                    angleToAccelerate;
+		[Header("Effected values")]
 		[Tooltip("Core: Decides how much of the acceleration values to accelerate by based on current running speed by Top Speed (not max speed)")]
 		public AnimationCurve     AccelBySpeed;
 		[Tooltip("Core: Decides how much of the acceleration values to accelerate by based on y normal of current slope. 0 = horizontal wall. ")]
 		public AnimationCurve         AccelBySlopeAngle;
-		[Tooltip("Core: If the angle between current direction and input direction is greater than this, then the player will not gain speed")]
-		public float                    angleToAccelerate;
 
 	}
 	#endregion
@@ -108,10 +110,12 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucTurning
 	{
+		[Header("Base values")]
 		[Tooltip("Surface : Decides how fast the character will turn. Core calculations are applied to this number, but it can easily be changed. How many degrees to change per frame")]
 		public float              turnSpeed;
 		[Tooltip("Surface : Decides how much speed will be lost when turning. Calculations are applied to this, but it can easily be changed. How much speed to lose per frame")]
 		public float              turnDrag;
+		[Header("Effected Values")]
 		[Tooltip("Core : Multiplies the turn speed based on the the angle difference between input direction and moving direction")]
 		public AnimationCurve     TurnRateByAngle;
 		[Tooltip("Core : Multiplies the turn speed based on the the current speed divided by max speed.")]
@@ -228,26 +232,29 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucSlopes
 	{
+		[Header("Limits")]
 		[Tooltip("Core: If the y normal of the floor is below this, then the player is considered on a slope. 1 = flat ground, as it's pointing straight up.")]
 		public float              slopeEffectLimit;
 		[Tooltip("Core: Decides if the player will fall off the slope. If their speed is under what this curve has for the current normal's y value, then they fall off.")]
 		public AnimationCurve     SpeedLimitBySlopeAngle;
+		[Header("Forces")]
 		[Tooltip("Surface : Sets the overall force power of slopes.")]
 		public float              generalHillMultiplier;
 		[Tooltip("Surface : Multiplied with the force of a slope when going uphill to determine the force against.")]
 		public float              uphillMultiplier;
 		[Tooltip("Surface : Multiplied with the force of a slope when going downhill to determine the force for.")]
 		public float              downhillMultiplier;
-		[Tooltip("Core : The speed the player should be moving downwards when grounded on a slope to be considered going downhill.")]
-		public float              downhillThreshold;
-		[Tooltip("Core : The speed the player should be moving upwards when grounded on a slope to be considered going uphill.")]
-		public float              uphillThreshold;
 		[Tooltip("Core : Determines the power of the slope by current speed divided by max. ")]
 		public AnimationCurve     SlopePowerByCurrentSpeed;
 		[Tooltip("Core: Determines the power of the slope when going uphill, based on how long has been spent going uphill since they were last going downhill or on flat ground.")]
 		public AnimationCurve     UpHillEffectByTime;
+		[Header("Triggers")]
 		[Tooltip("Core: Amount of force gained when landing on a slope.")]
 		public float                  landingConversionFactor;
+		[Tooltip("Core : The speed the player should be moving downwards when grounded on a slope to be considered going downhill.")]
+		public float              downhillThreshold;
+		[Tooltip("Core : The speed the player should be moving upwards when grounded on a slope to be considered going uphill.")]
+		public float              uphillThreshold;
 	}
 	#endregion
 
@@ -264,7 +271,7 @@ public class S_O_CharacterStats : ScriptableObject
 			stickingLerps = new Vector2(0.885f, 1.005f),
 			stickingNormalLimit = 0.5f,
 			stickCastAhead = 1.9f,
-			negativeGHoverHeight = 0.05f,
+			groundBuffer = 0.05f,
 			rotationResetThreshold = -0.1f,
 			upwardsLimitByCurrentSlope = new AnimationCurve(new Keyframe[]
 			{
@@ -287,7 +294,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: The cast ahead to check for slopes to align to. Multiplied by the movement this frame. Too much of this value might send the player flying off before it hits the loop, too little might see micro stutters, default value 1.9")]
 		public float        stickCastAhead;
 		[Tooltip("Core: This is the position above the raycast hit point that the player will be placed if they are loosing grip.")]
-		public float        negativeGHoverHeight;
+		public float        groundBuffer;
 		[Tooltip("Core: If the y value of the player's relative up direction is less than this (-1 is fully upside down) when in the air, then they will rotate sideways to face back up, rather than the conventonal rotation approach. This keeps them facing in their movement direction.")]
 		public float        rotationResetThreshold;
 		[Tooltip("Core: When lerping up negative slopes, if the difference between the two is under this, then will lerp up it, otherwise it is seen as a wall, not a slope. The value is based on the normal y of the current slope, so running on a horizonal wall can have a different difference limit to running on flat ground.")]
@@ -348,14 +355,17 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucInAir
 	{
-		[Tooltip("Surface: The maximum speed the player can ever be moving downwards when not grounded.")]
-		public float    startMaxFallingSpeed;
+		[Header("Control")]
+		[Tooltip("Surface: X is multiplied with the turning speed when in the air, Y is multiplied with acceleration when in the air.")]
+		public Vector2   controlAmmount;
 		[Tooltip("Core: Whether or not the player should decelerate when there's no input in the air.")]
 		public bool               shouldStopAirMovementWhenNoInput;
 		[Tooltip("Core: How long to keep rotation relative to ground after losing it.")]
 		public float    keepNormalForThis;
-		[Tooltip("Surface: X is multiplied with the turning speed when in the air, Y is multiplied with acceleration when in the air.")]
-		public Vector2   controlAmmount;
+
+		[Header("Falling")]
+		[Tooltip("Surface: The maximum speed the player can ever be moving downwards when not grounded.")]
+		public float    startMaxFallingSpeed;
 		[Tooltip("Surface: Force to add onto the player per frame when in the air and falling downwards.")]
 		public Vector3  fallGravity;
 		[Tooltip("Surface: Force to add onto the player per frame when in the air but currently moving upwards (such as launched by a slope)")]
@@ -388,9 +398,7 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucRolling
 	{
-		[Tooltip("Core: Multiplied by landing conversion factor to gain more force when landing on a slope and immediately rolling.")]
-		public float    rollingLandingBoost;
-		public float    minRollingTime;
+		[Header("Effects")]
 		[Tooltip("Core: Multiplies force for when rolling downhill..")]
 		public float    rollingDownhillBoost;
 		[Tooltip("Core: Multiplies force against when rolling uphill")]
@@ -399,6 +407,11 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    rollingStartSpeed;
 		[Tooltip("Core: When rolling, multiplied by turn speed.")]
 		public float    rollingTurningModifier;
+		[Header("Interactions")]
+		[Tooltip("Core: Multiplied by landing conversion factor to gain more force when landing on a slope and immediately rolling.")]
+		public float    rollingLandingBoost;
+		[Tooltip("Core: Can only exit a role after benn rolling for this many seconds.")]
+		public float    minRollingTime;
 	}
 
 	#endregion
@@ -426,21 +439,24 @@ public class S_O_CharacterStats : ScriptableObject
 	[Tooltip("Surface: Skidding is when the player holds inputs against their movement direction to quickly slow down.")]
 	public struct StrucSkidding
 	{
-		[Tooltip("Surface: Immediately stop if skidding while under this speed.")]
-		public float	speedToStopAt;
-		[Tooltip("Surface: Whether the player can change their direction while skidding")]
-		public bool	shouldSkiddingDisableTurning;
+		[Header("Interaction")]
 		[Tooltip("Surface: How precise the angle has to be against the character's movement. E.G. a value of 160 means the player's input should be between a 160 and 180 degrees angle from movement.")]
 		public int	angleToPerformSkid;
 		public int	angleToPerformHomingSkid;
-		[Range(-100, 0)]
-		[Tooltip("Surface: How much force to apply against the character per frame as they skid on the ground.")]
-		public float	skiddingIntensity;
 		[Tooltip("Surface: Whehter or not the player can perform a skid while airborn.")]
 		public bool	canSkidInAir;
+		[Tooltip("Surface: Whether the player can change their direction while skidding")]
+		public bool         shouldSkiddingDisableTurning;
+
+		[Header("Effects")]
+		[Range(-100, 0)]
+		[Tooltip("Surface: How much force to apply against the character per frame as they skid on the ground.")]
+		public float        skiddingIntensity;
 		[Range(-100, 0)]
 		[Tooltip("Surface: How much force to apply against the character per frame as they skid in the air.")]
-		public float	skiddingIntensityInAir;
+		public float        skiddingIntensityInAir;
+		[Tooltip("Surface: Immediately stop if skidding while under this speed.")]
+		public float        speedToStopAt;
 	}
 
 	#endregion
@@ -463,7 +479,6 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(1.5f, 0.55f),
 			}),
 			jumpSlopeConversion = 0.03f,
-			stopYSpeedOnRelease = 2.1f,
 			jumpRollingLandingBoost = 0f,
 			startJumpDuration = new Vector2 (0.15f, 0.25f),
 			startSlopedJumpDuration = 0.2f,
@@ -478,14 +493,18 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucJumps
 	{
-		public AnimationCurve CoyoteTimeBySpeed;
-		public float    jumpSlopeConversion;
-		public float    stopYSpeedOnRelease;
-		public float    jumpRollingLandingBoost;
-		public Vector2    startJumpDuration;
-		public float    startSlopedJumpDuration;
+		[Header("Force")]
 		public float    startJumpSpeed;
 		public float    speedLossOnJump;
+		public float    jumpSlopeConversion;
+		public float    jumpRollingLandingBoost;
+
+		[Header("Durations")]
+		public Vector2    startJumpDuration;
+		public float    startSlopedJumpDuration;
+		public AnimationCurve CoyoteTimeBySpeed;
+
+		[Header ("Control")]
 		public float      jumpExtraControlThreshold;
 		public Vector2      jumpAirControl;
 	}
@@ -511,10 +530,9 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucMultiJumps
 	{
-		public bool         canDoubleJump;
-		public bool         canTripleJump;
 		public int          maxJumpCount;
 
+		[Header("Effects")]
 		public float        doubleJumpSpeed;
 		public float        doubleJumpDuration;
 		public float        speedLossOnDoubleJump;
@@ -541,10 +559,13 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucQuickstep
 	{
+		[Header("Grounded")]
 		public float        stepSpeed;
 		public float        stepDistance;
+		[Header("In Air")]
 		public float        airStepSpeed;
 		public float        airStepDistance;
+		[Header("Interaction")]
 		public LayerMask    StepLayerMask;
 
 	}
@@ -567,8 +588,13 @@ public class S_O_CharacterStats : ScriptableObject
 			minDuration = 0.15f,
 			turnSpeed = 8,
 			dashIncrease = 15,
-			verticalAngle = 0,
+			forceUpwards = 0,
 			horizontalAngle = 90,
+			faceDownwardsSpeed = 0.02f,
+			maxDownwardsSpeed = -5,
+			lockMoveInputOnStart = 0,
+			speedAfterDash = -5,
+			framesToChangeSpeed = 5,
 		};
 	}
 
@@ -576,14 +602,25 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucAirDash
 	{
 		public S_Enums.JumpDashType	behaviour;
+		[Header("Pre Dash")]
 		public float        dashSpeed;
 		public float        dashIncrease;
+		public int          forceUpwards;
+		[Range(0, 180)]
+		public int          horizontalAngle;
+		public int          lockMoveInputOnStart;
+
+		[Header("In Dash")]
 		public float        turnSpeed;
 		public float        maxDuration;
 		public float        minDuration;
-		[Range(-180, 180)]
-		public int          verticalAngle;
-		public int          horizontalAngle;
+		public float	faceDownwardsSpeed;
+		public float        maxDownwardsSpeed;
+
+		[Header("Post Dash")]
+		public int          lockMoveInputOnEnd;
+		public float        speedAfterDash;
+		public float        framesToChangeSpeed;
 	}
 
 	#region homing
@@ -595,7 +632,7 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucHomingSearch
 		{
 			targetSearchDistance = 44f,
-			rangeInCameraDirection = 1.2f,
+			distanceModifierInCameraDirection = 1.2f,
 			minimumTargetDistance = 15,
 			maximumTargetDistance = 80,
 			TargetLayer = new LayerMask(),
@@ -615,23 +652,27 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucHomingSearch
 	{
+		public float                  timeBetweenScans;
+		[Header("Ranges")]
 		public float                  targetSearchDistance;
-		public float                  rangeInCameraDirection;
+		public float                  distanceModifierInCameraDirection;
+		public int                    radiusOfCameraTargetCheck;
 		public int                    minimumTargetDistance;
 		public int                    maximumTargetDistance;
+
+		[Header("Target Selection")]
 		public LayerMask              TargetLayer;
 		public LayerMask              blockingLayers;
-		public float                  iconScale;
-		public float                  iconDistanceScaling;
-		public float                  facingAmount;
-		[Range(0f, 1f)]
-		public float		currentTargetPriority;
-		public Vector2                timeToKeepTarget;
-		public float                  timeBetweenScans;
-		public int                    radiusOfCameraTargetCheck;
 		[Range(0f, 1f)]
 		public float                  cameraDirectionPriority;
+		public float                  facingAmount;
+		[Range(0f, 1f)]
+		public float                  currentTargetPriority;
+		public Vector2                timeToKeepTarget;
 
+		[Header("Reticle")]
+		public float                  iconScale;
+		public float                  iconDistanceScaling;
 	}
 
 	public StrucHomingAction HomingStats = SetStrucHomingAction();
@@ -662,24 +703,28 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucHomingAction
 	{
+		[Header("States")]
 		public bool         canBePerformedOnGround;
-		public bool         canBeControlled;
 		public bool         canDashWhenFalling;
+		[Range(0, 10)]
+		public int          homingCountLimit;
+		[Header("Effects")]
 		public float	attackSpeed;
-		public int          maximumSpeed;
-		public int          minimumSpeed;
-		public int          minimumSpeedOnHit;
 		public float	timerLimit;
-		public float	successDelay;
 		public float	turnSpeed;
-		public int	deceleration;
-		public int	acceleration;
+		[Header("On Hit")]
+		public float        successDelay;
+		public int          minimumSpeedOnHit;
 		[Range(0, 1)]
 		public float        lerpToPreviousDirectionOnHit;
 		[Range(0, 1)]
 		public float        lerpToNewInputOnHit;
-		[Range(0, 10)]
-		public int          homingCountLimit;
+		[Header("Control")]
+		public bool         canBeControlled;
+		public int          maximumSpeed;
+		public int          minimumSpeed;
+		public int          deceleration;
+		public int          acceleration;
 	}
 
 	#endregion
@@ -750,23 +795,26 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucSpinCharge
 	{
 		public S_Enums.SpinChargeAiming whatAimMethod;
-		public float              chargingSpeed;
+		[Header ("Charge")]
+		public float		chargingSpeed;
 		public float                  tappingBonus;
 		public int                    delayBeforeLaunch;
-		public float              minimunCharge;
-		public float              maximunCharge;
-		public float              forceAgainstMovement;
-		public bool                   shouldSetRolling;
-		public float              maximumSpeedPerformedAt; //The max amount of speed you can be at to perform a Spin Dash
-		public float              maximumSlopePerformedAt; //The highest slope you can be on to Spin Dash
-		public float              releaseShakeAmmount;
-		public AnimationCurve     SpeedLossByTime;
-		public AnimationCurve     ForceGainByAngle;
-		public AnimationCurve     LerpRotationByAngle;
-		public AnimationCurve     ForceGainByCurrentSpeed;
-		public float              angleToPerformSkid;
-		public float              skidIntesity;
-
+		public float		minimunCharge;
+		public float		maximunCharge;
+		[Header("Release")]
+		public bool		shouldSetRolling;
+		public float		releaseShakeAmmount;
+		public AnimationCurve	ForceGainByAngle;
+		public AnimationCurve	LerpRotationByAngle;
+		public AnimationCurve	ForceGainByCurrentSpeed;
+		[Header("Control")]
+		public float		forceAgainstMovement;
+		public AnimationCurve	SpeedLossByTime;
+		public float		angleToPerformSkid;
+		public float		skidIntesity;
+		[Header("Performing")]
+		public float		maximumSpeedPerformedAt; //The max amount of speed you can be at to perform a Spin Dash
+		public float		maximumSlopePerformedAt; //The highest slope you can be on to Spin Dash
 	}
 	#endregion
 
@@ -799,19 +847,18 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucBounce
 	{
 		[Header("Movement")]
-		public float              dropSpeed;
-		public float              bounceHaltFactor;
+		public float		dropSpeed;
+		public float		bounceHaltFactor;
 		public Vector2                horizontalSpeedDecay;
-		public Vector2      bounceAirControl;
+		public Vector2		bounceAirControl;
 		[Header("Bounces")]
-		public List<float>        listOfBounceSpeeds;
-		public float              bounceUpMaxSpeed;
+		public List<float>		listOfBounceSpeeds;
+		public float		bounceUpMaxSpeed;
 		public float                  minimumPushForce;
 		public float                  lerpTowardsInput;
 		[Header("Cooldown")]
-		public float              bounceCoolDown;
-		public float              coolDownModiferBySpeed;
-
+		public float		bounceCoolDown;
+		public float		coolDownModiferBySpeed;
 	}
 	#endregion
 
@@ -827,7 +874,7 @@ public class S_O_CharacterStats : ScriptableObject
 			minimumEndingSpeed = 60f,
 			speedGained = 1.2f,
 
-			SearchDistance = 8f,
+			searchDistance = 8f,
 			RingRoadLayer = new LayerMask()
 		};
 	}
@@ -838,14 +885,14 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucRingRoad
 	{
 		[Header ("Performing")]
-		public bool	willCarrySpeed;
-		public float    dashSpeed;
-		public float    minimumEndingSpeed;
+		public bool		willCarrySpeed;
+		public float		dashSpeed;
+		public float		minimumEndingSpeed;
 		[Range (0, 2)]
-		public float        speedGained;
+		public float		speedGained;
 		[Header ("Scanning")]
-		public float    SearchDistance;
-		public LayerMask          RingRoadLayer;
+		public float		searchDistance;
+		public LayerMask		RingRoadLayer;
 	}
 	#endregion
 
@@ -861,7 +908,7 @@ public class S_O_CharacterStats : ScriptableObject
 			chargingSpeed = 1.2f,
 			minimunCharge = 40f,
 			maximunCharge = 150f,
-			minimumHeightToDropCharge = 5,
+			minimumHeightToPerform = 5,
 		};
 	}
 
@@ -873,7 +920,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float      chargingSpeed;
 		public float      minimunCharge;
 		public float      maximunCharge;
-		public float      minimumHeightToDropCharge;
+		public float      minimumHeightToPerform;
 	}
 	#endregion
 
@@ -887,9 +934,7 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			bouncingPower = 45f,
 			homingBouncingPower = 40f,
-			enemyHomingStoppingPowerWhenAdditive = 40f,
-			shouldStopOnHomingAttackHit = true,
-			shouldStopOnHit = true,
+			shouldStopOnHit = false,
 			damageShakeAmmount = 0.5f,
 			hitShakeAmmount = 1.2f,
 		};
@@ -900,11 +945,11 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucEnemyInteract
 	{
+		[Header("Force on hit")]
 		public float		bouncingPower;
 		public float		homingBouncingPower;
-		public float		enemyHomingStoppingPowerWhenAdditive;
-		public bool		shouldStopOnHomingAttackHit;
 		public bool		shouldStopOnHit;
+		[Header("Effects")]
 		public float		damageShakeAmmount;
 		public float		hitShakeAmmount;
 	}

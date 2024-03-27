@@ -70,8 +70,6 @@ public class S_Enums
 	public enum JumpDashType {
 		ControlledDash,
 		Push,
-		AngledPush,
-		ArcedDash,
 	}
 
 	public enum HomingRebounding {

@@ -98,11 +98,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eb7a79ff1af44844acaaa91f003f9c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Distance: 1500
-  TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
-    type: 3}
-  Enemy: {fileID: 1000010720554734, guid: 69122227f361a3d4aae3617e55c68c01, type: 3}
-  respawnOnDeath: 1
+  _SpawnerData:
+    _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
+      type: 3}
+    _ObjectToSpawn: {fileID: 1000010720554734, guid: 69122227f361a3d4aae3617e55c68c01,
+      type: 3}
+    _willRespawnOnDeath: 1
+    _distanceFromPlayerToSpawn: 500
+    _willAutoSpawn: 1
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _ObjectClone: {fileID: 0}
+  _counter: 0
 --- !u!114 &-3845985876537958363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,5 +122,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 1
-  Des: 0
+  _whatAction: 2
+  _delayInSeconds: 0

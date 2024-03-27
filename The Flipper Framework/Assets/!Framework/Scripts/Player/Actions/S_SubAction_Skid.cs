@@ -68,7 +68,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	}
 
 	private void FixedUpdate () {
-		if(_whatCurrentAction != _Actions.whatAction) 
+		if(_whatCurrentAction != _Actions._whatAction) 
 		{ 
 			StopAction();
 			enabled = false;
@@ -79,10 +79,10 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	//Called when attempting to perform an action, checking and preparing inputs.
 	public bool AttemptAction () {
 		bool willStartAction = false;
-		_whatCurrentAction = _Actions.whatAction;
+		_whatCurrentAction = _Actions._whatAction;
 
 		//Different actions require different skids, even though they all call this function.
-		switch (_Actions.whatAction)
+		switch (_Actions._whatAction)
 		{
 			case S_Enums.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._isGrounded)
@@ -114,7 +114,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	public void StartAction() {
 		if (!_isSkidding)
 		{
-			_Actions.whatSubAction = S_Enums.SubPlayerStates.Skidding;
+			_Actions._whatSubAction = S_Enums.SubPlayerStates.Skidding;
 			if (!enabled) { enabled = true; }
 
 			_Sounds.SkiddingSound();

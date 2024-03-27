@@ -258,7 +258,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//Gets the players current input direction and moves the target in that direction.
 		if (_shouldMoveInInputDirection_)
 		{
-			Vector3 inputDirection = (_PlayerPhys._moveInput);
+			Vector3 inputDirection = _PlayerPhys.transform.TransformDirection(_PlayerPhys._moveInput);
 			_predictAheadPosition = Vector3.MoveTowards(_predictAheadPosition, inputDirection * _inputPredictonDistance_, _cameraMoveToInputSpeed_ * Time.deltaTime);
 
 		}
@@ -437,7 +437,7 @@ public class S_HedgeCamera : MonoBehaviour
 		float verticalSpeed = _PlayerTransformReal.InverseTransformDirection(_PlayerPhys._RB.velocity).y;
 
 		//Making the camera face down when in the air for long enough.
-		bool isRightAction = _Actions.whatAction == S_Enums.PrimaryPlayerStates.Jump || _Actions.whatAction == S_Enums.PrimaryPlayerStates.Default || _Actions.whatAction == S_Enums.PrimaryPlayerStates.DropCharge;
+		bool isRightAction = _Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump || _Actions._whatAction == S_Enums.PrimaryPlayerStates.Default || _Actions._whatAction == S_Enums.PrimaryPlayerStates.DropCharge;
 		if (_shouldFaceDownWhenInAir_ && !_PlayerPhys._isGrounded && verticalSpeed < _fallSpeedThreshold_ && isRightAction)
 		{
 			//If isn't facing down yet, then check high enough in the air to warrent changing view.
@@ -477,7 +477,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//Certain actions will have different requirements for the camera to move behind. The switch sets the requirements before the if statement checks against them.
 		float minSpeed;
 		bool skipDelay = false;
-		switch (_Actions.whatAction)
+		switch (_Actions._whatAction)
 		{
 			default:
 				minSpeed = _lockCamAtSpeed_;
@@ -631,7 +631,7 @@ public class S_HedgeCamera : MonoBehaviour
 		if (!_isLocked)
 		{
 			//A switch is used so it's less clutured than an if statement.
-			switch(_Actions.whatAction)
+			switch(_Actions._whatAction)
 			{
 				case S_Enums.PrimaryPlayerStates.Rail:
 					break;

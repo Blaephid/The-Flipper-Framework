@@ -102,6 +102,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+		this.enabled = true;
 	}
 
 	public bool AttemptAction () {
@@ -248,7 +249,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			}
 			CancelCoyote();
 		}
-		_Actions.ActionDefault.SwitchSkin(true);
+		_Actions._ActionDefault.SwitchSkin(true);
 	}
 
 

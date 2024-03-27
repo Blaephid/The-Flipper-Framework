@@ -23,8 +23,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private GameObject            _JumpBall;
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
@@ -34,7 +32,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private float       _startSlopedJumpDuration_;
 	private float       _startJumpSpeed_;
 	private float       _jumpSlopeConversion_;
-	private float       _stopYSpeedOnRelease_;
 
 	//Additional jumps
 	private int         _maxJumps_;
@@ -69,35 +66,23 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	#endregion
 	#endregion
-	#endregion
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
 	#region Inherited
-
-	// Start is called before the first frame update
-	void Start () {
-
-	}
-
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyAction();
-		_JumpBall.SetActive(true);
-	}
-
-	private void OnDisable () {
-		_JumpBall.SetActive(false);
 	}
 
 
 	// Update is called once per frame
 	void Update () {
 		//Set Animator Parameters
-		_Actions.ActionDefault.HandleAnimator(1);
-		_Actions.ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
+		_Actions._ActionDefault.HandleAnimator(1);
+		_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
 
 		//Actions
 		if (!_Actions.isPaused)
@@ -120,7 +105,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 		if (_Input.JumpPressed)
 		{
-			switch (_Actions.whatAction)
+			switch (_Actions._whatAction)
 			{
 				case S_Enums.PrimaryPlayerStates.Default:
 					//Normal grounded Jump
@@ -130,20 +115,20 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 						StartAction();
 					}
 					//Jump from regular action due to coyote time
-					else if (_Actions.ActionDefault.enabled && _Actions.ActionDefault._isCoyoteInEffect)
+					else if (_Actions._ActionDefault.enabled && _Actions._ActionDefault._isCoyoteInEffect)
 					{
-						AssignStartValues(_Actions.ActionDefault._coyoteRememberDirection, true);
+						AssignStartValues(_Actions._ActionDefault._coyoteRememberDirection, true);
 						StartAction();
 					}
 					//Jump when in the air
-					else if (_Actions._jumpCount < _maxJumps_ && !_Actions.lockDoubleJump)
+					else if (_Actions._jumpCount < _maxJumps_ && !_Actions._isJumpLocked)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
 					}
 					return true;
 				case S_Enums.PrimaryPlayerStates.Jump:
-					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && !_Actions.lockDoubleJump)
+					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && !_Actions._isJumpLocked)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
@@ -182,7 +167,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_CharacterAnimator.SetInteger("Action", 1);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_Sounds.JumpSound();
-		_Actions.ActionDefault.SwitchSkin(false);
+		_JumpBall.SetActive(true);
+		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Snap off of ground to make sure player jumps
 		transform.position += (_upwardsDirection * 0.3f);
@@ -193,18 +179,16 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Sets jump stats for this specific jump.
 			_thisJumpSpeed = _startJumpSpeed_ * _jumpSpeedModifier;
 			_thisJumpDuration = _maxJumpTime_ * _jumpDurationModifier;
-			_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 
 			//Jump higher depending on the speed and the slope you're in
 			if (_PlayerPhys._RB.velocity.y > 5 && _upwardsDirection.y > 1)
 			{
 				_jumpSlopeSpeed = _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_;
+				_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 			}
-			//If jump would aim down, then greatly increase the upwards direction to point more up.
-			else if (Mathf.Abs(_upwardsDirection.y) < 0.1f && _PlayerPhys._RB.velocity.y < -5)
+			else
 			{
-				_upwardsDirection.y = 4;
-				_upwardsDirection.Normalize();
+				_jumpSlopeSpeed = 0; //Means slope jump force won't be applied this jump
 			}
 
 			_Actions._jumpCount = 1; //Number of jumps set to 1, allowing for double jumps.
@@ -224,6 +208,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		}
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
+		this.enabled = true;
 	}
 
 	public void StopAction (bool isFirstTime = false ) {
@@ -233,8 +218,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		_Actions.ActionDefault._animationAction = 0; //Ensures player will land properly in the correct animation when entering default action.
+		_Actions._ActionDefault._animationAction = 0; //Ensures player will land properly in the correct animation when entering default action.
 		_PlayerPhys._canBeGrounded = true;
+		_JumpBall.SetActive(false);
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
@@ -308,13 +294,13 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Jump move at angle
 			if (_counter < _slopedJumpDuration && _jumpSlopeSpeed > 0)
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.75f), false);
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.25f), false); //Extra speed to ballance out direction
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f), false);
+				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f), false); //Extra speed to ballance out direction
 			}
 			//Move straight up in world.
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_thisJumpSpeed), false);
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed), false);
 			}
 		}
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.
@@ -339,7 +325,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Prevents holding jump to keep doing so forever.
 			_Input.JumpPressed = false;
 
-			_Actions.ActionDefault.StartAction();
+			_Actions._ActionDefault.StartAction();
 		}
 	}
 
@@ -398,7 +384,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_startJumpSpeed_ = _Tools.Stats.JumpStats.startJumpSpeed;
 		_startSlopedJumpDuration_ = _Tools.Stats.JumpStats.startSlopedJumpDuration;
 		_jumpSlopeConversion_ = _Tools.Stats.JumpStats.jumpSlopeConversion;
-		_stopYSpeedOnRelease_ = _Tools.Stats.JumpStats.stopYSpeedOnRelease;
 
 		_maxJumps_ = _Tools.Stats.MultipleJumpStats.maxJumpCount;
 		_doubleJumpDuration_ = _Tools.Stats.MultipleJumpStats.doubleJumpDuration;

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 82000010318864316}
   - component: {fileID: 9051259168261039089}
   m_Layer: 0
-  m_Name: Pr_TeleportSparkle
+  m_Name: Pr_Effect_TeleportSparkle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

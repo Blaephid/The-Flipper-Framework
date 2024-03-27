@@ -5966,7 +5966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316796d67803e6b4f8719aa0db4b6204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _trailOffSet: {x: 0, y: -3, z: 0}
+  _trailOffSet: {x: 0, y: 0.1, z: 0}
 --- !u!114 &6634573134749074193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5980,12 +5980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _DropEffect: {fileID: 0}
-  _spinDashChargingSpeed_: 0.3
-  _minimunCharge_: 10
-  _maximunCharge_: 100
   _charge: 0
-  _ballAnimationSpeedMultiplier: 0
-  _spinDashChargedEffectAmm: 0
   _releaseShakeAmmount: 0
 --- !u!114 &4314005691558026853
 MonoBehaviour:
@@ -6020,10 +6015,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fadeadbb69111459e75fec9dcceb48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isAdditive_: 0
-  _AirDashSpeed_: 0
-  _AirDashDuration_: 0
-  _skinRotationSpeed: 0
+  _skinRotationSpeed: 5
 --- !u!114 &6755438600529197151
 MonoBehaviour:
   m_ObjectHideFlags: 0

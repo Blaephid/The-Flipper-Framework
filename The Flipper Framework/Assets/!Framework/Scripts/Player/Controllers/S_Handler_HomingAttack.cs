@@ -219,7 +219,8 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	//Takes in a target and return the closer of it or the current one.
 	private Transform CheckTarget ( Transform newTarget, float distance, Transform closest, float facingAmount, bool skipIsOnScreen = false ) {
 
-		
+		//If this new target is out of the maximum range, then ignore it, no matter the check. Gets its own distance because the distance parameter won't always be the exact distance.
+		if (Vector3.Distance(transform.position, newTarget.position) > _maxTargetDistance_ ) { return closest; } 
 		//Make sure Sonic is facing the target enough
 		Vector3 direction = (newTarget.position - transform.position).normalized;
 		float angle = Vector3.Angle(new Vector3(_MainSkin.forward.x, 0, _MainSkin.forward.z), new Vector3 (direction.x, 0, direction.z));
@@ -370,7 +371,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
 		_targetSearchDistance_ = _Tools.Stats.HomingSearch.targetSearchDistance;
-		_faceRange_ = _Tools.Stats.HomingSearch.rangeInCameraDirection;
+		_faceRange_ = _Tools.Stats.HomingSearch.distanceModifierInCameraDirection;
 		_minTargetDistance_ = _Tools.Stats.HomingSearch.minimumTargetDistance;
 		_maxTargetDistance_ = _Tools.Stats.HomingSearch.maximumTargetDistance;
 		_TargetLayer_ = _Tools.Stats.HomingSearch.TargetLayer;
