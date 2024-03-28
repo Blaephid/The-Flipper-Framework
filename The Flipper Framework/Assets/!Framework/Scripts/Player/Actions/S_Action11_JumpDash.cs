@@ -61,7 +61,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private float	_timer;		//Tracks how long has been in this action
 	private float	_dashSpeed;	//Generated at start of action, based on player speed and stats.
 	private Vector3	_dashDirection;	//Generated at start of action, based on input, stats and movement.
-	private float	_downSpeed;          //Generated at start of action, based on input, stats and movement.
+	private float	_upwardsSpeed;          //Generated at start of action, based on input, stats and movement.
 
 	private Vector3     _input;
 	#endregion
@@ -167,9 +167,9 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		_Input.LockInputForAWhile(_lockMoveInputOnStart_, false, _dashDirection);
 
-		Vector3 newVel = _dashDirection * _dashSpeed;
-		newVel.y = _downSpeed;
-		_PlayerPhys.SetCoreVelocity(newVel, true);
+		Vector3 newVec = _dashDirection * _dashSpeed;
+		newVec += _MainSkin.up * _upwardsSpeed;
+		_PlayerPhys.SetCoreVelocity(newVec, true);
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
 		this.enabled = true;
@@ -226,11 +226,11 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 			_dashDirection = Vector3.RotateTowards(_dashDirection, _input, inputMag * _turnSpeed_ * Time.deltaTime, 0f);
 		}
 		//Since gravity is not being applied, use this to slowly aim more downwards.
-		_downSpeed = Mathf.MoveTowards(_downSpeed, _maxDownwardsSpeed_, _faceDownwardsSpeed_);
+		_upwardsSpeed = Mathf.MoveTowards(_upwardsSpeed, _maxDownwardsSpeed_, _faceDownwardsSpeed_);
 
 		//Build and set velocity.
 		Vector3 newVec = _dashDirection.normalized * _dashSpeed;
-		newVec += _MainSkin.up * _downSpeed;
+		newVec += _MainSkin.up * _upwardsSpeed;
 		_PlayerPhys.SetCoreVelocity(newVec);
 	}
 
@@ -283,7 +283,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_dashDirection.y = 0;
 
 		//Aiming Vertically
-		_downSpeed = _verticalAngle_;
+		_upwardsSpeed = _verticalAngle_;
 
 		//Aiming Horizontally
 		_input = transform.TransformDirection(_PlayerPhys._moveInput);
