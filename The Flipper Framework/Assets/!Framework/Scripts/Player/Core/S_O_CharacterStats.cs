@@ -138,7 +138,7 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucDeceleration
 		{
 			moveDeceleration = 1.05f,
-			airDecel = 1.25f,
+			airManualDecel = 1.25f,
 			DecelBySpeed = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0, 1.005f),
@@ -148,7 +148,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(1f, 1.1f),
 			}),
 			rollingFlatDecell = 1.004f,
-			naturalAirDecel = 1.002f
+			airConstantDecel = 1.002f
 		};
 	}
 
@@ -158,13 +158,13 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Surface : Decides how fast the player will lose speed when not inputing on the ground. How much speed to lose per frame.")]
 		public float              moveDeceleration;
 		[Tooltip("Surface : Decides how fast the player will lose speed when not inputing in the air. How much speed to lose per frame.")]
-		public float              airDecel;
+		public float              airManualDecel;
+		[Tooltip("Surface : Decides how much horizontal speed the player will lose for each frame in the air. Stacks with other decelerations")]
+		public float              airConstantDecel;
 		[Tooltip("Surface: Decides how fast the player will lose speed when rolling and not on a slope, even if there is an input. Applied against the roll acceleration.")]
 		public float                  rollingFlatDecell;
 		[Tooltip("Core : Multiplies the deceleration this frame, based on the current speed divided by Max speed.")]
 		public AnimationCurve     DecelBySpeed;
-		[Tooltip("Surface : Decides how much horizontal speed the player will lose for each frame in the air. Stacks with other decelerations")]
-		public float              naturalAirDecel;
 	}
 	#endregion
 
@@ -362,7 +362,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public bool               shouldStopAirMovementWhenNoInput;
 		[Tooltip("Core: How long to keep rotation relative to ground after losing it.")]
 		public float    keepNormalForThis;
-
+		
 		[Header("Falling")]
 		[Tooltip("Surface: The maximum speed the player can ever be moving downwards when not grounded.")]
 		public float    startMaxFallingSpeed;
@@ -405,7 +405,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    rollingUphillBoost;
 		[Tooltip("Core: Minimum speed to be at to start rolling.")]
 		public float    rollingStartSpeed;
-		[Tooltip("Core: When rolling, multiplied by turn speed.")]
+		[Tooltip("Core: When rolling, multiplies turn speed.")]
 		public float    rollingTurningModifier;
 		[Header("Interactions")]
 		[Tooltip("Core: Multiplied by landing conversion factor to gain more force when landing on a slope and immediately rolling.")]
@@ -427,6 +427,7 @@ public class S_O_CharacterStats : ScriptableObject
 			speedToStopAt = 10,
 			shouldSkiddingDisableTurning = true,
 			angleToPerformSkid = 160,
+			angleToPerformSpinSkid = 140,
 			angleToPerformHomingSkid = 130,
 			skiddingIntensity = -5,
 			canSkidInAir = true,
@@ -442,6 +443,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Header("Interaction")]
 		[Tooltip("Surface: How precise the angle has to be against the character's movement. E.G. a value of 160 means the player's input should be between a 160 and 180 degrees angle from movement.")]
 		public int	angleToPerformSkid;
+		public float                  angleToPerformSpinSkid;
 		public int	angleToPerformHomingSkid;
 		[Tooltip("Surface: Whehter or not the player can perform a skid while airborn.")]
 		public bool	canSkidInAir;
@@ -479,11 +481,9 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(1.5f, 0.55f),
 			}),
 			jumpSlopeConversion = 0.03f,
-			jumpRollingLandingBoost = 0f,
-			startJumpDuration = new Vector2 (0.15f, 0.25f),
+			jumpDuration = new Vector2 (0.15f, 0.25f),
 			startSlopedJumpDuration = 0.2f,
-			startJumpSpeed = 4f,
-			speedLossOnJump = 0.99f,
+			jumpSpeed = 4f,
 			jumpExtraControlThreshold = 0.4f,
 			jumpAirControl = new Vector2(1.3f, 1.1f)
 		};
@@ -494,19 +494,24 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucJumps
 	{
 		[Header("Force")]
-		public float    startJumpSpeed;
-		public float    speedLossOnJump;
+		[Tooltip("Surface: The force applied per frame in jump direction.")]
+		public float    jumpSpeed;
+		[Tooltip("Core: When running up and jumping off a slope, the jump force becomes the current upwards speed, times this.")]
 		public float    jumpSlopeConversion;
-		public float    jumpRollingLandingBoost;
 
 		[Header("Durations")]
-		public Vector2    startJumpDuration;
+		[Tooltip("Surface: How long in seconds the jump will last. X is the minimum time (can end jump early by releasing the button after this). Y is the maximum (will always end after this).")]
+		public Vector2    jumpDuration;
+		[Tooltip("Core: How long in seconds the force calculated with jumpSlopeConversion will be applied before returning to normal force.")]
 		public float    startSlopedJumpDuration;
+		[Header("Core: How long in seconds the player will have after running off an edge where they can still perform a grounded jump. The amount depends on their running speed beforehand.")]
 		public AnimationCurve CoyoteTimeBySpeed;
 
 		[Header ("Control")]
-		public float      jumpExtraControlThreshold;
+		[Tooltip("Surface: The modifiers that will be applied to control when jumping. X modifies turning. Y modifies acceleration.")]
 		public Vector2      jumpAirControl;
+		[Tooltip("Core: The duration in seconds where the player gains the above control.")]
+		public float      jumpExtraControlThreshold;
 	}
 	#endregion
 
@@ -520,7 +525,7 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			maxJumpCount = 2,
 			doubleJumpSpeed = 4.5f,
-			doubleJumpDuration = 0.14f,
+			doubleJumpDuration = new Vector2 (0.04f, 0.14f),
 			speedLossOnDoubleJump = 0.978f
 		};
 	}
@@ -530,11 +535,15 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucMultiJumps
 	{
+		[Tooltip("Surface: The maxinum number of jumps that can be applied before landing on the ground.")]
 		public int          maxJumpCount;
 
 		[Header("Effects")]
+		[Tooltip("Surface: The force upwards when performing an air jump.")]
 		public float        doubleJumpSpeed;
-		public float        doubleJumpDuration;
+		[Tooltip("Surface: The minimum and maximum time in seconds an air jump can last.")]
+		public Vector2        doubleJumpDuration;
+		[Tooltip("Surface: Horizontal speed will be multiplied by this when performed.")]
 		public float        speedLossOnDoubleJump;
 	}
 	#endregion
@@ -560,12 +569,17 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucQuickstep
 	{
 		[Header("Grounded")]
+		[Tooltip("Surface: The speed to move left or right when stepping. This is a force, so the distance traveled will equal this multiplied by time between frames.")]
 		public float        stepSpeed;
+		[Tooltip("Surface: How far to the right or left to move in total when performing a step (will stop if hits an obstruction)")]
 		public float        stepDistance;
 		[Header("In Air")]
+		[Tooltip("Surface: Same as above but when the step is started in the air.")]
 		public float        airStepSpeed;
+		[Tooltip("Surface: Same as above but when the step is started in the air.")]
 		public float        airStepDistance;
 		[Header("Interaction")]
+		[Tooltip("Core: Objects on this layer will end a step if in the way of the left or right movement.")]
 		public LayerMask    StepLayerMask;
 
 	}
@@ -601,20 +615,31 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucAirDash
 	{
+		[Tooltip("Core: The type of dash that will be performed. Controlled means it will be treated as its own temporary state with its own turn values, and gravity calculations. Push means it will immeidately add force in the direction.")]
 		public S_Enums.JumpDashType	behaviour;
 		[Header("Pre Dash")]
+		[Tooltip("Surface: The minimum force to move in when in this state.")]
 		public float        dashSpeed;
+		[Tooltip("Surface: If moving faster than the dash speed, add this to the current speed instead of setting it directly.")]
 		public float        dashIncrease;
+		[Tooltip("Surface: When performed this will be added as upwards force (this can lead to an arc)")]
 		public int          forceUpwards;
 		[Range(0, 180)]
+		[Tooltip("Core: The maximum turn that can be made when starting a dash. 90 means can turn fully right or left.")]
 		public int          horizontalAngle;
+		[Tooltip("Core: How long to disable changing input when performed. This will prevent turning with a controlled dash, and lock input after push.")]
 		public int          lockMoveInputOnStart;
 
 		[Header("In Dash")]
+		[Tooltip("Surface: How quickly will change direction after the first turn when in a controlled dash.")]
 		public float        turnSpeed;
+		[Tooltip("Surface: How long the controlled dash can last in seconds before ending.")]
 		public float        maxDuration;
+		[Tooltip("Sufrace: How long in seconds before the controlled dash can end when button is released.")]
 		public float        minDuration;
+		[Tooltip("Surface: How quickly a controlled dash will start to move downwards. Acts like internal gravity.")]
 		public float	faceDownwardsSpeed;
+		[Tooltip("Surface: The maximum downwards speed that can be reached in a controlled dash.")]
 		public float        maxDownwardsSpeed;
 
 		[Header("Post Dash")]
@@ -652,26 +677,38 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucHomingSearch
 	{
+		[Tooltip("Core: The time in seconds before every check of targets around. This is not done every frame for efficiency.")]
 		public float                  timeBetweenScans;
 		[Header("Ranges")]
+		[Tooltip("Core: The maximum range of the sphere check for targets around the character.")]
 		public float                  targetSearchDistance;
+		[Tooltip("Core: In addition to the sphere check is a sphere cast from the character in camera direction. This value is multiplied by the above distance to get the range of this check.")]
 		public float                  distanceModifierInCameraDirection;
+		[Tooltip("Core: The radius of the sphere used in the above sphere cast.")]
 		public int                    radiusOfCameraTargetCheck;
+		[Tooltip("Core: An object can only be set as a target if more than this distance away.")]
 		public int                    minimumTargetDistance;
+		[Tooltip("Core: An object cannot be a target if further than this distance away, no matter the modifiers.")]
 		public int                    maximumTargetDistance;
 
 		[Header("Target Selection")]
+		[Tooltip("Core: The layers the sphere checks and casts will look for. This should only ever be set to 'Homing Target'")]
 		public LayerMask              TargetLayer;
+		[Tooltip("Core: Will ignore a target if an object of this layer is between it and the character")]
 		public LayerMask              blockingLayers;
-		[Range(0f, 1f)]
+		[Range(0f, 1f), Tooltip("Core: Determines how much to favour a target found by the sphere cast rather than the sphere check. It does this by treating the camera one as closer by this amount. (So 1 means a target found through the cast will be treated as 0 distance from player.)")]
 		public float                  cameraDirectionPriority;
+		[Tooltip("Core: The maximum angle there can be between the characters facing direction and direction of target for the target to be allowed. So if 90, then any targets behind the character will not be counted.")]
 		public float                  facingAmount;
-		[Range(0f, 1f)]
+		[Range(0f, 1f), Tooltip("Core: If switching target, this sets how much to prioritise the old target to the new one. 0.5 means the new target must be more than twice as close.")]
 		public float                  currentTargetPriority;
+		[Tooltip("Core: The minimum time in seconds an object can be considered the closest target before changing. X = How long before switching to the new closest target. Y = How long before setting there as being no current target.")]
 		public Vector2                timeToKeepTarget;
 
 		[Header("Reticle")]
+		[Tooltip("Core: How large to make the homing reticle when placed over the target.")]
 		public float                  iconScale;
+		[Tooltip("Core: How much to increase the icon by per unit of distance. Combats depth perception as the icon is an object in 3D space.")]
 		public float                  iconDistanceScaling;
 	}
 
@@ -693,8 +730,8 @@ public class S_O_CharacterStats : ScriptableObject
 			turnSpeed = 0.8f,
 			lerpToNewInputOnHit = 0.5f,
 			lerpToPreviousDirectionOnHit = 0,
-			deceleration = 55,
-			acceleration = 70,
+			deceleration = 3.5f,
+			acceleration = 5,
 			homingCountLimit = 0,
 
 		};
@@ -704,29 +741,40 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucHomingAction
 	{
 		[Header("States")]
+		[Tooltip("Core: If true, can perform a homing attack when grounded")]
 		public bool         canBePerformedOnGround;
+		[Tooltip("Core: If true, can perform a homing attack when lost the ground, rather than specifically a jump.")]
 		public bool         canDashWhenFalling;
-		[Range(0, 10)]
+		[Range(0, 10), Tooltip("Core: The maxinum number of homing attacks that can be performed before landing. 0 = infinite")]
 		public int          homingCountLimit;
 		[Header("Effects")]
+		[Tooltip("Surface: The minimum speed the attack will home in on the target.")]
 		public float	attackSpeed;
+		[Tooltip("Surface: Will end the attack if the target hasn't been reached before this long in seconds.")]
 		public float	timerLimit;
+		[Tooltip("Surface: How quickly the attack will rotate towards the target.")]
 		public float	turnSpeed;
 		[Header("On Hit")]
+		[Tooltip("Core: How long after a succesful attack until another can be performed.")]
 		public float        successDelay;
+		[Tooltip("Surface: If bouncing through the target on hit (like if it's destroyed and the button is held), this is the minimum speed to be set to.")]
 		public int          minimumSpeedOnHit;
-		[Range(0, 1)]
-		public float        lerpToPreviousDirectionOnHit;
-		[Range(0, 1)]
+		[Range(0, 1), Tooltip("Core: If holding an input on hit, and that input is within this angle of the direction the dash was moving, then on hit will start moving in this input direction. 0.5 = Will move in input direction if less than 90 degrees from dash direction.")]
 		public float        lerpToNewInputOnHit;
+		[Range(0, 1), Tooltip("Core: If not following input, bounce in a direction lerped from the dash direction to the direction before the attack. 1 = will always move in direction before attack. 0.5 = halfway between")]
+		public float        lerpToPreviousDirectionOnHit;
 		[Header("Control")]
+		[Tooltip("Core: If true, the player can have some control over the speed and angles of the attack.")]
 		public bool         canBeControlled;
+		[Tooltip("Surface: The homing attack can never move faster than this. No matter what speed it was started at.")]
 		public int          maximumSpeed;
+		[Tooltip("Surface: A homing attack can never move slower than this, even if decelerating.")]
 		public int          minimumSpeed;
-		public int          deceleration;
-		public int          acceleration;
+		[Tooltip("Surface: How must speed to lose per frame when inputing against homing direction.")]
+		public float         deceleration;
+		[Tooltip("Surface: How must speed to gain per frame when inputing with homing direction. This cannot accelerate past the speed the attack started at.")]
+		public float         acceleration;
 	}
-
 	#endregion
 
 
@@ -786,34 +834,45 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.85f, 0.9f),
 				new Keyframe(1f, 0.9f),
 			}),
-			angleToPerformSkid = 10f,
-			skidIntesity = 3f
 		};
 	}
 
 	[System.Serializable]
 	public struct StrucSpinCharge
 	{
+		[Tooltip("Core: The means in which the spin charge will be aimed. By input means it will follow player input and velocity. Camera means it will always point in camera direction (unless camera is locked by something)")]
 		public S_Enums.SpinChargeAiming whatAimMethod;
 		[Header ("Charge")]
+		[Tooltip("Surface: How much charge to gain every frame this is being performed.")]
 		public float		chargingSpeed;
+		[Tooltip("Surface: How much charge to gain when pressing down on the charge button (after temporarily releasing)")]
 		public float                  tappingBonus;
+		[Tooltip("Core: How many frames to wait after the button is released before launching. (Can allow time for tapping).")]
 		public int                    delayBeforeLaunch;
+		[Tooltip("Surface: The minimum value the charge must hit to actually launch forwards.")]
 		public float		minimunCharge;
+		[Tooltip("Surface: The maximum charge to be used when launching.")]
 		public float		maximunCharge;
 		[Header("Release")]
-		public bool		shouldSetRolling;
+		[Tooltip("How much to shake the camera when launching.")]
 		public float		releaseShakeAmmount;
+		[Tooltip("Core: Launch force will be multiplied by the angle between current velocity and facing direction. The Y value at 1 = how much to multiply force by if launching backwards.")]
 		public AnimationCurve	ForceGainByAngle;
-		public AnimationCurve	LerpRotationByAngle;
+		[Tooltip("Core: Launch force will be multiplied by this, based on current speed moving at.")]
 		public AnimationCurve	ForceGainByCurrentSpeed;
+		[Tooltip("Core: How much to rotate launch direction from velocity to facing direction, by the angle between.")]
+		public AnimationCurve         LerpRotationByAngle;
 		[Header("Control")]
+		[Tooltip("Core: If true, movement calculations will be taken as if the player is in the rolling state. Will also enter the rolling state when launched..")]
+		public bool                   shouldSetRolling;
+		[Tooltip("Surface: How much to decrease speed by every frame")]
 		public float		forceAgainstMovement;
+		[Tooltip("Core: Increases speed lost per frame by how long has been charging for.")]
 		public AnimationCurve	SpeedLossByTime;
-		public float		angleToPerformSkid;
-		public float		skidIntesity;
 		[Header("Performing")]
+		[Tooltip("Core: Can only start a spin charge if moving slower than this speed.")]
 		public float		maximumSpeedPerformedAt; //The max amount of speed you can be at to perform a Spin Dash
+		[Tooltip("Core: Can only start a spin charge if on a slope angle less steep than this. 1 = flat ground. 0 = horizontal wall.")]
 		public float		maximumSlopePerformedAt; //The highest slope you can be on to Spin Dash
 	}
 	#endregion
@@ -834,7 +893,6 @@ public class S_O_CharacterStats : ScriptableObject
 
 			listOfBounceSpeeds = new List<float> { 40f, 42f, 44f },
 			minimumPushForce = 30,
-			bounceUpMaxSpeed = 75f,
 			lerpTowardsInput = 0.5f,
 
 			bounceCoolDown = 8f,
@@ -847,17 +905,25 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucBounce
 	{
 		[Header("Movement")]
+		[Tooltip("Surface: How fast to immediately fall when performing a bounce.")]
 		public float		dropSpeed;
+		[Tooltip("Surface: Multiplied by horizontal speed at start to decrease speed during bounce.")]
 		public float		bounceHaltFactor;
+		[Tooltip("Core: Speed before action is saved when started, but will decrease by this amount per frame. X = flat value. Y = percentage of current saved speed. Will decrease by the higher.")]
 		public Vector2                horizontalSpeedDecay;
+		[Tooltip("Core: X = turning modifier in bounce. Y = acceleration modifier in bounce.")]
 		public Vector2		bounceAirControl;
 		[Header("Bounces")]
+		[Tooltip("Surface: How much force to add upwards for each bounce. Resets to the first when properly landing.")]
 		public List<float>		listOfBounceSpeeds;
-		public float		bounceUpMaxSpeed;
+		[Tooltip("Surface: The minimum horizontal speed to gain on bounce (if saved speed is higher, it will be that instead.)")]
 		public float                  minimumPushForce;
+		[Tooltip("Core: How much to rotate direction towards input on bounce.")]
 		public float                  lerpTowardsInput;
 		[Header("Cooldown")]
+		[Tooltip("Core: How long until another bounce can be performed after a successful one.")]
 		public float		bounceCoolDown;
+		[Tooltip("Core: Delay between bounces will be multiplied by this, based on current horizontal speed.")]
 		public float		coolDownModiferBySpeed;
 	}
 	#endregion
@@ -879,19 +945,22 @@ public class S_O_CharacterStats : ScriptableObject
 		};
 	}
 
-
-
 	[System.Serializable]
 	public struct StrucRingRoad
 	{
 		[Header ("Performing")]
-		public bool		willCarrySpeed;
+		[Tooltip("SurfaceL The minimum speed to dash along the road in.")]
 		public float		dashSpeed;
+		[Tooltip("Surface: The minimum speed be set to after finishing the dash.")]
 		public float		minimumEndingSpeed;
-		[Range (0, 2)]
+		[Range (0, 2), Tooltip("Surface: If started action faster than minimum ending speed, multiply that value by this and move at that new speed.")]
 		public float		speedGained;
+		[Tooltip("Core: If true, will keep moving at speed from ring road once it's over.")]
+		public bool                   willCarrySpeed;
 		[Header ("Scanning")]
+		[Tooltip("Core: The range of the sphere check for nearby rings.")]
 		public float		searchDistance;
+		[Tooltip("Core: To be considered targets for a ring road, objects must be on this layer.")]
 		public LayerMask		RingRoadLayer;
 	}
 	#endregion
@@ -917,9 +986,13 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucDropCharge
 	{
+		[Tooltip("Surface: How much charge to gain per frame.")]
 		public float      chargingSpeed;
+		[Tooltip("Surface: The minimum speed to launch at. Does not start charging from here, but will always launch with this or more force.")]
 		public float      minimunCharge;
+		[Tooltip("Surface: The maximum speed to launch at, charge cannot exceed this.")]
 		public float      maximunCharge;
+		[Tooltip("Core: Can only start the action if higher than this above the ground.")]
 		public float      minimumHeightToPerform;
 	}
 	#endregion
@@ -946,11 +1019,16 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucEnemyInteract
 	{
 		[Header("Force on hit")]
+		[Tooltip("Surface: How much force pushes upwards after damaging an enemy with a jump attack.")]
 		public float		bouncingPower;
+		[Tooltip("Surface: How much force pushes upwards after damaging an enemy with a  homing attack.")]
 		public float		homingBouncingPower;
+		[Tooltip("Core: If true, cannot carry momentum after hitting an enemy, instead being set to a specific velocity.")]
 		public bool		shouldStopOnHit;
 		[Header("Effects")]
+		[Tooltip("Core: How much to shake the camera when hurt.")]
 		public float		damageShakeAmmount;
+		[Tooltip("Core: How much to shake the camera when succesffuly hiting an enemy.")]
 		public float		hitShakeAmmount;
 	}
 	#endregion
@@ -980,11 +1058,11 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucItemPull
 	{
-		[Tooltip("Core:")]
+		[Tooltip("Core: How close rings need to be to get pulled towards the player, by current running speed.")]
 		public AnimationCurve RadiusBySpeed;
-		[Tooltip("Core:")]
+		[Tooltip("Core: To be pulled in, objects must be on this layer")]
 		public LayerMask RingMask;
-		[Tooltip("Core:")]
+		[Tooltip("Core: How quickly to pull rings in, this will scale with player's running speed.")]
 		public float basePullSpeed;
 	}
 	#endregion
@@ -1009,11 +1087,17 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucBonk
 	{
+		[Tooltip("Core: If an object is on this layer, running face first into it will cause the player to rebound. Set to none to disable bonking.")]
 		public LayerMask              BonkOnWalls;
+		[Tooltip("Surface: How much the player will be knocked off the ground when bonking. Will be less in the air.")]
 		public float                  bonkUpwardsForce;
+		[Tooltip("Surface: How much the player will be knocked backwards, away from the wall.")]
 		public float                  bonkBackwardsForce;
+		[Tooltip("Core: How long in frames control should be disabled after a bonk, not being able to move until this is over")]
 		public float                  bonkControlLock;
+		[Tooltip("Core: Same as above, but typically longer when in the air to prevent using bonks to scale up.")]
 		public float                  bonkControlLockAir;
+		[Tooltip("Core: How long in frames to stay in the state. This won't lock control (see above for that), but will affect movemement and performable actions.")]
 		public int                    bonkTime;
 
 	}
@@ -1050,14 +1134,22 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucHurt
 	{
+		[Header("Damaged")]
+		[Tooltip("Surface: How long in frames to be impervious to being hit again after taking damage.")]
 		public int              invincibilityTime;
-		public int              maxRingLoss;
-		public float            ringReleaseSpeed;
-		public float            ringArcSpeed;
+		[Tooltip("Core: The character will flicker when invincible. X = how long it will be visible, Y = how long it will be hidden.")]
 		public Vector2            flickerTimes;
+		[Tooltip("Core: How long in frames the three stages of respawning will take in total. X = when to start fading out. Y = when to end fading out (this is when the level will be reset). Z = When to respawn and fade back in.")]
 		public Vector3                respawnAfter;
+		[Header("Ring Loss")]
+		[Tooltip("Surface: When damage, will never lose more rings than this.")]
+		public int              maxRingLoss;
+		[Tooltip("Core: The force to apply on rings to move them away from the player when lost.")]
+		public float            ringReleaseSpeed;
+		[Tooltip("Core: Rings won't all be shot out in the same direction. Each frame the next ring will be shot out at this much of an angle from the last.")]
+		public float            ringArcSpeed;
+		[Tooltip("Core: Not every ring lost will be spawned to be picked up again. This decreases how many rings to drop based on how many rings are left to lose. So if losing 30 rings, the first dropped would decrease how many to dropped by the Y value at x30.")]
 		public AnimationCurve         RingsLostInSpawnByAmount;
-
 	}
 
 	public StrucRebound KnockbackStats = SetStrucRebound();
@@ -1080,13 +1172,23 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucRebound
 	{
+		[Header("Interactions")]
+		[Tooltip("Core: How the player will respond when damaged. Normal = carrying on without losing much speed and 'phasing' through attack. Reset speed = being knocked back with a new set force, losing all speed. Frontier = being knocked back but not taking damage until hitting the ground in the damaged state.")]
 		public S_Enums.HurtResponse whatResponse;
-		public float            knockbackUpwardsForce;
+		[Tooltip("Core: Even if set to normal, solid objects of this layer will still knock the player back when damaged. E.G. if running into a spike wall, don't want to keep player momentum as they'd get stuck on it, so still bounce backwards there.")]
 		public LayerMask        recoilFrom;
+		[Tooltip("Surface: If being knocked back, this is how much to be sent upwards. Less in the air.")]
+		public float            knockbackUpwardsForce;
+		[Tooltip("Surface: How much to be knocked backwards.")]
 		public float            knockbackForce;
+		[Header("Durations")]
+		[Tooltip("Core: How long in frames control should be disabled after taking damage, not being able to change movement input until this is over")]
 		public float            hurtControlLock;
+		[Tooltip("Core: Same as above, but likely longer when in the air.")]
 		public float            hurtControlLockAir;
+		[Tooltip("Core: If rebounding, how long in frames to be stuck in the state for. This doesn't lock control but affects movement, actions and animations.")]
 		public int         stateLengthWithKnockback;
+		[Tooltip("Core: If not being knocked back, will be in the state for a differnet time.")]
 		public int         stateLengthWithoutKnockback;
 
 	}
@@ -1103,23 +1205,19 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			railMaxSpeed = 125f,
 			railTopSpeed = 80f,
-			railDecaySpeedHigh = 0.18f,
-			railDecaySpeedLow = 0.06f,
-			MinStartSpeed = 20f,
+			railDecaySpeed = 0.06f,
+			minimumStartSpeed = 20f,
 			RailPushFowardmaxSpeed = 90f,
 			RailPushFowardIncrements = 5f,
 			RailPushFowardDelay = 0.42f,
 			RailSlopePower = 2.5f,
-			RailUpHillMultiplier = 1.9f,
-			RailDownHillMultiplier = 0.5f,
-			RailUpHillMultiplierCrouching = 2.3f,
-			RailDownHillMultiplierCrouching = 0.65f,
-			RailDragVal = 0.0001f,
+			RailUpHillMultiplier = new Vector2 (1.9f, 2.3f),
+			RailDownHillMultiplier = new Vector2(0.5f, 0.75f),
 			RailPlayerBrakePower = 0.97f,
 			hopDelay = 0.3f,
 			hopSpeed = 3.5f,
 			hopDistance = 12f,
-			RailAccelerationBySpeed = new AnimationCurve(new Keyframe[]
+			PushBySpeed = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0, 3.5f),
 				new Keyframe(0.12f, 3.5f),
@@ -1136,27 +1234,45 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucRails
 	{
+		[Header("Speeds")]
+		[Tooltip("Surface: The maximum speed that can be reached on a rail.")]
 		public float            railMaxSpeed;
+		[Tooltip("Surface: Might exceed this speed, but will face drag when done so.")]
 		public float            railTopSpeed;
-		public float            railDecaySpeedHigh;
-		public float            railDecaySpeedLow;
-		public float            MinStartSpeed;
+		[Tooltip("Surface: If entering a rail, will start grinding at at least this speed.")]
+		public float            minimumStartSpeed;
+		[Header("Push")]
+		[Tooltip("Core: Pushes will only increase speed if grinding slower than this.")]
 		public float            RailPushFowardmaxSpeed;
+		[Tooltip("Core: How much speed to gain when pushing.")]
 		public float            RailPushFowardIncrements;
+		[Tooltip("Core: How long until another push can be performed.")]
 		public float            RailPushFowardDelay;
+		[Tooltip("Core: Pushes will be multiplied by this, depending on current grinding speed.")]
+		public AnimationCurve   PushBySpeed;
+		[Header("Slopes")]
+		[Tooltip("Surface: The general force applied when grinding up (against) or down (for)")]
 		public float            RailSlopePower;
-		public float            RailUpHillMultiplier;
-		public float            RailDownHillMultiplier;
-		public float            RailUpHillMultiplierCrouching;
-		public float            RailDownHillMultiplierCrouching;
-		public float            RailDragVal;
+		[Tooltip("Core: Force against multiplied by this when grinding upwards. X = normal. Y = when crouching")]
+		public Vector2           RailUpHillMultiplier;
+		[Tooltip("Core: Force for multiplied by this when grinding downwards. X = normal. Y = when crouching")]
+		public Vector2            RailDownHillMultiplier;
+		[Header("Drag")]
+		[Tooltip("Surface: How much speed to lose a frame when over top speed.")]
+		public float            railDecaySpeed;
+		[Tooltip("Surface: How much speed to lose a frame when intentionally breaking.")]
 		public float            RailPlayerBrakePower;
-		public float            hopDelay;
-		public float            hopSpeed;
-		public float            hopDistance;
-		public AnimationCurve   RailAccelerationBySpeed;
+		[Tooltip("Core: How much speed to lose per frame after a booster has finished apply new speed.")]
 		public float            railBoostDecaySpeed;
+		[Tooltip("Core: How long in seconds for boost to wear off after it has finished. Won't remove all speed gained, just some will fall off, depending on above stat.")]
 		public float            railBoostDecayTime;
+		[Header("Hopping")]
+		[Tooltip("Core: How long in seconds after landing on a rail before a hop can be performed.")]
+		public float            hopDelay;
+		[Tooltip("Core: How much distance is moved a frame when hopping to rails on the right or left.")]
+		public float            hopSpeed;
+		[Tooltip("Core: The total distance a hop will travel to hit a rail.")]
+		public float            hopDistance;
 
 	}
 
@@ -1176,10 +1292,12 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucPositionOnRail
 	{
+		[Tooltip("Surface: How much above the spline the player should be to be visibly on the rail.")]
 		public float    offsetRail;
+		[Tooltip("Surface: How much below the the spline the player should be to be visibly holding onto the handle.")]
 		public float    offsetZip;
+		[Tooltip("Surface: How much below the the handle the player should be to be visibly holding onto it.")]
 		public float    upreel;
-
 	}
 	#endregion
 

@@ -32,20 +32,25 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
+	private bool        _CanBePerformedOnGround_;
+
 	private float       _homingAttackSpeed_;
-	private bool        _canBeControlled_;
 	private float       _homingTimerLimit_;
 	private float       _homingTurnSpeed_;
-	private bool        _CanBePerformedOnGround_;
+
+	private bool        _canBeControlled_;
 	private int         _homingSkidAngleStartPoint_;
-	private int         _homingDeceleration_;
-	private int         _homingAcceleration_;
+	private float         _homingDeceleration_;
+	private float         _homingAcceleration_;
+
+	private int         _maxHomingSpeed_;
+	private int         _minHomingSpeed_;
+
 	private float       _homingBouncingPower_;
 	private int         _minSpeedGainOnHit_;
 	private float       _lerpToPreviousDirection_;
 	private float       _lerpToNewInput_;
-	private int         _maxHomingSpeed_;
-	private int         _minHomingSpeed_;
+
 	private int         _homingCountLimit_;
 	#endregion
 
@@ -386,17 +391,15 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		void GetDirectionPostHit () {
 			//Get current movement direction
-			newSpeed = _PlayerPhys._RB.velocity.normalized;
-			Vector3 horizontalDirection = new Vector3(newSpeed.x, newSpeed.z);
 
 			if (_PlayerPhys._moveInput.sqrMagnitude < 0.1)
 			{
-				newSpeed = _PlayerPhys._RB.velocity.normalized;
+				newSpeed = _PlayerPhys._coreVelocity.normalized;
 			}
 			//If trying to move in the direction taken by the attack at the end, then will move that way
-			else if (Vector3.Angle(horizontalDirection, _PlayerPhys._moveInput) / 180 < _lerpToNewInput_)
+			else if (Vector3.Angle(_PlayerPhys._coreVelocity.normalized, _PlayerPhys._moveInput) / 180 < _lerpToNewInput_)
 			{
-				newSpeed = horizontalDirection;
+				newSpeed = _PlayerPhys._coreVelocity.normalized;
 			}
 			//otherwise will move in previous direction.
 			else
@@ -459,13 +462,13 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Different start point from the other two skid types.
 		if (_inputAngle > _homingSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
-			_currentSpeed -= _homingDeceleration_ * Time.deltaTime;
+			_currentSpeed -= _homingDeceleration_;
 			_currentSpeed = Mathf.Clamp(_currentSpeed, Mathf.Max(_minHomingSpeed_, 20), _speedAtStart);
 			return true;
 		}
 		else if (_inputAngle < 40 && !_Input._isInputLocked)
 		{
-			_currentSpeed += _homingAcceleration_ * Time.deltaTime;
+			_currentSpeed += _homingAcceleration_;
 			_currentSpeed = Mathf.Clamp(_currentSpeed, 0, _speedAtStart);
 		}
 		return false;

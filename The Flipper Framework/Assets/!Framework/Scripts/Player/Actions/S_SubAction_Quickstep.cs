@@ -161,8 +161,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		//Check sides based on step direction for if there's a wall preventing the step. If there isn't, change position.
 		if (!Physics.BoxCast(transform.position, new Vector3(0, _CharacterCapsule.height / 2, _CharacterCapsule.radius), _MainSkin.right * dir, _MainSkin.rotation, 1.5f, _StepPlayermask_) && _canStep)
 		{
-			_PlayerPhys.AddGeneralVelocity(_MainSkin.transform.right * dir * toTravel); //This will add velocity to this frame, that will be ignored next update.
-			
+			_PlayerPhys.AddGeneralVelocity(_MainSkin.transform.right * dir * toTravel); //This will add velocity to this frame, that will be ignored next update.		
 		}
 		else
 			enabled = false;

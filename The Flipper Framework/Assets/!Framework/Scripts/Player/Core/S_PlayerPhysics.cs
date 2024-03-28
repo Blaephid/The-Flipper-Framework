@@ -1021,8 +1021,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		_startMaxFallingSpeed_ = _Tools.Stats.WhenInAir.startMaxFallingSpeed;
 		_moveDeceleration_ = _Tools.Stats.DecelerationStats.moveDeceleration;
 		_DecelBySpeed_ = _Tools.Stats.DecelerationStats.DecelBySpeed;
-		_constantAirDecel_ = _Tools.Stats.DecelerationStats.naturalAirDecel;
-		_airDecel_ = _Tools.Stats.DecelerationStats.airDecel;
+		_constantAirDecel_ = _Tools.Stats.DecelerationStats.airConstantDecel;
+		_airDecel_ = _Tools.Stats.DecelerationStats.airManualDecel;
 		_slopeEffectLimit_ = _Tools.Stats.SlopeStats.slopeEffectLimit;
 		_SlopeSpeedLimitByAngle_ = _Tools.Stats.SlopeStats.SpeedLimitBySlopeAngle;
 		_generalHillMultiplier_ = _Tools.Stats.SlopeStats.generalHillMultiplier;

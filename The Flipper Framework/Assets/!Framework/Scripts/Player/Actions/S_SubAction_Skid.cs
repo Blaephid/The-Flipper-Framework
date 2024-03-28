@@ -35,7 +35,6 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	public float        _regularSkiddingIntensity_;
 	private float       _airSkiddingIntensity_;
 	private float       _spinSkidAngleStartPoint_;
-	private float       _spinSkiddingIntensity_;
 	private bool        _canSkidInAir_;
 	private int         _speedToStopAt_;
 	private bool        _shouldSkiddingDisableTurning_;
@@ -205,7 +204,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 			//Different start point from the other two skid types.
 		if (_PlayerPhys._inputVelocityDifference > _spinSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
-			_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * _spinSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
+			_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * _regularSkiddingIntensity_ * 0.6f);
 			return true;
 		}
 		return false;
@@ -231,8 +230,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		_airSkiddingIntensity_ = _Tools.Stats.SkiddingStats.skiddingIntensity;
 		_canSkidInAir_ = _Tools.Stats.SkiddingStats.canSkidInAir;
 		_regularSkidAngleStartPoint_ = _Tools.Stats.SkiddingStats.angleToPerformSkid;
-		_spinSkiddingIntensity_ = _Tools.Stats.SpinChargeStat.skidIntesity;
-		_spinSkidAngleStartPoint_ = _Tools.Stats.SpinChargeStat.angleToPerformSkid;
+		_spinSkidAngleStartPoint_ = _Tools.Stats.SkiddingStats.angleToPerformSpinSkid;
 		_speedToStopAt_ = (int)_Tools.Stats.SkiddingStats.speedToStopAt;
 		_shouldSkiddingDisableTurning_ = _Tools.Stats.SkiddingStats.shouldSkiddingDisableTurning;
 	}

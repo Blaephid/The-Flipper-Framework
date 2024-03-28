@@ -34,7 +34,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	[HideInInspector]
 	public List<float>	_BounceUpSpeeds_;
-	private float	_bounceUpMaxSpeed_;
 	private float	_minimumPushForce_;
 	private float       _lerpTowardsInput_;
 
@@ -221,7 +220,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_hasBounced = true; //Prevents speed being adjusted and allows the action to be exited.
 
 		//Get force of the bounce from how many bounces have been done without resetting, not exceeidng the maxmium.
-		_currentBounceForce = Mathf.Clamp(_currentBounceForce, _BounceUpSpeeds_[_Actions._bounceCount], _bounceUpMaxSpeed_);
+		_currentBounceForce = Mathf.Clamp(_currentBounceForce, _BounceUpSpeeds_[_Actions._bounceCount], _currentBounceForce);
 
 		//Effects
 		_HomingTrailScript.emitTime = _currentBounceForce / 60f;
@@ -335,7 +334,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		{
 			_BounceUpSpeeds_.Add(_Tools.Stats.BounceStats.listOfBounceSpeeds[i]);
 		}
-		_bounceUpMaxSpeed_ = _Tools.Stats.BounceStats.bounceUpMaxSpeed;
 		_minimumPushForce_ = _Tools.Stats.BounceStats.minimumPushForce;
 		_lerpTowardsInput_ = _Tools.Stats.BounceStats.lerpTowardsInput;
 

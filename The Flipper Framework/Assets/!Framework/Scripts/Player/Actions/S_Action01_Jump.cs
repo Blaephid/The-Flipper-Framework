@@ -36,7 +36,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	//Additional jumps
 	private int         _maxJumps_;
 	private float       _doubleJumpSpeed_;
-	private float       _doubleJumpDuration_;
+	private Vector2       _doubleJumpDuration_;
 	private float       _speedLossOnDoubleJump_;
 	#endregion
 
@@ -55,7 +55,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	public bool         _isJumping;	//Will only apply force if this is true, when false, it means another jump can now be performed
 	private bool        _isJumpingFromGround;	//Seperates grounded and air jumps
 
-	private float       _thisJumpDuration;		//Cancels jump when counter exceeds this. Affected by stats and situation
+	private float       _thisMinDuration;		//After this is exceeded, can end jump by releasing button.
+	private float       _thisMaxDuration;		//Cancels jump when counter exceeds this. Affected by stats and situation
 	private float       _slopedJumpDuration;	//When exceeded, jump will only move upwards, even if started on a slope.	
 	private float       _thisJumpSpeed;		
 	private float       _jumpSlopeSpeed;		//Jump speed is different on slopes, determined by upwards speed and conversion stat
@@ -178,27 +179,28 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		{
 			//Sets jump stats for this specific jump.
 			_thisJumpSpeed = _startJumpSpeed_ * _jumpSpeedModifier;
-			_thisJumpDuration = _maxJumpTime_ * _jumpDurationModifier;
+			_thisMinDuration = _minJumpTime_ * _jumpDurationModifier;
+			_thisMaxDuration = _maxJumpTime_ * _jumpDurationModifier;
 
-			//Jump higher depending on the speed and the slope you're in
+			//Jump higher depending based on speed, if jumping upwards off a slope the players running up.
 			if (_PlayerPhys._RB.velocity.y > 5 && _upwardsDirection.y > 1)
 			{
-				_jumpSlopeSpeed = _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_;
+				_jumpSlopeSpeed = Mathf.Max( _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_, _thisJumpSpeed);
 				_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 			}
 			else
 			{
 				_jumpSlopeSpeed = 0; //Means slope jump force won't be applied this jump
 			}
-
 			_Actions._jumpCount = 1; //Number of jumps set to 1, allowing for double jumps.
 		}
 		else
 		{
 			//Sets jump stats for this specific jump.
 			_thisJumpSpeed = _doubleJumpSpeed_ * _jumpSpeedModifier;
-			_thisJumpDuration = _doubleJumpDuration_ * _jumpDurationModifier;
-			_slopedJumpDuration = _doubleJumpDuration_ * _jumpDurationModifier;
+			_thisMaxDuration = _doubleJumpDuration_.y * _jumpDurationModifier;
+			_thisMinDuration = _doubleJumpDuration_.x * _jumpDurationModifier;
+			_slopedJumpDuration = 0;
 
 			_jumpSlopeSpeed = 0;
 
@@ -258,12 +260,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private void JumpInAir () {
 
 		//Take some horizontal speed on jump and remove vertical speed to ensure jump is an upwards force.
-		Vector3 newVec;
-		if (_PlayerPhys._RB.velocity.y > 10)
-			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
-		else
-			newVec = new Vector3(_PlayerPhys._RB.velocity.x * _speedLossOnDoubleJump_, 0, _PlayerPhys._RB.velocity.z * _speedLossOnDoubleJump_);
-		_PlayerPhys.SetCoreVelocity(newVec, false, false);
+		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._RB.velocity.y, 0), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
+		_PlayerPhys.SetCoreVelocity(newVel, false, false);
 
 		//Add particle effect during jump
 		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
@@ -274,12 +272,12 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	private void ApplyForce() {
 		//Ending Jump Early
-		if (!_Input.JumpPressed && _counter > _minJumpTime_ && _isJumping)
+		if (!_Input.JumpPressed && _counter > _thisMinDuration && _isJumping)
 		{
 			EndJumpForce();
 		}
 		//Ending jump after max duration
-		else if (_counter > _thisJumpDuration && _isJumping && _Input.JumpPressed)
+		else if (_counter > _thisMaxDuration && _isJumping && _Input.JumpPressed)
 		{
 			EndJumpForce();
 		}
@@ -312,7 +310,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	//Called when the jump should stop applying force, but before exiting the state.
 	private void EndJumpForce () {
-		_counter = _thisJumpDuration;
+		_counter = _thisMaxDuration;
 		_isJumping = false;
 		_Input.JumpPressed = false;
 	}
@@ -379,9 +377,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	//Responsible for assigning stats from the stats script.
 	private void AssignStats () {
-		_maxJumpTime_ = _Tools.Stats.JumpStats.startJumpDuration.y;
-		_minJumpTime_ = _Tools.Stats.JumpStats.startJumpDuration.x;
-		_startJumpSpeed_ = _Tools.Stats.JumpStats.startJumpSpeed;
+		_maxJumpTime_ = _Tools.Stats.JumpStats.jumpDuration.y;
+		_minJumpTime_ = _Tools.Stats.JumpStats.jumpDuration.x;
+		_startJumpSpeed_ = _Tools.Stats.JumpStats.jumpSpeed;
 		_startSlopedJumpDuration_ = _Tools.Stats.JumpStats.startSlopedJumpDuration;
 		_jumpSlopeConversion_ = _Tools.Stats.JumpStats.jumpSlopeConversion;
 

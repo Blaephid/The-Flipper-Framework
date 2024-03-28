@@ -58,8 +58,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private float                 _playerBrakePower_ = 0.95f;
 	private AnimationCurve        _accelBySpeed_;
 
-	private float                 _decaySpeedLow_;
-	private float                 _decaySpeedHigh_;
+	private float                 _decaySpeed_;
 
 	private float                 _pushFowardmaxSpeed_ = 80f;
 	private float                 _pushFowardIncrements_ = 15f;
@@ -70,7 +69,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private float                 _downHillMultiplier_ = 0.35f;
 	private float                 _upHillMultiplierCrouching_ = 0.4f;
 	private float                 _downHillMultiplierCrouching_ = 0.6f;
-	private float                 _dragVal_ = 0.0001f;
 
 	private float                 _boostDecayTime_;
 	private float                 _boostDecaySpeed_;
@@ -495,10 +493,10 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		HandleSlopes();
 
 		//Decrease speed if over max or top speed on the rail.
-		if (_playerSpeed > _railmaxSpeed_)
-			_playerSpeed -= _decaySpeedHigh_;
-		else if (_playerSpeed > _railTopSpeed_)
-			_playerSpeed -= _decaySpeedLow_;
+		_playerSpeed = Mathf.Min(_playerSpeed, _railmaxSpeed_);
+
+		if (_playerSpeed > _railTopSpeed_)
+			_playerSpeed -= _decaySpeed_;
 
 		_playerSpeed = Mathf.Clamp(_playerSpeed, 10, _PlayerPhys._currentMaxSpeed);
 	}
@@ -542,7 +540,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			//Downhill
 			force *=_isCrouching ? _downHillMultiplierCrouching_ : _downHillMultiplier_;
 		}
-		force = (AbsYPow * force) + (_dragVal_ * _playerSpeed);
+		force = (AbsYPow * force) ;
 		//Apply to moving speed (if uphill will be a negative/
 		_playerSpeed += force;
 	}
@@ -573,7 +571,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					//Will only increase speed if under the max trick speed.
 					if (_playerSpeed < _pushFowardmaxSpeed_)
 					{
-						_playerSpeed += _pushFowardIncrements_ + _accelBySpeed_.Evaluate(_playerSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
+						_playerSpeed += _pushFowardIncrements_ * _accelBySpeed_.Evaluate(_playerSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
 					}
 					_isFacingRight = !_isFacingRight; //This will cause the animator to perform a small hop and face the other way.
 					_pushTimer = 0f; //Resets timer so delay must be exceeded again.
@@ -793,23 +791,21 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private void AssignStats () {
 		_railTopSpeed_ = _Tools.Stats.RailStats.railTopSpeed;
 		_railmaxSpeed_ = _Tools.Stats.RailStats.railMaxSpeed;
-		_decaySpeedHigh_ = _Tools.Stats.RailStats.railDecaySpeedHigh;
-		_decaySpeedLow_ = _Tools.Stats.RailStats.railDecaySpeedLow;
-		_minStartSpeed_ = _Tools.Stats.RailStats.MinStartSpeed;
+		_decaySpeed_ = _Tools.Stats.RailStats.railDecaySpeed;
+		_minStartSpeed_ = _Tools.Stats.RailStats.minimumStartSpeed;
 		_pushFowardmaxSpeed_ = _Tools.Stats.RailStats.RailPushFowardmaxSpeed;
 		_pushFowardIncrements_ = _Tools.Stats.RailStats.RailPushFowardIncrements;
 		_pushFowardDelay_ = _Tools.Stats.RailStats.RailPushFowardDelay;
 		_generalHillModifier = _Tools.Stats.SlopeStats.generalHillMultiplier;
-		_upHillMultiplier_ = _Tools.Stats.RailStats.RailUpHillMultiplier;
-		_downHillMultiplier_ = _Tools.Stats.RailStats.RailDownHillMultiplier;
-		_upHillMultiplierCrouching_ = _Tools.Stats.RailStats.RailUpHillMultiplierCrouching;
-		_downHillMultiplierCrouching_ = _Tools.Stats.RailStats.RailDownHillMultiplierCrouching;
-		_dragVal_ = _Tools.Stats.RailStats.RailDragVal;
+		_upHillMultiplier_ = _Tools.Stats.RailStats.RailUpHillMultiplier.x;
+		_downHillMultiplier_ = _Tools.Stats.RailStats.RailDownHillMultiplier.x;
+		_upHillMultiplierCrouching_ = _Tools.Stats.RailStats.RailUpHillMultiplier.y;
+		_downHillMultiplierCrouching_ = _Tools.Stats.RailStats.RailDownHillMultiplier.y;
 		_playerBrakePower_ = _Tools.Stats.RailStats.RailPlayerBrakePower;
 		_hopDelay_ = _Tools.Stats.RailStats.hopDelay;
 		_hopSpeed_ = _Tools.Stats.RailStats.hopSpeed;
 		_hopDistance_ = _Tools.Stats.RailStats.hopDistance;
-		_accelBySpeed_ = _Tools.Stats.RailStats.RailAccelerationBySpeed;
+		_accelBySpeed_ = _Tools.Stats.RailStats.PushBySpeed;
 
 		_offsetRail_ = _Tools.Stats.RailPosition.offsetRail;
 		_offsetZip_ = _Tools.Stats.RailPosition.offsetZip;
