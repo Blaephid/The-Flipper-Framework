@@ -1,0 +1,421 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1746248922773075795
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1746248922773075794}
+  - component: {fileID: 1746248922773075792}
+  - component: {fileID: 1746248922773075793}
+  m_Layer: 23
+  m_Name: Base_Rail
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1746248922773075794
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248922773075795}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1589951227926622677}
+  m_Father: {fileID: 1746248924027914670}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1746248922773075792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248922773075795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80f0d9d0d6c9a384daea57fabf03e1ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Distance: 2000
+--- !u!114 &1746248922773075793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248922773075795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bdec4da60e9d6244bd256a2fee1226b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodes:
+  - position: {x: 1.5471497, y: 0, z: 0}
+    direction: {x: 1.5471497, y: 0, z: -17}
+    up: {x: 0, y: 1, z: 0}
+    scale: {x: 1, y: 1}
+    roll: 0
+  - position: {x: 0, y: 0, z: -84.927185}
+    direction: {x: 0, y: 0, z: -97.847305}
+    up: {x: 0, y: 1, z: 0}
+    scale: {x: 1, y: 1}
+    roll: 0
+  curves:
+  - n1:
+      position: {x: 1.5471497, y: 0, z: 0}
+      direction: {x: 1.5471497, y: 0, z: -17}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    n2:
+      position: {x: 0, y: 0, z: -84.927185}
+      direction: {x: 0, y: 0, z: -97.847305}
+      up: {x: 0, y: 1, z: 0}
+      scale: {x: 1, y: 1}
+      roll: 0
+    Changed:
+      m_PersistentCalls:
+        m_Calls: []
+  Length: 84.94228
+  isLoop: 0
+  CurveChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &1746248922998980189
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1746248922998980188}
+  - component: {fileID: 1746248922998980163}
+  - component: {fileID: 8974859964089420816}
+  m_Layer: 23
+  m_Name: HomingTargets
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1746248922998980188
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248922998980189}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1589951227926622677}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1746248922998980163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248922998980189}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpdateThis: 0
+  justStart: 1
+  onlyOne: 0
+  none: 0
+  onEnd: 1
+  prefab: {fileID: 1334624118752866, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213, type: 3}
+  asPrefab: 0
+  scale: 1
+  scaleRange: 0
+  spacing: 153.02
+  spacingRange: 0
+  offset: 0
+  offsetRange: 0
+  Offset3d: {x: 0, y: 0, z: 0}
+  offsetRotation: {x: 0, y: 0, z: 0}
+  initialSpacing: 0
+  EndingSpacing: 0
+  isRandomYaw: 0
+  randomSeed: 0
+  alingwithterrain: 0
+--- !u!114 &8974859964089420816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248922998980189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
+  isBooster: 0
+  speed: 0
+  setRailSpeed: 0
+  addRailSpeed: 0
+  isSpring: 0
+  force: 100
+  LockControl: 1
+  LockTime: 60
+  lockGravity: {x: 0, y: -1.5, z: 0}
+  lockAirMoves: 1
+  lockAirMovesTime: 30
+--- !u!1 &1746248923561123930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1746248923561123929}
+  - component: {fileID: 1746248923561123928}
+  - component: {fileID: 6166060589612403482}
+  m_Layer: 23
+  m_Name: RailCollision
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1746248923561123929
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248923561123930}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1589951227926622677}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1746248923561123928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248923561123930}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpdateThis: 0
+  justStart: 0
+  onlyOne: 0
+  none: 0
+  onEnd: 0
+  prefab: {fileID: 839480660917174404, guid: beddb481e3513af4097bb599f4c39f4b, type: 3}
+  asPrefab: 0
+  scale: 1
+  scaleRange: 0
+  spacing: 10
+  spacingRange: 0
+  offset: 0
+  offsetRange: 0
+  Offset3d: {x: 0, y: 0, z: 2.67}
+  offsetRotation: {x: 90, y: 0, z: 0}
+  initialSpacing: 0
+  EndingSpacing: 0
+  isRandomYaw: 0
+  randomSeed: 0
+  alingwithterrain: 0
+--- !u!114 &6166060589612403482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248923561123930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
+  isBooster: 0
+  speed: 0
+  setRailSpeed: 0
+  addRailSpeed: 0
+  isSpring: 0
+  force: 100
+  LockControl: 1
+  LockTime: 60
+  lockGravity: {x: 0, y: -1.5, z: 0}
+  lockAirMoves: 1
+  lockAirMovesTime: 30
+--- !u!1 &1746248923953385623
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1746248923953385622}
+  - component: {fileID: 1746248923953385621}
+  m_Layer: 23
+  m_Name: RailMesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1746248923953385622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248923953385623}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1589951227926622677}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1746248923953385621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248923953385623}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 174367e175762fb48ba55d6171e99990, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mesh: {fileID: 4300000, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
+  material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
+  physicMaterial: {fileID: 0}
+  translation: {x: 0, y: 0, z: 0}
+  rotation: {x: -90, y: 0, z: 0}
+  scale: {x: 1, y: 1, z: 1}
+  DeactivateOnStart: 0
+  updateInPlayMode: 0
+  curveSpace: 0
+  enableCollider: 0
+  enableVisual: 1
+  ObjTag: Rail
+  ObjLayer: 23
+  refDir: {fileID: 0}
+  showEndDir: 0
+  showStartDir: 0
+  mode: 1
+  _InspectorTheme: {fileID: 0}
+--- !u!1 &1746248924027914671
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1746248924027914670}
+  m_Layer: 23
+  m_Name: Pr_Rail Base
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1746248924027914670
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248924027914671}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -170.8, y: 257.7, z: 780.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1746248922773075794}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1757826820364849966
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1589951227926622677}
+  m_Layer: 23
+  m_Name: Rail 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1589951227926622677
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1757826820364849966}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1746248923953385622}
+  - {fileID: 1746248922998980188}
+  - {fileID: 1746248923561123929}
+  m_Father: {fileID: 1746248922773075794}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -1,0 +1,210 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
+
+public class S_Handler_RingRoad : MonoBehaviour
+{
+
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
+
+	//Unity
+	#region Unity Specific Properties
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerInput         _Input;
+	private S_ActionManager       _Actions;
+
+	[HideInInspector]
+	public Transform              _TargetRing;
+	[HideInInspector]
+	public GameObject[]           _ListOfHitTargets;
+	[HideInInspector]
+	public List<Transform>        _ListOfCloseTargets = new List<Transform>();
+
+	private Transform             _MainSkin;
+	#endregion
+
+	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
+	#region Stats
+
+	private float       _targetSearchDistance_ = 10;
+	private LayerMask   _Layer_;
+	#endregion
+
+	// Trackers
+	#region trackers
+	[HideInInspector]
+	public bool         _isScanning;
+	#endregion
+	#endregion
+
+	/// <summary>
+	/// Inherited ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region Inherited
+
+	// Start is called before the first frame update
+	void Start () {
+		ReadyScript();
+		StartCoroutine(ScanForTargets());
+	}
+
+	// Update is called once per frame
+	void Update () {
+
+	}
+
+	private void FixedUpdate () {
+	}
+
+	#endregion
+
+	/// <summary>
+	/// Private ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region private
+	private IEnumerator ScanForTargets () {
+		while (true)
+		{
+			//For efficiency, there must be a gap between scans. This will only be a frame if currently performing the action (as this needs to be smoothly updated).
+			//Ring road is currently not here because it will call ScanForRings seperately.
+			switch (_Actions._whatAction)
+			{
+				default:
+					yield return new WaitForSeconds(0.05f);
+					break;
+			}
+			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
+			if (_isScanning)
+			{
+				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, transform.position);
+			}
+			_isScanning = false; //Set to false every frame but will be counteracted in Action RingRoad's AttemptAction()
+		}
+
+	}
+
+	//Called by this script at intervals, and by the ring road action when a ring has been picked up. Gets nereby rings, then calls a method to get a target from them.
+	public void ScanForRings ( Vector2 modifier, Vector3 direction, Vector3 position ) {
+
+		//Modifier x increase raidus, modifer y increase range sphere is cast along, direction and position will usually based on the character, but when creating a path will go from target to target.
+		List<Transform> TargetsInRange = GetTargetsInRange(_targetSearchDistance_ * modifier.x, _targetSearchDistance_ * modifier.y, direction, position);
+		_TargetRing = OrderTargets(TargetsInRange, position);
+	}
+
+
+	//Returns any triggers of the correct layers (rings or ring roads).
+	List<Transform> GetTargetsInRange ( float radius, float range, Vector3 scannerDirection, Vector3 scannerPosition ) {
+
+		RaycastHit[] HitsInRange = Physics.SphereCastAll(scannerPosition, radius, scannerDirection, range, _Layer_, QueryTriggerInteraction.Collide);
+
+		//Since a cast returns hits, convert those to a list of transforms.
+		List<Transform>  TargetsInRange = new List<Transform>();
+		foreach (RaycastHit Target in HitsInRange)
+		{
+			//If the transform of this hit isn't in the new list, add it.
+			if (!TargetsInRange.Contains(Target.collider.transform))
+			{
+				TargetsInRange.Add(Target.collider.transform);
+			}
+		}
+		return TargetsInRange;
+	}
+
+	//Go through each target found, and ready a list of them to be ordered in.
+	Transform OrderTargets ( List<Transform> TargetsInRange, Vector3 scannerPosition ) {
+
+		int checkLimit = 0; //Used to prevent too many checks in one frame, no matter how many rings in range at once.
+		_ListOfCloseTargets.Clear(); //This new empty list will be used for the ordered targets.
+		_ListOfCloseTargets.Add(null);
+
+		//Go through each collider and check it. If list is empty, then this will be skipped and null wull be returned.
+		foreach (Transform Target in TargetsInRange)
+		{
+			if (Target != null) //Called in case the collider was lost since scanned (like if the ring was picked up).
+			{
+				PlaceTargetInOrder(Target, scannerPosition); //Compared this one to what's already been set as closest this scan (will return the new one if closest is null) 
+
+				//As said above, limits checks per scan.
+				checkLimit++;
+				if (checkLimit > 5)
+					break;
+			}
+		}
+		return _ListOfCloseTargets[0];
+	}
+
+	//Take the current target and place it where it fits into the list, by closest to furthest.
+	void PlaceTargetInOrder ( Transform thisTarget, Vector3 scannerCentre ) {
+
+		//Get the distance and direction of this target from the scanning centre
+		float thisDistanceFromScanner = Vector3.Distance(scannerCentre, thisTarget.position);
+
+		//Go through the new ordered list so far.
+		for (int i = 0 ; i < _ListOfCloseTargets.Count ; i++)
+		{
+			//If the first target checked this scan, then set immediately.
+			if(_ListOfCloseTargets[i] == null)
+			{
+				_ListOfCloseTargets[i] = SetTarget(thisTarget);
+				return; //Going through loop again after editing it would cause issues.
+			}
+
+			//If our checking target is closer than the target in this array space, then it goes before it. If not, check next array element.
+			float tempDistance = Vector3.Distance(scannerCentre, _ListOfCloseTargets[i].position);
+			if(thisDistanceFromScanner < tempDistance)
+			{
+				_ListOfCloseTargets.Insert(i, SetTarget(thisTarget));
+				return;
+			}
+		}
+		//If hasn't returned yet, then this target is furthest, so add it at the end.
+		_ListOfCloseTargets.Add(thisTarget);
+
+		//Allows checks when setting a target (such as debugs)
+		Transform SetTarget ( Transform Target) {
+			return Target;
+		}
+	}
+	#endregion
+
+	/// <summary>
+	/// Assigning ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Assigning
+
+	//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
+	public void ReadyScript () {
+		if (_PlayerPhys == null)
+		{
+			//Assign all external values needed for gameplay.
+			_Tools = GetComponent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
+		}
+	}
+
+	//Responsible for assigning objects and components from the tools script.
+	private void AssignTools () {
+		_Input = GetComponent<S_PlayerInput>();
+		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Actions = GetComponent<S_ActionManager>();
+
+		_MainSkin = _Tools.mainSkin;
+	}
+
+	//Reponsible for assigning stats from the stats script.
+	private void AssignStats () {
+		_targetSearchDistance_ = _Tools.Stats.RingRoadStats.searchDistance;
+		_Layer_ = _Tools.Stats.RingRoadStats.RingRoadLayer;
+	}
+	#endregion
+}
