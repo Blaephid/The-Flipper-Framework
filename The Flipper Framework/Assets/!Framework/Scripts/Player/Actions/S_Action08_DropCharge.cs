@@ -2,7 +2,6 @@
 using System.Collections;
 using UnityEditor;
 
-[RequireComponent(typeof(S_ActionManager))]
 public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 {
 	/// <summary>
@@ -332,7 +331,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -350,16 +349,16 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
-		_CamHandler = GetComponent<S_Handler_Camera>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_CamHandler = _Tools.CamHandler;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_Sounds = _Tools.SoundControl;
 		_DropEffect = _Tools.DropEffect;
 
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 		_FeetPoint = _Tools.FeetPoint;
 		_JumpBall = _Tools.JumpBall;
 	}

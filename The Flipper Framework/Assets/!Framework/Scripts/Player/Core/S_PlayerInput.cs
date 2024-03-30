@@ -26,7 +26,9 @@ public class S_PlayerInput : MonoBehaviour
 	#region trackers
 	[HideInInspector]
 	public Vector3     _move;
+	[HideInInspector]
 	public Vector3      _inputWithoutCamera;
+	[HideInInspector]
 	public Vector3      _prevInputWithoutCamera;
 	[HideInInspector]
 	public Vector3     _camMoveInput;
@@ -49,12 +51,14 @@ public class S_PlayerInput : MonoBehaviour
 	Vector2 CurrentCamMovement;
 	[HideInInspector] public float	moveCamX;
 	[HideInInspector] public float	moveCamY;
-	float				camSensi;
+	private float			camSensi;
+	[HideInInspector]
 	public float			mouseSensi;
 
 	[HideInInspector] public bool		JumpPressed;
 	[HideInInspector] public bool		RollPressed;
 	[HideInInspector] public bool		SpecialPressed;
+	[HideInInspector] public bool		BoostPressed;
 	[HideInInspector] public bool		LeftStepPressed;
 	[HideInInspector] public bool		RightStepPressed;
 	[HideInInspector] public bool		BouncePressed;
@@ -78,9 +82,9 @@ public class S_PlayerInput : MonoBehaviour
 	// Start is called before the first frame update
 	void Start () {
 		// Set up the reference.
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_CamHandler = GetComponent<S_Handler_Camera>();
-		_Tools = GetComponent<S_CharacterTools>();
+		_Tools = GetComponentInParent<S_CharacterTools>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_CamHandler = _Tools.CamHandler;
 
 		// get the transform of the main camera
 		if (Camera.main != null)
@@ -89,8 +93,8 @@ public class S_PlayerInput : MonoBehaviour
 		}
 
 		//Managing Inputs
-		mouseSensi = _Tools.camStats.InputStats.InputMouseSensi;
-		camSensi = _Tools.camStats.InputStats.InputSensi;
+		mouseSensi = _Tools.CameraStats.InputStats.InputMouseSensi;
+		camSensi = _Tools.CameraStats.InputStats.InputSensi;
 	}
 
 	// Update is called once per frame
@@ -249,6 +253,13 @@ public class S_PlayerInput : MonoBehaviour
 		if (ctx.performed || ctx.canceled)
 		{
 			SpecialPressed = ctx.ReadValueAsButton();
+		}
+	}
+
+	public void Boost ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed || ctx.canceled)
+		{
+			BoostPressed = ctx.ReadValueAsButton();
 		}
 	}
 

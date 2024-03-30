@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class S_Handler_WallRunning : MonoBehaviour
 {
-	S_CharacterTools Tools;
+	S_CharacterTools _Tools;
 
 	S_Action01_Jump JumpAction;
 	S_Action00_Default RegularAction;
-	S_PlayerPhysics Player;
-	S_PlayerInput Inp;
-	S_ActionManager Actions;
+	S_PlayerPhysics _PlayerPhys;
+	S_PlayerInput _Input;
+	S_ActionManager _Actions;
 
 
 	S_Control_SoundsPlayer sounds;
@@ -41,9 +41,9 @@ public class S_Handler_WallRunning : MonoBehaviour
 	// Start is called before the first frame update
 	void Start () {
 		//Assigns tool and stats for later use.
-		if (Player == null)
+		if (_PlayerPhys == null)
 		{
-			Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 
 			AssignStats();
@@ -63,14 +63,14 @@ public class S_Handler_WallRunning : MonoBehaviour
 			//Debug.DrawRay(transform.position, Player.MoveInput, Color.red);
 
 
-			checkSpeed = Player._horizontalSpeedMagnitude;
-			saveVec = Player._RB.velocity;
+			checkSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+			saveVec = _PlayerPhys._RB.velocity;
 
 			//If High enough above ground and not at an odd rotation
-			if (enoughAboveGround() && (Actions._whatAction == S_Enums.PrimaryPlayerStates.Default || Actions._whatAction == S_Enums.PrimaryPlayerStates.JumpDash || (Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump && GetComponent<S_Interaction_Pathers>()._currentUpreel == null)))
+			if (enoughAboveGround() && (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Default || _Actions._whatAction == S_Enums.PrimaryPlayerStates.JumpDash || (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump && _Tools.PathInteraction._currentUpreel == null)))
 			{
 
-				if (Inp._camMoveInput.sqrMagnitude > 0.8f)
+				if (_Input._camMoveInput.sqrMagnitude > 0.8f)
 				{
 					//Checks for nearby walls using raycasts
 					CheckForWall();
@@ -105,7 +105,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 
 
 			}
-			else if (Player._isGrounded)
+			else if (_PlayerPhys._isGrounded)
 			{
 				bannedWall = null;
 			}
@@ -123,38 +123,38 @@ public class S_Handler_WallRunning : MonoBehaviour
 
 			//Enter wall run as a climb
 			WallRun.InitialEvents(true, frontWallDetect, false, _wallCheckDistance_ * CheckModifier);
-			Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
 
 		}
 	}
 
 	void tryWallRunLeft () {
 		float dis = Vector3.Distance(transform.position, leftWallDetect.point);
-		if (Physics.Raycast(transform.position, Inp._camMoveInput, dis + 0.1f, _WallLayerMask_))
+		if (Physics.Raycast(transform.position, _Input._camMoveInput, dis + 0.1f, _WallLayerMask_))
 		{
 			//Debug.Log("Trigger Wall Left");
 			//Enter a wallrun with wall on left.
 			WallRun.InitialEvents(false, leftWallDetect, false);
-			Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
 
 		}
 	}
 
 	void tryWallRunRight () {
 		float dis = Vector3.Distance(transform.position, rightWallDetect.point);
-		if (Physics.Raycast(transform.position, Inp._camMoveInput, dis + 0.1f, _WallLayerMask_))
+		if (Physics.Raycast(transform.position, _Input._camMoveInput, dis + 0.1f, _WallLayerMask_))
 		{
 			//Debug.Log("Trigger Wall Right");
 			//Enter a wallrun with wall on right.
 			WallRun.InitialEvents(false, rightWallDetect, true);
-			Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
+			_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
 
 		}
 	}
 
 	private bool enoughAboveGround () {
 		//If racycast does not detect ground
-		if (!Player._isGrounded)
+		if (!_PlayerPhys._isGrounded)
 			return !Physics.Raycast(CharacterAnimator.transform.position, -Vector3.up, 6f, _WallLayerMask_);
 		else
 			return false;
@@ -187,7 +187,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 				if (!wallLeft && !wallRight)
 				{
 					//Increases check range based on speed
-					CheckModifier = (Player._horizontalSpeedMagnitude * 0.035f) + .5f;
+					CheckModifier = (_PlayerPhys._horizontalSpeedMagnitude * 0.035f) + .5f;
 					wallFront = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), CharacterAnimator.transform.forward, out frontWallDetect,
 					_wallCheckDistance_ * CheckModifier, _WallLayerMask_);
 
@@ -210,7 +210,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 				Vector3 wallDirection = frontWallDetect.point - transform.position;
 				//Debug.Log(Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized));
 
-				if (Vector3.Dot(wallDirection.normalized, Inp._camMoveInput.normalized) < 0.2f)
+				if (Vector3.Dot(wallDirection.normalized, _Input._camMoveInput.normalized) < 0.2f)
 				{
 					wallFront = false;
 				}
@@ -225,7 +225,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 				Vector3 wallDirection = rightWallDetect.point - transform.position;
 				//Debug.Log(Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized));
 
-				if (Vector3.Dot(wallDirection.normalized, Inp._camMoveInput.normalized) < 0.2f)
+				if (Vector3.Dot(wallDirection.normalized, _Input._camMoveInput.normalized) < 0.2f)
 				{
 					wallFront = false;
 				}
@@ -240,7 +240,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 			//Debug.DrawRay(transform.position, wallDirection, Color.red, 60f);
 			//Debug.DrawRay(transform.position, Inp.trueMoveInput, Color.green, 60f);
 
-			if (Vector3.Dot(wallDirection.normalized, Inp._camMoveInput.normalized) < 0.2f)
+			if (Vector3.Dot(wallDirection.normalized, _Input._camMoveInput.normalized) < 0.2f)
 			{
 				wallFront = false;
 			}
@@ -273,21 +273,21 @@ public class S_Handler_WallRunning : MonoBehaviour
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
 
-		_WallLayerMask_ = Tools.Stats.WallRunningStats.WallLayerMask;
-		_wallCheckDistance_ = Tools.Stats.WallRunningStats.wallCheckDistance;
+		_WallLayerMask_ = _Tools.Stats.WallRunningStats.WallLayerMask;
+		_wallCheckDistance_ = _Tools.Stats.WallRunningStats.wallCheckDistance;
 	}
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		Player = GetComponent<S_PlayerPhysics>();
-		Actions = GetComponent<S_ActionManager>();
-		WallRun = Actions.Action12;
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		WallRun = GetComponent<S_Action12_WallRunning>();
 		JumpAction = GetComponent<S_Action01_Jump>();
-		RegularAction = Actions._ActionDefault;
-		Inp = GetComponent<S_PlayerInput>();
+		RegularAction = _Actions._ActionDefault;
+		_Input = _Tools.GetComponent<S_PlayerInput>();
 
-		CharacterAnimator = Tools.CharacterAnimator;
-		sounds = Tools.SoundControl;
-		JumpBall = Tools.JumpBall;
+		CharacterAnimator = _Tools.CharacterAnimator;
+		sounds = _Tools.SoundControl;
+		JumpBall = _Tools.JumpBall;
 	}
 }

@@ -45,6 +45,7 @@ public class S_Enums
 		Skidding,
 		Quickstepping,
 		Rolling,
+		Boost,
 	}
 
 	//Interaction
@@ -53,6 +54,13 @@ public class S_Enums
 		Rolling,
 		SpinJump,
 		HomingAttack,
+	}
+
+	public enum PlayerAttackStates {
+		Unprotected,
+		Ball,
+		Homing,
+		Boost,
 	}
 
 	public enum AttackTargets {
@@ -70,6 +78,11 @@ public class S_Enums
 	public enum JumpDashType {
 		ControlledDash,
 		Push,
+	}
+
+	public enum BoostTypes {
+		Normal,
+		Segmented,
 	}
 
 	public enum HomingRebounding {

@@ -64,8 +64,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private bool                  _isPressedCurrently = true;		//Involed in mashing. Reflects whether the button is pressed, if false, start exiting, if false when button is true, reset exiting.	
 
 	private float		_currentCharge;			//Tracks how much power gained this use of the action,  starting from minimum.
-	public float		_spinDashChargedEffectAmm;		//How active the spin dash particle effect should be
-	public float		_ballAnimationSpeedMultiplier;
+	private float		_spinDashChargedEffectAmm = 1;		//How active the spin dash particle effect should be
+	private float		_ballAnimationSpeedMultiplier = 1;
 
 	private float		_counter = 0;	//Tracks how long in this state for
 
@@ -133,8 +133,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	//Called by the action manager whenever action is changing. Will only perform if enabled right now. Similar to OnDisable.
 	public void StopAction(bool isFirstTime = false ) {
-		if (enabled) enabled = false;
-		else return;
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
+		enabled = false;
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		//Setting public
 		_LowerCapsule.SetActive(false);
@@ -364,7 +365,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		{
 
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -398,20 +399,20 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_shouldSetRolling_ = _Tools.Stats.SpinChargeStat.shouldSetRolling;
 	}
 	private void AssignTools () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
-		_CamHandler = GetComponent<S_Handler_Camera>();
-		_Input = GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_CamHandler = _Tools.CamHandler;
+		_Input = _Tools.GetComponent<S_PlayerInput>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 		_BallAnimator = _Tools.BallAnimator;
 		_Sounds = _Tools.SoundControl;
 		_Effects = _Tools.EffectsControl;
 
 		_PlayerSkinTransform = _Tools.PlayerSkinTransform;
-		_LowerCapsule = _Tools.crouchCapsule;
-		_CharacterCapsule = _Tools.characterCapsule;
+		_LowerCapsule = _Tools.CrouchCapsule;
+		_CharacterCapsule = _Tools.CharacterCapsule;
 	}
 
 	#endregion

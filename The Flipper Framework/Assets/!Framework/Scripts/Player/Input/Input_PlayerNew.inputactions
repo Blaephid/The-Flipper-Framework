@@ -1,5 +1,5 @@
 {
-    "name": "Player New Input",
+    "name": "Input_PlayerNew",
     "maps": [
         {
             "name": "CharacterActions",
@@ -63,15 +63,6 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "e16675b5-a1e2-4aeb-9ea2-e97861123be7",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Skid",
-                    "type": "Button",
-                    "id": "27482aec-dc87-42ba-a8cd-fc41c580d62f",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -144,6 +135,15 @@
                     "name": "SpinChargePressed",
                     "type": "Button",
                     "id": "b5a2c673-34a7-4de0-805b-06900520bba4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Boost",
+                    "type": "Button",
+                    "id": "e79a6c25-e5eb-4ccc-94f5-34e2bf1a8b2c",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -434,28 +434,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "826e107b-37fd-4e52-8610-44fd318741a9",
-                    "path": "<SwitchProControllerHID>/leftTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Skid",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "44f484a4-66f1-4d55-80ab-79d55c0ee0ba",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Skid",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -843,6 +821,17 @@
                     "action": "MovementKeyboard",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "f04bf7c4-d7f0-47cb-97cc-f08baa1ffe0b",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Boost",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

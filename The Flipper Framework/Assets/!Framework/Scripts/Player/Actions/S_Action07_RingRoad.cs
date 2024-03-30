@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEditor;
 
 [RequireComponent(typeof(S_Handler_RingRoad))]
-[RequireComponent(typeof(S_ActionManager))]
 public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 {
 
@@ -50,7 +49,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	public Vector3      _trailOffSet = new Vector3(0,-3,0);	//The trail effect will be away from the player by this.
 
 
-	private float       _dashSpeed;		//Tracks how fast the player is currently moving in the dash, and moves them accordingly.
 	private float       _speedBeforeAction;		//The speed moving at before the action. Will return to it when action ends.
 	private Vector3     _directionToGo;		//The direction the player will move towards the next ring or along the created path.
 	private float       _positionAlongPath;		//How far the player has moved this dash.
@@ -95,7 +93,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	public bool AttemptAction () {
 		_RoadHandler._isScanning = true; //This makes it so the scanner will only happen if this method is called by another action (decided in the action manager).
-
 		if (_Input.InteractPressed && _RoadHandler._TargetRing != null && !enabled)
 		{
 			StartAction();
@@ -136,7 +133,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_counter = 0;
 
 		_speedBeforeAction = _PlayerPhys._horizontalSpeedMagnitude;
-		_dashSpeed = Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f); //Speed to move at, always faster than was moving before.
+		_Actions._onPathSpeed = Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f); //Speed to move at, always faster than was moving before.
 
 		_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
@@ -146,9 +143,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
@@ -212,7 +207,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private void PlaceOnCreatedPath () {
 		if (_counter < 3) { return; } //Gives time to create a spline before moving along it.
 
-		_positionAlongPath += Time.deltaTime * _dashSpeed; //Increase distance on spline by speed.
+		_positionAlongPath += Time.deltaTime * _Actions._onPathSpeed; //Increase distance on spline by speed.
 
 		//If still on the spline.
 		if (_positionAlongPath < _CreatedSpline.Length)
@@ -220,8 +215,10 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			//Get the world transform point of that point on the spline.
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
 
+			Debug.DrawRay(Sample.location, Sample.up * 2, Color.red, 30f);
+
 			//Place player on it (since called in update, not fixed update, won't be too jittery).
-			transform.position = Sample.location;
+			_PlayerPhys.transform.position = Sample.location;
 
 			//Rotate towards the next ring, according to the created spline.
 			_directionToGo = Sample.tangent;
@@ -246,7 +243,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_PlayerPhys.SetTotalVelocity(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
-		float differentSpeedOnExit = _dashSpeed - endingSpeedResult;
+		float differentSpeedOnExit = _Actions._onPathSpeed - endingSpeedResult;
 		if(differentSpeedOnExit > 0) { StartCoroutine(LoseTemporarySpeedOverTime(differentSpeedOnExit)); }
 
 		_Actions._ActionDefault.StartAction();
@@ -275,7 +272,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -293,13 +290,13 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
-		_Actions = GetComponent<S_ActionManager>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 		_RoadHandler = GetComponent<S_Handler_RingRoad>();
 
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_JumpBall = _Tools.JumpBall;
 		_HomingTrail = _Tools.HomingTrail;
@@ -309,7 +306,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
 		_willCarrySpeed_ = _Tools.Stats.RingRoadStats.willCarrySpeed;
-		_dashSpeed_ = _Tools.Stats.RingRoadStats.dashSpeed;
+		_dashSpeed_= _Tools.Stats.RingRoadStats.dashSpeed;
 		_minimumEndingSpeed_ = _Tools.Stats.RingRoadStats.minimumEndingSpeed;
 		_speedGain_ = _Tools.Stats.RingRoadStats.speedGained;
 	}

@@ -14,14 +14,14 @@ public class S_Handler_Camera : MonoBehaviour
 	[HideInInspector] public float _initialDistance;
 
 	void Start () {
-		_Tools = GetComponent<S_CharacterTools>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Input = GetComponent<S_PlayerInput>();
-		_initialDistance = _Tools.camStats.DistanceStats.CameraMaxDistance;
+		_Tools = GetComponentInParent<S_CharacterTools>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_initialDistance = _Tools.CameraStats.DistanceStats.CameraMaxDistance;
 	}
 
 
-	public void OnTriggerEnter ( Collider col ) {
+	public void EventTriggerEnter ( Collider col ) {
 		if (col.tag == "CameraTrigger")
 		{
 			if (col.GetComponent<S_Trigger_Camera>() != null)

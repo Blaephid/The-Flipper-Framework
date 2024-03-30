@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace templates
 {
-	[RequireComponent(typeof(S_ActionManager))]
 	public class ActionsTemplate : MonoBehaviour, IMainAction
 	{
 		/// <summary>
@@ -113,7 +112,7 @@ namespace templates
 			{
 
 				//Assign all external values needed for gameplay.
-				_Tools = GetComponent<S_CharacterTools>();
+				_Tools = GetComponentInParent<S_CharacterTools>();
 				AssignTools();
 				AssignStats();
 
@@ -131,9 +130,9 @@ namespace templates
 
 		//Responsible for assigning objects and components from the tools script.
 		private void AssignTools () {
-			_Input = GetComponent<S_PlayerInput>();
-			_PlayerPhys = GetComponent<S_PlayerPhysics>();
-			_Actions = GetComponent<S_ActionManager>();
+			_Input = _Tools.GetComponent<S_PlayerInput>();
+			_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+			_Actions = _Tools.GetComponent<S_ActionManager>();
 		}
 
 		//Reponsible for assigning stats from the stats script.

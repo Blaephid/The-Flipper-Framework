@@ -94,7 +94,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 			MoveOnUpreel();		
 	}
 
-	public void OnTriggerEnter ( Collider col ) {
+	public void EventTriggerEnter ( Collider col ) {
 
 		switch (col.gameObject.tag)
 		{
@@ -458,7 +458,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 		}
@@ -466,16 +466,16 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
-		_RailAction = GetComponent<S_Action05_Rail>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_RailAction = _Actions._ObjectForActions.GetComponent<S_Action05_Rail>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_characterCapsule = _Tools.characterCapsule.GetComponent<Collider>();
+		_characterCapsule = _Tools.CharacterCapsule.GetComponent<Collider>();
 		_HandGripTransform = _Tools.HandGripPoint;
 		_FeetTransform = _Tools.FeetPoint;
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 	}
 
 	//Reponsible for assigning stats from the stats script.

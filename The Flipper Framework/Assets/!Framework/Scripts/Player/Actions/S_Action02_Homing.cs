@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(S_ActionManager))]
 [RequireComponent(typeof(S_Handler_HomingAttack))]
 public class S_Action02_Homing : MonoBehaviour, IMainAction
 {
@@ -58,7 +57,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	#region trackers
 	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
-	public float        _skinRotationSpeed;
+	public float        _skinRotationSpeed = 7;
 
 	private bool        _isHoming;                    //If currently homing. The action has unique interactions that will turn this off, disabling actual homing in on targets.
 
@@ -213,7 +212,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_PlayerPhys._isGravityOn = true;
 	}
 
-	private void OnCollisionEnter ( Collision collision ) {
+	public void EventCollisionEnter ( Collision collision ) {
 		if(!enabled) { return; }
 		Debug.Log("Collision in homing");
 
@@ -253,7 +252,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Set Player location when close enough, for precision.
 		if (_distanceFromTarget < (_currentSpeed * Time.fixedDeltaTime))
 		{
-			transform.position = _Target.transform.position;
+			_PlayerPhys.transform.position = _Target.transform.position;
 			return;
 		}
 		//Turn faster when close to target and fast to make missing very hard.
@@ -279,9 +278,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			_horizontalDirection.y = 0;
 
 			_inputAngle = Vector3.Angle(_horizontalDirection, _currentInput);
-
-			Debug.DrawRay(transform.position, _horizontalDirection * 4, Color.red);
-			Debug.DrawRay(transform.position, _currentInput * 4, Color.yellow);
 
 			//Will only add control if input is not pointing directily behind character as that will lead to zigzagging
 			if (_inputAngle < 130)
@@ -493,7 +489,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		{
 
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -511,12 +507,12 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 		_HomingHandler = GetComponent<S_Handler_HomingAttack>();
 		_Sounds = _Tools.SoundControl;
-		_Skin = _Tools.mainSkin;
+		_Skin = _Tools.MainSkin;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_HomingTrailScript = _Tools.HomingTrailScript;

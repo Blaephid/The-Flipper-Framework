@@ -23,7 +23,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	private bool	_hasHitThisFrame = false; //Prevents multiple attacks from being calculated in one frame
 
 	private void Start () {
-		_Tools = GetComponent<S_CharacterTools>();
+		_Tools = GetComponentInParent<S_CharacterTools>();
 		AssignTools();
 		AssignStats();
 	}
@@ -42,7 +42,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 			{
 				//If in default, will only attack if rolling.
 				case S_Enums.PrimaryPlayerStates.Default:
-					if (_PlayerPhys._isRolling)
+					if (_PlayerPhys._isRolling || _PlayerPhys)
 					{
 						AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target);
 						_hasHitThisFrame = true;
@@ -147,14 +147,14 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		//If destroyed enemy, will bounce through, if not, will take knockback from it.
 		if(_shouldStopOnHit_)
 		{
-			GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.bounceOff);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.bounceOff);
 		}
 		if (wasDestroyed)
 		{
-			GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.BounceThrough);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.BounceThrough);
 		}
 		else
-			GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.Rebound);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.Rebound);
 	}
 
 	//Prevents multiple attacks in quick succession.
@@ -171,9 +171,9 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 
 	private void AssignTools () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_ObjectInteraction = GetComponent<S_Interaction_Objects>();
-		_Actions = GetComponent<S_ActionManager>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 	}
 }
 

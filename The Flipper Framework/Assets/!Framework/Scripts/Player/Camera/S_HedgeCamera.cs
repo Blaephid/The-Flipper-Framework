@@ -760,56 +760,56 @@ public class S_HedgeCamera : MonoBehaviour
 		_isLocked = false;
 		_canMove = true;
 
-		_shouldSetHeightWhenMoving_ = _Tools.camStats.LockHeightStats.LockHeight;
-		_lockHeightSpeed_ = _Tools.camStats.LockHeightStats.LockHeightSpeed;
-		_shouldFaceDownWhenInAir_ = _Tools.camStats.AutoLookDownStats.shouldLookDownWhenInAir;
-		_minHeightToLookDown_ = _Tools.camStats.AutoLookDownStats.minHeightToLookDown;
-		_heightToLock_ = _Tools.camStats.LockHeightStats.HeightToLock;
-		_heightFollowSpeed_ = _Tools.camStats.AutoLookDownStats.HeightFollowSpeed;
-		_fallSpeedThreshold_ = _Tools.camStats.AutoLookDownStats.FallSpeedThreshold;
+		_shouldSetHeightWhenMoving_ = _Tools.CameraStats.LockHeightStats.LockHeight;
+		_lockHeightSpeed_ = _Tools.CameraStats.LockHeightStats.LockHeightSpeed;
+		_shouldFaceDownWhenInAir_ = _Tools.CameraStats.AutoLookDownStats.shouldLookDownWhenInAir;
+		_minHeightToLookDown_ = _Tools.CameraStats.AutoLookDownStats.minHeightToLookDown;
+		_heightToLock_ = _Tools.CameraStats.LockHeightStats.HeightToLock;
+		_heightFollowSpeed_ = _Tools.CameraStats.AutoLookDownStats.HeightFollowSpeed;
+		_fallSpeedThreshold_ = _Tools.CameraStats.AutoLookDownStats.FallSpeedThreshold;
 
-		_cameraMaxDistance_ = _Tools.camStats.DistanceStats.CameraMaxDistance;
-		_cameraDistanceBySpeed_ = _Tools.camStats.DistanceStats.cameraDistanceBySpeed;
-		_shouldAffectDistanceBySpeed_ = _Tools.camStats.DistanceStats.affectDistancebySpeed;
-		_VirtualCamera.GetComponent<CinemachineCollider>().m_CollideAgainst = _Tools.camStats.DistanceStats.CollidableLayers;
-		_CollidableLayers_ = _Tools.camStats.DistanceStats.CollidableLayers;
+		_cameraMaxDistance_ = _Tools.CameraStats.DistanceStats.CameraMaxDistance;
+		_cameraDistanceBySpeed_ = _Tools.CameraStats.DistanceStats.cameraDistanceBySpeed;
+		_shouldAffectDistanceBySpeed_ = _Tools.CameraStats.DistanceStats.affectDistancebySpeed;
+		_VirtualCamera.GetComponent<CinemachineCollider>().m_CollideAgainst = _Tools.CameraStats.DistanceStats.CollidableLayers;
+		_CollidableLayers_ = _Tools.CameraStats.DistanceStats.CollidableLayers;
 
-		_dampingBehind_ = _Tools.camStats.cinemachineStats.dampingBehind;
-		_dampingInFront_ = _Tools.camStats.cinemachineStats.dampingInFront;
-		_Transposer.m_SoftZoneHeight = _Tools.camStats.cinemachineStats.softZone.y;
-		_Transposer.m_SoftZoneWidth = _Tools.camStats.cinemachineStats.softZone.x;
-		_Transposer.m_DeadZoneHeight = _Tools.camStats.cinemachineStats.deadZone.y;
-		_Transposer.m_DeadZoneWidth = _Tools.camStats.cinemachineStats.deadZone.x;
+		_dampingBehind_ = _Tools.CameraStats.cinemachineStats.dampingBehind;
+		_dampingInFront_ = _Tools.CameraStats.cinemachineStats.dampingInFront;
+		_Transposer.m_SoftZoneHeight = _Tools.CameraStats.cinemachineStats.softZone.y;
+		_Transposer.m_SoftZoneWidth = _Tools.CameraStats.cinemachineStats.softZone.x;
+		_Transposer.m_DeadZoneHeight = _Tools.CameraStats.cinemachineStats.deadZone.y;
+		_Transposer.m_DeadZoneWidth = _Tools.CameraStats.cinemachineStats.deadZone.x;
 
-		_angleThreshold_.x = _Tools.camStats.AligningStats.angleThresholdUpwards;
-		_angleThreshold_.y = _Tools.camStats.AligningStats.angleThresholdDownwards;
-		_cameraVerticalRotationSpeed_ = _Tools.camStats.AligningStats.CameraVerticalRotationSpeed;
-		_VerticalFollowSpeedByAngle_ = _Tools.camStats.AligningStats.vertFollowSpeedByAngle;
+		_angleThreshold_.x = _Tools.CameraStats.AligningStats.angleThresholdUpwards;
+		_angleThreshold_.y = _Tools.CameraStats.AligningStats.angleThresholdDownwards;
+		_cameraVerticalRotationSpeed_ = _Tools.CameraStats.AligningStats.CameraVerticalRotationSpeed;
+		_VerticalFollowSpeedByAngle_ = _Tools.CameraStats.AligningStats.vertFollowSpeedByAngle;
 
-		_inputXSpeed_ = _Tools.camStats.InputStats.InputXSpeed;
-		_inputYSpeed_ = _Tools.camStats.InputStats.InputYSpeed;
-		_stationaryCamIncrease_ = _Tools.camStats.InputStats.stationaryCamIncrease;
+		_inputXSpeed_ = _Tools.CameraStats.InputStats.InputXSpeed;
+		_inputYSpeed_ = _Tools.CameraStats.InputStats.InputYSpeed;
+		_stationaryCamIncrease_ = _Tools.CameraStats.InputStats.stationaryCamIncrease;
 
-		_afterMoveXDelay_ = _Tools.camStats.RotateBehindStats.afterMoveXDelay;
-		_afterMoveYDelay_ = _Tools.camStats.LockHeightStats.afterMoveYDelay;
+		_afterMoveXDelay_ = _Tools.CameraStats.RotateBehindStats.afterMoveXDelay;
+		_afterMoveYDelay_ = _Tools.CameraStats.LockHeightStats.afterMoveYDelay;
 
-		_yMinLimit_ = _Tools.camStats.ClampingStats.yMinLimit;
-		_yMaxLimit_ = _Tools.camStats.ClampingStats.yMaxLimit;
+		_yMinLimit_ = _Tools.CameraStats.ClampingStats.yMinLimit;
+		_yMaxLimit_ = _Tools.CameraStats.ClampingStats.yMaxLimit;
 
-		_lockCamAtSpeed_ = _Tools.camStats.RotateBehindStats.LockCamAtHighSpeed;
-		_rotateToBehindSpeed_ = _Tools.camStats.RotateBehindStats.rotateToBehindSpeed;
-		_rotateCharacterBeforeCameraFollows_ = _Tools.camStats.RotateBehindStats.rotateCharacterBeforeCameraFollows;
-		_followFacingDirectionSpeed_ = _Tools.camStats.RotateBehindStats.followFacingDirectionSpeed;
+		_lockCamAtSpeed_ = _Tools.CameraStats.RotateBehindStats.LockCamAtHighSpeed;
+		_rotateToBehindSpeed_ = _Tools.CameraStats.RotateBehindStats.rotateToBehindSpeed;
+		_rotateCharacterBeforeCameraFollows_ = _Tools.CameraStats.RotateBehindStats.rotateCharacterBeforeCameraFollows;
+		_followFacingDirectionSpeed_ = _Tools.CameraStats.RotateBehindStats.followFacingDirectionSpeed;
 
-	         _shakeDampen_ = _Tools.camStats.EffectsStats.ShakeDampen;
+	         _shakeDampen_ = _Tools.CameraStats.EffectsStats.ShakeDampen;
 
-		_inputPredictonDistance_ = _Tools.camStats.LookAheadStats.inputPredictonDistance;
-		_cameraMoveToInputSpeed_ = _Tools.camStats.LookAheadStats.cameraMoveToInputSpeed;
-		_shouldMoveInInputDirection_ = _Tools.camStats.LookAheadStats.shouldMoveInInputDirection;
+		_inputPredictonDistance_ = _Tools.CameraStats.LookAheadStats.inputPredictonDistance;
+		_cameraMoveToInputSpeed_ = _Tools.CameraStats.LookAheadStats.cameraMoveToInputSpeed;
+		_shouldMoveInInputDirection_ = _Tools.CameraStats.LookAheadStats.shouldMoveInInputDirection;
 
-		_shouldMoveBasedOnAngle_ = _Tools.camStats.TargetByAngleStats.shouldMoveBasedOnAngle;
-		_moveUpByAngle_ = _Tools.camStats.TargetByAngleStats.moveUpByAngle;
-		_moveSideByAngle_ = _Tools.camStats.TargetByAngleStats.moveSideByAngle;
+		_shouldMoveBasedOnAngle_ = _Tools.CameraStats.TargetByAngleStats.shouldMoveBasedOnAngle;
+		_moveUpByAngle_ = _Tools.CameraStats.TargetByAngleStats.moveUpByAngle;
+		_moveSideByAngle_ = _Tools.CameraStats.TargetByAngleStats.moveSideByAngle;
 
 		_startLockCam = _lockCamAtSpeed_;
 	}

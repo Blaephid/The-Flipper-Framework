@@ -51,6 +51,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private LayerMask   _TargetLayer_;
 	private LayerMask   _BlockingLayers_;
 	private float       _facingAmount_;
+	[HideInInspector]
 	public float        _homingDelay_;
 	private float       _iconScale_;
 	private float       _iconDistanceScaling_;
@@ -345,7 +346,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 		}
@@ -353,12 +354,12 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 		_MainCamera = _Tools.MainCamera;
 		_IconTransform = _Tools.homingIcons.transform;
 		_NormalIcon = _Tools.NormalIcon;

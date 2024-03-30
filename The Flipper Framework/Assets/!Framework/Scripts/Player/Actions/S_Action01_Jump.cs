@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(S_ActionManager))]
 public class S_Action01_Jump : MonoBehaviour, IMainAction
 {
 	/// <summary>
@@ -45,7 +44,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
-	public float        _skinRotationSpeed;
+	public float        _skinRotationSpeed = 8;
 
 	[HideInInspector]
 	public Vector3      _upwardsDirection;	//The direction the jump will move in. If on the ground, follows the normal of the floor, otherwise is upwards.
@@ -346,7 +345,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -364,10 +363,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
-		_CamHandler = GetComponent<S_Handler_Camera>();
-		_Input = GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_CamHandler = _Tools.CamHandler;
+		_Input = _Tools.GetComponent<S_PlayerInput>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_Sounds = _Tools.SoundControl;

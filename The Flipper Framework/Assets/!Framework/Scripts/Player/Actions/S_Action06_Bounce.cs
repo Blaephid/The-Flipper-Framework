@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections;
 using Unity.VisualScripting;
 
-[RequireComponent(typeof(S_ActionManager))]
 public class S_Action06_Bounce : MonoBehaviour, IMainAction
 {
 
@@ -297,7 +296,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -315,15 +314,15 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 		_Sounds = _Tools.SoundControl;
 		_HomingTrailScript = _Tools.HomingTrailScript;
 		_BallAnimator = _Tools.BallAnimator;
-		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 	}
 
 	//Reponsible for assigning stats from the stats script.

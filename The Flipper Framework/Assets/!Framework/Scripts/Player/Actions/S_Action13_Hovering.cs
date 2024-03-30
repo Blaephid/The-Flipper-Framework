@@ -61,7 +61,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	private void OnEnable () {
 		if (_PlayerPhys == null)
 		{
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 		}
@@ -158,12 +158,13 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
-		_Input = GetComponent<S_PlayerInput>();
+		
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 		_PlayerSkin = _Tools.PlayerSkinTransform;
 		_Sounds = _Tools.SoundControl;
 	}

@@ -44,6 +44,7 @@ namespace SplineMesh
 
         bool active = false;
         [HideInInspector] public S_Action05_Rail playerRail;
+        [HideInInspector] public S_ActionManager _PlayerActions;
         float currentSpeed;
         float range;
         CurveSample sample;
@@ -82,7 +83,7 @@ namespace SplineMesh
             if (currentSpeed == 0)
                 currentSpeed = StartSpeed;
 
-            S_Manager_LevelProgress.onReset += ReturnOnDeath;
+            S_Manager_LevelProgress.onReset += EventReturnOnDeath;
 
         }
 
@@ -299,13 +300,13 @@ namespace SplineMesh
                         playerDistance = playerRail._pointOnSpline - range;
                     }
 
-                    playerSpeed = (playerRail._playerSpeed - currentSpeed) / playerRail._railmaxSpeed_;
+                    playerSpeed = (_PlayerActions._onPathSpeed - currentSpeed) / playerRail._railmaxSpeed_;
                     float changeSpeed = followSpeed * followBySpeedDif.Evaluate(Mathf.Abs(playerSpeed));
                     
 
                     if (playerDistance > 0)
                     {
-                        if (currentSpeed < playerRail._playerSpeed - 3)
+                        if (currentSpeed < _PlayerActions._onPathSpeed - 3)
                             currentSpeed += changeSpeed;
 
                         currentSpeed += followSpeed * followByDistance.Evaluate(Mathf.Abs(playerDistance));
@@ -314,7 +315,7 @@ namespace SplineMesh
                     else
                     {
 
-                        currentSpeed = Mathf.MoveTowards(currentSpeed, playerRail._playerSpeed - 2, changeSpeed);
+                        currentSpeed = Mathf.MoveTowards(currentSpeed, _PlayerActions._onPathSpeed - 2, changeSpeed);
                     }
 
 
@@ -363,7 +364,7 @@ namespace SplineMesh
         }
 
 
-        void ReturnOnDeath(object sender, EventArgs e)
+        void EventReturnOnDeath(object sender, EventArgs e)
         {
 
             firstSet = true;

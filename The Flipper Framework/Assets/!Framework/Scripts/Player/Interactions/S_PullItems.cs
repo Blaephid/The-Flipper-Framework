@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class S_PullItems : MonoBehaviour
 {
-    S_CharacterTools tools;
+    S_CharacterTools _Tools;
 
     Animator CharacterAnimator;
-    S_PlayerPhysics player;
+    S_PlayerPhysics _PlayerPhys;
 
     AnimationCurve _RadiusBySpeed_;
     LayerMask _RingMask_;
@@ -19,13 +19,13 @@ public class S_PullItems : MonoBehaviour
 
     public void Start()
     {
-        player = GetComponent<S_PlayerPhysics>();
-        tools = GetComponent<S_CharacterTools>();
+        _PlayerPhys = GetComponentInParent<S_PlayerPhysics>();
+        _Tools = GetComponentInParent<S_CharacterTools>();
 
-        CharacterAnimator = tools.CharacterAnimator;
-        _RadiusBySpeed_ = tools.Stats.ItemPulling.RadiusBySpeed;
-        _RingMask_ = tools.Stats.ItemPulling.RingMask;
-        _basePullSpeed_ = tools.Stats.ItemPulling.basePullSpeed;
+        CharacterAnimator = _Tools.CharacterAnimator;
+        _RadiusBySpeed_ = _Tools.Stats.ItemPulling.RadiusBySpeed;
+        _RingMask_ = _Tools.Stats.ItemPulling.RingMask;
+        _basePullSpeed_ = _Tools.Stats.ItemPulling.basePullSpeed;
 
 
         
@@ -41,7 +41,7 @@ public class S_PullItems : MonoBehaviour
     public void AddToList()
     {
 
-        Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(player._horizontalSpeedMagnitude / player._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
+        Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
         foreach (Collider r in rings)
         {
             allRings.Add(r.transform.parent);
@@ -65,7 +65,7 @@ public class S_PullItems : MonoBehaviour
                    
                 else
                 {
-                    r.position = Vector3.MoveTowards(r.position, transform.position, Time.deltaTime * _basePullSpeed_ * player._horizontalSpeedMagnitude);
+                    r.position = Vector3.MoveTowards(r.position, transform.position, Time.deltaTime * _basePullSpeed_ * _PlayerPhys._horizontalSpeedMagnitude);
                 }
             
             }

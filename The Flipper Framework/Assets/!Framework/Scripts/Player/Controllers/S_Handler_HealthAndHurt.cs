@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
 
-[RequireComponent(typeof(S_Action04_Hurt))]
 public class S_Handler_HealthAndHurt : MonoBehaviour
 {
 
@@ -39,6 +36,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	private GameObject  _MovingRing;
 	private GameObject  _ReleaseDirection;
+
+	public event	EventHandler<float> onRingGet;
 	#endregion
 
 
@@ -62,24 +61,31 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//Health
 	[HideInInspector]
-	public float _ringAmount; //The amount of health the player has. Goes down on hit, up on gaining rings.
+	public float _ringAmount;			//The amount of health the player has. Goes down on hit, up on gaining rings.
+	private bool _gainedRingThisFrame;
 
 	//States
+	[HideInInspector]
 	public bool         _isHurt;
-	public bool         _isInvincible; //Cannot take damage while this is true. Temporarily set on hit.
-	public bool         _isDead; //If the player has been killed
-	public bool         _hasShield = false; //Shields can be gained from monitors and grant one free hit
-	public bool         _inHurtStateBeforeDamage; //Frontiers hurt responses mean not takind damage until landing after being hit.
-	public bool         _wasHurtWithoutKnockback; //Frontiers hurt responses mean not takind damage until landing after being hit.
+	[HideInInspector]
+	public bool         _isInvincible;                //Cannot take damage while this is true. Temporarily set on hit.
+	[HideInInspector]
+	public bool         _isDead;                      //If the player has been killed
+	[HideInInspector]
+	public bool         _hasShield = false;           //Shields can be gained from monitors and grant one free hit
+	[HideInInspector]
+	public bool         _inHurtStateBeforeDamage;     //Frontiers hurt responses mean not takind damage until landing after being hit.
+	[HideInInspector]
+	public bool         _wasHurtWithoutKnockback;	//Frontiers hurt responses mean not takind damage until landing after being hit.
 
 	//Counters
-	private int         _counter; //How long is hurt for, when to end invincibility.
-	private float       _flickerCounter; //When invncible after taking damage, skin will flicker, this handles when to show and hide it.
-	private int         _deadCounter = 0; //Follows how long the player has been dead to allow respawning and resetting.
+	private int         _counter;			//How long is hurt for, when to end invincibility.
+	private float       _flickerCounter;		//When invncible after taking damage, skin will flicker, this handles when to show and hide it.
+	private int         _deadCounter = 0;		//Follows how long the player has been dead to allow respawning and resetting.
 
 	//Release rings on hurt
 	private bool        _isReleasingRings = false;
-	private int         _ringsToLose;       //Tracks how many rings to be shot out, doesn't decrease 1 per ring spawned, but does decrease.
+	private int         _ringsToLose;		//Tracks how many rings to be shot out, doesn't decrease 1 per ring spawned, but does decrease.
 	#endregion
 	#endregion
 
@@ -112,7 +118,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	}
 
 	//Any collisions involved in losing health are here, rather than in the object interaction script.
-	public void OnTriggerEnter ( Collider other ) {
+	public void EventTriggerEnter ( Collider other ) {
 
 		switch (other.tag)
 		{
@@ -135,7 +141,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		}
 	}
 
-	public void OnCollisionEnter ( Collision collision ) {
+	public void EventCollisionEnter ( Collision collision ) {
 		
 		switch (collision.collider.tag)
 		{
@@ -517,10 +523,13 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		Instantiate(Particle, col.transform.position, Quaternion.identity);
 		Destroy(col.gameObject);
 
+		_gainedRingThisFrame = false;
+
 		float ThisFramesRingCount = _ringAmount;
 		yield return new WaitForEndOfFrame();
 
 		_ringAmount = Mathf.Clamp(ThisFramesRingCount + amount, _ringAmount, ThisFramesRingCount + 100); 
+		if(!_gainedRingThisFrame) { onRingGet.Invoke(null, amount); }
 	}
 
 	//Called whenever the player should gain or lose a shield, which blocks one hit.
@@ -540,7 +549,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -551,22 +560,22 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_LevelHandler = GetComponent<S_Manager_LevelProgress>();
-		_Actions = GetComponent<S_ActionManager>();
-		_Objects = GetComponent<S_Interaction_Objects>();
-		_CamHandler = GetComponent<S_Handler_Camera>();
-		_Input = GetComponent<S_PlayerInput>();
-		_Attacks = GetComponent<S_Handler_CharacterAttacks>();
-		_HurtAction = GetComponent<S_Action04_Hurt>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_LevelHandler = _Actions._ObjectForInteractions.GetComponent<S_Manager_LevelProgress>();
+		_Objects = _Actions._ObjectForInteractions.GetComponent<S_Interaction_Objects>();
+		_CamHandler = _Tools.CamHandler;
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_Attacks = _Actions._ObjectForInteractions.GetComponent<S_Handler_CharacterAttacks>();
+		_HurtAction = _Actions._ObjectForActions.GetComponent<S_Action04_Hurt>();
 
-		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
-		_MainSkin = _Tools.mainSkin;
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+		_MainSkin = _Tools.MainSkin;
 		_JumpBall = _Tools.JumpBall;
 		_Sounds = _Tools.SoundControl;
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_SonicSkins = _Tools.PlayerSkin;
-		_MovingRing = _Tools.movingRing;
+		_SonicSkins = _Tools.PlayerSkins;
+		_MovingRing = _Tools.MovingRingObject;
 		_FadeOutImage = _Tools.FadeOutImage;
 	}
 

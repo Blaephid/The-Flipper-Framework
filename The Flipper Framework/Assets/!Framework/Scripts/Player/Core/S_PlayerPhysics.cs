@@ -29,6 +29,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	public UnityEvent             _OnGrounded;        //Event called when isGrounded is set to true from false, remember to assign what methods to call in the editor.
 	public UnityEvent             _OnLoseGround;        //Event called when isGrounded is set to false from true.
+	public UnityEvent<Collider>             _OnTriggerEnter;        //Event called when entering a trigger through the built in method.
+	public UnityEvent<Collision>           _OnCollisionEnter;        //Event called when start collision through the built in method.
 
 	[HideInInspector]
 	public Rigidbody _RB;
@@ -203,6 +205,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	[HideInInspector]
 	public bool                   _isRolling;         //Set by the rolling subaction, certain controls are different when rolling.
+	[HideInInspector]
+	public bool                   _isBoosting;         //Set by the boost subaction. This will be used in attacks and changes calculations.
 
 	//Disabling options
 	[HideInInspector]
@@ -272,6 +276,14 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//CheckForGround();
 	}
+
+	private void OnTriggerEnter ( Collider other ) {
+		_OnTriggerEnter.Invoke(other);
+	}
+	private void OnCollisionEnter ( Collision collision ) {
+		_OnCollisionEnter.Invoke(collision);
+	}
+
 	#endregion
 
 	/// <summary>
@@ -1079,13 +1091,13 @@ public class S_PlayerPhysics : MonoBehaviour
 	private void AssignTools () {
 		s_MasterPlayer = this;
 		_RB = GetComponent<Rigidbody>();
-		_Actions = GetComponent<S_ActionManager>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 		_SoundController = _Tools.SoundControl;
-		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_FeetTransform = _Tools.FeetPoint;
-		_Input = GetComponent<S_PlayerInput>();
-		_MainSkin = _Tools.mainSkin;
-		_camHandler = GetComponent<S_Handler_Camera>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_MainSkin = _Tools.MainSkin;
+		_camHandler = _Tools.CamHandler;
 	}
 
 	#endregion

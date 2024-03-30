@@ -175,14 +175,14 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	#region Assigning
 
 	private void AssignTools () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Tools = GetComponent<S_CharacterTools>();
-		_Input = GetComponent<S_PlayerInput>();
+		_Tools = GetComponentInParent<S_CharacterTools>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
-		_Actions = GetComponent<S_ActionManager>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 		_Action00 = _Actions._ActionDefault;
-		_CharacterCapsule = _Tools.characterCapsule;
-		_RollingCapsule = _Tools.crouchCapsule;
+		_CharacterCapsule = _Tools.CharacterCapsule;
+		_RollingCapsule = _Tools.CrouchCapsule;
 		_CharacterAnimator = _Tools.CharacterAnimator;
 	}
 

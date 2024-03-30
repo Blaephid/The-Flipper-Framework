@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(S_Handler_HealthAndHurt))]
 public class S_Action04_Hurt : MonoBehaviour, IMainAction
 {
 
@@ -60,7 +59,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 	[HideInInspector]
 	public Vector3      _knockbackDirection;          //Set externally when the action starts. The direction to be flung, if it's zero it means there should be no knockback.
-	public Vector3      _faceDirection;		//Set on start action, locks the character to face this direction.
+	private Vector3      _faceDirection;		//Set on start action, locks the character to face this direction.
 	[HideInInspector]
 	public bool         _wasHit;			//Set externally when the action starts, determines if this is a harmless bonk or damage was taken.
 	private bool        _isEndingAction;		//Set false at start, set true when it ends, allowing a one frame delay to check this the next frame before actually ending action.
@@ -330,7 +329,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		{
 
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -348,16 +347,16 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
-		_HurtControl = GetComponent<S_Handler_HealthAndHurt>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_HurtControl = GetComponentInParent<S_Handler_HealthAndHurt>();
 
-		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_JumpBall = _Tools.JumpBall;
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_Sounds = _Tools.SoundControl;
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 	}
 
 	//Reponsible for assigning stats from the stats script.

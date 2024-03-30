@@ -23,7 +23,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	S_PlayerInput _Input;
 	public GameObject CurrentCheckPoint { get; set; }
 
-	Transform characterTransform;
+	Transform _MainSkin;
 	//public Material LampDone;
 	public int LevelToGoNext = 0;
 	public string NextLevelNameLeft;
@@ -35,16 +35,16 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 
 	void Start () {
-		_Tools = GetComponent<S_CharacterTools>();
-		Cam = basePlayer.GetComponent<S_Handler_Camera>();
-		_Actions = basePlayer.GetComponent<S_ActionManager>();
-		_PlayerPhys = basePlayer.GetComponent<S_PlayerPhysics>();
-		_Input = basePlayer.GetComponent<S_PlayerInput>();
-		_HealthAndHurt = GetComponent<S_Handler_HealthAndHurt>();
-		characterTransform = _Tools.mainSkin;
-		ResumePosition = characterTransform.position;
-		ResumeRotation = characterTransform.rotation;
-		ResumeFace = characterTransform.forward;
+		_Tools = GetComponentInParent<S_CharacterTools>();
+		Cam = _Tools.CamHandler;
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_HealthAndHurt = _Tools.GetComponent<S_Handler_HealthAndHurt>();
+		_MainSkin = _Tools.MainSkin;
+		ResumePosition = _MainSkin.position;
+		ResumeRotation = _MainSkin.rotation;
+		ResumeFace = _MainSkin.forward;
 
 	}
 
@@ -59,7 +59,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 			if (readyCount > 1.5f)
 			{
 				Color alpha = Color.black;
-				S_Handler_HealthAndHurt HurtControl = GetComponent<S_Handler_HealthAndHurt>();
+				S_Handler_HealthAndHurt HurtControl = _Tools.GetComponent<S_Handler_HealthAndHurt>();
 				HurtControl._FadeOutImage.color = Color.Lerp(HurtControl._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
 			}
 			if (readyCount > 2.6f)
@@ -87,19 +87,18 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		}
 
 
-		_PlayerPhys.SetTotalVelocity(characterTransform.forward * 2, new Vector2(1, 0));
+		_PlayerPhys.SetTotalVelocity(_MainSkin.forward * 2, new Vector2(1, 0));
 
 		Cam._HedgeCam._isReversed = false;
 		Cam._HedgeCam.SetBehind(20);
 
-		transform.position = ResumePosition;
+		_PlayerPhys.transform.position = ResumePosition;
 		//transform.rotation = ResumeRotation;
-		characterTransform.forward = ResumeFace;
+		_MainSkin.forward = ResumeFace;
 
 	}
 
 	public void RespawnObjects () {
-
 		if (onReset != null)
 		{
 			Debug.LogWarning("Has begun respawning");
@@ -114,7 +113,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		ResumeTransform = position;
 	}
 
-	public void OnTriggerEnter ( Collider col ) {
+	public void EventTriggerEnter ( Collider col ) {
 		if (col.tag == "Checkpoint")
 		{
 			if (col.GetComponent<S_Data_Checkpoint>() != null)

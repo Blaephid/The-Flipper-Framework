@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 
-[RequireComponent(typeof(S_ActionManager))]
 public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 {
 	/// <summary>
@@ -177,9 +176,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		//Inputs
@@ -317,7 +314,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -335,15 +332,15 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input =		GetComponent<S_PlayerInput>();
-		_PlayerPhys =	GetComponent<S_PlayerPhysics>();
-		_Actions =	GetComponent<S_ActionManager>();
-		_CamHandler =	GetComponent<S_Handler_Camera>();
+		_Input =		_Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_Actions =	_Tools.GetComponent<S_ActionManager>();
+		_CamHandler =	_Tools.CamHandler;
 		_Sounds =			_Tools.SoundControl;
 		_Effects =		_Tools.EffectsControl;
 
 		_CharacterAnimator =	_Tools.CharacterAnimator;
-		_MainSkin =		_Tools.mainSkin;
+		_MainSkin =		_Tools.MainSkin;
 		_HomingTrailScript =	_Tools.HomingTrailScript;
 		_JumpBall =		_Tools.JumpBall;
 	}

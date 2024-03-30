@@ -97,6 +97,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 		//Modifier x increase raidus, modifer y increase range sphere is cast along, direction and position will usually based on the character, but when creating a path will go from target to target.
 		List<Transform> TargetsInRange = GetTargetsInRange(_targetSearchDistance_ * modifier.x, _targetSearchDistance_ * modifier.y, direction, position);
+		Debug.DrawRay(position, direction, Color.yellow, 1f);
 		_TargetRing = OrderTargets(TargetsInRange, position);
 	}
 
@@ -186,7 +187,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 		if (_PlayerPhys == null)
 		{
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 		}
@@ -194,11 +195,11 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 	}
 
 	//Reponsible for assigning stats from the stats script.

@@ -54,13 +54,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 
 	// Start is called before the first frame update
 	void Start () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Tools = GetComponent<S_CharacterTools>();
-		_Actions = GetComponent<S_ActionManager>();
-		_MainSkin = _Tools.mainSkin;
-		_CamHandler = GetComponent<S_Handler_Camera>();
-		_Input = GetComponent<S_PlayerInput>();
-		_CharacterCapsule = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
+		AssignTools();
 		_StepPlayermask_ = _Tools.Stats.QuickstepStats.StepLayerMask;
 
 		enabled = false;
@@ -226,4 +220,16 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		}
 	}
 	#endregion
+
+
+	private void AssignTools () {
+		_Tools =		GetComponentInParent<S_CharacterTools>();
+		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_Actions =	_Tools.GetComponent<S_ActionManager>();
+		_Input =		_Tools.GetComponent<S_PlayerInput>();
+
+		_MainSkin =	_Tools.MainSkin;
+		_CamHandler =	_Tools.CamHandler;
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+	}
 }

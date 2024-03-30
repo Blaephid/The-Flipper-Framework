@@ -13,17 +13,17 @@ using UnityEngine.Windows;
 public class S_Interaction_Objects : MonoBehaviour
 {
 
-	S_CharacterTools Tools;
+	S_CharacterTools _Tools;
 
 	[Header("For Rings, Springs and so on")]
 
-	S_PlayerPhysics Player;
-	S_HedgeCamera _CamHandler;
+	S_PlayerPhysics _PlayerPhys;
+	S_Handler_Camera _CamHandler;
 	Animator CharacterAnimator;
-	S_Control_SoundsPlayer Sounds;
+	S_Control_SoundsPlayer _Sounds;
 	S_ActionManager _Actions;
 	S_PlayerInput _Input;
-	S_Handler_CharacterAttacks attack;
+	S_Handler_CharacterAttacks _AttackHandler;
 	S_Handler_HealthAndHurt _HurtAndHealth;
 
 	GameObject JumpBall;
@@ -55,9 +55,9 @@ public class S_Interaction_Objects : MonoBehaviour
 	public Color DashRingLightsColor;
 
 	private void Awake () {
-		if (Player == null)
+		if (_PlayerPhys == null)
 		{
-			Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
 
 			AssignStats();
@@ -76,7 +76,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		switch (_Actions._whatAction)
 		{
 			default:
-				DisplaySpeed = Player._horizontalSpeedMagnitude;
+				DisplaySpeed = _PlayerPhys._horizontalSpeedMagnitude;
 				break;
 
 			case S_Enums.PrimaryPlayerStates.WallRunning:
@@ -87,7 +87,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				break;
 		}
 
-		if (SpeedCounter != null && Player._speedMagnitude > 10f) SpeedCounter.text = DisplaySpeed.ToString("F0");
+		if (SpeedCounter != null && _PlayerPhys._speedMagnitude > 10f) SpeedCounter.text = DisplaySpeed.ToString("F0");
 		else if (SpeedCounter != null && DisplaySpeed < 10f) SpeedCounter.text = "0";
 	}
 
@@ -106,7 +106,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			transform.position += (-Platform.TranslateVector);
 		}
-		if (!Player._isGrounded)
+		if (!_PlayerPhys._isGrounded)
 		{
 			Platform = null;
 		}
@@ -114,8 +114,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	}
 
-	public void OnTriggerEnter ( Collider col ) {
-
+	public void EventTriggerEnter ( Collider col ) {
 		switch(col.tag)
 		{
 			case "SpeedPad":
@@ -156,8 +155,8 @@ public class S_Interaction_Objects : MonoBehaviour
 					if (pad.LockToDirection)
 					{
 						float speed = col.GetComponent<S_Data_SpeedPad>().Speed;
-						if (speed < Player._horizontalSpeedMagnitude)
-							speed = Player._horizontalSpeedMagnitude;
+						if (speed < _PlayerPhys._horizontalSpeedMagnitude)
+							speed = _PlayerPhys._horizontalSpeedMagnitude;
 
 						if (!pad.isDashRing)
 							StartCoroutine(applyForce(col.transform.forward * speed, lockpos, 1));
@@ -166,7 +165,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					}
 					else
 					{
-						Player.AddCoreVelocity(col.transform.forward * col.GetComponent<S_Data_SpeedPad>().Speed);
+						_PlayerPhys.AddCoreVelocity(col.transform.forward * col.GetComponent<S_Data_SpeedPad>().Speed);
 
 						if (col.GetComponent<S_Data_SpeedPad>().Snap)
 						{
@@ -214,7 +213,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					if (pad.AffectCamera)
 					{
 						Vector3 dir = col.transform.forward;
-						_CamHandler.SetCamera(dir, 2.5f, 20, 5f, 1);
+						_CamHandler._HedgeCam.SetCamera(dir, 2.5f, 20, 5f, 1);
 
 					}
 
@@ -229,7 +228,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				break;
 			case "Spring":
 				_Actions._ActionDefault.CancelCoyote();
-				Player._isGravityOn = true;
+				_PlayerPhys._isGravityOn = true;
 
 				JumpBall.SetActive(false);
 
@@ -269,7 +268,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 					if (spring.IsAdditive)
 					{
-						Vector3 newVelocity = new Vector3(Player._RB.velocity.x, 0f, Player._RB.velocity.z);
+						Vector3 newVelocity = new Vector3(_PlayerPhys._RB.velocity.x, 0f, _PlayerPhys._RB.velocity.z);
 						newVelocity = (newVelocity * 0.8f) + (spring.transform.up * spring.SpringForce);
 						StartCoroutine(applyForce(newVelocity, spring.BounceCenter.position));
 					}
@@ -357,7 +356,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 			case "Monitor":
 				col.GetComponentInChildren<BoxCollider>().enabled = false;
-				attack.AttemptAttackOnContact(col, S_Enums.AttackTargets.Monitor);
+				_AttackHandler.AttemptAttackOnContact(col, S_Enums.AttackTargets.Monitor);
 				break;
 
 			case "Ring":
@@ -404,7 +403,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (col.GetComponent<S_Data_Monitor>().Type == MonitorType.Ring)
 		{
 
-			GetComponent<S_Handler_HealthAndHurt>()._ringAmount = (int)GetComponent<S_Handler_HealthAndHurt>()._ringAmount + col.GetComponent<S_Data_Monitor>().RingAmount;
+			_HurtAndHealth._ringAmount = (int)GetComponent<S_Handler_HealthAndHurt>()._ringAmount + col.GetComponent<S_Data_Monitor>().RingAmount;
 			col.GetComponent<S_Data_Monitor>().DestroyMonitor();
 
 		}
@@ -418,16 +417,16 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	private IEnumerator lockGravity ( Vector3 newGrav ) {
 
-		Player._currentFallGravity = newGrav;
+		_PlayerPhys._currentFallGravity = newGrav;
 		yield return new WaitForSeconds(0.2f);
 		while (true)
 		{
 			yield return new WaitForFixedUpdate();
-			if (Player._isGrounded)
+			if (_PlayerPhys._isGrounded)
 				break;
 		}
 
-		Player._currentFallGravity = Player._startFallGravity_;
+		_PlayerPhys._currentFallGravity = _PlayerPhys._startFallGravity_;
 	}
 
 	private IEnumerator applyForce ( Vector3 force, Vector3 position, int frames = 3 ) {
@@ -435,13 +434,13 @@ public class S_Interaction_Objects : MonoBehaviour
 		for (int i = 0 ; i < frames ; i++)
 		{
 			transform.position = position;
-			Player._RB.velocity = Vector3.zero;
+			_PlayerPhys._RB.velocity = Vector3.zero;
 			yield return new WaitForFixedUpdate();
 		}
 
 		_Actions._ActionDefault.StartAction();
 		transform.position = position;
-		Player._RB.velocity = force;
+		_PlayerPhys._RB.velocity = force;
 
 	}
 
@@ -451,16 +450,17 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	private void AssignTools () {
-		Player = GetComponent<S_PlayerPhysics>();
-		_CamHandler = GetComponent<S_Handler_Camera>()._HedgeCam;
-		_Actions = GetComponent<S_ActionManager>();
-		_Input = GetComponent<S_PlayerInput>();
-		attack = GetComponent<S_Handler_CharacterAttacks>();
-		_HurtAndHealth = GetComponent<S_Handler_HealthAndHurt>();
+		_Tools = GetComponentInParent<S_CharacterTools>();	
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_CamHandler = _Tools.CamHandler;
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_AttackHandler = GetComponent<S_Handler_CharacterAttacks>();
+		_HurtAndHealth =_Tools.GetComponent<S_Handler_HealthAndHurt>();
 
-		CharacterAnimator = Tools.CharacterAnimator;
-		Sounds = Tools.SoundControl;
-		JumpBall = Tools.JumpBall;
+		CharacterAnimator = _Tools.CharacterAnimator;
+		_Sounds = _Tools.SoundControl;
+		JumpBall = _Tools.JumpBall;
 
 
 	}

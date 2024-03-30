@@ -3,10 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using System.Linq;
-using UnityEngine.UI;
-using static UnityEngine.GridBrushBase;
 
-[RequireComponent(typeof(S_Action00_Default))]
 public class S_ActionManager : MonoBehaviour
 {
 
@@ -28,6 +25,12 @@ public class S_ActionManager : MonoBehaviour
 	public S_Action10_FollowAutoPath Action10;
 	public S_Action11_JumpDash Action11;
 	public S_Action12_WallRunning Action12;
+
+	//Keeps track of the generated objects that handle different components. This is to prevent having all components on one object.
+	public GameObject _ScriptsHolder;
+	public GameObject _ObjectForActions;
+	public GameObject _ObjectForSubActions;
+	public GameObject _ObjectForInteractions;
 	#endregion
 
 	// Trackers
@@ -35,10 +38,13 @@ public class S_ActionManager : MonoBehaviour
 	//Tracking states in game
 	public S_Enums.PrimaryPlayerStates	_whatAction;
 	public S_Enums.SubPlayerStates	_whatSubAction;
+	public S_Enums.PlayerAttackStates       _whatCurrentAttack;
 	public S_Enums.PrimaryPlayerStates	_whatPreviousAction { get; set; }
 
-	//Actions
+	[HideInInspector]
+	public float                            _onPathSpeed = 0;		//Certain actions will move the player along the spline, this will be used to track the speed for any actions that do so.
 
+	//Actions
 	public List<S_Structs.StrucMainActionTracker>	_MainActions; //This list of structs will cover each action currently available to the player (set in inspector), along with what actions it can enter through input or situation.	
 	private S_Structs.StrucMainActionTracker	_currentAction; //Which struct in the above list is currently active.
 
@@ -86,10 +92,10 @@ public class S_ActionManager : MonoBehaviour
 	void Start () {
 
 		//Assigning
-		_Tools = GetComponent<S_CharacterTools>();
-		_ActionDefault = GetComponent<S_Action00_Default>();
-		_ActionHurt = GetComponent<S_Action04_Hurt>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_Tools =		GetComponent<S_CharacterTools>();
+		_ActionDefault =	GetComponentInChildren<S_Action00_Default>();
+		_ActionHurt =	GetComponentInChildren<S_Action04_Hurt>();
+		_PlayerPhys =	GetComponent<S_PlayerPhysics>();
 
 		//Go through each struct and assign/add the scripts linked to that enum.
 		for (int i = 0 ; i < _MainActions.Count ; i++)
@@ -113,6 +119,7 @@ public class S_ActionManager : MonoBehaviour
 			action.SubActions = new List<ISubAction>();
 			foreach (S_Enums.SubPlayerStates subState in action.PerformableSubStates)
 			{
+				Debug.Log(subState+ " in " +action.State);
 				action.SubActions.Add(AssignSubScript(subState));
 			}
 
@@ -244,22 +251,22 @@ public class S_ActionManager : MonoBehaviour
 		{
 			//If the enum of the struct is set to Jump, then assign the jump script to it.
 			case S_Enums.PlayerControlledStates.Jump:
-				TryGetComponent(out S_Action01_Jump jump);
+				_ObjectForActions.TryGetComponent(out S_Action01_Jump jump);
 				return jump;
 			case S_Enums.PlayerControlledStates.Homing:
-				TryGetComponent(out S_Action02_Homing home);
+				_ObjectForActions.TryGetComponent(out S_Action02_Homing home);
 				return home;
 			case S_Enums.PlayerControlledStates.SpinCharge:
-				TryGetComponent(out S_Action03_SpinCharge spin);
+				_ObjectForActions.TryGetComponent(out S_Action03_SpinCharge spin);
 				return spin;
 			case S_Enums.PlayerControlledStates.Bounce:
-				TryGetComponent(out S_Action06_Bounce bounce);
+				_ObjectForActions.TryGetComponent(out S_Action06_Bounce bounce);
 				return bounce;
 			case S_Enums.PlayerControlledStates.DropCharge:
-				TryGetComponent(out S_Action08_DropCharge drop);
+				_ObjectForActions.TryGetComponent(out S_Action08_DropCharge drop);
 				return drop;
 			case S_Enums.PlayerControlledStates.JumpDash:
-				TryGetComponent(out S_Action11_JumpDash dash);
+				_ObjectForActions.TryGetComponent(out S_Action11_JumpDash dash);
 				return dash;
 		}
 		return null;
@@ -269,25 +276,25 @@ public class S_ActionManager : MonoBehaviour
 		{
 			//If the enum of the struct is set to Regular, then assign the jump script to it.
 			case S_Enums.PlayerSituationalStates.Default:
-				TryGetComponent(out S_Action00_Default def);
+				_ObjectForActions.TryGetComponent(out S_Action00_Default def);
 				return def;
 			case S_Enums.PlayerSituationalStates.Hurt:
-				TryGetComponent(out S_Action04_Hurt hurt);
+				_ObjectForActions.TryGetComponent(out S_Action04_Hurt hurt);
 				return hurt;
 			case S_Enums.PlayerSituationalStates.Rail:
-				TryGetComponent(out S_Action05_Rail rail);
+				_ObjectForActions.TryGetComponent(out S_Action05_Rail rail);
 				return rail;
 			case S_Enums.PlayerSituationalStates.RingRoad:
-				TryGetComponent(out S_Action07_RingRoad road);
+				_ObjectForActions.TryGetComponent(out S_Action07_RingRoad road);
 				return road;
 			case S_Enums.PlayerSituationalStates.Path:
-				TryGetComponent(out S_Action10_FollowAutoPath path);
+				_ObjectForActions.TryGetComponent(out S_Action10_FollowAutoPath path);
 				return path;
 			case S_Enums.PlayerSituationalStates.WallRunning:
-				TryGetComponent(out S_Action12_WallRunning wall);
+				_ObjectForActions.TryGetComponent(out S_Action12_WallRunning wall);
 				return wall;
 			case S_Enums.PlayerSituationalStates.Hovering:
-				TryGetComponent(out S_Action13_Hovering hov);
+				_ObjectForActions.TryGetComponent(out S_Action13_Hovering hov);
 				return hov;
 		}
 		return null;
@@ -298,134 +305,134 @@ public class S_ActionManager : MonoBehaviour
 		{
 			// If the enum of the struct is set to Jump, then assign the jump script to it.
 			case S_Enums.PrimaryPlayerStates.Jump:
-				if (TryGetComponent(out S_Action01_Jump jumpAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action01_Jump jumpAction))
 				{
 					return jumpAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action01_Jump>();
+					return _ObjectForActions.AddComponent<S_Action01_Jump>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.Homing:
-				if (TryGetComponent(out S_Action02_Homing homingAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action02_Homing homingAction))
 				{
 					return homingAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action02_Homing>();
+					return _ObjectForActions.AddComponent<S_Action02_Homing>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.SpinCharge:
-				if (TryGetComponent(out S_Action03_SpinCharge spinChargeAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action03_SpinCharge spinChargeAction))
 				{
 					return spinChargeAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action03_SpinCharge>();
+					return _ObjectForActions.AddComponent<S_Action03_SpinCharge>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.Bounce:
-				if (TryGetComponent(out S_Action06_Bounce bounceAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action06_Bounce bounceAction))
 				{
 					return bounceAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action06_Bounce>();
+					return _ObjectForActions.AddComponent<S_Action06_Bounce>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.DropCharge:
-				if (TryGetComponent(out S_Action08_DropCharge dropChargeAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action08_DropCharge dropChargeAction))
 				{
 					return dropChargeAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action08_DropCharge>();
+					return _ObjectForActions.AddComponent<S_Action08_DropCharge>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.JumpDash:
-				if (TryGetComponent(out S_Action11_JumpDash jumpDashAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action11_JumpDash jumpDashAction))
 				{
 					return jumpDashAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action11_JumpDash>();
+					return _ObjectForActions.AddComponent<S_Action11_JumpDash>();
 				}
 
 			// If the enum of the struct is set to Default, then assign the jump script to it.
 			case S_Enums.PrimaryPlayerStates.Default:
-				if (TryGetComponent(out S_Action00_Default defaultAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action00_Default defaultAction))
 				{
 					return defaultAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action00_Default>();
+					return _ObjectForActions.AddComponent<S_Action00_Default>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.Hurt:
-				if (TryGetComponent(out S_Action04_Hurt hurtAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action04_Hurt hurtAction))
 				{
 					return hurtAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action04_Hurt>();
+					return _ObjectForActions.AddComponent<S_Action04_Hurt>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.Rail:
-				if (TryGetComponent(out S_Action05_Rail railAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action05_Rail railAction))
 				{
 					return railAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action05_Rail>();
+					return _ObjectForActions.AddComponent<S_Action05_Rail>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.RingRoad:
-				if (TryGetComponent(out S_Action07_RingRoad ringRoadAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action07_RingRoad ringRoadAction))
 				{
 					return ringRoadAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action07_RingRoad>();
+					return _ObjectForActions.AddComponent<S_Action07_RingRoad>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.Path:
-				if (TryGetComponent(out S_Action10_FollowAutoPath pathAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action10_FollowAutoPath pathAction))
 				{
 					return pathAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action10_FollowAutoPath>();
+					return _ObjectForActions.AddComponent<S_Action10_FollowAutoPath>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.WallRunning:
-				if (TryGetComponent(out S_Action12_WallRunning wallRunningAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action12_WallRunning wallRunningAction))
 				{
 					return wallRunningAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action12_WallRunning>();
+					return _ObjectForActions.AddComponent<S_Action12_WallRunning>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.Hovering:
-				if (TryGetComponent(out S_Action13_Hovering hoveringAction))
+				if (_ObjectForActions.TryGetComponent(out S_Action13_Hovering hoveringAction))
 				{
 					return hoveringAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_Action13_Hovering>();
+					return _ObjectForActions.AddComponent<S_Action13_Hovering>();
 				}
 		}
 		return null;
@@ -436,35 +443,44 @@ public class S_ActionManager : MonoBehaviour
 		{
 			// Case for S_SubAction_Skid
 			case S_Enums.SubPlayerStates.Skidding:
-				if (TryGetComponent(out S_SubAction_Skid skidAction))
+				if (_ObjectForSubActions.TryGetComponent(out S_SubAction_Skid skidAction))
 				{
 					return skidAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_SubAction_Skid>();
+					return _ObjectForSubActions.AddComponent<S_SubAction_Skid>();
 				}
 
 			// Case for S_SubAction_Quickstep
 			case S_Enums.SubPlayerStates.Quickstepping:
-				if (TryGetComponent(out S_SubAction_Quickstep quickstepAction))
+				if (_ObjectForSubActions.TryGetComponent(out S_SubAction_Quickstep quickstepAction))
 				{
 					return quickstepAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_SubAction_Quickstep>();
+					return _ObjectForSubActions.AddComponent<S_SubAction_Quickstep>();
 				}
 
 			// Case for S_SubAction_Roll
 			case S_Enums.SubPlayerStates.Rolling:
-				if (TryGetComponent(out S_SubAction_Roll rollAction))
+				if (_ObjectForSubActions.TryGetComponent(out S_SubAction_Roll rollAction))
 				{
 					return rollAction;
 				}
 				else
 				{
-					return gameObject.AddComponent<S_SubAction_Roll>();
+					return _ObjectForSubActions.AddComponent<S_SubAction_Roll>();
+				}
+			case S_Enums.SubPlayerStates.Boost:
+				if (_ObjectForSubActions.TryGetComponent(out S_SubAction_Boost boostAction))
+				{
+					return boostAction;
+				}
+				else
+				{
+					return _ObjectForSubActions.AddComponent<S_SubAction_Boost>();
 				}
 		}
 		return null;
@@ -586,7 +602,6 @@ public class ActionManagerEditor : Editor
 			Undo.RecordObject(_ActionMan, "Import Missing");
 			if (GUILayout.Button("Import Missing", BigButtonStyle))
 			{
-
 				for (int i = 0 ; i < _ActionMan._MainActions.Count ; i++)
 				{
 					//Go through each struct and use the AssignScript to add missing components.
@@ -615,7 +630,13 @@ public class ActionManagerEditor : Editor
 						action.SituationalStates.Insert(0, S_Enums.PlayerSituationalStates.Hurt);
 					}
 
+					//Ensures the component is attached to the game objects.
 					_ActionMan.AssignMainActionScriptByEnum(action.State);
+					//Ensures the same with the subactions
+					foreach (S_Enums.SubPlayerStates SS in action.PerformableSubStates)
+					{
+						_ActionMan.AssignSubScript(SS);
+					}
 
 					//To apply this, the action has to be removed from the list, and this added in its place.
 					_ActionMan._MainActions.RemoveAt(i);
@@ -638,9 +659,14 @@ public class ActionManagerEditor : Editor
 			}
 		}
 		#endregion
+
+		_ActionMan._ScriptsHolder = GenerateOrCheckObjectToHoldOthers(_ActionMan.transform, _ActionMan._ScriptsHolder, "!Player Components!");
+		_ActionMan._ObjectForActions = GenerateOrCheckObjectToHoldOthers(_ActionMan._ScriptsHolder.transform, _ActionMan._ObjectForActions, "Main Actions");
+		_ActionMan._ObjectForSubActions = GenerateOrCheckObjectToHoldOthers(_ActionMan._ScriptsHolder.transform, _ActionMan._ObjectForSubActions, "Sub Actions");
+		_ActionMan._ObjectForInteractions = GenerateOrCheckObjectToHoldOthers(_ActionMan._ScriptsHolder.transform, _ActionMan._ObjectForInteractions, "Interactions");
 	}
 
-	//Take in a primary state and add it to the list if it cant be found.
+	//Take in a primary state and add it to the list if it can be found.
 	private void AddActionToList ( S_Enums.PrimaryPlayerStates state, bool withDefault = false, bool skip = false ) {
 		if (!_ActionMan._MainActions.Any(item => item.State == state) || skip)
 		{
@@ -757,6 +783,30 @@ public class ActionManagerEditor : Editor
 				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.Hovering);
 				break;
 
+		}
+	}
+
+	//Called whenever an object should exist, that's the child of another. Used to manage the seperate objects holding the script components.
+	private GameObject GenerateOrCheckObjectToHoldOthers (Transform ObjectParent, GameObject ThisObject, string objectName) {
+		//If there isn't one yet, find it or create it.
+		if(ThisObject == null)
+		{
+			return CreateNewObject();
+		}
+		//If it is no longer a child of what it should be (so was moved in the editor), replace it.
+		else if(ThisObject.transform.parent != ObjectParent)
+		{
+			ThisObject.transform.parent = ObjectParent;
+		}
+		return ThisObject;
+
+		//Searched through the prefab to find the object, and if it can't be found, creates a new one in its place.
+		GameObject CreateNewObject(){
+			string generatedName = objectName;
+			var generatedTranform = _ActionMan.transform.Find(generatedName);
+			ThisObject = generatedTranform != null ? generatedTranform.gameObject : new GameObject(generatedName);
+			ThisObject.transform.parent = ObjectParent;
+			return ThisObject;
 		}
 	}
 }

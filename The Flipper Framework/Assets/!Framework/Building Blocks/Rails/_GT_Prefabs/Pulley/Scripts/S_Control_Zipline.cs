@@ -34,15 +34,15 @@ public class S_Control_Zipline : MonoBehaviour
 	}
 
 	private void OnEnable () {
-		S_Manager_LevelProgress.onReset += ReturnToRope;
+		S_Manager_LevelProgress.onReset += EventReturnToRope;
 	}
 
 	private void OnDisable () {
-		S_Manager_LevelProgress.onReset -= ReturnToRope;
+		S_Manager_LevelProgress.onReset -= EventReturnToRope;
 	}
 
 
-	void ReturnToRope ( object sender, EventArgs e ) {
+	void EventReturnToRope ( object sender, EventArgs e ) {
 		//Debug.Log("Invoke Pulley");
 		sphcol.enabled = true;
 		homingtgt.SetActive(true);

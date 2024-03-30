@@ -1974,7 +1974,7 @@ MonoBehaviour:
     minimumEndingSpeed: 80
     speedGained: 1.35
     willCarrySpeed: 1
-    searchDistance: 10
+    searchDistance: 12
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 262144

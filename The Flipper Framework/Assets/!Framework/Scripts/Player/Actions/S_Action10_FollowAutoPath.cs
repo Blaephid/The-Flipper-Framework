@@ -2,7 +2,6 @@
 using System.Collections;
 using SplineMesh;
 
-[RequireComponent(typeof(S_ActionManager))]
 public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 {
 
@@ -82,7 +81,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private void OnEnable () {
 		if (_PlayerPhys == null)
 		{
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 		}
@@ -166,16 +165,16 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Actions = GetComponent<S_ActionManager>();
-		_Input = GetComponent<S_PlayerInput>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Path_Int = GetComponent<S_Interaction_Pathers>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 		_Sounds = _Tools.SoundControl;
-		_CamHandler = GetComponent<S_Handler_Camera>()._HedgeCam;
-		_Skin = _Tools.mainSkin;
+		_CamHandler = _Tools.CamHandler._HedgeCam;
+		_Skin = _Tools.MainSkin;
 	}
 
 	//Reponsible for assigning stats from the stats script.
@@ -290,12 +289,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 				//transform.position = (hitRot.point + PathTransform.position) + FootPos;
 
 				Vector3 FootPos = transform.position - _Path_Int._FeetTransform.position;
-				transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
+				_PlayerPhys.transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
 			}
 			else
 			{
 				Vector3 FootPos = transform.position - _Path_Int._FeetTransform.position;
-				transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
+				_PlayerPhys.transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
 			}
 
 
@@ -368,7 +367,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		_MainSkin.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, _PlayerPhys._HitGround.normal);
 
-		_PlayerPhys.GetComponent<S_Handler_Camera>()._HedgeCam.SetBehind(0);
+		_CamHandler.SetBehind(0);
 		_Input.LockInputForAWhile(30f, true, _MainSkin.forward);
 
 		//Reenables Colliders

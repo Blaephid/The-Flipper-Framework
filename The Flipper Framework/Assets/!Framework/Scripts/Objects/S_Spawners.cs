@@ -45,10 +45,10 @@ public class S_Spawners : MonoBehaviour
 
 	//These attach the return methods, so they perform when onReset is invoked in the Level Progress script
 	private void OnEnable () {
-		S_Manager_LevelProgress.onReset += ReturnOnDeath;
+		S_Manager_LevelProgress.onReset += EventReturnOnDeath;
 	}
 	private void OnDisable () {
-		S_Manager_LevelProgress.onReset -= ReturnOnDeath;
+		S_Manager_LevelProgress.onReset -= EventReturnOnDeath;
 	}
 	//
 
@@ -77,7 +77,7 @@ public class S_Spawners : MonoBehaviour
 	}
 
 	//Destroys any enemy spawned, so a new one can be created again in the above methods.
-	private void ReturnOnDeath ( object sender, EventArgs e ) {
+	private void EventReturnOnDeath ( object sender, EventArgs e ) {
 		//Since enemies can move, this removes that one and gets ready to spawn a new one in the correct place
 		if (_SpawnerData._willRespawnOnDeath && _ObjectClone != null)
 		{

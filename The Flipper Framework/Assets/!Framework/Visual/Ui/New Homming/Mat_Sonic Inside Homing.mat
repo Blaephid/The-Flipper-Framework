@@ -36,5 +36,5 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     m_Colors:
-    - _Color: {r: 0.7490196, g: 0.042232066, b: 0, a: 1}
+    - _Color: {r: 1, g: 0.11576611, b: 0, a: 1}
   m_BuildTextureStacks: []

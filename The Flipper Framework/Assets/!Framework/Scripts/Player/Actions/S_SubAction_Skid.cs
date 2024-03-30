@@ -102,7 +102,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 				willStartAction = TrySpinSkid();
 				break;
 			case S_Enums.PrimaryPlayerStates.Homing:
-				willStartAction = GetComponent<S_Action02_Homing>().TryHomingSkid();
+				willStartAction = _Actions._ObjectForActions.GetComponent<S_Action02_Homing>().TryHomingSkid();
 				break;
 
 		}
@@ -218,11 +218,11 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	#region Assigning
 
 	private void AssignTools() {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Tools = GetComponent<S_CharacterTools>();
-		_Input = GetComponent<S_PlayerInput>();
+		_Tools = GetComponentInParent<S_CharacterTools>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
-		_Actions = GetComponent<S_ActionManager>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
 	}
 
 	private void AssignStats() {

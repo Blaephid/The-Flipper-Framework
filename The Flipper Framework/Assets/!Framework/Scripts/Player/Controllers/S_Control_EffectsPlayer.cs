@@ -4,9 +4,9 @@ using System.Collections;
 public class S_Control_EffectsPlayer : MonoBehaviour
 {
 
-	public S_PlayerPhysics _PlayerPhys;
+	private S_PlayerPhysics _PlayerPhys;
 	public S_CharacterTools _Tools;
-	public S_Handler_Camera _CamHandler;
+	private S_Handler_Camera _CamHandler;
 
 	public ParticleSystem RunningDust;
 	public ParticleSystem SpeedLines;
@@ -37,6 +37,8 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 	private void Start () {
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_JumpDashParticle = _Tools.JumpDashParticle;
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_CamHandler = _Tools.CamHandler;
 	}
 
 	void FixedUpdate () {

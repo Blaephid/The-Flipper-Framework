@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using UnityEditor;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(S_ActionManager))]
 public class S_Action00_Default : MonoBehaviour, IMainAction
 {
 
@@ -39,7 +38,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	public float                  _skinRotationSpeed = 2;
+	public float                  _skinRotationSpeed = 13;
 	[HideInInspector]
 	public bool                   _canDashDuringFall_;
 	private AnimationCurve        _coyoteTimeBySpeed_;
@@ -269,7 +268,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		{
 
 			//Assign all external values needed for gameplay.
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 
@@ -291,16 +290,16 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 
 	private void AssignTools () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Input = GetComponent<S_PlayerInput>();
-		_Actions = GetComponent<S_ActionManager>();
-		_CamHandler = GetComponent<S_Handler_Camera>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_CamHandler = _Tools.CamHandler;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_BallAnimator = _Tools.BallAnimator;
 		_CurrentAnimator = _CharacterAnimator;
-		_MainSkin = _Tools.mainSkin;
-		_PlayerSkin = _Tools.PlayerSkin;
+		_MainSkin = _Tools.MainSkin;
+		_PlayerSkin = _Tools.PlayerSkins;
 		_SpinDashBall = _Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
 
 		_CharacterAnimator.SetBool("isRolling", false);

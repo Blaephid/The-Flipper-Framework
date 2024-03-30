@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(S_Handler_WallRunning))]
 public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 {
 	/// <summary>
@@ -97,7 +98,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private void OnEnable () {
 		if (_PlayerPhys == null)
 		{
-			_Tools = GetComponent<S_CharacterTools>();
+			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();
 			AssignStats();
 		}
@@ -213,21 +214,21 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_Actions = GetComponent<S_ActionManager>();
-		_CamHandler = GetComponent<S_Handler_Camera>();
-		_Input = GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_CamHandler = _Tools.CamHandler;
+		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Control = GetComponent<S_Handler_WallRunning>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.mainSkin;
+		_MainSkin = _Tools.MainSkin;
 		_CharacterTransform = _Tools.PlayerSkinTransform;
 		_Sounds = _Tools.SoundControl;
 		_JumpBall = _Tools.JumpBall;
-		_DropShadow = _Tools.dropShadow;
-		_CamTarget = _Tools.cameraTarget;
-		_ConstantTarget = _Tools.constantTarget;
-		_CoreCollider = _Tools.characterCapsule.GetComponent<CapsuleCollider>();
+		_DropShadow = _Tools.DropShadow;
+		_CamTarget = _Tools.CameraTarget;
+		_ConstantTarget = _Tools.ConstantTarget;
+		_CoreCollider = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 	}
 
 	//Reponsible for assigning stats from the stats script.
@@ -340,7 +341,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 wallDirection = wallHit.point - transform.position;
 		_PlayerPhys._RB.AddForce(wallDirection * 10f);
 
-		transform.position = wallHit.point + (wallHit.normal * _distanceFromWall);
+		_PlayerPhys.transform.position = wallHit.point + (wallHit.normal * _distanceFromWall);
 
 		_isRunning = true;
 		_isClimbing = false;
@@ -434,7 +435,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		{
 			_isWall = false;
 
-			transform.position = _wallToClimb.point + (_wallToClimb.normal * 4f);
+			_PlayerPhys.transform.position = _wallToClimb.point + (_wallToClimb.normal * 4f);
 
 			//This bool causes the jump physics to be done next frame, making things much smoother. 1 Represents jumping from a wallrun
 			_switchToJump = 1;
@@ -509,7 +510,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		if (_Input.JumpPressed)
 		{
 			_isWall = false;
-			transform.position = new Vector3(_wallToRun.point.x + _wallToRun.normal.x * 0.9f, _wallToRun.point.y + _wallToRun.normal.y * 0.5f, _wallToRun.point.z + _wallToRun.normal.z * 0.9f);
+			_PlayerPhys.transform.position = new Vector3(_wallToRun.point.x + _wallToRun.normal.x * 0.9f, _wallToRun.point.y + _wallToRun.normal.y * 0.5f, _wallToRun.point.z + _wallToRun.normal.z * 0.9f);
 			//CharacterAnimator.transform.forward = Vector3.Lerp(CharacterAnimator.transform.forward, wallToRun.normal, 0.3f);
 
 			//This bool causes the jump physics to be done next frame, making things much smoother. 2 Represents jumping from a wallrun
