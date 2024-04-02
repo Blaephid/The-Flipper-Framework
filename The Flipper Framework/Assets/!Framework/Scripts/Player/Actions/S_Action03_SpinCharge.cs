@@ -270,8 +270,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 			_CharacterAnimator.SetFloat("GroundSpeed", speed);
 
-			//_Input.LockInputForAWhile(8, false);
-
 			_Actions._ActionDefault.StartAction();
 		}
 

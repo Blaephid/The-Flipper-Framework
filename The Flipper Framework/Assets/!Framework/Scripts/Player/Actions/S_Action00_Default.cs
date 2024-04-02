@@ -33,8 +33,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
@@ -60,7 +58,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	[HideInInspector]
 	public int          _animationAction = 0;
 
-	#endregion
 	#endregion
 	#endregion
 

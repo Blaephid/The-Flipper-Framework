@@ -72,16 +72,9 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Start () {
-	}
-
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyAction();
-	}
-	private void OnDisable () {
-
 	}
 
 	// Update is called once per frame
@@ -211,7 +204,6 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 		_counter = 0;
 	}
-
 	#endregion
 
 	/// <summary>
@@ -315,9 +307,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			}
 		}
 	}
-
 	#endregion
-
 	/// <summary>
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>

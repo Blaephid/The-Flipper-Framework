@@ -42,7 +42,7 @@ public class S_ActionManager : MonoBehaviour
 	public S_Enums.PrimaryPlayerStates	_whatPreviousAction { get; set; }
 
 	[HideInInspector]
-	public float                            _onPathSpeed = 0;		//Certain actions will move the player along the spline, this will be used to track the speed for any actions that do so.
+	public List<float>                            _listOfSpeedOnPaths = new List<float>();	//Certain actions will move the player along the spline, this will be used to track the speed for any actions that do so. It is used as a list rather than a singular as it will allow speeds to be added and removed with the action, then the most recent is the only one used.
 
 	//Actions
 	public List<S_Structs.StrucMainActionTracker>	_MainActions; //This list of structs will cover each action currently available to the player (set in inspector), along with what actions it can enter through input or situation.	
@@ -119,7 +119,6 @@ public class S_ActionManager : MonoBehaviour
 			action.SubActions = new List<ISubAction>();
 			foreach (S_Enums.SubPlayerStates subState in action.PerformableSubStates)
 			{
-				Debug.Log(subState+ " in " +action.State);
 				action.SubActions.Add(AssignSubScript(subState));
 			}
 

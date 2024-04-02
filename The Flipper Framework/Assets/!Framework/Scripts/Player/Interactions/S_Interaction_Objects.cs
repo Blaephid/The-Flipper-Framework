@@ -59,8 +59,6 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			_Tools = GetComponent<S_CharacterTools>();
 			AssignTools();
-
-			AssignStats();
 		}
 
 	}
@@ -378,7 +376,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		}
 	}
 
-	private void OnTriggerExit ( Collider col ) {
+	public void EventTriggerExit ( Collider col ) {
 		if (col.tag == "Wind")
 		{
 			GetComponent<S_Action13_Hovering>().inWind = false;
@@ -441,11 +439,6 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._ActionDefault.StartAction();
 		transform.position = position;
 		_PlayerPhys._RB.velocity = force;
-
-	}
-
-
-	private void AssignStats () {
 
 	}
 

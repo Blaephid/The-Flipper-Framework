@@ -20,41 +20,44 @@ public class S_Handler_Camera : MonoBehaviour
 		_initialDistance = _Tools.CameraStats.DistanceStats.CameraMaxDistance;
 	}
 
-
+	//Called when entering a trigger in the physics script (must be assigned in Unity editor)
 	public void EventTriggerEnter ( Collider col ) {
 		if (col.tag == "CameraTrigger")
 		{
-			if (col.GetComponent<S_Trigger_Camera>() != null)
+			//What happens depends on the data set to the camera trigger in its script.
+			if (col.TryGetComponent(out S_Trigger_Camera cameraData))
 			{
-				S_Trigger_Camera cameraData = col.GetComponent<S_Trigger_Camera>();
-
 				switch (cameraData.Type)
 				{
+					//Rotates the camera in direction and prevents controlled rotation.
 					case TriggerType.LockToDirection:
 						setHedgeCamera(cameraData, col.transform.forward);
 						LockCamera(true);
 						changeDistance(cameraData);
 						break;
 
+						//Reneables camera control but still affects distance and other.
 					case TriggerType.SetFree:
 						_HedgeCam._cameraMaxDistance_ = _initialDistance;
 						LockCamera(false);
 						_HedgeCam._isReversed = false;
 						break;
 
+						//Nothing changes in control, but distance and height may change.
 					case TriggerType.justEffect:
 						changeDistance(cameraData);
 						if (cameraData.changeAltitude)
 							_HedgeCam.SetCameraHeightOnly(cameraData.CameraAltitude, cameraData.FaceSpeed, cameraData.duration);
 						break;
 
-
+					//Allow controlled rotation but manually rotate in direction.
 					case TriggerType.SetFreeAndLookTowards:
 						setHedgeCamera(cameraData, col.transform.forward);
 						changeDistance(cameraData);
 						LockCamera(false);
 						break;
 
+					//Make camera face behind player.
 					case TriggerType.Reverse:				
 						_HedgeCam._isReversed = true;
 						setHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
@@ -62,6 +65,7 @@ public class S_Handler_Camera : MonoBehaviour
 						LockCamera(false);
 						break;
 
+						//Make camera face behind player and disable rotation.
 					case TriggerType.ReverseAndLockControl:
 						_HedgeCam._isReversed = true;
 						setHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
@@ -76,6 +80,7 @@ public class S_Handler_Camera : MonoBehaviour
 
 	}
 
+	//Makes it so the camera will be further out from the player.
 	void changeDistance(S_Trigger_Camera cameraData) {
 		if (!cameraData.changeDistance)
 		{
@@ -87,12 +92,14 @@ public class S_Handler_Camera : MonoBehaviour
 		}
 	}
 
+	//Will either make it so the camera can't be moved in the hedge cam script, or that it can.
 	void LockCamera(bool state) {
 		_HedgeCam._isMasterLocked = state;
 		_HedgeCam._isLocked = state;
 		_HedgeCam._canMove = !state;
 	}
 
+	//Calls the hedgecam to rotate towards or change height.
 	void setHedgeCamera(S_Trigger_Camera cameraData, Vector3 dir) {
 		Quaternion targetRotation = Quaternion.LookRotation(cameraData.transform.forward, cameraData.transform.up);
 
@@ -102,42 +109,36 @@ public class S_Handler_Camera : MonoBehaviour
 			_HedgeCam.SetCameraNoHeight(dir, 2.5f, cameraData.FaceSpeed, targetRotation, cameraData.shouldRotateCameraUpToThis);
 	}
 
-	public void OnTriggerExit ( Collider col ) {
+	public void EventTriggerExit ( Collider col ) {
 		if (col.tag == "CameraTrigger")
 		{
-			S_Trigger_Camera cameraData = col.GetComponent<S_Trigger_Camera>();
-			if (cameraData != null)
+			//What happens depends on the data set to the camera trigger in its script.
+			if (col.TryGetComponent(out S_Trigger_Camera cameraData))
 			{
-				if (cameraData.Type == TriggerType.LockToDirection && cameraData.ReleaseOnExit)
+				//If trigger was set to undo effects on exit, then reset all data to how they should be again.
+				if (cameraData.ReleaseOnExit)
 				{
 					_HedgeCam._cameraMaxDistance_ = _initialDistance;
 
-					_HedgeCam._isMasterLocked = false;
-					_HedgeCam._isLocked = false;
-					_HedgeCam._canMove = true;
-					_HedgeCam._lookTimer = 0;
-				}
-
-				else if (cameraData.ReleaseOnExit)
-				{
-					_HedgeCam._lookTimer = 0;
-					_HedgeCam._cameraMaxDistance_ = _initialDistance;
-
-					if (cameraData.Type == TriggerType.Reverse)
+					switch (cameraData.Type)
 					{
-						_HedgeCam._isReversed = false;
-					}
-					else if (cameraData.Type == TriggerType.ReverseAndLockControl)
-					{
-						_HedgeCam._isReversed = false;
-						_HedgeCam._canMove = true;
+						case TriggerType.LockToDirection:
+							LockCamera(false);
+							return;
+						case TriggerType.Reverse:
+							_HedgeCam._isReversed = false;
+							break;
+						case TriggerType.ReverseAndLockControl:
+							_HedgeCam._isReversed = false;
+							_HedgeCam._canMove = true;
+							break;
 					}
 				}
 			}
 		}
 	}
 
-
+	//Certain actions will call this in input, where if button is pressed under right speed, then camera will reset to behind character's back.
 	public void AttemptCameraReset () {
 		//Set Camera to back
 		if (_Input.CamResetPressed)

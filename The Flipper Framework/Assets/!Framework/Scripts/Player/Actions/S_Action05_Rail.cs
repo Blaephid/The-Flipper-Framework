@@ -223,7 +223,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 
 		//If got onto this rail from anything except a rail hop, set speed to physics.
-		_Actions._onPathSpeed = _PlayerPhys._speedMagnitude;
+		_Actions._listOfSpeedOnPaths.Add(_PlayerPhys._speedMagnitude);
 
 		//Get how much the character is facing the same way as the point.
 		CurveSample sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
@@ -236,21 +236,20 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
 			case S_Enums.PrimaryPlayerStates.Homing:
 				facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _sampleForwards);
-				_Actions._onPathSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
+				_Actions._listOfSpeedOnPaths[0] = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
 				break;
 			//If it was a drop charge, add speed from the charge to the grind speed.
 			case S_Enums.PrimaryPlayerStates.DropCharge:
 				float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
-				_Actions._onPathSpeed = Mathf.Clamp(charge, _Actions._onPathSpeed + (charge / 6), 160);
+				_Actions._listOfSpeedOnPaths[0] = Mathf.Clamp(charge, _Actions._listOfSpeedOnPaths[0] + (charge / 6), 160);
 				break;
-
 		}
 
 		// Get Direction for the Rail
 		_isGoingBackwards = facingDot < 0;
 
 		// Apply minimum speed
-		_Actions._onPathSpeed = Mathf.Max(_Actions._onPathSpeed, _minStartSpeed_);
+		_Actions._listOfSpeedOnPaths[0] = Mathf.Max(_Actions._listOfSpeedOnPaths[0], _minStartSpeed_);
 
 		_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
 
@@ -271,7 +270,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			switch (_whatKindOfRail)
 			{
 				case S_Interaction_Pathers.PathTypes.zipline:
-					_PlayerPhys.SetCoreVelocity(_sampleForwards * _Actions._onPathSpeed, true);  //Ensure player carries on momentum
+					_PlayerPhys.SetCoreVelocity(_sampleForwards * _Actions._listOfSpeedOnPaths[0], true);  //Ensure player carries on momentum
 					_PlayerPhys._groundNormal = Vector3.up; // Fix rotation
 
 					//After a delay, restore zipline collisions and physics
@@ -293,6 +292,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//Local values
 		_Rail_int._isFollowingPath = false;
 
+		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
+
+
 		StartCoroutine(DelayCollision());
 	}
 
@@ -309,7 +311,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	public void PlaceOnRail () {
 
 		//Increase/decrease the Amount of distance travelled on the Spline by DeltaTime and direction
-		float travelAmount = (Time.deltaTime * _Actions._onPathSpeed);
+		float travelAmount = (Time.deltaTime * _Actions._listOfSpeedOnPaths[0]);
 		_movingDirection = _isGoingBackwards ? -1 : 1;
 
 		_pointOnSpline += travelAmount * _movingDirection;
@@ -371,8 +373,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
 		{
 			//Set Player Speed correctly so that it becomes smooth grinding
-			_PlayerPhys.SetCoreVelocity(_sampleForwards * _Actions._onPathSpeed);
-			if (_ZipBody) { _ZipBody.velocity = _sampleForwards * _Actions._onPathSpeed; }
+			_PlayerPhys.SetCoreVelocity(_sampleForwards * _Actions._listOfSpeedOnPaths[0]);
+			if (_ZipBody) { _ZipBody.velocity = _sampleForwards * _Actions._listOfSpeedOnPaths[0]; }
 		}
 		else
 		{
@@ -457,11 +459,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				//Make player face upwards again rather than tilted to the side from rotating handle
 				Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
 				if (VelocityMod != Vector3.zero) { _MainSkin.rotation = Quaternion.LookRotation(VelocityMod, transform.up); }
-				_PlayerPhys.SetCoreVelocity(_sampleForwards * _Actions._onPathSpeed); //Make sure player flies off the end of the rail consitantly.
+				_PlayerPhys.SetCoreVelocity(_sampleForwards * _Actions._listOfSpeedOnPaths[0]); //Make sure player flies off the end of the rail consitantly.
 				break;
 
 			case S_Interaction_Pathers.PathTypes.rail:
-				_PlayerPhys.SetCoreVelocity(_sampleForwards * _Actions._onPathSpeed); //Make sure player flies off the end of the rail consitantly.
+				_PlayerPhys.SetCoreVelocity(_sampleForwards * _Actions._listOfSpeedOnPaths[0]); //Make sure player flies off the end of the rail consitantly.
 
 				VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
 				if (VelocityMod != Vector3.zero) { _MainSkin.rotation = Quaternion.LookRotation(VelocityMod, _PlayerPhys.transform.up); }
@@ -484,18 +486,18 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	void HandleRailSpeed () {
-		if (_isBraking && _Actions._onPathSpeed > _minStartSpeed_) _Actions._onPathSpeed *= _playerBrakePower_;
+		if (_isBraking && _Actions._listOfSpeedOnPaths[0] > _minStartSpeed_) _Actions._listOfSpeedOnPaths[0] *= _playerBrakePower_;
 
 		HandleBoost();
 		HandleSlopes();
 
 		//Decrease speed if over max or top speed on the rail.
-		_Actions._onPathSpeed = Mathf.Min(_Actions._onPathSpeed, _railmaxSpeed_);
+		_Actions._listOfSpeedOnPaths[0] = Mathf.Min(_Actions._listOfSpeedOnPaths[0], _railmaxSpeed_);
 
-		if (_Actions._onPathSpeed > _railTopSpeed_)
-			_Actions._onPathSpeed -= _decaySpeed_;
+		if (_Actions._listOfSpeedOnPaths[0] > _railTopSpeed_)
+			_Actions._listOfSpeedOnPaths[0] -= _decaySpeed_;
 
-		_Actions._onPathSpeed = Mathf.Clamp(_Actions._onPathSpeed, 10, _PlayerPhys._currentMaxSpeed);
+		_Actions._listOfSpeedOnPaths[0] = Mathf.Clamp(_Actions._listOfSpeedOnPaths[0], 10, _PlayerPhys._currentMaxSpeed);
 	}
 
 	//Set to true outside of this script. But when boosted on a rail will gain a bunch of speed at once before having some of it quickly drop off.
@@ -507,7 +509,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			_boostTime -= Time.fixedDeltaTime;
 			if (_boostTime < 0)
 			{		
-				if (_Actions._onPathSpeed > 60) { _Actions._onPathSpeed -= _boostDecaySpeed_; } //Speed can never decay to go under 60.
+				if (_Actions._listOfSpeedOnPaths[0] > 60) { _Actions._listOfSpeedOnPaths[0] -= _boostDecaySpeed_; } //Speed can never decay to go under 60.
 				//Keep losing speed until _decayTime_ amount of time has passed.
 				if (_boostTime < -_boostDecayTime_)
 				{
@@ -539,7 +541,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 		force = (AbsYPow * force) ;
 		//Apply to moving speed (if uphill will be a negative/
-		_Actions._onPathSpeed += force;
+		_Actions._listOfSpeedOnPaths[0] += force;
 	}
 
 	//Inputs
@@ -566,9 +568,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				if (_Input.SpecialPressed && _pushTimer > _pushFowardDelay_)
 				{	
 					//Will only increase speed if under the max trick speed.
-					if (_Actions._onPathSpeed < _pushFowardmaxSpeed_)
+					if (_Actions._listOfSpeedOnPaths[0] < _pushFowardmaxSpeed_)
 					{
-						_Actions._onPathSpeed += _pushFowardIncrements_ * _accelBySpeed_.Evaluate(_Actions._onPathSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
+						_Actions._listOfSpeedOnPaths[0] += _pushFowardIncrements_ * _accelBySpeed_.Evaluate(_Actions._listOfSpeedOnPaths[0] / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
 					}
 					_isFacingRight = !_isFacingRight; //This will cause the animator to perform a small hop and face the other way.
 					_pushTimer = 0f; //Resets timer so delay must be exceeded again.
@@ -712,9 +714,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			//Set means completely changing the speed to a specific value.
 			if (set)
 			{
-				if (_Actions._onPathSpeed < speed)
+				if (_Actions._listOfSpeedOnPaths[0] < speed)
 				{
-					_Actions._onPathSpeed = speed;
+					_Actions._listOfSpeedOnPaths[0] = speed;
 					_isBoosted = true;
 					_boostTime = 0.9f; //How long the boost lasts before decaying.
 
@@ -725,7 +727,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			//Keep checking if on a rail before applying this.
 			if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Rail)
 			{
-				_Actions._onPathSpeed += addSpeed;
+				_Actions._listOfSpeedOnPaths[0] += addSpeed;
 				_isBoosted = true;
 				_boostTime = 0.7f; //How long the boost lasts before decaying.
 
@@ -740,7 +742,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				_isGoingBackwards = false;
 		}
 	}
-
 	#endregion
 
 	/// <summary>

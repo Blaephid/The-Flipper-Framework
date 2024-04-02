@@ -22,25 +22,21 @@ public class S_PlayerPhysics : MonoBehaviour
 	#region Unity Specific Members
 	private S_ActionManager       _Actions;
 	private S_CharacterTools      _Tools;
-	private S_Control_SoundsPlayer _SoundController;
 	static public S_PlayerPhysics s_MasterPlayer;
 	private S_PlayerInput         _Input;
-	private S_Handler_Camera      _camHandler;
 
-	public UnityEvent             _OnGrounded;        //Event called when isGrounded is set to true from false, remember to assign what methods to call in the editor.
-	public UnityEvent             _OnLoseGround;        //Event called when isGrounded is set to false from true.
+	public UnityEvent			_OnGrounded;        //Event called when isGrounded is set to true from false, remember to assign what methods to call in the editor.
+	public UnityEvent			_OnLoseGround;        //Event called when isGrounded is set to false from true.
 	public UnityEvent<Collider>             _OnTriggerEnter;        //Event called when entering a trigger through the built in method.
+	public UnityEvent<Collider>             _OnTriggerExit;        //Event called when exitting a trigger through the built in method.
 	public UnityEvent<Collision>           _OnCollisionEnter;        //Event called when start collision through the built in method.
 
 	[HideInInspector]
-	public Rigidbody _RB;
+	public Rigidbody		_RB;
 	private CapsuleCollider       _CharacterCapsule;
 	private Transform             _FeetTransform;
 	private Transform             _MainSkin;
 	#endregion
-
-	//General
-	#region General Members
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats 
@@ -247,7 +243,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	#endregion
 	#endregion
-	#endregion
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -273,13 +268,15 @@ public class S_PlayerPhysics : MonoBehaviour
 	void Update () {
 
 		_playerPos = transform.position;
-
-		//CheckForGround();
 	}
 
 	private void OnTriggerEnter ( Collider other ) {
 		_OnTriggerEnter.Invoke(other);
 	}
+	private void OnTriggerExit ( Collider other ) {
+		_OnTriggerExit.Invoke(other);
+	}
+
 	private void OnCollisionEnter ( Collision collision ) {
 		_OnCollisionEnter.Invoke(collision);
 	}
@@ -515,7 +512,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Bring local velocity back to world space.
 		Vector3 newVelocity = transform.TransformDirection(localVelocity);
-
 		return newVelocity;
 	}
 
@@ -526,7 +522,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;
 		float inputMagnitude = Mathf.Max(Mathf.Abs(input.x), Mathf.Abs(input.z));
-
 
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
@@ -577,7 +572,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		float dragRate = _DragByAngle_.Evaluate(deviationFromInput) * _curvePosDrag;
 		float speedChange = accelRate - (dragRate * _turnDrag_) * modifier.y;
 		setVelocity = Vector3.MoveTowards(setVelocity, Vector3.zero, -speedChange);
-
 
 		//Step 4) If the change is still under the current top speed, or the change is a decrease in total, then apply it.
 		//        Top speed can only be exceeded through other means like actions or slopes.
@@ -1092,13 +1086,10 @@ public class S_PlayerPhysics : MonoBehaviour
 		s_MasterPlayer = this;
 		_RB = GetComponent<Rigidbody>();
 		_Actions = _Tools.GetComponent<S_ActionManager>();
-		_SoundController = _Tools.SoundControl;
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_FeetTransform = _Tools.FeetPoint;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_MainSkin = _Tools.MainSkin;
-		_camHandler = _Tools.CamHandler;
 	}
-
 	#endregion
 }

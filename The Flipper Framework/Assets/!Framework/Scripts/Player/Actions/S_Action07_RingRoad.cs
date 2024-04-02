@@ -133,7 +133,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_counter = 0;
 
 		_speedBeforeAction = _PlayerPhys._horizontalSpeedMagnitude;
-		_Actions._onPathSpeed = Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f); //Speed to move at, always faster than was moving before.
+		_Actions._listOfSpeedOnPaths[0] = Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f); //Speed to move at, always faster than was moving before.
 
 		_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
@@ -154,6 +154,8 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 		_PlayerPhys._canBeGrounded = true;
 
+		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
+
 		_PlayerPhys._listOfCanControl.RemoveAt(0); //Remove lock on control before this, but add a new delay before control returns.
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f));
 
@@ -161,7 +163,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		for (int i = _HomingTrailContainer.transform.childCount - 1 ; i >= 0 ; i--)
 			Destroy(_HomingTrailContainer.transform.GetChild(i).gameObject);
 	}
-
 	#endregion
 
 	/// <summary>
@@ -207,7 +208,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private void PlaceOnCreatedPath () {
 		if (_counter < 3) { return; } //Gives time to create a spline before moving along it.
 
-		_positionAlongPath += Time.deltaTime * _Actions._onPathSpeed; //Increase distance on spline by speed.
+		_positionAlongPath += Time.deltaTime * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
 
 		//If still on the spline.
 		if (_positionAlongPath < _CreatedSpline.Length)
@@ -243,7 +244,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_PlayerPhys.SetTotalVelocity(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
-		float differentSpeedOnExit = _Actions._onPathSpeed - endingSpeedResult;
+		float differentSpeedOnExit = _Actions._listOfSpeedOnPaths[0] - endingSpeedResult;
 		if(differentSpeedOnExit > 0) { StartCoroutine(LoseTemporarySpeedOverTime(differentSpeedOnExit)); }
 
 		_Actions._ActionDefault.StartAction();

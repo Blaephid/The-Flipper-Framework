@@ -296,7 +296,6 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region public 
-
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
 	public void EventOnGrounded () {
 		_Actions._isAirDashAvailables = true;

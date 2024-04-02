@@ -5319,6 +5319,45 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _OnTriggerExit:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4063413262116479932}
+        m_TargetAssemblyTypeName: S_Interaction_Objects, Assembly-CSharp
+        m_MethodName: EventTriggerExit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 4088390049303459277}
+        m_TargetAssemblyTypeName: S_Handler_Camera, Assembly-CSharp
+        m_MethodName: EventTriggerExit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1806186076038971531}
+        m_TargetAssemblyTypeName: S_Interaction_Pathers, Assembly-CSharp
+        m_MethodName: EventTriggerExit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _OnCollisionEnter:
     m_PersistentCalls:
       m_Calls:
@@ -5385,6 +5424,7 @@ MonoBehaviour:
   _wasInAir: 0
   _currentFallGravity: {x: 0, y: 0, z: 0}
   _isRolling: 0
+  _isBoosting: 0
   _isGravityOn: 1
   _listOfCanTurns: 
   _listOfCanControl: 
@@ -5412,6 +5452,8 @@ MonoBehaviour:
   _ObjectForInteractions: {fileID: 3555636911059774156}
   _whatAction: 0
   _whatSubAction: 0
+  _whatCurrentAttack: 0
+  _listOfSpeedOnPaths: []
   _MainActions:
   - State: 0
     ConnectedStates: 000000000100000002000000030000000400000005000000
@@ -5436,7 +5478,7 @@ MonoBehaviour:
   - State: 5
     ConnectedStates: 00000000
     SituationalStates: 0100000000000000
-    PerformableSubStates: 
+    PerformableSubStates: 03000000
   - State: 6
     ConnectedStates: 040000000500000000000000
     SituationalStates: 0100000000000000
@@ -27218,7 +27260,6 @@ MonoBehaviour:
   _railmaxSpeed_: 0
   _whatKindOfRail: 0
   _pointOnSpline: 0
-  _playerSpeed: 0
   _isGoingBackwards: 0
   _isBoosted: 0
   _boostTime: 0

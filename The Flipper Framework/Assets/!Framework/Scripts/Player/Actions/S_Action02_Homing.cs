@@ -65,7 +65,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	public float       _speedBeforeAttack;           //The movement speed before performing this action.
 	[HideInInspector]
 	public Vector3     _directionBeforeAttack;       //The direction the player was moving before performing this action.
-	private float       _currentSpeed;                //The speed the homing attack moves at this frame. If skid is a possible action, this can be changed.
 	private float       _speedAtStart;                //The speed the homing attack happens at when performed, accelerating after decelerating will not exceed this.
 
 	[HideInInspector]
@@ -194,7 +193,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Get speed of attack and speed to return to on hit.		
 		_speedAtStart = Mathf.Max(_speedBeforeAttack * 0.9f, _homingAttackSpeed_);
 		_speedAtStart = Mathf.Min(_speedAtStart, _maxHomingSpeed_);
-		_currentSpeed = _speedAtStart;
+		_Actions._listOfSpeedOnPaths.Add (_speedAtStart);
 
 
 		_speedBeforeAttack = Mathf.Max(_speedBeforeAttack, _minSpeedGainOnHit_);
@@ -208,13 +207,15 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
+		//Return control options that were lost.
 		_PlayerPhys._canBeGrounded = true;
 		_PlayerPhys._isGravityOn = true;
+
+		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 	}
 
 	public void EventCollisionEnter ( Collision collision ) {
 		if(!enabled) { return; }
-		Debug.Log("Collision in homing");
 
 		//If something is blocking the way, bounce off it.
 		if (Physics.Linecast(transform.position, collision.contacts[0].point, out RaycastHit hit, _PlayerPhys._Groundmask_))
@@ -250,7 +251,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		float thisTurn =  _homingTurnSpeed_;
 
 		//Set Player location when close enough, for precision.
-		if (_distanceFromTarget < (_currentSpeed * Time.fixedDeltaTime))
+		if (_distanceFromTarget < (_Actions._listOfSpeedOnPaths[0] * Time.fixedDeltaTime * 2))
 		{
 			_PlayerPhys.transform.position = _Target.transform.position;
 			return;
@@ -260,7 +261,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		{
 			if (_distanceFromTarget < 40)
 				thisTurn *= 2f;
-			if (_currentSpeed > 90)
+			if (_Actions._listOfSpeedOnPaths[0] > 90)
 				thisTurn *= 1.3f;
 		}
 
@@ -300,7 +301,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			}
 		}
 		_currentDirection = Vector3.RotateTowards(_currentDirection, newDirection, Mathf.Deg2Rad * thisTurn, 0.0f);
-		_PlayerPhys.SetCoreVelocity(_currentDirection * _currentSpeed);
+		_PlayerPhys.SetCoreVelocity(_currentDirection * _Actions._listOfSpeedOnPaths[0]);
 	}
 
 	public void HandleInputs () {
@@ -371,7 +372,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			//Send player in new horizontal direction by speed before attack, but vertical speed is determined by bounce power.
 			newSpeed.y = 0;
 			newSpeed.Normalize();
-			newSpeed *= Mathf.Min(_speedBeforeAttack, _currentSpeed);
+			newSpeed *= Mathf.Min(_speedBeforeAttack, _Actions._listOfSpeedOnPaths[0]);
 			newSpeed.y = _homingBouncingPower_;
 
 		}
@@ -458,14 +459,14 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Different start point from the other two skid types.
 		if (_inputAngle > _homingSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
-			_currentSpeed -= _homingDeceleration_;
-			_currentSpeed = Mathf.Clamp(_currentSpeed, Mathf.Max(_minHomingSpeed_, 20), _speedAtStart);
+			_Actions._listOfSpeedOnPaths[0] -= _homingDeceleration_;
+			_Actions._listOfSpeedOnPaths[0] = Mathf.Clamp(_Actions._listOfSpeedOnPaths[0], Mathf.Max(_minHomingSpeed_, 20), _speedAtStart);
 			return true;
 		}
 		else if (_inputAngle < 40 && !_Input._isInputLocked)
 		{
-			_currentSpeed += _homingAcceleration_;
-			_currentSpeed = Mathf.Clamp(_currentSpeed, 0, _speedAtStart);
+			_Actions._listOfSpeedOnPaths[0] += _homingAcceleration_;
+			_Actions._listOfSpeedOnPaths[0] = Mathf.Clamp(_Actions._listOfSpeedOnPaths[0], 0, _speedAtStart);
 		}
 		return false;
 	}
@@ -475,8 +476,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			_Actions._isAirDashAvailables = true;
 			_homingCount = 0;		
 	}
-
-
 	#endregion
 
 	/// <summary>

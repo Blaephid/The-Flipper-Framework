@@ -149,7 +149,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		}
 	}
 
-	private void OnTriggerExit ( Collider col ) {
+	public void EventTriggerExit ( Collider col ) {
 		//Automatic Paths
 		switch (col.gameObject.tag)
 		{
@@ -443,7 +443,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 		zipHandle.GetComponent<CapsuleCollider>().enabled = true;
 		target.SetActive(true);
 		zipHandle.GetComponentInChildren<MeshCollider>().enabled = true;
-
 	}
 	#endregion
 

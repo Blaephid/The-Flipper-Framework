@@ -90,11 +90,11 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//Called when the action is enabled and readies all variables for it to be performed.
 	public void StartAction () {
-		_currentSpeed = _PlayerPhys._horizontalSpeedMagnitude;
-		_goalSpeed = _boostSpeed_;
+		_currentSpeed = _Actions._listOfSpeedOnPaths.Count > 0 ? _Actions._listOfSpeedOnPaths[0] : _PlayerPhys._horizontalSpeedMagnitude; //The boost speed will be set to and increase from either the running speed, or path speed if currently in use.
+		_goalSpeed = _boostSpeed_; //This is how fast the boost will move, and speed will lerp towards it.
 
-		StopCoroutine(LerpToGoalSpeed(0));
-		StartCoroutine(LerpToGoalSpeed(10));
+		StopCoroutine(LerpToGoalSpeed(0)); //If already in motion for a boost just before, this ends that calculation.
+		StartCoroutine(LerpToGoalSpeed(20));
 
 		_PlayerPhys._isBoosting = true;
 	}
@@ -107,12 +107,16 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	/// 
 	#region private
 
+	//Called every frame and applies physics accordingly
 	private void ApplyBoost () {
 		if (_PlayerPhys._isBoosting)
 		{
-			if (!_Input.BoostPressed || !_inAStateThatCanBoost) { EndBoost(); }
+			if (!_Input.BoostPressed || !_inAStateThatCanBoost) { EndBoost(); } //Will end boost if released button or entered a state where boosting doesn't happen.
 
 			_PlayerPhys.SetCoreVelocity(_MainSkin.forward * _currentSpeed, false);
+			if (_Actions._listOfSpeedOnPaths.Count > 0) _Actions._listOfSpeedOnPaths[0] = _currentSpeed;
+
+			_Input.RollPressed = false; //This will ensure the player won't crouch or roll and instead stay boosting.
 		}
 	}
 

@@ -70,17 +70,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Start () {
-
-	}
-
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyAction();
-	}
-	private void OnDisable () {
-
 	}
 
 	// Update is called once per frame
@@ -92,7 +84,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		CheckSpeed(); //Called first to make sure state will be changed after any physics changes.
 		CheckForGround();
 	}
-
 	
 	public bool AttemptAction () {
 
@@ -276,14 +267,12 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region public 
-
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
 	public void EventOnGrounded () {
 		_isBounceAvailable = true;
 
 		if(!enabled)_Actions._bounceCount = 0; //Only reset bouncing if hit the ground in a different state, since every bounce grounds the player.
 	}
-
 	#endregion
 
 	/// <summary>
