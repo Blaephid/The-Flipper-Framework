@@ -76,7 +76,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 
 	//Called in order to deal damage and affect the player afterwards.
-	private void AttackThing ( Collider col, S_Enums.PlayerAttackTypes attackType, S_Enums.AttackTargets target, int damage = 1 ) {
+	public void AttackThing ( Collider col, S_Enums.PlayerAttackTypes attackType, S_Enums.AttackTargets target, int damage = 1 ) {
 		//Different targets require different means of taking damage.
 		switch (target)
 		{

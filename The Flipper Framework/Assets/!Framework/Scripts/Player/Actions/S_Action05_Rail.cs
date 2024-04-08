@@ -81,6 +81,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	#region trackers
 	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
+	private int         _startedThisFrame;
+
 	[HideInInspector]
 	public S_Interaction_Pathers.PathTypes _whatKindOfRail;     //Set when entering the action, deciding if this is a zipline, rail or later added type
 
@@ -152,15 +154,17 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					break;
 			}
 		}
+	}
+
+	private void FixedUpdate () {
+		_startedThisFrame = 0;
 
 		// Actions Go Here
 		if (_canInput)
 		{
 			HandleInputs();
 		}
-	}
 
-	private void FixedUpdate () {
 		//If on a rail.
 		if (_Rail_int._isFollowingPath)
 		{
@@ -181,13 +185,18 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	public void StartAction () {
+		if(_startedThisFrame > 0) { return; }
+		_startedThisFrame++;
+
+		Debug.Log("Call Rail");
+
+		//ignore further rail collisions
+		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, true);
+
 		if (enabled) { _PlayerPhys._listOfCanControl.RemoveAt(0); } //Because this action can transfer into itself through rail hopping, undo the lock that would usually be undone in StopAction.
 
 		//Prevents raill hopping temporarily
 		StartCoroutine(DelayHopOnLanding());
-
-		//ignore further rail collisions
-		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, true);
 
 		//Set private 
 		_canInput = true;
@@ -259,9 +268,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; }
-
 		enabled = false;
-
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		//If left this action to perform a jump,

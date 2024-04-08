@@ -65,7 +65,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private float                 _speedBeforeUpreel;           //Gets running speed before an upreel and returns partly to it after finishing the action.
 	#endregion
 
-	public enum PathTypes {
+	public enum PathTypes
+	{
 		rail,
 		zipline,
 		upreel,
@@ -91,7 +92,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
-			MoveOnUpreel();		
+		MoveOnUpreel();
 	}
 
 	public void EventTriggerEnter ( Collider col ) {
@@ -103,24 +104,11 @@ public class S_Interaction_Pathers : MonoBehaviour
 				if (!_canGrindOnRail) { return; }
 
 				//The different sizes of the rail collider have different minimum speeds. This is to allow less accuracy required at high speed.
-				switch (col.GetComponent<CapsuleCollider>().radius)
+				float distance = Vector3.Distance(col.transform.position, transform.position);
+				Debug.Log(distance);
+				if (distance < Mathf.Max(_PlayerPhys._speedMagnitude / 70, 1.5f))
 				{
-					case 4:
-						if (_PlayerPhys._speedMagnitude > 120 || Mathf.Abs(_PlayerPhys._RB.velocity.y) > 30) { SetOnRail(null, true, col); }
-						break;
-					case 3:
-						if (_PlayerPhys._speedMagnitude > 80 || Mathf.Abs(_PlayerPhys._RB.velocity.y) > 20) { SetOnRail(null, true, col); }
-						break;
-					case 2:
-						if (_PlayerPhys._speedMagnitude > 40 || Mathf.Abs(_PlayerPhys._RB.velocity.y) > 10) { SetOnRail(null, true, col); }
-						break;
-					case 1:
-						if (col.GetComponent<CapsuleCollider>().radius == 1) { SetOnRail(null, true, col); }
-						break;
-					default:
-						SetOnRail(null, true, col);
-						break;
-
+					SetOnRail(null, true, col);
 				}
 				break;
 
@@ -136,7 +124,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 			case "Upreel":
 				//If not already on an upreel
-				if(_currentUpreel == null)
+				if (_currentUpreel == null)
 				{
 					SetOnUpreel(col);
 				}
@@ -180,7 +168,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	//Readies all the stats needed to move up an upreel over the next few updates.
-	private void SetOnUpreel(Collider col) {
+	private void SetOnUpreel ( Collider col ) {
 		//Activates the upreel to start retracting. See PulleyActor class for more.
 		//Sets currentUpreel. See FixedUpdate() above for more.
 		_currentUpreel = col.gameObject.GetComponentInParent<S_Upreel>();
@@ -243,7 +231,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	//When leaving pulley, player is bounced up and forwards after a momment, allowing them to clear the wall without issue.
-	IEnumerator ExitPulley (Transform Upreel) {
+	IEnumerator ExitPulley ( Transform Upreel ) {
 		_PlayerPhys.SetTotalVelocity(Upreel.up * 60, new Vector2(1, 0)); //Apply force up relative to upreel (therefore the direction the player was moving).
 
 		yield return new WaitForSeconds(.2f);
@@ -293,19 +281,19 @@ public class S_Interaction_Pathers : MonoBehaviour
 				addOn = collider.gameObject.GetComponentInParent<S_AddOnRail>();
 
 				//Check there is a potential rail to go to either way, otherwise don't add it.
-				if(addOn.nextRail == null && addOn.PrevRail == null) { addOn = null; }
+				if (addOn.nextRail == null && addOn.PrevRail == null) { addOn = null; }
 			}
 
 			//Sets the player to the rail grind action, and sets their position and what spline to follow.
 			_RailAction.AssignForThisGrind(Range, _PathSpline.transform, PathTypes.rail, offSet, addOn);
-			_RailAction.StartAction();		
+			_RailAction.StartAction();
 		}
 	}
 
 	//Readies stats for movemement on zipline and the zipline itself.
-	private void SetOnZipline (Collider col) {
+	private void SetOnZipline ( Collider col ) {
 		_PathSpline = col.transform.GetComponent<S_Control_Zipline>().Rail;
-		if(_PathSpline == null) { return; }
+		if (_PathSpline == null) { return; }
 
 		//Assigns what is the Zipline and handle, and sets it to not be kinematic to avoid gravity.
 		Rigidbody zipbody = col.GetComponent<Rigidbody>();

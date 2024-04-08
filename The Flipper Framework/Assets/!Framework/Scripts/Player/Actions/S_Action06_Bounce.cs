@@ -77,12 +77,13 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-		HandleInputs();
 	}
 
 	private void FixedUpdate () {
 		CheckSpeed(); //Called first to make sure state will be changed after any physics changes.
 		CheckForGround();
+
+		HandleInputs();
 	}
 	
 	public bool AttemptAction () {

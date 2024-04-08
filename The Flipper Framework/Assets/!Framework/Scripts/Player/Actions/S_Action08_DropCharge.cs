@@ -80,11 +80,11 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		//Set Animator Parameters
 		_Actions._ActionDefault.HandleAnimator(1);
 		_Actions._ActionDefault.SetSkinRotationToVelocity(_Actions._ActionDefault._skinRotationSpeed);
-
-		HandleInputs();
 	}
 
 	private void FixedUpdate () {
+		HandleInputs();
+
 		ChargeDash();
 		CheckGround();
 	}

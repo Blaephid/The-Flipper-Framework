@@ -83,15 +83,11 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//Set Animator Parameters
 		_Actions._ActionDefault.HandleAnimator(1);
 		_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
-
-		//Actions
-		if (!_Actions.isPaused)
-		{
-			HandleInputs();
-		}
 	}
 
 	private void FixedUpdate () {
+		HandleInputs();
+
 		//Tracking length of jump
 		_counter += Time.fixedDeltaTime;
 		_Actions._actionTimeCounter += Time.fixedDeltaTime;

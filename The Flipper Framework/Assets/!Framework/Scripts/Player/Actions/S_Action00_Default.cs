@@ -58,6 +58,9 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	[HideInInspector]
 	public int          _animationAction = 0;
 
+	[HideInInspector]
+	public bool	_isAnimatorControlledExternally_ = false;
+
 	#endregion
 	#endregion
 
@@ -78,13 +81,15 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-
-		HandleAnimator(_animationAction);
-		SetSkinRotationToVelocity(_skinRotationSpeed);
-		HandleInputs();
+		if (!_isAnimatorControlledExternally_)
+		{
+			HandleAnimator(_animationAction);
+			SetSkinRotationToVelocity(_skinRotationSpeed);
+		}
 	}
 
 	private void FixedUpdate () {
+		HandleInputs();
 	}
 
 	//Called when the current action should be set to this.

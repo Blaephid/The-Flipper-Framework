@@ -102,8 +102,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 			//Set Animation Angle
 			_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
-
-			HandleInputs();
 		}
 	}
 
@@ -111,6 +109,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		if (_isHoming)
 		{
 			HomeInOnTarget();
+			
+			HandleInputs();
 		}
 	}
 
@@ -192,6 +192,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Return control options that were lost.
 		_PlayerPhys._canBeGrounded = true;
 		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 

@@ -80,7 +80,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
-    - _Alpha_Sharpness: 0
+    - _Alpha_Modifier: 1
+    - _Alpha_Sharpness: 0.8
     - _Blend: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
@@ -90,7 +91,7 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Emmision: 0.2
+    - _Emmision: 1
     - _EnvironmentReflections: 1
     - _Frequency: 0
     - _GlossMapScale: 0
@@ -102,8 +103,8 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 14
     - _ReceiveShadows: 1
-    - _Rotate_Speed: 40
-    - _Sharpness: 2.24
+    - _Rotate_Speed: 20
+    - _Sharpness: 0.9
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1

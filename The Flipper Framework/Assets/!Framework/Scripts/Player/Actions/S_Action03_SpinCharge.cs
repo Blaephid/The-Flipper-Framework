@@ -95,6 +95,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private void FixedUpdate () {
 		ChargeSpin();
 		AffectMovement();
+		HandleInputs();
 	}
 
 	//Checks if this action can currently be performed, based on the input and environmental factors.
@@ -189,8 +190,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		{
 			_currentCharge = _maximunCharge_;
 		}
-
-		HandleInputs();
 	}
 
 	//Changes how the player moves when in this state.

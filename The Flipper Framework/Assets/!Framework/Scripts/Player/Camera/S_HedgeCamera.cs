@@ -16,6 +16,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Unity
 	#region Unity Specific properties
+	[Header("Character Components")]
 	public S_CharacterTools       _Tools;
 	
 	public S_PlayerPhysics        _PlayerPhys;
@@ -23,13 +24,19 @@ public class S_HedgeCamera : MonoBehaviour
 	public S_ActionManager        _Actions;
 	public S_PlayerInput          _Input;
 
-	public Transform              _PlayerTransformCopy;
+	[Header("Target Levels")]
 	public Transform              _BaseTarget;
 	public Transform               _FinalTarget;
-	private Transform             _FinalTargetTransform;
 	public Transform               _TargetByCollisions;
 	public Transform               _TargetByInput;
 	public Transform               _TargetByAngle;
+	public Transform              _PlayerTransformCopy;
+
+
+	[Header("Cameras")]
+	public GameObject		_SecondaryCamera;
+	public CinemachineBrain	_Brain;
+
 	private Transform              _PlayerTransformReal;
 
 	private CinemachineVirtualCamera	_VirtualCamera;
@@ -178,19 +185,10 @@ public class S_HedgeCamera : MonoBehaviour
 		//Deals with cursor 
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
-
-		_FinalTargetTransform = _FinalTarget;
 	}
 
 	//LateUpdate is called at the end of an update, and all camera controls are handled here.
 	void LateUpdate () {
-
-		//If anything goes wrong and the target is lost, assign it to what was memorised as the final target.
-		if (_FinalTarget == null) 
-		{ 
-			_FinalTarget = _FinalTargetTransform;
-			_VirtualCamera.Follow = _FinalTarget;
-		} 
 
 		HandleTargetPosition();
 		AlignPlayerTransformCopy();
@@ -757,28 +755,27 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 	}
 
-	//Called externally and temporarily creates a 3d object to use as the target that won't move, causing the camera to stay stationary until over.
-	public IEnumerator ApplyCameraPause (int frames) {
-		Debug.Log("Camera Pause");
+	//Called externally and temporarily creates activates the second camera at the position of the main one, before transitioning back to the primary.
+	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
+	public IEnumerator ApplyCameraPause (Vector2 frames) {
 
-		//Creates an object in the same place as the proper target, but uses it as target.
-		Vector3 savePosition = _FinalTarget.position;
-		_FinalTarget = new GameObject("TEMP TARGET").transform;
-		_FinalTarget.parent = null;
-		_FinalTarget.position = savePosition;
-		_VirtualCamera.Follow = _FinalTarget; //Applies to cinemachine so it can handle camera position.
+		if(_SecondaryCamera.active) { yield return null; } //If secondary camera is already active, don't move it, let it play out.
 
-		//After x frames.
-		for (int i = 0 ; i < frames; i++)
+		//Sets the secondary camera to the position of the primary, then makes it take over display.
+		_SecondaryCamera.transform.position = transform.position;
+		_SecondaryCamera.transform.rotation = transform.rotation;
+		_SecondaryCamera.SetActive(true);
+
+		//Remain locked in place for x frames.
+		for (int i = 0 ; i < frames.x; i++)
 		{
 			yield return new WaitForFixedUpdate();
 		}
+		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
+		_Brain.m_DefaultBlend.m_Time = 55 / frames.y;
+		_Brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
 
-		//Destroys the temp object and resets the final target as what it should be.
-		GameObject DestroyThis = _FinalTarget.gameObject;
-		_FinalTarget = _FinalTargetTransform;
-		Destroy(DestroyThis);
-		_VirtualCamera.Follow = _FinalTargetTransform; //Applies to cinemachine so it can handle camera position.
+		_SecondaryCamera.SetActive(false); //Disabling the secondary camera will cause the brain to automatically transition back to primary (assuming no other virtual cameras are at play.
 	}
 
 	#endregion
@@ -796,6 +793,7 @@ public class S_HedgeCamera : MonoBehaviour
 		_Transposer = _VirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
 
 		_VirtualCamera.Follow = _FinalTarget;
+		_SecondaryCamera.SetActive(false);
 	}
 
 	void SetStats () {

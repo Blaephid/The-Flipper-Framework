@@ -80,7 +80,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
-    - _Alpha_Sharpness: -0.05
+    - _Alpha_Modifier: 1
+    - _Alpha_Sharpness: 5
     - _Blend: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
@@ -90,9 +91,9 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Emmision: 1
+    - _Emmision: 4.48
     - _EnvironmentReflections: 1
-    - _Frequency: 6.65
+    - _Frequency: 30
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -103,11 +104,11 @@ Material:
     - _QueueOffset: 14
     - _ReceiveShadows: 1
     - _Rotate_Speed: 5
-    - _Sharpness: 0.02
+    - _Sharpness: 1.2
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: -2
+    - _Speed: -6
     - _SrcBlend: 1
     - _Surface: 0
     - _WorkflowMode: 1
@@ -116,15 +117,15 @@ Material:
     m_Colors:
     - _Alpha_Remap: {r: -1.16, g: 1, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Base_Colour: {r: 0.11238872, g: 0.592493, b: 0.7735849, a: 1}
+    - _Base_Colour: {r: 0.11238866, g: 0.592493, b: 0.7735849, a: 0.13333334}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Direction: {r: 0, g: 0.4, b: 0, a: 0}
+    - _Direction: {r: 0, g: 1, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _End_Colour: {r: 0.01960783, g: 0.27453715, b: 0.8, a: 1}
-    - _Out_Remap_End: {r: -3, g: 1, b: 0, a: 0}
-    - _Out_Remap_Tip: {r: -3.8, g: 1, b: 0, a: 0}
+    - _End_Colour: {r: 0.01960783, g: 0.27453712, b: 0.8, a: 1}
+    - _Out_Remap_End: {r: -0.86, g: 1, b: 0, a: 0}
+    - _Out_Remap_Tip: {r: -1.67, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _Tiling: {r: 1.5, g: 0.2, b: 0, a: 0}
+    - _Tiling: {r: 1, g: 0.2, b: 0, a: 0}
     - _Tip_Colour: {r: 0.1137255, g: 0.5921569, b: 0.7725491, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &1894076367821143873

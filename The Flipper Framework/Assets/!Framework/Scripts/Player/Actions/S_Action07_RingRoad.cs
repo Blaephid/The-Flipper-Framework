@@ -81,14 +81,14 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	void Update () {
 		//Set Animator Parameters
 		_Actions._ActionDefault.HandleAnimator(7);
-
-		HandleInputs();
 		PlaceOnCreatedPath();
 	}
 
 	private void FixedUpdate () {
 		CreatePath();
 		_counter++;
+
+		HandleInputs();
 	}
 
 	public bool AttemptAction () {

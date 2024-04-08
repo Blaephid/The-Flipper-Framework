@@ -485,8 +485,12 @@ public class S_PlayerPhysics : MonoBehaviour
 	//This turns, decreases and/or increases the velocity based on input.
 	Vector3 HandleControlledVelocity ( Vector2 modifier ) {
 
-		//Certain actions control velocity in their own way.
-		if (_listOfCanControl.Count != 0) { return _coreVelocity; }
+		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
+		if (_listOfCanControl.Count != 0) 
+		{ 
+			_externalRunningSpeed = 0;  
+			return _coreVelocity; 
+		}
 
 		//Original by Damizean, edited by Blaephid
 
