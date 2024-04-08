@@ -189,7 +189,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			//If fall speed has been decreased this much, then something must be in the way so end the action.
 			 if (vertSpeed > 1)
 			{
-				Debug.Log("END action");
 				_Actions._ActionDefault.StartAction();
 			}
 		}

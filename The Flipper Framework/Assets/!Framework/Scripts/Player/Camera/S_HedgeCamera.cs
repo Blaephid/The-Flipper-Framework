@@ -24,8 +24,10 @@ public class S_HedgeCamera : MonoBehaviour
 	public S_PlayerInput          _Input;
 
 	public Transform              _PlayerTransformCopy;
-	public Transform              _baseTarget;
-	public Transform               _finalTarget;
+	public Transform              _BaseTarget;
+	public Transform               _FinalTarget;
+	private Transform             _FinalTargetTransform;
+	public Transform               _TargetByCollisions;
 	public Transform               _TargetByInput;
 	public Transform               _TargetByAngle;
 	private Transform              _PlayerTransformReal;
@@ -176,10 +178,19 @@ public class S_HedgeCamera : MonoBehaviour
 		//Deals with cursor 
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
+
+		_FinalTargetTransform = _FinalTarget;
 	}
 
 	//LateUpdate is called at the end of an update, and all camera controls are handled here.
 	void LateUpdate () {
+
+		//If anything goes wrong and the target is lost, assign it to what was memorised as the final target.
+		if (_FinalTarget == null) 
+		{ 
+			_FinalTarget = _FinalTargetTransform;
+			_VirtualCamera.Follow = _FinalTarget;
+		} 
 
 		HandleTargetPosition();
 		AlignPlayerTransformCopy();
@@ -289,14 +300,15 @@ public class S_HedgeCamera : MonoBehaviour
 
 
 		//The final target is the actual anchor point for the camera, and should not be changed, as it is a child of the other targets. 
-		_finalTarget.localPosition = Vector3.zero;
+		//_FinalTarget.localPosition = Vector3.zero;
+		_TargetByCollisions.localPosition = Vector3.zero;
 
-		Vector3 targetOffset = _finalTarget.position - _baseTarget.position;
-		float targetOffsetDistance = Vector3.Distance(_finalTarget.position , _baseTarget.position) + 0.2f;
+		Vector3 targetOffset = _FinalTarget.position - _BaseTarget.position;
+		float targetOffsetDistance = Vector3.Distance(_FinalTarget.position , _BaseTarget.position) + 0.2f;
 		//But to prevent the target going through surfaces (and by extent the camera) move it if there would be a collision closer to the centre.
-		if (Physics.Raycast(_baseTarget.position, targetOffset, out RaycastHit hit, targetOffsetDistance, _CollidableLayers_))
+		if (Physics.Raycast(_BaseTarget.position, targetOffset, out RaycastHit hit, targetOffsetDistance, _CollidableLayers_))
 		{
-			_finalTarget.position = Vector3.LerpUnclamped(hit.point, _baseTarget.position, 0.8f);
+			_TargetByCollisions.position = Vector3.LerpUnclamped(hit.point, _BaseTarget.position, 0.8f);
 		}
 		//If no wall to block the target, then apply the calculations.
 		else
@@ -391,7 +403,7 @@ public class S_HedgeCamera : MonoBehaviour
 		else
 		{
 			//Check for a wall by moving from anchor towards camera.
-			if (Physics.Raycast(_finalTarget.position, -transform.forward, out RaycastHit hitWall, -dist, _CollidableLayers_))
+			if (Physics.Raycast(_TargetByCollisions.position, -transform.forward, out RaycastHit hitWall, -dist, _CollidableLayers_))
 			{
 				dist = (-hitWall.distance);
 				_hitNormal = hitWall.normal * 0.5f;
@@ -403,7 +415,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 			//Get position by moving from the camera anchor in a backwards direction relative to the overall rotation.
 			var position = _lerpedRot * new Vector3(0, 0, dist + 0.3f);
-			transform.position = _finalTarget.position + position + _hitNormal;
+			transform.position = _FinalTarget.position + position + _hitNormal;
 		}
 
 	}
@@ -709,6 +721,10 @@ public class S_HedgeCamera : MonoBehaviour
 		_heightToLook = heightSet;
 	}
 
+	//
+	//Camera Effects
+	//
+
 	//Called by other scripts to make the camera shake with force  for a time.
 	public void ApplyCameraShake ( float shakeForce, int frames ) {
 		StopCoroutine(ShakeCamera(1, 1));
@@ -741,6 +757,30 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 	}
 
+	//Called externally and temporarily creates a 3d object to use as the target that won't move, causing the camera to stay stationary until over.
+	public IEnumerator ApplyCameraPause (int frames) {
+		Debug.Log("Camera Pause");
+
+		//Creates an object in the same place as the proper target, but uses it as target.
+		Vector3 savePosition = _FinalTarget.position;
+		_FinalTarget = new GameObject("TEMP TARGET").transform;
+		_FinalTarget.parent = null;
+		_FinalTarget.position = savePosition;
+		_VirtualCamera.Follow = _FinalTarget; //Applies to cinemachine so it can handle camera position.
+
+		//After x frames.
+		for (int i = 0 ; i < frames; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+
+		//Destroys the temp object and resets the final target as what it should be.
+		GameObject DestroyThis = _FinalTarget.gameObject;
+		_FinalTarget = _FinalTargetTransform;
+		Destroy(DestroyThis);
+		_VirtualCamera.Follow = _FinalTargetTransform; //Applies to cinemachine so it can handle camera position.
+	}
+
 	#endregion
 
 	/// <summary>
@@ -754,6 +794,8 @@ public class S_HedgeCamera : MonoBehaviour
 		_PlayerTransformCopy.rotation = _PlayerTransformReal.rotation;
 		_currentFaceDirection = GetFaceDirection(_Skin.forward);
 		_Transposer = _VirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+
+		_VirtualCamera.Follow = _FinalTarget;
 	}
 
 	void SetStats () {

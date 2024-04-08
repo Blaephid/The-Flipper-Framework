@@ -137,6 +137,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private List<Vector3>         _listOfVelocityToAddThisUpdate = new List<Vector3>(); //Rather than applied across all scripts, added forces are stored here and applied at the end of the frame.
 	private List<Vector3>         _listOfCoreVelocityToAdd= new List<Vector3>();
 	private Vector3               _externalCoreVelocity;        //Replaces core velocity this frame instead of just add to it.
+	private float		_externalRunningSpeed;		//Replaces core velocity magnitude this frame, but keeps direction and applied forces.
 	private bool                  _isOverwritingCoreVelocity;   //Set to true if core velocity should be completely replaced, including any aditions that would be made. If false, added forces will still be applied.
 
 	[HideInInspector]
@@ -202,7 +203,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public bool                   _isRolling;         //Set by the rolling subaction, certain controls are different when rolling.
 	[HideInInspector]
-	public bool                   _isBoosting;         //Set by the boost subaction. This will be used in attacks and changes calculations.
+	public bool                   _isBoosting = false;         //Set by the boost subaction. This will be used in attacks and changes calculations.
 
 	//Disabling options
 	[HideInInspector]
@@ -406,7 +407,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_listOfVelocityToAddThisUpdate.Clear();
 		_isOverwritingCoreVelocity = false;
 
-		//Sets rigidbody, this should be the only line in the player scripts to do so.
+		//Sets rigidbody velocity, this should be the only line in the player scripts to do so.
 		_RB.velocity = _totalVelocity;
 		prevVec = _totalVelocity;
 
@@ -498,6 +499,14 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Apply changes to the lateral velocity based on input.
 		lateralVelocity = AccelerateAndTurn(lateralVelocity, _moveInput, modifier);
 		lateralVelocity = Decelerate(lateralVelocity, _moveInput);
+
+		//If external core speed has been set to a positive value this frame, overwrite running speed without losing direction.
+		if (_externalRunningSpeed >= 0)
+		{
+			if(lateralVelocity.sqrMagnitude < 0.1f) { lateralVelocity = _MainSkin.forward; } //Ensures speed will always be applied, even if there's currently no velocity.
+			lateralVelocity = lateralVelocity.normalized * _externalRunningSpeed;
+			_externalRunningSpeed = -1; //Set to a negative value so core speeds of 0 can be set externally.
+		}
 
 		// Clamp horizontal running speed. coreVelocity can never exceed the player moving laterally faster than this.
 		localVelocity = lateralVelocity + verticalVelocity;
@@ -947,6 +956,11 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		_externalCoreVelocity = force;
 		if (shouldPrintForce) Debug.Log("Set Core FORCE");
+	}
+	//This will change the magnitude of the local lateral velocity vector in ControlledVelocity but will not change the direction.
+	public void SetLateralSpeed(float speed, bool shouldPrintForce = false) {
+		_externalRunningSpeed = speed; //This will be set to negative at the end of the frame, but if changed here will be applied in HandleControlledVelocity (NOT SetTotalVelocity). This is because this should only change running speed.
+		if (shouldPrintForce) Debug.Log("Set Core SPEED");
 	}
 	public void SetTotalVelocity ( Vector3 force, Vector2 split, bool shouldPrintForce = false ) {
 		_externalCoreVelocity = force * split.x;

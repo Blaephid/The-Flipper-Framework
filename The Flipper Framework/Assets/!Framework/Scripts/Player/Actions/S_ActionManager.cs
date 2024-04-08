@@ -186,21 +186,19 @@ public class S_ActionManager : MonoBehaviour
 
 		_currentAction = _MainActions[currentActionInList]; //This will allow the update method to check situation actions
 
-		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
-		//When one returns true, it is being switched to, so end the loop.
-		foreach (IMainAction mainAction in _currentAction.ConnectedActions)
-		{
-			performAction = mainAction.AttemptAction();
-			if (performAction) { break; }
-		}
-
-		performAction = false; //Allows check to be made again with the same variable.
-
-		//Checks if the subaction should be performed ontop of the current action.
+		//Checks if any subactions attached to this action should be performed ontop. 
+		//When one returns true, it is being switched to, so end the method. This take priority over main actions.
 		foreach (ISubAction subAction in _currentAction.SubActions)
 		{
 			performAction = subAction.AttemptAction();
-			if (performAction) { break; }
+			if (performAction) { return; }
+		}
+
+		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
+		foreach (IMainAction mainAction in _currentAction.ConnectedActions)
+		{
+			performAction = mainAction.AttemptAction();
+			if (performAction) { return; }
 		}
 	}
 

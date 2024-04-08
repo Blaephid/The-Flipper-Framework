@@ -20,7 +20,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private S_Handler_HomingAttack _HomingHandler;
 	private S_Control_SoundsPlayer  _Sounds;
 
-	private GameObject            _HomingTrailContainer;
 	private GameObject            _JumpBall;
 	private Animator              _CharacterAnimator;
 	private Transform             _Skin;
@@ -91,23 +90,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private void OnEnable () {
 		ReadyAction();
 		_JumpBall.SetActive(false);
-	}
-
-	private void OnDisable () {
-		_timer = 0;
-		_HomingTrailContainer.transform.DetachChildren();
-
-		//Removes one count of control being locked to counteract one being added when this action is start. This can also be done elsewhere but that will disable _isHoming
-		if (_PlayerPhys._listOfCanControl.Count > 0)
-		{
-			_PlayerPhys._listOfCanControl.RemoveAt(0);
-		}
-
-		//if ended prematurely
-		if(_isHoming)
-		{
-			_Actions.AddDashDelay(_HomingHandler._homingDelay_);
-		}
 	}
 
 	// Update is called once per frame
@@ -212,6 +194,14 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_PlayerPhys._isGravityOn = true;
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
+
+		_timer = 0;
+
+		//if ended prematurely
+		if (_isHoming)
+		{
+			_Actions.AddDashDelay(_HomingHandler._homingDelay_);
+		}
 	}
 
 	public void EventCollisionEnter ( Collision collision ) {
@@ -515,7 +505,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_HomingTrailScript = _Tools.HomingTrailScript;
-		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_JumpBall = _Tools.JumpBall;
 	}
 
