@@ -165,7 +165,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;
-		_PlayerSkin = _Tools.PlayerSkinTransform;
+		_PlayerSkin = _Tools.CharacterModelOffset;
 		_Sounds = _Tools.SoundControl;
 	}
 

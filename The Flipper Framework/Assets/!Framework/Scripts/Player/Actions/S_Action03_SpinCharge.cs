@@ -407,7 +407,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Sounds = _Tools.SoundControl;
 		_Effects = _Tools.EffectsControl;
 
-		_PlayerSkinTransform = _Tools.PlayerSkinTransform;
+		_PlayerSkinTransform = _Tools.CharacterModelOffset;
 		_LowerCapsule = _Tools.CrouchCapsule;
 		_CharacterCapsule = _Tools.CharacterCapsule;
 	}

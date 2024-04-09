@@ -97,7 +97,6 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 		//Modifier x increase raidus, modifer y increase range sphere is cast along, direction and position will usually based on the character, but when creating a path will go from target to target.
 		List<Transform> TargetsInRange = GetTargetsInRange(_targetSearchDistance_ * modifier.x, _targetSearchDistance_ * modifier.y, direction, position);
-		Debug.DrawRay(position, direction, Color.yellow, 1f);
 		_TargetRing = OrderTargets(TargetsInRange, position);
 	}
 

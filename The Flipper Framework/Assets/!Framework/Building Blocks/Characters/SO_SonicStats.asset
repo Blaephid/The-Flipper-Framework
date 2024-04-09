@@ -207,7 +207,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  StartTurningStats:
+  StarTurningStats:
     turnSpeed: 4
     turnDrag: 0.7
     TurnRateByAngle:
@@ -1216,7 +1216,7 @@ MonoBehaviour:
     rollingLandingBoost: 1.4
     minRollingTime: 0.4
   SkiddingStats:
-    angleToPerformSkid: 160
+    angleToPerformSkid: 140
     angleToPerformSpinSkid: 140
     angleToPerformHomingSkid: 130
     canSkidInAir: 1

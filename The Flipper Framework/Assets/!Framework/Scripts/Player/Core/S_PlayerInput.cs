@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.InputSystem;
 using UnityEditor;
+using UnityEngine.Windows;
 
 public class S_PlayerInput : MonoBehaviour
 {
@@ -32,6 +33,8 @@ public class S_PlayerInput : MonoBehaviour
 	public Vector3      _prevInputWithoutCamera;
 	[HideInInspector]
 	public Vector3     _camMoveInput;
+
+	private Vector3     _inputCheckedLastFrame;
 
 	public bool	_isInputLocked { get; set; }
 	float               _lockedTime;
@@ -99,10 +102,10 @@ public class S_PlayerInput : MonoBehaviour
 
 	// Update is called once per frame
 	void Update () {
-		AcquireMoveInput();
 	}
 
 	private void FixedUpdate () {
+		AcquireMoveInput();
 		if (!_isInputLocked)
 		{
 			_PlayerPhys._moveInput = _move;
@@ -190,8 +193,24 @@ public class S_PlayerInput : MonoBehaviour
 		_isInputLocked = true;
 		_isCamLocked = lockCam; //Also prevents camera control
 	}
-	#endregion
 
+	//Called externally once per frame to check if the input is different to last frame despite the actual controller input not being changed.
+	public bool IsTurningBecauseOfCamera (Vector3 inputDirection) {
+		bool isCamera = false;
+		if (Vector3.Angle(_inputCheckedLastFrame, inputDirection) > 1)                      //If move input is noticeably different to how it was last frame.
+		{
+			if (_prevInputWithoutCamera == _inputWithoutCamera) //But if controlled input has not changed, this means the input is only changed because of the camera.
+			{
+				isCamera = true;
+			}
+		}
+		_prevInputWithoutCamera = _inputWithoutCamera;
+		_inputCheckedLastFrame = inputDirection;
+		return isCamera;
+	}
+
+
+	#endregion
 	#region inputSystem
 	public void MoveInput ( InputAction.CallbackContext ctx ) {
 		moveVec = ctx.ReadValue<Vector2>();

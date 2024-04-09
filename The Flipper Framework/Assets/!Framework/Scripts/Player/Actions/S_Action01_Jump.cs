@@ -80,9 +80,14 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-		//Set Animator Parameters
-		_Actions._ActionDefault.HandleAnimator(1);
-		_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
+		if(!_Actions._ActionDefault._isAnimatorControlledExternally)
+		{
+			_Actions._ActionDefault._animationAction = 1;
+
+			//Set Animator Parameters
+			_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction);
+			_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
+		}
 	}
 
 	private void FixedUpdate () {

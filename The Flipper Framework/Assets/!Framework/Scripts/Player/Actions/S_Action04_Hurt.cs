@@ -142,8 +142,6 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			_knockbackDirection = _knockbackDirection == Vector3.zero ? -checkDirection : _knockbackDirection;
 			_HurtControl._wasHurtWithoutKnockback = false;
 
-			Debug.DrawRay(transform.position, _knockbackDirection, Color.yellow, 20);
-
 			//Gets the values to use, then edit if was not hit by an attack.
 			float force = _knockbackForce_;
 			float upForce = _knockbackUpwardsForce_;
@@ -182,7 +180,6 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			newSpeed = transform.TransformDirection(newSpeed);
 
 			_faceDirection = -newSpeed;
-			Debug.DrawRay(transform.position, newSpeed, Color.red, 20);
 
 			_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(1f, 0f));
 		}

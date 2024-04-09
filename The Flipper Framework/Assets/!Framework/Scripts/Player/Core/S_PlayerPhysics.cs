@@ -30,6 +30,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public UnityEvent<Collider>             _OnTriggerEnter;        //Event called when entering a trigger through the built in method.
 	public UnityEvent<Collider>             _OnTriggerExit;        //Event called when exitting a trigger through the built in method.
 	public UnityEvent<Collision>           _OnCollisionEnter;        //Event called when start collision through the built in method.
+	public UnityEvent<Collider>           _OnTriggerStay;        //Event called each frame when in a trigger.
 
 	[HideInInspector]
 	public Rigidbody		_RB;
@@ -121,6 +122,11 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	// Trackers
 	#region trackers
+
+	//Methods
+	public delegate Vector3		DelegateAccelerationAndTurning ( Vector3 vector, Vector3 input, Vector2 modifier );        //A delegate for deciding methods to calculate acceleration and turning 
+	public DelegateAccelerationAndTurning   CallAccelerationAndTurning; //This delegate will be called in controlled velocity to return changes to acceleration and turning. This will usually be the base one in this script, but may be changed externally depending on the action.
+
 	[HideInInspector]
 	public bool                   _arePhysicsOn = true;         //If false, no changes to velocity will be calculated or applied.
 
@@ -178,6 +184,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Ground tracking
 	[HideInInspector]
 	public bool                   _isGrounded;        //Used to check if the player is currently grounded. _isGrounded
+	public bool                   _isCurrentlyOnSlope;        //Used so external scripts can interact differently knowing if player is on a slope being affected by slope physics.
 	[HideInInspector]
 	public bool                   _canBeGrounded = true;        //Set externally to prevent player's entering a grounded state.
 	[HideInInspector]
@@ -258,10 +265,15 @@ public class S_PlayerPhysics : MonoBehaviour
 		AssignStats();
 
 		SetIsGrounded(false);
+
+		//Set delegates
+		CallAccelerationAndTurning = DefaultAccelerateAndTurn; //Whenever this delegate is called, it will call the default acceleration and turning present in this script, but the delegate may be changed by actions.
 	}
 
 	//On FixedUpdate,  call HandleGeneralPhysics if relevant.
 	void FixedUpdate () {
+		_isCurrentlyOnSlope = false; //Set to false at the end of a frame but will be set to true if slope physics are called next frame.
+
 		HandleGeneralPhysics();
 	}
 
@@ -280,6 +292,10 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	private void OnCollisionEnter ( Collision collision ) {
 		_OnCollisionEnter.Invoke(collision);
+	}
+
+	private void OnTriggerStay ( Collider other ) {
+		_OnTriggerStay.Invoke(other);
 	}
 
 	#endregion
@@ -303,30 +319,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Set if the player is grounded based on current situation.
 		CheckForGround();
 
-		//If the rigidbody velocity is smaller than it was last frame (such as from hitting a wall),
-		//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
-		Vector3 newVelocity = _RB.velocity;
-		Vector3 velocity1FrameAgo = _previousVelocities[0];
-
-		if (newVelocity.sqrMagnitude <= velocity1FrameAgo.sqrMagnitude && velocity1FrameAgo.sqrMagnitude > 1)
-		{
-			float angleChange = Vector3.Angle(newVelocity, velocity1FrameAgo) / 180;
-			float sizeDifference = Mathf.Abs(newVelocity.magnitude - _speedMagnitude);
-			float newSpeed = _RB.velocity.sqrMagnitude;
-			// If the change is just making the player bounce off upwards into the air, then set it to zero.
-			if (angleChange > 0.45 || (angleChange > 0.1 && Vector3.Angle(newVelocity, transform.up) < Vector3.Angle(velocity1FrameAgo, transform.up)))
-			{
-				_RB.velocity = Vector3.zero;
-			}
-			//But if the difference in speed is minor(such as lightly colliding with a slope when going up), then ignore the change.
-			else if (sizeDifference < 10 && newSpeed > Mathf.Pow(15, 2))
-			{
-				_RB.velocity = velocity1FrameAgo;
-			}
-
-			Vector3 vectorDifference = velocity1FrameAgo - newVelocity;
-			_coreVelocity -= vectorDifference;
-		}
+		//Handle any changes to the velocity between updates.
+		CheckAndApplyVelocityChanges();
 
 		//Calls the appropriate movement handler.
 		if (_isGrounded)
@@ -374,6 +368,34 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If return is not called yet, then sets grounded to false.
 		_groundNormal = Vector3.up;
 		SetIsGrounded(false, 0.1f);
+	}
+
+	//If the rigidbody velocity is smaller than it was last frame (such as from hitting a wall),
+	//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
+	private void CheckAndApplyVelocityChanges () {
+
+		Vector3 newVelocity = _RB.velocity;
+		Vector3 velocity1FrameAgo = _previousVelocities[0];
+
+		if (newVelocity.sqrMagnitude <= velocity1FrameAgo.sqrMagnitude && velocity1FrameAgo.sqrMagnitude > 1)
+		{
+			float angleChange = Vector3.Angle(newVelocity, velocity1FrameAgo) / 180;
+			float sizeDifference = Mathf.Abs(newVelocity.magnitude - _speedMagnitude);
+			float newSpeed = _RB.velocity.sqrMagnitude;
+			// If the change is just making the player bounce off upwards into the air, then set it to zero.
+			if (angleChange > 0.45 || (angleChange > 0.1 && Vector3.Angle(newVelocity, transform.up) < Vector3.Angle(velocity1FrameAgo, transform.up)))
+			{
+				_RB.velocity = Vector3.zero;
+			}
+			//But if the difference in speed is minor(such as lightly colliding with a slope when going up), then ignore the change.
+			else if (sizeDifference < 10 && newSpeed > Mathf.Pow(15, 2))
+			{
+				_RB.velocity = velocity1FrameAgo;
+			}
+
+			Vector3 vectorDifference = velocity1FrameAgo - newVelocity;
+			_coreVelocity -= vectorDifference;
+		}
 	}
 
 	//After every other calculation has been made, all of the new velocities and combined and set to the rigidbody.
@@ -433,8 +455,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		_coreVelocity = HandleControlledVelocity(new Vector2(1, 1));
 		_coreVelocity = StickToGround(_coreVelocity);
 		_coreVelocity = HandleSlopePhysics(_coreVelocity);
-
-		Debug.DrawRay(transform.position, _coreVelocity.normalized * 8, Color.magenta);
 	}
 
 	//Calls methods relevant to general control and gravity, while applying the turn and accelleration modifiers depending on a number of factors while in the air.
@@ -501,7 +521,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		//Apply changes to the lateral velocity based on input.
-		lateralVelocity = AccelerateAndTurn(lateralVelocity, _moveInput, modifier);
+		lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier); //Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
 		lateralVelocity = Decelerate(lateralVelocity, _moveInput);
 
 		//If external core speed has been set to a positive value this frame, overwrite running speed without losing direction.
@@ -530,7 +550,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//This handles increasing the speed while changing the direction of the player's controlled velocity.
 	//It will not allow speed to increase if over topSpeed, but will only decrease if there is enough drag from the turn.
-	Vector3 AccelerateAndTurn ( Vector3 lateralVelocity, Vector3 input, Vector2 modifier ) {
+	//This will only be called by delegates, but is the default means of handling acceleration and turn. See CallAccelerationAndTurning for more.
+	public Vector3 DefaultAccelerateAndTurn ( Vector3 lateralVelocity, Vector3 input, Vector2 modifier ) {
 
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;
@@ -539,14 +560,17 @@ public class S_PlayerPhysics : MonoBehaviour
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
 
-		_inputVelocityDifference = lateralVelocity.sqrMagnitude < 1 ? 0 : Vector3.Angle(lateralVelocity, inputDirection);
+		_inputVelocityDifference = lateralVelocity.sqrMagnitude < 1 ? 0 : Vector3.Angle(lateralVelocity, inputDirection); //The change in input in degrees, this will be used by the skid script to calculate whether should skid.
 		float deviationFromInput = _inputVelocityDifference  / 180.0f;
+
 		Quaternion lateralToInput = lateralVelocity.sqrMagnitude < 1
 			? Quaternion.identity
 			: Quaternion.FromToRotation(lateralVelocity.normalized, inputDirection);
 
-		//If standing still, should immediately move in required direction, rather than rotate velocity from zero towards it.
-		if(lateralVelocity.sqrMagnitude < 1)
+		float dragRate = 0; //This will be applied when changing speed. But will only be greater than 0 if turning.
+
+				//If standing still, should immediately move in required direction, rather than rotate velocity from zero towards it.
+		if (lateralVelocity.sqrMagnitude < 1)
 		{
 			lateralVelocity = inputDirection * inputMagnitude;
 		}
@@ -561,13 +585,15 @@ public class S_PlayerPhysics : MonoBehaviour
 			float turnRate = (_isRolling ? _rollingTurningModifier_ : 1.0f);
 			turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
 			turnRate *= _TurnRateBySpeed_.Evaluate((_RB.velocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
-			if (_trackMoveInput != inputDirection)
+
+			if(_Input.IsTurningBecauseOfCamera(inputDirection))
 			{
 				turnRate *= _TurnRateByInputChange_.Evaluate(Vector3.Angle(_Input._inputWithoutCamera, _Input._prevInputWithoutCamera) / 180);
-				_Input._prevInputWithoutCamera = _Input._inputWithoutCamera;
-				_trackMoveInput = inputDirection;
 			}
-			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Mathf.Deg2Rad * modifier.x, 0.0f);
+
+			dragRate = _DragByAngle_.Evaluate(deviationFromInput) * _curvePosDrag; //If turning, may lose speed.
+
+			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Mathf.Deg2Rad * modifier.x, 0.0f); //Apply turn by calculate speed
 		}
 
 		// Step 3) Get current velocity (if it's zero then use input)
@@ -576,14 +602,16 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		Vector3 setVelocity = lateralVelocity.sqrMagnitude > 0 ? lateralVelocity : inputDirection;
 		float accelRate = 0;
-		if (deviationFromInput < _angleToAccelerate_ || _horizontalSpeedMagnitude < 10)
+
+		if (deviationFromInput < _angleToAccelerate_ || _horizontalSpeedMagnitude < 10) //Will only accelerate if inputing in direction enough, unless under certain speed.
 		{
 			accelRate = (_isRolling && _isGrounded ? _currentRollAccell : _currentRunAccell) * inputMagnitude;
 			accelRate *= _curvePosAcell;
 			accelRate *= _AccelBySlope_.Evaluate(_groundNormal.y);
 		}
-		float dragRate = _DragByAngle_.Evaluate(deviationFromInput) * _curvePosDrag;
+
 		float speedChange = accelRate - (dragRate * _turnDrag_) * modifier.y;
+
 		setVelocity = Vector3.MoveTowards(setVelocity, Vector3.zero, -speedChange);
 
 		//Step 4) If the change is still under the current top speed, or the change is a decrease in total, then apply it.
@@ -660,6 +688,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If slope angle is less than limit, meaning on a slope
 		if (_groundNormal.y < _slopeEffectLimit_ && _horizontalSpeedMagnitude > 5)
 		{
+			_isCurrentlyOnSlope = true;
+
 			//Get force to always apply whether up or down hill
 			Vector3 force = new Vector3(0, -_curvePosSlopePower, 0);
 			force *= _generalHillMultiplier_;

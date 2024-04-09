@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using Cinemachine;
 using SplineMesh;
+using System.Drawing;
 
 
 //[RequireComponent(typeof(Spline))]
@@ -99,19 +100,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 		switch (col.gameObject.tag)
 		{
-			case "Rail":
-				//Can only enter a rail if not already on one and in an action with grinding set as a situational action in the action manager.
-				if (!_canGrindOnRail) { return; }
-
-				//The different sizes of the rail collider have different minimum speeds. This is to allow less accuracy required at high speed.
-				float distance = Vector3.Distance(col.transform.position, transform.position);
-				Debug.Log(distance);
-				if (distance < Mathf.Max(_PlayerPhys._speedMagnitude / 70, 1.5f))
-				{
-					SetOnRail(null, true, col);
-				}
-				break;
-
 			case "ZipLine":
 				//Can only enter a zipline if not already on one and in an action with grinding set as a situational action in the action manager.
 				if (!_canGrindOnRail) { return; }
@@ -133,6 +121,27 @@ public class S_Interaction_Pathers : MonoBehaviour
 			case "PathTrigger":
 				if (!_canEnterAutoPath)
 					StartCoroutine(SetOnPath(col));
+				break;
+		}
+	}
+
+	//Because the variety of speeds means rails should be easier to land on at higher speeds, being in a rail trigger causes different checks to happen each frame, only setting if within range inside the trigger.
+	public void EventTriggerStay ( Collider col ) {
+		switch (col.gameObject.tag)
+		{
+			case "Rail":
+				//Can only enter a rail if not already on one and in an action with grinding set as a situational action in the action manager.
+				if (!_canGrindOnRail) { return; }
+
+				Spline ThisSpline = col.gameObject.GetComponentInParent<Spline>(); //Create a temporary variable to check this rail before confirming it.
+
+				Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, ThisSpline); //Returns the closest point on the rail by position.
+
+				//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
+				if (rangeAndDis.y < Mathf.Max(_PlayerPhys._speedMagnitude / 70, 1.5f))
+				{
+					SetOnRail(true, col, rangeAndDis);
+				}
 				break;
 		}
 	}
@@ -244,16 +253,11 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	//Readies stats and activates the grinding action when on a rail. Can be called by OnTriggerEnter and OnCollisionEnter, assigning parameters appropriately.
-	public void SetOnRail ( Collision collision, bool isTrigger, Collider collider ) {
+	public void SetOnRail ( bool isTrigger, Collider collider, Vector2 rangeAndDis ) {
 		//Rail must have a spline to follow.
 		if (collider.gameObject.GetComponentInParent<Spline>())
 		{
 			_PathSpline = collider.gameObject.GetComponentInParent<Spline>();
-
-			//Depending on what collision type called this (trigger or collision), assign the position to get rail position from.
-			Transform ColPos = isTrigger ? transform : GetCollisionPoint(collision);
-
-			float Range = GetClosestPos(ColPos.position, _PathSpline); //Returns the closest point on the rail by position.
 
 			Vector3 offSet = Vector3.zero;
 
@@ -285,7 +289,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 			}
 
 			//Sets the player to the rail grind action, and sets their position and what spline to follow.
-			_RailAction.AssignForThisGrind(Range, _PathSpline.transform, PathTypes.rail, offSet, addOn);
+			_RailAction.AssignForThisGrind(rangeAndDis.x, _PathSpline.transform, PathTypes.rail, offSet, addOn);
 			_RailAction.StartAction();
 		}
 	}
@@ -301,14 +305,14 @@ public class S_Interaction_Pathers : MonoBehaviour
 		_RailAction._ZipBody = zipbody;
 		zipbody.isKinematic = false;
 
-		float Range = GetClosestPos(zipbody.position, _PathSpline); //Gets place on rail closest to collision point.
+		Vector2 rangeAndDis = GetClosestPointOfSpline(zipbody.position, _PathSpline); //Gets place on rail closest to collision point.
 
 		//Disables the homing target so it isn't a presence if homing attack can be performed in the grind action
 		GameObject target = col.transform.GetComponent<S_Control_Zipline>().homingtgt;
 		target.SetActive(false);
 
 		//Sets the player to the rail grind action, and sets their position and what spline to follow.
-		_RailAction.AssignForThisGrind(Range, _PathSpline.transform, PathTypes.zipline, Vector3.zero, null);
+		_RailAction.AssignForThisGrind(rangeAndDis.x, _PathSpline.transform, PathTypes.zipline, Vector3.zero, null);
 		_RailAction.StartAction();
 	}
 
@@ -398,8 +402,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 
-	//Goes through whole spline and returns the point closests to the given position
-	public float GetClosestPos ( Vector3 colliderPosition, Spline thisSpline ) {
+	//Goes through whole spline and returns the point closests to the given position, along with how far it is.
+	public Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline ) {
 		float CurrentDist = 9999999f;
 		float closestSample = 0;
 		for (float n = 0 ; n < thisSpline.Length ; n += 5)
@@ -414,7 +418,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				closestSample = n;
 			}
 		}
-		return closestSample;
+		return new Vector2 (closestSample, CurrentDist);
 	}
 
 	//Called when leaving a pulley to prevent player attaching to it immediately.

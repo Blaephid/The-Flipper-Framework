@@ -153,7 +153,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	}
 
 	//Called every frame when overlapping a trigger
-	public void OnTriggerStay ( Collider col ) {
+	public void EventTriggerStay ( Collider col ) {
 		//Pits force the camera to look down from above
 		if (col.tag == "Pit")
 		{

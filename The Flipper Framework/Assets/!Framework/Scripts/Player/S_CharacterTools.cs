@@ -17,7 +17,7 @@ public class S_CharacterTools : MonoBehaviour
 	[Header("Model / Skin")]
 	public SkinnedMeshRenderer[]	PlayerSkins;
 	public Transform		MainSkin;
-	public Transform		PlayerSkinTransform;
+	public Transform		CharacterModelOffset;
 
 	[Header("Balls")]
 	public GameObject	JumpBall;

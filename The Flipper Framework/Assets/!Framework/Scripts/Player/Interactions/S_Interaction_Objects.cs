@@ -383,7 +383,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		}
 	}
 
-	public void OnTriggerStay ( Collider col ) {
+	public void EventTriggerStay ( Collider col ) {
 
 		if (col.gameObject.tag == "MovingPlatform")
 		{

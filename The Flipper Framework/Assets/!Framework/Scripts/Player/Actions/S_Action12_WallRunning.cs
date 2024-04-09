@@ -222,7 +222,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;
-		_CharacterTransform = _Tools.PlayerSkinTransform;
+		_CharacterTransform = _Tools.CharacterModelOffset;
 		_Sounds = _Tools.SoundControl;
 		_JumpBall = _Tools.JumpBall;
 		_DropShadow = _Tools.DropShadow;
@@ -281,7 +281,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		transformedInput = (_MainSkin.rotation * _Input._inputWithoutCamera);
 		transformedInput = transform.InverseTransformDirection(transformedInput);
 		transformedInput.y = 0.0f;
-		//Debug.DrawRay(transform.position, transformedInput * 10, Color.red);
 
 		if (_Input._camMoveInput.sqrMagnitude > 0.4f)
 		{
@@ -410,7 +409,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		if (!_isWall)
 		{
 			Debug.Log("Lost Wall");
-			Debug.DrawRay(new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z), _MainSkin.forward * _climbWallDistance * 1.3f, Color.red, 20f);
 			_CharacterAnimator.SetInteger("Action", 0);
 			_CharacterAnimator.SetBool("Grounded", false);
 
@@ -490,12 +488,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			_CharacterAnimator.SetBool("Grounded", false);
 
 			StartCoroutine(loseWall());
-
-			//Debug.Log("Lost the Wall");
-			if (_isWallOnRight)
-				Debug.DrawRay(transform.position, _MainSkin.right * _wallCheckDistance_ * 2f, Color.blue, 20f);
-			else
-				Debug.DrawRay(transform.position, -_MainSkin.right * _wallCheckDistance_ * 2f, Color.blue, 20f);
 
 		}
 		else
@@ -773,13 +765,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		}
 		else
 		{
-			Debug.Log(Vector3.Dot(_wallToClimb.normal, _Input._camMoveInput));
-			Debug.Log(_climbingSpeed);
 
 			_jumpAngle = Vector3.Lerp(_wallToClimb.normal, transform.up, 0.6f);
 			faceDir = _wallToClimb.normal;
-
-			Debug.DrawRay(transform.position, faceDir, Color.red, 20);
 
 			_PlayerPhys.SetCoreVelocity(faceDir * 4f);
 		}

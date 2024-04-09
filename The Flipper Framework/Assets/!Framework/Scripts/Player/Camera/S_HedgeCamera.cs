@@ -759,7 +759,7 @@ public class S_HedgeCamera : MonoBehaviour
 	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
 	public IEnumerator ApplyCameraPause (Vector2 frames) {
 
-		if(_SecondaryCamera.active) { yield return null; } //If secondary camera is already active, don't move it, let it play out.
+		if(_SecondaryCamera.activeSelf) { yield break; } //If secondary camera is already active, don't move it, let it play out.
 
 		//Sets the secondary camera to the position of the primary, then makes it take over display.
 		_SecondaryCamera.transform.position = transform.position;
@@ -770,11 +770,14 @@ public class S_HedgeCamera : MonoBehaviour
 		for (int i = 0 ; i < frames.x; i++)
 		{
 			yield return new WaitForFixedUpdate();
+			Debug.Log(i);
 		}
 		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
 		_Brain.m_DefaultBlend.m_Time = 55 / frames.y;
 		_Brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
 
+		Debug.Log("-- " + _Brain.m_DefaultBlend.m_Time);
+		yield return new WaitForFixedUpdate();
 		_SecondaryCamera.SetActive(false); //Disabling the secondary camera will cause the brain to automatically transition back to primary (assuming no other virtual cameras are at play.
 	}
 

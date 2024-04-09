@@ -653,6 +653,18 @@ public class ActionManagerEditor : Editor
 			{
 				_ActionMan._MainActions = _ActionMan._MainActions.OrderBy(item => item.State).ToList();
 				serializedObject.ApplyModifiedProperties();
+
+				//Also order each of the subLists for each actions by how they're ordered in the Enums class.
+				for (int i = 0 ; i < _ActionMan._MainActions.Count ; i++)
+				{
+					S_Structs.StrucMainActionTracker s = _ActionMan._MainActions[i];
+					s.ConnectedStates = s.ConnectedStates.OrderBy(d => (int)d).ToList();
+					s.SituationalStates = s.SituationalStates.OrderBy(d => (int)d).ToList();
+					s.PerformableSubStates = s.PerformableSubStates.OrderBy(d => (int)d).ToList();
+
+					_ActionMan._MainActions[i] = s;
+					serializedObject.ApplyModifiedProperties();
+				}
 			}
 		}
 		#endregion

@@ -216,8 +216,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			//Get the world transform point of that point on the spline.
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
 
-			Debug.DrawRay(Sample.location, Sample.up * 2, Color.red, 30f);
-
 			//Place player on it (since called in update, not fixed update, won't be too jittery).
 			_PlayerPhys.transform.position = Sample.location;
 

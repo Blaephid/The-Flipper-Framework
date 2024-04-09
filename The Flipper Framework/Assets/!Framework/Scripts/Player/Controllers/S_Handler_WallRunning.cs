@@ -60,8 +60,6 @@ public class S_Handler_WallRunning : MonoBehaviour
 		{
 			yield return new WaitForFixedUpdate();
 
-			//Debug.DrawRay(transform.position, Player.MoveInput, Color.red);
-
 
 			checkSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 			saveVec = _PlayerPhys._RB.velocity;
@@ -236,9 +234,6 @@ public class S_Handler_WallRunning : MonoBehaviour
 			if (leftWallDetect.collider.gameObject == bannedWall)
 				wallLeft = false;
 			Vector3 wallDirection = leftWallDetect.point - transform.position;
-			//Debug.Log(Vector3.Dot(wallDirection.normalized, Inp.trueMoveInput.normalized));
-			//Debug.DrawRay(transform.position, wallDirection, Color.red, 60f);
-			//Debug.DrawRay(transform.position, Inp.trueMoveInput, Color.green, 60f);
 
 			if (Vector3.Dot(wallDirection.normalized, _Input._camMoveInput.normalized) < 0.2f)
 			{

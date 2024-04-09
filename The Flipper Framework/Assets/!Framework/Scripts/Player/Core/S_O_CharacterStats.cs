@@ -61,7 +61,7 @@ public class S_O_CharacterStats : ScriptableObject
 
 	#region turning
 	//-------------------------------------------------------------------------------------------------
-	public StrucTurning StartTurningStats = SetStrucTurning();
+	public StrucTurning StarTurningStats = SetStrucTurning();
 	public StrucTurning TurningStats = SetStrucTurning();
 
 	static StrucTurning SetStrucTurning () {
@@ -1512,7 +1512,7 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to Defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.TurningStats = stats.StartTurningStats;
+				stats.TurningStats = stats.StarTurningStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

@@ -109,7 +109,6 @@ public class S_AddOnRail : MonoBehaviour
 
 				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
 				offset = sample.Rotation * offset;
-				Debug.DrawRay(thisSpline.gameObject.transform.position + thisSpline.nodes[thisSpline.nodes.Count - 1].Position, offset, Color.red, 30f);
 
 				otherSpline.gameObject.transform.parent.position = thisSpline.gameObject.transform.parent.position + offset;
 				otherSpline.nodes[0].Position = thisSpline.nodes[thisSpline.nodes.Count - 1].Position;

@@ -20,6 +20,8 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	private Animator              _CharacterAnimator;
 	private Animator              _BallAnimator;
 	private Transform             _MainSkin;
+	private Transform             _SkinOffset;
+
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
 	private S_PlayerInput         _Input;
@@ -59,7 +61,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	public int          _animationAction = 0;
 
 	[HideInInspector]
-	public bool	_isAnimatorControlledExternally_ = false;
+	public bool	_isAnimatorControlledExternally = false;
 
 	#endregion
 	#endregion
@@ -81,7 +83,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-		if (!_isAnimatorControlledExternally_)
+		if (!_isAnimatorControlledExternally)
 		{
 			HandleAnimator(_animationAction);
 			SetSkinRotationToVelocity(_skinRotationSpeed);
@@ -162,11 +164,17 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		}
 	}
 
-	//Points the player visuals (model, effects, etc) in the direction of movement.
-	public void SetSkinRotationToVelocity ( float rotateSpeed ) {
+	//Points the player visuals (model, effects, etc) in the direction of movement or a custom direction. Can also apply an offset which will only rotate character models, leaving effects and other children where they are.
+	public void SetSkinRotationToVelocity ( float rotateSpeed, Vector3 direction = default(Vector3), Vector3 offset = default(Vector3) ) {
 
-		//Gets a direction based on core velocity, and if there isn't one, don't chnage it.
-		Vector3 newForward = _PlayerPhys._coreVelocity - transform.up * Vector3.Dot(_PlayerPhys._coreVelocity, transform.up);
+		//If no direction was passed, use moving direction.
+		if (direction == default(Vector3))
+		{
+			direction = _PlayerPhys._coreVelocity;
+		}
+
+		//Gets a direction to rotate towards based on input direction, and if there isn't one, don't change it.
+		Vector3 newForward = direction - transform.up * Vector3.Dot(direction, transform.up);
 		if (newForward.sqrMagnitude > 0.01f)
 		{
 			//Makes a rotation that only changes horizontally, never looking up or down.
@@ -180,6 +188,20 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			else
 			{
 				_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, charRot, Time.deltaTime * rotateSpeed * 0.75f);
+			}
+
+			//Apply a local rotation to the offset object, based on input offset.
+			if (offset != default(Vector3))
+			{
+				Vector3 offSetForward = _SkinOffset.InverseTransformDirection(offset);
+				charRot = Quaternion.LookRotation(offSetForward, _MainSkin.up);
+
+				_SkinOffset.localRotation = Quaternion.Lerp(_SkinOffset.localRotation, charRot, Time.deltaTime * rotateSpeed * 0.5f);
+			}
+			//If not applying an offset but there is one, then rotate to undo it.
+			else if(_SkinOffset.forward != _MainSkin.forward)
+			{
+				_SkinOffset.localRotation = Quaternion.Lerp(_SkinOffset.localRotation, Quaternion.identity, Time.deltaTime * rotateSpeed * 0.5f);
 			}
 		}
 	}
@@ -292,17 +314,18 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 
 	private void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
-		_CamHandler = _Tools.CamHandler;
+		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_Input =		_Tools.GetComponent<S_PlayerInput>();
+		_Actions =	_Tools.GetComponent<S_ActionManager>();
+		_CamHandler =	_Tools.CamHandler;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_BallAnimator = _Tools.BallAnimator;
-		_CurrentAnimator = _CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
-		_PlayerSkin = _Tools.PlayerSkins;
-		_SpinDashBall = _Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
+		_BallAnimator =	_Tools.BallAnimator;
+		_CurrentAnimator =	_CharacterAnimator;
+		_MainSkin =	_Tools.MainSkin;
+		_PlayerSkin =	_Tools.PlayerSkins;
+		_SkinOffset =	_Tools.CharacterModelOffset;
+		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
 
 		_CharacterAnimator.SetBool("isRolling", false);
 	}
