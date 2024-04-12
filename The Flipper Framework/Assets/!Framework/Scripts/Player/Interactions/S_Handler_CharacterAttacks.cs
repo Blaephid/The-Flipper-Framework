@@ -42,13 +42,17 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 			{
 				//If in default, will only attack if rolling.
 				case S_Enums.PrimaryPlayerStates.Default:
-					if (_PlayerPhys._isRolling || _PlayerPhys)
+					if (_PlayerPhys._isRolling)
 					{
 						AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target);
 						_hasHitThisFrame = true;
 						break;
 					}
-					_hasHitThisFrame = false;
+					else if (_PlayerPhys._isBoosting) //Boost attack is handled in its own unique script, but this prevents damage being taken.
+					{
+						_hasHitThisFrame = true;
+					}
+					else { _hasHitThisFrame = false; }
 					break;
 					//Spin charge counts as a rolling attack.
 				case S_Enums.PrimaryPlayerStates.SpinCharge:
@@ -78,6 +82,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	//Called in order to deal damage and affect the player afterwards.
 	public void AttackThing ( Collider col, S_Enums.PlayerAttackTypes attackType, S_Enums.AttackTargets target, int damage = 1 ) {
 		//Different targets require different means of taking damage.
+
 		switch (target)
 		{
 			case S_Enums.AttackTargets.Monitor:

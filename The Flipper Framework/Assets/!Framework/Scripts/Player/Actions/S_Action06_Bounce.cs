@@ -20,6 +20,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	private S_ActionManager       _Actions;
 	private S_Control_SoundsPlayer _Sounds;
 	private S_VolumeTrailRenderer _HomingTrailScript;
+	private S_Handler_Camera      _CamHandler;
 
 	private Animator    _BallAnimator;
 	private Transform   _MainSkin;
@@ -29,7 +30,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private float _dropSpeed_;
+	private float _startDropSpeed_;
+	private float _maxDropSpeed_;
 
 	[HideInInspector]
 	public List<float>	_BounceUpSpeeds_;
@@ -41,6 +43,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	private float	_bounceCoolDown_;
 	private float	_cooldownModifierBySpeed_;
+
+	private Vector2               _cameraPauseEffect_ = new Vector2(3, 35);
 	#endregion
 
 	// Trackers
@@ -112,11 +116,14 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		//Physics
 		_PlayerPhys._isGravityOn = false; //Moving down will be handled here rather than through the premade gravity in physics script.
 		_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_), false); //Immediately slows down player movement and removes vertical movement.
-		_PlayerPhys.AddCoreVelocity(new Vector3(0, _dropSpeed_, 0), false); // Apply downward force, this is instant rather than  ramp up like gravity.
+		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerPhys._coreVelocity.y - 20);
+		_PlayerPhys.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0), false); // Apply downward force, this is instant rather than  ramp up like gravity.
 
 		//Effects
 		_Actions._ActionDefault.SwitchSkin(false); //Ball animation rather than character ones.
 		_BallAnimator.SetInteger("Action", 1); //Ensures it is set to jump first, because it will then transition from that to bounce.
+
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2 ( -_PlayerPhys._coreVelocity.y, -thisDropSpeed), 1f)); //The camera will fall back before catching up.
 
 		_Sounds.BounceStartSound();
 
@@ -191,6 +198,10 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			 if (vertSpeed > 1)
 			{
 				_Actions._ActionDefault.StartAction();
+			}
+			 else if(vertSpeed > _maxDropSpeed_)
+			{
+				_PlayerPhys.AddCoreVelocity(Vector3.down * 2.5f);
 			}
 		}
 	}
@@ -303,34 +314,38 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Input =	_Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_Actions =	_Tools.GetComponent<S_ActionManager>();
 
-		_MainSkin = _Tools.MainSkin;
-		_Sounds = _Tools.SoundControl;
-		_HomingTrailScript = _Tools.HomingTrailScript;
-		_BallAnimator = _Tools.BallAnimator;
-		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+		_MainSkin =		_Tools.MainSkin;
+		_Sounds =			_Tools.SoundControl;
+		_HomingTrailScript =	_Tools.HomingTrailScript;
+		_BallAnimator =		_Tools.BallAnimator;
+		_CharacterCapsule =		_Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+		_CamHandler =		_Tools.CamHandler;
 	}
 
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
-		_dropSpeed_ = _Tools.Stats.BounceStats.dropSpeed;
+		_startDropSpeed_ = _Tools.Stats.BounceStats.startDropSpeed;
+		_maxDropSpeed_ = _Tools.Stats.BounceStats.maxDropSpeed;
 
 		for (int i = 0 ; i < _Tools.Stats.BounceStats.listOfBounceSpeeds.Count ; i++)
 		{
 			_BounceUpSpeeds_.Add(_Tools.Stats.BounceStats.listOfBounceSpeeds[i]);
 		}
-		_minimumPushForce_ = _Tools.Stats.BounceStats.minimumPushForce;
-		_lerpTowardsInput_ = _Tools.Stats.BounceStats.lerpTowardsInput;
+		_minimumPushForce_ =	_Tools.Stats.BounceStats.minimumPushForce;
+		_lerpTowardsInput_ =	_Tools.Stats.BounceStats.lerpTowardsInput;
 
-		_bounceCoolDown_ = _Tools.Stats.BounceStats.bounceCoolDown;
-		_cooldownModifierBySpeed_ = _Tools.Stats.BounceStats.coolDownModiferBySpeed;
+		_bounceCoolDown_ =		_Tools.Stats.BounceStats.bounceCoolDown;
+		_cooldownModifierBySpeed_ =	_Tools.Stats.BounceStats.coolDownModiferBySpeed;
 
-		_bounceHaltFactor_ = _Tools.Stats.BounceStats.bounceHaltFactor;
-		_horizontalSpeedDecay_ = _Tools.Stats.BounceStats.horizontalSpeedDecay;
-}
+		_bounceHaltFactor_ =	_Tools.Stats.BounceStats.bounceHaltFactor;
+		_horizontalSpeedDecay_ =	_Tools.Stats.BounceStats.horizontalSpeedDecay;
+
+		_cameraPauseEffect_ =	_Tools.Stats.BounceStats.cameraPauseEffect;
+	}
 	#endregion
 
 }

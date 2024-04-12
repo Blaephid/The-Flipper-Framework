@@ -303,7 +303,6 @@ GameObject:
   - component: {fileID: 2226283832785026035}
   - component: {fileID: 2226283832785026034}
   - component: {fileID: -2424639703880734972}
-  - component: {fileID: 2226283832785026036}
   m_Layer: 0
   m_Name: Pr_CheckPoint
   m_TagString: Checkpoint
@@ -463,24 +462,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &2226283832785026036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2226283832785026039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92999533eb78a2a47a2a97620d6e68aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SurfaceAlignment: 1
-  SnapDirection: 0
-  LineToTargetPos: 0
-  Align: 0
-  RandomRotation: 0
-  RemoveScript: 0
 --- !u!1 &2226283833398211570
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,8 +670,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 0
-  Des: 0
+  _whatAction: 2
+  _delayInSeconds: 0
 --- !u!1001 &2226283832202413150
 PrefabInstance:
   m_ObjectHideFlags: 0

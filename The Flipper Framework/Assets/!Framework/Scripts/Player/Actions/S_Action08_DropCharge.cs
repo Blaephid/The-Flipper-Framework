@@ -36,6 +36,8 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private float        _minimunCharge_ = 10;
 	private float        _maximunCharge_ = 100;
 
+	private Vector2	_cameraPauseEffect_ = new Vector2(3, 40);
+
 	private float       _minimumHeightToDropCharge_;
 	#endregion
 
@@ -232,6 +234,10 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 		StartCoroutine(delayForce(force, 2)); //Will apply this force after a few frames, this is to give a chance to properly align to the ground.
 
+		//Effects
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerPhys._horizontalSpeedMagnitude, _charge), 0.25f)); //The camera will fall back before catching up.
+
+		//Control
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
 	}
 
@@ -259,7 +265,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private void Launch ( Vector3 force ) {
 
 		//Effects
-		_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount * _charge) / 100, 40);
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount * _charge) / 100, 10));
 		_Sounds.SpinDashReleaseSound();
 
 		//Ensure player is aligned to the ground below them.
@@ -295,7 +301,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	//Returns the current charge. This is for carry over charge gained when this can't add velocity itself (like when landing on a rail)
 	public float GetCharge () {
 		//Effects
-		_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount * _charge) / 100, 30);
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount * _charge) / 150, 1));
 		_Sounds.SpinDashReleaseSound();
 
 		return _charge;
@@ -365,10 +371,12 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
-		_spinDashChargingSpeed_ = _Tools.Stats.DropChargeStats.chargingSpeed;
-		_minimunCharge_ = _Tools.Stats.DropChargeStats.minimunCharge;
-		_maximunCharge_ = _Tools.Stats.DropChargeStats.maximunCharge;
-		_minimumHeightToDropCharge_ = _Tools.Stats.DropChargeStats.minimumHeightToPerform;
+		_spinDashChargingSpeed_ =	_Tools.Stats.DropChargeStats.chargingSpeed;
+		_minimunCharge_ =		_Tools.Stats.DropChargeStats.minimunCharge;
+		_maximunCharge_ =		_Tools.Stats.DropChargeStats.maximunCharge;
+		_minimumHeightToDropCharge_ =	_Tools.Stats.DropChargeStats.minimumHeightToPerform;
+
+		_cameraPauseEffect_ =	_Tools.Stats.DropChargeStats.cameraPauseEffect;
 	}
 	#endregion
 }

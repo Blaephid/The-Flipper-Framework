@@ -95,11 +95,6 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Start () {
-
-	}
-
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyScript();
@@ -124,10 +119,10 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		{
 			case "Hazard":
 				DamagePlayer();
-				_CamHandler._HedgeCam.ApplyCameraShake(_damageShakeAmmount_, 60);
+				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(_damageShakeAmmount_, 15));
 				return;
 			case "Enemy":
-				_CamHandler._HedgeCam.ApplyCameraShake(_enemyHitShakeAmmount_, 30);
+				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(_enemyHitShakeAmmount_, 12));
 
 				if (!_Attacks.AttemptAttackOnContact(other, S_Enums.AttackTargets.Enemy))
 				{
@@ -147,7 +142,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		{
 			case "Hazard":
 				DamagePlayer();
-				_CamHandler._HedgeCam.ApplyCameraShake(_damageShakeAmmount_, 60);
+				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(_damageShakeAmmount_, 14));
 				return;
 		}
 	}
@@ -560,23 +555,23 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
-		_LevelHandler = _Actions._ObjectForInteractions.GetComponent<S_Manager_LevelProgress>();
-		_Objects = _Actions._ObjectForInteractions.GetComponent<S_Interaction_Objects>();
-		_CamHandler = _Tools.CamHandler;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_Attacks = _Actions._ObjectForInteractions.GetComponent<S_Handler_CharacterAttacks>();
-		_HurtAction = _Actions._ObjectForActions.GetComponent<S_Action04_Hurt>();
+		_PlayerPhys =		_Tools.GetComponent<S_PlayerPhysics>();
+		_Actions =		_Tools.GetComponent<S_ActionManager>();
+		_LevelHandler =		_Actions._ObjectForInteractions.GetComponent<S_Manager_LevelProgress>();
+		_Objects =		_Actions._ObjectForInteractions.GetComponent<S_Interaction_Objects>();
+		_CamHandler = 		_Tools.CamHandler;
+		_Input =			_Tools.GetComponent<S_PlayerInput>();
+		_Attacks =		_Actions._ObjectForInteractions.GetComponent<S_Handler_CharacterAttacks>();
+		_HurtAction =		_Actions._ObjectForActions.GetComponent<S_Action04_Hurt>();
 
-		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
-		_MainSkin = _Tools.MainSkin;
-		_JumpBall = _Tools.JumpBall;
-		_Sounds = _Tools.SoundControl;
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_SonicSkins = _Tools.PlayerSkins;
-		_MovingRing = _Tools.MovingRingObject;
-		_FadeOutImage = _Tools.FadeOutImage;
+		_FadeOutImage =		_Tools.UISpawner._BaseUIElements.FadeOutBox;
+		_CharacterCapsule =		_Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+		_MainSkin =		_Tools.MainSkin;
+		_JumpBall =		_Tools.JumpBall;
+		_Sounds =			_Tools.SoundControl;
+		_CharacterAnimator =	_Tools.CharacterAnimator;
+		_SonicSkins =		_Tools.PlayerSkins;
+		_MovingRing =		_Tools.MovingRingObject;
 	}
 
 	//Reponsible for assigning stats from the stats script.

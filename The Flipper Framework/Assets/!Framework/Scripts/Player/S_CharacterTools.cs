@@ -10,6 +10,9 @@ public class S_CharacterTools : MonoBehaviour
 	public S_O_CameraStats	CameraStats;
 
 	[Header("Key Objects")]
+	[Header("UI")]
+	public S_Spawn_UI             UISpawner;
+
 	[Header ("Colliders")]
 	public GameObject		CharacterCapsule;
 	public GameObject		CrouchCapsule;
@@ -43,7 +46,6 @@ public class S_CharacterTools : MonoBehaviour
 
 	[Header("Prefabs")]
 	public GameObject	MovingRingObject;
-	public GameObject	BoostUI;
 
 	[Header("Location References")]
 	public Transform	HandGripPoint;
@@ -56,7 +58,6 @@ public class S_CharacterTools : MonoBehaviour
 	public S_Control_EffectsPlayer	EffectsControl;
 
 	[Header("Particles")]
-	public Image		FadeOutImage;
 	public ParticleSystem	DropEffect;
 	public GameObject		JumpDashParticle;
 

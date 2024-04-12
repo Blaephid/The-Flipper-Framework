@@ -15,8 +15,9 @@ public class S_ActionManager : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Properties
-	private S_PlayerPhysics	_PlayerPhys;
-	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics		_PlayerPhys;
+	private S_CharacterTools		_Tools;
+	private S_Handler_HealthAndHurt	_HealthAndHurt;
 
 	//Action Scrips, These ones are required, any others will be handled through the interface list.
 	[Header("Actions")]
@@ -96,6 +97,7 @@ public class S_ActionManager : MonoBehaviour
 		_ActionDefault =	GetComponentInChildren<S_Action00_Default>();
 		_ActionHurt =	GetComponentInChildren<S_Action04_Hurt>();
 		_PlayerPhys =	GetComponent<S_PlayerPhysics>();
+		_HealthAndHurt =	GetComponent<S_Handler_HealthAndHurt>();
 
 		//Go through each struct and assign/add the scripts linked to that enum.
 		for (int i = 0 ; i < _MainActions.Count ; i++)
@@ -180,7 +182,7 @@ public class S_ActionManager : MonoBehaviour
 
 	//Called by action scripts to go through all of the actions they can possibly transition to. Each primary action should call this on Update
 	public void HandleInputs ( int currentActionInList ) {
-		if (isPaused) { return; } //Can only change state if game isn't paused.
+		if (isPaused || _HealthAndHurt._isDead) { return; } //Can only change state if game isn't paused.
 
 		bool performAction; //This will be set to true if an action attempt succeeds, stopping the checks after one does so.
 

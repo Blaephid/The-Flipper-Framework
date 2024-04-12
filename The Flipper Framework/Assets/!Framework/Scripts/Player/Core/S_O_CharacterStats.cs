@@ -473,7 +473,7 @@ public class S_O_CharacterStats : ScriptableObject
 	//-------------------------------------------------------------------------------------------------
 
 	public StrucJumps JumpStats = SetStrucJumps();
-	[HideInInspector] public StrucJumps StartJumpStats = SetStrucJumps();
+	[HideInInspector] public StrucJumps StarJumpStats = SetStrucJumps();
 
 	static StrucJumps SetStrucJumps () {
 		return new StrucJumps
@@ -484,6 +484,14 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(0.25f, 0.15f),
 				new Keyframe(1f, 0.2f),
 				new Keyframe(1.5f, 0.25f),
+			}),
+			JumpForceByTime = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0,2f),
+				new Keyframe(0.2f, 1),
+				new Keyframe(0.4f, 1),
+				new Keyframe(0.8f, 0.7f),
+				new Keyframe(1, 0.5f),
 			}),
 			jumpSlopeConversion = 0.03f,
 			jumpDuration = new Vector2(0.15f, 0.25f),
@@ -503,6 +511,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    jumpSpeed;
 		[Tooltip("Core: When running up and jumping off a slope, the jump force becomes the current upwards speed, times this.")]
 		public float    jumpSlopeConversion;
+
+		public AnimationCurve JumpForceByTime;
 
 		[Header("Durations")]
 		[Tooltip("Surface: How long in seconds the jump will last. X is the minimum time (can end jump early by releasing the button after this). Y is the maximum (will always end after this).")]
@@ -787,7 +797,7 @@ public class S_O_CharacterStats : ScriptableObject
 	#region spin Charge
 	//-------------------------------------------------------------------------------------------------
 
-	public StrucSpinCharge SpinChargeStat = SetStrucSpinCharge();
+	public StrucSpinCharge SpinChargeStats = SetStrucSpinCharge();
 	public StrucSpinCharge StartSpinChargeStat = SetStrucSpinCharge();
 
 	static StrucSpinCharge SetStrucSpinCharge () {
@@ -803,6 +813,7 @@ public class S_O_CharacterStats : ScriptableObject
 			maximumSpeedPerformedAt = 200f,
 			maximumSlopePerformedAt = -0.5f,
 			releaseShakeAmmount = 1.5f,
+			cameraPauseEffect = new Vector2(3,40),
 			SpeedLossByTime = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0f, 0.1f),
@@ -866,6 +877,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public AnimationCurve         ForceGainByCurrentSpeed;
 		[Tooltip("Core: How much to rotate launch direction from velocity to facing direction, by the angle between.")]
 		public AnimationCurve         LerpRotationByAngle;
+		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
+		public Vector2 cameraPauseEffect;
 		[Header("Control")]
 		[Tooltip("Core: If true, movement calculations will be taken as if the player is in the rolling state. Will also enter the rolling state when launched..")]
 		public bool                   shouldSetRolling;
@@ -878,6 +891,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float                  maximumSpeedPerformedAt; //The max amount of speed you can be at to perform a Spin Dash
 		[Tooltip("Core: Can only start a spin charge if on a slope angle less steep than this. 1 = flat ground. 0 = horizontal wall.")]
 		public float                  maximumSlopePerformedAt; //The highest slope you can be on to Spin Dash
+
 	}
 	#endregion
 
@@ -890,7 +904,8 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucBounce SetStrucBounce () {
 		return new StrucBounce
 		{
-			dropSpeed = -100f,
+			startDropSpeed = -100f,
+			maxDropSpeed = -200f,
 			bounceHaltFactor = 0.7f,
 			bounceAirControl = new Vector2(1.4f, 1.1f),
 			horizontalSpeedDecay = new Vector2(0.1f, 0.001f),
@@ -901,6 +916,8 @@ public class S_O_CharacterStats : ScriptableObject
 
 			bounceCoolDown = 0.4f,
 			coolDownModiferBySpeed = 0.003f,
+
+			cameraPauseEffect = new Vector2(2, 30)
 		};
 	}
 
@@ -910,7 +927,9 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Header("Movement")]
 		[Tooltip("Surface: How fast to immediately fall when performing a bounce.")]
-		public float                  dropSpeed;
+		public float                  startDropSpeed;
+		[Tooltip("Surface: How fast to fall eventually when performing a bounce.")]
+		public float                  maxDropSpeed;
 		[Tooltip("Surface: Multiplied by horizontal speed at start to decrease speed during bounce.")]
 		public float                  bounceHaltFactor;
 		[Tooltip("Core: Speed before action is saved when started, but will decrease by this amount per frame. X = flat value. Y = percentage of current saved speed. Will decrease by the higher.")]
@@ -929,6 +948,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float                  bounceCoolDown;
 		[Tooltip("Core: Delay between bounces will be increase by this per unit of speed")]
 		public float                  coolDownModiferBySpeed;
+		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
+		public Vector2 cameraPauseEffect;
 	}
 	#endregion
 
@@ -953,7 +974,7 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucRingRoad
 	{
 		[Header ("Performing")]
-		[Tooltip("SurfaceL The minimum speed to dash along the road in.")]
+		[Tooltip("Surface: The minimum speed to dash along the road in.")]
 		public float                  dashSpeed;
 		[Tooltip("Surface: The minimum speed be set to after finishing the dash.")]
 		public float                  minimumEndingSpeed;
@@ -982,10 +1003,9 @@ public class S_O_CharacterStats : ScriptableObject
 			minimunCharge = 40f,
 			maximunCharge = 150f,
 			minimumHeightToPerform = 3,
+			cameraPauseEffect = new Vector2 (3,40),
 		};
 	}
-
-
 
 	[System.Serializable]
 	public struct StrucDropCharge
@@ -998,6 +1018,76 @@ public class S_O_CharacterStats : ScriptableObject
 		public float      maximunCharge;
 		[Tooltip("Core: Can only start the action if higher than this above the ground.")]
 		public float      minimumHeightToPerform;
+		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
+		public Vector2 cameraPauseEffect;
+	}
+	#endregion
+
+	#region Boost
+	//-------------------------------------------------------------------------------------------------
+
+	public StrucBoost BoostStats = SetStrucBoost();
+	public StrucBoost StartBoostStats = SetStrucBoost();
+
+	static StrucBoost SetStrucBoost () {
+		return new StrucBoost
+		{
+			startBoostSpeed = 70,
+			framesToReachBoostSpeed = 5,
+			boostSpeed = 150,
+			maxSpeedWhileBoosting = 180,
+			regainBoostSpeed = 8,
+			turnCharacterThreshold = 48,
+			boostTurnSpeed = 2,
+			faceTurnSpeed = 6,
+			speedLostOnEndBoost = 20,
+			framesToLoseSpeed = 30,
+			hasAirBoost = true,
+			boostFramesInAir = 40,
+			AngleOfAligningToEndBoost = 80,
+			gainEnergyFromRings = true,
+			gainEnergyOverTime = false,
+			energyGainPerRing = 4,
+			energyGainPerSecond = 10,
+			maxBoostEnergy = 100,
+			energyDrainedOnStart = 5,
+			energyDrainedPerSecond = 5,
+			cameraPauseEffect = new Vector2(2,40),
+		};
+	}
+
+	[System.Serializable]
+	public struct StrucBoost
+	{
+		[Header("Start Boost")]
+		public float       startBoostSpeed ;
+		public int         framesToReachBoostSpeed;
+		[Header("Boosting")]
+		public float       boostSpeed;
+		public float       maxSpeedWhileBoosting;
+		public float	regainBoostSpeed;
+		[Header("Turning")]
+		public float        turnCharacterThreshold;
+		public float        boostTurnSpeed;
+		public float        faceTurnSpeed;
+		[Header("End Boost")]
+		public float       speedLostOnEndBoost;
+		public int         framesToLoseSpeed;
+		[Header("Air Boost")]
+		public bool        hasAirBoost;
+		public float       boostFramesInAir;
+		public float       AngleOfAligningToEndBoost;
+		[Header("Energy")]
+		public bool        gainEnergyFromRings;
+		public bool        gainEnergyOverTime;
+		public float       energyGainPerSecond;
+		public float       energyGainPerRing;
+		public float	maxBoostEnergy;
+		public float       energyDrainedPerSecond;
+		public float       energyDrainedOnStart;
+		[Header("Effects")]
+		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
+		public Vector2 cameraPauseEffect;
 	}
 	#endregion
 
@@ -1433,6 +1523,7 @@ public class S_O_CharacterStatsEditor : Editor
 		EditorGUILayout.LabelField("Grounded Actions", headerStyle);
 		DrawSpinCharge();
 		DrawQuickstep();
+		DrawBoost();
 
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Situational Actions", headerStyle);
@@ -1624,7 +1715,7 @@ public class S_O_CharacterStatsEditor : Editor
 			Undo.RecordObject(stats, "set to Defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.JumpStats = stats.StartJumpStats;
+				stats.JumpStats = stats.StarJumpStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1667,12 +1758,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region SpinCharge
 		void DrawSpinCharge () {
 			EditorGUILayout.Space();
-			DrawProperty("SpinChargeStat", "Spin Charge");
+			DrawProperty("SpinChargeStats", "Spin Charge");
 
 			Undo.RecordObject(stats, "set to Defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.SpinChargeStat = stats.StartSpinChargeStat;
+				stats.SpinChargeStats = stats.StartSpinChargeStat;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1765,6 +1856,21 @@ public class S_O_CharacterStatsEditor : Editor
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
 				stats.JumpDashStats = stats.StartJumpDashStats;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
+		#endregion
+
+		//Boost
+		#region Boost
+		void DrawBoost () {
+			EditorGUILayout.Space();
+			DrawProperty("BoostStats", "Boost Stats");
+
+			if (GUILayout.Button("Default", ResetToDefaultButton))
+			{
+				stats.BoostStats = stats.StartBoostStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

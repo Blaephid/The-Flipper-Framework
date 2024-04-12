@@ -3,28 +3,28 @@ using System.Collections;
 
 public enum MonitorType
 {
-    Ring, Shield
+	Ring, Shield
 }
 
-public class S_Data_Monitor : MonoBehaviour {
+public class S_Data_Monitor : MonoBehaviour
+{
 
-    public MonitorType Type;
-    public GameObject Bubble;
-    public Texture MonitorFace;
-    public int RingAmount;
-    
+	public MonitorType Type;
+	public GameObject Bubble;
+	public Texture MonitorFace;
+	public int RingAmount;
 
-    public GameObject MonitorExplosion;
 
-    public void DestroyMonitor()
-    {
-        if (Bubble != null)
-        {
-            Destroy(Bubble);
-        }
+	public GameObject MonitorExplosion;
 
-        GameObject.Instantiate(MonitorExplosion, transform.position, Quaternion.identity);
-        Destroy(gameObject);
-    }
+	public void DestroyMonitor () {
+		if (Bubble != null)
+		{
+			Destroy(Bubble);
+		}
+
+		GameObject.Instantiate(MonitorExplosion, transform.position, Quaternion.identity);
+		Destroy(gameObject);
+	}
 
 }

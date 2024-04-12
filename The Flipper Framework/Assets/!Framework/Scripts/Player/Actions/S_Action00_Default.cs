@@ -165,7 +165,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 
 	//Points the player visuals (model, effects, etc) in the direction of movement or a custom direction. Can also apply an offset which will only rotate character models, leaving effects and other children where they are.
-	public void SetSkinRotationToVelocity ( float rotateSpeed, Vector3 direction = default(Vector3), Vector3 offset = default(Vector3) ) {
+	public void SetSkinRotationToVelocity ( float rotateSpeed, Vector3 direction = default(Vector3), Vector2 offset = default(Vector2) ) {
 
 		//If no direction was passed, use moving direction.
 		if (direction == default(Vector3))
@@ -190,19 +190,15 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 				_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, charRot, Time.deltaTime * rotateSpeed * 0.75f);
 			}
 
-			//Apply a local rotation to the offset object, based on input offset.
-			if (offset != default(Vector3))
-			{
-				Vector3 offSetForward = _SkinOffset.InverseTransformDirection(offset);
-				charRot = Quaternion.LookRotation(offSetForward, _MainSkin.up);
 
-				_SkinOffset.localRotation = Quaternion.Lerp(_SkinOffset.localRotation, charRot, Time.deltaTime * rotateSpeed * 0.5f);
-			}
-			//If not applying an offset but there is one, then rotate to undo it.
-			else if(_SkinOffset.forward != _MainSkin.forward)
-			{
-				_SkinOffset.localRotation = Quaternion.Lerp(_SkinOffset.localRotation, Quaternion.identity, Time.deltaTime * rotateSpeed * 0.5f);
-			}
+			if (offset == default(Vector2)) { offset = Vector2.zero; } //If no offset is input, should lerp to remove offset.
+
+			//Apply a local rotation to the offset object, based on input offset.
+			float xEuler = Mathf.Lerp(_SkinOffset.localEulerAngles.x + 360, offset.y + 360, Time.deltaTime * rotateSpeed * 0.5f) - 360;
+			float yEuler = _SkinOffset.localEulerAngles.y > 180 ? _SkinOffset.localEulerAngles.y - 360 : _SkinOffset.localEulerAngles.y; //Because euler angles update automaitcally to different numbers, ensure is within the range of -180 -> 180.
+			yEuler = Mathf.Lerp(yEuler, offset.x , Time.deltaTime * rotateSpeed * 0.5f);
+
+			_SkinOffset.localEulerAngles = new Vector3(xEuler, yEuler, 0); //Lerp angles seperately, then apply, this ensures it will only change on these angles, not rotate through z.
 		}
 	}
 

@@ -195,9 +195,9 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	//Called externally once per frame to check if the input is different to last frame despite the actual controller input not being changed.
-	public bool IsTurningBecauseOfCamera (Vector3 inputDirection) {
+	public bool IsTurningBecauseOfCamera (Vector3 inputDirection, float threshold = 1) {
 		bool isCamera = false;
-		if (Vector3.Angle(_inputCheckedLastFrame, inputDirection) > 1)                      //If move input is noticeably different to how it was last frame.
+		if (Vector3.Angle(_inputCheckedLastFrame, inputDirection) > threshold)                      //If move input is noticeably different to how it was last frame.
 		{
 			if (_prevInputWithoutCamera == _inputWithoutCamera) //But if controlled input has not changed, this means the input is only changed because of the camera.
 			{

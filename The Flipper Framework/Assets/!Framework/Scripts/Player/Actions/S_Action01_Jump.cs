@@ -26,11 +26,13 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	//Main jump
-	private float       _maxJumpTime_;
-	private float       _minJumpTime_;
-	private float       _startSlopedJumpDuration_;
-	private float       _startJumpSpeed_;
-	private float       _jumpSlopeConversion_;
+	private float		_maxJumpTime_;
+	private float		_minJumpTime_;
+	private float		_startSlopedJumpDuration_;
+
+	private float		_startJumpSpeed_;
+	private AnimationCurve	_JumpForceByTime_;
+	private float		_jumpSlopeConversion_;
 
 	//Additional jumps
 	private int         _maxJumps_;
@@ -260,8 +262,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private void JumpInAir () {
 
 		//Take some horizontal speed on jump and remove vertical speed to ensure jump is an upwards force.
-		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._RB.velocity.y, 0), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
-		_PlayerPhys.SetCoreVelocity(newVel, false, false);
+		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._RB.velocity.y, 2), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
+		_PlayerPhys.SetCoreVelocity(newVel, true, false);
 
 		//Add particle effect during jump
 		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
@@ -289,16 +291,17 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//If there are no interuptions, apply jump force.
 		else if (_isJumping)
 		{
+			float modifierThisFrame = _JumpForceByTime_.Evaluate(_counter / _thisMaxDuration ); //Get a modifier to adjust jump force this frame based on how long has been jumping for out of maximum time.
 			//Jump move at angle
 			if (_counter < _slopedJumpDuration && _jumpSlopeSpeed > 0)
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f), false);
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f), false); //Extra speed to ballance out direction
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f * modifierThisFrame), false);
+				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f * modifierThisFrame), false); //Extra speed to ballance out direction
 			}
 			//Move straight up in world.
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed), false);
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed) * modifierThisFrame, false);
 			}
 		}
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.
@@ -382,6 +385,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_startJumpSpeed_ = _Tools.Stats.JumpStats.jumpSpeed;
 		_startSlopedJumpDuration_ = _Tools.Stats.JumpStats.startSlopedJumpDuration;
 		_jumpSlopeConversion_ = _Tools.Stats.JumpStats.jumpSlopeConversion;
+
+		_JumpForceByTime_ = _Tools.Stats.JumpStats.JumpForceByTime;
 
 		_maxJumps_ = _Tools.Stats.MultipleJumpStats.maxJumpCount;
 		_doubleJumpDuration_ = _Tools.Stats.MultipleJumpStats.doubleJumpDuration;

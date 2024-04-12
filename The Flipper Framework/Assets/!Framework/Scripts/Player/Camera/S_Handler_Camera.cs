@@ -17,7 +17,7 @@ public class S_Handler_Camera : MonoBehaviour
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_initialDistance = _Tools.CameraStats.DistanceStats.CameraMaxDistance;
+		_initialDistance = _Tools.CameraStats.DistanceStats.CameraDistance;
 	}
 
 	//Called when entering a trigger in the physics script (must be assigned in Unity editor)
@@ -31,7 +31,7 @@ public class S_Handler_Camera : MonoBehaviour
 				{
 					//Rotates the camera in direction and prevents controlled rotation.
 					case TriggerType.LockToDirection:
-						setHedgeCamera(cameraData, col.transform.forward);
+						SetHedgeCamera(cameraData, col.transform.forward);
 						LockCamera(true);
 						changeDistance(cameraData);
 						break;
@@ -46,13 +46,13 @@ public class S_Handler_Camera : MonoBehaviour
 						//Nothing changes in control, but distance and height may change.
 					case TriggerType.justEffect:
 						changeDistance(cameraData);
-						if (cameraData.changeAltitude)
-							_HedgeCam.SetCameraHeightOnly(cameraData.CameraAltitude, cameraData.FaceSpeed, cameraData.duration);
+						if (cameraData.willChangeAltitude)
+							_HedgeCam.SetCameraHeightOnly(cameraData.newAltitude, cameraData.faceSpeed, cameraData.duration);
 						break;
 
 					//Allow controlled rotation but manually rotate in direction.
 					case TriggerType.SetFreeAndLookTowards:
-						setHedgeCamera(cameraData, col.transform.forward);
+						SetHedgeCamera(cameraData, col.transform.forward);
 						changeDistance(cameraData);
 						LockCamera(false);
 						break;
@@ -60,7 +60,7 @@ public class S_Handler_Camera : MonoBehaviour
 					//Make camera face behind player.
 					case TriggerType.Reverse:				
 						_HedgeCam._isReversed = true;
-						setHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
+						SetHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
 						changeDistance(cameraData);
 						LockCamera(false);
 						break;
@@ -68,7 +68,7 @@ public class S_Handler_Camera : MonoBehaviour
 						//Make camera face behind player and disable rotation.
 					case TriggerType.ReverseAndLockControl:
 						_HedgeCam._isReversed = true;
-						setHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
+						SetHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
 						changeDistance(cameraData);
 						LockCamera(true) ;
 						break;
@@ -82,13 +82,13 @@ public class S_Handler_Camera : MonoBehaviour
 
 	//Makes it so the camera will be further out from the player.
 	void changeDistance(S_Trigger_Camera cameraData) {
-		if (!cameraData.changeDistance)
+		if (!cameraData.willChangeDistance)
 		{
 			_HedgeCam._cameraMaxDistance_ = _initialDistance;
 		}
 		else
 		{
-			_HedgeCam._cameraMaxDistance_ = cameraData.ChangeDistance;
+			_HedgeCam._cameraMaxDistance_ = cameraData.newDistance;
 		}
 	}
 
@@ -100,13 +100,13 @@ public class S_Handler_Camera : MonoBehaviour
 	}
 
 	//Calls the hedgecam to rotate towards or change height.
-	void setHedgeCamera(S_Trigger_Camera cameraData, Vector3 dir) {
+	void SetHedgeCamera(S_Trigger_Camera cameraData, Vector3 dir) {
 		Quaternion targetRotation = Quaternion.LookRotation(cameraData.transform.forward, cameraData.transform.up);
 
-		if (cameraData.changeAltitude)
-			_HedgeCam.SetCameraToDirection(dir, 2.5f, cameraData.CameraAltitude, cameraData.FaceSpeed, targetRotation, cameraData.shouldRotateCameraUpToThis);
+		if (cameraData.willChangeAltitude)
+			_HedgeCam.SetCameraToDirection(dir, cameraData.duration, cameraData.newAltitude, cameraData.faceSpeed, targetRotation, cameraData.willRotateCameraUpToThis);
 		else
-			_HedgeCam.SetCameraNoHeight(dir, 2.5f, cameraData.FaceSpeed, targetRotation, cameraData.shouldRotateCameraUpToThis);
+			_HedgeCam.SetCameraNoHeight(dir, cameraData.duration, cameraData.faceSpeed, targetRotation, cameraData.willRotateCameraUpToThis, cameraData.willRotateVertically);
 	}
 
 	public void EventTriggerExit ( Collider col ) {

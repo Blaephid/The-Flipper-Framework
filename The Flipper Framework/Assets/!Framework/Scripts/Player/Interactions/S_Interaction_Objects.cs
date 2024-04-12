@@ -42,11 +42,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	
 	public bool updateTargets { get; set; }
 
-	[Header("UI objects")]
-
-	public TextMeshProUGUI RingsCounter;
-	public TextMeshProUGUI SpeedCounter;
-	public S_HintBox HintBox;
+	private S_Spawn_UI.StrucCoreUIElements _CoreUIElements;
 
 	[HideInInspector] public float DisplaySpeed;
 
@@ -63,11 +59,15 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	}
 
+	private void Start () {
+		_CoreUIElements = _Tools.UISpawner._BaseUIElements;
+	}
+
 	//Displays rings and speed on UI
 	private void LateUpdate () {
 		UpdateSpeed();
 
-		RingsCounter.text = ": " + (int)_HurtAndHealth._ringAmount;
+		_CoreUIElements.RingsCounter.text = ": " + (int)_HurtAndHealth._ringAmount;
 	}
 
 	void UpdateSpeed () {
@@ -85,8 +85,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				break;
 		}
 
-		if (SpeedCounter != null && _PlayerPhys._speedMagnitude > 10f) SpeedCounter.text = DisplaySpeed.ToString("F0");
-		else if (SpeedCounter != null && DisplaySpeed < 10f) SpeedCounter.text = "0";
+		if (_CoreUIElements.SpeedCounter != null && _PlayerPhys._speedMagnitude > 10f) _CoreUIElements.SpeedCounter.text = DisplaySpeed.ToString("F0");
+		else if (_CoreUIElements.SpeedCounter != null && DisplaySpeed < 10f) _CoreUIElements.SpeedCounter.text = "0";
 	}
 
 	void Update () {
@@ -305,16 +305,16 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "HintRing":
 				S_Data_HintRing hintRing = col.GetComponent<S_Data_HintRing>();
 
-				if (col.gameObject != HintBox.currentHint)
+				if (col.gameObject != _CoreUIElements.HintBox.currentHint)
 				{
-					HintBox.currentHint = col.gameObject;
+					_CoreUIElements.HintBox.currentHint = col.gameObject;
 					hintRing.hintSound.Play();
 
 
 					if (_Input.usingMouse)
 					{
 						Debug.Log("SHOWHINT with = " + hintRing.hintText[0]);
-						HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
+						_CoreUIElements.HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
 					}
 
 					else
@@ -325,25 +325,25 @@ public class S_Interaction_Objects : MonoBehaviour
 						switch (input)
 						{
 							case (null):
-								HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
+								_CoreUIElements.HintBox.ShowHint(hintRing.hintText, hintRing.hintDuration, col.gameObject);
 								break;
 							case (SwitchProControllerHID):
-								HintBox.ShowHint(hintRing.hintTextGamePad, hintRing.hintDuration, col.gameObject);
+								_CoreUIElements.HintBox.ShowHint(hintRing.hintTextGamePad, hintRing.hintDuration, col.gameObject);
 								break;
 							case (DualSenseGamepadHID):
-								HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
+								_CoreUIElements.HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
 								break;
 							case (DualShock3GamepadHID):
-								HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
+								_CoreUIElements.HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
 								break;
 							case (DualShock4GamepadHID):
-								HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
+								_CoreUIElements.HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
 								break;
 							case (DualShockGamepad):
-								HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
+								_CoreUIElements.HintBox.ShowHint(hintRing.hintTextPS4, hintRing.hintDuration, col.gameObject);
 								break;
 							case (XInputController):
-								HintBox.ShowHint(hintRing.hintTextXbox, hintRing.hintDuration, col.gameObject);
+								_CoreUIElements.HintBox.ShowHint(hintRing.hintTextXbox, hintRing.hintDuration, col.gameObject);
 								break;
 
 						}

@@ -51,6 +51,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private AnimationCurve        _turnAmountByAngle_;
 	private AnimationCurve	_gainBySpeed_;
 	private float                 _releaseShakeAmmount_;
+	private Vector2               _cameraPauseEffect_ = new Vector2(3, 40);
 	private S_Enums.SpinChargeAiming _whatControl_;
 	private float                 _tappingBonus_;
 	private int                   _delayBeforeLaunch_;
@@ -227,10 +228,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	//Launches player forwards at speed.
 	private void Release () {
-		//Effects
-		_Effects.EndSpinDash();
-		_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount_ * _currentCharge) / 10, 40);
-		_Actions._ActionDefault.SwitchSkin(true);
+
+		float newSpeed = 0;
 
 		//Only launches forwards if charged long enough.
 		if (_currentCharge < _minimunCharge_)
@@ -245,32 +244,39 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 			//New speed to gain is determined by charge but affected by -
 			Vector3 addForce = _PlayerSkinTransform.forward;
-			float speed = _currentCharge;
+			newSpeed = _currentCharge;
 
 			//The angle between movement direction and this new force (typically higher with bigger angles)
 			float dif = Vector3.Dot(addForce.normalized, _PlayerPhys._RB.velocity.normalized);
 			if (_PlayerPhys._horizontalSpeedMagnitude > 20)
-				speed *= _forceGainByAngle_.Evaluate(dif);
+				newSpeed *= _forceGainByAngle_.Evaluate(dif);
 
 			//And the current speed (typically lower when at higher speed)
-			speed *= _gainBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
-			addForce *= speed; //Adds speed to direction to get the force
+			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
+			addForce *= newSpeed; //Adds speed to direction to get the force
 
 			_PlayerPhys.AddCoreVelocity(addForce, false);
 
 			//Adding velocity is more natural/realistic, but for accuracy in aiming, there is also a rotation towards the new direction.
-			Vector3 newSpeed = _PlayerPhys._RB.velocity;
-			newSpeed.Normalize();
-			dif = Vector3.Angle(_MainSkin.forward, newSpeed);
+			Vector3 newDir = _PlayerPhys._RB.velocity;
+			newDir.Normalize();
+			dif = Vector3.Angle(_MainSkin.forward, newDir);
 			dif *= _turnAmountByAngle_.Evaluate(dif);
 
-			newSpeed = Vector3.RotateTowards(newSpeed, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
-			_PlayerPhys.SetCoreVelocity(newSpeed * _PlayerPhys._horizontalSpeedMagnitude, false);
+			newDir = Vector3.RotateTowards(newDir, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
+			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._horizontalSpeedMagnitude, false);
 
-			_CharacterAnimator.SetFloat("GroundSpeed", speed);
+			_CharacterAnimator.SetFloat("GroundSpeed", newSpeed);
 
 			_Actions._ActionDefault.StartAction();
 		}
+
+		//Effects
+		_Effects.EndSpinDash();
+		_Actions._ActionDefault.SwitchSkin(true);
+
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(Mathf.Max(_releaseShakeAmmount_ * _currentCharge, 5) / 10, 8));
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerPhys._horizontalSpeedMagnitude, newSpeed), 0.25f)); //The camera will fall back before catching up.
 
 	}
 
@@ -379,21 +385,23 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 
 	private void AssignStats () {
-		_spinDashChargingSpeed_ = _Tools.Stats.SpinChargeStat.chargingSpeed;
-		_minimunCharge_ = _Tools.Stats.SpinChargeStat.minimunCharge;
-		_maximunCharge_ = _Tools.Stats.SpinChargeStat.maximunCharge;
-		_spinDashStillForce_ = _Tools.Stats.SpinChargeStat.forceAgainstMovement;
-		_speedLossByTime_ = _Tools.Stats.SpinChargeStat.SpeedLossByTime;
-		_forceGainByAngle_ = _Tools.Stats.SpinChargeStat.ForceGainByAngle;
-		_turnAmountByAngle_ = _Tools.Stats.SpinChargeStat.LerpRotationByAngle;
-		_gainBySpeed_ = _Tools.Stats.SpinChargeStat.ForceGainByCurrentSpeed;
-		_releaseShakeAmmount_ = _Tools.Stats.SpinChargeStat.releaseShakeAmmount;
-		_MaximumSlopeForSpinDash_ = _Tools.Stats.SpinChargeStat.maximumSlopePerformedAt;
-		_MaximumSpeedForSpinDash_ = _Tools.Stats.SpinChargeStat.maximumSpeedPerformedAt;
-		_whatControl_ = _Tools.Stats.SpinChargeStat.whatAimMethod;
-		_tappingBonus_ = _Tools.Stats.SpinChargeStat.tappingBonus;
-		_delayBeforeLaunch_ = _Tools.Stats.SpinChargeStat.delayBeforeLaunch;
-		_shouldSetRolling_ = _Tools.Stats.SpinChargeStat.shouldSetRolling;
+		_spinDashChargingSpeed_ =	_Tools.Stats.SpinChargeStats.chargingSpeed;
+		_minimunCharge_ =		_Tools.Stats.SpinChargeStats.minimunCharge;
+		_maximunCharge_ =		_Tools.Stats.SpinChargeStats.maximunCharge;
+		_spinDashStillForce_ =	_Tools.Stats.SpinChargeStats.forceAgainstMovement;
+		_speedLossByTime_ =		_Tools.Stats.SpinChargeStats.SpeedLossByTime;
+		_forceGainByAngle_ =	_Tools.Stats.SpinChargeStats.ForceGainByAngle;
+		_turnAmountByAngle_ =	_Tools.Stats.SpinChargeStats.LerpRotationByAngle;
+		_gainBySpeed_ =		_Tools.Stats.SpinChargeStats.ForceGainByCurrentSpeed;
+		_releaseShakeAmmount_ =	_Tools.Stats.SpinChargeStats.releaseShakeAmmount;
+		_MaximumSlopeForSpinDash_ =	_Tools.Stats.SpinChargeStats.maximumSlopePerformedAt;
+		_MaximumSpeedForSpinDash_ =	_Tools.Stats.SpinChargeStats.maximumSpeedPerformedAt;
+		_whatControl_ =		_Tools.Stats.SpinChargeStats.whatAimMethod;
+		_tappingBonus_ =		_Tools.Stats.SpinChargeStats.tappingBonus;
+		_delayBeforeLaunch_ =	_Tools.Stats.SpinChargeStats.delayBeforeLaunch;
+		_shouldSetRolling_ =	_Tools.Stats.SpinChargeStats.shouldSetRolling;
+
+		_cameraPauseEffect_ =	_Tools.Stats.SpinChargeStats.cameraPauseEffect;
 	}
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
@@ -409,9 +417,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 		_PlayerSkinTransform = _Tools.CharacterModelOffset;
 		_LowerCapsule = _Tools.CrouchCapsule;
-		_CharacterCapsule = _Tools.CharacterCapsule;
+		_CharacterCapsule = _Tools.CharacterCapsule;	
 	}
-
 	#endregion
 
 }

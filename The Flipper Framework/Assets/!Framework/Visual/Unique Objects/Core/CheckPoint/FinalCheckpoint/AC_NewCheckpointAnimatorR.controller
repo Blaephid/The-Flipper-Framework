@@ -6,7 +6,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AC_NewCheckpointAnimatorL
+  m_Name: AC_NewCheckpointAnimatorR
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Open
@@ -74,7 +74,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -1158726129008117130, guid: 42a82295d1429e04d8e88ae1b6d4f19f,
+  m_Motion: {fileID: -3309059882529947057, guid: 250d795e5f1999b42bc73af2b66c28d4,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -101,7 +101,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -623603649343465320, guid: 42a82295d1429e04d8e88ae1b6d4f19f,
+  m_Motion: {fileID: 2282931271793402414, guid: 250d795e5f1999b42bc73af2b66c28d4,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 

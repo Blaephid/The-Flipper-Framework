@@ -8087,8 +8087,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 0
-  Des: 0
+  _whatAction: 2
+  _delayInSeconds: 0
 --- !u!23 &365879787
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -13257,8 +13257,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 0
-  Des: 0
+  _whatAction: 2
+  _delayInSeconds: 0
 --- !u!23 &597680794
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -14041,7 +14041,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4804175425643756, guid: 82ff4dda02d893a4ca86793a0c4f0f1f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 5.4795003
       objectReference: {fileID: 0}
     - target: {fileID: 4804175425643756, guid: 82ff4dda02d893a4ca86793a0c4f0f1f, type: 3}
       propertyPath: m_LocalScale.z
@@ -14049,11 +14049,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4804175425643756, guid: 82ff4dda02d893a4ca86793a0c4f0f1f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 24.4
+      value: 24.05
       objectReference: {fileID: 0}
     - target: {fileID: 4804175425643756, guid: 82ff4dda02d893a4ca86793a0c4f0f1f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.1399999
+      value: -2.71
       objectReference: {fileID: 0}
     - target: {fileID: 4804175425643756, guid: 82ff4dda02d893a4ca86793a0c4f0f1f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -19236,7 +19236,6 @@ Transform:
   - {fileID: 1028038930}
   - {fileID: 66279811}
   - {fileID: 536022841}
-  - {fileID: 1073962699}
   m_Father: {fileID: 570514848}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -23608,8 +23607,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 0
-  Des: 1
+  _whatAction: 2
+  _delayInSeconds: 0
 --- !u!114 &1018664527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25096,12 +25095,6 @@ Transform:
   m_Father: {fileID: 1028038930}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &1073962699 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3c6ad998a941dc24cbeed232ca630254,
-    type: 3}
-  m_PrefabInstance: {fileID: 1330533491}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1075633079
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30191,8 +30184,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 0
-  Des: 0
+  _whatAction: 2
+  _delayInSeconds: 0
 --- !u!23 &1289949149
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -31033,88 +31026,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 678598776}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1330533491
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 830219747}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 3c6ad998a941dc24cbeed232ca630254,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_Name
-      value: BlockLoop_NoWall
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_RootOrder
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 16
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalScale.z
-      value: -15.089201
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -306.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 220.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1009.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2300000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 051b24ff1a1d5cf4cac68aa186627619, type: 2}
-    - target: {fileID: 2300000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
-      propertyPath: m_Materials.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: 6d711d4eb539a704c85e1d4fbf17a5bf, type: 2}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 3c6ad998a941dc24cbeed232ca630254, type: 3}
 --- !u!4 &1332571691 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000011037360016, guid: daed3bd981f4b21449eb3b94cb88cd1c,
@@ -51207,8 +51118,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 0
-  Des: 0
+  _whatAction: 2
+  _delayInSeconds: 0
 --- !u!23 &2120428915
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -52272,11 +52183,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
   isBooster: 0
   speed: 0
   setRailSpeed: 0
@@ -52319,11 +52237,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
   isBooster: 0
   speed: 0
   setRailSpeed: 0
@@ -52414,11 +52339,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
   isBooster: 0
   speed: 0
   setRailSpeed: 0
@@ -52461,11 +52393,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
   isBooster: 0
   speed: 0
   setRailSpeed: 0
@@ -52521,11 +52460,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
   isBooster: 0
   speed: 0
   setRailSpeed: 0
@@ -52581,11 +52527,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
+  whatToSpawn: 0
+  _GeneralSpawner:
+    _TeleportSparkle: {fileID: 0}
+    _ObjectToSpawn: {fileID: 0}
+    _willRespawnOnDeath: 0
+    _distanceFromPlayerToSpawn: 0
+    _willAutoSpawn: 0
+    _willRespawnWhenDestroyed: 0
+    _respawnDelay: 0
+  _RingSpawner:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
   isBooster: 0
   speed: 0
   setRailSpeed: 0
