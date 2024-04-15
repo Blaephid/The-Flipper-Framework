@@ -508,7 +508,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
 		if (_listOfCanControl.Count != 0) 
 		{ 
-			_externalRunningSpeed = 0;  
+			_externalRunningSpeed = -1;  
 			return _coreVelocity; 
 		}
 
@@ -627,7 +627,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Handles decreasing the magnitude of the player's controlled velocity, usually only if there is no input, but other circumstances may decrease speed as well.
 	//Deceleration is calculated, then applied at the end of the method.
 	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier = 1 ) {
-		if(_listOfCanDecelerates.Count != 0) { 
+		if(_listOfCanDecelerates.Count > 0) { 
 			return lateralVelocity; }
 
 		float decelAmount = 0;

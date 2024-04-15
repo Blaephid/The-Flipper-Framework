@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4000013650343686}
   - component: {fileID: 33000013330213386}
   - component: {fileID: 23000012139479684}
-  - component: {fileID: 114000012770380332}
   - component: {fileID: -3845985876537958363}
+  - component: {fileID: 3285143780681963358}
   m_Layer: 6
   m_Name: Pr_EnemySpawner
   m_TagString: Untagged
@@ -86,7 +86,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &114000012770380332
+--- !u!114 &-3845985876537958363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013103318408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _whatAction: 0
+  _delayInSeconds: 0
+--- !u!114 &3285143780681963358
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -110,17 +124,3 @@ MonoBehaviour:
     _respawnDelay: 0
   _ObjectClone: {fileID: 0}
   _counter: 0
---- !u!114 &-3845985876537958363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013103318408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _whatAction: 2
-  _delayInSeconds: 0

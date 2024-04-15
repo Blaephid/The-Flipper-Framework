@@ -97,6 +97,7 @@ public class S_Enums
 		Normal,
 		ResetSpeed,
 		Frontiers,
-		FrontiersWithoutDeathDelay
+		FrontiersSansDeathDelay,
+		NormalSansDeathDelay,
 	}
 }

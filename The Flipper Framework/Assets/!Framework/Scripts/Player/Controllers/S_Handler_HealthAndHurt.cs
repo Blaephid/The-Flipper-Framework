@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 public class S_Handler_HealthAndHurt : MonoBehaviour
 {
@@ -263,6 +264,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//A coroutine that updates independantly even when the player object is disabled. This handles the different events that happen when dead until respawning.
 	private IEnumerator TrackDeath () {
+		_PlayerPhys._listOfCanControl.Add(false); //Does not have to be undone because on respawn, this will be cleared.
 
 		while (_isDead)
 		{
@@ -428,10 +430,18 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			{
 				//Damaged immediately but won't be knocked back or have velocity greatly changed.
 				case S_Enums.HurtResponse.Normal:
-					CheckHealth();
-					_HurtAction._knockbackDirection = Vector3.zero;
-					_HurtAction._wasHit = true;
-					_HurtAction.StartAction();
+					NormalResponse();
+					break;
+					//If not killed, respond as above, if killed, die immediately, with knockback.
+				case S_Enums.HurtResponse.NormalSansDeathDelay:
+					if (_ringAmount <= 0 && !_hasShield)
+					{
+						DieWithoutDelay();
+					}
+					else
+					{
+						NormalResponse();
+					}
 					break;
 				//Damaged immediately and will enter a seperate knockback state.
 				case S_Enums.HurtResponse.ResetSpeed:
@@ -447,24 +457,34 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
-				//Same as frontiers response, but if should die, will do so immediately.
-				case S_Enums.HurtResponse.FrontiersWithoutDeathDelay:
-					_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
+				//Same as frontiers response, but if should die, will do so immediately, rather than wait to hit ground.
+				case S_Enums.HurtResponse.FrontiersSansDeathDelay:
 					_HurtAction._wasHit = true;
 					if (_ringAmount > 0 || _hasShield)
 					{
+						_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 						_inHurtStateBeforeDamage = true;
 						_HurtAction.StartAction();
 					}
 					else
 					{
-						_HurtAction._knockbackDirection.y = -0.5f;
-						Die();
+						DieWithoutDelay();
 					}
 					break;
 			}
+		}
 
+		void NormalResponse () {
+			CheckHealth();
+			_HurtAction._knockbackDirection = Vector3.zero;
+			_HurtAction._wasHit = true;
+			_HurtAction.StartAction();
+		}
 
+		void DieWithoutDelay () {
+			_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
+			_HurtAction._knockbackDirection.y = -0.5f;
+			Die();
 		}
 	}
 

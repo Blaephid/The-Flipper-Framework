@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4902981855221343234}
-  - component: {fileID: 8137808373398084909}
+  - component: {fileID: 5964198311337560815}
   m_Layer: 23
   m_Name: RailCollider
   m_TagString: Rail
@@ -64,8 +64,8 @@ Transform:
   m_Father: {fileID: 839480660917174405}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
---- !u!136 &8137808373398084909
-CapsuleCollider:
+--- !u!65 &5964198311337560815
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -74,7 +74,6 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 4
-  m_Height: 15
-  m_Direction: 1
+  serializedVersion: 2
+  m_Size: {x: 4.5, y: 15, z: 4.5}
   m_Center: {x: 0, y: 0, z: 0}

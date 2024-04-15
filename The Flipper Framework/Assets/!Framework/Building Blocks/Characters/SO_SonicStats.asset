@@ -1568,14 +1568,14 @@ MonoBehaviour:
     minimumSpeed: 60
     deceleration: 55
     acceleration: 70
-  SpinChargeStat:
+  SpinChargeStats:
     whatAimMethod: 0
     chargingSpeed: 1.05
     tappingBonus: 2.1
     delayBeforeLaunch: 12
     minimunCharge: 20
     maximunCharge: 120
-    releaseShakeAmmount: 1.5
+    releaseShakeAmmount: {x: 4, y: 0.15, z: 18, w: 14}
     ForceGainByAngle:
       serializedVersion: 2
       m_Curve:
@@ -1774,6 +1774,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    cameraPauseEffect: {x: 3, y: 40}
     shouldSetRolling: 1
     forceAgainstMovement: 1.2
     SpeedLossByTime:
@@ -1818,7 +1819,7 @@ MonoBehaviour:
     delayBeforeLaunch: 12
     minimunCharge: 20
     maximunCharge: 120
-    releaseShakeAmmount: 1.5
+    releaseShakeAmmount: {x: 10, y: 0.2, z: 20, w: 10}
     ForceGainByAngle:
       serializedVersion: 2
       m_Curve:
@@ -2017,6 +2018,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    cameraPauseEffect: {x: 3, y: 40}
     shouldSetRolling: 1
     forceAgainstMovement: 1.2
     SpeedLossByTime:
@@ -2068,6 +2070,7 @@ MonoBehaviour:
     lerpTowardsInput: 0.5
     bounceCoolDown: 0.4
     coolDownModiferBySpeed: 0.003
+    cameraPauseEffect: {x: 2, y: 30}
   StartBounceStats:
     startDropSpeed: -100
     maxDropSpeed: 0
@@ -2082,10 +2085,11 @@ MonoBehaviour:
     lerpTowardsInput: 0.5
     bounceCoolDown: 0.4
     coolDownModiferBySpeed: 0.003
+    cameraPauseEffect: {x: 2, y: 30}
   RingRoadStats:
     dashSpeed: 160
     minimumEndingSpeed: 80
-    speedGained: 1.35
+    speedGained: 1.25
     willCarrySpeed: 1
     searchDistance: 12
     RingRoadLayer:
@@ -2105,11 +2109,59 @@ MonoBehaviour:
     minimunCharge: 40
     maximunCharge: 150
     minimumHeightToPerform: 3
+    cameraPauseEffect: {x: 3, y: 40}
   StartDropChargeStats:
     chargingSpeed: 1.2
     minimunCharge: 40
     maximunCharge: 150
     minimumHeightToPerform: 3
+    cameraPauseEffect: {x: 3, y: 40}
+  BoostStats:
+    startBoostSpeed: 70
+    framesToReachBoostSpeed: 5
+    boostSpeed: 150
+    maxSpeedWhileBoosting: 180
+    regainBoostSpeed: 3
+    turnCharacterThreshold: 48
+    boostTurnSpeed: 2
+    faceTurnSpeed: 6
+    speedLostOnEndBoost: 20
+    framesToLoseSpeed: 30
+    cooldown: 0.5
+    hasAirBoost: 1
+    boostFramesInAir: 40
+    AngleOfAligningToEndBoost: 80
+    gainEnergyFromRings: 1
+    gainEnergyOverTime: 0
+    energyGainPerRing: 4
+    energyGainPerSecond: 10
+    maxBoostEnergy: 100
+    energyDrainedPerSecond: 5
+    energyDrainedOnStart: 5
+    cameraPauseEffect: {x: 2, y: 40}
+  StartBoostStats:
+    startBoostSpeed: 70
+    framesToReachBoostSpeed: 5
+    boostSpeed: 150
+    maxSpeedWhileBoosting: 180
+    regainBoostSpeed: 3
+    turnCharacterThreshold: 48
+    boostTurnSpeed: 2
+    faceTurnSpeed: 6
+    speedLostOnEndBoost: 20
+    framesToLoseSpeed: 30
+    cooldown: 0.5
+    hasAirBoost: 1
+    boostFramesInAir: 40
+    AngleOfAligningToEndBoost: 80
+    gainEnergyFromRings: 1
+    gainEnergyOverTime: 0
+    energyGainPerRing: 4
+    energyGainPerSecond: 10
+    maxBoostEnergy: 100
+    energyDrainedPerSecond: 5
+    energyDrainedOnStart: 5
+    cameraPauseEffect: {x: 2, y: 40}
   EnemyInteraction:
     bouncingPower: 45
     homingBouncingPower: 40
@@ -2369,14 +2421,14 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   KnockbackStats:
-    whatResponse: 0
+    whatResponse: 4
     recoilFrom:
       serializedVersion: 2
       m_Bits: 4097
     knockbackUpwardsForce: 30
     knockbackForce: 25
-    hurtControlLock: 15
-    hurtControlLockAir: 30
+    hurtControlLock: {x: 10, y: 15}
+    hurtControlLockAir: {x: 10, y: 35}
     stateLengthWithKnockback: 130
     stateLengthWithoutKnockback: 90
   StartKnockBackStats:
@@ -2386,8 +2438,8 @@ MonoBehaviour:
       m_Bits: 0
     knockbackUpwardsForce: 30
     knockbackForce: 25
-    hurtControlLock: 15
-    hurtControlLockAir: 30
+    hurtControlLock: {x: 10, y: 15}
+    hurtControlLockAir: {x: 10, y: 35}
     stateLengthWithKnockback: 130
     stateLengthWithoutKnockback: 90
   RailStats:

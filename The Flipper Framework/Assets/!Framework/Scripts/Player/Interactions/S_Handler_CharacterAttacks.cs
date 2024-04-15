@@ -52,6 +52,12 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 					{
 						_hasHitThisFrame = true;
 					}
+					//If currently in a jump ball in the air
+					else if (_Actions._ActionDefault._animationAction == 1)
+					{
+						AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
+						_hasHitThisFrame = true;
+					}
 					else { _hasHitThisFrame = false; }
 					break;
 					//Spin charge counts as a rolling attack.

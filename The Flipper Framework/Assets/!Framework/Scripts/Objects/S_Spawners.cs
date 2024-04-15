@@ -35,7 +35,7 @@ public class S_Spawners : MonoBehaviour
 	public GameObject   _ObjectClone;
 
 	[HideInInspector]
-	public float _counter;
+	public float _counter = 1;
 
 
 	void Start () {
@@ -59,10 +59,10 @@ public class S_Spawners : MonoBehaviour
 			if (Vector3.Distance(_Player.position, transform.position) < _SpawnerData._distanceFromPlayerToSpawn)
 			{
 				//Will only spawn if enough time has passed.
-				if (_SpawnerData._willRespawnWhenDestroyed) _counter += Time.deltaTime;
+				if (_SpawnerData._willRespawnWhenDestroyed) { _counter += Time.deltaTime; }
 
-				//Counter will either increase, or be set directly to respawn delay if needed to respawn immediately.
-				if (_counter >= _SpawnerData._respawnDelay)
+				//Counter will either increase, or be set directly to respawn delay if needed to respawn immediately. The max is to prevent this from going constantly if the respawn data has a 0 respawn delay.
+				if (_counter >= Mathf.Max(_SpawnerData._respawnDelay, 0.01f))
 				{
 					_counter = 0;
 					SpawnObject();
@@ -84,6 +84,6 @@ public class S_Spawners : MonoBehaviour
 			Destroy(_ObjectClone);
 			_ObjectClone = null;
 		}
-		_counter = _SpawnerData._respawnDelay; //Ensures respawn will be immediate, even if already destroyed
+		_counter = _SpawnerData._respawnDelay + 1; //Ensures respawn will be immediate, even if already destroyed
 	}
 }

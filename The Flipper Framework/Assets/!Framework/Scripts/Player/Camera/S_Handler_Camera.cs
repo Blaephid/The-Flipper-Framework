@@ -6,17 +6,22 @@ using UnityEngine.Windows;
 public class S_Handler_Camera : MonoBehaviour
 {
 
-	public S_HedgeCamera _HedgeCam;
+	public S_HedgeCamera	_HedgeCam;
 	public CinemachineVirtualCamera _VirtCam;
-	private S_CharacterTools _Tools;
+	private S_CharacterTools	_Tools;
 	private S_PlayerInput	_Input;
-	private S_PlayerPhysics _PlayerPhys;
+	private S_PlayerPhysics	_PlayerPhys;
+
+	private Transform             _MainSkin;
+
 	[HideInInspector] public float _initialDistance;
 
 	void Start () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_MainSkin = _Tools.MainSkin;
+
 		_initialDistance = _Tools.CameraStats.DistanceStats.CameraDistance;
 	}
 
@@ -143,8 +148,13 @@ public class S_Handler_Camera : MonoBehaviour
 		//Set Camera to back
 		if (_Input.CamResetPressed)
 		{
-			if (_Input.moveVec == Vector2.zero && _PlayerPhys._horizontalSpeedMagnitude < 5f)
-				_HedgeCam.GoBehindCharacter(6, 20f, false);
+			if(!_HedgeCam._isLocked) {
+				if (_Input.moveVec == Vector2.zero && _PlayerPhys._horizontalSpeedMagnitude < 5f)
+				{
+					_HedgeCam.SetCameraToDirection(_MainSkin.forward, 0.25f, 0, 12, Quaternion.identity, false);
+					_Input.CamResetPressed = false;
+				}
+			}
 		}
 	}
 

@@ -38,8 +38,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	private float	_bonkBackForce_;
 	private float	_bonkUpForce_;
 
-	private float	_recoilGround_ ;
-	private float	_recoilAir_ ;
+	private Vector2	_controlLockGround_ ;
+	private Vector2	_controlLockAir_ ;
 
 	private float	_bonkLock_ ;
 	private float	_bonkLockAir_ ;
@@ -55,7 +55,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 	private float       _lockInStateFor;		//When the action starts, set how long should be in it for.
 	private int	_counter;			//Tracks how long the state has been active for.
-	private int         _keepLockingControlUntil;	//How long to lose control for, a lot of overlap with lock in state for
+	private int         _keepLockingControlUntil;     //How long to lose control for, a lot of overlap with lock in state for
+	private Vector3     _lockInputToThis;		//When control is lost, input will be stuck as this. What it is depends on the knockback.
 
 	[HideInInspector]
 	public Vector3      _knockbackDirection;          //Set externally when the action starts. The direction to be flung, if it's zero it means there should be no knockback.
@@ -124,12 +125,14 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			_PlayerPhys.AddCoreVelocity(-_PlayerPhys._RB.velocity.normalized * _knockbackForce_ * 0.2f);
 			_PlayerPhys.AddCoreVelocity(transform.up * _knockbackUpwardsForce_);
 
-			lockControlFor = _PlayerPhys._isGrounded ? _recoilGround_ : _recoilAir_;
+			lockControlFor = _PlayerPhys._isGrounded ? _controlLockGround_.x : _controlLockAir_.x;
 			_lockInStateFor = _stateLengthWithoutKnockback_;
 
 			_HurtControl._wasHurtWithoutKnockback = true;
 
 			_faceDirection = Vector3.zero;
+
+			_lockInputToThis = _MainSkin.forward;
 		}
 		//Speed should be reset.
 		else
@@ -145,7 +148,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			//Gets the values to use, then edit if was not hit by an attack.
 			float force = _knockbackForce_;
 			float upForce = _knockbackUpwardsForce_;
-			lockControlFor = _PlayerPhys._isGrounded ? _recoilGround_ * 1.5f: _recoilAir_ * 1.5f;
+			lockControlFor = _PlayerPhys._isGrounded ? _controlLockGround_.y: _controlLockAir_.y;
 			_lockInStateFor = Mathf.Max(_stateLengthWithKnockback_, lockControlFor);
 
 			//If was hit is false, then this was action was trigged by something not meant to be an attack, so apply bonk stats rather than damage response stats.
@@ -182,9 +185,10 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			_faceDirection = -newSpeed;
 
 			_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(1f, 0f));
+
+			_lockInputToThis = Vector3.zero; //Locks input as nothing being input, preventing skidding against the knockback until unlocked.
 		}
 		_keepLockingControlUntil = (int)lockControlFor;
-		_Input._move = Vector3.zero; //Locks input as nothing being input, preventing skidding against the knockback until unlocked.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
 		this.enabled = true;
@@ -192,11 +196,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
-
 		_counter = 0;
 	}
 	#endregion
@@ -216,14 +217,14 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		//Since the lock input here may be interupted, keep setting to lock for one frame until this is up.
 		if (_counter <= _keepLockingControlUntil)
 		{
-			_Input.LockInputForAWhile(1, false, _MainSkin.forward);
-			StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, Time.fixedDeltaTime));
+			_Input.LockInputForAWhile(1, false,  _lockInputToThis);
+			StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0, 1));
 		}
 	}
 
 	private void AffectMovement() {
 		//If given feedback and doesn't have control right now.
-		if (!_HurtControl._wasHurtWithoutKnockback && _PlayerPhys._listOfCanControl.Count > 0)
+		if ((!_HurtControl._wasHurtWithoutKnockback || _HurtControl._isDead) && _PlayerPhys._listOfCanControl.Count > 0)
 		{
 			//If on the ground, use the decelerate method (which is currently disabled normally) to decrease horizontal movement.
 			if (_PlayerPhys._isGrounded && _counter > 10)
@@ -353,8 +354,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		_bonkBackForce_ = _Tools.Stats.WhenBonked.bonkBackwardsForce;
 		_bonkUpForce_ = _Tools.Stats.WhenBonked.bonkUpwardsForce;
 
-		_recoilAir_ = _Tools.Stats.KnockbackStats.hurtControlLockAir;
-		_recoilGround_ = _Tools.Stats.KnockbackStats.hurtControlLock;
+		_controlLockAir_ = _Tools.Stats.KnockbackStats.hurtControlLockAir;
+		_controlLockGround_ = _Tools.Stats.KnockbackStats.hurtControlLock;
 		_bonkLock_ = _Tools.Stats.WhenBonked.bonkControlLock;
 		_bonkLockAir_ = _Tools.Stats.WhenBonked.bonkControlLockAir;
 

@@ -129,7 +129,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	//Responsible for taking in inputs the player performs to switch or activate other actions, or other effects.
 	public void HandleInputs () {
 		//Moving camera behind
-		if (!_Actions.isPaused) _CamHandler.AttemptCameraReset();
+		if (!_Actions._isPaused) _CamHandler.AttemptCameraReset();
 
 		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 		_Actions.HandleInputs(_positionInActionList);	

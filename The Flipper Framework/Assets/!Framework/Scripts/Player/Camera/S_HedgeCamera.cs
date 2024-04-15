@@ -729,10 +729,10 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Called by other scripts to make the camera shake with force  for a time. This is done through the built in noise feature of CInemachine Virtual Cameras.
 	public IEnumerator ApplyCameraShake ( float shakeForce, int frames ) {
-		_Noise.m_AmplitudeGain = shakeForce * _shakeDampen_;
-		_Noise.m_FrequencyGain = 20;
+		_Noise.m_AmplitudeGain = shakeForce / _shakeDampen_;
+		_Noise.m_FrequencyGain = 10;
 		_SecondaryCamera.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_FrequencyGain = _Noise.m_FrequencyGain;
-		float segments = (shakeForce * _shakeDampen_) / frames;
+		float segments = _Noise.m_AmplitudeGain / frames;
 
 		//This will repeat until noise has reached 0 again.
 		for (int i = 0 ; _Noise.m_AmplitudeGain > 0 ; i++)
@@ -746,8 +746,7 @@ public class S_HedgeCamera : MonoBehaviour
 			}
 
 			//If the secondary camera is in affect, ensure it has the same shake. (An exmaple of this situation is when launching a spin charge.)
-			_SecondaryCamera.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = _Noise.m_AmplitudeGain;
-			
+			_SecondaryCamera.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = _Noise.m_AmplitudeGain;		
 		}
 	}
 

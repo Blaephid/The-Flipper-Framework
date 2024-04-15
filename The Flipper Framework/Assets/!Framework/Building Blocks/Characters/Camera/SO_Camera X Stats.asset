@@ -34,8 +34,8 @@ MonoBehaviour:
     FallSpeedThreshold: -140
     HeightFollowSpeed: 7
   DefaultDistanceStats:
-    CameraMaxDistance: 8
-    affectDistancebySpeed: 1
+    CameraDistance: 8
+    shouldAffectDistancebySpeed: 1
     cameraDistanceBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -127,8 +127,8 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
   DistanceStats:
-    CameraMaxDistance: 7
-    affectDistancebySpeed: 1
+    CameraDistance: 8
+    shouldAffectDistancebySpeed: 1
     cameraDistanceBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -534,5 +534,5 @@ MonoBehaviour:
   DefaultEffectsStats:
     ShakeDampen: 4
   EffectsStats:
-    ShakeDampen: 4
+    ShakeDampen: 1.2
   InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

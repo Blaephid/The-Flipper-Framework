@@ -111,20 +111,13 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 
 
 	public void AirDashParticle () {
-		GameObject JumpDashParticleClone = Instantiate(_JumpDashParticle, _HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
-		//if (Player.SpeedMagnitude > 60)
-		//    JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = Player.SpeedMagnitude / 60f;
-		//else
-		//    JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
+		GameObject JumpDashParticleClone = Instantiate(_JumpDashParticle, _Tools.transform.position, Quaternion.identity) as GameObject;
 
 		if (_PlayerPhys._speedMagnitude > 60)
 			JumpDashParticleClone.transform.localScale = new Vector3(_PlayerPhys._speedMagnitude / 60f, _PlayerPhys._speedMagnitude / 60f, _PlayerPhys._speedMagnitude / 60f);
-		//else
-		//    JumpDashParticleClone.GetComponent<ParticleSystem>().startSize = 1f;
 
-		JumpDashParticleClone.transform.position = _HomingTrailContainer.transform.position;
-		JumpDashParticleClone.transform.rotation = _HomingTrailContainer.transform.rotation;
-		//JumpDashParticleClone.transform.parent = HomingTrailContainer.transform;
+		JumpDashParticleClone.transform.position = _Tools.transform.position;
+		JumpDashParticleClone.transform.rotation = _Tools.MainSkin.transform.rotation;
 	}
 
 }

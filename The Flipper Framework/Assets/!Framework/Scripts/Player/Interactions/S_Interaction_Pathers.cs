@@ -59,9 +59,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 	[HideInInspector]
 	public bool                   _canGrindOnRail;              //Set to false every frame, but then to true if in the AttemptAction method of the grind action.
 
-	[HideInInspector]
-	public bool                   _isFollowingPath ;            //If currently on a rail, zipline or automated path. Even if in the grind script, this won't always be true.
-
 	//Upreel
 	private float                 _speedBeforeUpreel;           //Gets running speed before an upreel and returns partly to it after finishing the action.
 	#endregion
@@ -135,10 +132,16 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 				Spline ThisSpline = col.gameObject.GetComponentInParent<Spline>(); //Create a temporary variable to check this rail before confirming it.
 
-				Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, ThisSpline); //Returns the closest point on the rail by position.
+				Vector3 offset = Vector3.zero;
+				if(col.GetComponentInParent<S_PlaceOnSpline>())
+				{
+					offset = col.GetComponentInParent<S_PlaceOnSpline>().Offset3d;
+				}
+
+				Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
 
 				//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
-				if (rangeAndDis.y < Mathf.Max(_PlayerPhys._speedMagnitude / 70, 1.5f))
+				if (rangeAndDis.y < Mathf.Clamp(_PlayerPhys._speedMagnitude / 30, 2f, 5f))
 				{
 					SetOnRail(true, col, rangeAndDis);
 				}
@@ -305,7 +308,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		_RailAction._ZipBody = zipbody;
 		zipbody.isKinematic = false;
 
-		Vector2 rangeAndDis = GetClosestPointOfSpline(zipbody.position, _PathSpline); //Gets place on rail closest to collision point.
+		Vector2 rangeAndDis = GetClosestPointOfSpline(zipbody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.
 
 		//Disables the homing target so it isn't a presence if homing attack can be performed in the grind action
 		GameObject target = col.transform.GetComponent<S_Control_Zipline>().homingtgt;
@@ -403,13 +406,15 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 
 	//Goes through whole spline and returns the point closests to the given position, along with how far it is.
-	public Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline ) {
+	public Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline, Vector3 offset ) {
 		float CurrentDist = 9999999f;
 		float closestSample = 0;
 		for (float n = 0 ; n < thisSpline.Length ; n += 5)
 		{
+			Vector3 checkPos = thisSpline.transform.position + //Object position
+				(thisSpline.transform.rotation * (thisSpline.GetSampleAtDistance(n).location + (thisSpline.GetSampleAtDistance(n).Rotation * offset))); //Place on spline relative to object rotation and offset.
 			//The distance between the point at distance n along the spline, and the current collider position.
-			float dist = Vector3.Distance(thisSpline.transform.position + (thisSpline.transform.rotation * thisSpline.GetSampleAtDistance(n).location), colliderPosition);
+			float dist = Vector3.Distance(checkPos,colliderPosition);
 
 			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
 			if (dist <= CurrentDist)
@@ -418,7 +423,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				closestSample = n;
 			}
 		}
-		return new Vector2 (closestSample, CurrentDist);
+		return new Vector2(closestSample, CurrentDist);
 	}
 
 	//Called when leaving a pulley to prevent player attaching to it immediately.

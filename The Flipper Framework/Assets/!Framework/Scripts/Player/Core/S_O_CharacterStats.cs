@@ -812,7 +812,7 @@ public class S_O_CharacterStats : ScriptableObject
 			shouldSetRolling = true,
 			maximumSpeedPerformedAt = 200f,
 			maximumSlopePerformedAt = -0.5f,
-			releaseShakeAmmount = 1.5f,
+			releaseShakeAmmount = new Vector4 (7, 0.1f, 15, 10),
 			cameraPauseEffect = new Vector2(3,40),
 			SpeedLossByTime = new AnimationCurve(new Keyframe[]
 			{
@@ -869,8 +869,8 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Surface: The maximum charge to be used when launching.")]
 		public float                  maximunCharge;
 		[Header("Release")]
-		[Tooltip("How much to shake the camera when launching.")]
-		public float                  releaseShakeAmmount;
+		[Tooltip("How much to shake the camera when launching. X is applied and multipled by charge, Y is minimum including this multiplication, Z is maximum. W is how long it lasts.")]
+		public Vector4                  releaseShakeAmmount;
 		[Tooltip("Core: Launch force will be multiplied by the angle between current velocity and facing direction. The Y value at -1 = how much to multiply force by if launching backwards.")]
 		public AnimationCurve         ForceGainByAngle;
 		[Tooltip("Core: Launch force will be multiplied by this, based on current speed moving at.")]
@@ -1036,12 +1036,13 @@ public class S_O_CharacterStats : ScriptableObject
 			framesToReachBoostSpeed = 5,
 			boostSpeed = 150,
 			maxSpeedWhileBoosting = 180,
-			regainBoostSpeed = 8,
+			regainBoostSpeed = 3,
 			turnCharacterThreshold = 48,
 			boostTurnSpeed = 2,
 			faceTurnSpeed = 6,
 			speedLostOnEndBoost = 20,
 			framesToLoseSpeed = 30,
+			cooldown = 0.5f,
 			hasAirBoost = true,
 			boostFramesInAir = 40,
 			AngleOfAligningToEndBoost = 80,
@@ -1060,30 +1061,52 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucBoost
 	{
 		[Header("Start Boost")]
+		[Tooltip("The speed the player will immediately run at when starting a boost, and will approach proper boost speed.")]
 		public float       startBoostSpeed ;
+		[Tooltip("How many frames to go from start speed above, to ideal boost speed below.")]
 		public int         framesToReachBoostSpeed;
 		[Header("Boosting")]
+		[Tooltip("The ideal speed to boost at after the frames above, and where the player should remain during the main boost.")]
 		public float       boostSpeed;
+		[Tooltip("Boost speed can still be exceeded through other means like slope physics, this changes the max speed players can reach normally.")]
 		public float       maxSpeedWhileBoosting;
+		[Tooltip("If speed has been decreased through other means, this is how much speed to regain every frame when running on flat ground until back at boost speed.")]
 		public float	regainBoostSpeed;
 		[Header("Turning")]
+		[Tooltip("The angle of degrees input should exceed to count as a full turn rather than a strafe. 45 = if camera is behind player and they input more that 45 degrees from forwards, character will turn fully, not strafe.")]
 		public float        turnCharacterThreshold;
+		[Tooltip("How quickly to change velocity towards input. Degrees per frame.")]
 		public float        boostTurnSpeed;
+		[Tooltip("How quickly the character will change the direction the model is facing to match velocity when not strafing. Degrees per frame.")]
 		public float        faceTurnSpeed;
 		[Header("End Boost")]
+		[Tooltip("How much to decrease running or path speed when a boost ends.")]
 		public float       speedLostOnEndBoost;
+		[Tooltip("How many frames it takes to remove the above speed.")]
 		public int         framesToLoseSpeed;
+		[Tooltip("How many seconds until another boost can start after one ended.")]
+		public float        cooldown;
 		[Header("Air Boost")]
+		[Tooltip("If true, boost will act as normal in the air. If false, boost will end in the air.")]
 		public bool        hasAirBoost;
+		[Tooltip("How many frames until a boost ends when started in, or entered the air. Will not apply is hasAirBoost is true.")]
 		public float       boostFramesInAir;
+		[Tooltip("If character rotates more than this many degrees when in the air (from automatic alignign to face up), then end boost.")]
 		public float       AngleOfAligningToEndBoost;
 		[Header("Energy")]
+		[Tooltip("If true, boost energy will increase when a ring is picked up.")]
 		public bool        gainEnergyFromRings;
+		[Tooltip("If true, boost energy will increase every fixed frame (55 a second).")]
 		public bool        gainEnergyOverTime;
-		public float       energyGainPerSecond;
+		[Tooltip("How much energy is gained whenever a ring is picked up.")]
 		public float       energyGainPerRing;
+		[Tooltip("How much energy is gained each fixed frame.")]
+		public float       energyGainPerSecond;
+		[Tooltip("Cannot gain more boost energy than this.")]
 		public float	maxBoostEnergy;
+		[Tooltip("How much boost energy is lost every second while boosting.")]
 		public float       energyDrainedPerSecond;
+		[Tooltip("How much energy is consumed when a boost starts.")]
 		public float       energyDrainedOnStart;
 		[Header("Effects")]
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
@@ -1256,8 +1279,8 @@ public class S_O_CharacterStats : ScriptableObject
 			knockbackUpwardsForce = 30f,
 			recoilFrom = new LayerMask(),
 			knockbackForce = 25f,
-			hurtControlLock = 15f,
-			hurtControlLockAir = 30f,
+			hurtControlLock = new Vector2 (10, 15f),
+			hurtControlLockAir = new Vector2(10, 35f),
 			stateLengthWithKnockback = 130,
 			stateLengthWithoutKnockback = 90,
 		};
@@ -1276,10 +1299,10 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Surface: How much to be knocked backwards.")]
 		public float            knockbackForce;
 		[Header("Durations")]
-		[Tooltip("Core: How long in frames control should be disabled after taking damage, not being able to change movement input until this is over")]
-		public float            hurtControlLock;
+		[Tooltip("Core: How long in frames control should be disabled after taking damage, not being able to change movement input until this is over. X = rebound when not being knocked backwards, Y = when is being knocked backwards.")]
+		public Vector2            hurtControlLock;
 		[Tooltip("Core: Same as above, but likely longer when in the air.")]
-		public float            hurtControlLockAir;
+		public Vector2           hurtControlLockAir;
 		[Tooltip("Core: If rebounding, how long in frames to be stuck in the state for. This doesn't lock control but affects movement, actions and animations.")]
 		public int         stateLengthWithKnockback;
 		[Tooltip("Core: If not being knocked back, will be in the state for a differnet time.")]

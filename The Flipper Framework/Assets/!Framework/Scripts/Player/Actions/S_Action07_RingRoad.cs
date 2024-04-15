@@ -235,13 +235,14 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		//End at the speed started at (with a slight change), but with a minimum.
 		float endingSpeedResult = Mathf.Max(_minimumEndingSpeed_, _speedBeforeAction * _speedGain_);
 
-		if (_willCarrySpeed_) endingSpeedResult = _minimumEndingSpeed_; //Speed unaffected by how it was before the action.
+		if (!_willCarrySpeed_) endingSpeedResult = _minimumEndingSpeed_; //Speed unaffected by how it was before the action.
 
 		//Sends the player in the direction of the end of the spline.
 		_directionToGo = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length).tangent;
 		_PlayerPhys.SetTotalVelocity(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
+		Debug.Log(_Actions._listOfSpeedOnPaths[0]+ " - " + endingSpeedResult);
 		float differentSpeedOnExit = _Actions._listOfSpeedOnPaths[0] - endingSpeedResult;
 		if(differentSpeedOnExit > 0) { StartCoroutine(LoseTemporarySpeedOverTime(differentSpeedOnExit)); }
 
@@ -259,7 +260,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			tempSpeed -= increments; //Go down in increments. When at zero, the player will have smoothly gone down to the actual speed rather than jump.
 		}
 	}
-
 	#endregion
 
 	/// <summary>

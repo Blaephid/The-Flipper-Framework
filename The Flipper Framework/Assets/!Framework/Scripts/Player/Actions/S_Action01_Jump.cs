@@ -141,6 +141,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					AssignStartValues(_Actions.Action12._jumpAngle, true);
 					StartAction();
 					return true;
+				case S_Enums.PrimaryPlayerStates.Rail:
+					AssignStartValues(transform.up, true);
+					StartAction();
+					return true;
 				default:
 					AssignStartValues(transform.up, _PlayerPhys._isGrounded);
 					StartAction();
@@ -174,7 +178,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Snap off of ground to make sure player jumps
-		transform.position += (_upwardsDirection * 0.3f);
+		_PlayerPhys.transform.position += (_upwardsDirection * 0.3f);
 
 		//If performing a grounded jump. JumpCount may be changed externally to allow for this.
 		if (_isJumpingFromGround)
@@ -252,7 +256,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	public void HandleInputs () {
 		//Moving camera behind
-		if (!_Actions.isPaused) _CamHandler.AttemptCameraReset();
+		if (!_Actions._isPaused) _CamHandler.AttemptCameraReset();
 
 		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 		_Actions.HandleInputs(_positionInActionList);
@@ -281,10 +285,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//Ending jump after max duration
 		else if (_counter > _thisMaxDuration && _isJumping && _Input.JumpPressed)
 		{
-			EndJumpForce();
+   			EndJumpForce();
 		}
 		//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
-		else if(_PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
+		else if(_isJumping && _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
 		{
 			EndJumpForce();
 		}
@@ -322,7 +326,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//End Action on landing. Has to have been in the air for some time first though to prevent immediately becoming grounded.
 		if (_PlayerPhys._isGrounded && _counter > _slopedJumpDuration)
 		{ 
-
 			//Prevents holding jump to keep doing so forever.
 			_Input.JumpPressed = false;
 

@@ -17,9 +17,6 @@ namespace templates
 
 		#endregion
 
-		//General
-		#region General Properties
-
 		//Stats
 		#region Stats
 		#endregion
@@ -28,7 +25,6 @@ namespace templates
 		#region trackers
 		#endregion
 
-		#endregion
 		#endregion
 
 		/// <summary>

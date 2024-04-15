@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor;
 
 [RequireComponent(typeof(S_Handler_HomingAttack))]
 public class S_Action02_Homing : MonoBehaviour, IMainAction
@@ -189,19 +190,19 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		//Return control options that were lost.
-		_PlayerPhys._canBeGrounded = true;
-		_PlayerPhys._isGravityOn = true;
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
-
-		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
-
 		_timer = 0;
 
 		//if ended prematurely
 		if (_isHoming)
 		{
 			_Actions.AddDashDelay(_HomingHandler._homingDelay_);
+
+			//Return control options that were lost.
+			_PlayerPhys._canBeGrounded = true;
+			_PlayerPhys._isGravityOn = true;
+			_PlayerPhys._listOfCanControl.RemoveAt(0);
+
+			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 		}
 	}
 
@@ -241,8 +242,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_distanceFromTarget = Vector3.Distance(_Target.position, transform.position);
 		float thisTurn =  _homingTurnSpeed_;
 
+		Debug.DrawRay(transform.position, newDirection, Color.yellow, 5f);
+
 		//Set Player location when close enough, for precision.
-		if (_distanceFromTarget < (_Actions._listOfSpeedOnPaths[0] * Time.fixedDeltaTime * 2))
+		if (_distanceFromTarget < (_Actions._listOfSpeedOnPaths[0] * Time.deltaTime))
 		{
 			_PlayerPhys.transform.position = _Target.transform.position;
 			return;
@@ -250,8 +253,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Turn faster when close to target and fast to make missing very hard.
 		else
 		{
-			if (_distanceFromTarget < 40)
-				thisTurn *= 2f;
+			if (_distanceFromTarget < 30)
+				thisTurn *= 1.75f;
 			if (_Actions._listOfSpeedOnPaths[0] > 90)
 				thisTurn *= 1.3f;
 		}
@@ -279,7 +282,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 				//Get a horizontal direction between the two but don't change vertical.
 				float percentageRelevantDif = Vector3.Angle(_horizontalDirection, useInput) * 0.8f;
-				if (_distanceFromTarget < 40)
+				if (_distanceFromTarget < 30)
 				{
 					percentageRelevantDif *= 0.3f;
 				}
@@ -288,10 +291,13 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				Vector3 temp = Vector3.RotateTowards(_horizontalDirection, useInput, Mathf.Deg2Rad * percentageRelevantDif, 0);
 
 				temp.y = rememberY;
-				newDirection = temp.normalized;
+				newDirection = temp;
+
+				Debug.DrawRay(transform.position, newDirection, Color.red, 5f);
 			}
 		}
 		_currentDirection = Vector3.RotateTowards(_currentDirection, newDirection, Mathf.Deg2Rad * thisTurn, 0.0f);
+		Debug.DrawRay(transform.position, _currentDirection, Color.black, 5f);
 		_PlayerPhys.SetCoreVelocity(_currentDirection * _Actions._listOfSpeedOnPaths[0]);
 	}
 
@@ -311,7 +317,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	//What happens to the character after they hit a target, the directions they bounce based on input, stats and target.
 	public void HittingTarget ( S_Enums.HomingRebounding whatRebound ) {
-		_isHoming = false; //Prevents the rest of the code in Update and FixedUpdate from happening.
 		_HomingHandler._TargetObject = null;
 		_HomingHandler._PreviousTarget = null;
 
@@ -323,7 +328,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		_CharacterAnimator.SetInteger("Action", 1);
 
-		_Actions.AddDashDelay(_HomingHandler._homingDelay_); //Add delay before it can be used again.
 		Vector3 newSpeed = Vector3.zero;
 
 		switch (whatRebound)
@@ -394,20 +398,21 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			{
 				//Rotate towards previous direction by percentage
 				float partDifference = Vector3.Angle(newSpeed, _directionBeforeAttack) * _lerpToPreviousDirection_;
-				newSpeed = Vector3.RotateTowards(newSpeed, _directionBeforeAttack, partDifference * Mathf.Deg2Rad, 0);
+				newSpeed = Vector3.RotateTowards(_PlayerPhys._coreVelocity.normalized, _directionBeforeAttack, partDifference * Mathf.Deg2Rad, 0);
 			}
 		}
 	}
 
 	//Applies knockback and a temporary locked state
 	public IEnumerator HittingObstacle ( Vector3 wallNormal = default(Vector3), float force = 25 ) {
+		_isHoming = false; //Prevents the rest of the code in Update and FixedUpdate from happening.
 
 		float duration = 0.6f * 55;
 
 		_PlayerPhys._canBeGrounded = true;
 
 		//Gets a direction to make the player face and rebound away from. This is either the way they were already going, or slightly affected by what they hit.
-		Vector3 faceDirection = _PlayerPhys._RB.velocity.normalized;
+		Vector3 faceDirection = _PlayerPhys._previousVelocities[2].normalized;
 		if (wallNormal != default(Vector3))
 		{
 			faceDirection = Vector3.Lerp(faceDirection, wallNormal, 0.5f);
@@ -415,23 +420,25 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		_PlayerPhys.SetTotalVelocity(Vector3.up * 2, new Vector2(1, 0), true);
 		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
-		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
 
-		//Bounce backwards and upwards (halfway between the two).
-		Vector3 ReboundDirection = new Vector3(-faceDirection.x, 0.8f, -faceDirection.z);
-		_PlayerPhys.AddCoreVelocity(ReboundDirection * force, true);
+		//Bounce backwards and upwards 
+
+		Vector3 reboundDirection = -faceDirection; 
+		if(reboundDirection.y < 0.4f && reboundDirection.y > -0.4f) reboundDirection = new Vector3(-faceDirection.x, 0.8f, -faceDirection.z); //If rebound is too horizontal, ensure it bounces upwards slighty.
+		_PlayerPhys.SetTotalVelocity(reboundDirection * force, new Vector2(1,0));
 
 		for (int i = 0 ; i < duration * 0.2f && !_PlayerPhys._isGrounded ; i++)
 		{
 			//Rotation
 			_Skin.rotation = Quaternion.LookRotation(faceDirection, transform.up);
-
 			yield return new WaitForFixedUpdate();
 		}
 
 		//Returns control partway through the rebound.
 		_PlayerPhys._isGravityOn = true;
-		this.enabled = false;
+		_PlayerPhys._canBeGrounded = true;
+		_PlayerPhys._listOfCanControl.RemoveAt(0);
+		_Actions._listOfSpeedOnPaths.RemoveAt(0);
 
 		for (int i = 0 ; i < duration * 0.8f && !_PlayerPhys._isGrounded ; i++)
 		{

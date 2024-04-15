@@ -182,11 +182,11 @@ public class S_PlayerInput : MonoBehaviour
 	/// 
 	#region public 
 	//Called by other scripts to set the input to a specific thing, unable to change for a period of time.
-	public void LockInputForAWhile ( float duration, bool lockCam, Vector3 newInput ) {
+	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput ) {
 		_move = newInput;
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.
-		_lockedTime = Mathf.Max(duration, _lockedTime);
+		_lockedTime = Mathf.Max(frames, _lockedTime);
 
 		//Will be locked until counter exceeds timer.
 		_lockedCounter = 0;
@@ -340,12 +340,7 @@ public class S_PlayerInput : MonoBehaviour
 		if (ctx.performed)
 		{
 			CamResetPressed = !CamResetPressed;
-			if (_CamHandler._HedgeCam._lockCamAtSpeed_ != 20f)
-				_CamHandler._HedgeCam._lockCamAtSpeed_ = 20f;
-			else
-				_CamHandler._HedgeCam._lockCamAtSpeed_ = _CamHandler._HedgeCam._startLockCam;
 		}
-
 	}
 	#endregion
 

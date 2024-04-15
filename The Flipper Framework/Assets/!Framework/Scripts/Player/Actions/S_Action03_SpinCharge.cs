@@ -50,7 +50,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private AnimationCurve	_forceGainByAngle_;
 	private AnimationCurve        _turnAmountByAngle_;
 	private AnimationCurve	_gainBySpeed_;
-	private float                 _releaseShakeAmmount_;
+	private Vector4                 _releaseShakeAmmount_;
 	private Vector2               _cameraPauseEffect_ = new Vector2(3, 40);
 	private S_Enums.SpinChargeAiming _whatControl_;
 	private float                 _tappingBonus_;
@@ -275,7 +275,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Effects.EndSpinDash();
 		_Actions._ActionDefault.SwitchSkin(true);
 
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(Mathf.Max(_releaseShakeAmmount_ * _currentCharge, 5) / 10, 8));
+		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _currentCharge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(shake, (int)_releaseShakeAmmount_.w));
+
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerPhys._horizontalSpeedMagnitude, newSpeed), 0.25f)); //The camera will fall back before catching up.
 
 	}

@@ -78,7 +78,7 @@ public class S_ActionManager : MonoBehaviour
 	public bool         _isJumpLocked;
 
 	[HideInInspector]
-	public bool         isPaused;
+	public bool         _isPaused;
 	#endregion
 
 	#endregion
@@ -182,7 +182,7 @@ public class S_ActionManager : MonoBehaviour
 
 	//Called by action scripts to go through all of the actions they can possibly transition to. Each primary action should call this on Update
 	public void HandleInputs ( int currentActionInList ) {
-		if (isPaused || _HealthAndHurt._isDead) { return; } //Can only change state if game isn't paused.
+		if (_isPaused || _HealthAndHurt._isDead) { return; } //Can only change state if game isn't paused.
 
 		bool performAction; //This will be set to true if an action attempt succeeds, stopping the checks after one does so.
 
@@ -608,13 +608,19 @@ public class ActionManagerEditor : Editor
 
 
 					//Go through all of the connected states for each state, and make sure those states are also in the list.
-					foreach (S_Enums.PlayerSituationalStates state in action.SituationalStates)
+					if(action.SituationalStates.Count > 0)
 					{
-						AddSituationalActionToList(state);
+						foreach (S_Enums.PlayerSituationalStates state in action.SituationalStates)
+						{
+							AddSituationalActionToList(state);
+						}
 					}
-					foreach (S_Enums.PlayerControlledStates state in action.ConnectedStates)
+					if(action.ConnectedStates.Count > 0)
 					{
-						AddControledActionToList(state);
+						foreach (S_Enums.PlayerControlledStates state in action.ConnectedStates)
+						{
+							AddControledActionToList(state);
+						}
 					}
 
 					//Makes sure every action still has default as as connected situation interaction.
