@@ -245,7 +245,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		// Apply minimum speed
 		_grindingSpeed = Mathf.Max(_grindingSpeed, _minStartSpeed_);
 
-		_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
+		_PlayerPhys.SetBothVelocities(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Rail);
 		this.enabled = true;
@@ -357,7 +357,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
 		{
 			//Set Player Speed correctly so that it becomes smooth grinding
-			_PlayerPhys.SetTotalVelocity(_sampleForwards * _grindingSpeed, new Vector2(1, 0));
+			_PlayerPhys.SetBothVelocities(_sampleForwards * _grindingSpeed, new Vector2(1, 0));
 			if (_ZipBody) { _ZipBody.velocity = _sampleForwards * _grindingSpeed; }
 		}
 		else
@@ -452,7 +452,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				break;
 
 			case S_Interaction_Pathers.PathTypes.rail:
-				_PlayerPhys.SetTotalVelocity(_sampleForwards * _grindingSpeed, new Vector2(1, 0)); //Make sure player flies off the end of the rail consitantly.
+				_PlayerPhys.SetBothVelocities(_sampleForwards * _grindingSpeed, new Vector2(1, 0)); //Make sure player flies off the end of the rail consitantly.
 				break;
 		}
 

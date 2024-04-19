@@ -244,7 +244,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 	//When leaving pulley, player is bounced up and forwards after a momment, allowing them to clear the wall without issue.
 	IEnumerator ExitPulley ( Transform Upreel ) {
-		_PlayerPhys.SetTotalVelocity(Upreel.up * 60, new Vector2(1, 0)); //Apply force up relative to upreel (therefore the direction the player was moving).
+		_PlayerPhys.SetBothVelocities(Upreel.up * 60, new Vector2(1, 0)); //Apply force up relative to upreel (therefore the direction the player was moving).
 
 		yield return new WaitForSeconds(.2f);
 
@@ -336,8 +336,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 			//If the path is being started by a path speed pad
 			if (col.gameObject.GetComponent<S_Data_SpeedPad>())
 			{
-				_PathSpline = col.gameObject.GetComponent<S_Data_SpeedPad>().path;
-				speedGo = Mathf.Max(col.gameObject.GetComponent<S_Data_SpeedPad>().Speed, _PlayerPhys._horizontalSpeedMagnitude);
+				_PathSpline = col.gameObject.GetComponent<S_Data_SpeedPad>()._Path;
+				speedGo = Mathf.Max(col.gameObject.GetComponent<S_Data_SpeedPad>()._speedToSet_, _PlayerPhys._horizontalSpeedMagnitude);
 			}
 
 			//If the path is being started by a normal trigger

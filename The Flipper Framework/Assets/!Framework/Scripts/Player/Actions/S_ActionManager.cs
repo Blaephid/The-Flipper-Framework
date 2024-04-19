@@ -69,13 +69,7 @@ public class S_ActionManager : MonoBehaviour
 
 	//THe bellow are all temporarily locked under certain situations, like using a spring.
 	[HideInInspector]
-	public bool         _isBounceLocked;
-	[HideInInspector]
-	public bool         _isHomingLocked;
-	[HideInInspector]
-	public bool         _isJumpDashLocked;
-	[HideInInspector]
-	public bool         _isJumpLocked;
+	public bool         _areAirActionsAvailable = true;
 
 	[HideInInspector]
 	public bool         _isPaused;
@@ -212,25 +206,18 @@ public class S_ActionManager : MonoBehaviour
 	}
 
 	//Called externally to prevent certain actions from being performed until time is up.
-	public IEnumerator lockAirMoves ( float time ) {
-		_isBounceLocked = true;
-		_isJumpDashLocked = true;
-		_isHomingLocked = true;
-		_isJumpLocked = true;
+	public IEnumerator lockAirMoves ( float frames ) {
+		_areAirActionsAvailable = false;
 
 		//Apply delay, in frames.
-		for (int s = 0 ; s < time ; s++)
+		for (int s = 0 ; s < frames ; s++)
 		{
 			yield return new WaitForFixedUpdate();
 			if (_PlayerPhys._isGrounded)
 				break;
 		}
 
-		_isBounceLocked = false;
-		_isJumpDashLocked = false;
-		_isHomingLocked = false;
-		_isJumpLocked = false;
-
+		_areAirActionsAvailable = true;
 	}
 
 	//Called upon successful attacks to set the counter (which will tick down when above 0)

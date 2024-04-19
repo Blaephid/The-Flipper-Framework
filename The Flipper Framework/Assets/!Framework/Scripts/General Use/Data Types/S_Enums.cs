@@ -100,4 +100,19 @@ public class S_Enums
 		FrontiersSansDeathDelay,
 		NormalSansDeathDelay,
 	}
+
+
+	//Objects & Interactions
+
+	public enum ChangeLockState {
+		Ignore,
+		Lock,
+		Unlock
+	}
+
+	public enum LockControlDirection {
+		NoChange,
+		NoInput,
+		CharacterForwards,
+	}
 }

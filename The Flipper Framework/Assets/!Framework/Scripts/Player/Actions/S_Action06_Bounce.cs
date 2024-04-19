@@ -93,7 +93,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 
 		//Can only bounce if it isn't locked in the actionManager, and not moving too fast up.
-		if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f && !_Actions._isBounceLocked && _isBounceAvailable)
+		if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)
 		{
 			StartAction();
 			return true;
@@ -107,7 +107,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
 		this.enabled = true;
 
-		_memorisedSpeed = _PlayerPhys._horizontalSpeedMagnitude; //Stores the running speed the player was before bouncing.
+		_memorisedSpeed = _PlayerPhys._currentRunningSpeed; //Stores the running speed the player was before bouncing.
 		_nextSpeed = _memorisedSpeed; //This will decrease as the action goes on, then resetting the player's movement to it after completing the bounce.
 
 		_isBounceAvailable = false; //Can't perform a bounce while in a bounce.

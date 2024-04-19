@@ -118,7 +118,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		//This is called no matter the action, so it used as function to check the always relevant data.
 		void CheckDash() {
 			//Can't be grounded or have the action locked by external means.
-			if (!_PlayerPhys._isGrounded && !_Actions._isJumpDashLocked && _Actions._isAirDashAvailables && _Input.SpecialPressed)
+			if (!_PlayerPhys._isGrounded && _Actions._areAirActionsAvailable && _Actions._isAirDashAvailables && _Input.SpecialPressed)
 			{
 				StartAction();
 				willChangeAction = true; //Used because returning here would just return to the main method, not the caller.
@@ -152,7 +152,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_timer = 0;
 
 		//Create vector to move in
-		_dashSpeed = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude +  _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
+		_dashSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed +  _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
 
 		//Rotate right or left on a large scale based on input
 		MakeFullTurn();
@@ -166,9 +166,10 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		_Input.LockInputForAWhile(_lockMoveInputOnStart_, false, _dashDirection);
 
-		Vector3 newVec = _dashDirection * _dashSpeed;
-		newVec += _MainSkin.up * _upwardsSpeed;
-		_PlayerPhys.SetCoreVelocity(newVec, true);
+		Vector3 newVec = _dashDirection * _dashSpeed; //Dash forwards
+		newVec += _MainSkin.up * _upwardsSpeed; //If has upwards force, add that as well.
+		_PlayerPhys.SetCoreVelocity(newVec, true); //Move in dash direction
+		_PlayerPhys.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
 		this.enabled = true;

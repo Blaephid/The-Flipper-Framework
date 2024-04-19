@@ -33,7 +33,7 @@ public class S_Data_HintRing : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _hintbox = S_HintBox.instance;
+        _hintbox = S_HintBox.s_Instance;
         InitialPos = Center.localPosition;
         LookTarget = Camera.main.transform;
         hintSound = GetComponent<AudioSource>();

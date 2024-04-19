@@ -124,14 +124,14 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 						StartAction();
 					}
 					//Jump when in the air
-					else if (_Actions._jumpCount < _maxJumps_ && !_Actions._isJumpLocked)
+					else if (_Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
 					}
 					return true;
 				case S_Enums.PrimaryPlayerStates.Jump:
-					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && !_Actions._isJumpLocked)
+					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
@@ -169,6 +169,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//Physics
 		_PlayerPhys.SetIsGrounded(false);
 		_PlayerPhys._canBeGrounded = false; //Prevents being set to grounded if jumping because it would lead to weird interactions going up through platforms or triggering on grounded events
+		_PlayerPhys.RemoveEnvironmentalVelocityAirAction();
 
 		//Effects
 		_CharacterAnimator.SetInteger("Action", 1);

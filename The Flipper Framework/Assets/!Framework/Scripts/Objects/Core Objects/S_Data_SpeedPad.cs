@@ -4,30 +4,35 @@ using SplineMesh;
 
 public class S_Data_SpeedPad : MonoBehaviour
 {
-    [Header ("Type")]
-    public bool onRail;
-    public bool railBackwards;
-    public bool isDashRing;
-    public Spline path;
-    public bool setSpeed = true;
-    public float addSpeed = 15;
+	[Header ("Type")]
+	public bool	_isOnRail_;
+	public bool	_isDashRing_;
 
-    [Header("Effects")]
-    public float Speed;
-    public bool LockToDirection;
-    
-    public bool Snap;
-    public bool AffectCamera = true;
-    public bool ResetRotation = true;
-    public bool setInputForwards;
+	[Header ("On Rail")]
+	public bool	_willSetBackwards_;
+	public Spline	_Path;
+	public bool	_willSetSpeed_ = true;
+	public float	_addSpeed_ = 15;
 
-    [Header("Lock?")]
-    public Transform positionToLockTo;
-    public bool LockControl;
-    public float LockControlTime = 0.5f;
-    public Vector3 lockGravity = new Vector3(0f, -1.5f, 0f);
-    public bool lockAirMoves = false;
-    public float lockAirMovesTime = 30f;
-    
+	[Header("Off Rail")]
+
+	[Header("Effects")]
+	public float	_speedToSet_;
+	public bool	_lockToDirection_;
+
+	public bool	_willSnap;
+	public bool	_willAffectCamera_ = true;
+	public bool	_willResetRotation_ = true;
+
+	[Header("Lock?")]
+	public Transform	_PositionToLockTo;
+	public bool	_willLockControl;
+	public float	_lockControlFor_ = 0.5f;
+	public S_Enums.LockControlDirection _lockInputTo_;
+
+	public Vector3      _overwriteGravity_;
+	public bool	_willLockAirMoves_ = false;
+	public float	_lockAirMovesFor_ = 30f;
+
 }
 

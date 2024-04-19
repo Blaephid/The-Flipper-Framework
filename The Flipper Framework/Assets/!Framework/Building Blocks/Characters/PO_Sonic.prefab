@@ -919,8 +919,24 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _OnTriggerAirLauncher:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4227673059168097595}
+        m_TargetAssemblyTypeName: S_SubAction_Boost, Assembly-CSharp
+        m_MethodName: EventOnTriggerAirLauncher
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _RB: {fileID: 0}
   _moveDeceleration_: 1.3
+  _gravityWhenMovingUp_: {x: 0, y: 0, z: 0}
   _startFallGravity_: {x: 0, y: 0, z: 0}
   _negativeGHoverHeight_: 0.6115
   _Groundmask_:
@@ -935,8 +951,11 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
+  _resetEnvironmentalOnGrounded: 0
+  _resetEnvironmentalOnAirAction: 0
   _speedMagnitude: 0
   _horizontalSpeedMagnitude: 0
+  _currentRunningSpeed: 0
   _previousHorizontalSpeeds:
   - 1
   - 2
@@ -958,6 +977,7 @@ MonoBehaviour:
   _timeOnGround: 0
   _wasInAir: 0
   _currentFallGravity: {x: 0, y: 0, z: 0}
+  _currentUpwardsFallGravity: {x: 0, y: 0, z: 0}
   _isRolling: 0
   _isBoosting: 0
   _isGravityOn: 1
@@ -12885,15 +12905,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e68b4ac01ce5dc42b13673e287b845a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShieldObject: {fileID: 1118500399814704}
   RingCollectParticle: {fileID: 1000011339303976, guid: a9392ff007f838347a83411dd1d9e5e7,
     type: 3}
   SpeedPadTrack: {fileID: 2100000, guid: 620ddb7d525d8cf4c8825898d6d3273c, type: 2}
   DashRingMaterial: {fileID: 2100000, guid: b759e3326b7e5e442b0b7e8f2058a414, type: 2}
   NormalShieldMaterial: {fileID: 2100000, guid: 87b5faac8a750664d9bb8eda1b21739b,
     type: 2}
-  DisplaySpeed: 0
   DashRingLightsColor: {r: 0, g: 0, b: 0, a: 0}
+  _displaySpeed: 0
 --- !u!114 &1806186076038971531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13196,8 +13215,8 @@ MonoBehaviour:
   SpeedLines: {fileID: 864949301854616318}
   SpinDashDust: {fileID: 580622908006863174}
   SpinDashEnergy: {fileID: 6466641387993368723}
-  RunningDustThreshold: 8000
-  SpeedLinesThreshold: 10000
+  RunningDustThreshold: 80
+  SpeedLinesThreshold: 100
   RailsSparks1: {fileID: 0}
   RailsSparks2: {fileID: 0}
   _Head: {fileID: 3939103226326160823}

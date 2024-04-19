@@ -2,23 +2,34 @@
 using System.Collections;
 
 [ExecuteInEditMode]
-public class S_Data_Spring : MonoBehaviour {
+public class S_Data_Spring : MonoBehaviour
+{
+	[Header("Bounce")]
+	[Tooltip("The magnitude of the environmental velocity added to player.")]
+	public float _springForce_;
+	[Tooltip("If false, player will always bounce in the spring direction, at its set force. If true, this is more maluable, and the player's launch direction will be affected by horizontal velocity before hitting spring.")]
+	public bool _keepHorizontal_;
 
-    public float SpringForce;
-    public bool IsAdditive;
-    public Transform BounceCenter;
-    public Animator anim { get; set; }
-    public bool LockControl = false;
-    public float LockTime = 60;
+	[Header("Objects")]
+	[Tooltip("This transform is used for bounce direction and position player is set to before the launch..")]
+	public Transform _BounceTransform;
+	[Tooltip("The spring animator, will be triggered when used.")]
+	public Animator _Animator { get; set; }
 
-    public Vector3 lockGravity = new Vector3(0f, -1.5f, 0f);
-    public bool lockAirMoves = true;
-    public float lockAirMovesTime = 30f;
+	[Header ("On Player")]
+	[Tooltip("If set to true, player will not be able to change input after launched.")]
+	public bool _willLockControl_ = false;
+	[Tooltip("How amy frames until the player regains control if the above is true.")]
+	public int _lockForFrames_ = 60;
+	[Tooltip("What the player's input will be during the frames their control is locked.")]
+	public S_Enums.LockControlDirection _LockInputTo_;
 
+	[Tooltip("Since character's can have different gravities. If this is not zero, the player gravity will be this until they hit the ground.")]
+	public Vector3 _overwriteGravity_;
+	[Tooltip("The player will not be able to perform air actions (homing, jump dash, bounce, double jump) until this many frames after being launched.")]
+	public float _lockAirMovesTime_ = 30f;
 
-    void Start()
-    {
-        anim = GetComponent<Animator>();
-        //Gravity.y = 56.5f * PlayerGravity;
-    }
+	void Start () {
+		_Animator = GetComponent<Animator>();
+	}
 }

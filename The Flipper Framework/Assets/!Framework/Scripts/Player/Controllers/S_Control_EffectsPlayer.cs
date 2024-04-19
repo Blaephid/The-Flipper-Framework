@@ -43,16 +43,16 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 
 	void FixedUpdate () {
 
-		if (_PlayerPhys._RB.velocity.sqrMagnitude > RunningDustThreshold && _PlayerPhys._isGrounded && RunningDust != null)
+		if (_PlayerPhys._currentRunningSpeed > RunningDustThreshold && _PlayerPhys._isGrounded && RunningDust != null)
 		{
 			RunningDust.Emit(Random.Range(0, 20));
 		}
 
-		if (_PlayerPhys._RB.velocity.sqrMagnitude > SpeedLinesThreshold && _PlayerPhys._isGrounded && SpeedLines != null && SpeedLines.isPlaying == false)
+		if (_PlayerPhys._currentRunningSpeed > SpeedLinesThreshold && SpeedLines != null && SpeedLines.isPlaying == false)
 		{
 			SpeedLines.Play();
 		}
-		else if (_PlayerPhys._RB.velocity.sqrMagnitude < SpeedLinesThreshold && SpeedLines.isPlaying == true || (!_PlayerPhys._isGrounded))
+		else if ((_PlayerPhys._currentRunningSpeed < SpeedLinesThreshold && SpeedLines.isPlaying == true) || Mathf.Abs(_PlayerPhys._coreVelocity.y) > _PlayerPhys._currentRunningSpeed)
 		{
 			SpeedLines.Stop();
 		}

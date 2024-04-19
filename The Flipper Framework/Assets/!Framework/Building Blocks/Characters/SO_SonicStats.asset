@@ -827,7 +827,7 @@ MonoBehaviour:
   DecelerationStats:
     moveDeceleration: 4
     airManualDecel: 1.5
-    airConstantDecel: 0.1
+    airConstantDecel: 0
     rollingFlatDecell: 0.5
     DecelBySpeed:
       serializedVersion: 2
@@ -2136,8 +2136,8 @@ MonoBehaviour:
     energyGainPerRing: 4
     energyGainPerSecond: 10
     maxBoostEnergy: 100
-    energyDrainedPerSecond: 5
-    energyDrainedOnStart: 5
+    energyDrainedPerSecond: 0
+    energyDrainedOnStart: 0
     cameraPauseEffect: {x: 2, y: 40}
   StartBoostStats:
     startBoostSpeed: 70

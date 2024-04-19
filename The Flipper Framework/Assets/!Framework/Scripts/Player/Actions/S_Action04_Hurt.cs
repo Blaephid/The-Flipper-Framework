@@ -184,7 +184,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 			_faceDirection = -newSpeed;
 
-			_PlayerPhys.SetTotalVelocity(newSpeed, new Vector2(1f, 0f));
+			_PlayerPhys.SetBothVelocities(newSpeed, new Vector2(1f, 0f));
 
 			_lockInputToThis = Vector3.zero; //Locks input as nothing being input, preventing skidding against the knockback until unlocked.
 		}
@@ -235,7 +235,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 				newVelocity.y = 0;
 
 				//Decrease speed
-				newVelocity = _PlayerPhys.Decelerate(newVelocity, Vector3.zero, 0.8f);
+				newVelocity = _PlayerPhys.Decelerate(newVelocity, Vector3.zero, 1.2f);
 
 				//Return vertical velocity and interpret as world space again
 				newVelocity.y = keepY;

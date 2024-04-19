@@ -141,7 +141,9 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			{ //Will only trigger start action if not already boosting.
 				if (_canStartBoost && _currentBoostEnergy > _energyDrainedOnStart_ && _canBoostBecauseGround)
 				{
-					StartAction();
+					//Can always be performed on the ground, but if in the air, air actions must be available.
+					if(_PlayerPhys._isGrounded || _Actions._areAirActionsAvailable)
+						StartAction();
 				}
 				return true; //Will still return true even if not applying the boost, this will prevent entering the wrong action when this is in cooldown.
 			}
@@ -170,13 +172,17 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		_faceDirectionOffset = Vector2.zero;
 
 		//Physics
-		_PlayerPhys.SetCoreVelocity(_faceDirection * _currentSpeed); //Immediately launch the player in the direction the character is facing.
 		_PlayerPhys._currentMaxSpeed = _maxSpeedWhileBoosting_;
 
 		if (!_PlayerPhys._isGrounded)
 		{
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_)); //Starts air boost parameters rather than normal boost.
 			_canBoostBecauseGround = false; //This prevents another boost from being performed if in the air.
+			_PlayerPhys.SetBothVelocities(_faceDirection * _currentSpeed, new Vector2(1, 0));
+		}
+		else
+		{
+			_PlayerPhys.SetCoreVelocity(_faceDirection * _currentSpeed); //Immediately launch the player in the direction the character is facing.
 		}
 
 		//Control
@@ -245,7 +251,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	}
 
 	//Called when a boost should come to an end. Applies trackers to tell the script the boost is over, and applie ending effects.
-	private void EndBoost () {
+	private void EndBoost (bool skipSlowing = false) {
 		//Flow cotntrol
 		_PlayerPhys._isBoosting = false;
 
@@ -255,7 +261,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 		//Physics
 		_PlayerPhys.CallAccelerationAndTurning = _PlayerPhys.DefaultAccelerateAndTurn; //Changes the method delegated for calculating acceleration and turning back to the correct one.
-		StartCoroutine(SlowSpeedOnEnd(_speedLostOnEndBoost_, _framesToLoseSpeed_)); //Player lose speed when ending a boost
+		 if(!skipSlowing) StartCoroutine(SlowSpeedOnEnd(_speedLostOnEndBoost_, _framesToLoseSpeed_)); //Player lose speed when ending a boost
 
 		//Control
 		_Actions._ActionDefault._isAnimatorControlledExternally = false; //The main action now takes over animations again.
@@ -475,6 +481,11 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	}
 	public void EventOnLoseGround () {
 		StartCoroutine(CheckAirBoost(_boostFramesInAir_ * 0.75f));
+	}
+
+	//Boost should end when going through springs or dash rings.This will not trigger the speed being lost over time.
+	public void EventOnTriggerAirLauncher () {
+		EndBoost(true);
 	}
 	#endregion
 

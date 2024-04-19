@@ -98,23 +98,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76aa04b38a8830f4989413856f3df268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
-    type: 3}
-  _EnemyToSpawn: {fileID: 1000013484563888, guid: 94011950920092e448e5d835201f5995,
-    type: 3}
-  _willRespawnOnDeath: 1
-  _distanceFromPlayerToSpawn: 300
-  _willAutoSpawn: 1
-  _willRespawnWhenDestroyed: 1
-  _respawnDelay: 10
-  _distanceFromPlayerToSpawn: 0
-  _willAutoRespawn: 1
-  RespawnTime: 0
-  respawnOnDeath: 0
-  Ring: {fileID: 0}
-  TeleportSparkle: {fileID: 0}
-  FollowThis: {fileID: 0}
-  followOffset: {x: 0, y: 0, z: 0}
+  _SpawnerData:
+    _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
+      type: 3}
+    _ObjectToSpawn: {fileID: 1000013484563888, guid: 94011950920092e448e5d835201f5995,
+      type: 3}
+    _willRespawnOnDeath: 1
+    _distanceFromPlayerToSpawn: 400
+    _willAutoSpawn: 1
+    _willRespawnWhenDestroyed: 1
+    _respawnDelay: 10
+  _ObjectClone: {fileID: 0}
+  _counter: 1
+  _ringSpawnerData:
+    _TransformToFollow: {fileID: 0}
+    _followOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &6256206368870015520
 MonoBehaviour:
   m_ObjectHideFlags: 0

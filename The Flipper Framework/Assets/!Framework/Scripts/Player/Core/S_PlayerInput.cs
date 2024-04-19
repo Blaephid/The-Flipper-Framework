@@ -21,6 +21,8 @@ public class S_PlayerInput : MonoBehaviour
 
 	private Transform             _Camera; // A reference to the main camera in the scene's transform
 
+	private Transform             _MainSkin;
+
 	#endregion
 
 	// Trackers
@@ -88,6 +90,7 @@ public class S_PlayerInput : MonoBehaviour
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_CamHandler = _Tools.CamHandler;
+		_MainSkin = _Tools.MainSkin;
 
 		// get the transform of the main camera
 		if (Camera.main != null)
@@ -182,11 +185,23 @@ public class S_PlayerInput : MonoBehaviour
 	/// 
 	#region public 
 	//Called by other scripts to set the input to a specific thing, unable to change for a period of time.
-	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput ) {
-		_move = newInput;
+	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_Enums.LockControlDirection whatLock = S_Enums.LockControlDirection.NoChange) {
+
+		//While the enum won't be used freqeuntly, it is short shand for removing input or setting player to forwards without having to calculate it before being called.
+		switch (whatLock)
+		{
+			//If enum is not set in the call, move becomes the input given.
+			case S_Enums.LockControlDirection.NoChange:
+				_move = newInput; break;
+			case S_Enums.LockControlDirection.NoInput:
+				_move = Vector3.zero; break;
+			case S_Enums.LockControlDirection.CharacterForwards:
+				_move = _MainSkin.forward; break;
+		}
+		_PlayerPhys._moveInput = _move;
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.
-		_lockedTime = Mathf.Max(frames, _lockedTime);
+		_lockedTime = Mathf.Max(frames, _lockedTime - _lockedCounter);
 
 		//Will be locked until counter exceeds timer.
 		_lockedCounter = 0;

@@ -87,7 +87,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		}
 
 
-		_PlayerPhys.SetTotalVelocity(_MainSkin.forward * 2, new Vector2(1, 0));
+		_PlayerPhys.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
 
 		Cam._HedgeCam._isReversed = false;
 		Cam._HedgeCam.SetBehind(20);

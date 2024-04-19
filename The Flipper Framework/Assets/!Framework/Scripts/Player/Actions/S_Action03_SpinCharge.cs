@@ -248,11 +248,11 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 			//The angle between movement direction and this new force (typically higher with bigger angles)
 			float dif = Vector3.Dot(addForce.normalized, _PlayerPhys._RB.velocity.normalized);
-			if (_PlayerPhys._horizontalSpeedMagnitude > 20)
+			if (_PlayerPhys._currentRunningSpeed > 20)
 				newSpeed *= _forceGainByAngle_.Evaluate(dif);
 
 			//And the current speed (typically lower when at higher speed)
-			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
+			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed);
 			addForce *= newSpeed; //Adds speed to direction to get the force
 
 			_PlayerPhys.AddCoreVelocity(addForce, false);
@@ -264,7 +264,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			dif *= _turnAmountByAngle_.Evaluate(dif);
 
 			newDir = Vector3.RotateTowards(newDir, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
-			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._horizontalSpeedMagnitude, false);
+			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._currentRunningSpeed, false);
 
 			_CharacterAnimator.SetFloat("GroundSpeed", newSpeed);
 

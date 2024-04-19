@@ -160,18 +160,21 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_PlayerPhys._isGravityOn = false;
 		_PlayerPhys._canBeGrounded = false;
 		_PlayerPhys._canBeGrounded = false;
-		_PlayerPhys.SetIsGrounded(false);
-		_JumpBall.SetActive(false);
 		_PlayerPhys._listOfCanControl.Add(false);
+
+		_PlayerPhys.SetIsGrounded(false);
 		_Input.JumpPressed = false;
 
 		//Effects
+		_JumpBall.SetActive(false);
+		_Actions._ActionDefault.SwitchSkin(false);
+		_Sounds.HomingAttackSound();
+
 		_CharacterAnimator.SetInteger("Action", 1);
 		_CharacterAnimator.SetTrigger("ChangedState");
-		_Sounds.HomingAttackSound();
+
 		_HomingTrailScript.emitTime = _homingTimerLimit_ + 0.06f;
 		_HomingTrailScript.emit = true;
-		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Get speed of attack and speed to return to on hit.		
 		_speedAtStart = Mathf.Max(_speedBeforeAttack * 0.9f, _homingAttackSpeed_);
@@ -242,8 +245,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_distanceFromTarget = Vector3.Distance(_Target.position, transform.position);
 		float thisTurn =  _homingTurnSpeed_;
 
-		Debug.DrawRay(transform.position, newDirection, Color.yellow, 5f);
-
 		//Set Player location when close enough, for precision.
 		if (_distanceFromTarget < (_Actions._listOfSpeedOnPaths[0] * Time.deltaTime))
 		{
@@ -258,7 +259,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			if (_Actions._listOfSpeedOnPaths[0] > 90)
 				thisTurn *= 1.3f;
 		}
-
 
 		//If there is input, then alter direction slightly to left or right.
 		if (_PlayerPhys._moveInput.sqrMagnitude > 0.2f && _canBeControlled_ && _timer > 0.02f)
@@ -290,15 +290,14 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				//A lerp would go through 0, while rotating by difference means it goes outwards without losing magnitude.
 				Vector3 temp = Vector3.RotateTowards(_horizontalDirection, useInput, Mathf.Deg2Rad * percentageRelevantDif, 0);
 
+				//Ensures vertical direction is not changed by input.
 				temp.y = rememberY;
 				newDirection = temp;
-
-				Debug.DrawRay(transform.position, newDirection, Color.red, 5f);
 			}
 		}
 		_currentDirection = Vector3.RotateTowards(_currentDirection, newDirection, Mathf.Deg2Rad * thisTurn, 0.0f);
-		Debug.DrawRay(transform.position, _currentDirection, Color.black, 5f);
-		_PlayerPhys.SetCoreVelocity(_currentDirection * _Actions._listOfSpeedOnPaths[0]);
+
+		_PlayerPhys.SetBothVelocities(_currentDirection * _Actions._listOfSpeedOnPaths[0], new Vector2 (1, 0)); //Move in direction but remove all environmental velocity.
 	}
 
 	public void HandleInputs () {
@@ -418,14 +417,14 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			faceDirection = Vector3.Lerp(faceDirection, wallNormal, 0.5f);
 		}
 
-		_PlayerPhys.SetTotalVelocity(Vector3.up * 2, new Vector2(1, 0), true);
+		_PlayerPhys.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0), true);
 		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
 
 		//Bounce backwards and upwards 
 
 		Vector3 reboundDirection = -faceDirection; 
 		if(reboundDirection.y < 0.4f && reboundDirection.y > -0.4f) reboundDirection = new Vector3(-faceDirection.x, 0.8f, -faceDirection.z); //If rebound is too horizontal, ensure it bounces upwards slighty.
-		_PlayerPhys.SetTotalVelocity(reboundDirection * force, new Vector2(1,0));
+		_PlayerPhys.SetBothVelocities(reboundDirection * force, new Vector2(1,0));
 
 		for (int i = 0 ; i < duration * 0.2f && !_PlayerPhys._isGrounded ; i++)
 		{

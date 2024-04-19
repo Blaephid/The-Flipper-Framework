@@ -30,7 +30,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private Animator              _CharacterAnimator;
 	private SkinnedMeshRenderer[] _SonicSkins;
 	private Transform             _MainSkin;
-	private CapsuleCollider _CharacterCapsule;
+	private CapsuleCollider	_CharacterCapsule;
+	private GameObject            _ShieldObject;
 
 	[HideInInspector]
 	public Image        _FadeOutImage;
@@ -335,7 +336,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_PlayerPhys._canBeGrounded = true;
 		_PlayerPhys._arePhysicsOn = true;
 
-		_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(0, 0));
+		_PlayerPhys.SetBothVelocities(Vector3.zero, new Vector2(0, 0));
 	}
 
 	//Bonking refers to rebounding off solid surfaces when moving into them at high speed.
@@ -395,7 +396,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 				if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
 
-					_PlayerPhys.SetTotalVelocity(Vector3.zero, new Vector2(1, 0));
+					_PlayerPhys.SetBothVelocities(Vector3.zero, new Vector2(1, 0));
 				_PlayerPhys._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
 				_MainSkin.forward = rememberDirection;
 			}
@@ -550,7 +551,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Called whenever the player should gain or lose a shield, which blocks one hit.
 	public void SetShield ( bool isOn ) {
 		_hasShield = isOn;
-		_Objects.ShieldObject.SetActive(isOn);
+		_ShieldObject.SetActive(isOn);
 	}
 	#endregion
 
@@ -592,6 +593,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_CharacterAnimator =	_Tools.CharacterAnimator;
 		_SonicSkins =		_Tools.PlayerSkins;
 		_MovingRing =		_Tools.MovingRingObject;
+		_ShieldObject =		_Tools.Shield;
 	}
 
 	//Reponsible for assigning stats from the stats script.

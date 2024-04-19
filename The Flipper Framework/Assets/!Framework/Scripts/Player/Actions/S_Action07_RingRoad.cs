@@ -105,7 +105,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	public void StartAction () {
 
 		//Physics
-		_PlayerPhys.SetTotalVelocity(Vector3.zero, Vector2.right); //Prevent character moving outside of the path.
+		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.right); //Prevent character moving outside of the path.
 		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
 		_PlayerPhys._canBeGrounded = false;
 
@@ -239,7 +239,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 		//Sends the player in the direction of the end of the spline.
 		_directionToGo = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length).tangent;
-		_PlayerPhys.SetTotalVelocity(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
+		_PlayerPhys.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
 		Debug.Log(_Actions._listOfSpeedOnPaths[0]+ " - " + endingSpeedResult);

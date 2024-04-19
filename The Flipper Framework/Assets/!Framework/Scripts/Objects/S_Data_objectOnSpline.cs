@@ -33,7 +33,7 @@ public class S_Data_objectOnSpline : MonoBehaviour
 	public bool isSpring;
 	public float force = 100;
 	public bool LockControl = true;
-	public float LockTime = 60;
+	public int  LockTime = 60;
 
 	public Vector3 lockGravity = new Vector3(0f, -1.5f, 0f);
 	public bool lockAirMoves = true;
@@ -64,19 +64,18 @@ public class S_Data_objectOnSpline : MonoBehaviour
 	void setBoosters ( GameObject go ) {
 		S_Data_SpeedPad pad = go.GetComponent<S_Data_SpeedPad>();
 
-		pad.Speed = speed;
-		pad.addSpeed = addRailSpeed;
-		pad.setSpeed = setRailSpeed;
+		pad._speedToSet_ = speed;
+		pad._addSpeed_ = addRailSpeed;
+		pad._willSetSpeed_ = setRailSpeed;
 
 	}
 
 	void setSprings ( GameObject go ) {
 		S_Data_Spring spring = go.GetComponent<S_Data_Spring>();
-		spring.SpringForce = force;
-		spring.LockControl = LockControl;
-		spring.LockTime = LockTime;
-		spring.lockGravity = lockGravity;
-		spring.lockAirMoves = lockAirMoves;
-		spring.lockAirMovesTime = lockAirMovesTime;
+		spring._springForce_ = force;
+		spring._willLockControl_ = LockControl;
+		spring._lockForFrames_ = LockTime;
+		spring._overwriteGravity_ = lockGravity;
+		spring._lockAirMovesTime_ = lockAirMovesTime;
 	}
 }
