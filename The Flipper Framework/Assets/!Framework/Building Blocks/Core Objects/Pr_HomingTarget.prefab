@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b1a46ddb4e93c48bfea5b68621b70f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _offset: {x: 0, y: 1, z: 0}
+  _offset: {x: 0, y: 0, z: 0}
   drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
 --- !u!65 &3629668216035965291

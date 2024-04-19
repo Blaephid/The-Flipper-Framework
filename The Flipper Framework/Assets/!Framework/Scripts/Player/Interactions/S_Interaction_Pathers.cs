@@ -334,10 +334,10 @@ public class S_Interaction_Pathers : MonoBehaviour
 			float speedGo = 0f;
 
 			//If the path is being started by a path speed pad
-			if (col.gameObject.GetComponent<S_Data_SpeedPad>())
+			if (col.TryGetComponent(out S_Data_SpeedPad SpeedPadScript))
 			{
-				_PathSpline = col.gameObject.GetComponent<S_Data_SpeedPad>()._Path;
-				speedGo = Mathf.Max(col.gameObject.GetComponent<S_Data_SpeedPad>()._speedToSet_, _PlayerPhys._horizontalSpeedMagnitude);
+				_PathSpline = SpeedPadScript._Path;
+				speedGo = Mathf.Max(SpeedPadScript._speedToSet_, _PlayerPhys._horizontalSpeedMagnitude);
 			}
 
 			//If the path is being started by a normal trigger

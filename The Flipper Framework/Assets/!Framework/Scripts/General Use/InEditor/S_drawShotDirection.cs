@@ -61,24 +61,32 @@ public class S_drawShotDirection : MonoBehaviour
 			Vector3[] DebugTrajectoryPoints; //This array will make points along a line following the path the player should take.
 			if (_SpringScript)
 			{
-				//If spring, get gravity and force.
-
+				//If spring, get gravity, force and duration of lock.
 				_force = _SpringScript._springForce_;
+
 				_overwriteGravity = _SpringScript._overwriteGravity_;
 				if(_overwriteGravity != Vector3.zero)
 				{
 					_fallGravity = _overwriteGravity;
 					_upGravity = _overwriteGravity;
 				}
+				_lockFrames = _SpringScript._lockForFrames_; 
 
-				_lockFrames = _SpringScript._lockForFrames_;
-
+				//Use the launch data to proejct where player will go.
 				DebugTrajectoryPoints = PreviewTrajectory(_ShotCenter.position, _SpringScript._BounceTransform.up * _force, _SpringScript._BounceTransform.up * 2, _SpringScript._LockInputTo_);
 			}
 			else
 			{
 				_force = _DashRingScript._speedToSet_;
 				_overwriteGravity = _DashRingScript._overwriteGravity_;
+				if (_overwriteGravity != Vector3.zero)
+				{
+					_fallGravity = _overwriteGravity;
+					_upGravity = _overwriteGravity;
+				}
+				_lockFrames = _DashRingScript._lockControlFrames_;
+
+				//Use the launch data to proejct where player will go.
 				DebugTrajectoryPoints = PreviewTrajectory(_ShotCenter.position, transform.forward * _force, transform.forward * 2, _DashRingScript._lockInputTo_);
 			}
 

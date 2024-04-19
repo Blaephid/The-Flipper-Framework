@@ -187,10 +187,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		}
 
 		//Prevents going over the maximum
-		if (_currentCharge > _maximunCharge_)
-		{
-			_currentCharge = _maximunCharge_;
-		}
+		_currentCharge = Mathf.Min(_currentCharge, _maximunCharge_);
 	}
 
 	//Changes how the player moves when in this state.

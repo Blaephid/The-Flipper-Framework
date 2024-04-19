@@ -317,7 +317,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				case S_Interaction_Pathers.PathTypes.rail:
 
 					_PlayerPhys.transform.up = _PlayerPhys.transform.rotation * (_RailTransform.rotation * _Sample.up);
-					_MainSkin.rotation = Quaternion.LookRotation(_sampleForwards, _PlayerPhys.transform.up);
+					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards);
 
 					Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
 
@@ -331,13 +331,13 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 					//Set ziphandle rotation to follow sample
 					_ZipHandle.rotation = _RailTransform.rotation * _Sample.Rotation;
-					_PlayerPhys.transform.up = _PlayerPhys.transform.rotation * (_RailTransform.rotation * _Sample.up);
-					_MainSkin.rotation = Quaternion.LookRotation(_sampleForwards, _PlayerPhys.transform.up);
-
 					//Since the handle and by extent the player can be tilted up to the sides (not changing forward direction), adjust the eueler angles to reflect this.
 					//_pulleyRotate is handled in input, but applied here.
 					_ZipHandle.eulerAngles = new Vector3(_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f * _movingDirection);
-					_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _MainSkin.eulerAngles.z + _pulleyRotate * 70f);
+
+					//_PlayerPhys.transform.up = _PlayerPhys.transform.rotation * (_RailTransform.rotation * _Sample.up);
+					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards);
+					_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _pulleyRotate * 70f);
 
 					//Similar to on rail, but place handle first, and player relevant to that.
 					newPos = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
@@ -351,6 +351,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 	//Takes the data from the previous method but handles physics for smoothing and applying if lost rail.
 	public void MoveOnRail () {
+		_PlayerPhys.SetIsGrounded(true);
+
 		HandleRailSpeed(); //Make changes to player speed based on angle
 
 		//If this point is on the spline.
@@ -443,11 +445,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				GameObject target = _ZipHandle.transform.GetComponent<S_Control_Zipline>().homingtgt;
 				target.SetActive(false);
 
-				_PlayerPhys.SetCoreVelocity(_ZipBody.velocity); //Make sure zip handle flies off
+				//_PlayerPhys.SetCoreVelocity(_ZipBody.velocity); //Make sure zip handle flies off
 
-				//Make player face upwards again rather than tilted to the side from rotating handle
-				Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-				if (VelocityMod != Vector3.zero) { _MainSkin.rotation = Quaternion.LookRotation(VelocityMod, transform.up); }
 				_PlayerPhys.SetCoreVelocity(_sampleForwards * _grindingSpeed); //Make sure player flies off the end of the rail consitantly.
 				break;
 
@@ -533,10 +532,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	//Inputs
 	public void HandleInputs () {
-		if (!_Actions._isPaused) HandleUniqueInputs();
 
 		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 		_Actions.HandleInputs(_positionInActionList);
+
+		if (!_Actions._isPaused) HandleUniqueInputs();
 	}
 
 	private void HandleUniqueInputs () {
@@ -691,7 +691,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	//Called externally when entering a booster on a rail. Changes speed. 
-	public IEnumerator ApplyBoost ( float speed, bool set, float addSpeed, bool backwards ) {
+	public IEnumerator ApplyBoosters ( float speed, bool set, float addSpeed, bool backwards ) {
 		//Rather than apply boost immediately, stretch it over three frames for smoothness and to ensure player proerly enters rail.
 		for (int i = 0 ; i < 3 ; i++)
 		{

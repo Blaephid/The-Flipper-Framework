@@ -25,14 +25,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000011923364308}
-  m_LocalRotation: {x: -0, y: -0, z: -0.6060539, w: 0.7954236}
+  m_LocalRotation: {x: 0.000000059604645, y: -0, z: -0.5876336, w: 0.8091272}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000013130497754}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -74.609}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -71.979}
 --- !u!33 &33000012443735406
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -94,7 +94,6 @@ GameObject:
   - component: {fileID: 4000013130497754}
   - component: {fileID: 65000010017290134}
   - component: {fileID: 114000010754803480}
-  - component: {fileID: 8349486046636627964}
   - component: {fileID: 82000010483717982}
   m_Layer: 0
   m_Name: Pr_DashRing
@@ -117,7 +116,6 @@ Transform:
   m_Children:
   - {fileID: 4000013981200658}
   - {fileID: 3885937149502337261}
-  - {fileID: 7786040367226423988}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -146,48 +144,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onRail: 0
-  railBackwards: 0
-  isDashRing: 1
-  path: {fileID: 0}
-  setSpeed: 1
-  addSpeed: 15
-  Speed: 80
-  LockToDirection: 1
-  Snap: 1
-  AffectCamera: 1
-  ResetRotation: 1
-  setInputForwards: 0
-  positionToLockTo: {fileID: 7786040367226423988}
-  LockControl: 1
-  LockControlTime: 40
-  lockGravity: {x: 0, y: -1.45, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 20
---- !u!114 &8349486046636627964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013037187298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DebugForce: 1
-  LineLength: 30
-  isSpring: 0
-  isBoostRing: 1
-  spring: {fileID: 0}
-  speedPad: {fileID: 114000010754803480}
-  Force: 80
-  ShotCenter: {fileID: 4000013130497754}
-  lockGravity: {x: 0, y: -1.45, z: 0}
-  FallGravity: {x: 0, y: -1.5, z: 0}
-  UpGravity: {x: 0, y: -1.5, z: 0}
-  PlayerDecell: 1.002
+  _isOnRail_: 0
+  _isDashRing_: 1
+  _Path: {fileID: 0}
+  _willSetBackwards_: 0
+  _willSetSpeed_: 1
+  _addSpeed_: 15
+  _speedToSet_: 80
+  _willCarrySpeed_: 1
+  _willSnap: 0
+  _willAffectCamera_: 1
+  _CameraRotateTime_: {x: 0.15, y: 20}
+  _PositionToLockTo: {fileID: 4000013130497754}
+  _willLockControl: 0
+  _lockControlFrames_: 30
+  _lockInputTo_: 1
+  _overwriteGravity_: {x: 0, y: 0, z: 0}
+  _lockAirMovesFor_: 30
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0
@@ -285,37 +258,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!1 &693495288869660913
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7786040367226423988}
-  m_Layer: 0
-  m_Name: LockPosition
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7786040367226423988
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 693495288869660913}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4000013130497754}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2568351612008521427
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,6 +270,7 @@ GameObject:
   - component: {fileID: 3514529406219168338}
   - component: {fileID: 1375498123779447062}
   - component: {fileID: 126034879377962833}
+  - component: {fileID: 1829543084453734850}
   m_Layer: 6
   m_Name: Ref_Direction
   m_TagString: Untagged
@@ -342,14 +285,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2568351612008521427}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0.61}
-  m_LocalScale: {x: 0.09678003, y: 1.7345282, z: 0.09678003}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.561}
+  m_LocalScale: {x: 0.09678003, y: 0.14405777, z: 1.4461806}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000013130497754}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3514529406219168338
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -412,5 +355,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StopRender: 0
-  Des: 0
+  _whatAction: 0
+  _delayInSeconds: 0
+--- !u!114 &1829543084453734850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2568351612008521427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _debugForce: 1
+  _calculations: 60
+  _SpringScript: {fileID: 0}
+  _DashRingScript: {fileID: 114000010754803480}
+  _force: 80
+  _ShotCenter: {fileID: 4000013130497754}
+  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
+    type: 2}
+  _simCoreVel: {x: 0, y: -188.7999, z: -2}
+  _simEnVel: {x: 0, y: 0, z: -80}

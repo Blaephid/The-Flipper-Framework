@@ -7,32 +7,29 @@ public class S_Data_SpeedPad : MonoBehaviour
 	[Header ("Type")]
 	public bool	_isOnRail_;
 	public bool	_isDashRing_;
+	public Spline       _Path;
 
 	[Header ("On Rail")]
 	public bool	_willSetBackwards_;
-	public Spline	_Path;
 	public bool	_willSetSpeed_ = true;
 	public float	_addSpeed_ = 15;
 
-	[Header("Off Rail")]
 
 	[Header("Effects")]
-	public float	_speedToSet_;
-	public bool	_lockToDirection_;
+	public float	_speedToSet_ = 100;
+	public bool         _willCarrySpeed_ = true;
 
 	public bool	_willSnap;
 	public bool	_willAffectCamera_ = true;
-	public bool	_willResetRotation_ = true;
+	public Vector2      _CameraRotateTime_ = new Vector2 (0.15f, 20f);
 
 	[Header("Lock?")]
 	public Transform	_PositionToLockTo;
 	public bool	_willLockControl;
-	public float	_lockControlFor_ = 0.5f;
+	public int	_lockControlFrames_ = 30;
 	public S_Enums.LockControlDirection _lockInputTo_;
 
 	public Vector3      _overwriteGravity_;
-	public bool	_willLockAirMoves_ = false;
 	public float	_lockAirMovesFor_ = 30f;
-
 }
 

@@ -129,14 +129,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5626e6442bcc31848b513053d594ce12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpringForce: 20
-  IsAdditive: 0
-  BounceCenter: {fileID: 0}
-  LockControl: 1
-  LockTime: 5
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  _springForce_: 60
+  _keepHorizontal_: 0
+  _BounceTransform: {fileID: 4295196305529716}
+  _willLockControl_: 1
+  _lockForFrames_: 5
+  _LockInputTo_: 0
+  _overwriteGravity_: {x: 0, y: 0, z: 0}
+  _lockAirMovesTime_: 30
 --- !u!82 &82856755086992070
 AudioSource:
   m_ObjectHideFlags: 0
@@ -261,12 +261,121 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9d02b444549974b946d5f306e77118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HorizontalXDistance: 0
-  HorizontalXSpeed: 0
-  HorizontalZDistance: 0
-  HorizontalZSpeed: 0
-  VerticalDistance: 0
-  VerticalSpeed: 0
+  _projectPath: 0
+  _calculations: 0
+  _isActive: 1
+  _ListOfMovesOnStart:
+  - _XSpeedByTime_:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.8
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _XMaxDistance_: 0
+    _XSpeed_: 0
+    _willReturnOnX: 1
+    _XDelay: 0
+    _ZSpeedByTime_:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.8
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _ZMaxDistance_: 0
+    _ZSpeed_: 0
+    _willReturnOnZ: 1
+    _ZDelay: 0
+    _YSpeedByTime_:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.8
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.7
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _YMaxDistance_: 0
+    _YSpeed_: 5
+    _willReturnOnY: 1
+    _YDelay: 0
 --- !u!1 &3660494256526747153
 GameObject:
   m_ObjectHideFlags: 0

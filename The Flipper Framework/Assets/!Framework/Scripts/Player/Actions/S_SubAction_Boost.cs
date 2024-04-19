@@ -71,7 +71,6 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	// Trackers
 	#region trackers
-	private S_Enums.PrimaryPlayerStates _whatActionWasOn;
 	private float                 _currentBoostEnergy = 10;
 
 	//Running speed to apply / reach
@@ -137,6 +136,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 		if (_Input.BoostPressed)
 		{
+			_Input.RollPressed = false;
 			if (!_PlayerPhys._isBoosting)
 			{ //Will only trigger start action if not already boosting.
 				if (_canStartBoost && _currentBoostEnergy > _energyDrainedOnStart_ && _canBoostBecauseGround)
@@ -220,27 +220,31 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			// Will end boost if released button , entered a state where without boost attached,  ran out of energy , or movement speed was decreased externally (like from a collision)
 			if (!_Input.BoostPressed || !_inAStateThatCanBoost || _currentBoostEnergy <= 0 || currentRunningPhysics.sqrMagnitude < 100) //Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
 			{
-				EndBoost();
+			EndBoost();
 			}
 
-			_currentSpeed = Mathf.Max(_currentSpeed, _PlayerPhys._horizontalSpeedMagnitude); //If running speed has been increased beyond boost speed (such as through slope physics) then factor that in so it isn't set over.
-			
+			if (_Actions._listOfSpeedOnPaths.Count == 0)
+				_currentSpeed = Mathf.Max(_currentSpeed, _PlayerPhys._horizontalSpeedMagnitude); //If running speed has been increased beyond boost speed (such as through slope physics) then factor that in so it isn't set over.
+			else
+				_currentSpeed = Mathf.Max(_currentSpeed, _Actions._listOfSpeedOnPaths[0]);
+
 			//If running speed has been decreased by an external force AFTER boost speed was set last frame (such as by slope physics), then apply the difference to the boost speed.
-			if (_PlayerPhys._horizontalSpeedMagnitude < _PlayerPhys._previousHorizontalSpeeds[1])
+			if (_PlayerPhys._horizontalSpeedMagnitude < _PlayerPhys._previousHorizontalSpeeds[1] && _Actions._listOfSpeedOnPaths.Count == 0)
 			{
 				float difference = _PlayerPhys._horizontalSpeedMagnitude - _PlayerPhys._previousHorizontalSpeeds[1];
 				_currentSpeed += difference;
 			}
 
 			//If speed is decreased beyond boost speed, then if on flat ground return to it.
-			if (!_PlayerPhys._isCurrentlyOnSlope && _PlayerPhys._isGrounded)
+			if (!_PlayerPhys._isCurrentlyOnSlope && _PlayerPhys._isGrounded && _currentSpeed < _currentSpeedLerpingTowardsGoal)
 			{
 				_currentSpeed = Mathf.MoveTowards(_currentSpeed, _currentSpeedLerpingTowardsGoal, _regainBoostSpeed_); //The latter will only be changed during initial boost start, so this won't kick in until losing speed after finishing lerp.
 			}
 
 			//Apply speed
 			_PlayerPhys.SetLateralSpeed(_currentSpeed, false); //Applies boost speed to movement.
-			if (_Actions._listOfSpeedOnPaths.Count > 0) _Actions._listOfSpeedOnPaths[0] = _currentSpeed; //Sets speed on rails, or other actions following paths.
+			if (_Actions._listOfSpeedOnPaths.Count > 0) 
+				_Actions._listOfSpeedOnPaths[0] = _currentSpeed; //Sets speed on rails, or other actions following paths.
 
 			//Remember that the turning method will be called by the delegate in PlayerPhysics, not here. 
 
@@ -264,6 +268,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		 if(!skipSlowing) StartCoroutine(SlowSpeedOnEnd(_speedLostOnEndBoost_, _framesToLoseSpeed_)); //Player lose speed when ending a boost
 
 		//Control
+		_Input.BoostPressed = false; //Incase end boost was called not letting go of the button.
 		_Actions._ActionDefault._isAnimatorControlledExternally = false; //The main action now takes over animations again.
 
 		//Effects
@@ -480,7 +485,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		_canBoostBecauseGround = true; //This allows another boost to be performed in the air (because this started from the ground. }
 	}
 	public void EventOnLoseGround () {
-		StartCoroutine(CheckAirBoost(_boostFramesInAir_ * 0.75f));
+		StartCoroutine(CheckAirBoost(_boostFramesInAir_));
 	}
 
 	//Boost should end when going through springs or dash rings.This will not trigger the speed being lost over time.

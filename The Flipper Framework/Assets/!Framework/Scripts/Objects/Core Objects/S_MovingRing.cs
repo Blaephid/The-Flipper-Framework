@@ -1,53 +1,52 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S_MovingRing : MonoBehaviour {
+public class S_MovingRing : MonoBehaviour
+{
 
-    public float CollectTime;
-    float coutner;
-    public bool colectable { get; set; }
-    float flickCount = 0;
+	public float _collectTime_ = 0.6f;
+	float _counter;
+	public bool _isCollectable { get; set; }
+	float _flickCount = 0;
 
-    public float Duration;
+	public float _duration_ = 6;
 
-    void Start()
-    {
-        colectable = false;
-    }
+	void Start () {
+		_isCollectable = false;
+	}
 
 	void Update () {
 
-        coutner += Time.deltaTime;
-        if(coutner > CollectTime)
-        {
-            colectable = true;
-        }
-        if(coutner > Duration - 2)
-        {
-            RingFlicker();
-        }
-        if(coutner > Duration)
-        {
-            Destroy(gameObject);
-        }
+		_counter += Time.deltaTime;
+		if (_counter > _collectTime_)
+		{
+			_isCollectable = true;
+		}
+		if (_counter > _duration_ - 2)
+		{
+			RingFlicker();
+		}
+		if (_counter > _duration_)
+		{
+			Destroy(gameObject);
+		}
 
 	}
 
-    public void RingFlicker()
-    {
-        flickCount += Time.deltaTime * 180;
-        if(flickCount < 0)
-        {
-            gameObject.GetComponent<MeshRenderer>().enabled = false;
-        }
-        else
-        {
-            gameObject.GetComponent<MeshRenderer>().enabled = true;
-        }
-        if (flickCount > 10)
-        {
-            flickCount = -10;
-        }
-    }
+	public void RingFlicker () {
+		_flickCount += Time.deltaTime * 180;
+		if (_flickCount < 0)
+		{
+			gameObject.GetComponent<MeshRenderer>().enabled = false;
+		}
+		else
+		{
+			gameObject.GetComponent<MeshRenderer>().enabled = true;
+		}
+		if (_flickCount > 10)
+		{
+			_flickCount = -10;
+		}
+	}
 
 }

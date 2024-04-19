@@ -713,7 +713,6 @@ public class S_HedgeCamera : MonoBehaviour
 		_heightToLook = heightSet;
 		_lockedRotationSpeed = speed;
 		_moveModifier = lagSet;
-
 	}
 
 	//Only changes height

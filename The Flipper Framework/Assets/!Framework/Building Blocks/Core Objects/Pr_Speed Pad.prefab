@@ -159,24 +159,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onRail: 0
-  railBackwards: 0
-  isDashRing: 0
-  path: {fileID: 0}
-  setSpeed: 1
-  addSpeed: 15
-  Speed: 130
-  LockToDirection: 1
-  Snap: 1
-  AffectCamera: 1
-  ResetRotation: 1
-  setInputForwards: 0
-  positionToLockTo: {fileID: 7047104281063144656}
-  LockControl: 1
-  LockControlTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 0
-  lockAirMovesTime: 30
+  _isOnRail_: 0
+  _isDashRing_: 0
+  _Path: {fileID: 0}
+  _willSetBackwards_: 0
+  _willSetSpeed_: 0
+  _addSpeed_: 0
+  _speedToSet_: 100
+  _willCarrySpeed_: 1
+  _willSnap: 0
+  _willAffectCamera_: 1
+  _CameraRotateTime_: {x: 0.15, y: 20}
+  _PositionToLockTo: {fileID: 7047104281063144656}
+  _willLockControl: 1
+  _lockControlFrames_: 10
+  _lockInputTo_: 2
+  _overwriteGravity_: {x: 0, y: 0, z: 0}
+  _lockAirMovesFor_: 30
 --- !u!205 &205000011634412510
 LODGroup:
   m_ObjectHideFlags: 0

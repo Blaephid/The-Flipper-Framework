@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Switch;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.Windows;
+using UnityEngine.Rendering.Universal;
 
 
 public class S_Interaction_Objects : MonoBehaviour
@@ -35,8 +36,11 @@ public class S_Interaction_Objects : MonoBehaviour
 	private S_Handler_Camera      _CamHandler;
 	private S_Control_SoundsPlayer _Sounds;
 
+	private Transform		_FeetPoint;
+
 	//External
 	private S_Control_MovingPlatform	_PlatformScript;
+	private GameObject                       _PlatformAnchor;
 
 	[Header("Unity Objects")]
 	private GameObject	_JumpBall;
@@ -63,6 +67,8 @@ public class S_Interaction_Objects : MonoBehaviour
 	[HideInInspector] 
 	public float	_displaySpeed;
 
+	private Vector3     _previousPlatformPointPosition;
+
 	#endregion
 
 	#endregion
@@ -86,7 +92,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_CoreUIElements.RingsCounter.text = ": " + (int)_HurtAndHealth._ringAmount;
 	}
 
-	void FixedUpdate () {
+	private void Update () {
 		FollowPlatform();
 	}
 
@@ -145,7 +151,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "MovingRing":
 				if (Col.TryGetComponent(out S_MovingRing MovingRingScript))
 				{
-					if (MovingRingScript.colectable)
+					if (MovingRingScript._isCollectable)
 					{
 						StartCoroutine(_HurtAndHealth.GainRing(1f, Col, RingCollectParticle));
 					}
@@ -154,24 +160,26 @@ public class S_Interaction_Objects : MonoBehaviour
 		}
 	}
 
-	public void EventTriggerExit ( Collider col ) {
-		if (col.tag == "Wind")
+	public void EventTriggerExit ( Collider Col ) {
+		switch (Col.tag)
 		{
-			GetComponent<S_Action13_Hovering>().inWind = false;
+			case "Wind":
+				GetComponent<S_Action13_Hovering>().inWind = false;
+				break;
+
+			case "MovingPlatform":
+				Destroy(_PlatformAnchor);
+				break;
 		}
 	}
 
-	public void EventTriggerStay ( Collider col ) {
-
-		if (col.gameObject.tag == "MovingPlatform")
+	public void EventTriggerStay ( Collider Col ) {
+		switch (Col.tag)
 		{
-			_PlatformScript = col.gameObject.GetComponent<S_Control_MovingPlatform>();
+			case "MovingPlatform":
+				AttachAnchorToPlatform(Col);
+				break;
 		}
-		else
-		{
-			_PlatformScript = null;
-		}
-
 	}
 
 	#endregion
@@ -183,32 +191,37 @@ public class S_Interaction_Objects : MonoBehaviour
 	#region private
 	//Called every frame
 	private void UpdateSpeed () {
-		switch (_Actions._whatAction)
-		{
-			default:
-				_displaySpeed = _PlayerPhys._horizontalSpeedMagnitude;
-				break;
-
-			case S_Enums.PrimaryPlayerStates.WallRunning:
-				if (_Actions.Action12._runningSpeed > _Actions.Action12._climbingSpeed)
-					_displaySpeed = _Actions.Action12._runningSpeed;
-				else
-					_displaySpeed = _Actions.Action12._climbingSpeed;
-				break;
-		}
-
-		if (_CoreUIElements.SpeedCounter != null && _PlayerPhys._speedMagnitude > 10f) _CoreUIElements.SpeedCounter.text = _displaySpeed.ToString("F0");
+		//If a text element of the UI has been set for speed, update it to show current running speed.
+		if (_CoreUIElements.SpeedCounter != null && _PlayerPhys._speedMagnitude > 10f) _CoreUIElements.SpeedCounter.text = _PlayerPhys._currentRunningSpeed.ToString("F0");
 		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) _CoreUIElements.SpeedCounter.text = "0";
 	}
 
-	private void FollowPlatform () {
-		if (_PlatformScript != null)
+	//When on a moving platform, check is an anchor has currently been spawned, and if not, create one.
+	private void AttachAnchorToPlatform(Collider Col) {
+		if (_PlatformAnchor == null)
 		{
-			transform.position += (-_PlatformScript.TranslateVector);
+			//The reason we're using an anchor reference attached as a child to the mover is because it means we can compare the changes in world position every frame, no matter what happens.
+			//For instance, if the object is rotating, this anchor will reflect that as it will move around as a child of the rotating.
+			_PlatformAnchor = GameObject.Instantiate(new GameObject("Anchor"), _PlayerPhys.transform.position, Quaternion.identity);
+			_PlatformAnchor.transform.parent = Col.transform;
+			_previousPlatformPointPosition = _PlatformAnchor.transform.position;
 		}
-		if (!_PlayerPhys._isGrounded)
+	}
+
+	//If there is currently a platform script saved from being in a trigger with one, adjust the players position every frame to match it.
+	private void FollowPlatform () {
+
+		if(_PlatformAnchor != null)
 		{
-			_PlatformScript = null;
+			//Get how much the anchor has moved, and apply that same movement to the player.
+			Vector3 direction = _PlatformAnchor.transform.position - _previousPlatformPointPosition;
+			_previousPlatformPointPosition = _PlatformAnchor.transform.position;
+
+			//These alternate approaches are because when moving, changing rigidbody is smoother, when not, changing transform is smoother.
+			if (_PlayerPhys._coreVelocity.sqrMagnitude < 5)
+				_PlayerPhys.transform.position += direction;
+			else
+				_PlayerPhys._RB.position += direction;
 		}
 	}
 
@@ -219,94 +232,97 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		Col.GetComponent<AudioSource>().Play();
 
+		//If a rail booster
 		if (SpeedPadScript._isOnRail_)
 		{
-
+			//Attaches the player to the rail this rail booster is on.
 			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.Rail)
 			{
-				transform.position = Col.GetComponent<S_Data_SpeedPad>()._PositionToLockTo.position;
+				_PlayerPhys.transform.position = SpeedPadScript._PositionToLockTo.position;
 			}
 			else
 			{
-				StartCoroutine(GetComponent<S_Action05_Rail>().ApplyBoost(SpeedPadScript._speedToSet_, SpeedPadScript._willSetSpeed_, SpeedPadScript._addSpeed_, SpeedPadScript._willSetBackwards_));
+				StartCoroutine(_Actions._ObjectForActions.GetComponent<S_Action05_Rail>().ApplyBoosters(SpeedPadScript._speedToSet_, SpeedPadScript._willSetSpeed_, SpeedPadScript._addSpeed_, SpeedPadScript._willSetBackwards_));
 			}
 			return;
 		}
 
-
-		else if (!Col.GetComponent<S_Data_SpeedPad>()._Path)
+		//Normal Dash pad
+		else if (!SpeedPadScript._Path)
 		{
-
-			_Actions._isAirDashAvailables = true;
-
-			transform.rotation = Quaternion.identity;
-			//ResetPlayerRotation
-
-			Vector3 lockpos;
-			if (Col.GetComponent<S_Data_SpeedPad>()._PositionToLockTo != null)
-				lockpos = Col.GetComponent<S_Data_SpeedPad>()._PositionToLockTo.position;
+			//For consistency, ensure player always launches out of ring of off booster from the same point.
+			Vector3 snapPosition;
+			if (SpeedPadScript._PositionToLockTo != null)
+				snapPosition = SpeedPadScript._PositionToLockTo.position;
 			else
-				lockpos = Col.transform.position;
+				snapPosition = Col.transform.position;
 
-
-			if (SpeedPadScript._lockToDirection_)
+			//Magnitude of force
+			float speed = SpeedPadScript._speedToSet_;
+			if (SpeedPadScript._willCarrySpeed_)
 			{
-				float speed = Col.GetComponent<S_Data_SpeedPad>()._speedToSet_;
-				if (speed < _PlayerPhys._horizontalSpeedMagnitude)
-					speed = _PlayerPhys._horizontalSpeedMagnitude;
-
-				if (!SpeedPadScript._isDashRing_)
-					StartCoroutine(ApplyForceAfterDelay(Col.transform.forward * speed, lockpos, Vector3.zero));
-				else
-					StartCoroutine(ApplyForceAfterDelay(Col.transform.forward * Col.GetComponent<S_Data_SpeedPad>()._speedToSet_, lockpos, Vector3.zero));
-			}
-			else
-			{
-				_PlayerPhys.AddCoreVelocity(Col.transform.forward * Col.GetComponent<S_Data_SpeedPad>()._speedToSet_);
-
-				if (Col.GetComponent<S_Data_SpeedPad>()._willSnap)
-				{
-					transform.position = lockpos;
-				}
+				speed = Mathf.Max(speed, _PlayerPhys._currentRunningSpeed);
 			}
 
-
+			//Dash ring
 			if (SpeedPadScript._isDashRing_)
 			{
-
+				//Air interactions
+				_Actions._isAirDashAvailables = true;
 				_Actions._ActionDefault.CancelCoyote();
 				_Actions._ActionDefault.StartAction();
+
+				//Effects
 				_CharacterAnimator.SetBool("Grounded", false);
 
-				if (SpeedPadScript._willLockAirMoves_)
+				//Prevents immediately using air actions like bounce or jumps.
+				if (SpeedPadScript._lockAirMovesFor_ > 0)
 				{
 					StopCoroutine(_Actions.lockAirMoves(SpeedPadScript._lockAirMovesFor_));
 					StartCoroutine(_Actions.lockAirMoves(SpeedPadScript._lockAirMovesFor_));
 				}
 
+				//Because this is to launch the player through the sky, certain stats can have different gravities. This ensures characters will always fall the same way by overwriting their stats until landing.
 				if (SpeedPadScript._overwriteGravity_ != Vector3.zero)
 				{
 					StartCoroutine(LockPlayerGraivtyUntilGrounded(SpeedPadScript._overwriteGravity_));
 				}
 
-
-
+				Vector3 direction = SpeedPadScript._PositionToLockTo.forward;
+				LaunchInDirection(direction, speed, snapPosition);
 			}
+			//Speed pad
 			else
 			{
+				//Effects
+				_CharacterAnimator.SetBool("Grounded", true);
+
+				//Set rotation to immediately be in line with pad.
 				transform.up = Col.transform.up;
-				_CharacterAnimator.transform.forward = Col.transform.forward;
+				_Actions._ActionDefault.SetSkinRotationToVelocity(0, Col.transform.forward);
+
+
+				//Apply location to start moving from.
+				if (SpeedPadScript._willSnap)
+				{
+					snapPosition += _FeetPoint.up * -_FeetPoint.localPosition.y; //Because on ground, feet should be set to pad position.
+					_PlayerPhys.transform.position = snapPosition;
+				}
+
+				//Pushes player in direction
+				_PlayerPhys.SetCoreVelocity(Col.transform.forward * speed, true);
 			}
 
 			if (SpeedPadScript._willLockControl)
 			{
-				_Input.LockInputForAWhile(SpeedPadScript._lockControlFor_, true, Col.transform.forward, SpeedPadScript._lockInputTo_);
+				_Input.LockInputForAWhile(SpeedPadScript._lockControlFrames_, false, Col.transform.forward, SpeedPadScript._lockInputTo_);
 			}
+
+			//If pad is set to, rotate camera horizontally towards dash direction.
 			if (SpeedPadScript._willAffectCamera_)
 			{
-				Vector3 dir = Col.transform.forward;
-				_CamHandler._HedgeCam.SetCamera(dir, 2.5f, 20, 5f, 1);
-
+				Quaternion targetRotation = Quaternion.LookRotation(Col.transform.forward, _PlayerPhys.transform.up);
+				_CamHandler._HedgeCam.SetCameraNoHeight(Col.transform.forward, SpeedPadScript._CameraRotateTime_.x, SpeedPadScript._CameraRotateTime_.y, targetRotation, false, false);
 			}
 
 		}
@@ -331,28 +347,28 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Input.SpecialPressed = false;
 		_Input.BouncePressed = false;
 
-		//Calculate force
-
-		//Since vertical will be taken over by environment, get horizontal core velocity.
-		Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity, false);
 		Vector3 direction = SpringScript._BounceTransform.up;
-		Vector3 bounceHorizontalVelocity = _PlayerPhys.GetRelevantVel(direction * SpringScript._springForce_, false); //Combined the spring direction with force to get the only the force horizontally.
+		//Calculate force
 
 		//If spring should not take complete control of player velocity, calculate direction based on movement into spring, including spring direction.
 		//Horizontal speed is calculated using core velocity, while vertical is environmental. Horizontal cannot be greater than the larger of running speed or launch speed.
 		if (SpringScript._keepHorizontal_)
 		{
-			Vector3 combinedVelocityDirection = (bounceHorizontalVelocity * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
-			Vector3 combinedVelocityMagnitude = (bounceHorizontalVelocity + newCoreVelocity); //The magnitude of the two put together.
+			//Since vertical will be taken over by environment, get horizontal core velocity.
+			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity, false);
+			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVel(direction * SpringScript._springForce_, false); //Combined the spring direction with force to get the only the force horizontally.
+
+			Vector3 combinedVelocityDirection = (launchHorizontalVelocity * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
+			Vector3 combinedVelocityMagnitude = (launchHorizontalVelocity + newCoreVelocity); //The two put together normally so the magnitude is accurate.
 			Vector3 upDirection = new Vector3(0, direction.y, 0);
 
 			//If the velocity after bounce is greater than velocity going in to bounce, the take the larger of the two that made it, without losing direction. This will prevent speed increasing too much.
 			if (combinedVelocityMagnitude.sqrMagnitude > newCoreVelocity.sqrMagnitude)
 			{
 				//Rather than using Max / Min, use IF statements to compare with sqrMagnitude before getting an actual "magnitude".
-				if (bounceHorizontalVelocity.sqrMagnitude > newCoreVelocity.sqrMagnitude)
+				if (launchHorizontalVelocity.sqrMagnitude > newCoreVelocity.sqrMagnitude)
 				{
-					newCoreVelocity = combinedVelocityDirection.normalized * bounceHorizontalVelocity.magnitude;
+					newCoreVelocity = combinedVelocityDirection.normalized * launchHorizontalVelocity.magnitude;
 				}
 				else
 				{
@@ -369,26 +385,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else
 		{
-			//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
-			//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
-			//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
-			float horizontalSpeed = bounceHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
-
-			float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  _PlayerPhys._horizontalSpeedMagnitude, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
-
-			//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
-			float coreSpeed = _PlayerPhys._horizontalSpeedMagnitude;
-			if(coreSpeed > horizontalSpeed) { 
-				horizontalEnvSpeed = 1; //Ensure's theres still a direction even though this won't factor in much to world velocity.
-				coreSpeed = horizontalSpeed; //In this case, bounce will be entirely through core velocity, not environmental.
-			}
-			//else { coreSpeed = horizontalSpeed - horizontalEnvSpeed; }
-
-			//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
-
-			Vector3 totalEnvironment = (bounceHorizontalVelocity.normalized * horizontalEnvSpeed) + (new Vector3(0, (direction * SpringScript._springForce_).y,0));
-
-			StartCoroutine(ApplyForceAfterDelay(totalEnvironment, SpringScript._BounceTransform.position, bounceHorizontalVelocity.normalized * coreSpeed));
+			LaunchInDirection(direction, SpringScript._springForce_, SpringScript._BounceTransform.position);
 		}
 
 
@@ -417,6 +414,32 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (Col.GetComponent<AudioSource>()) { Col.GetComponent<AudioSource>().Play(); }
 		if (SpringScript._Animator != null)
 			SpringScript._Animator.SetTrigger("Hit");
+	}
+
+	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
+	private void LaunchInDirection (Vector3 direction, float launchPower, Vector3 lockPosition) {
+		//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
+		//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
+		//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
+
+		Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVel(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
+		float horizontalSpeed = launchHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
+
+		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  _PlayerPhys._horizontalSpeedMagnitude, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+
+		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
+		float coreSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+		if (coreSpeed > horizontalSpeed)
+		{
+			horizontalEnvSpeed = 1; //Ensure's theres still a direction even though this won't factor in much to world velocity.
+			coreSpeed = horizontalSpeed; //In this case, bounce will be entirely through core velocity, not environmental.
+		}
+
+		//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
+
+		Vector3 totalEnvironment = (launchHorizontalVelocity.normalized * horizontalEnvSpeed) + (new Vector3(0, (direction * launchPower).y,0));
+
+		StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed));
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
@@ -569,6 +592,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Sounds =			_Tools.SoundControl;
 		_JumpBall =		_Tools.JumpBall;
 		_CoreUIElements =		_Tools.UISpawner._BaseUIElements;
+		_FeetPoint =		_Tools.FeetPoint;
 	}
 	#endregion
 }

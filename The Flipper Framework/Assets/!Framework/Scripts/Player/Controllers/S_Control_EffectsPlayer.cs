@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.VFX;
 
 public class S_Control_EffectsPlayer : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 	private S_Handler_Camera _CamHandler;
 
 	public ParticleSystem RunningDust;
-	public ParticleSystem SpeedLines;
+	public ParticleSystem SpeedLinesCharacter;
+	public VisualEffect		_SpeedLinesScreen;
 	public ParticleSystem SpinDashDust;
 	public ParticleSystem SpinDashEnergy;
 	public float RunningDustThreshold;
@@ -48,14 +50,21 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 			RunningDust.Emit(Random.Range(0, 20));
 		}
 
-		if (_PlayerPhys._currentRunningSpeed > SpeedLinesThreshold && SpeedLines != null && SpeedLines.isPlaying == false)
+		if (_PlayerPhys._currentRunningSpeed > SpeedLinesThreshold && SpeedLinesCharacter != null && SpeedLinesCharacter.isPlaying == false)
 		{
-			SpeedLines.Play();
+			SpeedLinesCharacter.Play();
 		}
-		else if ((_PlayerPhys._currentRunningSpeed < SpeedLinesThreshold && SpeedLines.isPlaying == true) || Mathf.Abs(_PlayerPhys._coreVelocity.y) > _PlayerPhys._currentRunningSpeed)
+		else if ((_PlayerPhys._currentRunningSpeed < SpeedLinesThreshold && SpeedLinesCharacter.isPlaying == true) || Mathf.Abs(_PlayerPhys._coreVelocity.y) > _PlayerPhys._currentRunningSpeed)
 		{
-			SpeedLines.Stop();
+			SpeedLinesCharacter.Stop();
 		}
+
+		if (_PlayerPhys._horizontalSpeedMagnitude > 50)
+		{
+			_SpeedLinesScreen.SetFloat("Intensity", (_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed) * 2);
+		}
+		else
+			_SpeedLinesScreen.SetFloat("Intensity", 0);
 
 		HandleMouths();
 
