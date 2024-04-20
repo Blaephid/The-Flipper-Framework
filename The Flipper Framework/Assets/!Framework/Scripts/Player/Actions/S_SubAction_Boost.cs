@@ -116,7 +116,15 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		//If currently enabled, then apply rotation and animations to character.
 		if (_PlayerPhys._isBoosting)
 		{
-			_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction); // Means animation will reflect jumping or being grounded.;
+			switch (_Actions._whatAction)
+			{
+				case S_Enums.PrimaryPlayerStates.Default:
+					_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction); // Means animation will reflect jumping or being grounded.;
+					break;
+				case S_Enums.PrimaryPlayerStates.Jump:
+					_Actions._ActionDefault.HandleAnimator(1);
+					break;
+			}
 
 			_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 			_savedSkinDirection = _MainSkin.forward;
@@ -549,7 +557,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 private void AssignTools () {
 	_Tools = GetComponentInParent<S_CharacterTools>();
 	_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-	_Actions = _Tools.GetComponent<S_ActionManager>();
+	_Actions = _Tools._ActionManager;
 	_CamHandler = _Tools.CamHandler;
 	_Input = _Tools.GetComponent<S_PlayerInput>();
 

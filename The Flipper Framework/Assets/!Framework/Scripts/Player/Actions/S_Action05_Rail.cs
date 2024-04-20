@@ -22,12 +22,12 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private S_Control_SoundsPlayer _Sounds;
 	[HideInInspector]
 	public S_Interaction_Pathers  _Rail_int;
-	public S_AddOnRail            _ConnectedRails;
+	private S_AddOnRail            _ConnectedRails;
 	private S_HedgeCamera         _CamHandler;
 
 	//Current rail
 	private Transform             _RailTransform;
-	public CurveSample            _Sample;
+	private CurveSample            _Sample;
 
 	//ZipLine
 	[HideInInspector]
@@ -50,8 +50,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private float                 _offsetRail_ = 2.05f;
 	private float                 _offsetZip_ = -2.05f;
 
-	[HideInInspector]
 	private float                 _minStartSpeed_ = 60f;
+	[HideInInspector]
 	public float                  _railmaxSpeed_;
 	private float                 _railTopSpeed_;
 	private float                 _playerBrakePower_ = 0.95f;
@@ -98,6 +98,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private bool                   _isBraking;        //Set by input, if true will decrease speed.
 
 	private Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
+	private Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
 
 	//Quaternion rot;
 	private Vector3               _setOffSet;         //Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
@@ -117,6 +118,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	public bool         _isBoosted;
 	[HideInInspector]
 	public float        _boostTime;
+
+	[HideInInspector]
+	public bool	_isGrinding; //USed to ensure no calculations are made from this still being active for possibly one frame called by Update when ending action.
 	#endregion
 	#endregion
 
@@ -138,7 +142,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-		if(!enabled) { return; }
+		if(!enabled || !_isGrinding) { return; }
 		PlaceOnRail();
 		PerformHop();
 
@@ -158,6 +162,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	private void FixedUpdate () {
+
+		if (!enabled || !_isGrinding) { return; }
 
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; } //This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 
@@ -185,6 +191,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		StartCoroutine(DelayHopOnLanding());
 
 		//Set private 
+		_isGrinding = true;
 		_canInput = true;
 		_pushTimer = _pushFowardDelay_;
 		_distanceToStep = 0; //Ensure not immediately stepping when called
@@ -258,8 +265,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; }
 		enabled = false;
-		Debug.Log("End Rail");
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+
+		_isGrinding = false;
 
 		//If left this action to perform a jump,
 		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump)
@@ -315,6 +323,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			//Get the data of the spline at that point along it (rotation, location, etc)
 			_Sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
 			_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
+			_sampleUpwards = (_RailTransform.rotation * _Sample.up);
 
 			//Set player Position and rotation on Rail
 			switch (_whatKindOfRail)
@@ -322,15 +331,15 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				//Place character in world space on point in rail
 				case S_Interaction_Pathers.PathTypes.rail:
 
-					_PlayerPhys.transform.up = (_RailTransform.rotation * _Sample.up);
+					_PlayerPhys.transform.up = _sampleUpwards;
 					Debug.DrawRay(transform.position, _RailTransform.rotation * _Sample.up * 5, Color.red, 20f);
-					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards, default(Vector3), _RailTransform.rotation * _Sample.up);
+					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards, default(Vector3), _sampleUpwards);
 
 					Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
 
 					//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
 					Vector3 newPos = _RailTransform.position + ( _RailTransform.rotation * _Sample.location);
-					newPos += (_Sample.up * _offsetRail_) + relativeOffset;
+					newPos += (_sampleUpwards * _offsetRail_) + relativeOffset;
 					_PlayerPhys.transform.position = newPos;
 					break;
 
@@ -358,8 +367,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 	//Takes the data from the previous method but handles physics for smoothing and applying if lost rail.
 	public void MoveOnRail () {
-		if(!enabled) { return; }
 
+		if(!_isGrinding) { return; }
 		_PlayerPhys.SetIsGrounded(true, 0.5f);
 
 		HandleRailSpeed(); //Make changes to player speed based on angle
@@ -444,6 +453,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 10));
 		_distanceToStep = 0; //Stop a step that might be happening
 
+		_isGrinding = false;
+
 		switch (_whatKindOfRail)
 		{
 			case S_Interaction_Pathers.PathTypes.zipline:
@@ -518,8 +529,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private void HandleSlopes () {
 		//Start a force to apply based on the curve position and general modifier for all slopes handled in physics script 
 		float force = _generalHillModifier;
-		force *= ((1 - (Mathf.Abs(_PlayerPhys.transform.up.y) / 10)) + 1); //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
-		float AbsYPow = Mathf.Abs(_PlayerPhys._RB.velocity.normalized.y * _PlayerPhys._RB.velocity.normalized.y);
+		force *= (1 - (Mathf.Abs(_PlayerPhys.transform.up.y) / 10)) + 1; //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
+		//float AbsYPow = Mathf.Abs(_PlayerPhys._RB.velocity.normalized.y * _PlayerPhys._RB.velocity.normalized.y);
 
 		//use player vertical speed to find if player is going up or down
 		//if going uphill on rail
@@ -534,7 +545,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			//Downhill
 			force *= _isCrouching ? _downHillMultiplierCrouching_ : _downHillMultiplier_;
 		}
-		force = (AbsYPow * force);
+		force = (0.1f * force);
 		//Apply to moving speed (if uphill will be a negative/
 		_grindingSpeed += force;
 	}
@@ -767,17 +778,17 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Actions = _Tools.GetComponent<S_ActionManager>();
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_Rail_int = _Tools.PathInteraction;
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_CamHandler = _Tools.CamHandler._HedgeCam;
+		_Actions =	_Tools._ActionManager;
+		_Input =		_Tools.GetComponent<S_PlayerInput>();
+		_Rail_int =	_Tools.PathInteraction;
+		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_CamHandler =	_Tools.CamHandler._HedgeCam;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
-		_Sounds = _Tools.SoundControl;
+		_MainSkin =	_Tools.MainSkin;
+		_Sounds =		_Tools.SoundControl;
 
-		_JumpBall = _Tools.JumpBall;
+		_JumpBall =	_Tools.JumpBall;
 	}
 
 	//Reponsible for assigning stats from the stats script.

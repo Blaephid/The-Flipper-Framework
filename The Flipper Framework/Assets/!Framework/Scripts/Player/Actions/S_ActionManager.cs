@@ -28,7 +28,6 @@ public class S_ActionManager : MonoBehaviour
 	public S_Action12_WallRunning Action12;
 
 	//Keeps track of the generated objects that handle different components. This is to prevent having all components on one object.
-	public GameObject _ScriptsHolder;
 	public GameObject _ObjectForActions;
 	public GameObject _ObjectForSubActions;
 	public GameObject _ObjectForInteractions;
@@ -87,11 +86,11 @@ public class S_ActionManager : MonoBehaviour
 	void Start () {
 
 		//Assigning
-		_Tools =		GetComponent<S_CharacterTools>();
+		_Tools =		GetComponentInParent<S_CharacterTools>();
 		_ActionDefault =	GetComponentInChildren<S_Action00_Default>();
 		_ActionHurt =	GetComponentInChildren<S_Action04_Hurt>();
-		_PlayerPhys =	GetComponent<S_PlayerPhysics>();
-		_HealthAndHurt =	GetComponent<S_Handler_HealthAndHurt>();
+		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_HealthAndHurt =	_Tools.GetComponent<S_Handler_HealthAndHurt>();
 
 		//Go through each struct and assign/add the scripts linked to that enum.
 		for (int i = 0 ; i < _MainActions.Count ; i++)
@@ -664,10 +663,9 @@ public class ActionManagerEditor : Editor
 		}
 		#endregion
 
-		_ActionMan._ScriptsHolder = GenerateOrCheckObjectToHoldOthers(_ActionMan.transform, _ActionMan._ScriptsHolder, "!Player Components!");
-		_ActionMan._ObjectForActions = GenerateOrCheckObjectToHoldOthers(_ActionMan._ScriptsHolder.transform, _ActionMan._ObjectForActions, "Main Actions");
-		_ActionMan._ObjectForSubActions = GenerateOrCheckObjectToHoldOthers(_ActionMan._ScriptsHolder.transform, _ActionMan._ObjectForSubActions, "Sub Actions");
-		_ActionMan._ObjectForInteractions = GenerateOrCheckObjectToHoldOthers(_ActionMan._ScriptsHolder.transform, _ActionMan._ObjectForInteractions, "Interactions");
+		_ActionMan._ObjectForActions = GenerateOrCheckObjectToHoldOthers(_ActionMan.transform, _ActionMan._ObjectForActions, "Main Actions");
+		_ActionMan._ObjectForSubActions = GenerateOrCheckObjectToHoldOthers(_ActionMan.transform, _ActionMan._ObjectForSubActions, "Sub Actions");
+		_ActionMan._ObjectForInteractions = GenerateOrCheckObjectToHoldOthers(_ActionMan.transform, _ActionMan._ObjectForInteractions, "Interactions");
 	}
 
 	//Take in a primary state and add it to the list if it can be found.

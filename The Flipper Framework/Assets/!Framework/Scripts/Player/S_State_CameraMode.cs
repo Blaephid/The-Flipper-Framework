@@ -58,7 +58,7 @@ public class S_State_CameraMode : MonoBehaviour
 
 	// Start is called before the first frame update
 	void Start () {
-		_ActionMan = _Tools.GetComponent<S_ActionManager>();
+		_ActionMan = _Tools._ActionManager;
 		_CamTransform = _VirtualCamera.transform;
 		_PlayerInput = _Tools.GetComponent<PlayerInput>();
 		_InputScript= _Tools.GetComponent<S_PlayerInput>();

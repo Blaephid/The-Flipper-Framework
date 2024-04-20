@@ -156,14 +156,18 @@ public class S_Control_MovingPlatform : MonoBehaviour
 	}
 
 #if UNITY_EDITOR
+	//If selecting this instance in editor outside of play mode, will make all the movement calculations in order (up to a limit), and draw lines, in order to show the path the object will take from this script.
 	private void OnDrawGizmosSelected () {
 		if (!Application.isPlaying)
 		{
+			//For tracking movements
 			_startPosition = transform.position;
 			_currentPosition = transform.position;
 
+			//To prevent the simulations from affecting the actual movements, make sure it starts from the same stats each time.
 			SetPlayListAsStart();
 
+			//For each calculation, get the previous position, apply a movement, then draw a line from the former to the latter.
 			for (int i = 0 ; i < _calculations ; i++)
 			{
 				Vector3 lineStart = _currentPosition;
@@ -173,7 +177,6 @@ public class S_Control_MovingPlatform : MonoBehaviour
 				Gizmos.DrawLine(lineStart, _currentPosition);
 			}
 		}
-
 	}
 #endif
 }

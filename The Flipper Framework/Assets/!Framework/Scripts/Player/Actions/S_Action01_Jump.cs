@@ -142,6 +142,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					StartAction();
 					return true;
 				case S_Enums.PrimaryPlayerStates.Rail:
+					GetComponent<S_Action05_Rail>()._isGrinding = false;
 					AssignStartValues(transform.up, true);
 					StartAction();
 					return true;
@@ -156,9 +157,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	public void StartAction () {
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updated that would interupt jump aiming end before we set values.
-
-		Debug.Log("JUMP");
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
 
 		ReadyAction();
 
@@ -235,7 +234,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
-	public void EventOnGrounded() {
+	public void EventOnGrounded () {
 		_Actions._jumpCount = 0;
 	}
 
@@ -288,7 +287,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//Ending jump after max duration
 		else if (_counter > _thisMaxDuration && _isJumping && _Input.JumpPressed)
 		{
-   			EndJumpForce();
+			EndJumpForce();
 		}
 		//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
 		else if(_isJumping && _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
@@ -374,7 +373,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 

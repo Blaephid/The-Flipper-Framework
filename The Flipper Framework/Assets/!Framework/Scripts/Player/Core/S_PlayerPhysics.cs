@@ -7,6 +7,7 @@ using UnityEngine.Windows;
 using UnityEditor;
 using System.Linq;
 using UnityEngine.Events;
+using UnityEditor.PackageManager;
 
 [RequireComponent(typeof(Rigidbody))]
 public class S_PlayerPhysics : MonoBehaviour
@@ -24,14 +25,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private S_CharacterTools      _Tools;
 	static public S_PlayerPhysics s_MasterPlayer;
 	private S_PlayerInput         _Input;
-
-	public UnityEvent                       _OnGrounded;        //Event called when isGrounded is set to true from false, remember to assign what methods to call in the editor.
-	public UnityEvent                       _OnLoseGround;        //Event called when isGrounded is set to false from true.
-	public UnityEvent<Collider>             _OnTriggerEnter;        //Event called when entering a trigger through the built in method.
-	public UnityEvent<Collider>             _OnTriggerExit;        //Event called when exitting a trigger through the built in method.
-	public UnityEvent<Collision>           _OnCollisionEnter;        //Event called when start collision through the built in method.
-	public UnityEvent<Collider>           _OnTriggerStay;        //Event called each frame when in a trigger.
-	public UnityEvent		          _OnTriggerAirLauncher;        //Event called each frame when in a trigger.
+	private S_PlayerEvents	_Events;
 
 	[HideInInspector]
 	public Rigidbody              _RB;
@@ -176,7 +170,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Updated each frame to get current place on animation curves relevant to movement.
 	private float                 _currentRunAccell;
 	private float                 _currentRollAccell;
-	public float                  _curvePosAcell;
+	private float                  _curvePosAcell;
 	private float                 _curvePosDecell;
 	[HideInInspector]
 	public float                  _curvePosDrag;
@@ -194,6 +188,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Ground tracking
 	[HideInInspector]
 	public bool                   _isGrounded;        //Used to check if the player is currently grounded. _isGrounded
+	[HideInInspector]
 	public bool                   _isCurrentlyOnSlope;        //Used so external scripts can interact differently knowing if player is on a slope being affected by slope physics.
 	[HideInInspector]
 	public bool                   _canChangeGrounded = true;        //Set externally to prevent player's entering a grounded state.
@@ -216,6 +211,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector] public bool _wasInAir;
 	[HideInInspector]
 	public Vector3                _currentFallGravity;          //The actual gravity used in calculations, set to start gravity at start, and will return to that after temporary changes expire.
+	[HideInInspector]
 	public Vector3                _currentUpwardsFallGravity;
 
 	[HideInInspector]
@@ -296,18 +292,18 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	private void OnTriggerEnter ( Collider other ) {
-		_OnTriggerEnter.Invoke(other);
+		_Events._OnTriggerEnter.Invoke(other);
 	}
 	private void OnTriggerExit ( Collider other ) {
-		_OnTriggerExit.Invoke(other);
+		_Events._OnTriggerExit.Invoke(other);
 	}
 
 	private void OnCollisionEnter ( Collision collision ) {
-		_OnCollisionEnter.Invoke(collision);
+		_Events._OnCollisionEnter.Invoke(collision);
 	}
 
 	private void OnTriggerStay ( Collider other ) {
-		_OnTriggerStay.Invoke(other);
+		_Events._OnTriggerStay.Invoke(other);
 	}
 
 	#endregion
@@ -996,13 +992,13 @@ public class S_PlayerPhysics : MonoBehaviour
 	public void SetIsGrounded ( bool value, float timer = 0 ) {
 		if (_isGrounded != value)
 		{
-			Debug.Log("Set grounded to " + value);
+			Debug.Log(value);
 			//If changed to be in the air when was on the ground
 			if (_isGrounded && _isGrounded != value)
 			{
 				_groundingDelay = timer;
 				_timeOnGround = 0;
-				_OnLoseGround.Invoke();
+				_Events._OnLoseGround.Invoke();
 			}
 			//If changed to be on the ground when was in the air
 			else if (!_isGrounded && _isGrounded != value)
@@ -1021,7 +1017,7 @@ public class S_PlayerPhysics : MonoBehaviour
 					SetEnvironmentalVelocity(Vector3.zero, false, false, S_Enums.ChangeLockState.Unlock);
 				}
 
-				_OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
+				_Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
 			}
 			_isGrounded = value;
 		}
@@ -1219,13 +1215,15 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	private void AssignTools () {
-		s_MasterPlayer = this;
-		_RB = GetComponent<Rigidbody>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		s_MasterPlayer =	this;
+		_RB =		GetComponent<Rigidbody>();
+		_Actions =	_Tools._ActionManager;
+		_Input =		_Tools.GetComponent<S_PlayerInput>();
+		_Events =		_Tools.PlayerEvents;
+
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
-		_FeetTransform = _Tools.FeetPoint;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_MainSkin = _Tools.MainSkin;
+		_FeetTransform =	_Tools.FeetPoint;
+		_MainSkin =	_Tools.MainSkin;
 	}
 	#endregion
 }

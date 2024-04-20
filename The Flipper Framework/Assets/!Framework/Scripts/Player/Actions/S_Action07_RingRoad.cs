@@ -3,6 +3,7 @@ using System.Collections;
 using SplineMesh;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.PackageManager.UI;
 
 [RequireComponent(typeof(S_Handler_RingRoad))]
 public class S_Action07_RingRoad : MonoBehaviour, IMainAction
@@ -146,7 +147,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
+		//Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
 
 		//Here to ensure this is always called no matter why the action ends.
 		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
@@ -232,17 +233,22 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	//Handles player physics when at the end of a chain of rings.
 	private void EndRingRoad () {
+
 		//End at the speed started at (with a slight change), but with a minimum.
 		float endingSpeedResult = Mathf.Max(_minimumEndingSpeed_, _speedBeforeAction * _speedGain_);
 
 		if (!_willCarrySpeed_) endingSpeedResult = _minimumEndingSpeed_; //Speed unaffected by how it was before the action.
 
 		//Sends the player in the direction of the end of the spline.
-		_directionToGo = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length).tangent;
+		CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length - 1);
+		_directionToGo = Sample.tangent;
+
+		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _directionToGo);
+
+		_PlayerPhys.transform.position = Sample.location;
 		_PlayerPhys.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
-		Debug.Log(_Actions._listOfSpeedOnPaths[0]+ " - " + endingSpeedResult);
 		float differentSpeedOnExit = _Actions._listOfSpeedOnPaths[0] - endingSpeedResult;
 		if(differentSpeedOnExit > 0) { StartCoroutine(LoseTemporarySpeedOverTime(differentSpeedOnExit)); }
 
@@ -291,8 +297,8 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
+		_Actions = _Tools._ActionManager;
 		_RoadHandler = GetComponent<S_Handler_RingRoad>();
 
 		_MainSkin = _Tools.MainSkin;

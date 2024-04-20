@@ -270,7 +270,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	#region public 
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
-	public void EventOnGrounded() {
+	public void EventOnGrounded () {
 		if (enabled)
 		{
 			//The frontiers response element means health isn't checked until hitting the ground after being hit.
@@ -335,7 +335,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		_HurtControl = GetComponentInParent<S_Handler_HealthAndHurt>();
 
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();

@@ -318,7 +318,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
-		_Actions =	_Tools.GetComponent<S_ActionManager>();
+		_Actions =	_Tools._ActionManager;
 		_CamHandler =	_Tools.CamHandler;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;

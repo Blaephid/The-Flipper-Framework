@@ -545,7 +545,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		yield return new WaitForEndOfFrame();
 
 		_ringAmount = Mathf.Clamp(ThisFramesRingCount + amount, _ringAmount, ThisFramesRingCount + 100); 
-		if(!_gainedRingThisFrame) { onRingGet.Invoke(null, amount); }
+		if(!_gainedRingThisFrame && onRingGet != null) { onRingGet.Invoke(null, amount); }
 	}
 
 	//Called whenever the player should gain or lose a shield, which blocks one hit.
@@ -577,7 +577,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
 		_PlayerPhys =		_Tools.GetComponent<S_PlayerPhysics>();
-		_Actions =		_Tools.GetComponent<S_ActionManager>();
+		_Actions =		_Tools._ActionManager;
 		_LevelHandler =		_Actions._ObjectForInteractions.GetComponent<S_Manager_LevelProgress>();
 		_Objects =		_Actions._ObjectForInteractions.GetComponent<S_Interaction_Objects>();
 		_CamHandler = 		_Tools.CamHandler;

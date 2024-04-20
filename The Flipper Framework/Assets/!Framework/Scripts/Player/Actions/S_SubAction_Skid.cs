@@ -221,7 +221,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 	}
 
 	private void AssignStats() {

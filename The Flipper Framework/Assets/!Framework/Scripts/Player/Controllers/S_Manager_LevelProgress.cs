@@ -37,7 +37,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	void Start () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		Cam = _Tools.CamHandler;
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_HealthAndHurt = _Tools.GetComponent<S_Handler_HealthAndHurt>();

@@ -884,7 +884,7 @@ MonoBehaviour:
     topSpeed: 90
     maxSpeed: 160
   SpeedStats:
-    topSpeed: 90
+    topSpeed: 100
     maxSpeed: 160
   StartSlopeStats:
     slopeEffectLimit: 0.92

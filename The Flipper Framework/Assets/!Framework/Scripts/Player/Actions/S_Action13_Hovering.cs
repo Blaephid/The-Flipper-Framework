@@ -160,7 +160,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;

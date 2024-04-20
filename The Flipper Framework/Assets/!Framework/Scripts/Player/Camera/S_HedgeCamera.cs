@@ -22,7 +22,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	public S_PlayerPhysics        _PlayerPhys;
 	public Transform              _Skin;
-	public S_ActionManager        _Actions;
+	private S_ActionManager        _Actions;
 	public S_PlayerInput          _Input;
 
 	[Header("Target Levels")]
@@ -803,6 +803,8 @@ public class S_HedgeCamera : MonoBehaviour
 
 		_SecondaryCamera.transform.parent = null;
 		_SecondaryCamera.SetActive(false);
+
+		_Actions = _Tools._ActionManager;
 	}
 
 	void SetStats () {

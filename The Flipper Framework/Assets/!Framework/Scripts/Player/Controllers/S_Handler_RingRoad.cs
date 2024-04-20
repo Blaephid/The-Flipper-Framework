@@ -196,7 +196,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 
 		_MainSkin = _Tools.MainSkin;
 	}

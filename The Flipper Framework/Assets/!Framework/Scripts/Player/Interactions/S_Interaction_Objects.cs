@@ -9,6 +9,7 @@ using UnityEngine.InputSystem.Switch;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.Windows;
 using UnityEngine.Rendering.Universal;
+using UnityEditor.PackageManager;
 
 
 public class S_Interaction_Objects : MonoBehaviour
@@ -29,6 +30,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private S_PlayerPhysics	_PlayerPhys;
 	private S_ActionManager	_Actions;
 	private S_PlayerInput	_Input;
+	private S_PlayerEvents	_Events;
 
 	private S_Handler_CharacterAttacks	_AttackHandler;
 	private S_Handler_HealthAndHurt	_HurtAndHealth;
@@ -340,7 +342,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._ActionDefault.StartAction();
 		_CharacterAnimator.SetBool("Grounded", false);
 
-		_PlayerPhys._OnTriggerAirLauncher.Invoke();
+		_Events._OnTriggerAirLauncher.Invoke();
 
 		//Prevents immediate air actions.
 		_Input.JumpPressed = false;
@@ -583,7 +585,8 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Tools =		GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
 		_CamHandler =	_Tools.CamHandler;
-		_Actions =	_Tools.GetComponent<S_ActionManager>();
+		_Actions =	_Tools._ActionManager;
+		_Events =		_Tools.PlayerEvents;
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
 		_AttackHandler =	GetComponent<S_Handler_CharacterAttacks>();
 		_HurtAndHealth =	_Tools.GetComponent<S_Handler_HealthAndHurt>();

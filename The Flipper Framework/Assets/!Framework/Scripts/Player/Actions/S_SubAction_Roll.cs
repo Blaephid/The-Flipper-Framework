@@ -179,7 +179,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		_Action00 = _Actions._ActionDefault;
 		_CharacterCapsule = _Tools.CharacterCapsule;
 		_RollingCapsule = _Tools.CrouchCapsule;

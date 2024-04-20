@@ -464,7 +464,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		_RailAction = _Actions._ObjectForActions.GetComponent<S_Action05_Rail>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;

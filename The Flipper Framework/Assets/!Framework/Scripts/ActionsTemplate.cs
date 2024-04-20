@@ -132,7 +132,7 @@ namespace templates
 		private void AssignTools () {
 			_Input = _Tools.GetComponent<S_PlayerInput>();
 			_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-			_Actions = _Tools.GetComponent<S_ActionManager>();
+			_Actions = _Tools._ActionManager;
 		}
 
 		//Reponsible for assigning stats from the stats script.

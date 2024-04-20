@@ -9,6 +9,12 @@ public class S_CharacterTools : MonoBehaviour
 	public S_O_CharacterStats	Stats;
 	public S_O_CameraStats	CameraStats;
 
+	[Header("Attach from Action Manager")]
+	public S_ActionManager	_ActionManager;
+	public S_Interaction_Pathers  PathInteraction;
+	public S_Handler_Camera       CamHandler;
+	public S_PlayerEvents	PlayerEvents;
+
 	[Header("Key Objects")]
 	[Header("UI")]
 	public S_Spawn_UI             UISpawner;
@@ -37,12 +43,9 @@ public class S_CharacterTools : MonoBehaviour
 
 	[Header("Camera Related")]
 	public Transform		MainCamera;
-	public S_Handler_Camera	CamHandler;
 	public Transform		CameraTarget;
 	public Transform		ConstantTarget;
 
-	[Header("Interactions")]
-	public S_Interaction_Pathers	PathInteraction;
 
 	[Header("Prefabs")]
 	public GameObject	MovingRingObject;

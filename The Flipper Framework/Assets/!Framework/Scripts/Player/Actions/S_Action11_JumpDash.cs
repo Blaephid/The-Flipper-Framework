@@ -334,7 +334,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_Actions =	_Tools.GetComponent<S_ActionManager>();
+		_Actions =	_Tools._ActionManager;
 		_CamHandler =	_Tools.CamHandler;
 		_Sounds =			_Tools.SoundControl;
 		_Effects =		_Tools.EffectsControl;

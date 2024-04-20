@@ -184,7 +184,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_ObjectInteraction = GetComponent<S_Interaction_Objects>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 	}
 }
 

@@ -275,7 +275,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		WallRun = GetComponent<S_Action12_WallRunning>();
 		JumpAction = GetComponent<S_Action01_Jump>();
 		RegularAction = _Actions._ActionDefault;

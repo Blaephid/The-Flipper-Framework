@@ -7,7 +7,6 @@ public class S_Handler_AttackInstance : MonoBehaviour
 	public S_Handler_CharacterAttacks	_AttacksComponent;
 
 	private void OnTriggerEnter ( Collider other ) {
-		Debug.Log(other.tag);
 
 		switch ( other.tag )
 		{

@@ -225,7 +225,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	private void AssignTools () {
 		_Tools =		GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_Actions =	_Tools.GetComponent<S_ActionManager>();
+		_Actions =	_Tools._ActionManager;
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
 
 		_MainSkin =	_Tools.MainSkin;

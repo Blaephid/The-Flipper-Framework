@@ -215,7 +215,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Control = GetComponent<S_Handler_WallRunning>();
