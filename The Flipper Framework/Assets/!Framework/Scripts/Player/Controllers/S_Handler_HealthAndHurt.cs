@@ -333,7 +333,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		//Reset trackers
 		_PlayerPhys._listOfCanControl.Clear();
 		_PlayerPhys._listOfCanTurns.Clear();
-		_PlayerPhys._canBeGrounded = true;
+		_PlayerPhys._canChangeGrounded = true;
 		_PlayerPhys._arePhysicsOn = true;
 
 		_PlayerPhys.SetBothVelocities(Vector3.zero, new Vector2(0, 0));

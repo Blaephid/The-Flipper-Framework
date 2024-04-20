@@ -167,7 +167,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 
 	//Points the player visuals (model, effects, etc) in the direction of movement or a custom direction. Can also apply an offset which will only rotate character models, leaving effects and other children where they are.
-	public void SetSkinRotationToVelocity ( float rotateSpeed, Vector3 direction = default(Vector3), Vector2 offset = default(Vector2) ) {
+	public void SetSkinRotationToVelocity ( float rotateSpeed, Vector3 direction = default(Vector3), Vector2 offset = default(Vector2), Vector3 upDirection = default(Vector3) ) {
 
 		//If no direction was passed, use moving direction.
 		if (direction == default(Vector3))
@@ -175,12 +175,17 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			direction = _PlayerPhys._coreVelocity;
 		}
 
+		if(upDirection == default(Vector3))
+		{
+			upDirection = transform.up;
+		}
+
 		//Gets a direction to rotate towards based on input direction, and if there isn't one, don't change it.
-		Vector3 newForward = direction - transform.up * Vector3.Dot(direction, transform.up);
+		Vector3 newForward = direction - upDirection * Vector3.Dot(direction, upDirection);
 		if (newForward.sqrMagnitude > 0.01f)
 		{
 			//Makes a rotation that only changes horizontally, never looking up or down.
-			Quaternion charRot = Quaternion.LookRotation(newForward, transform.up);
+			Quaternion charRot = Quaternion.LookRotation(newForward, upDirection);
 
 			//Rotate towards it, slower if in the air. If rotateSpeed input was 0, then turn becomes instant.
 			if (_PlayerPhys._isGrounded)

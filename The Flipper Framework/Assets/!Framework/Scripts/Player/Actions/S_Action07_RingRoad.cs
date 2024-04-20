@@ -107,7 +107,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		//Physics
 		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.right); //Prevent character moving outside of the path.
 		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
-		_PlayerPhys._canBeGrounded = false;
+		_PlayerPhys._canChangeGrounded = false;
 
 		//Effects
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -152,7 +152,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
 
-		_PlayerPhys._canBeGrounded = true;
+		_PlayerPhys._canChangeGrounded = true;
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 

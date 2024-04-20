@@ -158,8 +158,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		//Setting public
 		_PlayerPhys._isGravityOn = false;
-		_PlayerPhys._canBeGrounded = false;
-		_PlayerPhys._canBeGrounded = false;
+		_PlayerPhys._canChangeGrounded = false;
+		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys._listOfCanControl.Add(false);
 
 		_PlayerPhys.SetIsGrounded(false);
@@ -201,7 +201,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			_Actions.AddDashDelay(_HomingHandler._homingDelay_);
 
 			//Return control options that were lost.
-			_PlayerPhys._canBeGrounded = true;
+			_PlayerPhys._canChangeGrounded = true;
 			_PlayerPhys._isGravityOn = true;
 			_PlayerPhys._listOfCanControl.RemoveAt(0);
 
@@ -408,7 +408,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		float duration = 0.6f * 55;
 
-		_PlayerPhys._canBeGrounded = true;
+		_PlayerPhys._canChangeGrounded = true;
 
 		//Gets a direction to make the player face and rebound away from. This is either the way they were already going, or slightly affected by what they hit.
 		Vector3 faceDirection = _PlayerPhys._previousVelocities[2].normalized;
@@ -435,7 +435,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		//Returns control partway through the rebound.
 		_PlayerPhys._isGravityOn = true;
-		_PlayerPhys._canBeGrounded = true;
+		_PlayerPhys._canChangeGrounded = true;
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_Actions._listOfSpeedOnPaths.RemoveAt(0);
 

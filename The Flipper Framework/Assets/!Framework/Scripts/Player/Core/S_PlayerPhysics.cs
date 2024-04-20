@@ -196,7 +196,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public bool                   _isGrounded;        //Used to check if the player is currently grounded. _isGrounded
 	public bool                   _isCurrentlyOnSlope;        //Used so external scripts can interact differently knowing if player is on a slope being affected by slope physics.
 	[HideInInspector]
-	public bool                   _canBeGrounded = true;        //Set externally to prevent player's entering a grounded state.
+	public bool                   _canChangeGrounded = true;        //Set externally to prevent player's entering a grounded state.
 	[HideInInspector]
 	public RaycastHit             _HitGround;         //Used to check if there is ground under the player's feet, and gets data on it like the normal.
 	[HideInInspector]
@@ -355,7 +355,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			return;
 		}
 		//Certain actions will prevent being grounded.
-		if (!_canBeGrounded) { return; }
+		if (!_canChangeGrounded) { return; }
 
 		//Sets the size of the ray to check for ground. If running on the ground then it is typically to avoid flying off the ground.
 		float rayToGroundDistancecor = _rayToGroundDistance_;
@@ -996,6 +996,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public void SetIsGrounded ( bool value, float timer = 0 ) {
 		if (_isGrounded != value)
 		{
+			Debug.Log("Set grounded to " + value);
 			//If changed to be in the air when was on the ground
 			if (_isGrounded && _isGrounded != value)
 			{

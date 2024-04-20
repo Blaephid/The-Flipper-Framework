@@ -1513,7 +1513,7 @@ public class S_O_CharacterStatsEditor : Editor
 		"Every stat is organised in Strucs relevant to its purpose, and hovering over one will display a tooltip describing its function. \n" +
 		"The tooltip will also say if it's a core stat (meaning it has large effects on the controller and should be changed with care), or a surface stat " +
 		"(meaning it can easily be changed without much damage, and is ideal for making different character control different in the same playstyle). \n" +
-		"At the botton are a number of buttons to reset any Struc to whatever is Set as the Default.", EditorStyles.textArea);
+		"You can also return each struct to its default values if you're not happy with your changes.", EditorStyles.textArea);
 
 		//Order of Drawing
 		EditorGUILayout.Space();

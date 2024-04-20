@@ -162,8 +162,6 @@ public class S_Control_MovingPlatform : MonoBehaviour
 			_startPosition = transform.position;
 			_currentPosition = transform.position;
 
-			int counter = 0;
-
 			SetPlayListAsStart();
 
 			for (int i = 0 ; i < _calculations ; i++)

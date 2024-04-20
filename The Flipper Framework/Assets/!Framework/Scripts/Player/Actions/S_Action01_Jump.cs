@@ -156,6 +156,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	public void StartAction () {
 
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updated that would interupt jump aiming end before we set values.
+
+		Debug.Log("JUMP");
+
 		ReadyAction();
 
 		//Setting private
@@ -167,8 +171,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_Actions._actionTimeCounter = 0;
 
 		//Physics
-		_PlayerPhys.SetIsGrounded(false);
-		_PlayerPhys._canBeGrounded = false; //Prevents being set to grounded if jumping because it would lead to weird interactions going up through platforms or triggering on grounded events
+		_PlayerPhys.SetIsGrounded(false, 0.2f);
+		_PlayerPhys._canChangeGrounded = false; //Prevents being set to grounded if jumping because it would lead to weird interactions going up through platforms or triggering on grounded events
 		_PlayerPhys.RemoveEnvironmentalVelocityAirAction();
 
 		//Effects
@@ -215,9 +219,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 			JumpInAir();
 		}
-
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
-		this.enabled = true;
+		enabled = true;
 	}
 
 	public void StopAction (bool isFirstTime = false ) {
@@ -228,7 +230,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		_Actions._ActionDefault._animationAction = 0; //Ensures player will land properly in the correct animation when entering default action.
-		_PlayerPhys._canBeGrounded = true;
+		_PlayerPhys._canChangeGrounded = true;
 		_JumpBall.SetActive(false);
 	}
 
@@ -312,7 +314,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.
 		else
 		{
-			_PlayerPhys._canBeGrounded = true;
+			_PlayerPhys._canChangeGrounded = true;
 		}
 	}
 
@@ -325,7 +327,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	private void CheckShouldEndAction() {
 		//End Action on landing. Has to have been in the air for some time first though to prevent immediately becoming grounded.
-		if (_PlayerPhys._isGrounded && _counter > _slopedJumpDuration)
+		if (_PlayerPhys._isGrounded && _counter > Mathf.Max(_slopedJumpDuration, 0.25f))
 		{ 
 			//Prevents holding jump to keep doing so forever.
 			_Input.JumpPressed = false;

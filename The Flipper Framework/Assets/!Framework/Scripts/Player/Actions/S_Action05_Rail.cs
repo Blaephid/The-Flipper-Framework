@@ -138,6 +138,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
+		if(!enabled) { return; }
 		PlaceOnRail();
 		PerformHop();
 
@@ -199,6 +200,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//Set controls
 		_PlayerPhys._isGravityOn = false;
 		_PlayerPhys._listOfCanControl.Add(false);
+		_PlayerPhys._canChangeGrounded = false;
+
 		_Input.JumpPressed = false;
 
 		//Animator
@@ -224,6 +227,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_sampleForwards = _RailTransform.rotation * sample.tangent;
 		float facingDot = Vector3.Dot(_PlayerPhys._RB.velocity.normalized, _sampleForwards);
 
+		_grindingSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 		//What action before this one.
 		switch (_Actions._whatAction)
 		{
@@ -248,12 +252,13 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_PlayerPhys.SetBothVelocities(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Rail);
-		this.enabled = true;
+		enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; }
 		enabled = false;
+		Debug.Log("End Rail");
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		//If left this action to perform a jump,
@@ -275,6 +280,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//Restore Control
 		_PlayerPhys._isGravityOn = true;
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
+		_PlayerPhys._canChangeGrounded = true;
 
 		//To prevent instant actions
 		_Input.RollPressed = false;
@@ -316,8 +322,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				//Place character in world space on point in rail
 				case S_Interaction_Pathers.PathTypes.rail:
 
-					_PlayerPhys.transform.up = _PlayerPhys.transform.rotation * (_RailTransform.rotation * _Sample.up);
-					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards);
+					_PlayerPhys.transform.up = (_RailTransform.rotation * _Sample.up);
+					Debug.DrawRay(transform.position, _RailTransform.rotation * _Sample.up * 5, Color.red, 20f);
+					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards, default(Vector3), _RailTransform.rotation * _Sample.up);
 
 					Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
 
@@ -351,7 +358,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 	//Takes the data from the previous method but handles physics for smoothing and applying if lost rail.
 	public void MoveOnRail () {
-		_PlayerPhys.SetIsGrounded(true);
+		if(!enabled) { return; }
+
+		_PlayerPhys.SetIsGrounded(true, 0.5f);
 
 		HandleRailSpeed(); //Make changes to player speed based on angle
 
