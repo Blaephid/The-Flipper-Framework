@@ -45,10 +45,10 @@ public class S_Spawners : MonoBehaviour
 
 	//These attach the return methods, so they perform when onReset is invoked in the Level Progress script
 	private void OnEnable () {
-		S_Manager_LevelProgress.onReset += EventReturnOnDeath;
+		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
 	private void OnDisable () {
-		S_Manager_LevelProgress.onReset -= EventReturnOnDeath;
+		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 	//
 

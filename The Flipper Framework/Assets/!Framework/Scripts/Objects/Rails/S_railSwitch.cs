@@ -47,7 +47,7 @@ public class S_railSwitch : MonoBehaviour
     {
         if (main)
         {
-            S_Manager_LevelProgress.onReset += EventReset;
+            S_Manager_LevelProgress.OnReset += EventReset;
         }
     }
 

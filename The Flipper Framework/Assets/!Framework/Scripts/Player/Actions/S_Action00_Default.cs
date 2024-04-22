@@ -159,6 +159,8 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			_CharacterAnimator.SetFloat("HorizontalInput", Mathf.Max(_Input.moveX, _Input.moveY));
 			//Is grounded
 			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
+			//Is rolling
+			_CharacterAnimator.SetBool("isRolling", _PlayerPhys._isRolling);
 		}
 		else if (_CurrentAnimator == _BallAnimator)
 		{
@@ -328,8 +330,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_PlayerSkin =	_Tools.PlayerSkins;
 		_SkinOffset =	_Tools.CharacterModelOffset;
 		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
-
-		_CharacterAnimator.SetBool("isRolling", false);
 	}
 	#endregion
 }

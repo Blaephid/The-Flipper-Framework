@@ -568,7 +568,7 @@ MonoBehaviour:
   _ActionManager: {fileID: 5533984412786659221}
   PathInteraction: {fileID: 8028938472070211148}
   CamHandler: {fileID: 5674738649225253642}
-  PlayerEvents: {fileID: 3624239064362977154}
+  PlayerEvents: {fileID: 4834250052958916856}
   UISpawner: {fileID: 8180601928860910201}
   CharacterCapsule: {fileID: 1605683383104138}
   CrouchCapsule: {fileID: 1794423812473573934}
@@ -29830,6 +29830,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: PO_Actions_Rolling
       objectReference: {fileID: 0}
+    - target: {fileID: 3624239064362977154, guid: 99bb1a0761440aa4d906f36f4fe221cc,
+        type: 3}
+      propertyPath: _OnTriggerStay.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5416488146372199807}
+    - target: {fileID: 3624239064362977154, guid: 99bb1a0761440aa4d906f36f4fe221cc,
+        type: 3}
+      propertyPath: _OnTriggerEnter.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5416488146372199807}
+    - target: {fileID: 3624239064362977154, guid: 99bb1a0761440aa4d906f36f4fe221cc,
+        type: 3}
+      propertyPath: _OnCollisionEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 5416488146372199807}
     - target: {fileID: 4584081993875375216, guid: 99bb1a0761440aa4d906f36f4fe221cc,
         type: 3}
       propertyPath: _VirtCam
@@ -29907,58 +29922,22 @@ PrefabInstance:
       objectReference: {fileID: 1504729745689472983}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99bb1a0761440aa4d906f36f4fe221cc, type: 3}
---- !u!114 &369367460192747392 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8393890891212056826, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73ea18ef60704e74ba507d7e1ade1a2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &770575581695713440 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8929781120038647770, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 181222eb924ad744a9ab86e4790de666, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &997342592972494350 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8974006341597823348, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da02b53e7cffa2549856b2800d6d0816, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1953290212954445475 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7657858712053285337, guid: 99bb1a0761440aa4d906f36f4fe221cc,
     type: 3}
   m_PrefabInstance: {fileID: 8168780911374276474}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4583659295302445487 stripped
+--- !u!114 &4834250052958916856 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5674882071896522453, guid: 99bb1a0761440aa4d906f36f4fe221cc,
+  m_CorrespondingSourceObject: {fileID: 3624239064362977154, guid: 99bb1a0761440aa4d906f36f4fe221cc,
     type: 3}
   m_PrefabInstance: {fileID: 8168780911374276474}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23fadeadbb69111459e75fec9dcceb48, type: 3}
+  m_Script: {fileID: 11500000, guid: ea3445215f44c524f886c4cf51e7e0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &5533984412786659221 stripped
@@ -29967,22 +29946,10 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8168780911374276474}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6352656877098258317}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 795317e0a409ba3499067f99a8f5ed0c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5627385721693750651 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4559098073210278401, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e68b4ac01ce5dc42b13673e287b845a, type: 3}
+  m_Script: {fileID: 11500000, guid: 795317e0a409ba3499067f99a8f5ed0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &5674738649225253642 stripped
@@ -29997,333 +29964,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1662691c848ef3f4caa5c4f59d5f16ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5876362223618296897 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2364493964444146491, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2ad0cea500f9334c8b1e2539e9bc2ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5892677716966875818 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2349658396617029072, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1313590d96251e46aaef7e509eb58d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &6352656877098258317 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2987150101943081207, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &3624239064362977154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6352656877098258317}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea3445215f44c524f886c4cf51e7e0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _OnGrounded:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5876362223618296897}
-        m_TargetAssemblyTypeName: S_Action06_Bounce, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8973699885055106866}
-        m_TargetAssemblyTypeName: S_Action02_Homing, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 369367460192747392}
-        m_TargetAssemblyTypeName: S_Action08_DropCharge, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 4583659295302445487}
-        m_TargetAssemblyTypeName: S_Action11_JumpDash, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8674282290959448995}
-        m_TargetAssemblyTypeName: S_Action00_Default, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 5892677716966875818}
-        m_TargetAssemblyTypeName: S_Action01_Jump, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8902633703631210661}
-        m_TargetAssemblyTypeName: S_Action04_Hurt, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _OnLoseGround:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8674282290959448995}
-        m_TargetAssemblyTypeName: S_Action00_Default, Assembly-CSharp
-        m_MethodName: EventOnGroundLost
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 770575581695713440}
-        m_TargetAssemblyTypeName: S_Action03_SpinCharge, Assembly-CSharp
-        m_MethodName: EventOnGroundLost
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _OnTriggerEnter:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5416488146372199807}
-        m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
-        m_MethodName: EventTriggerEnter
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 5627385721693750651}
-        m_TargetAssemblyTypeName: S_Interaction_Objects, Assembly-CSharp
-        m_MethodName: EventTriggerEnter
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 5674738649225253642}
-        m_TargetAssemblyTypeName: S_Handler_Camera, Assembly-CSharp
-        m_MethodName: EventTriggerEnter
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 997342592972494350}
-        m_TargetAssemblyTypeName: S_Manager_LevelProgress, Assembly-CSharp
-        m_MethodName: EventTriggerEnter
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8028938472070211148}
-        m_TargetAssemblyTypeName: S_Interaction_Pathers, Assembly-CSharp
-        m_MethodName: EventTriggerEnter
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _OnTriggerExit:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5627385721693750651}
-        m_TargetAssemblyTypeName: S_Interaction_Objects, Assembly-CSharp
-        m_MethodName: EventTriggerExit
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 5674738649225253642}
-        m_TargetAssemblyTypeName: S_Handler_Camera, Assembly-CSharp
-        m_MethodName: EventTriggerExit
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8028938472070211148}
-        m_TargetAssemblyTypeName: S_Interaction_Pathers, Assembly-CSharp
-        m_MethodName: EventTriggerExit
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _OnCollisionEnter:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8973699885055106866}
-        m_TargetAssemblyTypeName: S_Action02_Homing, Assembly-CSharp
-        m_MethodName: EventCollisionEnter
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 5416488146372199807}
-        m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
-        m_MethodName: EventCollisionEnter
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _OnTriggerStay:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5416488146372199807}
-        m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
-        m_MethodName: EventTriggerStay
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8028938472070211148}
-        m_TargetAssemblyTypeName: S_Interaction_Pathers, Assembly-CSharp
-        m_MethodName: EventTriggerStay
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 5627385721693750651}
-        m_TargetAssemblyTypeName: S_Interaction_Objects, Assembly-CSharp
-        m_MethodName: EventTriggerStay
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _OnTriggerAirLauncher:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &8028938472070211148 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2175753145177796918, guid: 99bb1a0761440aa4d906f36f4fe221cc,
@@ -30334,41 +29974,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd931b89b64ec84fa70a94de2d5ef5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8674282290959448995 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 665524752473779417, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6da8dadf30a2c64abf5847208a3b113, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8902633703631210661 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 779638243685523423, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36193597c27d39846afd0cfd81c7331c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8973699885055106866 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 996890313225717832, guid: 99bb1a0761440aa4d906f36f4fe221cc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8168780911374276474}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c1a4862d66441f4f94e9a7d171185b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -741,7 +741,7 @@ public class S_HedgeCamera : MonoBehaviour
 			//Once through 50% of the shake time, start slowing it down until it reaches 0.
 			if (i > frames * 0.5f)
 			{
-				_Noise.m_AmplitudeGain -= (segments / 0.5f);
+				_Noise.m_AmplitudeGain = Mathf.Max(_Noise.m_AmplitudeGain -(segments / 0.5f), 0);
 			}
 
 			//If the secondary camera is in affect, ensure it has the same shake. (An exmaple of this situation is when launching a spin charge.)

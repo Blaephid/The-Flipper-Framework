@@ -999,7 +999,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucDropCharge SetStrucDropCharge () {
 		return new StrucDropCharge
 		{
-			chargingSpeed = 1.2f,
+			chargingSpeed = 110f,
 			minimunCharge = 40f,
 			maximunCharge = 150f,
 			minimumHeightToPerform = 3,
@@ -1010,7 +1010,7 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucDropCharge
 	{
-		[Tooltip("Surface: How much charge to gain per frame.")]
+		[Tooltip("Surface: How much charge to gain per second")]
 		public float      chargingSpeed;
 		[Tooltip("Surface: The minimum speed to launch at. Does not start charging from here, but will always launch with this or more force.")]
 		public float      minimunCharge;

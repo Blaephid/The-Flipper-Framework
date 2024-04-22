@@ -41,7 +41,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	private Transform		_FeetPoint;
 
 	//External
-	private S_Control_MovingPlatform	_PlatformScript;
 	private GameObject                       _PlatformAnchor;
 
 	[Header("Unity Objects")]
@@ -153,6 +152,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "MovingRing":
 				if (Col.TryGetComponent(out S_MovingRing MovingRingScript))
 				{
+					//The script handles this, applying a delay after being spawned until this is true.
 					if (MovingRingScript._isCollectable)
 					{
 						StartCoroutine(_HurtAndHealth.GainRing(1f, Col, RingCollectParticle));
@@ -269,10 +269,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			//Dash ring
 			if (SpeedPadScript._isDashRing_)
 			{
-				//Air interactions
-				_Actions._isAirDashAvailables = true;
-				_Actions._ActionDefault.CancelCoyote();
-				_Actions._ActionDefault.StartAction();
+				AirLauncher();
 
 				//Effects
 				_CharacterAnimator.SetBool("Grounded", false);
@@ -330,19 +327,25 @@ public class S_Interaction_Objects : MonoBehaviour
 		}
 	}
 
-	private void LaunchFromSpring (Collider Col) {
-		if (!Col.TryGetComponent(out S_Data_Spring SpringScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
-
-		//Immediate effects on player
+	private void AirLauncher () {
+		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
-		_PlayerPhys._isGravityOn = true; //Counter acts any actions that might have disabled this.
+		_PlayerPhys._isGravityOn = true; //Counteracts any actions that might have disabled this.
+
+		//Returns air actions
 		_Actions._isAirDashAvailables = true;
 		_Actions._jumpCount = 1;
 
+		_Events._OnTriggerAirLauncher.Invoke();
+	}
+
+	private void LaunchFromSpring (Collider Col) {
+		if (!Col.TryGetComponent(out S_Data_Spring SpringScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
+
+		AirLauncher();
+
 		_Actions._ActionDefault.StartAction();
 		_CharacterAnimator.SetBool("Grounded", false);
-
-		_Events._OnTriggerAirLauncher.Invoke();
 
 		//Prevents immediate air actions.
 		_Input.JumpPressed = false;
@@ -360,8 +363,8 @@ public class S_Interaction_Objects : MonoBehaviour
 			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity, false);
 			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVel(direction * SpringScript._springForce_, false); //Combined the spring direction with force to get the only the force horizontally.
 
-			Vector3 combinedVelocityDirection = (launchHorizontalVelocity * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
 			Vector3 combinedVelocityMagnitude = (launchHorizontalVelocity + newCoreVelocity); //The two put together normally so the magnitude is accurate.
+			Vector3 combinedVelocityDirection = (_PlayerPhys.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
 			Vector3 upDirection = new Vector3(0, direction.y, 0);
 
 			//If the velocity after bounce is greater than velocity going in to bounce, the take the larger of the two that made it, without losing direction. This will prevent speed increasing too much.
@@ -440,6 +443,12 @@ public class S_Interaction_Objects : MonoBehaviour
 		//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
 
 		Vector3 totalEnvironment = (launchHorizontalVelocity.normalized * horizontalEnvSpeed) + (new Vector3(0, (direction * launchPower).y,0));
+
+		launchHorizontalVelocity = _PlayerPhys.transform.TransformDirection(launchHorizontalVelocity);
+
+		Debug.DrawRay(transform.position, direction.normalized * 2, Color.magenta, 20f);
+		Debug.DrawRay(transform.position, totalEnvironment.normalized * 2, Color.red, 20f);
+		Debug.DrawRay(transform.position, launchHorizontalVelocity.normalized * 2, Color.blue, 20f);
 
 		StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed));
 	}

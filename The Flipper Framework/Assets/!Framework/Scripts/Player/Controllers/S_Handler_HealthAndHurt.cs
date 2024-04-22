@@ -326,6 +326,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		}
 	}
 
+	//Returns the player to the state they should be at the start.
 	private void ResetStatsOnRespawn() {
 		//Visual
 		_CharacterAnimator.SetBool("Dead", false);

@@ -2105,7 +2105,7 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
   DropChargeStats:
-    chargingSpeed: 1.2
+    chargingSpeed: 110
     minimunCharge: 40
     maximunCharge: 150
     minimumHeightToPerform: 3

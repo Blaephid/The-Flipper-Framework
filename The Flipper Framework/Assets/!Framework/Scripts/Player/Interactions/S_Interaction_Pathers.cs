@@ -141,7 +141,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
 
 				//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
-				if (rangeAndDis.y < Mathf.Clamp(_PlayerPhys._speedMagnitude / 30, 2f, 5f))
+				if (rangeAndDis.y < Mathf.Clamp(_PlayerPhys._speedMagnitude / 25, 2f, 6f))
 				{
 					SetOnRail(true, col, rangeAndDis);
 				}

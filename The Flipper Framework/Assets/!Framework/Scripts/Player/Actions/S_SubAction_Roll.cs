@@ -146,8 +146,6 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 			//Set to rolling from not
 			if (value)
 			{
-				_CharacterAnimator.SetBool("isRolling", true);
-
 				//Make shorter to slide under spaces
 				_RollingCapsule.SetActive(true);
 				_CharacterCapsule.SetActive(false);
@@ -155,7 +153,6 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 			//Set to not rolling from was
 			else
 			{
-				_CharacterAnimator.SetBool("isRolling", false);
 
 				//Make taller again to slide under spaces
 				_CharacterCapsule.SetActive(true);

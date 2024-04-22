@@ -27,12 +27,10 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private GameObject            _JumpBall;
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private float        _spinDashChargingSpeed_ = 0.3f;
+	private float        _chargingSpeed_ = 1.5f;
 	private float        _minimunCharge_ = 10;
 	private float        _maximunCharge_ = 100;
 
@@ -45,15 +43,14 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	#region trackers
 	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
-	private bool        _isCharging = false;	//If true, increase charge, if false (set if not inputting), prepare to exit action after a delay.
+	private bool        _isCharging = false;          //If true, increase charge, if false (set if not inputting), prepare to exit action after a delay.
+	private bool        _hasLanded;		//Used to prevent release being called mutliple times in the time between being grounded and changing action.
 
 	[HideInInspector]
 	public float        _charge;			//The current speed charged up and ready.
 	private RaycastHit  _FloorHit;		//A hit on the ground
 
 	public float        _releaseShakeAmmount;	//Camera shake when performed
-	#endregion
-
 	#endregion
 	#endregion
 
@@ -124,6 +121,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		}
 
 		_isCharging = true;
+		_hasLanded = false;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -144,7 +142,6 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
 	public void HandleInputs () {
 		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 		_Actions.HandleInputs(_positionInActionList);
@@ -154,7 +151,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private void ChargeDash () {
 		if (_isCharging)
 		{
-			_charge = Mathf.Clamp(_charge + (_spinDashChargingSpeed_ * Time.fixedDeltaTime), 0, _maximunCharge_); //Increase charge
+			_charge = Mathf.Clamp(_charge + (_chargingSpeed_ * Time.deltaTime), 0, _maximunCharge_); //Increase charge
 
 			//If input is released, then end sound and prepare to end action after a delay.
 			if (!_Input.RollPressed)
@@ -205,8 +202,9 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 			RaycastHit UseHit = isRaycasthit ? _FloorHit : _PlayerPhys._HitGround; //Get which one to use
 
 			//If hits the ground, apply new forces and effects but also change back to default action.
-			if (isGroundHit)
+			if (isGroundHit && !_hasLanded)
 			{
+				_hasLanded = true;
 				Release(UseHit.normal);
 			}
 		}
@@ -232,7 +230,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		_charge = Mathf.Clamp(_charge, _minimunCharge_, _maximunCharge_);
 		Vector3 force = _PlayerPhys.AlignWithNormal(_MainSkin.forward, upNormal, _charge);
 
-		StartCoroutine(delayForce(force, 2)); //Will apply this force after a few frames, this is to give a chance to properly align to the ground.
+		StartCoroutine(DelayForce(force, 2)); //Will apply this force after a few frames, this is to give a chance to properly align to the ground.
 
 		//Effects
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerPhys._horizontalSpeedMagnitude, _charge), 0.25f)); //The camera will fall back before catching up.
@@ -252,8 +250,8 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		_PlayerPhys._isGravityOn = true;
 	}
 
-	//Prevents force being applied until enough fixed frames have passed.
-	private IEnumerator delayForce ( Vector3 force, int delay ) {
+	//Prevents force being applied until enough fixed frames have passed. This is to give some time to properly rotate to match ground.
+	private IEnumerator DelayForce ( Vector3 force, int delay ) {
 		for (int i = 1 ; i <= delay ; i++)
 		{
 			yield return new WaitForFixedUpdate();
@@ -273,7 +271,6 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 		//Make force relevant to character's current rotation
 		Vector3 releVec = _PlayerPhys.GetRelevantVel(force, false);
-		float mag = force.magnitude;
 
 		//If the new total force is higher than current speed, then apply it. Uses sqrs because it's faster with comparing magnitudes
 		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerPhys._horizontalSpeedMagnitude + _charge * 0.1f, 2))
@@ -320,6 +317,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 			yield return new WaitForFixedUpdate();
 			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.DropCharge)
 			{
+				yield return new WaitForFixedUpdate();
 				_charge = 0;
 			}
 		}
@@ -371,7 +369,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
-		_spinDashChargingSpeed_ =	_Tools.Stats.DropChargeStats.chargingSpeed;
+		_chargingSpeed_ =	_Tools.Stats.DropChargeStats.chargingSpeed;
 		_minimunCharge_ =		_Tools.Stats.DropChargeStats.minimunCharge;
 		_maximunCharge_ =		_Tools.Stats.DropChargeStats.maximunCharge;
 		_minimumHeightToDropCharge_ =	_Tools.Stats.DropChargeStats.minimumHeightToPerform;

@@ -34,11 +34,11 @@ public class S_Control_Zipline : MonoBehaviour
 	}
 
 	private void OnEnable () {
-		S_Manager_LevelProgress.onReset += EventReturnToRope;
+		S_Manager_LevelProgress.OnReset += EventReturnToRope;
 	}
 
 	private void OnDisable () {
-		S_Manager_LevelProgress.onReset -= EventReturnToRope;
+		S_Manager_LevelProgress.OnReset -= EventReturnToRope;
 	}
 
 

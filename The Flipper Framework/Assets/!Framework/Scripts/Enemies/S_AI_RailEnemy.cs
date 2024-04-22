@@ -81,7 +81,7 @@ namespace SplineMesh
 			if (currentSpeed == 0)
 				currentSpeed = StartSpeed;
 
-			S_Manager_LevelProgress.onReset += EventReturnOnDeath;
+			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 
 		}
 

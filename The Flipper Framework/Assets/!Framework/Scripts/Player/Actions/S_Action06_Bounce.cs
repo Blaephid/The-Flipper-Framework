@@ -143,6 +143,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		float coolDown = _bounceCoolDown_;
 		coolDown = Mathf.Clamp(coolDown - (_PlayerPhys._horizontalSpeedMagnitude * _cooldownModifierBySpeed_), 0.05f, coolDown);
 		StartCoroutine(AddDelay(coolDown));
+
+		_HomingTrailScript.emitTime = 0.2f;
 	}
 
 	#endregion
