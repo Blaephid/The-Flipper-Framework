@@ -218,7 +218,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				//Moves the player to the position of the Upreel
 				Vector3 HandPos = transform.position - _HandGripTransform.position;
 				HandPos += (_currentUpreel.transform.forward * _offsetUpreel_);
-				transform.position = _currentUpreel.HandleGripPos.position + HandPos;
+				_PlayerPhys.SetPlayerPosition(_currentUpreel.HandleGripPos.position + HandPos);
 				_MainSkin.rotation = Quaternion.LookRotation(-_currentUpreel.transform.forward, _currentUpreel.transform.up);
 			}
 			//On finished

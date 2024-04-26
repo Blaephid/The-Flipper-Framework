@@ -130,7 +130,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Sounds.SpinDashSound();
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.SpinCharge);
-		this.enabled = true;
+		enabled = true;
 	}
 
 	//Called by the action manager whenever action is changing. Will only perform if enabled right now. Similar to OnDisable.
@@ -142,6 +142,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		//Setting public
 		_LowerCapsule.SetActive(false);
 		_CharacterCapsule.SetActive(true);
+
+		_Actions._ActionDefault.SwitchSkin(true);
+
 		_PlayerPhys._isRolling = false;
 	}
 
@@ -193,15 +196,15 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	//Changes how the player moves when in this state.
 	private void AffectMovement () {
 
-		_PlayerPhys._moveInput *= 0.75f; //Limits input, lessening turning and deceleration
+		_PlayerPhys._moveInput *= 0.65f; //Limits input, lessening turning and deceleration
 		
 		if(_shouldSetRolling_) _PlayerPhys._isRolling = true; // set every frame to counterballanced the rolling subaction
 
 		//Apply a force against the player movement to decrease speed.
 		float stillForce = _spinDashStillForce_ * _speedLossByTime_.Evaluate(_counter);
-		if (stillForce * 4 < _PlayerPhys._horizontalSpeedMagnitude)
+		if (_PlayerPhys._horizontalSpeedMagnitude > 20)
 		{
-			_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * -stillForce, false);
+			_PlayerPhys.AddCoreVelocity(- _PlayerPhys._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerPhys._horizontalSpeedMagnitude), false);
 		}
 	}
 
@@ -270,7 +273,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 		//Effects
 		_Effects.EndSpinDash();
-		_Actions._ActionDefault.SwitchSkin(true);
 
 		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _currentCharge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(shake, (int)_releaseShakeAmmount_.w));

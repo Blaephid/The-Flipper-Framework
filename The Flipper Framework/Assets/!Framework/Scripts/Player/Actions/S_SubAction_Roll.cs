@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
 public class S_SubAction_Roll : MonoBehaviour, ISubAction
@@ -28,9 +29,6 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	#endregion
 
-	//General
-	#region General Properties
-
 	//Stats
 	#region Stats
 	private float       _rollingStartSpeed_;
@@ -41,11 +39,11 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	#region trackers
 	private S_Enums.PrimaryPlayerStates _whatCurrentAction;
 
+	private bool       _isRollingFromThis;
 	[HideInInspector]
 	public float        _rollCounter;
 	#endregion
 
-	#endregion
 	#endregion
 
 	/// <summary>
@@ -68,13 +66,13 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	private void FixedUpdate () {
 
 		//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
-		if ((!_PlayerPhys._isGrounded && _PlayerPhys._isRolling) || (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling) || _whatCurrentAction != _Actions._whatAction)
+		if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatAction)))
 		{
 			UnCurl();
 		}
 
 		//While isRolling is set externally, the counter tracks when it is.
-		else if (_PlayerPhys._isRolling)
+		else if (_isRollingFromThis)
 			_rollCounter += Time.deltaTime;
 
 	}
@@ -88,16 +86,18 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 				//Must be on the ground to roll
 				if (_PlayerPhys._isGrounded)
 				{
-					//Enter Rolling state, must have been rolling for a long enough time first.
-					if (_Input.RollPressed && _PlayerPhys._isGrounded && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
+					//Enter Rolling state, must be moving fast enought first.
+					if (_Input.RollPressed && !_isRollingFromThis && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
 						_whatCurrentAction = _Actions._whatAction; //If the current action stops matching this, then the player has switched actions while rolling
 						_Actions._whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
+						
 						Curl();
 						return true;
 					}
-					//Exit rolling state
-					if ((!_Input.RollPressed && _rollCounter > _minRollTime_) || !_PlayerPhys._isGrounded)
+
+					//End rolling state
+					if (_isRollingFromThis && !_Input.RollPressed && _rollCounter > _minRollTime_)
 					{
 						UnCurl();
 					}
@@ -106,12 +106,9 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		}
 		return false;
 	}
-
 	public void StartAction () {
 
 	}
-
-
 	#endregion
 
 	/// <summary>
@@ -125,14 +122,14 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		if (!_PlayerPhys._isRolling)
 		{
 			_Sounds.SpinningSound();
+			SetIsRolling(true);
 		}
-		SetIsRolling(true);
 	}
 
 	//When the player wants to stop rolling while on the ground, check if there's enough room to stand up.
 	public void UnCurl () {
 		CapsuleCollider col = _CharacterCapsule.GetComponent<CapsuleCollider>();
-		if (!Physics.BoxCast(col.transform.position, new Vector3(col.radius, col.height / 2.1f, col.radius), Vector3.zero, transform.rotation, 0))
+		if (_PlayerPhys._isRolling && !Physics.BoxCast(col.transform.position, new Vector3(col.radius, col.height / 2.1f, col.radius), Vector3.zero, transform.rotation, 0))
 		{
 			SetIsRolling(false);
 		}
@@ -160,6 +157,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 				_rollCounter = 0f;
 			}
 
+			_isRollingFromThis = value;
 			_PlayerPhys._isRolling = value; //The physics script handles all of the movement differences while rolling.
 		}
 	}

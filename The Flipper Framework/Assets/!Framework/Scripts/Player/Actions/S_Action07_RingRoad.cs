@@ -109,6 +109,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.right); //Prevent character moving outside of the path.
 		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
 		_PlayerPhys._canChangeGrounded = false;
+		_PlayerPhys.SetIsGrounded(false);
 
 		//Effects
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -218,7 +219,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
 
 			//Place player on it (since called in update, not fixed update, won't be too jittery).
-			_PlayerPhys.transform.position = Sample.location;
+			_PlayerPhys.SetPlayerPosition( Sample.location);
 
 			//Rotate towards the next ring, according to the created spline.
 			_directionToGo = Sample.tangent;
@@ -234,6 +235,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	//Handles player physics when at the end of a chain of rings.
 	private void EndRingRoad () {
 
+
 		//End at the speed started at (with a slight change), but with a minimum.
 		float endingSpeedResult = Mathf.Max(_minimumEndingSpeed_, _speedBeforeAction * _speedGain_);
 
@@ -245,13 +247,14 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _directionToGo);
 
-		_PlayerPhys.transform.position = Sample.location;
+		_PlayerPhys.SetPlayerPosition( Sample.location);
 		_PlayerPhys.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
 		float differentSpeedOnExit = _Actions._listOfSpeedOnPaths[0] - endingSpeedResult;
 		if(differentSpeedOnExit > 0) { StartCoroutine(LoseTemporarySpeedOverTime(differentSpeedOnExit)); }
 
+		_Actions._ActionDefault.HandleAnimator(0);
 		_Actions._ActionDefault.StartAction();
 	}
 

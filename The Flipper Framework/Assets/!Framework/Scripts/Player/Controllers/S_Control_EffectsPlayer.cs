@@ -32,8 +32,6 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 	[SerializeField]
 	Transform LeftMouth, RightMouth;
 	[SerializeField]
-	Transform[] MouthsToHide;
-	[SerializeField]
 	Transform Eyelids;
 
 	private void Start () {
@@ -43,7 +41,9 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 		_CamHandler = _Tools.CamHandler;
 	}
 
-	void FixedUpdate () {
+	void Update () {
+
+		HandleMouths();
 
 		if (_PlayerPhys._currentRunningSpeed > RunningDustThreshold && _PlayerPhys._isGrounded && RunningDust != null)
 		{
@@ -54,19 +54,17 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 		{
 			SpeedLinesCharacter.Play();
 		}
-		else if ((_PlayerPhys._currentRunningSpeed < SpeedLinesThreshold && SpeedLinesCharacter.isPlaying == true) || Mathf.Abs(_PlayerPhys._coreVelocity.y) > _PlayerPhys._currentRunningSpeed)
+		else if ((_PlayerPhys._currentRunningSpeed < SpeedLinesThreshold - 5 && SpeedLinesCharacter.isPlaying == true) || Mathf.Abs(_PlayerPhys._coreVelocity.y) > _PlayerPhys._currentRunningSpeed)
 		{
 			SpeedLinesCharacter.Stop();
 		}
 
-		if (_PlayerPhys._horizontalSpeedMagnitude > 50)
+		if (_PlayerPhys._horizontalSpeedMagnitude > 70)
 		{
 			_SpeedLinesScreen.SetFloat("Intensity", (_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed) * 2);
 		}
 		else
 			_SpeedLinesScreen.SetFloat("Intensity", 0);
-
-		HandleMouths();
 
 	}
 
@@ -76,8 +74,6 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 
 		LeftMouth.localScale = _isFacingRightSide ? Vector3.zero : Vector3.one;
 		RightMouth.localScale = !_isFacingRightSide ? Vector3.zero : Vector3.one;
-		
-
 	}
 
 	public ParticleSystem GetSpinDashDust () {

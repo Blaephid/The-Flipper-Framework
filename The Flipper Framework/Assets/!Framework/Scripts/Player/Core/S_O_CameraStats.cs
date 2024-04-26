@@ -113,6 +113,33 @@ public class S_O_CameraStats : ScriptableObject
 	}
 	#endregion
 
+	#region FOV
+	//-------------------------------------------------------------------------------------------------
+
+	public StrucFOV DefaultFOVStats = SetStrucFOV();
+	public StrucFOV FOVStats = SetStrucFOV();
+
+	static StrucFOV SetStrucFOV () {
+		return new StrucFOV
+		{
+			baseFOV = 50,
+			shouldAffectFOVbySpeed = true,
+
+		};
+	}
+
+	[System.Serializable]
+	public struct StrucFOV
+	{
+		[Tooltip("How far the camera should be from the character, will be less if there is a solid object.")]
+		public float baseFOV;
+		[Tooltip("If true, the camera FOV will change depending on running speed.")]
+		public bool shouldAffectFOVbySpeed;
+		[Tooltip("Multiply FOV by the x, obtained from current running speed.")]
+		public AnimationCurve cameraFOVBySpeed;
+	}
+	#endregion
+
 	#region cinemachine
 	//-------------------------------------------------------------------------------------------------
 
@@ -397,6 +424,7 @@ public class S_O_CameraStatsEditor : Editor
 		DrawInput();
 
 		DrawDistance();
+		DrawFOV();
 		DrawCinemachine();
 		DrawAligning();
 		DrawLockHeight();
@@ -424,6 +452,22 @@ public class S_O_CameraStatsEditor : Editor
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
 				stats.DistanceStats = stats.DefaultDistanceStats;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
+		#endregion
+
+		//FOV
+		#region FOV
+		void DrawFOV () {
+			EditorGUILayout.Space();
+			DrawProperty("FOVStats", "Camera FOV");
+
+			Undo.RecordObject(stats, "set to defaults");
+			if (GUILayout.Button("Default", ResetToDefaultButton))
+			{
+				stats.FOVStats = stats.DefaultFOVStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

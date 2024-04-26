@@ -197,7 +197,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 
 		//Transform
-		_PlayerPhys.transform.position = _resumePosition;
+		_PlayerPhys.SetPlayerPosition(_resumePosition);
 		_MainSkin.forward = _resumeForwards;
 
 	}

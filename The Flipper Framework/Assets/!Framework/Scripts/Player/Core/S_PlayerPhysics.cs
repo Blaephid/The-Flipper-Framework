@@ -63,6 +63,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _startMaxFallingSpeed_ = -500f;
 
 	[Header("Slopes")]
+	public bool                   _isUsingSlopePhysics_ = true;
+
 	private float                 _slopeEffectLimit_ = 0.9f;
 	private AnimationCurve        _SlopeSpeedLimitByAngle_;
 
@@ -102,7 +104,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _stickCastAhead_ = 1.9f;
 	private AnimationCurve        _upwardsLimitByCurrentSlope_;
 	[HideInInspector]
-	public float                  _negativeGHoverHeight_ = 0.6115f;
+	public float                  _placeAboveGroundBuffer_ = 0.6115f;
 	private float                 _rayToGroundDistance_ = 0.55f;
 	private float                 _raytoGroundSpeedRatio_ = 0.01f;
 	private float                 _raytoGroundSpeedMax_ = 2.4f;
@@ -118,6 +120,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	// Trackers
 	#region trackers
+
+	private bool        _isPositiveUpdate;	//Alternates between on and off every update, so can be used universally for anything that should only happen every other frame.
 
 	//Methods
 	public delegate Vector3 DelegateAccelerationAndTurning ( Vector3 vector, Vector3 input, Vector2 modifier );        //A delegate for deciding methods to calculate acceleration and turning 
@@ -196,6 +200,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public RaycastHit             _HitGround;         //Used to check if there is ground under the player's feet, and gets data on it like the normal.
 	[HideInInspector]
 	public Vector3                _groundNormal;
+	private Vector3               _previousNormal;        //Used to prevent the player jittering between two different upwards direction due to matching the rotation of one making the other be detected.
 	private Vector3               _keepNormal;        //Used when in the air to remember up direction when the ground was lost.
 	private float                 _groundingDelay;    //Set when ground is lost and can't enter grounded state again until it's over.
 	[HideInInspector]
@@ -282,7 +287,12 @@ public class S_PlayerPhysics : MonoBehaviour
 	void FixedUpdate () {
 		_isCurrentlyOnSlope = false; //Set to false at the end of a frame but will be set to true if slope physics are called next frame.
 
+		Debug.DrawRay(transform.position, Vector3.up * 0.1f, Color.cyan, 20f);
 		HandleGeneralPhysics();
+		Debug.DrawRay(transform.position, Vector3.up * 0.1f, Color.blue, 20f);
+		Debug.DrawRay(transform.position + (_totalVelocity * Time.deltaTime), Vector3.up * 0.1f, Color.yellow, 20f);
+
+		_isPositiveUpdate = !_isPositiveUpdate; //Alternates at the end of an update, so will be the oppositve value enxt call.
 	}
 
 	//Sets public variables relevant to other calculations 
@@ -291,6 +301,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_playerPos = transform.position;
 	}
 
+	///----Collision Trackers
 	private void OnTriggerEnter ( Collider other ) {
 		_Events._OnTriggerEnter.Invoke(other);
 	}
@@ -343,7 +354,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
-	void CheckForGround () {
+	private void CheckForGround () {
 
 		if (_groundingDelay > 0)
 		{
@@ -354,21 +365,47 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (!_canChangeGrounded) { return; }
 
 		//Sets the size of the ray to check for ground. If running on the ground then it is typically to avoid flying off the ground.
-		float rayToGroundDistancecor = _rayToGroundDistance_;
-		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Default && _isGrounded)
+		float groundCheckerDistance = _rayToGroundDistance_;
+		if (_isGrounded)
 		{
-			rayToGroundDistancecor = Mathf.Max(_rayToGroundDistance_ + (_horizontalSpeedMagnitude * _raytoGroundSpeedRatio_), _rayToGroundDistance_);
-			rayToGroundDistancecor = Mathf.Min(rayToGroundDistancecor, _raytoGroundSpeedMax_);
+			groundCheckerDistance = _rayToGroundDistance_ + (_horizontalSpeedMagnitude * _raytoGroundSpeedRatio_);
+			groundCheckerDistance = Mathf.Min(groundCheckerDistance, _raytoGroundSpeedMax_);
 		}
 
 		//Uses the ray to check for ground, if found, sets grounded to true and takes the normal.
-		if (Physics.Raycast(transform.position + (transform.up * 2), -transform.up, out RaycastHit hitGroundTemp, 2f + rayToGroundDistancecor, _Groundmask_))
+		Vector3 rayCastStartPosition = transform.position + (transform.up * 0.5f);
+		if (Physics.Raycast(rayCastStartPosition, -transform.up, out RaycastHit hitGroundTemp, 0.5f + groundCheckerDistance, _Groundmask_))
 		{
-			if (Vector3.Angle(_groundNormal, hitGroundTemp.normal) / 180 < _groundDifferenceLimit_)
+			Vector3 tempNormal = hitGroundTemp.normal;
+
+			//Because terrain can be bumpy, find an average normal between multiple around the same area.
+			int numberOfChecks = 7; //How many checks to perform. Changing this value will automatically affect the calculations so it will always be even.
+			float rotateValue = 360 / numberOfChecks; //How much to rotate each instance to add up to a full rotation.
+			Vector3 offSetForCheck = _horizontalSpeedMagnitude > 3 ? _coreVelocity.normalized : _MainSkin.forward; //The offset from the main check that will rotate
+
+			for (int i = 0 ; i < numberOfChecks ; i++)
+			{
+				//Gets a new position for this check instance, by rotating to the right from the last.
+				offSetForCheck = Vector3.RotateTowards(offSetForCheck, Vector3.Cross(offSetForCheck, transform.up), i * rotateValue, 0);
+				Vector3 thisStartPosition = rayCastStartPosition + offSetForCheck * 0.75f;
+
+				Debug.DrawRay(thisStartPosition, -transform.up * groundCheckerDistance, Color.gray, 2f);
+
+				//If it finds ground, saves the normal as between the two, adding this up to an average.
+				if (Physics.Raycast(thisStartPosition, -transform.up, out RaycastHit hitSecondTemp, 0.5f + groundCheckerDistance, _Groundmask_))
+				{
+					tempNormal += hitSecondTemp.normal;
+				}
+			}
+			tempNormal.Normalize(); //Gets the average upwards direction by adding them all together then normalizing.
+
+
+			//After getting average normal, check if it's not too different, then set ground.
+			if (Vector3.Angle(_groundNormal, tempNormal) / 180 < _groundDifferenceLimit_)
 			{
 				_HitGround = hitGroundTemp;
 				SetIsGrounded(true);
-				_groundNormal = _HitGround.normal;
+				_groundNormal = tempNormal;
 				return;
 			}
 		}
@@ -382,27 +419,30 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 	private void CheckAndApplyVelocityChanges () {
 
-		Vector3 newVelocity = _RB.velocity;
-		Vector3 velocity1FrameAgo = _previousVelocities[0];
+		Debug.DrawRay(transform.position, _coreVelocity * Time.deltaTime, Color.white, 20f);
 
-		if (newVelocity.sqrMagnitude <= velocity1FrameAgo.sqrMagnitude && velocity1FrameAgo.sqrMagnitude > 1)
+		Vector3 velocityThisFrame = _RB.velocity;
+		Vector3 velocity1FrameAgo = _previousVelocities[1];
+
+		if (velocityThisFrame.sqrMagnitude <= velocity1FrameAgo.sqrMagnitude && velocity1FrameAgo.sqrMagnitude > 1)
 		{
-			float angleChange = Vector3.Angle(newVelocity, velocity1FrameAgo) / 180;
-			float sizeDifference = Mathf.Abs(newVelocity.magnitude - _speedMagnitude);
+			float angleChange = Vector3.Angle(velocityThisFrame, velocity1FrameAgo) / 180;
+			float sizeDifference = Mathf.Abs(velocityThisFrame.magnitude - _speedMagnitude);
 			float newSpeed = _RB.velocity.sqrMagnitude;
-			// If the change is just making the player bounce off upwards into the air, then set it to zero.
-			if (angleChange > 0.45 || (angleChange > 0.1 && Vector3.Angle(newVelocity, transform.up) < Vector3.Angle(velocity1FrameAgo, transform.up)))
+			// If the change is just making the player bounce off upwards into the air, then ignore the change.
+			if (angleChange > 0.45 || (angleChange > 0.1 && Vector3.Angle(velocityThisFrame, transform.up) < Vector3.Angle(velocity1FrameAgo, transform.up)))
 			{
-				_RB.velocity = Vector3.zero;
+				velocityThisFrame = velocity1FrameAgo;
 			}
 			//But if the difference in speed is minor(such as lightly colliding with a slope when going up), then ignore the change.
-			else if (sizeDifference < 10 && newSpeed > Mathf.Pow(15, 2))
+			else if (sizeDifference < 20 && newSpeed > Mathf.Pow(15, 2))
 			{
-				_RB.velocity = velocity1FrameAgo;
+				velocityThisFrame = velocity1FrameAgo;
 			}
 
-			Vector3 vectorDifference = velocity1FrameAgo - newVelocity;
+			Vector3 vectorDifference = velocity1FrameAgo - velocityThisFrame;
 			_coreVelocity -= vectorDifference;
+
 			//If environmental velocity is in use, decrease as well to track the collisions.
 			if (_environmentalVelocity.sqrMagnitude > 10)
 			{
@@ -416,6 +456,8 @@ public class S_PlayerPhysics : MonoBehaviour
 				}
 			}
 		}
+
+		Debug.DrawRay(transform.position, _coreVelocity * Time.deltaTime * 1, Color.black, 20f);
 	}
 
 	//After every other calculation has been made, all of the new velocities and combined and set to the rigidbody.
@@ -435,7 +477,6 @@ public class S_PlayerPhysics : MonoBehaviour
 				_coreVelocity += force;
 			}
 		}
-
 
 		//Calculate total velocity this frame.
 		_totalVelocity = _coreVelocity + _environmentalVelocity;
@@ -464,7 +505,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		releVec = GetRelevantVel(_coreVelocity, false);
 		_currentRunningSpeed = releVec.magnitude;
-
 
 		//Adds this new speed to a list of 3
 		_previousHorizontalSpeeds.Insert(0, _horizontalSpeedMagnitude);
@@ -686,6 +726,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Handles interactions with slopes (non flat ground), both positive and negative, relative to the player's current rotation.
 	//This includes adding force downhill, aiding or hampering running, as well as falling off when too slow.
 	private Vector3 HandleSlopePhysics ( Vector3 worldVelocity ) {
+		if(!_isUsingSlopePhysics_) { return worldVelocity; }
+
+
 		Vector3 slopeVelocity = Vector3.zero;
 
 		//If just landed, apply additional speed dependant on slope angle.
@@ -701,7 +744,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 
 		//If moving too slow compared to the limit
-		if (_horizontalSpeedMagnitude < _SlopeSpeedLimitByAngle_.Evaluate(_groundNormal.y))
+		float speedRequirement = _SlopeSpeedLimitByAngle_.Evaluate(_groundNormal.y);
+		if (_horizontalSpeedMagnitude < speedRequirement)
 		{
 			//Then fall off and away from the slope.
 			SetIsGrounded(false, 1f);
@@ -760,57 +804,92 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//If moving and has been grounded for long enough.
 		//Then ready a raycast to check for slopes.
-		if (_timeOnGround > 0.06f && _horizontalSpeedMagnitude > 1)
+		if (_timeOnGround > 0f && _horizontalSpeedMagnitude > 2)
 		{
-			float DirectionDif = Vector3.Angle(_RB.velocity.normalized, _HitGround.normal) / 180;
-			Vector3 newGroundNormal = _HitGround.normal;
-			Vector3 raycastStartPosition = _HitGround.point + (_HitGround.normal * 0.2f);
+			Debug.DrawRay(_HitGround.point, _groundNormal * 0.2f, Color.magenta, 20f);
+
+			Vector3 currentGroundNormal = _groundNormal;
+			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.2f);
 			Vector3 rayCastDirection = _RB.velocity.normalized;
 
 			//If the Raycast Hits something, then there is a wall in front, that could be a slope.
 			if (Physics.Raycast(raycastStartPosition, rayCastDirection, out RaycastHit hitSticking,
 				_horizontalSpeedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, _Groundmask_))
 			{
-				float dif = Vector3.Angle(newGroundNormal, hitSticking.normal) / 180;
-				float limit = _upwardsLimitByCurrentSlope_.Evaluate(newGroundNormal.y);
 
-				//If the difference between current slope and encountered one is under the limit
-				//Then it creates a velocity aligned to that new normal, then interpolates from the current to this new one.			
-				if (dif < limit)
+				float upwardsDirectionDifference = Vector3.Angle(currentGroundNormal, hitSticking.normal);
+				float limit = _upwardsLimitByCurrentSlope_.Evaluate(currentGroundNormal.y);
+
+				//Debug.Log("negative slope at " +upwardsDirectionDifference);
+
+				if(upwardsDirectionDifference > 0.5f)
 				{
-					newGroundNormal = hitSticking.normal.normalized;
-					Vector3 Dir = AlignWithNormal(velocity, newGroundNormal.normalized, velocity.magnitude);
-					velocity = Vector3.Lerp(velocity, Dir, _stickingLerps_.x);
-					transform.position = _HitGround.point + newGroundNormal * _negativeGHoverHeight_;
-				}
-				//If the difference is too large, then it's not a slope, so see if its a step to step over/onto.
-				else
-				{
-					StepOver(raycastStartPosition, rayCastDirection, newGroundNormal);
+
+					//If the difference between current slope and encountered one is under the limit
+					//Then it creates a velocity aligned to that new normal, then interpolates from the current to this new one.			
+					if (upwardsDirectionDifference / 180 < limit)
+					{		
+						currentGroundNormal = hitSticking.normal.normalized;
+						Vector3 Dir = AlignWithNormal(velocity, currentGroundNormal, velocity.magnitude);
+						velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.x);
+
+						//If player is too far from ground, set back to buffer position.
+						if (_placeAboveGroundBuffer_ > 0 && Vector3.Distance(transform.position, _HitGround.point) > _placeAboveGroundBuffer_)
+						{
+							SetPlayerPosition(_HitGround.point + _groundNormal * _placeAboveGroundBuffer_, false);
+
+							Debug.DrawRay(_HitGround.point, _groundNormal * _placeAboveGroundBuffer_, Color.magenta, 20f);
+						}
+
+						Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.red, 20f);
+						
+					}
+					//If the difference is too large, then it's not a slope, so see if its a step to step over/onto.
+					else
+					{
+						StepOver(raycastStartPosition, rayCastDirection, currentGroundNormal);
+					}
 				}
 			}
 			// If there is no wall, then we may be dealing with a positive slope (like the outside of a loop, where the ground is relatively lower).
-			else if (_timeOnGround > 0.1f)
+			else
 			{
-				//If the difference between current movement and ground normal is less than the limit to stick (lower limits prevent super sticking).
-				if (Mathf.Abs(DirectionDif) < _stickingNormalLimit_)
+				float upwardsDirectionDifference = Vector3.Angle(transform.up, _groundNormal);
+
+				//Debug.Log("Positive Slope with " + upwardsDirectionDifference);
+
+				//If the difference between current movement and ground normal is less than the limit to stick (lower limits prevent super sticking). 
+				if (upwardsDirectionDifference / 180 < _stickingNormalLimit_)
 				{
-					raycastStartPosition = raycastStartPosition + (rayCastDirection * (_horizontalSpeedMagnitude * 0.7f) * _stickCastAhead_ * Time.deltaTime);
-					//Shoots a raycast from infront, but downwards to check for lower ground.
-					//Then create a velocity relative to the current groundNormal, then lerp from one to the other.
-					if (Physics.Raycast(raycastStartPosition, -_HitGround.normal, out hitSticking, 2.5f, _Groundmask_))
+					if(upwardsDirectionDifference < 2)
 					{
-						newGroundNormal = hitSticking.normal;
-						Vector3 Dir = AlignWithNormal(velocity, newGroundNormal, velocity.magnitude);
-						velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.y);
+						//Shoots a raycast from infront, but downwards to check for lower ground.
+						raycastStartPosition = raycastStartPosition + (rayCastDirection * (_horizontalSpeedMagnitude * 0.7f) * _stickCastAhead_ * Time.deltaTime);
+						//Then create a velocity relative to the current groundNormal, then lerp from one to the other.
+						if (Physics.Raycast(raycastStartPosition, -_groundNormal, out hitSticking, 2.5f, _Groundmask_))
+						{
+							currentGroundNormal = hitSticking.normal;
+						}
+					}		
+					Vector3 Dir = AlignWithNormal(velocity, currentGroundNormal, velocity.magnitude);
+					velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.y);
 
-					}
+					Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.green, 20f);
 
-					// Adds velocity downwards to remain on the slope.
-					AddCoreVelocity(-newGroundNormal * 2, false);
-
+					// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
+					AddGeneralVelocity(-currentGroundNormal * 0.9f, false);
 				}
 			}
+		}
+		//Even if not adjusting velocity to ground, still try to stick on it. This will avoid liting off the ground when slowing down to a stop.
+		else if (_isGrounded)
+		{
+			//Since stationary, remove any relative upwards force in core that might push the player off the ground.
+			velocity = GetRelevantVel(velocity);
+			velocity.y = 0;
+			velocity = transform.TransformDirection(velocity);
+
+			AddGeneralVelocity(-_groundNormal * 1.5f, false);
 		}
 		return velocity;
 	}
@@ -839,7 +918,7 @@ public class S_PlayerPhysics : MonoBehaviour
 					Vector3 boxSizeOfPlayerCollider = new Vector3 (_CharacterCapsule.radius, _CharacterCapsule.height + (_CharacterCapsule.radius * 2), _CharacterCapsule.radius);
 					if (!Physics.BoxCast(newPosition, boxSizeOfPlayerCollider, rayCastDirection, Quaternion.LookRotation(rayCastDirection, transform.up), 0.4f))
 					{
-						transform.position = newPosition;
+						SetPlayerPosition( newPosition);
 					}
 				}
 			}
@@ -847,8 +926,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 
 	}
-
-
 	#endregion
 
 	/// <summary>
@@ -888,6 +965,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Makes a vector relative to a normal. Such as a forward direction being affected by the ground.
 	public Vector3 AlignWithNormal ( Vector3 vector, Vector3 normal, float magnitude ) {
+		//return Vector3.ProjectOnPlane(vector.normalized, normal) * magnitude;
+
 		Vector3 tangent = Vector3.Cross(normal, vector);
 		Vector3 newVector = -Vector3.Cross(normal, tangent);
 		vector = newVector.normalized * magnitude;
@@ -900,8 +979,17 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If on ground, then rotates to match the normal of the floor.
 		if (isGrounded)
 		{
-			_keepNormal = normal;
-			transform.rotation = Quaternion.FromToRotation(transform.up, normal) * transform.rotation;
+			//If this new normal is not the same as the normal two frames ago (means there won't be flickering between two different normals at all times).
+			if(_previousNormal != normal)
+			{
+				_keepNormal = normal;
+				Quaternion targetRotation = Quaternion.FromToRotation(transform.up, normal) * transform.rotation;
+				transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 0.6f);
+
+				//Every other update will save the normal as the normal two frames ago.
+				if (_isPositiveUpdate)
+					_previousNormal = normal;
+			}
 
 		}
 		//If in the air, then stick to previous normal for a moment before rotating legs towards gravity. This avoids collision issues
@@ -992,10 +1080,11 @@ public class S_PlayerPhysics : MonoBehaviour
 	public void SetIsGrounded ( bool value, float timer = 0 ) {
 		if (_isGrounded != value)
 		{
-			Debug.Log(value);
 			//If changed to be in the air when was on the ground
 			if (_isGrounded && _isGrounded != value)
 			{
+				Debug.Log("LOST GROUND BECAUSE");
+
 				_groundingDelay = timer;
 				_timeOnGround = 0;
 				_Events._OnLoseGround.Invoke();
@@ -1093,6 +1182,12 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 	}
 
+	public void SetPlayerPosition (Vector3 newPosition, bool shouldPrintLocation = false) {
+		transform.position = newPosition;
+
+		if (shouldPrintLocation) Debug.Log("Change Position to  " +newPosition);
+	}
+
 
 	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.
 	public IEnumerator LockFunctionForTime ( EnumControlLimitations whatToLimit, float seconds, int frames = 0 ) {
@@ -1160,6 +1255,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		_DecelBySpeed_ = _Tools.Stats.DecelerationStats.DecelBySpeed;
 		_constantAirDecel_ = _Tools.Stats.DecelerationStats.airConstantDecel;
 		_airDecel_ = _Tools.Stats.DecelerationStats.airManualDecel;
+
+		_isUsingSlopePhysics_ = _Tools.Stats.SlopeStats.isUsingSlopePhysics;
 		_slopeEffectLimit_ = _Tools.Stats.SlopeStats.slopeEffectLimit;
 		_SlopeSpeedLimitByAngle_ = _Tools.Stats.SlopeStats.SpeedLimitBySlopeAngle;
 		_generalHillMultiplier_ = _Tools.Stats.SlopeStats.generalHillMultiplier;
@@ -1190,7 +1287,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_stickingLerps_ = _Tools.Stats.GreedysStickToGround.stickingLerps;
 		_stickingNormalLimit_ = _Tools.Stats.GreedysStickToGround.stickingNormalLimit;
 		_stickCastAhead_ = _Tools.Stats.GreedysStickToGround.stickCastAhead;
-		_negativeGHoverHeight_ = _Tools.Stats.GreedysStickToGround.groundBuffer;
+		_placeAboveGroundBuffer_ = _Tools.Stats.GreedysStickToGround.groundBuffer;
 		_rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;
 		_raytoGroundSpeedRatio_ = _Tools.Stats.FindingGround.raytoGroundSpeedRatio;
 		_raytoGroundSpeedMax_ = _Tools.Stats.FindingGround.raytoGroundSpeedMax;

@@ -35,7 +35,8 @@ public class S_HedgeCamera : MonoBehaviour
 
 
 	[Header("Cameras")]
-	public GameObject             _SecondaryCamera;
+
+	public CinemachineVirtualCamera         _SecondaryCamera;
 	public CinemachineBrain       _Brain;
 
 	private Transform              _PlayerTransformReal;
@@ -64,6 +65,10 @@ public class S_HedgeCamera : MonoBehaviour
 	private AnimationCurve        _cameraDistanceBySpeed_;
 	private bool                  _shouldAffectDistanceBySpeed_;
 	private Vector3               _angleThreshold_;
+
+	private bool                  _shouldAffectFOVBySpeed_;
+	private float                 _baseFOV_;
+	private AnimationCurve        _cameraFOVBySpeed_;
 
 	private Vector3               _dampingBehind_;
 	private Vector3               _dampingInFront_;
@@ -391,6 +396,14 @@ public class S_HedgeCamera : MonoBehaviour
 		{
 			float targetDistance = _cameraDistanceBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
 			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.1f);
+		}
+
+		//To make the player feel faster than they are, changes camera FOV based on speed.
+		if(_shouldAffectFOVBySpeed_)
+		{
+			float targetFOV = _cameraFOVBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed) * _baseFOV_;
+			_VirtualCamera.m_Lens.FieldOfView = Mathf.Lerp(_VirtualCamera.m_Lens.FieldOfView, targetFOV, 0.2f);
+			_SecondaryCamera.m_Lens.FieldOfView = _VirtualCamera.m_Lens.FieldOfView;
 		}
 
 		float dist = _cameraMaxDistance_ * _distanceModifier;
@@ -730,7 +743,7 @@ public class S_HedgeCamera : MonoBehaviour
 	public IEnumerator ApplyCameraShake ( float shakeForce, int frames ) {
 		_Noise.m_AmplitudeGain = shakeForce / _shakeDampen_;
 		_Noise.m_FrequencyGain = 10;
-		_SecondaryCamera.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_FrequencyGain = _Noise.m_FrequencyGain;
+		_SecondaryCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_FrequencyGain = _Noise.m_FrequencyGain;
 		float segments = _Noise.m_AmplitudeGain / frames;
 
 		//This will repeat until noise has reached 0 again.
@@ -745,14 +758,14 @@ public class S_HedgeCamera : MonoBehaviour
 			}
 
 			//If the secondary camera is in affect, ensure it has the same shake. (An exmaple of this situation is when launching a spin charge.)
-			_SecondaryCamera.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = _Noise.m_AmplitudeGain;		
+			_SecondaryCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = _Noise.m_AmplitudeGain;		
 		}
 	}
 
 	//Called externally and temporarily creates activates the second camera at the position of the main one, before transitioning back to the primary.
 	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
 	public IEnumerator ApplyCameraPause ( Vector2 frames, Vector2 speedBeforeAndAfter, float minDifference = 0 ) {
-		if (_SecondaryCamera.activeSelf) { yield break; } //If secondary camera is already active, don't move it, let it play out.
+		if (_SecondaryCamera.gameObject.activeSelf) { yield break; } //If secondary camera is already active, don't move it, let it play out.
 
 		//If the caller has input a speed the player is suddenly moving at, affect the lerp time by the speed difference.
 		if (speedBeforeAndAfter.y > 0 && speedBeforeAndAfter.y >= speedBeforeAndAfter.x)
@@ -772,7 +785,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//Sets the secondary camera to the position of the primary, then makes it take over display.
 		_SecondaryCamera.transform.position = transform.position;
 		_SecondaryCamera.transform.rotation = transform.rotation;
-		_SecondaryCamera.SetActive(true);
+		_SecondaryCamera.gameObject.SetActive(true);
 
 		//Remain locked in place for x frames. At least 1
 		for (int i = 1 ; i <= Mathf.Max(frames.x, 2) ; i++)
@@ -780,7 +793,7 @@ public class S_HedgeCamera : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
-		_SecondaryCamera.SetActive(false); //Disabling the secondary camera will cause the brain to automatically transition back to primary (assuming no other virtual cameras are at play.
+		_SecondaryCamera.gameObject.SetActive(false); //Disabling the secondary camera will cause the brain to automatically transition back to primary (assuming no other virtual cameras are at play.
 	}
 
 	#endregion
@@ -799,10 +812,9 @@ public class S_HedgeCamera : MonoBehaviour
 		_Transposer = _VirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
 
 		_VirtualCamera.Follow = _FinalTarget;
-		_SecondaryCamera.SetActive(false);
 
+		_SecondaryCamera.gameObject.SetActive(false);
 		_SecondaryCamera.transform.parent = null;
-		_SecondaryCamera.SetActive(false);
 
 		_Actions = _Tools._ActionManager;
 	}
@@ -811,56 +823,60 @@ public class S_HedgeCamera : MonoBehaviour
 		_isLocked = false;
 		_canMove = true;
 
-		_shouldSetHeightWhenMoving_ = _Tools.CameraStats.LockHeightStats.LockHeight;
-		_lockHeightSpeed_ = _Tools.CameraStats.LockHeightStats.LockHeightSpeed;
-		_shouldFaceDownWhenInAir_ = _Tools.CameraStats.AutoLookDownStats.shouldLookDownWhenInAir;
-		_minHeightToLookDown_ = _Tools.CameraStats.AutoLookDownStats.minHeightToLookDown;
-		_heightToLock_ = _Tools.CameraStats.LockHeightStats.HeightToLock;
-		_heightFollowSpeed_ = _Tools.CameraStats.AutoLookDownStats.HeightFollowSpeed;
-		_fallSpeedThreshold_ = _Tools.CameraStats.AutoLookDownStats.FallSpeedThreshold;
+		_shouldSetHeightWhenMoving_ =		_Tools.CameraStats.LockHeightStats.LockHeight;
+		_lockHeightSpeed_ =			_Tools.CameraStats.LockHeightStats.LockHeightSpeed;
+		_shouldFaceDownWhenInAir_ =		_Tools.CameraStats.AutoLookDownStats.shouldLookDownWhenInAir;
+		_minHeightToLookDown_ =		_Tools.CameraStats.AutoLookDownStats.minHeightToLookDown;
+		_heightToLock_ =			_Tools.CameraStats.LockHeightStats.HeightToLock;
+		_heightFollowSpeed_ =		_Tools.CameraStats.AutoLookDownStats.HeightFollowSpeed;
+		_fallSpeedThreshold_ =		_Tools.CameraStats.AutoLookDownStats.FallSpeedThreshold;
 
-		_cameraMaxDistance_ = _Tools.CameraStats.DistanceStats.CameraDistance;
-		_cameraDistanceBySpeed_ = _Tools.CameraStats.DistanceStats.cameraDistanceBySpeed;
-		_shouldAffectDistanceBySpeed_ = _Tools.CameraStats.DistanceStats.shouldAffectDistancebySpeed;
+		_cameraMaxDistance_ =		_Tools.CameraStats.DistanceStats.CameraDistance;
+		_cameraDistanceBySpeed_ =		_Tools.CameraStats.DistanceStats.cameraDistanceBySpeed;
+		_shouldAffectDistanceBySpeed_ =	_Tools.CameraStats.DistanceStats.shouldAffectDistancebySpeed;
 		_VirtualCamera.GetComponent<CinemachineCollider>().m_CollideAgainst = _Tools.CameraStats.DistanceStats.CollidableLayers;
-		_CollidableLayers_ = _Tools.CameraStats.DistanceStats.CollidableLayers;
+		_CollidableLayers_ =		_Tools.CameraStats.DistanceStats.CollidableLayers;
 
-		_dampingBehind_ = _Tools.CameraStats.cinemachineStats.dampingBehind;
-		_dampingInFront_ = _Tools.CameraStats.cinemachineStats.dampingInFront;
+		_shouldAffectFOVBySpeed_ =	_Tools.CameraStats.FOVStats.shouldAffectFOVbySpeed;
+		_baseFOV_ =			_Tools.CameraStats.FOVStats.baseFOV;
+		_cameraFOVBySpeed_ =		_Tools.CameraStats.FOVStats.cameraFOVBySpeed;
+
+		_dampingBehind_ =		_Tools.CameraStats.cinemachineStats.dampingBehind;
+		_dampingInFront_ =		_Tools.CameraStats.cinemachineStats.dampingInFront;
 		_Transposer.m_SoftZoneHeight = _Tools.CameraStats.cinemachineStats.softZone.y;
 		_Transposer.m_SoftZoneWidth = _Tools.CameraStats.cinemachineStats.softZone.x;
 		_Transposer.m_DeadZoneHeight = _Tools.CameraStats.cinemachineStats.deadZone.y;
 		_Transposer.m_DeadZoneWidth = _Tools.CameraStats.cinemachineStats.deadZone.x;
 
-		_angleThreshold_.x = _Tools.CameraStats.AligningStats.angleThresholdUpwards;
-		_angleThreshold_.y = _Tools.CameraStats.AligningStats.angleThresholdDownwards;
+		_angleThreshold_.x =	_Tools.CameraStats.AligningStats.angleThresholdUpwards;
+		_angleThreshold_.y =	_Tools.CameraStats.AligningStats.angleThresholdDownwards;
 		_cameraVerticalRotationSpeed_ = _Tools.CameraStats.AligningStats.CameraVerticalRotationSpeed;
 		_VerticalFollowSpeedByAngle_ = _Tools.CameraStats.AligningStats.vertFollowSpeedByAngle;
 
-		_inputXSpeed_ = _Tools.CameraStats.InputStats.InputXSpeed;
-		_inputYSpeed_ = _Tools.CameraStats.InputStats.InputYSpeed;
-		_stationaryCamIncrease_ = _Tools.CameraStats.InputStats.stationaryCamIncrease;
+		_inputXSpeed_ =		_Tools.CameraStats.InputStats.InputXSpeed;
+		_inputYSpeed_ =		_Tools.CameraStats.InputStats.InputYSpeed;
+		_stationaryCamIncrease_ =	_Tools.CameraStats.InputStats.stationaryCamIncrease;
 
 		_afterMoveXDelay_ = _Tools.CameraStats.RotateBehindStats.afterMoveXDelay;
 		_afterMoveYDelay_ = _Tools.CameraStats.LockHeightStats.afterMoveYDelay;
 
-		_yMinLimit_ = _Tools.CameraStats.ClampingStats.yMinLimit;
-		_yMaxLimit_ = _Tools.CameraStats.ClampingStats.yMaxLimit;
+		_yMinLimit_ =	_Tools.CameraStats.ClampingStats.yMinLimit;
+		_yMaxLimit_ =	_Tools.CameraStats.ClampingStats.yMaxLimit;
 
-		_lockCamAtSpeed_ = _Tools.CameraStats.RotateBehindStats.LockCamAtHighSpeed;
-		_rotateToBehindSpeed_ = _Tools.CameraStats.RotateBehindStats.rotateToBehindSpeed;
-		_rotateCharacterBeforeCameraFollows_ = _Tools.CameraStats.RotateBehindStats.rotateCharacterBeforeCameraFollows;
-		_followFacingDirectionSpeed_ = _Tools.CameraStats.RotateBehindStats.followFacingDirectionSpeed;
+		_lockCamAtSpeed_ =			_Tools.CameraStats.RotateBehindStats.LockCamAtHighSpeed;
+		_rotateToBehindSpeed_ =		_Tools.CameraStats.RotateBehindStats.rotateToBehindSpeed;
+		_rotateCharacterBeforeCameraFollows_ =	_Tools.CameraStats.RotateBehindStats.rotateCharacterBeforeCameraFollows;
+		_followFacingDirectionSpeed_ =	_Tools.CameraStats.RotateBehindStats.followFacingDirectionSpeed;
 
-		_shakeDampen_ = _Tools.CameraStats.EffectsStats.ShakeDampen;
+		_shakeDampen_ =		_Tools.CameraStats.EffectsStats.ShakeDampen;
 
-		_inputPredictonDistance_ = _Tools.CameraStats.LookAheadStats.inputPredictonDistance;
-		_cameraMoveToInputSpeed_ = _Tools.CameraStats.LookAheadStats.cameraMoveToInputSpeed;
+		_inputPredictonDistance_ =	_Tools.CameraStats.LookAheadStats.inputPredictonDistance;
+		_cameraMoveToInputSpeed_ =	_Tools.CameraStats.LookAheadStats.cameraMoveToInputSpeed;
 		_shouldMoveInInputDirection_ = _Tools.CameraStats.LookAheadStats.shouldMoveInInputDirection;
 
-		_shouldMoveBasedOnAngle_ = _Tools.CameraStats.TargetByAngleStats.shouldMoveBasedOnAngle;
-		_moveUpByAngle_ = _Tools.CameraStats.TargetByAngleStats.moveUpByAngle;
-		_moveSideByAngle_ = _Tools.CameraStats.TargetByAngleStats.moveSideByAngle;
+		_shouldMoveBasedOnAngle_ =	_Tools.CameraStats.TargetByAngleStats.shouldMoveBasedOnAngle;
+		_moveUpByAngle_ =		_Tools.CameraStats.TargetByAngleStats.moveUpByAngle;
+		_moveSideByAngle_ =		_Tools.CameraStats.TargetByAngleStats.moveSideByAngle;
 
 		_startLockCam = _lockCamAtSpeed_;
 	}

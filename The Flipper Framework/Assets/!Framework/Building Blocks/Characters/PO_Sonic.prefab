@@ -616,9 +616,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _RB: {fileID: 0}
   _moveDeceleration_: 1.3
+  _isUsingSlopePhysics_: 1
   _gravityWhenMovingUp_: {x: 0, y: 0, z: 0}
   _startFallGravity_: {x: 0, y: 0, z: 0}
-  _negativeGHoverHeight_: 0.6115
+  _placeAboveGroundBuffer_: 0.6115
   _Groundmask_:
     serializedVersion: 2
     m_Bits: 0
@@ -1109,7 +1110,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 38880623587908062}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.114, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11640,7 +11641,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1794423812473573934}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.187, z: 0}
+  m_LocalPosition: {x: 0, y: -0.167, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11723,7 +11724,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 5000
-  field of view: 80
+  field of view: 90
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -12971,7 +12972,6 @@ MonoBehaviour:
   _Head: {fileID: 3939103226326160823}
   LeftMouth: {fileID: 7020078753121730294}
   RightMouth: {fileID: 6819438881665587160}
-  MouthsToHide: []
   Eyelids: {fileID: 0}
 --- !u!1 &6373741851197098661
 GameObject:
@@ -22957,7 +22957,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7874859071667184223}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.1, z: 0}
+  m_LocalPosition: {x: 0, y: -0.986, z: 0}
   m_LocalScale: {x: 0.058556397, y: 0.058556397, z: 0.058556397}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23021,7 +23021,7 @@ MonoBehaviour:
   _TargetByInput: {fileID: 4616195427816144340}
   _TargetByAngle: {fileID: 3676360873521850425}
   _PlayerTransformCopy: {fileID: 4591767841459208}
-  _SecondaryCamera: {fileID: 978455970155520041}
+  _SecondaryCamera: {fileID: 3053389768707675931}
   _Brain: {fileID: 1617007407978008853}
   _shouldSetHeightWhenMoving_: 0
   _cameraMaxDistance_: -11
@@ -23060,7 +23060,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 6355604061925188031}
   m_Lens:
-    FieldOfView: 80
+    FieldOfView: 90
     OrthographicSize: 5
     NearClipPlane: 0.001
     FarClipPlane: 5000
@@ -29209,16 +29209,31 @@ PrefabInstance:
     - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
       propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1043370729688297133, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -827001806542614657, guid: e67537df6fb33e345a2680d3479af749,
@@ -29554,17 +29569,32 @@ PrefabInstance:
     - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641572446057265277, guid: e67537df6fb33e345a2680d3479af749,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5820605286163640495, guid: e67537df6fb33e345a2680d3479af749,
         type: 3}

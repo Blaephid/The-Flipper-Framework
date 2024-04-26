@@ -289,12 +289,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 				//transform.position = (hitRot.point + PathTransform.position) + FootPos;
 
 				Vector3 FootPos = transform.position - _Path_Int._FeetTransform.position;
-				_PlayerPhys.transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
+				_PlayerPhys.SetPlayerPosition(((_Sample.location) + _PathTransform.position) + FootPos);
 			}
 			else
 			{
 				Vector3 FootPos = transform.position - _Path_Int._FeetTransform.position;
-				_PlayerPhys.transform.position = ((_Sample.location) + _PathTransform.position) + FootPos;
+				_PlayerPhys.SetPlayerPosition(((_Sample.location) + _PathTransform.position) + FootPos)	;
 			}
 
 

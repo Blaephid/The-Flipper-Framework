@@ -240,7 +240,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			//Attaches the player to the rail this rail booster is on.
 			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.Rail)
 			{
-				_PlayerPhys.transform.position = SpeedPadScript._PositionToLockTo.position;
+				_PlayerPhys.SetPlayerPosition(SpeedPadScript._PositionToLockTo.position);
 			}
 			else
 			{
@@ -305,7 +305,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (SpeedPadScript._willSnap)
 				{
 					snapPosition += _FeetPoint.up * -_FeetPoint.localPosition.y; //Because on ground, feet should be set to pad position.
-					_PlayerPhys.transform.position = snapPosition;
+					_PlayerPhys.SetPlayerPosition( snapPosition);
 				}
 
 				//Pushes player in direction
@@ -471,7 +471,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Keep the player in position, with zero velocity, until delay is over.
 		for (int i = 0 ; i < frames ; i++)
 		{
-			_PlayerPhys.transform.position = position;
+			_PlayerPhys.SetPlayerPosition(position);
 			_PlayerPhys.SetCoreVelocity(Vector3.zero, true);
 			_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
@@ -479,7 +479,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		_Actions._ActionDefault.StartAction(); //Ensures player is still in correct state after delay.
 
-		_PlayerPhys.transform.position = position; //Ensures player is set to inside of spring, so bounce is consistant. 
+		_PlayerPhys.SetPlayerPosition(position); //Ensures player is set to inside of spring, so bounce is consistant. 
 
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 

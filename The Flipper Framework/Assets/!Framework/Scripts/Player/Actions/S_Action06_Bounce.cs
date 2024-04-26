@@ -51,17 +51,19 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	#region trackers
 	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
+	private float       _counter;
+
 
 	[HideInInspector] 
 	private bool	_isBounceAvailable;
-	private bool	_hasBounced;
+	private bool	_hasBounced;		//Set to false on start, and true when bounce upwards is performed. Can't exit action unless true.
 
 	private float	_currentBounceForce;
 
-	private float	_memorisedSpeed;
-	private float	_nextSpeed;
+	private float	_memorisedSpeed;		//The speed the player was moving at before starting the bounce.
+	private float	_nextSpeed;		//Starts at memorised speed, but will slowly decrease over time, and return the horizontal speed to it when the bounce upwards is performed.
 
-	private float       _trackedVerticalSpeed;
+	private float       _trackedVerticalSpeed;	//Used only for the animator. Lerps towards fall speed so transiton isn't instant.
 
 	private RaycastHit	_HitGround;
 	#endregion
@@ -136,13 +138,13 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		//Physics
-		_PlayerPhys._isGravityOn = true;
-
 		//Apply a cooldown so this can't be performed again immediately.
 		float coolDown = _bounceCoolDown_;
 		coolDown = Mathf.Clamp(coolDown - (_PlayerPhys._horizontalSpeedMagnitude * _cooldownModifierBySpeed_), 0.05f, coolDown);
 		StartCoroutine(AddDelay(coolDown));
+
+		//Incase this was disabled by changing action, rather than a bounce.
+		_PlayerPhys._isGravityOn = true;
 
 		_HomingTrailScript.emitTime = 0.2f;
 	}
@@ -169,10 +171,14 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		RaycastHit UseHit = isRaycasthit ? _HitGround : _PlayerPhys._HitGround; //Get which one to use
 
-		//If no longer hitting the ground but did earlier, then has bounced and won't be grounded immediately, so end action.
-		if (!isGroundHit && _hasBounced && _PlayerPhys._coreVelocity.y > 0f)
+		//If no longer hitting the ground but did earlier, then has bounced and won't be grounded immediately, so end action after a delay.
+		if (!isGroundHit && _hasBounced)
 		{
-			_Actions._ActionDefault.StartAction();
+			_counter += Time.deltaTime;
+			if(_counter > 0.1f)
+			{
+				_Actions._ActionDefault.StartAction();
+			}
 		}
 
 		//If there is ground and hasn't bounced yet
@@ -216,6 +222,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	private void Bounce ( Vector3 normal ) {
 
+		_counter = 0; //Starts the process of waiting after bounce before exiting action.
+
 		_Input.BouncePressed = false; //Prevents the action from being hold spammed.
 
 		_PlayerPhys.SetIsGrounded(true); //Resets air actions like homing attacks, air dashes, etc.
@@ -252,6 +260,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			newDir = transform.TransformDirection(newDir);
 			newSpeed = _nextSpeed;
 		}
+
+		//Starts applying normal force downwards again, even before exiting action.
+		_PlayerPhys._isGravityOn = true;
 
 		Vector3 input = transform.TransformDirection(_PlayerPhys._moveInput);
 

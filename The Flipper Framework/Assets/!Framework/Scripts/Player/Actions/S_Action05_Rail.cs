@@ -340,7 +340,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
 					Vector3 newPos = _RailTransform.position + ( _RailTransform.rotation * _Sample.location);
 					newPos += (_sampleUpwards * _offsetRail_) + relativeOffset;
-					_PlayerPhys.transform.position = newPos;
+					_PlayerPhys.SetPlayerPosition(newPos);
 					break;
 
 				case S_Interaction_Pathers.PathTypes.zipline:
@@ -359,7 +359,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					newPos = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
 					newPos += _setOffSet;
 					_ZipHandle.transform.position = newPos;
-					_PlayerPhys.transform.position = newPos + (_ZipHandle.transform.up * _offsetZip_);
+					_PlayerPhys.SetPlayerPosition( newPos + (_ZipHandle.transform.up * _offsetZip_));
 					break;
 			}
 		}

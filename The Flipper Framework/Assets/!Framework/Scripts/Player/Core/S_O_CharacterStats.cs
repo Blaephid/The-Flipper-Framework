@@ -207,6 +207,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucSlopes SetStrucSlopes () {
 		return new StrucSlopes
 		{
+			isUsingSlopePhysics = true,
 			slopeEffectLimit = 0.92f,
 			SpeedLimitBySlopeAngle = new AnimationCurve(new Keyframe[]
 			{
@@ -240,6 +241,7 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucSlopes
 	{
 		[Header("Limits")]
+		public bool                   isUsingSlopePhysics;
 		[Tooltip("Core: If the y normal of the floor is below this, then the player is considered on a slope. 1 = flat ground, as it's pointing straight up.")]
 		public float              slopeEffectLimit;
 		[Tooltip("Core: Decides if the player will fall off the slope. If their speed is under what this curve has for the current normal's y value, then they fall off.")]

@@ -248,7 +248,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Set Player location when close enough, for precision.
 		if (_distanceFromTarget < (_Actions._listOfSpeedOnPaths[0] * Time.deltaTime))
 		{
-			_PlayerPhys.transform.position = _Target.transform.position;
+			_PlayerPhys.SetPlayerPosition(_Target.transform.position);
 			return;
 		}
 		//Turn faster when close to target and fast to make missing very hard.

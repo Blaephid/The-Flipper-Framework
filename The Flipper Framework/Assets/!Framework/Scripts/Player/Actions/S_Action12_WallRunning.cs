@@ -340,7 +340,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 wallDirection = wallHit.point - transform.position;
 		_PlayerPhys._RB.AddForce(wallDirection * 10f);
 
-		_PlayerPhys.transform.position = wallHit.point + (wallHit.normal * _distanceFromWall);
+		_PlayerPhys.SetPlayerPosition(wallHit.point + (wallHit.normal * _distanceFromWall));
 
 		_isRunning = true;
 		_isClimbing = false;
@@ -433,7 +433,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		{
 			_isWall = false;
 
-			_PlayerPhys.transform.position = _wallToClimb.point + (_wallToClimb.normal * 4f);
+			_PlayerPhys.SetPlayerPosition(_wallToClimb.point + (_wallToClimb.normal * 4f));
 
 			//This bool causes the jump physics to be done next frame, making things much smoother. 1 Represents jumping from a wallrun
 			_switchToJump = 1;
