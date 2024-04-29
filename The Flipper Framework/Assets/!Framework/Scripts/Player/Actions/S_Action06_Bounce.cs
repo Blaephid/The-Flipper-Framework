@@ -121,6 +121,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerPhys._coreVelocity.y - 20);
 		_PlayerPhys.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0), false); // Apply downward force, this is instant rather than  ramp up like gravity.
 
+		_PlayerPhys._canStickToGround = false; //Prevents the  bounce following the ground direction.
+
 		//Effects
 		_Actions._ActionDefault.SwitchSkin(false); //Ball animation rather than character ones.
 		_BallAnimator.SetInteger("Action", 1); //Ensures it is set to jump first, because it will then transition from that to bounce.
@@ -175,14 +177,14 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		if (!isGroundHit && _hasBounced)
 		{
 			_counter += Time.deltaTime;
-			if(_counter > 0.1f)
+			if(_counter > 0.12f)
 			{
 				_Actions._ActionDefault.StartAction();
 			}
 		}
 
 		//If there is ground and hasn't bounced yet
-		if (isGroundHit && !_hasBounced)
+		else if (isGroundHit && !_hasBounced)
 		{
 			Bounce(UseHit.normal);			
 		}
@@ -276,6 +278,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		float dif = Vector3.Angle(normal, Vector3.up) * 0.5f;
 		normal = Vector3.Lerp(normal, Vector3.up, dif * Mathf.Deg2Rad);
 		_PlayerPhys.AddCoreVelocity(normal * _currentBounceForce, false);
+
+		Debug.DrawRay(transform.position, normal * _currentBounceForce, Color.magenta, 20f);
 
 		//If not at the last index, increase the bounce count.
 		if (_Actions._bounceCount < _BounceUpSpeeds_.Count - 1)

@@ -145,8 +145,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		if (_Input.BoostPressed)
 		{
 			_Input.RollPressed = false;
-			if (!_PlayerPhys._isBoosting)
-			{ //Will only trigger start action if not already boosting.
+			if (!_PlayerPhys._isBoosting)//Will only trigger start action if not already boosting.
+			{ 
 				if (_canStartBoost && _currentBoostEnergy > _energyDrainedOnStart_ && _canBoostBecauseGround)
 				{
 					//Can always be performed on the ground, but if in the air, air actions must be available.
@@ -185,7 +185,6 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		if (!_PlayerPhys._isGrounded)
 		{
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_)); //Starts air boost parameters rather than normal boost.
-			_canBoostBecauseGround = false; //This prevents another boost from being performed if in the air.
 			_PlayerPhys.SetBothVelocities(_faceDirection * _currentSpeed, new Vector2(1, 0));
 		}
 		else
@@ -345,6 +344,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//Called when boosting in the air, or entering the boost from the air.
 	private IEnumerator CheckAirBoost ( float frames ) {
+		_canBoostBecauseGround = false;
+
 		if (_hasAirBoost_) { yield break; } //Air boost works the same as a normal boost, but in the air. And if it isn't in use, will end boost as now in the air.
 
 		Vector3 startUpwards = transform.up; //Saves how the player was rotated at the start, and will compare against this.

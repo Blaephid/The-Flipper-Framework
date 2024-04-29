@@ -103,11 +103,13 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		//Set private
 		_isCoyoteInEffect = _PlayerPhys._isGrounded;
 
+		_PlayerPhys._canStickToGround = true; //Allows following the ground when in a normal grounded state.
+
 		//Set Effects
 		_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
-		this.enabled = true;
+		enabled = true;
 	}
 
 	public bool AttemptAction () {

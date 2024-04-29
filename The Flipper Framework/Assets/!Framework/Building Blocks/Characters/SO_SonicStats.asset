@@ -1004,7 +1004,7 @@ MonoBehaviour:
     downhillThreshold: -1.7
     uphillThreshold: 1
   SlopeStats:
-    isUsingSlopePhysics: 0
+    isUsingSlopePhysics: 1
     slopeEffectLimit: 0.92
     SpeedLimitBySlopeAngle:
       serializedVersion: 2

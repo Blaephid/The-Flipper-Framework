@@ -197,6 +197,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public bool                   _canChangeGrounded = true;        //Set externally to prevent player's entering a grounded state.
 	[HideInInspector]
+	public bool                   _canStickToGround = true;        //Set externally to allow following the ground. Only actions focussed on being grounded will enable this.
+	[HideInInspector]
 	public RaycastHit             _HitGround;         //Used to check if there is ground under the player's feet, and gets data on it like the normal.
 	[HideInInspector]
 	public Vector3                _groundNormal;
@@ -366,7 +368,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Sets the size of the ray to check for ground. If running on the ground then it is typically to avoid flying off the ground.
 		float groundCheckerDistance = _rayToGroundDistance_;
-		if (_isGrounded)
+		if (_isGrounded && _canStickToGround)
 		{
 			groundCheckerDistance = _rayToGroundDistance_ + (_horizontalSpeedMagnitude * _raytoGroundSpeedRatio_);
 			groundCheckerDistance = Mathf.Min(groundCheckerDistance, _raytoGroundSpeedMax_);
@@ -802,9 +804,11 @@ public class S_PlayerPhysics : MonoBehaviour
 	//This also handles stepping up over small ledges.
 	private Vector3 StickToGround ( Vector3 velocity ) {
 
-		//If moving and has been grounded for long enough.
+		if(!_canStickToGround) { return velocity; }
+
+		//If moving and has been grounded for long enough. The time on ground is to prevent gravity force before landing being carried over to shoot player forwards on landing.
 		//Then ready a raycast to check for slopes.
-		if (_timeOnGround > 0f && _horizontalSpeedMagnitude > 2)
+		if (_timeOnGround > 0.02f && _horizontalSpeedMagnitude > 2)
 		{
 			Debug.DrawRay(_HitGround.point, _groundNormal * 0.2f, Color.magenta, 20f);
 

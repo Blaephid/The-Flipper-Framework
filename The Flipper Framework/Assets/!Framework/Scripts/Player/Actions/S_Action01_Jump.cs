@@ -174,6 +174,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_PlayerPhys._canChangeGrounded = false; //Prevents being set to grounded if jumping because it would lead to weird interactions going up through platforms or triggering on grounded events
 		_PlayerPhys.RemoveEnvironmentalVelocityAirAction();
 
+		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
+
 		//Effects
 		_CharacterAnimator.SetInteger("Action", 1);
 		_CharacterAnimator.SetTrigger("ChangedState");

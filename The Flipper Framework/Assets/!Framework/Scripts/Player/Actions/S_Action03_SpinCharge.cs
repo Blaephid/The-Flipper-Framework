@@ -125,6 +125,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_LowerCapsule.SetActive(true);
 		_CharacterCapsule.SetActive(false);
 
+		_PlayerPhys._canStickToGround = true; //Allows following the ground when in a normal grounded state.
+
 		//Visuals & Effects
 		_Actions._ActionDefault.SwitchSkin(false);
 		_Sounds.SpinDashSound();

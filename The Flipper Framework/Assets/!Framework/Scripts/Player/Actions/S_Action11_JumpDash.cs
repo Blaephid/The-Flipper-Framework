@@ -144,6 +144,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_Input.HomingPressed = false;
 		_Actions._isAirDashAvailables = false; //Can't be used again until this is true
 
+		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
+
 		//Disable normal control so it's taken care of here
 		_PlayerPhys._listOfCanControl.Add(false);
 		_PlayerPhys._isGravityOn = false;
