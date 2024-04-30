@@ -81,13 +81,12 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	//Boost checkers/
 	private bool                  _inAStateThatCanBoost;	//Will be set false every frame, but true whenever AttemptAction is called. This means when false only, boost should end as not in a boostable state.
 	private bool                  _canStartBoost = true;	//Set false when using boost, and only true after a cooldown. Must be true to start a boost.
-	private bool                  _canBoostBecauseGround = true; //Turns false when boosting in the air, and true when grounded. Prevents starting multiple boosts in the air.
+	private bool                  _canBoostBecauseHasntBoostedInAir = true; //Turns false when starting a boost in the air, and true when grounded. Prevents starting multiple boosts in the air.
 
 	//Strafing and character rotation
 	private Vector3               _faceDirection;		//This decides which direction the character model will face when boosting. This overwrites the default handling of facing velocity, and instead allows strafing.
 	private Vector2               _faceDirectionOffset;	//When applying character model direction, this will change the facing direction away from the proper direction, showing slight difference when strafing.
 	private Vector3               _savedSkinDirection;          //Stores which way the character is facing according to this script, and if it isn't equal to the actual main skin, it means that's been changed externally, so should respond. This is used to change face direction if physics or paths happen.
-	private Vector3               _previousVelocityDirection;   //This is set at the end of every frame to check at the start of the next if something changed the direction (such as a collision), so can change facing direction accordingly.
 
 	private bool                  _isStrafing;
 	#endregion
@@ -147,7 +146,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			_Input.RollPressed = false;
 			if (!_PlayerPhys._isBoosting)//Will only trigger start action if not already boosting.
 			{ 
-				if (_canStartBoost && _currentBoostEnergy > _energyDrainedOnStart_ && _canBoostBecauseGround)
+				if (_canStartBoost && _currentBoostEnergy > _energyDrainedOnStart_ && _canBoostBecauseHasntBoostedInAir)
 				{
 					//Can always be performed on the ground, but if in the air, air actions must be available.
 					if(_PlayerPhys._isGrounded || _Actions._areAirActionsAvailable)
@@ -184,6 +183,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 		if (!_PlayerPhys._isGrounded)
 		{
+			_canBoostBecauseHasntBoostedInAir = false; //This will prevent the boost being used again until grounded.
+
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_)); //Starts air boost parameters rather than normal boost.
 			_PlayerPhys.SetBothVelocities(_faceDirection * _currentSpeed, new Vector2(1, 0));
 		}
@@ -344,7 +345,6 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//Called when boosting in the air, or entering the boost from the air.
 	private IEnumerator CheckAirBoost ( float frames ) {
-		_canBoostBecauseGround = false;
 
 		if (_hasAirBoost_) { yield break; } //Air boost works the same as a normal boost, but in the air. And if it isn't in use, will end boost as now in the air.
 
@@ -491,10 +491,11 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//These events must be set in the PlayerPhysics component, and will happen when the player goes from grounded to airborne, or vice versa.
 	public void EventOnGrounded () {
-		_canBoostBecauseGround = true; //This allows another boost to be performed in the air (because this started from the ground. }
+		_canBoostBecauseHasntBoostedInAir = true; //This allows another boost to be performed in the air (because this started from the ground. }
 	}
 	public void EventOnLoseGround () {
-		StartCoroutine(CheckAirBoost(_boostFramesInAir_));
+		if(_PlayerPhys._isBoosting)
+			StartCoroutine(CheckAirBoost(_boostFramesInAir_));
 	}
 
 	//Boost should end when going through springs or dash rings.This will not trigger the speed being lost over time.

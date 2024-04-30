@@ -44,7 +44,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	private GameObject                       _PlatformAnchor;
 
 	[Header("Unity Objects")]
-	private GameObject	_JumpBall;
 	private Animator	_CharacterAnimator;
 
 	[Header("For Rings, Springs and so on")]
@@ -114,8 +113,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				LaunchFromSpring(Col);
 				break;
 
-			case "Bumper":
-				
+			case "Bumper":				
 				break;
 			case "Wind":
 				if (Col.TryGetComponent(out S_Trigger_Updraft UpdraftScript))
@@ -269,7 +267,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			//Dash ring
 			if (SpeedPadScript._isDashRing_)
 			{
-				AirLauncher();
+				HitAirLauncher();
 
 				//Effects
 				_CharacterAnimator.SetBool("Grounded", false);
@@ -327,7 +325,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		}
 	}
 
-	private void AirLauncher () {
+	private void HitAirLauncher () {
 		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._isGravityOn = true; //Counteracts any actions that might have disabled this.
@@ -342,7 +340,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void LaunchFromSpring (Collider Col) {
 		if (!Col.TryGetComponent(out S_Data_Spring SpringScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 
-		AirLauncher();
+		HitAirLauncher();
 
 		_Actions._ActionDefault.StartAction();
 		_CharacterAnimator.SetBool("Grounded", false);
@@ -602,7 +600,6 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		_CharacterAnimator =	_Tools.CharacterAnimator;
 		_Sounds =			_Tools.SoundControl;
-		_JumpBall =		_Tools.JumpBall;
 		_CoreUIElements =		_Tools.UISpawner._BaseUIElements;
 		_FeetPoint =		_Tools.FeetPoint;
 	}

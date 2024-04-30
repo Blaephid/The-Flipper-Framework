@@ -158,14 +158,14 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		//If destroyed enemy, will bounce through, if not, will take knockback from it.
 		if(_shouldStopOnHit_)
 		{
-			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.bounceOff);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingReboundingTypes.bounceOff);
 		}
 		if (wasDestroyed)
 		{
-			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.BounceThrough);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingReboundingTypes.BounceThrough);
 		}
 		else
-			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingRebounding.Rebound);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingReboundingTypes.Rebound);
 	}
 
 	//Prevents multiple attacks in quick succession.

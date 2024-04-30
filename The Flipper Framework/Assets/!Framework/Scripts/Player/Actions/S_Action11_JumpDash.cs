@@ -29,7 +29,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private S_Enums.JumpDashType _WhatType_;
+	private S_Enums.JumpDashTypes _WhatType_;
 
 	private float	_airDashSpeed_;
 	private float       _airDashIncrease_;
@@ -161,7 +161,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		switch (_WhatType_)
 		{
-			case S_Enums.JumpDashType.Push:
+			case S_Enums.JumpDashTypes.Push:
 				_timer = _maxDuration_;
 				break;
 		}

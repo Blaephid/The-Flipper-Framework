@@ -315,7 +315,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	#region public 
 
 	//What happens to the character after they hit a target, the directions they bounce based on input, stats and target.
-	public void HittingTarget ( S_Enums.HomingRebounding whatRebound ) {
+	public void HittingTarget ( S_Enums.HomingReboundingTypes whatRebound ) {
 		_HomingHandler._TargetObject = null;
 		_HomingHandler._PreviousTarget = null;
 
@@ -331,7 +331,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		switch (whatRebound)
 		{
-			case S_Enums.HomingRebounding.BounceThrough:
+			case S_Enums.HomingReboundingTypes.BounceThrough:
 				if (_Input.HomingPressed) { additiveHit(); }
 				else { bounceUpHit(); }
 
@@ -342,10 +342,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				_Actions._ActionDefault.StartAction();
 
 				break;
-			case S_Enums.HomingRebounding.Rebound:
+			case S_Enums.HomingReboundingTypes.Rebound:
 				StartCoroutine(HittingObstacle());
 				return;
-			case S_Enums.HomingRebounding.bounceOff:
+			case S_Enums.HomingReboundingTypes.bounceOff:
 				bounceUpHit();
 				//Restore control and switch to default action
 				_PlayerPhys.SetCoreVelocity(newSpeed);

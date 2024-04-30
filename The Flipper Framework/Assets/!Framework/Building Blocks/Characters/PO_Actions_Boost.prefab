@@ -297,6 +297,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 6432330605133699478}
+        m_TargetAssemblyTypeName: S_SubAction_Boost, Assembly-CSharp
+        m_MethodName: EventOnGrounded
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _OnLoseGround:
     m_PersistentCalls:
       m_Calls:
@@ -315,6 +327,18 @@ MonoBehaviour:
       - m_Target: {fileID: 8929781120038647770}
         m_TargetAssemblyTypeName: S_Action03_SpinCharge, Assembly-CSharp
         m_MethodName: EventOnGroundLost
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6432330605133699478}
+        m_TargetAssemblyTypeName: S_SubAction_Boost, Assembly-CSharp
+        m_MethodName: EventOnLoseGround
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -377,6 +401,18 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2175753145177796918}
         m_TargetAssemblyTypeName: S_Interaction_Pathers, Assembly-CSharp
+        m_MethodName: EventTriggerEnter
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
         m_MethodName: EventTriggerEnter
         m_Mode: 0
         m_Arguments:
@@ -482,6 +518,18 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 4559098073210278401}
         m_TargetAssemblyTypeName: S_Interaction_Objects, Assembly-CSharp
+        m_MethodName: EventTriggerStay
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
         m_MethodName: EventTriggerStay
         m_Mode: 0
         m_Arguments:

@@ -71,13 +71,13 @@ public class S_Enums
 	}
 
 	//Action specific
-	public enum SpinChargeAiming
+	public enum SpinChargeAimingTypes
 	{
 		Input,
 		Camera
 	}
 
-	public enum JumpDashType {
+	public enum JumpDashTypes {
 		ControlledDash,
 		Push,
 	}
@@ -87,13 +87,13 @@ public class S_Enums
 		Segmented,
 	}
 
-	public enum HomingRebounding {
+	public enum HomingReboundingTypes {
 		BounceThrough,
 		bounceOff,
 		Rebound,
 	}
 
-	public enum HurtResponse {
+	public enum HurtResponses {
 		Normal,
 		ResetSpeed,
 		Frontiers,

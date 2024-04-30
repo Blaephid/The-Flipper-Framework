@@ -45,18 +45,19 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private S_Enums.HurtResponse _whatResponse_;
-	private int         _maxRingLoss_;
-	private float       _ringReleaseSpeed_;
-	private float       _ringArcSpeed_;
-	private int         _invincibilityTime_;
-	private Vector2       _flickerTime_;
-	private float       _damageShakeAmmount_;
-	private float       _enemyHitShakeAmmount_;
-	private AnimationCurve _RingsLostInSpawnByAmount_;
-	private Vector3        _respawnAfter_;
+	private S_Enums.HurtResponses _whatResponse_;
+	private int		_maxRingLoss_;
+	private float		_ringReleaseSpeed_;
+	private float		_ringArcSpeed_;
+	private int		_invincibilityTime_;
+	private Vector2		_flickerTime_;
+	private float		_damageShakeAmmount_;
+	private float		_enemyHitShakeAmmount_;
+	private AnimationCurve	_RingsLostInSpawnByAmount_;
+	private Vector3		_respawnAfter_;
 
-	private LayerMask   _BonkWall_;
+	private Vector2		_minSpeedToBonk_;
+	private LayerMask		_BonkWall_;
 	#endregion
 	// Trackers
 	#region trackers
@@ -346,13 +347,13 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		switch (_Actions._whatAction)
 		{
 			case S_Enums.PrimaryPlayerStates.Default:
-				if (_PlayerPhys._horizontalSpeedMagnitude > 50) TryBonk();
+				if (_PlayerPhys._horizontalSpeedMagnitude > _minSpeedToBonk_.x) TryBonk();
 				break;
 			case S_Enums.PrimaryPlayerStates.Jump:
-				if (_PlayerPhys._horizontalSpeedMagnitude > 40) TryBonk();
+				if (_PlayerPhys._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
 				break;
 			case S_Enums.PrimaryPlayerStates.JumpDash:
-				if (_PlayerPhys._horizontalSpeedMagnitude > 30) TryBonk();
+				if (_PlayerPhys._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
 				break;
 		}
 	}
@@ -431,11 +432,11 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			switch (_whatResponse_)
 			{
 				//Damaged immediately but won't be knocked back or have velocity greatly changed.
-				case S_Enums.HurtResponse.Normal:
+				case S_Enums.HurtResponses.Normal:
 					NormalResponse();
 					break;
 					//If not killed, respond as above, if killed, die immediately, with knockback.
-				case S_Enums.HurtResponse.NormalSansDeathDelay:
+				case S_Enums.HurtResponses.NormalSansDeathDelay:
 					if (_ringAmount <= 0 && !_hasShield)
 					{
 						DieWithoutDelay();
@@ -446,21 +447,21 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 					}
 					break;
 				//Damaged immediately and will enter a seperate knockback state.
-				case S_Enums.HurtResponse.ResetSpeed:
+				case S_Enums.HurtResponses.ResetSpeed:
 					CheckHealth();
 					_HurtAction._knockbackDirection = -_MainSkin.forward;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
 				//Won't be damaged until the EventOnGrounded action in the hurt script. This will then call the CheckHealth script
-				case S_Enums.HurtResponse.Frontiers:
+				case S_Enums.HurtResponses.Frontiers:
 					_inHurtStateBeforeDamage = true;
 					_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
 				//Same as frontiers response, but if should die, will do so immediately, rather than wait to hit ground.
-				case S_Enums.HurtResponse.FrontiersSansDeathDelay:
+				case S_Enums.HurtResponses.FrontiersSansDeathDelay:
 					_HurtAction._wasHit = true;
 					if (_ringAmount > 0 || _hasShield)
 					{
@@ -615,6 +616,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_BonkWall_ = _Tools.Stats.WhenBonked.BonkOnWalls;
 
 		_whatResponse_ = _Tools.Stats.KnockbackStats.whatResponse;
+
+		_minSpeedToBonk_ = _Tools.Stats.WhenBonked.minimumSpeeds;
 	}
 	#endregion
 }

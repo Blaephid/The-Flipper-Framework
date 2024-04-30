@@ -52,7 +52,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private AnimationCurve	_gainBySpeed_;
 	private Vector4                 _releaseShakeAmmount_;
 	private Vector2               _cameraPauseEffect_ = new Vector2(3, 40);
-	private S_Enums.SpinChargeAiming _whatControl_;
+	private S_Enums.SpinChargeAimingTypes _whatControl_;
 	private float                 _tappingBonus_;
 	private int                   _delayBeforeLaunch_;
 	private bool                  _shouldSetRolling_;
@@ -73,7 +73,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private Quaternion		_characterRotation;		//This has unique rotation properties different to most actions, so this tracks what rotation the character should have
 
 	#endregion
-
 	#endregion
 	#endregion
 
@@ -294,7 +293,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		//Configured to either rotate towards where the camera is facing, or to rotate to where the player is moving.
 		switch (_whatControl_)
 		{
-			case S_Enums.SpinChargeAiming.Camera:
+			case S_Enums.SpinChargeAimingTypes.Camera:
 				//Since it requires camera movement, if the camera can't be moved, instead aims by input.
 				if (_CamHandler._HedgeCam._isLocked)
 					FaceByInput();
@@ -302,7 +301,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 					FaceByCamera();
 				break;
 
-			case S_Enums.SpinChargeAiming.Input:
+			case S_Enums.SpinChargeAimingTypes.Input:
 				FaceByInput();		
 				break;
 		}
@@ -326,7 +325,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 				faceDirection = Vector3.RotateTowards(faceDirection, inputDirection, Mathf.Deg2Rad * 100, 0);
 			}
 
-			_characterRotation = Quaternion.LookRotation(faceDirection, transform.up);
+			if(faceDirection != Vector3.zero)
+				_characterRotation = Quaternion.LookRotation(faceDirection, transform.up);
 		}
 
 		//Rotate towards this new direction.

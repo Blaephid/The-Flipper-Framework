@@ -28172,8 +28172,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8902988512783151979}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.08100009, z: 1.1300001}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -0.08100009, z: 0.64}
+  m_LocalScale: {x: 1.2092011, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7787564028757733224}
@@ -29863,74 +29863,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
-      propertyPath: _OnGrounded.m_PersistentCalls.m_Calls.Array.size
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnLoseGround.m_PersistentCalls.m_Calls.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnGrounded.m_PersistentCalls.m_Calls.Array.data[7].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnGrounded.m_PersistentCalls.m_Calls.Array.data[7].m_Target
+      propertyPath: _OnTriggerStay.m_PersistentCalls.m_Calls.Array.data[3].m_Target
       value: 
-      objectReference: {fileID: 2973201733912951380}
+      objectReference: {fileID: 5416488146372199807}
     - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
-      propertyPath: _OnLoseGround.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnLoseGround.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      propertyPath: _OnTriggerEnter.m_PersistentCalls.m_Calls.Array.data[5].m_Target
       value: 
-      objectReference: {fileID: 2973201733912951380}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnGrounded.m_PersistentCalls.m_Calls.Array.data[7].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnGrounded.m_PersistentCalls.m_Calls.Array.data[7].m_MethodName
-      value: EventOnGrounded
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnLoseGround.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnLoseGround.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: EventOnLoseGround
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnGrounded.m_PersistentCalls.m_Calls.Array.data[7].m_TargetAssemblyTypeName
-      value: S_SubAction_Boost, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnLoseGround.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: S_SubAction_Boost, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnGrounded.m_PersistentCalls.m_Calls.Array.data[7].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: _OnLoseGround.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5416488146372199807}
     - target: {fileID: 4584081993875375216, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _VirtCam
@@ -30014,18 +29954,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8072374280709137346}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2973201733912951380 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6432330605133699478, guid: 0e8f736d2dd9706438972762531b3f8f,
-    type: 3}
-  m_PrefabInstance: {fileID: 8072374280709137346}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2ceabd5df025344eaf5838bb80ef600, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4777535912325801024 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
