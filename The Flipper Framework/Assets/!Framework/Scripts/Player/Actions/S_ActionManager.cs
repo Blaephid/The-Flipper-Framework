@@ -66,7 +66,7 @@ public class S_ActionManager : MonoBehaviour
 
 	//Can perform actions
 
-	//THe bellow are all temporarily locked under certain situations, like using a spring.
+	//The bellow are all temporarily locked under certain situations, like using a spring.
 	[HideInInspector]
 	public bool         _areAirActionsAvailable = true;
 

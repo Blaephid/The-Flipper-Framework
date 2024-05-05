@@ -1160,7 +1160,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				}
 				_keepNormalCounter = 0;
 
-				//If cthe last time environmental velocity was set, it was set to reset here, then remove environmnetal velocity.
+				//If the last time environmental velocity was set, it was set to reset here, then remove environmnetal velocity.
 				if (_resetEnvironmentalOnGrounded)
 				{
 					SetEnvironmentalVelocity(Vector3.zero, false, false, S_Enums.ChangeLockState.Unlock);

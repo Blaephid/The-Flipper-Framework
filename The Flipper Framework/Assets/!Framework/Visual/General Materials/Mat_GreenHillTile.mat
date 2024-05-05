@@ -111,9 +111,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Blend_Sharpness_Bottom: 3.92
-    - _Blend_Sharpness_Overall: 10
-    - _Blend_Sharpness_Top: 8
+    - _Blend_Sharpness_Bottom: 0
+    - _Blend_Sharpness_Overall: 3
+    - _Blend_Sharpness_Top: 0.5
     - _BottomScale: 0.1
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -122,19 +122,19 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.25
     - _GlossyReflections: 1
-    - _Metallic: 0
+    - _Metallic: 0.1
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SideScale: 0.1
-    - _Smoothness: 0.5
+    - _Smoothness: 0.2
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _TopScale: 0.1
-    - _Top_Overiding_Bottom: 0.2
+    - _Top_Overiding_Bottom: 0.03
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
