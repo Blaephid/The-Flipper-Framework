@@ -118,7 +118,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 
 	#endregion
-
 	// Trackers
 	#region trackers
 
@@ -137,7 +136,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3                _environmentalVelocity;       //Environmental velocity is the velocity applied by external forces, such as springs, fans and more.
 	[HideInInspector]
 	public Vector3                _totalVelocity;               //The combination of core and environmetal velocity determening actual movement direction and speed in game.
-	private Vector3               prevVec;
 	[HideInInspector]
 	public List<Vector3>          _previousVelocities = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
 
@@ -275,10 +273,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	void FixedUpdate () {
 		_isCurrentlyOnSlope = false; //Set to false at the end of a frame but will be set to true if slope physics are called next frame.
 
-		Debug.DrawRay(transform.position, Vector3.up * 0.1f, Color.cyan, 20f);
 		HandleGeneralPhysics();
-		Debug.DrawRay(transform.position, Vector3.up * 0.1f, Color.blue, 20f);
-		Debug.DrawRay(transform.position + (_totalVelocity * Time.deltaTime), Vector3.up * 0.1f, Color.yellow, 20f);
 
 		_isPositiveUpdate = !_isPositiveUpdate; //Alternates at the end of an update, so will be the oppositve value enxt call.
 	}
@@ -377,8 +372,6 @@ public class S_PlayerPhysics : MonoBehaviour
 				offSetForCheck = Vector3.RotateTowards(offSetForCheck, Vector3.Cross(offSetForCheck, transform.up), i * rotateValue, 0);
 				Vector3 thisStartPosition = rayCastStartPosition + offSetForCheck * 0.75f;
 
-				Debug.DrawRay(thisStartPosition, -transform.up * groundCheckerDistance, Color.gray, 2f);
-
 				//If it finds ground, saves the normal as between the two, adding this up to an average.
 				if (Physics.Raycast(thisStartPosition, -transform.up, out RaycastHit hitSecondTemp, 0.5f + groundCheckerDistance, _Groundmask_))
 				{
@@ -408,8 +401,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	//If the rigidbody velocity is smaller than it was last frame (such as from hitting a wall),
 	//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 	private void CheckAndApplyVelocityChanges () {
-
-		Debug.DrawRay(transform.position, _coreVelocity * Time.deltaTime, Color.white, 20f);
 
 		Vector3 currentVelocity = _RB.velocity;
 		Vector3 previousVelocity = _previousVelocities[0];
@@ -501,8 +492,6 @@ public class S_PlayerPhysics : MonoBehaviour
 					_environmentalVelocity = Vector3.zero;
 				}
 			}
-
-			Debug.DrawRay(transform.position, _coreVelocity * Time.deltaTime * 1, Color.black, 20f);
 		}
 
 	}
@@ -539,7 +528,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Sets rigidbody velocity, this should be the only line in the player scripts to do so.
 		_RB.velocity = _totalVelocity;
-		prevVec = _totalVelocity;
 
 		//Adds this new velocity to a list of 2, tracking the last 2 frames.
 		_previousVelocities.Insert(0, _totalVelocity);
@@ -841,7 +829,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				force = _isRolling ? force * _rollingDownhillBoost_ : force; //Add more force if rolling.
 			}
 
-			//This force is then added to the current velocity. but aimed towrds down the slope, leading to a more realistic and natural effect than just changing speed.
+			//This force is then added to the current velocity. but aimed towards down the slope, leading to a more realistic and natural effect than just changing speed.
 			Vector3 downSlopeForce = AlignWithNormal(new Vector3(_groundNormal.x, 0, _groundNormal.y), _groundNormal, force.y);
 			force = Vector3.Lerp(force, downSlopeForce, 0.35f);
 
@@ -863,7 +851,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Then ready a raycast to check for slopes.
 		if (_timeOnGround > 0.06f && _horizontalSpeedMagnitude > 3)
 		{
-			Debug.DrawRay(_HitGround.point, _groundNormal * 0.2f, Color.magenta, 20f);
 
 			Vector3 currentGroundNormal = _groundNormal;
 			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.2f);
@@ -894,12 +881,7 @@ public class S_PlayerPhysics : MonoBehaviour
 						if (_placeAboveGroundBuffer_ > 0 && Vector3.Distance(transform.position, _HitGround.point) > _placeAboveGroundBuffer_)
 						{
 							SetPlayerPosition(_HitGround.point + _groundNormal * _placeAboveGroundBuffer_, false);
-
-							Debug.DrawRay(_HitGround.point, _groundNormal * _placeAboveGroundBuffer_, Color.magenta, 20f);
 						}
-
-						Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.red, 20f);
-						
 					}
 					//If the difference is too large, then it's not a slope, so see if its a step to step over/onto.
 					else
@@ -928,8 +910,6 @@ public class S_PlayerPhysics : MonoBehaviour
 					}		
 					Vector3 Dir = AlignWithNormal(velocity, currentGroundNormal, velocity.magnitude);
 					velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.y);
-
-					Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.green, 20f);
 
 					// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
 					AddGeneralVelocity(-currentGroundNormal * 0.9f);

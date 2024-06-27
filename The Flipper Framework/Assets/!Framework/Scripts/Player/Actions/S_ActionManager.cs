@@ -519,7 +519,13 @@ public class ActionManagerEditor : Editor
 		serializedObject.Update();
 
 		//Describe what the script does
-		EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
+		EditorGUILayout.TextArea("This is the action manager, and it defines what actions the character can perform, and their connections to each other \n" +
+			"Here, each state is reprsented by drop down menus, ordered into a list. Each element will have itself and the states it can perform / enter. \n" +
+			"ADD NEW STATE will add a new action to the list of ones this character can perform. \n" +
+			"IMPORT MISSING will add any state listed as a connection by another, and ensure the scripts themeslves are components in the children. \n" +
+			"SORT ALL ACTIONS will organize the list into the normal order. \n" +
+			"If you want to easily add specific actions as connections to others, set one in ADD THIS TO ACTIONS, then " +
+			"whenever you press ADD SET, that action will be set as a conenction to the one you pressed on.", EditorStyles.textArea);
 
 		SerializedProperty ActionList = serializedObject.FindProperty("_MainActions");
 

@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Game/Scenes/Zones/Altitude Limit/Sc_AltitudeLimit.unity
     guid: 975ff8a3a5aaa15418195c73ef31af20
   - enabled: 1
-    path: Assets/Game/Scenes/Zones/IntroZone/Sc_IntroZone.unity
+    path: Assets/Sc_Playground.unity
     guid: b8e9635bc70746f40a8b47ccfe43ead6
   - enabled: 1
     path: Assets/Game/Scenes/Zones/TutorialLevel/Sc_TutorialLevel.unity

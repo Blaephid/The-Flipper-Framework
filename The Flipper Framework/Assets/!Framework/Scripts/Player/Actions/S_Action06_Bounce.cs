@@ -279,8 +279,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		normal = Vector3.Lerp(normal, Vector3.up, dif * Mathf.Deg2Rad);
 		_PlayerPhys.AddCoreVelocity(normal * _currentBounceForce, false);
 
-		Debug.DrawRay(transform.position, normal * _currentBounceForce, Color.magenta, 20f);
-
 		//If not at the last index, increase the bounce count.
 		if (_Actions._bounceCount < _BounceUpSpeeds_.Count - 1)
 		{

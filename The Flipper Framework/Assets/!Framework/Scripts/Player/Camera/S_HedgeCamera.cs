@@ -464,6 +464,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 		//Making the camera face down when in the air for long enough.
 		bool isRightAction = _Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump || _Actions._whatAction == S_Enums.PrimaryPlayerStates.Default || _Actions._whatAction == S_Enums.PrimaryPlayerStates.DropCharge;
+
 		if (_shouldFaceDownWhenInAir_ && !_PlayerPhys._isGrounded && verticalSpeed < _fallSpeedThreshold_ && isRightAction)
 		{
 			//If isn't facing down yet, then check high enough in the air to warrent changing view.

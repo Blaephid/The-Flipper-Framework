@@ -332,7 +332,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				case S_Interaction_Pathers.PathTypes.rail:
 
 					_PlayerPhys.transform.up = _sampleUpwards;
-					Debug.DrawRay(transform.position, _RailTransform.rotation * _Sample.up * 5, Color.red, 20f);
 					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards, default(Vector3), _sampleUpwards);
 
 					Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail

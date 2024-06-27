@@ -1203,8 +1203,8 @@ MonoBehaviour:
     shouldStopAirMovementWhenNoInput: 1
     keepNormalForThis: 0.4
     startMaxFallingSpeed: -250
-    fallGravity: {x: 0, y: -3.5, z: 0}
-    upGravity: {x: 0, y: -2.8, z: 0}
+    fallGravity: {x: 0, y: -3, z: 0}
+    upGravity: {x: 0, y: -2.3, z: 0}
   StartWhenInAir:
     controlAmmount: {x: 0.6, y: 0.8}
     shouldStopAirMovementWhenNoInput: 1
@@ -1245,7 +1245,7 @@ MonoBehaviour:
     skiddingIntensityInAir: -2.5
     speedToStopAt: 10
   JumpStats:
-    jumpSpeed: 10
+    jumpSpeed: 8
     jumpSlopeConversion: 0.03
     JumpForceByTime:
       serializedVersion: 2
@@ -1446,7 +1446,7 @@ MonoBehaviour:
     jumpExtraControlThreshold: 0.16
   MultipleJumpStats:
     maxJumpCount: 2
-    doubleJumpSpeed: 7
+    doubleJumpSpeed: 6
     doubleJumpDuration: {x: 0.08, y: 0.15}
     speedLossOnDoubleJump: 0.98
   StartMultipleJumpStats:
@@ -2089,9 +2089,9 @@ MonoBehaviour:
     coolDownModiferBySpeed: 0.003
     cameraPauseEffect: {x: 2, y: 30}
   RingRoadStats:
-    dashSpeed: 160
+    dashSpeed: 190
     minimumEndingSpeed: 80
-    speedGained: 1.25
+    speedGained: 1.2
     willCarrySpeed: 1
     searchDistance: 12
     RingRoadLayer:

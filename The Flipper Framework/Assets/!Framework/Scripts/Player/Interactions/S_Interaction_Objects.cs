@@ -444,10 +444,6 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		launchHorizontalVelocity = _PlayerPhys.transform.TransformDirection(launchHorizontalVelocity);
 
-		Debug.DrawRay(transform.position, direction.normalized * 2, Color.magenta, 20f);
-		Debug.DrawRay(transform.position, totalEnvironment.normalized * 2, Color.red, 20f);
-		Debug.DrawRay(transform.position, launchHorizontalVelocity.normalized * 2, Color.blue, 20f);
-
 		StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed));
 	}
 

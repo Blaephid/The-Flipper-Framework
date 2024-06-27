@@ -148,7 +148,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		//Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
+		Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
 
 		//Here to ensure this is always called no matter why the action ends.
 		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
@@ -225,6 +225,8 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			_directionToGo = Sample.tangent;
 			Quaternion targetRotation = Quaternion.LookRotation(Sample.tangent);
 			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, targetRotation, 0.6f);
+
+			_PlayerPhys._horizontalSpeedMagnitude = _Actions._listOfSpeedOnPaths[0];
 		}
 		else
 		{
@@ -234,7 +236,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	//Handles player physics when at the end of a chain of rings.
 	private void EndRingRoad () {
-
 
 		//End at the speed started at (with a slight change), but with a minimum.
 		float endingSpeedResult = Mathf.Max(_minimumEndingSpeed_, _speedBeforeAction * _speedGain_);

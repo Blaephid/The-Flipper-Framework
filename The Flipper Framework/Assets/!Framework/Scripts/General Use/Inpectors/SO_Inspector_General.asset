@@ -19,11 +19,11 @@ MonoBehaviour:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds:
       - {fileID: 3784932749224549720, guid: 0000000000000000d000000000000000, type: 0}
-      m_TextColor: {r: 0.93333334, g: 0.93333334, b: 0.93333334, a: 1}
+      m_TextColor: {r: 0.6792453, g: 0.6792453, b: 0.6792453, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.93333334, g: 0.93333334, b: 0.93333334, a: 1}
+      m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_Active:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds:
@@ -41,7 +41,7 @@ MonoBehaviour:
     m_OnHover:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.93333334, g: 0.93333334, b: 0.93333334, a: 1}
+      m_TextColor: {r: 0.26415092, g: 0, b: 0, a: 1}
     m_OnActive:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds:
@@ -50,7 +50,7 @@ MonoBehaviour:
     m_OnFocused:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.93333334, g: 0.93333334, b: 0.93333334, a: 1}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Border:
       m_Left: 6
       m_Right: 6
@@ -69,10 +69,10 @@ MonoBehaviour:
     m_Overflow:
       m_Left: 0
       m_Right: 0
-      m_Top: -1
+      m_Top: 0
       m_Bottom: 2
     m_Font: {fileID: 0}
-    m_FontSize: 12
+    m_FontSize: 16
     m_FontStyle: 1
     m_Alignment: 4
     m_WordWrap: 0
@@ -80,8 +80,8 @@ MonoBehaviour:
     m_TextClipping: 0
     m_ImagePosition: 0
     m_ContentOffset: {x: 0, y: 0}
-    m_FixedWidth: 63.15
-    m_FixedHeight: 20.82
+    m_FixedWidth: 76.63
+    m_FixedHeight: 21.9
     m_StretchWidth: 1
     m_StretchHeight: 1
   _GeneralButton:
@@ -90,11 +90,12 @@ MonoBehaviour:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds:
       - {fileID: 3784932749224549720, guid: 0000000000000000d000000000000000, type: 0}
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+      m_TextColor: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.93333334, g: 0.93333334, b: 0.93333334, a: 1}
+      m_ScaledBackgrounds:
+      - {fileID: 2800000, guid: c4b66e31395c54087a2fbc13ae7e0f3c, type: 3}
+      m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_Active:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds:
@@ -160,7 +161,7 @@ MonoBehaviour:
     m_Normal:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.8537736, g: 0.8879564, b: 1, a: 1}
+      m_TextColor: {r: 0.43137258, g: 0.7929987, b: 0.8666667, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
@@ -200,7 +201,7 @@ MonoBehaviour:
       m_Top: 2
       m_Bottom: 2
     m_Padding:
-      m_Left: 2
+      m_Left: 13
       m_Right: 2
       m_Top: 0
       m_Bottom: 0
@@ -209,17 +210,17 @@ MonoBehaviour:
       m_Right: 0
       m_Top: 0
       m_Bottom: 0
-    m_Font: {fileID: 12800000, guid: b17d02c8350bcfb40a8b3cfc712730be, type: 3}
+    m_Font: {fileID: 12800000, guid: 0ac12ae04128ca8429cfd0ce838dfa41, type: 3}
     m_FontSize: 25
     m_FontStyle: 1
     m_Alignment: 0
-    m_WordWrap: 0
+    m_WordWrap: 1
     m_RichText: 0
-    m_TextClipping: 0
+    m_TextClipping: 1
     m_ImagePosition: 3
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
-    m_FixedHeight: 32.4
+    m_FixedHeight: 39.98
     m_StretchWidth: 1
     m_StretchHeight: 0
   _SubHeaders:
@@ -227,7 +228,7 @@ MonoBehaviour:
     m_Normal:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.8235294, g: 0.8235294, b: 0.8235294, a: 1}
+      m_TextColor: {r: 0.59607846, g: 0.83498555, b: 0.9529412, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
@@ -267,7 +268,7 @@ MonoBehaviour:
       m_Top: 2
       m_Bottom: 2
     m_Padding:
-      m_Left: 2
+      m_Left: 44
       m_Right: 2
       m_Top: 1
       m_Bottom: 1
@@ -277,7 +278,7 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Font: {fileID: 0}
-    m_FontSize: 12
+    m_FontSize: 21
     m_FontStyle: 0
     m_Alignment: 3
     m_WordWrap: 0
