@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 12146, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: Br_Vertical
+  m_EditorClassIdentifier: 
+  m_Mask: {fileID: 2800000, guid: 6f3be8e78c10b4d418f442fc6d866b59, type: 3}
+  m_Falloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.037267078
+      outSlope: 0.037267078
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.6525437
+    - serializedVersion: 3
+      time: 0.15433246
+      value: 0.024836443
+      inSlope: 0.6038149
+      outSlope: 0.6038149
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.60832185
+    - serializedVersion: 3
+      time: 0.5663696
+      value: 0.42385712
+      inSlope: 2.6765895
+      outSlope: 2.6765895
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.22100192
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.795714
+      value: 0.98428285
+      inSlope: 0.09576609
+      outSlope: 0.09576609
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.098648414
+      outSlope: 0.098648414
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_RadiusScale: 1.4849247
+  m_BlackWhiteRemapMin: 0.24683231
+  m_BlackWhiteRemapMax: 1
+  m_InvertRemapRange: 0
