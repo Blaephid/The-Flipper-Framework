@@ -111,7 +111,7 @@ public class S_Enums
 	}
 
 	public enum LockControlDirection {
-		NoChange,
+		Change,
 		NoInput,
 		CharacterForwards,
 	}

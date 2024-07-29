@@ -185,19 +185,22 @@ public class S_PlayerInput : MonoBehaviour
 	/// 
 	#region public 
 	//Called by other scripts to set the input to a specific thing, unable to change for a period of time.
-	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_Enums.LockControlDirection whatLock = S_Enums.LockControlDirection.NoChange) {
+	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_Enums.LockControlDirection whatLock = S_Enums.LockControlDirection.Change) {
 
-		//While the enum won't be used freqeuntly, it is short shand for removing input or setting player to forwards without having to calculate it before being called.
+		//While the enum won't be used freqeuntly, it is short hand for removing input or setting player to forwards without having to calculate it before being called.
 		switch (whatLock)
 		{
 			//If enum is not set in the call, move becomes the input given.
-			case S_Enums.LockControlDirection.NoChange:
+			case S_Enums.LockControlDirection.Change:
 				_move = newInput; break;
 			case S_Enums.LockControlDirection.NoInput:
 				_move = Vector3.zero; break;
 			case S_Enums.LockControlDirection.CharacterForwards:
-				_move = _MainSkin.forward; break;
+				_move = transform.InverseTransformDirection(_MainSkin.forward); break;
 		}
+
+		Debug.DrawRay(transform.position, _move * 10, Color.red, 20);
+
 		_PlayerPhys._moveInput = _move;
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.

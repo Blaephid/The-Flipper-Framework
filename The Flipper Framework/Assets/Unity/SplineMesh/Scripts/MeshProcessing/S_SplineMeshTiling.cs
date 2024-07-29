@@ -267,7 +267,7 @@ public class SplineMeshEditor : Editor
 			}
 			if (GUILayout.Button("Update All", ButtonStyle))
 			{
-				S_SplineMeshTiling[] railsMeshes = FindObjectsOfType<S_SplineMeshTiling>();
+				S_SplineMeshTiling[] railsMeshes = FindObjectsByType<S_SplineMeshTiling>((FindObjectsSortMode.None));
 				foreach (S_SplineMeshTiling mesh in railsMeshes)
 				{
 					mesh.rebuild();

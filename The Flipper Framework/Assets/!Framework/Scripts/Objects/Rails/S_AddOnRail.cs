@@ -60,7 +60,7 @@ public class S_AddOnRail : MonoBehaviour
 
 		if (UpdateAll)
 		{
-			S_AddOnRail[] railsMeshes = FindObjectsOfType<S_AddOnRail>();
+			S_AddOnRail[] railsMeshes = FindObjectsByType<S_AddOnRail>(FindObjectsSortMode.None);
 			foreach (S_AddOnRail add in railsMeshes)
 			{
 				if (add.AddThis.Length != 0)

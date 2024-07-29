@@ -215,7 +215,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//If something is blocking the way, bounce off it.
 		if (Physics.Linecast(transform.position, collision.contacts[0].point, out RaycastHit hit, _PlayerPhys._Groundmask_))
 		{
-			Debug.Log("Rebound");
 			StartCoroutine(HittingObstacle(hit.normal));
 		}
 	}
@@ -417,7 +416,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			faceDirection = Vector3.Lerp(faceDirection, wallNormal, 0.5f);
 		}
 
-		_PlayerPhys.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0), true);
+		_PlayerPhys.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0), false);
 		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
 
 		//Bounce backwards and upwards 

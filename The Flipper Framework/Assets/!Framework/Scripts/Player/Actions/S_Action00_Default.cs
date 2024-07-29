@@ -3,6 +3,7 @@ using System.Collections;
 using System.Security.Cryptography;
 using UnityEditor;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class S_Action00_Default : MonoBehaviour, IMainAction
 {
@@ -28,7 +29,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
 
-	private SkinnedMeshRenderer[]           _PlayerSkin;
+	private List<SkinnedMeshRenderer>       _PlayerSkin = new List<SkinnedMeshRenderer>();
 	private SkinnedMeshRenderer             _SpinDashBall;
 	private List<SkinnedMeshRenderer>       _CurrentSkins = new List<SkinnedMeshRenderer>();
 
@@ -220,11 +221,11 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
 
 		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
-		for (int i = 0 ; i < _PlayerSkin.Length ; i++)
+		foreach (SkinnedMeshRenderer Skin in _PlayerSkin)
 		{
-			_PlayerSkin[i].enabled = setMainSkin;
-			if (_PlayerSkin[i].enabled) { _CurrentSkins.Add(_PlayerSkin[i]); }
-		}
+			Skin.enabled = setMainSkin;
+			if (Skin.enabled) { _CurrentSkins.Add(Skin); }
+		}	
 
 		_SpinDashBall.enabled = !setMainSkin;
 		//If ball enabled, disable the animator so its sounds don't overlap.
@@ -329,7 +330,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_BallAnimator =	_Tools.BallAnimator;
 		_CurrentAnimator =	_CharacterAnimator;
 		_MainSkin =	_Tools.MainSkin;
-		_PlayerSkin =	_Tools.PlayerSkins;
+		_PlayerSkin.Add(_Tools.SkinRenderer);
 		_SkinOffset =	_Tools.CharacterModelOffset;
 		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
 	}

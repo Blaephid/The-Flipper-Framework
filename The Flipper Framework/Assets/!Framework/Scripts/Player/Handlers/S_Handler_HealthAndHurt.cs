@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 public class S_Handler_HealthAndHurt : MonoBehaviour
@@ -28,7 +29,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	private GameObject            _JumpBall;
 	private Animator              _CharacterAnimator;
-	private SkinnedMeshRenderer[] _SonicSkins;
+	private List<SkinnedMeshRenderer> _SonicSkins = new List<SkinnedMeshRenderer>();
 	private Transform             _MainSkin;
 	private CapsuleCollider	_CharacterCapsule;
 	private GameObject            _ShieldObject;
@@ -593,7 +594,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_JumpBall =		_Tools.JumpBall;
 		_Sounds =			_Tools.SoundControl;
 		_CharacterAnimator =	_Tools.CharacterAnimator;
-		_SonicSkins =		_Tools.PlayerSkins;
+
+		_SonicSkins.Add(_Tools.SkinRenderer);
 		_MovingRing =		_Tools.MovingRingObject;
 		_ShieldObject =		_Tools.Shield;
 	}

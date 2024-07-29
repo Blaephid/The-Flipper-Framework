@@ -27,18 +27,18 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 	ParticleSystem RailsSparks2;
 
 	[Header("Mouth Sides")]
-	[SerializeField]
 	Transform _Head;
-	[SerializeField]
 	Transform LeftMouth, RightMouth;
-	[SerializeField]
-	Transform Eyelids;
 
 	private void Start () {
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_JumpDashParticle = _Tools.JumpDashParticle;
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_CamHandler = _Tools.CamHandler;
+
+		_Head = _Tools.Head;
+		LeftMouth = _Tools.LeftMouth;
+		RightMouth = _Tools.RightMouth;
 	}
 
 	void Update () {

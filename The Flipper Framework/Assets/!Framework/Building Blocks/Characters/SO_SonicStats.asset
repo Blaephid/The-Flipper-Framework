@@ -1246,7 +1246,7 @@ MonoBehaviour:
     speedToStopAt: 10
   JumpStats:
     jumpSpeed: 8
-    jumpSlopeConversion: 0.03
+    jumpSlopeConversion: 0.2
     JumpForceByTime:
       serializedVersion: 2
       m_Curve:
