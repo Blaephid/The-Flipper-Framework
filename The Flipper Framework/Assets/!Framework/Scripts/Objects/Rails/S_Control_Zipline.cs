@@ -6,33 +6,42 @@ using System;
 
 public class S_Control_Zipline : MonoBehaviour
 {
-	public Spline Rail;
-	CapsuleCollider sphcol;
-	[SerializeField]
-	bool placeFromEnd;
-	[SerializeField]
-	float offset = 0.5f;
-	public GameObject homingtgt;
+	[HideInInspector]
+	public Spline _Rail;
+	[HideInInspector]
+	public GameObject _HomingTarget;
 
-	Rigidbody rb;
+	[SerializeField]
+	bool _shouldPlaceFromEnd;
+	[SerializeField]
+	float _offset = 0.5f;
+
+	CapsuleCollider _CapsuleCollider;
+	Rigidbody _RB;
+
 	// Use this for initialization
 	void Start () {
-		rb = GetComponent<Rigidbody>();
-		Rail = GetComponentInParent<Spline>();
-		sphcol = GetComponent<CapsuleCollider>();
-		homingtgt = GetComponentInChildren<S_Data_HomingTarget>().gameObject;
+		//Set all object references automatically
+		_RB = GetComponent<Rigidbody>();
+		_Rail = GetComponentInParent<Spline>();
+		_CapsuleCollider = GetComponent<CapsuleCollider>();
+		_HomingTarget = GetComponentInChildren<S_Data_HomingTarget>().gameObject;
+
+		//Ensure handle is at correct place along the spline
 		PlaceOnRope();
 	}
 	private void Update () {
-		if (!sphcol.enabled)
+		if (!_CapsuleCollider.enabled)
 		{
-			if (homingtgt != null)
-				homingtgt.SetActive(false);
+			if (_HomingTarget != null)
+				_HomingTarget.SetActive(false);
 			//this.enabled = false;            
 		}
 
 	}
 
+
+	//Attaches to, and removes from, OnReset event so will always be where it should be when player dies.
 	private void OnEnable () {
 		S_Manager_LevelProgress.OnReset += EventReturnToRope;
 	}
@@ -41,23 +50,23 @@ public class S_Control_Zipline : MonoBehaviour
 		S_Manager_LevelProgress.OnReset -= EventReturnToRope;
 	}
 
-
+	//Reset handle to how it started
 	void EventReturnToRope ( object sender, EventArgs e ) {
-		//Debug.Log("Invoke Pulley");
-		sphcol.enabled = true;
-		homingtgt.SetActive(true);
-		rb.isKinematic = true;
-		rb.velocity = Vector3.zero;
+		_CapsuleCollider.enabled = true;
+		_HomingTarget.SetActive(true);
+		_RB.isKinematic = true;
+		_RB.velocity = Vector3.zero;
 
 
 		PlaceOnRope();
 	}
 
+	//Get correct transform in world space based on spline
 	void PlaceOnRope () {
-		CurveSample sample = (placeFromEnd) ? Rail.GetSampleAtDistance(Rail.Length - offset) : Rail.GetSampleAtDistance(1 + offset);
-		transform.position =  Rail.transform.position + (Rail.transform.rotation * sample.location);
+		CurveSample sample = (_shouldPlaceFromEnd) ? _Rail.GetSampleAtDistance(_Rail.Length - _offset) : _Rail.GetSampleAtDistance(1 + _offset);
+		transform.position =  _Rail.transform.position + (_Rail.transform.rotation * sample.location);
 
-		Vector3 dir = Rail.transform.rotation * sample.tangent;
-		transform.rotation = Quaternion.LookRotation(dir, Rail.transform.rotation * sample.up);
+		Vector3 dir = _Rail.transform.rotation * sample.tangent;
+		transform.rotation = Quaternion.LookRotation(dir, _Rail.transform.rotation * sample.up);
 	}
 }

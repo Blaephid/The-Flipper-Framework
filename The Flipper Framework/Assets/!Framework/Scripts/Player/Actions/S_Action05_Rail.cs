@@ -461,7 +461,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				//If the end of a zipline, then the handle must go flying off the end, so disable trigger for player and homing target, but renable collider with world.
 				_ZipHandle.GetComponent<CapsuleCollider>().enabled = false;
 				if (_ZipHandle.GetComponentInChildren<MeshCollider>()) { _ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; }
-				GameObject target = _ZipHandle.transform.GetComponent<S_Control_Zipline>().homingtgt;
+				GameObject target = _ZipHandle.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
 				target.SetActive(false);
 
 				//_PlayerPhys.SetCoreVelocity(_ZipBody.velocity); //Make sure zip handle flies off

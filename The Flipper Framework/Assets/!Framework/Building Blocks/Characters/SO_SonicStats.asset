@@ -2131,7 +2131,7 @@ MonoBehaviour:
     framesToLoseSpeed: 30
     cooldown: 0.5
     hasAirBoost: 0
-    boostFramesInAir: 40
+    boostFramesInAir: 60
     AngleOfAligningToEndBoost: 80
     gainEnergyFromRings: 1
     gainEnergyOverTime: 0

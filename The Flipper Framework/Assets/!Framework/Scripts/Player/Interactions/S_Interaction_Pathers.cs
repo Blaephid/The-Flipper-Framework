@@ -299,7 +299,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 	//Readies stats for movemement on zipline and the zipline itself.
 	private void SetOnZipline ( Collider col ) {
-		_PathSpline = col.transform.GetComponent<S_Control_Zipline>().Rail;
+		_PathSpline = col.transform.GetComponent<S_Control_Zipline>()._Rail;
 		if (_PathSpline == null) { return; }
 
 		//Assigns what is the Zipline and handle, and sets it to not be kinematic to avoid gravity.
@@ -311,7 +311,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		Vector2 rangeAndDis = GetClosestPointOfSpline(zipbody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.
 
 		//Disables the homing target so it isn't a presence if homing attack can be performed in the grind action
-		GameObject target = col.transform.GetComponent<S_Control_Zipline>().homingtgt;
+		GameObject target = col.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
 		target.SetActive(false);
 
 		//Sets the player to the rail grind action, and sets their position and what spline to follow.
@@ -431,7 +431,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 		//Disables the zipline handles collisions and homing target until after the delay
 		zipHandle.GetComponent<CapsuleCollider>().enabled = false;
-		GameObject target = zipHandle.transform.GetComponent<S_Control_Zipline>().homingtgt;
+		GameObject target = zipHandle.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
 		target.SetActive(false);
 
 		yield return new WaitForSeconds(time);

@@ -701,6 +701,17 @@
                 },
                 {
                     "name": "",
+                    "id": "e18022d5-a1d3-45c5-9dd6-0d68b537ae7f",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Boost",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "df8faad7-fdb8-4951-b6f5-d4455e748085",
                     "path": "<SwitchProControllerHID>/buttonSouth",
                     "interactions": "",
