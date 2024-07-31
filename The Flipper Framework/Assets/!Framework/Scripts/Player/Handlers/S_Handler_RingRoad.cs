@@ -83,7 +83,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 					break;
 			}
 			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
-			if (_isScanning)
+			if (_isScanning && _Actions._whatAction != S_Enums.PrimaryPlayerStates.RingRoad)//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
 			{
 				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, transform.position);
 			}
@@ -97,6 +97,8 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 		//Modifier x increase raidus, modifer y increase range sphere is cast along, direction and position will usually based on the character, but when creating a path will go from target to target.
 		List<Transform> TargetsInRange = GetTargetsInRange(_targetSearchDistance_ * modifier.x, _targetSearchDistance_ * modifier.y, direction, position);
+
+		Debug.DrawRay(position, direction * _targetSearchDistance_ * modifier.y, Color.magenta, 5f);
 		_TargetRing = OrderTargets(TargetsInRange, position);
 	}
 
@@ -124,18 +126,18 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 		int checkLimit = 0; //Used to prevent too many checks in one frame, no matter how many rings in range at once.
 		_ListOfCloseTargets.Clear(); //This new empty list will be used for the ordered targets.
-		_ListOfCloseTargets.Add(null);
+		_ListOfCloseTargets.Add(null); //If none are found, will return null
 
 		//Go through each collider and check it. If list is empty, then this will be skipped and null wull be returned.
 		foreach (Transform Target in TargetsInRange)
 		{
 			if (Target != null) //Called in case the collider was lost since scanned (like if the ring was picked up).
 			{
-				PlaceTargetInOrder(Target, scannerPosition); //Compared this one to what's already been set as closest this scan (will return the new one if closest is null) 
+				PlaceTargetInOrder(Target, scannerPosition); //Compare this one to what's already been set as closest this scan (will return the new one if closest is null) 
 
 				//As said above, limits checks per scan.
 				checkLimit++;
-				if (checkLimit > 5)
+				if (checkLimit > 4)
 					break;
 			}
 		}

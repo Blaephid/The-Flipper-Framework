@@ -163,6 +163,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	public float                  _currentRunningSpeed;         //Similar to horizontalSpedMagnitde, but only core velocity, therefore the actual running velocity applied through this script.
 	[HideInInspector]
 	public List<float>            _previousHorizontalSpeeds = new List<float>() {1f, 2f, 3f, 4 }; //The horizontal speeds across the last few frames. Useful for collision checks.
+	[HideInInspector]
+	public List<float>            _previousRunningSpeeds = new List<float>() {1f, 2f, 3f}; //The horizontal speeds across the last few frames. Useful for checking if core speed has been changed in external scripts.
 
 	[HideInInspector]
 	public Vector3                _moveInput;         //Assigned by the input script, the direction the player is trying to go.
@@ -280,7 +282,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Sets public variables relevant to other calculations 
 	void Update () {
-
+		Debug.DrawRay(transform.position, Vector3.forward * 6, Color.green, 5f);
 		_playerPos = transform.position;
 	}
 
@@ -544,6 +546,9 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Adds this new speed to a list of 3
 		_previousHorizontalSpeeds.Insert(0, _horizontalSpeedMagnitude);
 		_previousHorizontalSpeeds.RemoveAt(4);
+
+		_previousRunningSpeeds.Insert(0, _currentRunningSpeed);
+		_previousRunningSpeeds.RemoveAt(3);
 	}
 
 	//Calls all the methods involved in managing coreVelocity on the ground, such as normal control (with normal modifiers), sticking to the ground, and effects from slopes.
@@ -662,11 +667,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;
 		float inputMagnitude = Mathf.Max(Mathf.Abs(input.x), Mathf.Abs(input.z));
-
-
-		Debug.DrawRay(transform.position, inputDirection * 3, Color.yellow, 6);
-
-		Debug.DrawRay(transform.position + (inputDirection * 3), inputDirection * 2, Color.blue, 6);
 
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
@@ -882,7 +882,7 @@ public class S_PlayerPhysics : MonoBehaviour
 					//If player is too far from ground, set back to buffer position.
 					if (_placeAboveGroundBuffer_ > 0 && Vector3.Distance(transform.position, _HitGround.point) > _placeAboveGroundBuffer_)
 					{
-						SetPlayerPosition(_HitGround.point + _groundNormal * _placeAboveGroundBuffer_, false);
+						SetPlayerPosition(_HitGround.point + _groundNormal * _placeAboveGroundBuffer_);
 					}
 				}
 				//If the difference is too large, then it's not a slope, and is likely facing towards the player, so see if it's a step to step over/onto.
@@ -1175,6 +1175,9 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (shouldPrintForce) Debug.Log("Set Core SPEED");
 	}
 	public void SetBothVelocities ( Vector3 force, Vector2 split, bool shouldPrintForce = false ) {
+
+		force = force == Vector3.zero ? new Vector3(0, 0.1f, 0) : force; //Because velocity is overwritten if external is not set to default(vector3), see SetTotalVelocity, if trying to set to zero, catch and set as a tiny velocity instead.
+
 		_externalCoreVelocity = force * split.x;
 		_environmentalVelocity = force * split.y;
 		if (shouldPrintForce) Debug.Log("Set Total FORCE");
@@ -1225,10 +1228,10 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 	}
 
-	public void SetPlayerPosition (Vector3 newPosition, bool shouldPrintLocation = false) {
+	public void SetPlayerPosition (Vector3 newPosition, bool shouldPrintLocation = true) {
 		transform.position = newPosition;
 
-		if (shouldPrintLocation) Debug.Log("Change Position to  " +newPosition);
+		if (shouldPrintLocation) Debug.Log("Change Position to  ");
 	}
 
 	public void SetPlayerRotation ( Quaternion newRotation, bool shouldPrintRotation = false ) {

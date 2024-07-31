@@ -15,18 +15,14 @@ public class S_Spawn_Ring : S_Spawners
 
 	//Because this is inherited from S_Spawners, this overrrides the normal SpawnObject, which is called in by LateUpdate in the inherited script. Go there for calls
 	public override void SpawnObject () {
-		//Either spawn on an object the ring should be following, or spawn stationary in place.
-		if (_ringSpawnerData._TransformToFollow != null)
-		{
-			Instantiate(_SpawnerData._TeleportSparkle, _ringSpawnerData._TransformToFollow.transform.position + _ringSpawnerData._followOffset, transform.rotation);
-			_ObjectClone = (GameObject)Instantiate(_SpawnerData._ObjectToSpawn, _ringSpawnerData._TransformToFollow.transform.position + _ringSpawnerData._followOffset, transform.rotation);
-			_ObjectClone.transform.parent = _ringSpawnerData._TransformToFollow;
-		}
-		else
-		{
-			Instantiate(_SpawnerData._TeleportSparkle, transform.position, transform.rotation);
-			_ObjectClone = (GameObject)Instantiate(_SpawnerData._ObjectToSpawn, transform.position, transform.rotation);
-		}
+
+		Vector3 spawnLocation =  _ringSpawnerData._TransformToFollow ? _ringSpawnerData._TransformToFollow.transform.position + _ringSpawnerData._followOffset : transform.position;
+
+		Instantiate(_SpawnerData._TeleportSparkle, spawnLocation, transform.rotation); //Effect
+		_ObjectClone = (GameObject)Instantiate(_SpawnerData._ObjectToSpawn, spawnLocation, transform.rotation); //Object
+
+		//Bind the spawned ring either to a set object to follow, or to this so it is more organised in editor.
+		_ObjectClone.transform.parent = _ringSpawnerData._TransformToFollow ? _ringSpawnerData._TransformToFollow : transform;
 	}
 
 }

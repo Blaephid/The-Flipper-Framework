@@ -1052,6 +1052,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Quick Time Event",
+            "id": "c0ec9db4-2b31-4665-ace7-f508a4c4e60e",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "9a5c38f1-dd51-4cfe-b6fa-136d7438ef30",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fa56f548-b544-48e8-8545-02002b84825f",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

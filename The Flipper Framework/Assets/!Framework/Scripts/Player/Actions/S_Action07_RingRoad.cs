@@ -80,14 +80,23 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
+		Debug.DrawRay(_PlayerPhys.transform.position, Vector3.up * 4, Color.red, 5f);
+		Debug.Log(_PlayerPhys._RB.velocity);
+
 		//Set Animator Parameters
 		_Actions._ActionDefault.HandleAnimator(7);
+		_positionAlongPath += Mathf.Min(Time.deltaTime, Time.fixedDeltaTime) * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
+
 		PlaceOnCreatedPath();
+
+		Debug.DrawRay(_PlayerPhys.transform.position, Vector3.up * 2, Color.blue, 5f);
 	}
 
 	private void FixedUpdate () {
 		CreatePath();
 		_counter++;
+
+		//PlaceOnCreatedPath();
 
 		HandleInputs();
 	}
@@ -106,10 +115,11 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	public void StartAction () {
 
 		//Physics
-		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.right); //Prevent character moving outside of the path.
+		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one); //Prevent character moving outside of the path.
 		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys.SetIsGrounded(false);
+		_PlayerPhys._isGravityOn = false;
 
 		//Effects
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -148,13 +158,16 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
+		Debug.Log("Destroy" + _CreatedSpline.gameObject);
+		EditorApplication.isPaused = true;
+		//Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
 
 		//Here to ensure this is always called no matter why the action ends.
 		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
 
 		_PlayerPhys._canChangeGrounded = true;
+		_PlayerPhys._isGravityOn = true;
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
@@ -188,7 +201,9 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 				//If not used yet.
 				if (!_ListOfRingsInRoad.Contains(Target))
 				{
-					//Create a new node in the spline, expanding it so it can be followed.
+					Debug.DrawRay(Target.position, Vector3.up * 2 * _ListOfRingsInRoad.Count, Color.yellow, 10);
+
+					//Create a new node in the spline.
 					_CreatedSpline.AddNode(new SplineNode(Target.position, Target.position));
 
 					//This ensures the player won't miss the ring when moving along spline at high speed.
@@ -199,9 +214,10 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			}
 		}
 
-		//Spline is created by looking for more valid targets through each target. So this makes a scan for rings which wouldn't happen otherwise, but from the most recent target, in the direction from penultimate node to last.
+		//Spline is created by looking for more valid targets through each target.
+		//So this makes a scan for rings which wouldn't happen otherwise, but from the most recent target, in the direction from penultimate node to last.
 		if (_CreatedSpline.nodes.Count > 1)
-			_RoadHandler.ScanForRings(new Vector2(0.4f, 1.8f), _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 1].Position - _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 2].Position, _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 1].Position); //Called now because when being performed there needs to be constant updates to targets.
+			_RoadHandler.ScanForRings(new Vector2(0.4f, 1.8f), (_CreatedSpline.nodes[_CreatedSpline.nodes.Count - 1].Position - _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 2].Position).normalized, _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 1].Position); //Called now because when being performed there needs to be constant updates to targets.
 		else if (_CreatedSpline.nodes.Count > 0)
 			_RoadHandler.ScanForRings(new Vector2(2.5f, 0.1f), _directionToGo.normalized, _CreatedSpline.nodes[0].Position);
 
@@ -210,13 +226,17 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private void PlaceOnCreatedPath () {
 		if (_counter < 3) { return; } //Gives time to create a spline before moving along it.
 
-		_positionAlongPath += Time.deltaTime * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
+		//_positionAlongPath += Time.deltaTime * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
 
 		//If still on the spline.
 		if (_positionAlongPath < _CreatedSpline.Length)
 		{
 			//Get the world transform point of that point on the spline.
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
+
+			Debug.DrawLine(transform.position, Sample.location, Color.black, 8f);
+			Debug.DrawRay(transform.position, Vector3.down * 3, Color.white, 5f);
+			Debug.DrawRay(Sample.location, Vector3.down * 8, Color.white, 5f);
 
 			//Place player on it (since called in update, not fixed update, won't be too jittery).
 			_PlayerPhys.SetPlayerPosition( Sample.location);

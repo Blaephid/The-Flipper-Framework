@@ -394,14 +394,14 @@ public class S_HedgeCamera : MonoBehaviour
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
 		if (_shouldAffectDistanceBySpeed_)
 		{
-			float targetDistance = _cameraDistanceBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed);
+			float targetDistance = _cameraDistanceBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed);
 			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.1f);
 		}
 
 		//To make the player feel faster than they are, changes camera FOV based on speed.
 		if(_shouldAffectFOVBySpeed_)
 		{
-			float targetFOV = _cameraFOVBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed) * _baseFOV_;
+			float targetFOV = _cameraFOVBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed) * _baseFOV_;
 			_VirtualCamera.m_Lens.FieldOfView = Mathf.Lerp(_VirtualCamera.m_Lens.FieldOfView, targetFOV, 0.2f);
 			_SecondaryCamera.m_Lens.FieldOfView = _VirtualCamera.m_Lens.FieldOfView;
 		}

@@ -199,8 +199,6 @@ public class S_PlayerInput : MonoBehaviour
 				_move = transform.InverseTransformDirection(_MainSkin.forward); break;
 		}
 
-		Debug.DrawRay(transform.position, _move * 10, Color.red, 20);
-
 		_PlayerPhys._moveInput = _move;
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.

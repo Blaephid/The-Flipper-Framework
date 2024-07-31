@@ -118,7 +118,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		float checkDistance = _PlayerPhys._previousHorizontalSpeeds[3] * Time.deltaTime * 3; //Direction and speed are obtained from previous frames because there has now been a collision that may have affected them this frame.
 		Vector3 checkDirection = _PlayerPhys._previousVelocities[3].normalized;
 
-		//Knockback direction will have been set to zero in the hurt handler if not resetting speed on hit. If there isn't a solid object infront, the dont bounce back.
+		//Knockback direction will have been set to zero in the hurt handler if not resetting speed on hit. If there isn't a solid object infront, then dont bounce back.
 		if (_knockbackDirection == Vector3.zero && !Physics.BoxCast(transform.position, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
 		{
 			//Apply slight force against and upwards.
@@ -139,7 +139,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		{
 			Vector3 movePlacement = -_PlayerPhys._previousVelocities[3] * Time.deltaTime * 2;
 			movePlacement += transform.up;
-			transform.position += movePlacement; //Places character back the way they were moving to avoid weird collisions.
+			_PlayerPhys.SetPlayerPosition(transform.position + movePlacement); //Places character back the way they were moving to avoid weird collisions.
 
 			//Get a new direction if this was triggered because something was blocking the previous option
 			_knockbackDirection = _knockbackDirection == Vector3.zero ? -checkDirection : _knockbackDirection;

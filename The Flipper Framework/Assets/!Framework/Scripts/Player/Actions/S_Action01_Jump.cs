@@ -184,7 +184,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Snap off of ground to make sure player jumps
-		_PlayerPhys.transform.position += (_upwardsDirection * 0.3f);
+		_PlayerPhys.SetPlayerPosition(_PlayerPhys.transform.position + (_upwardsDirection * 0.3f));
 
 		//If performing a grounded jump. JumpCount may be changed externally to allow for this.
 		if (_isJumpingFromGround)

@@ -65,16 +65,18 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	private void FixedUpdate () {
 
-		//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
-		if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatAction)))
+		if (_PlayerPhys._isRolling)
 		{
-			UnCurl();
+			//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
+			if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatAction)))
+			{
+				UnCurl();
+			}
+
+			//While isRolling is set externally, the counter tracks when it is.
+			else if (_isRollingFromThis)
+				_rollCounter += Time.deltaTime;
 		}
-
-		//While isRolling is set externally, the counter tracks when it is.
-		else if (_isRollingFromThis)
-			_rollCounter += Time.deltaTime;
-
 	}
 
 	//Called when attempting to perform an action, checking and preparing inputs.
