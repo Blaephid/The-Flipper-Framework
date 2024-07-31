@@ -81,11 +81,16 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	// Update is called once per frame
 	void Update () {
 		Debug.DrawRay(_PlayerPhys.transform.position, Vector3.up * 4, Color.red, 5f);
-		Debug.Log(_PlayerPhys._RB.velocity);
 
 		//Set Animator Parameters
 		_Actions._ActionDefault.HandleAnimator(7);
 		_positionAlongPath += Mathf.Min(Time.deltaTime, Time.fixedDeltaTime) * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
+
+		//If player is near the end of the path, try to create the path here as well as FixedUpdate, incase player was moving too fast and there are more rings.
+		if(_positionAlongPath / _CreatedSpline.Length > 0.85f)
+		{
+			CreatePath();
+		}
 
 		PlaceOnCreatedPath();
 
@@ -95,8 +100,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private void FixedUpdate () {
 		CreatePath();
 		_counter++;
-
-		//PlaceOnCreatedPath();
 
 		HandleInputs();
 	}
@@ -147,6 +150,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_speedBeforeAction = _PlayerPhys._horizontalSpeedMagnitude;
 		_Actions._listOfSpeedOnPaths.Add(Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f)); //Speed to move at, always faster than was moving before.
 
+		Debug.DrawRay(_RoadHandler._TargetRing.position, Vector3.down * 5, Color.yellow, 10);
 		_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
@@ -193,6 +197,16 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	private void CreatePath () {
 
+		Debug.Log("CREATE WITH");
+		int lastNode = _CreatedSpline.nodes.Count - 1;
+
+		//Spline is created by looking for more valid targets through each target.
+		//So this makes a scan for rings which wouldn't happen otherwise, but from the most recent target, in the direction from penultimate node to last.
+		if (_CreatedSpline.nodes.Count > 2) 
+			_RoadHandler.ScanForRings(new Vector2(1f, 3f), (_CreatedSpline.nodes[lastNode].Position - _CreatedSpline.nodes[lastNode - 1].Position), _CreatedSpline.nodes[lastNode].Position); //Called now because when being performed there needs to be constant updates to targets.
+		else
+			_RoadHandler.ScanForRings(new Vector2(1.2f, 1.5f), _directionToGo, _CreatedSpline.nodes.Count > 0 ? _CreatedSpline.nodes[lastNode].Position : transform.position);
+
 		//Goes through the list of targets from closest to furthers (see Handler_RingRoad).
 		foreach (Transform Target in _RoadHandler._ListOfCloseTargets)
 		{
@@ -213,14 +227,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 				}
 			}
 		}
-
-		//Spline is created by looking for more valid targets through each target.
-		//So this makes a scan for rings which wouldn't happen otherwise, but from the most recent target, in the direction from penultimate node to last.
-		if (_CreatedSpline.nodes.Count > 1)
-			_RoadHandler.ScanForRings(new Vector2(0.4f, 1.8f), (_CreatedSpline.nodes[_CreatedSpline.nodes.Count - 1].Position - _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 2].Position).normalized, _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 1].Position); //Called now because when being performed there needs to be constant updates to targets.
-		else if (_CreatedSpline.nodes.Count > 0)
-			_RoadHandler.ScanForRings(new Vector2(2.5f, 0.1f), _directionToGo.normalized, _CreatedSpline.nodes[0].Position);
-
 	}
 
 	private void PlaceOnCreatedPath () {
@@ -235,8 +241,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
 
 			Debug.DrawLine(transform.position, Sample.location, Color.black, 8f);
-			Debug.DrawRay(transform.position, Vector3.down * 3, Color.white, 5f);
-			Debug.DrawRay(Sample.location, Vector3.down * 8, Color.white, 5f);
 
 			//Place player on it (since called in update, not fixed update, won't be too jittery).
 			_PlayerPhys.SetPlayerPosition( Sample.location);

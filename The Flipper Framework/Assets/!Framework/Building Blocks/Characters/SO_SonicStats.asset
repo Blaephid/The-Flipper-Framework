@@ -2089,11 +2089,11 @@ MonoBehaviour:
     coolDownModiferBySpeed: 0.003
     cameraPauseEffect: {x: 2, y: 30}
   RingRoadStats:
-    dashSpeed: 190
+    dashSpeed: 2
     minimumEndingSpeed: 80
     speedGained: 1.2
     willCarrySpeed: 1
-    searchDistance: 12
+    searchDistance: 13
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 262144

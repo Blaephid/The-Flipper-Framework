@@ -1228,7 +1228,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 	}
 
-	public void SetPlayerPosition (Vector3 newPosition, bool shouldPrintLocation = true) {
+	public void SetPlayerPosition (Vector3 newPosition, bool shouldPrintLocation = false) {
 		transform.position = newPosition;
 
 		if (shouldPrintLocation) Debug.Log("Change Position to  ");
