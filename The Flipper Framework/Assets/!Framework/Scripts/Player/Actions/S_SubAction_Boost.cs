@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder.Shapes;
@@ -336,9 +337,10 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	//Applies a new visibility to the objects saved as representting the boost effect using Material Property Blockers.
 	private void ChangeAlphaOfCones ( float alpha ) {
 		//Since the effect might be made up of several cones, each with their own materials.
-		foreach (MeshRenderer R in _ListOfSubCones)
+		for (int i = 0 ; i < _ListOfSubCones.Length ; i++)
 		{
-			//Takes the instance of this material on the mesh, and changes a property in its shader. Check the shader itself for the property, but currently, alpha modifier is multiplied with the opacity nodes.
+			MeshRenderer R = _ListOfSubCones[i];
+			// Takes the instance of this material on the mesh, and changes a property in its shader. Check the shader itself for the property, but currently, alpha modifier is multiplied with the opacity nodes.
 			MaterialPropertyBlock TempBlock = new MaterialPropertyBlock();
 			TempBlock.SetFloat("_Alpha_Modifier", alpha);
 			R.SetPropertyBlock(TempBlock);

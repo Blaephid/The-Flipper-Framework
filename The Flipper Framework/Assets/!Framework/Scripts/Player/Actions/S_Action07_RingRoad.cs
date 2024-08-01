@@ -80,26 +80,21 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-		Debug.DrawRay(_PlayerPhys.transform.position, Vector3.up * 4, Color.red, 5f);
-
 		//Set Animator Parameters
 		_Actions._ActionDefault.HandleAnimator(7);
-		_positionAlongPath += Mathf.Min(Time.deltaTime, Time.fixedDeltaTime) * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
 
 		//If player is near the end of the path, try to create the path here as well as FixedUpdate, incase player was moving too fast and there are more rings.
 		if(_positionAlongPath / _CreatedSpline.Length > 0.85f)
 		{
 			CreatePath();
 		}
-
-		PlaceOnCreatedPath();
-
-		Debug.DrawRay(_PlayerPhys.transform.position, Vector3.up * 2, Color.blue, 5f);
 	}
 
 	private void FixedUpdate () {
 		CreatePath();
 		_counter++;
+
+		PlaceOnCreatedPath();
 
 		HandleInputs();
 	}
@@ -150,7 +145,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_speedBeforeAction = _PlayerPhys._horizontalSpeedMagnitude;
 		_Actions._listOfSpeedOnPaths.Add(Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f)); //Speed to move at, always faster than was moving before.
 
-		Debug.DrawRay(_RoadHandler._TargetRing.position, Vector3.down * 5, Color.yellow, 10);
 		_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
@@ -162,9 +156,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		Debug.Log("Destroy" + _CreatedSpline.gameObject);
-		EditorApplication.isPaused = true;
-		//Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
+		Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
 
 		//Here to ensure this is always called no matter why the action ends.
 		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
@@ -197,7 +189,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	private void CreatePath () {
 
-		Debug.Log("CREATE WITH");
 		int lastNode = _CreatedSpline.nodes.Count - 1;
 
 		//Spline is created by looking for more valid targets through each target.
@@ -208,15 +199,15 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			_RoadHandler.ScanForRings(new Vector2(1.2f, 1.5f), _directionToGo, _CreatedSpline.nodes.Count > 0 ? _CreatedSpline.nodes[lastNode].Position : transform.position);
 
 		//Goes through the list of targets from closest to furthers (see Handler_RingRoad).
-		foreach (Transform Target in _RoadHandler._ListOfCloseTargets)
+		for (int i = 0 ; i < _RoadHandler._ListOfCloseTargets.Count ; i++)
 		{
+			Transform Target = _RoadHandler._ListOfCloseTargets[i];
+
 			if (Target != null) //If still a valid object (because rings could be picked up).
 			{
 				//If not used yet.
 				if (!_ListOfRingsInRoad.Contains(Target))
 				{
-					Debug.DrawRay(Target.position, Vector3.up * 2 * _ListOfRingsInRoad.Count, Color.yellow, 10);
-
 					//Create a new node in the spline.
 					_CreatedSpline.AddNode(new SplineNode(Target.position, Target.position));
 
@@ -232,7 +223,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private void PlaceOnCreatedPath () {
 		if (_counter < 3) { return; } //Gives time to create a spline before moving along it.
 
-		//_positionAlongPath += Time.deltaTime * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
+		_positionAlongPath += Mathf.Min(Time.deltaTime, Time.fixedDeltaTime) * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
 
 		//If still on the spline.
 		if (_positionAlongPath < _CreatedSpline.Length)
@@ -240,17 +231,16 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			//Get the world transform point of that point on the spline.
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
 
-			Debug.DrawLine(transform.position, Sample.location, Color.black, 8f);
-
-			//Place player on it (since called in update, not fixed update, won't be too jittery).
-			_PlayerPhys.SetPlayerPosition( Sample.location);
-
 			//Rotate towards the next ring, according to the created spline.
 			_directionToGo = Sample.tangent;
 			Quaternion targetRotation = Quaternion.LookRotation(Sample.tangent);
 			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, targetRotation, 0.6f);
 
-			_PlayerPhys._horizontalSpeedMagnitude = _Actions._listOfSpeedOnPaths[0];
+			//Place player on it (since called in update, not fixed update, won't be too jittery).
+			_PlayerPhys.SetPlayerPosition(Sample.location);
+			_PlayerPhys.SetBothVelocities(Sample.tangent * _Actions._listOfSpeedOnPaths[0], Vector2.right); //Ensures each ring will be collected and the move will look smooth even if only updating in FixedUpdate
+
+			//_PlayerPhys._horizontalSpeedMagnitude = _Actions._listOfSpeedOnPaths[0];
 		}
 		else
 		{

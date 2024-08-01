@@ -133,13 +133,13 @@ namespace SplineMesh
 			if (Mesh != null) { triangles = reversed ? MeshUtility.GetReversedTriangles(Mesh) : Mesh.triangles; }
 
 			// we transform the source mesh vertices according to rotation/translation/scale
-			int i = 0;
 			if (Mesh != null)
 			{
 				vertices = new List<MeshVertex>(Mesh.vertexCount);
-				foreach (Vector3 vert in Mesh.vertices)
+				for (int i = 0 ; i < Mesh.vertices.Length ; i++)
 				{
-					var transformed = new MeshVertex(vert, Mesh.normals[i++]);
+					Vector3 vert = Mesh.vertices[i];
+					var transformed = new MeshVertex(vert, Mesh.normals[i]);
 					//  application of rotation
 					if (rotation != Quaternion.identity)
 					{
@@ -164,8 +164,9 @@ namespace SplineMesh
 			float maxX = float.MinValue;
 			if(vertices != null)
 			{
-				foreach (var vert in vertices)
+				for (int i = 0 ; i < vertices.Count ; i++)
 				{
+					var vert = vertices[i];
 					Vector3 p = vert.position;
 					maxX = Math.Max(maxX, p.x);
 					minX = Math.Min(minX, p.x);

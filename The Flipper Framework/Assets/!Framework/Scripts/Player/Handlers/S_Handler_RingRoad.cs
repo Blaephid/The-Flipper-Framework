@@ -99,7 +99,6 @@ public class S_Handler_RingRoad : MonoBehaviour
 		//Modifier x increase raidus, modifer y increase range sphere is cast along, direction and position will usually based on the character, but when creating a path will go from target to target.
 		List<Transform> TargetsInRange = GetTargetsInRange(_targetSearchDistance_ * modifier.x, _targetSearchDistance_ * modifier.y, direction, position);
 
-		Debug.Log(position);
 		Debug.DrawRay(position, direction * _targetSearchDistance_ * modifier.y, Color.magenta, 1f);
 		_TargetRing = OrderTargets(TargetsInRange, position, direction);
 	}
@@ -112,8 +111,9 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 		//Since a cast returns hits, convert those to a list of transforms.
 		List<Transform>  TargetsInRange = new List<Transform>();
-		foreach (RaycastHit Target in HitsInRange)
+		for (int i = 0 ; i < HitsInRange.Length ; i++)
 		{
+			RaycastHit Target = HitsInRange[i];
 			//If the transform of this hit isn't in the new list, add it.
 			if (!TargetsInRange.Contains(Target.collider.transform))
 			{
@@ -131,13 +131,14 @@ public class S_Handler_RingRoad : MonoBehaviour
 		_ListOfCloseTargets.Add(null); //If none are found, will return null
 
 		//Go through each collider and check it. If list is empty, then this will be skipped and null wull be returned.
-		foreach (Transform Target in TargetsInRange)
+		for (int i = 0 ; i < TargetsInRange.Count ; i++)
 		{
+			Transform Target = TargetsInRange[i];
 			if (Target != null) //Called in case the collider was lost since scanned (like if the ring was picked up).
 			{
 				//Only add to list if in the direction the scan was going, so ones found behind the intended direction are not included
 				Vector3 directionToTarget = Target.position - scannerPosition;
-				if(Vector3.Angle(directionToTarget.normalized, scannerDirection) < 110) 
+				if (Vector3.Angle(directionToTarget.normalized, scannerDirection) < 110)
 				{
 					PlaceTargetInOrder(Target, scannerPosition); //Compare this one to what's already been set as closest this scan (will return the new one if closest is null) 
 

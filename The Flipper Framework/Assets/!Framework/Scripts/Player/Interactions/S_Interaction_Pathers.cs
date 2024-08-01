@@ -388,17 +388,21 @@ public class S_Interaction_Pathers : MonoBehaviour
 	//Returns the average point in 3D space of all the different collision points
 	public Transform GetCollisionPoint ( Collision col ) {
 		Transform CollisionPointTransform = transform;
-		foreach (ContactPoint contact in col.contacts)
+		Vector3 pointSum = Vector3.zero;
+
+		// Iterate over each ContactPoint
+		for (int i = 0 ; i < col.contacts.Length ; i++)
 		{
-			//Set Middle Point
-			Vector3 pointSum = Vector3.zero;
-			//Add all collision points together
-			for (int i = 0 ; i < col.contacts.Length ; i++)
+			ContactPoint contact = col.contacts[i];
+
+			// Add all collision points together
+			for (int i2 = 0 ; i2 < col.contacts.Length ; i2++)
 			{
-				pointSum = pointSum + col.contacts[i].point;
+				pointSum += col.contacts[i2].point;
 			}
-			//Divide by amount of points to get average.
-			pointSum = pointSum / col.contacts.Length;
+
+			// Divide by the number of points to get the average
+			pointSum /= col.contacts.Length;
 			CollisionPointTransform.position = pointSum;
 		}
 		return CollisionPointTransform;

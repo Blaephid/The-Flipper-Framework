@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class S_PullItems : MonoBehaviour
@@ -42,12 +43,13 @@ public class S_PullItems : MonoBehaviour
     {
 
         Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
-        foreach (Collider r in rings)
-        {
-            allRings.Add(r.transform.parent);
-            Destroy(r);
-        }
-    }
+		for (int i = 0 ; i < rings.Length ; i++)
+		{
+			Collider r = rings[i];
+			allRings.Add(r.transform.parent);
+			Destroy(r);
+		}
+	}
 
     public void pullRings()
     {

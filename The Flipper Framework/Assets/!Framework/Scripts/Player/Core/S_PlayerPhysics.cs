@@ -121,7 +121,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	// Trackers
 	#region trackers
 
-	private bool        _isPositiveUpdate;	//Alternates between on and off every update, so can be used universally for anything that should only happen every other frame.
+	private bool        _isPositiveUpdate;  //Alternates between on and off every update, so can be used universally for anything that should only happen every other frame.
+	[HideInInspector]
+	public int         _frameCount;	//Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
 
 	//Methods
 	public delegate Vector3 DelegateAccelerationAndTurning ( Vector3 vector, Vector3 input, Vector2 modifier );        //A delegate for deciding methods to calculate acceleration and turning 
@@ -284,6 +286,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	void Update () {
 		Debug.DrawRay(transform.position, Vector3.forward * 6, Color.green, 5f);
 		_playerPos = transform.position;
+
+		_frameCount++;
 	}
 
 	///----Collision Trackers
@@ -339,7 +343,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
-	private void CheckForGround () {
+	public void CheckForGround () {
 
 		if (_groundingDelay > 0)
 		{
@@ -510,17 +514,18 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 		if (!_isOverwritingCoreVelocity)
 		{
-			foreach (Vector3 force in _listOfCoreVelocityToAdd)
+			//Using a for loop instead of a foreach makes it longer to read, but creates less garbage so improves performance
+			for (int i = 0 ; i < _listOfCoreVelocityToAdd.Count ; i++)
 			{
-				_coreVelocity += force;
+				_coreVelocity += _listOfCoreVelocityToAdd[i];
 			}
 		}
 
 		//Calculate total velocity this frame.
 		_totalVelocity = _coreVelocity + _environmentalVelocity;
-		foreach (Vector3 force in _listOfVelocityToAddThisUpdate)
+		for (int i = 0 ; i < _listOfVelocityToAddThisUpdate.Count ; i++)
 		{
-			_totalVelocity += force;
+			_totalVelocity += _listOfVelocityToAddThisUpdate[i];
 		}
 
 		//Clear the lists to prevent forces carrying over multiple frames.

@@ -478,6 +478,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_Input.LeftStepPressed = false;
 		_Input.RightStepPressed = false;
 
+		_PlayerPhys._canChangeGrounded = true;
+		_PlayerPhys.CheckForGround();
+
 		//End action
 		StartCoroutine(_Actions._ActionDefault.CoyoteTime());
 		_Actions._ActionDefault.StartAction();

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using System.Linq;
 
 public class S_Handler_HomingAttack : MonoBehaviour
 {
@@ -168,8 +169,9 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, _radiusOfCameraTargetCheck_, _MainCamera.forward, _faceRange_ * radius, TargetMask);
 		if (NewTargetsInRange.Length > 0)
 		{
-			foreach (RaycastHit hit in NewTargetsInRange)
+			for (int i = 0 ; i < NewTargetsInRange.Length ; i++)
 			{
+				RaycastHit hit = NewTargetsInRange[i];
 				float distance = hit.distance;
 				//If hit has the homing target component and is far enough away, then compare to current closest.
 				if (hit.collider.gameObject.GetComponent<S_Data_HomingTarget>() && distance > _minTargetDistance_)
@@ -189,8 +191,9 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, radius, TargetMask);
 		if(TargetsInRange.Length > 0)
 		{
-			foreach (Collider hit in TargetsInRange)
+			for (int i = 0 ; i < TargetsInRange.Length ; i++)
 			{
+				Collider hit = TargetsInRange[i];
 				float distance = Vector3.Distance(transform.position, hit.transform.position);
 
 				//If has the homing target component and is far enough away, then compare to current closest.
@@ -203,7 +206,6 @@ public class S_Handler_HomingAttack : MonoBehaviour
 				//For efficiency, cannot check more than 3 objects
 				checkLimit++;
 				if (checkLimit > 3) { break; }
-
 			}
 		}
 

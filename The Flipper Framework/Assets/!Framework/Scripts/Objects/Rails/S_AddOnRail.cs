@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SplineMesh;
 using System;
+using System.Linq;
 
 [DisallowMultipleComponent]
 [ExecuteInEditMode]
@@ -61,8 +62,9 @@ public class S_AddOnRail : MonoBehaviour
 		if (UpdateAll)
 		{
 			S_AddOnRail[] railsMeshes = FindObjectsByType<S_AddOnRail>(FindObjectsSortMode.None);
-			foreach (S_AddOnRail add in railsMeshes)
+			for (int i = 0 ; i < railsMeshes.Length ; i++)
 			{
+				S_AddOnRail add = railsMeshes[i];
 				if (add.AddThis.Length != 0)
 				{
 					add.toUpdate = true;
@@ -102,8 +104,9 @@ public class S_AddOnRail : MonoBehaviour
 
 		if (AddThis.Length > 0)
 		{
-			foreach (S_AddOnRail rail in AddThis)
+			for (int i = 0 ; i < AddThis.Length ; i++)
 			{
+				S_AddOnRail rail = AddThis[i];
 				Spline thisSpline = GetComponentInParent<Spline>();
 				Spline otherSpline = rail.GetComponentInParent<Spline>();
 
@@ -115,8 +118,9 @@ public class S_AddOnRail : MonoBehaviour
 				otherSpline.nodes[0].Direction = thisSpline.nodes[thisSpline.nodes.Count - 1].Direction;
 			}
 
-			foreach (S_AddOnRail rail in AddBehindThese)
+			for (int i = 0 ; i < AddBehindThese.Length ; i++)
 			{
+				S_AddOnRail rail = AddBehindThese[i];
 				Spline thisSpline = GetComponentInParent<Spline>();
 				Spline otherSpline = rail.GetComponentInParent<Spline>();
 

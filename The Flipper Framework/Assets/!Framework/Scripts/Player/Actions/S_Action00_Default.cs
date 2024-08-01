@@ -221,11 +221,12 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
 
 		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
-		foreach (SkinnedMeshRenderer Skin in _PlayerSkin)
+		for (int i = 0 ; i < _PlayerSkin.Count ; i++)
 		{
+			SkinnedMeshRenderer Skin = _PlayerSkin[i];
 			Skin.enabled = setMainSkin;
 			if (Skin.enabled) { _CurrentSkins.Add(Skin); }
-		}	
+		}
 
 		_SpinDashBall.enabled = !setMainSkin;
 		//If ball enabled, disable the animator so its sounds don't overlap.
@@ -241,9 +242,9 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 
 	public void HideCurrentSkins(bool hide) {
-		foreach (SkinnedMeshRenderer sk in _CurrentSkins)
+		for (int i = 0 ; i < _CurrentSkins.Count ; i++)
 		{
-			sk.enabled = hide;
+			_CurrentSkins[i].enabled = hide;
 		}
 	}
 

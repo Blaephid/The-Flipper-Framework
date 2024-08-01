@@ -158,15 +158,18 @@ namespace SplineMesh {
             CurveSample previous = samples[0];
             CurveSample next = default(CurveSample);
             bool found = false;
-            foreach (CurveSample cp in samples) {
-                if (cp.timeInCurve >= time) {
-                    next = cp;
-                    found = true;
-                    break;
-                }
-                previous = cp;
-            }
-            if (!found) throw new Exception("Can't find curve samples.");
+			for (int i = 0 ; i < samples.Count ; i++)
+			{
+				CurveSample cp = samples[i];
+				if (cp.timeInCurve >= time)
+				{
+					next = cp;
+					found = true;
+					break;
+				}
+				previous = cp;
+			}
+			if (!found) throw new Exception("Can't find curve samples.");
             float t = next == previous ? 0 : (time - previous.timeInCurve) / (next.timeInCurve - previous.timeInCurve);
 
             return CurveSample.Lerp(previous, next, t);
@@ -184,15 +187,18 @@ namespace SplineMesh {
             CurveSample previous = samples[0];
             CurveSample next = default(CurveSample);
             bool found = false;
-            foreach (CurveSample cp in samples) {
-                if (cp.distanceInCurve >= d) {
-                    next = cp;
-                    found = true;
-                    break;
-                }
-                previous = cp;
-            }
-            if (!found) throw new Exception("Can't find curve samples.");
+			for (int i = 0 ; i < samples.Count ; i++)
+			{
+				CurveSample cp = samples[i];
+				if (cp.distanceInCurve >= d)
+				{
+					next = cp;
+					found = true;
+					break;
+				}
+				previous = cp;
+			}
+			if (!found) throw new Exception("Can't find curve samples.");
             float t = next == previous ? 0 : (d - previous.distanceInCurve) / (next.distanceInCurve - previous.distanceInCurve);
 
             return CurveSample.Lerp(previous, next, t);
@@ -205,16 +211,18 @@ namespace SplineMesh {
         public CurveSample GetProjectionSample(Vector3 pointToProject) {
             float minSqrDistance = float.PositiveInfinity;
             int closestIndex = -1;
-            int i = 0;
-            foreach (var sample in samples) {
-                float sqrDistance = (sample.location - pointToProject).sqrMagnitude;
-                if (sqrDistance < minSqrDistance) {
-                    minSqrDistance = sqrDistance;
-                    closestIndex = i;
-                }
-                i++;
-            }
-            CurveSample previous, next;
+
+			for (int i = 0 ; i < samples.Count ; i++)
+			{
+				var sample = samples[i];
+				float sqrDistance = (sample.location - pointToProject).sqrMagnitude;
+				if (sqrDistance < minSqrDistance)
+				{
+					minSqrDistance = sqrDistance;
+					closestIndex = i;
+				}
+			}
+			CurveSample previous, next;
             if(closestIndex == 0) {
                 previous = samples[closestIndex];
                 next = samples[closestIndex + 1];

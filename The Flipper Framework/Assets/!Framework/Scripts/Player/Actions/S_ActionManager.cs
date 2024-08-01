@@ -100,21 +100,22 @@ public class S_ActionManager : MonoBehaviour
 			//Makes lists of scripts matching what states are assigned for this state to transition to or activate.
 
 			action.ConnectedActions = new List<IMainAction>();
-			foreach (S_Enums.PlayerControlledStates connectedState in action.ConnectedStates)
+			for (int a = 0 ; a < action.ConnectedStates.Count ; a++)
 			{
-				action.ConnectedActions.Add(AssignControlledScriptByEnum(connectedState));
+				action.ConnectedActions.Add(AssignControlledScriptByEnum(action.ConnectedStates[a]));
 			}
 
 			action.SituationalActions = new List<IMainAction>();
-			foreach (S_Enums.PlayerSituationalStates situationalState in action.SituationalStates)
+			for (int a = 0 ; a < action.SituationalStates.Count ; a++)
 			{
-				action.SituationalActions.Add(AssignSituationalScriptByEnum(situationalState));
+				action.SituationalActions.Add(AssignSituationalScriptByEnum(action.SituationalStates[a]));
 			}
 
+
 			action.SubActions = new List<ISubAction>();
-			foreach (S_Enums.SubPlayerStates subState in action.PerformableSubStates)
+			for (int a = 0 ; a < action.PerformableSubStates.Count ; a++)
 			{
-				action.SubActions.Add(AssignSubScript(subState));
+				action.SubActions.Add(AssignSubScript(action.PerformableSubStates[a]));
 			}
 
 			//Assigns the script related to this state
@@ -141,9 +142,9 @@ public class S_ActionManager : MonoBehaviour
 		}
 
 		//Current action is set when  handle inputs is called, this goes through each situation action and calls methods that should allow them to be checked. Meaning it can only be enetered if it's called this frame
-		foreach (IMainAction situationAction in _currentAction.SituationalActions)
+		for (int a = 0 ; a < _currentAction.SituationalActions.Count ; a++)
 		{
-			situationAction.AttemptAction();
+			_currentAction.SituationalActions[a].AttemptAction();
 		}
 	}
 
@@ -157,9 +158,10 @@ public class S_ActionManager : MonoBehaviour
 	//Go through every action attached to this manager and call the inherited StopAction method (because interface).
 	public void DeactivateAllActions (bool firstTime = false) {
 
-		foreach (S_Structs.StrucMainActionTracker track in _MainActions)
+		for (int a = 0 ; a < _MainActions.Count ; a++)
 		{
-			if(track.State != _whatAction)
+			S_Structs.StrucMainActionTracker track = _MainActions[a];
+			if (track.State != _whatAction)
 			{
 				track.Action.StopAction(firstTime); //The stop action methods should all contain the same check if enabled and then disable the script if so.
 			}
@@ -183,16 +185,16 @@ public class S_ActionManager : MonoBehaviour
 
 		//Checks if any subactions attached to this action should be performed ontop. 
 		//When one returns true, it is being switched to, so end the method. This take priority over main actions.
-		foreach (ISubAction subAction in _currentAction.SubActions)
+		for (int a = 0 ; a < _currentAction.SubActions.Count ; a++)
 		{
-			performAction = subAction.AttemptAction();
+			performAction = _currentAction.SubActions[a].AttemptAction();
 			if (performAction) { return; }
 		}
 
 		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
-		foreach (IMainAction mainAction in _currentAction.ConnectedActions)
+		for (int a = 0 ; a < _currentAction.ConnectedActions.Count ; a++)
 		{
-			performAction = mainAction.AttemptAction();
+			performAction = _currentAction.ConnectedActions[a].AttemptAction();
 			if (performAction) { return; }
 		}
 	}
@@ -602,16 +604,16 @@ public class ActionManagerEditor : Editor
 					//Go through all of the connected states for each state, and make sure those states are also in the list.
 					if(action.SituationalStates.Count > 0)
 					{
-						foreach (S_Enums.PlayerSituationalStates state in action.SituationalStates)
+						for (int a = 0 ; a < action.SituationalStates.Count ; a++)
 						{
-							AddSituationalActionToList(state);
+							AddSituationalActionToList(action.SituationalStates[a]);
 						}
 					}
 					if(action.ConnectedStates.Count > 0)
 					{
-						foreach (S_Enums.PlayerControlledStates state in action.ConnectedStates)
+						for (int a = 0 ; a < action.ConnectedStates.Count ; a++)
 						{
-							AddControledActionToList(state);
+							AddControledActionToList(action.ConnectedStates[a]);
 						}
 					}
 
@@ -630,9 +632,9 @@ public class ActionManagerEditor : Editor
 					//Ensures the component is attached to the game objects.
 					_ActionMan.AssignMainActionScriptByEnum(action.State);
 					//Ensures the same with the subactions
-					foreach (S_Enums.SubPlayerStates SS in action.PerformableSubStates)
+					for (int a = 0 ; a < action.PerformableSubStates.Count ; a++)
 					{
-						_ActionMan.AssignSubScript(SS);
+						_ActionMan.AssignSubScript(action.PerformableSubStates[a]);
 					}
 
 					//To apply this, the action has to be removed from the list, and this added in its place.
