@@ -4,102 +4,144 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class S_Upreel : MonoBehaviour
 {
-    public GameObject HomingTarget;
-    public GameObject Handle;
-    public Transform HandleGripPos;
-    public float MaxLength;
-    [Range(0, 1)] public float PulleyPosition = 1;
-    public float Speed;
-    public bool DeployedOnStart;
-    public bool Moving { get; protected set; }
-    [Header("Visuals and effects")]
-    public LineRenderer wire;
-    public Transform WireTopAnchor;
-    public Transform WireBottomAnchor;
-    public AudioSource audioSource;
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (Application.isPlaying && DeployedOnStart)
-        {
-            DeployPulley();
-        }
-    }
+	
+	
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (!Handle) return;
-        Vector3 Pos = Handle.transform.localPosition;
-        Pos.y = -MaxLength * PulleyPosition;
-        Handle.transform.localPosition = Pos;
+	/// <summary>
+	/// Properties ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region properties
 
-        if (!wire || !WireTopAnchor || !WireBottomAnchor) return; //This won't update this bit if any of these are unassigned
-        wire.SetPosition(0, WireTopAnchor.position);
-        wire.SetPosition(1, WireBottomAnchor.position);
+	//Unity
+	public GameObject			_HomingTarget;
+	public GameObject			_HandleObject;
+	public Transform			_HandlePosition;
+	public Transform			_TopAchor;
+	public Transform			_LineEndAnchor;
+	public AudioSource			_AudioSource;
 
-       
-    }
+	[Header("Visuals and effects")]
+	public LineRenderer			_Line;
 
-    public void DeployPulley()
-    {
-        Moving = true;
-        audioSource.Play();
-        StartCoroutine(SetPulleyPosition(1f));
-    }
 
-    public void RetractPulley()
-    {
-        Moving = true;
-        Handle.GetComponent<Collider>().enabled = false ;
-        HomingTarget.SetActive(false);
-        audioSource.Play();
-        StartCoroutine(SetPulleyPosition(0f));
-    }
+	//Stats
+	public bool	_isDeployedOnStart = true;
+	public float	_reelSpeed;
+	public float	_maxLength;
 
-    IEnumerator SetPulleyPosition (float Target)
-    {
-        //Check if position is greater or less than target
-        if (Target > PulleyPosition)
-        {
-            while (PulleyPosition < Target)
-            {
-                PulleyPosition += Time.deltaTime * Speed;
-                yield return null;
-                if (PulleyPosition >= Target)
-                {
-                    PulleyPosition = Target;
-                    audioSource.Stop();
-                    Moving = false;
-                    Handle.GetComponent<Collider>().enabled = true;
-                    HomingTarget.SetActive(true);
-                    break;
-                }
-            }
-        } 
-        
-        else if (Target < PulleyPosition)
-        {
-            while (PulleyPosition > Target)
-            {
-                PulleyPosition -= Time.deltaTime * Speed;
-                yield return null;
-                if (PulleyPosition <= Target)
-                {
-                    PulleyPosition = Target;
-                    audioSource.Stop();
-                    Moving = false;
-                    StartCoroutine(ResetPulley(2f));
-                    break;
-                }
-            }
-        }
-        yield return null;
-    }
+	// Trackers
+	public bool		_isMoving { get; protected set; }
+	[Range(0, 1)] 
+	public float		_currentLengthPercentage = 1;
 
-    IEnumerator ResetPulley (float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        DeployPulley();
-    }
+	#endregion
+
+
+	void Start () {
+		//Checks if is playing because this updates in editor as well
+		if (Application.isPlaying && _isDeployedOnStart)
+		{
+			DeployOrRetractHandle(true);
+		}
+	}
+
+	// Also called in editor mode.
+	void Update () {
+		if (!_HandleObject) return; //Only execute if assigned to avoid null pointers
+
+		//Set handle object to place in scene corresponding to current line length
+		Vector3 position = _HandleObject.transform.localPosition;
+		position.y = -_maxLength * _currentLengthPercentage;
+		_HandleObject.transform.localPosition = position;
+
+		//Ensures two points of line are between handle and base.
+		if (!_Line || !_TopAchor || !_LineEndAnchor) return;
+		_Line.SetPosition(0, _TopAchor.position);
+		_Line.SetPosition(1, _LineEndAnchor.position);
+	}
+
+	//Called when the handle is going down.
+	public void DeployOrRetractHandle (bool isDeploying) {
+		_isMoving = true;
+		_AudioSource.Play();
+
+		//If retracting, ensure collision is disabled to avoid strange interacitons.
+		if (!isDeploying)
+		{
+			_HandleObject.GetComponent<Collider>().enabled = false;
+			_HomingTarget.SetActive(false);
+		}
+
+		//Call coroutine to move handle to full extent or base.
+		StartCoroutine(SetHandlePosition(isDeploying ? 1 : 0));
+	}
+
+	IEnumerator SetHandlePosition ( float targetExtentPercentage ) {
+
+		while (_currentLengthPercentage != targetExtentPercentage)
+		{
+			//Increase or decrease length of pulley towards target length. When they are equal, the loop will end.
+			_currentLengthPercentage = Mathf.MoveTowards(_currentLengthPercentage, targetExtentPercentage, Time.deltaTime * _reelSpeed);
+
+			yield return null; //Waits until next update.
+		}
+
+		_AudioSource.Stop();
+		_isMoving = false;
+
+		//If now fully extended
+		if(targetExtentPercentage == 1)
+		{
+			_HandleObject.GetComponent<Collider>().enabled = true;
+			_HomingTarget.SetActive(true);
+		}
+		//If now fully retracted
+		else if (targetExtentPercentage == 0)
+		{
+			StartCoroutine(ResetHandleAfterDelay(2f));
+		}
+
+		////If extending
+		//if (targetExtentPercentage > _currentLengthPercentage)
+		//{
+		//	while (_currentLengthPercentage < targetExtentPercentage)
+		//	{
+		//		_currentLengthPercentage += Time.deltaTime * _reelSpeed;
+		//		yield return null;
+		//		if (_currentLengthPercentage >= targetExtentPercentage)
+		//		{
+		//			_currentLengthPercentage = targetExtentPercentage;
+		//			_AudioSource.Stop();
+		//			_isMoving = false;
+		//			_HandleObject.GetComponent<Collider>().enabled = true;
+		//			_HomingTarget.SetActive(true);
+		//			break;
+		//		}
+		//	}
+		//}
+
+		////If Retracting
+		//else if (targetExtentPercentage < _currentLengthPercentage)
+		//{
+		//	while (_currentLengthPercentage > targetExtentPercentage)
+		//	{
+		//		_currentLengthPercentage -= Time.deltaTime * _reelSpeed;
+		//		yield return null;
+		//		if (_currentLengthPercentage <= targetExtentPercentage)
+		//		{
+		//			_currentLengthPercentage = targetExtentPercentage;
+		//			_AudioSource.Stop();
+		//			_isMoving = false;
+		//			StartCoroutine(ResetPulley(2f));
+		//			break;
+		//		}
+		//	}
+		//}
+	}
+
+	IEnumerator ResetHandleAfterDelay ( float delay ) {
+		yield return new WaitForSeconds(delay);
+		DeployOrRetractHandle(true);
+	}
 }

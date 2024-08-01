@@ -89,7 +89,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		ReadyScript();
 	}
 
-	private void FixedUpdate () {
+	private void Update () {
 		MoveOnUpreel();
 	}
 
@@ -191,13 +191,14 @@ public class S_Interaction_Pathers : MonoBehaviour
 			//Set same animation as when on a zipline.
 			_CharacterAnimator.SetInteger("Action", 9);
 			_CharacterAnimator.SetTrigger("ChangedState");
+			_Actions._ActionDefault.SwitchSkin(true);
 
 			_speedBeforeUpreel = _PlayerPhys._previousHorizontalSpeeds[1];
 
 			_PlayerPhys._listOfCanControl.Add(false); //Removes ability to control velocity until empty
 			_PlayerPhys._isGravityOn = false;
 
-			_currentUpreel.RetractPulley(); //This method is in a script on the upreel rather than the player
+			_currentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
 			_Actions._ActionDefault.StartAction();
 		}
 	}
@@ -208,45 +209,68 @@ public class S_Interaction_Pathers : MonoBehaviour
 		if (_currentUpreel != null)
 		{
 			//If the upreel is moving
-			if (_currentUpreel.Moving)
+			if (_currentUpreel._isMoving)
 			{
 				//Deactives player control and freezes movemnt to keep them in line with the upreel.
-
-				_PlayerPhys._RB.velocity = Vector3.zero;
+				_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
 				_Input.LockInputForAWhile(0f, false, Vector3.zero);
 
 				//Moves the player to the position of the Upreel
 				Vector3 HandPos = transform.position - _HandGripTransform.position;
 				HandPos += (_currentUpreel.transform.forward * _offsetUpreel_);
-				_PlayerPhys.SetPlayerPosition(_currentUpreel.HandleGripPos.position + HandPos);
-				_MainSkin.rotation = Quaternion.LookRotation(-_currentUpreel.transform.forward, _currentUpreel.transform.up);
+				_PlayerPhys.SetPlayerPosition(_currentUpreel._HandlePosition.position + HandPos);
+
+				_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_currentUpreel.transform.forward, Vector2.zero, _currentUpreel.transform.up);
 			}
 			//On finished
 			else
 			{
-				//Restores control but prevents input for a moment
-				_Input.LockInputForAWhile(20f, false, _MainSkin.forward);
-				_PlayerPhys._listOfCanControl.RemoveAt(0);
-				_PlayerPhys._isGravityOn = true;
-
-				_Actions._isAirDashAvailables = true;
-
-				//Enter standard animation
-				_CharacterAnimator.SetInteger("Action", 0);
-
-				StartCoroutine(ExitPulley(_currentUpreel.transform));
-
-				//Ends updates on this until a new upreel is set.
-				_currentUpreel = null;
+				StartCoroutine(EndUpreel(_currentUpreel.transform));
 			}
 		}
 	}
 
-	//When leaving pulley, player is bounced up and forwards after a momment, allowing them to clear the wall without issue.
-	IEnumerator ExitPulley ( Transform Upreel ) {
-		_PlayerPhys.SetBothVelocities(Upreel.up * 60, new Vector2(1, 0)); //Apply force up relative to upreel (therefore the direction the player was moving).
+	private void EndUpreel () {
+		//Restores control but prevents input for a moment
+		_Input.LockInputForAWhile(30f, false, _MainSkin.forward);
+		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
-		yield return new WaitForSeconds(.2f);
+
+		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys.SetEnvironmentalVelocity(new Vector3(0, _currentUpreel.transform.up.y * 70, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
+
+		_Actions._isAirDashAvailables = true;
+
+		//Enter standard animation
+		_CharacterAnimator.SetInteger("Action", 0);
+
+		StartCoroutine(EndUpreel(_currentUpreel.transform));
+
+		//Ends updates on this until a new upreel is set.
+		_currentUpreel = null;
+	}
+
+	//When leaving pulley, player is bounced up and forwards after a momment, allowing them to clear the wall without issue.
+	IEnumerator EndUpreel ( Transform Upreel ) {
+		//_PlayerPhys.SetBothVelocities(Upreel.up * 60, new Vector2(1, 0)); //Apply force up relative to upreel (therefore the direction the player was moving).
+
+		//Restores control but prevents input for a moment
+		_Input.LockInputForAWhile(30f, false, _MainSkin.forward);
+		_PlayerPhys._listOfCanControl.RemoveAt(0);
+
+
+		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys.SetEnvironmentalVelocity(new Vector3(0, Upreel.up.y * 70, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
+
+		_Actions._isAirDashAvailables = true;
+
+		//Enter standard animation
+		_CharacterAnimator.SetInteger("Action", 0);
+
+		//Ends updates on this until a new upreel is set.
+		_currentUpreel = null;
+
+		yield return new WaitForSeconds(0.8f);
 
 		//Apply new force once past the wall to keep movement going.
 		Vector3 forwardDirection = -Upreel.forward;

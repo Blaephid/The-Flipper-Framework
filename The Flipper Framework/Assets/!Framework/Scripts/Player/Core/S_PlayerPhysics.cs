@@ -1208,6 +1208,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		_resetEnvironmentalOnAirAction = willRemoveOnAirAction;
 
 		void HandleDeceleration ( S_Enums.ChangeLockState whatCase) {
+			if (willRemoveOnAirAction && willRemoveOnGrounded) { whatCase = S_Enums.ChangeLockState.Lock; }
+
 			//Due to deceleration working with core velocity at different speeds. Sometimes when environmental velocity is set, it will prevent deceleration because that would make the movement path inconsistent (as core velocity won't always be the same before environmental is added).
 			switch (whatCase)
 			{
