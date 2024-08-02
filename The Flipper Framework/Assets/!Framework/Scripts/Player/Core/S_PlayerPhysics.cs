@@ -283,7 +283,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//Sets public variables relevant to other calculations 
-	void Update () {
+	void LateUpdate () {
 		_playerPos = transform.position;
 
 		_frameCount++;
@@ -1139,6 +1139,9 @@ public class S_PlayerPhysics : MonoBehaviour
 			//If changed to be on the ground when was in the air
 			else if (!_isGrounded && _isGrounded != value)
 			{
+
+				_timeOnGround = 0;
+
 				//If hasn't completed aligning to face upwards when was upside down, then end that prematurely and retern turning.
 				if (_isUpsideDown)
 				{
@@ -1174,7 +1177,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (shouldPrintForce) Debug.Log("Set Core FORCE");
 	}
 	//This will change the magnitude of the local lateral velocity vector in ControlledVelocity but will not change the direction.
-	public void SetLateralSpeed ( float speed,  bool shouldPrintForce = false ) {
+	public void SetLateralSpeed ( float speed,  bool shouldPrintForce = true ) {
 		_externalRunningSpeed = speed; //This will be set to negative at the end of the frame, but if changed here will be applied in HandleControlledVelocity (NOT SetTotalVelocity). This is because this should only change running speed.
 		if (shouldPrintForce) Debug.Log("Set Core SPEED");
 	}
@@ -1194,7 +1197,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Environmental. Caused by objects in the world, but can b removed by others.
 	public void SetEnvironmentalVelocity ( Vector3 force, bool willRemoveOnGrounded, bool willRemoveOnAirAction,
-		S_Enums.ChangeLockState whatToDoWithDeceleration = S_Enums.ChangeLockState.Ignore, bool shouldPrintForce = true) {
+		S_Enums.ChangeLockState whatToDoWithDeceleration = S_Enums.ChangeLockState.Ignore, bool shouldPrintForce = false) {
 
 		_environmentalVelocity = force;
 

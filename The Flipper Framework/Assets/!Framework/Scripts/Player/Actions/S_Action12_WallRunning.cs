@@ -17,10 +17,10 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private S_PlayerPhysics		_PlayerPhys;
 	private S_PlayerInput		_Input;
 	private S_ActionManager		_Actions;
-	private S_Control_SoundsPlayer		_Sounds;
+	private S_Control_SoundsPlayer	_Sounds;
 	private S_Handler_HomingAttack	_HomingControl;
 	private S_Handler_Camera		_CamHandler;
-	private S_Handler_WallRunning		_Control;
+	private S_Handler_WallRunning		_WallHandler;
 
 	private GameObject		_JumpBall;
 	private GameObject		_DropShadow;
@@ -32,9 +32,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private Transform             _MainSkin;
 	private Transform		_CharacterTransform;
 	#endregion
-
-	//General
-	#region General Properties
 
 	//Stats
 	#region Stats
@@ -79,8 +76,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	[HideInInspector]
 	public Vector3      _jumpAngle;
 	#endregion
-
-	#endregion
 	#endregion
 
 	/// <summary>
@@ -111,8 +106,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	void Update () {
 		//Counter for how long on the wall
 		_counter += Time.deltaTime;
-
-		//Debug.Log(ClimbingSpeed);
 
 		if (_isWall)
 		{
@@ -168,9 +161,17 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		bool willChangeAction = false;
-		willChangeAction = true;
-		return willChangeAction;
+		if (enabled) return false;
+
+		_WallHandler._isScanning = true;
+
+		if (_WallHandler.TryWallClimb()) { return true; }
+
+		//If detecting a wall to the side
+		if (_WallHandler.tryWallRunLeft()) { return true; }
+		if (_WallHandler.tryWallRunRight()) {return true; }
+		
+		return false;
 	}
 
 	public void StartAction () {
@@ -218,7 +219,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_Control = GetComponent<S_Handler_WallRunning>();
+		_WallHandler = GetComponent<S_Handler_WallRunning>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;
@@ -245,8 +246,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	public void InitialEvents ( bool Climb, RaycastHit wallHit, bool wallRight, float frontDistance = 1f ) {
 		_isWall = true;
-
-		//Debug.Log("wallrunning");
 
 		//Universal varaibles
 		_isSwitchingToGround = false;
@@ -702,7 +701,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	void ExitWall ( bool immediately ) {
-		_Control.bannedWall = _CurrentWall;
+		_WallHandler._BannedWall = _CurrentWall;
 
 		//Actions.SkidPressed = false;
 

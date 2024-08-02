@@ -113,7 +113,6 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 		//Ends updates on this until a new upreel is set.
 		_currentUpreel = null;
-		Debug.Log("Disable Upreel");
 
 		_Actions._ActionDefault.StartAction();
 	}
@@ -209,7 +208,6 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 		forwardDirection.y = 0;
 
 		float newSpeed = Mathf.Max(_upreelSpeedKeptAfter_ * _speedBeforeUpreel, _minimumSpeedCarried_);
-		Debug.Log("Push forwards with " +newSpeed);
 
 		_PlayerPhys.SetCoreVelocity(forwardDirection * newSpeed, "Overwrite");
 	}

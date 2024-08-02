@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEditor;
 
 public class S_Handler_HealthAndHurt : MonoBehaviour
 {
@@ -363,7 +364,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private void TryBonk () {
 
 		Vector3 movingDirection = _PlayerPhys._RB.velocity.normalized; //Project on plane makes direction relevant to transform so it will only check in front of player, not below or above
-		float distance = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * Time.deltaTime * 2.5f, 2); //Uses timme.delta time to check where the character should probably be next frame.
+		float distance = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * Time.fixedDeltaTime + 1, 2); //Uses timme.delta time to check where the character should probably be next frame.
 		Vector3 sphereStartOffset = transform.up * (_CharacterCapsule.height / 2); // Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
 
 		//Checks for a wall, and if the direction of it is similar to movement direction, ready bonk.
@@ -399,7 +400,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 				if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
 
-					_PlayerPhys.SetBothVelocities(Vector3.zero, new Vector2(1, 0));
+					_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
 				_PlayerPhys._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
 				_MainSkin.forward = rememberDirection;
 			}

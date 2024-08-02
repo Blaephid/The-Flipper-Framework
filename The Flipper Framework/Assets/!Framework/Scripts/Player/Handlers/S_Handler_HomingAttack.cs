@@ -95,14 +95,6 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private void OnEnable () {
 		ReadyScript();
 	}
-	private void OnDisable () {
-
-	}
-
-	// Update is called once per frame
-	void Update () {
-	}
-
 
 	#endregion
 

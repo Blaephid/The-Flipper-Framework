@@ -2585,21 +2585,21 @@ MonoBehaviour:
   RailPosition:
     offsetRail: 2
     offsetZip: -6
-    upreel: 0.3
   StartRailPosition:
     offsetRail: 2
     offsetZip: -6
-    upreel: 0.3
   ObjectInteractions:
-    UpreelSpeedKeptAfter: 0.5
+    upreelSpeedKeptAfter: 0.3
+    minimumSpeedCarried: 30
   StartObjectInteractions:
-    UpreelSpeedKeptAfter: 0.5
+    upreelSpeedKeptAfter: 0.3
+    minimumSpeedCarried: 30
   WallRunningStats:
     wallCheckDistance: 1.2
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 1
     wallDuration: 0
     scrapeModifier: 1
     climbModifier: 1

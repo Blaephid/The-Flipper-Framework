@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor;
 
 public class S_Action04_Hurt : MonoBehaviour, IMainAction
 {
@@ -117,7 +118,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		Vector3 boxSize = new Vector3(_CharacterCapsule.radius, _CharacterCapsule.height, _CharacterCapsule.radius); //Based on player collider size
 		float checkDistance = _PlayerPhys._previousHorizontalSpeeds[3] * Time.deltaTime * 3; //Direction and speed are obtained from previous frames because there has now been a collision that may have affected them this frame.
 		Vector3 checkDirection = _PlayerPhys._previousVelocities[3].normalized;
-
+		
+		//If going to keep moving in direction
 		//Knockback direction will have been set to zero in the hurt handler if not resetting speed on hit. If there isn't a solid object infront, then dont bounce back.
 		if (_knockbackDirection == Vector3.zero && !Physics.BoxCast(transform.position, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
 		{
@@ -134,10 +136,10 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 			_lockInputToThis = _MainSkin.forward;
 		}
-		//Speed should be reset.
+		//If being knocked back and Speed should be reset.
 		else
 		{
-			Vector3 movePlacement = -_PlayerPhys._previousVelocities[3] * Time.deltaTime * 2;
+			Vector3 movePlacement = -_PlayerPhys._previousVelocities[3] * Time.deltaTime * 0.5f;
 			movePlacement += transform.up;
 			_PlayerPhys.SetPlayerPosition(transform.position + movePlacement); //Places character back the way they were moving to avoid weird collisions.
 
@@ -184,7 +186,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 			_faceDirection = -newSpeed;
 
-			_PlayerPhys.SetBothVelocities(newSpeed, new Vector2(1f, 0f));
+			_PlayerPhys.SetCoreVelocity(Vector3.zero, "Overwrite");
+			_PlayerPhys.SetEnvironmentalVelocity(newSpeed, true, true);
 
 			_lockInputToThis = Vector3.zero; //Locks input as nothing being input, preventing skidding against the knockback until unlocked.
 		}
