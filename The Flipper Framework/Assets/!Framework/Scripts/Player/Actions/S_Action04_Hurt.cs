@@ -241,7 +241,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 				newVelocity.y = keepY;
 				newVelocity = transform.TransformDirection(newVelocity);
 
-				_PlayerPhys.SetCoreVelocity(newVelocity, false);
+				_PlayerPhys.SetCoreVelocity(newVelocity);
 			}
 		}
 	}

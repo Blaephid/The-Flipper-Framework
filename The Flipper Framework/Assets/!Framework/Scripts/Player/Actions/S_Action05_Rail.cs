@@ -275,7 +275,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			switch (_whatKindOfRail)
 			{
 				case S_Interaction_Pathers.PathTypes.zipline:
-					_PlayerPhys.SetCoreVelocity(_sampleForwards * _grindingSpeed, true);  //Ensure player carries on momentum
+					_PlayerPhys.SetCoreVelocity(_sampleForwards * _grindingSpeed, "Overwrite");  //Ensure player carries on momentum
 					_PlayerPhys._groundNormal = Vector3.up; // Fix rotation
 
 					//After a delay, restore zipline collisions and physics

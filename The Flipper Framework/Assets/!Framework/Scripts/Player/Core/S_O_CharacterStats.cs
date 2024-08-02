@@ -1406,7 +1406,6 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			offsetRail = 2f,
 			offsetZip = -6f,
-			upreel = 0.3f
 		};
 	}
 
@@ -1418,8 +1417,6 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    offsetRail;
 		[Tooltip("Surface: How much below the the spline the player should be to be visibly holding onto the handle.")]
 		public float    offsetZip;
-		[Tooltip("Surface: How much below the the handle the player should be to be visibly holding onto it.")]
-		public float    upreel;
 	}
 	#endregion
 
@@ -1430,7 +1427,8 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucInteractions SetStrucInteractions () {
 		return new StrucInteractions
 		{
-			UpreelSpeedKeptAfter = 0.5f,
+			upreelSpeedKeptAfter = 0.3f,
+			minimumSpeedCarried = 30,
 		};
 	}
 
@@ -1439,7 +1437,8 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucInteractions
 	{
 		[Range(0,1)]
-		public float UpreelSpeedKeptAfter;
+		public float upreelSpeedKeptAfter;
+		public float minimumSpeedCarried;
 
 	}
 	#endregion

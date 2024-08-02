@@ -275,7 +275,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		//If the new total force is higher than current speed, then apply it. Uses sqrs because it's faster with comparing magnitudes
 		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerPhys._horizontalSpeedMagnitude + _charge * 0.1f, 2))
 		{
-			_PlayerPhys.SetCoreVelocity(force, true);
+			_PlayerPhys.SetCoreVelocity(force, "Overwrite");
 			_CamHandler._HedgeCam.ChangeHeight(18, 25f); //Ensures camera will go behind the player as they launch forwards from falling.
 		}
 		//Else, just add force to increase total speed. This will also happen if the new speed it only slightly more than the movement speed.

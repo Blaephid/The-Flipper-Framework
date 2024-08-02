@@ -271,7 +271,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 		//Take some horizontal speed on jump and remove vertical speed to ensure jump is an upwards force.
 		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._RB.velocity.y, 2), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
-		_PlayerPhys.SetCoreVelocity(newVel, true, false);
+		_PlayerPhys.SetCoreVelocity(newVel, "Overwrite");
 
 		//Add particle effect during jump
 		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
@@ -303,13 +303,13 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Jump move at angle
 			if (_counter < _slopedJumpDuration && _jumpSlopeSpeed > 0)
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f * modifierThisFrame), false);
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f * modifierThisFrame), false); //Extra speed to ballance out direction
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f * modifierThisFrame));
+				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f * modifierThisFrame)); //Extra speed to ballance out direction
 			}
 			//Move straight up in world.
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed) * modifierThisFrame, false);
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed) * modifierThisFrame);
 			}
 		}
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.

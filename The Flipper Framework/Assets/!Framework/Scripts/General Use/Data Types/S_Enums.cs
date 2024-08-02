@@ -20,7 +20,8 @@ public class S_Enums
 		Path = 9,
 		JumpDash = 10,
 		WallRunning = 11,
-		Hovering = 12
+		Hovering = 12,
+		Upreel = 13,
 	}
 
 	public enum PlayerControlledStates {
@@ -40,6 +41,7 @@ public class S_Enums
 		Path,
 		WallRunning,
 		Hovering,
+		Upreel
 	}
 
 	public enum SubPlayerStates {

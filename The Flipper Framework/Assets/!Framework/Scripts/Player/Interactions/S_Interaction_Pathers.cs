@@ -22,6 +22,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Action05_Rail       _RailAction;
+	private S_Action14_Upreel	_UpreelAction;
 
 	[HideInInspector]
 	public S_Trigger_CineCamera   _currentExternalCamera;
@@ -30,6 +31,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private Collider    _characterCapsule;
 	private Animator    _CharacterAnimator;
 	private Transform   _MainSkin;
+	[HideInInspector]
+	public Transform   _FeetTransform;
 
 	//Path
 	[HideInInspector]
@@ -37,19 +40,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 	[HideInInspector]
 	public CurveSample            _RailSample;
 
-	//Upreel
-	[HideInInspector]
-	public S_Upreel               _currentUpreel;
-	private Transform             _HandGripTransform;
-	[HideInInspector]
-	public Transform              _FeetTransform;
-	#endregion
-
-
-	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
-	#region Stats
-	private float                 _offsetUpreel_ = 1.5f;
-	private float                 _UpreelSpeedKeptAfter_;
 	#endregion
 
 	// Trackers
@@ -90,7 +80,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	private void Update () {
-		MoveOnUpreel();
+		
 	}
 
 	public void EventTriggerEnter ( Collider col ) {
@@ -108,11 +98,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				break;
 
 			case "Upreel":
-				//If not already on an upreel
-				if (_currentUpreel == null)
-				{
-					SetOnUpreel(col);
-				}
+				_UpreelAction.StartUpreel(col);
 				break;
 
 			case "PathTrigger":
@@ -177,106 +163,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 			yield return new WaitForEndOfFrame();
 			_canGrindOnRail = false; //Set true in the grinding action script whenever attempt action is called. This will mean currently in an action that can enter grind rails. 
 		}
-	}
-
-	//Readies all the stats needed to move up an upreel over the next few updates.
-	private void SetOnUpreel ( Collider col ) {
-		//Activates the upreel to start retracting. See PulleyActor class for more.
-		//Sets currentUpreel. See FixedUpdate() above for more.
-		_currentUpreel = col.gameObject.GetComponentInParent<S_Upreel>();
-
-		//If the object has the necessary scripts
-		if (_currentUpreel != null)
-		{
-			//Set same animation as when on a zipline.
-			_CharacterAnimator.SetInteger("Action", 9);
-			_CharacterAnimator.SetTrigger("ChangedState");
-			_Actions._ActionDefault.SwitchSkin(true);
-
-			_speedBeforeUpreel = _PlayerPhys._previousHorizontalSpeeds[1];
-
-			_PlayerPhys._listOfCanControl.Add(false); //Removes ability to control velocity until empty
-			_PlayerPhys._isGravityOn = false;
-
-			_currentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
-			_Actions._ActionDefault.StartAction();
-		}
-	}
-
-	//Handles player movement up an upreel when on it.
-	private void MoveOnUpreel () {
-		//Updates if the player is currently on an Upreel
-		if (_currentUpreel != null)
-		{
-			//If the upreel is moving
-			if (_currentUpreel._isMoving)
-			{
-				//Deactives player control and freezes movemnt to keep them in line with the upreel.
-				_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
-				_Input.LockInputForAWhile(0f, false, Vector3.zero);
-
-				//Moves the player to the position of the Upreel
-				Vector3 HandPos = transform.position - _HandGripTransform.position;
-				HandPos += (_currentUpreel.transform.forward * _offsetUpreel_);
-				_PlayerPhys.SetPlayerPosition(_currentUpreel._HandlePosition.position + HandPos);
-
-				_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_currentUpreel.transform.forward, Vector2.zero, _currentUpreel.transform.up);
-			}
-			//On finished
-			else
-			{
-				StartCoroutine(EndUpreel(_currentUpreel.transform));
-			}
-		}
-	}
-
-	private void EndUpreel () {
-		//Restores control but prevents input for a moment
-		_Input.LockInputForAWhile(30f, false, _MainSkin.forward);
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
-
-
-		_PlayerPhys._isGravityOn = true;
-		_PlayerPhys.SetEnvironmentalVelocity(new Vector3(0, _currentUpreel.transform.up.y * 70, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
-
-		_Actions._isAirDashAvailables = true;
-
-		//Enter standard animation
-		_CharacterAnimator.SetInteger("Action", 0);
-
-		StartCoroutine(EndUpreel(_currentUpreel.transform));
-
-		//Ends updates on this until a new upreel is set.
-		_currentUpreel = null;
-	}
-
-	//When leaving pulley, player is bounced up and forwards after a momment, allowing them to clear the wall without issue.
-	IEnumerator EndUpreel ( Transform Upreel ) {
-		//_PlayerPhys.SetBothVelocities(Upreel.up * 60, new Vector2(1, 0)); //Apply force up relative to upreel (therefore the direction the player was moving).
-
-		//Restores control but prevents input for a moment
-		_Input.LockInputForAWhile(30f, false, _MainSkin.forward);
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
-
-
-		_PlayerPhys._isGravityOn = true;
-		_PlayerPhys.SetEnvironmentalVelocity(new Vector3(0, Upreel.up.y * 70, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
-
-		_Actions._isAirDashAvailables = true;
-
-		//Enter standard animation
-		_CharacterAnimator.SetInteger("Action", 0);
-
-		//Ends updates on this until a new upreel is set.
-		_currentUpreel = null;
-
-		yield return new WaitForSeconds(0.8f);
-
-		//Apply new force once past the wall to keep movement going.
-		Vector3 forwardDirection = -Upreel.forward;
-		forwardDirection.y = 0;
-		//The speed forwards is a minimum of 15, but will increase to previous speed based on percentage set as an external stat.
-		_PlayerPhys.AddCoreVelocity(forwardDirection * Mathf.Max(_UpreelSpeedKeptAfter_ * _speedBeforeUpreel, 15));
 	}
 
 	//Readies stats and activates the grinding action when on a rail. Can be called by OnTriggerEnter and OnCollisionEnter, assigning parameters appropriately.
@@ -494,18 +380,17 @@ public class S_Interaction_Pathers : MonoBehaviour
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Actions = _Tools._ActionManager;
 		_RailAction = _Actions._ObjectForActions.GetComponent<S_Action05_Rail>();
+		_UpreelAction = _Actions._ObjectForActions.GetComponent<S_Action14_Upreel>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_characterCapsule = _Tools.CharacterCapsule.GetComponent<Collider>();
-		_HandGripTransform = _Tools.HandGripPoint;
 		_FeetTransform = _Tools.FeetPoint;
 		_MainSkin = _Tools.MainSkin;
 	}
 
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
-		_offsetUpreel_ = _Tools.Stats.RailPosition.upreel;
-		_UpreelSpeedKeptAfter_ = _Tools.Stats.ObjectInteractions.UpreelSpeedKeptAfter;
+		
 	}
 	#endregion
 

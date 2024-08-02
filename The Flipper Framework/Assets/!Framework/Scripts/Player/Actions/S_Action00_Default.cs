@@ -99,8 +99,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	public void StartAction () {
 		if(enabled) { return; } //Because this method can be called when this state is already active (object interactions), end early if so.
 
-		ReadyAction();
-
 		//Set private
 		_isCoyoteInEffect = _PlayerPhys._isGrounded;
 

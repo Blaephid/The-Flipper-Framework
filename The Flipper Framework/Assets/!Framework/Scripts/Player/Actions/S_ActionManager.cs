@@ -283,6 +283,9 @@ public class S_ActionManager : MonoBehaviour
 			case S_Enums.PlayerSituationalStates.Hovering:
 				_ObjectForActions.TryGetComponent(out S_Action13_Hovering hov);
 				return hov;
+			case S_Enums.PlayerSituationalStates.Upreel:
+				_ObjectForActions.TryGetComponent(out S_Action14_Upreel up);
+				return up;
 		}
 		return null;
 	}
@@ -420,6 +423,15 @@ public class S_ActionManager : MonoBehaviour
 				else
 				{
 					return _ObjectForActions.AddComponent<S_Action13_Hovering>();
+				}
+			case S_Enums.PrimaryPlayerStates.Upreel:
+				if (_ObjectForActions.TryGetComponent(out S_Action14_Upreel upreelAction))
+				{
+					return upreelAction;
+				}
+				else
+				{
+					return _ObjectForActions.AddComponent<S_Action14_Upreel>();
 				}
 		}
 		return null;
@@ -719,6 +731,9 @@ public class ActionManagerEditor : Editor
 			case S_Enums.PlayerSituationalStates.Hurt:
 				AddActionToList(S_Enums.PrimaryPlayerStates.Hurt);
 				break;
+			case S_Enums.PlayerSituationalStates.Upreel:
+				AddActionToList(S_Enums.PrimaryPlayerStates.Upreel);
+				break;
 		}
 	}
 
@@ -791,6 +806,9 @@ public class ActionManagerEditor : Editor
 				break;
 			case S_Enums.PrimaryPlayerStates.Hovering:
 				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.Hovering);
+				break;
+			case S_Enums.PrimaryPlayerStates.Upreel:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.Upreel);
 				break;
 
 		}

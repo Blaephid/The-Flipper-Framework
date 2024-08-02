@@ -244,8 +244,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_distanceFromTarget = Vector3.Distance(_Target.position, transform.position);
 		float thisTurn =  _homingTurnSpeed_;
 
-		Debug.DrawRay(transform.position, newDirection, Color.yellow, 5f);
-
 		//Set Player location when close enough, for precision.
 		if (_distanceFromTarget < (_Actions._listOfSpeedOnPaths[0] * Time.deltaTime))
 		{
@@ -297,8 +295,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			}
 		}
 		_currentDirection = Vector3.RotateTowards(_currentDirection, newDirection, Mathf.Deg2Rad * thisTurn, 0.0f);
-
-		Debug.DrawRay(_Target.position, Vector3.up * 5, Color.red, 10f);
 
 
 		_PlayerPhys.SetBothVelocities(_currentDirection * _Actions._listOfSpeedOnPaths[0], new Vector2 (1, 0)); //Move in direction but remove all environmental velocity.
@@ -421,7 +417,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			faceDirection = Vector3.Lerp(faceDirection, wallNormal, 0.5f);
 		}
 
-		_PlayerPhys.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0), false);
+		_PlayerPhys.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0));
 		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
 
 		//Bounce backwards and upwards 

@@ -205,7 +205,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		float stillForce = _spinDashStillForce_ * _speedLossByTime_.Evaluate(_counter);
 		if (_PlayerPhys._horizontalSpeedMagnitude > 20)
 		{
-			_PlayerPhys.AddCoreVelocity(- _PlayerPhys._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerPhys._horizontalSpeedMagnitude), false);
+			_PlayerPhys.AddCoreVelocity(- _PlayerPhys._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerPhys._horizontalSpeedMagnitude));
 		}
 	}
 
@@ -256,7 +256,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed);
 			addForce *= newSpeed; //Adds speed to direction to get the force
 
-			_PlayerPhys.AddCoreVelocity(addForce, false);
+			_PlayerPhys.AddCoreVelocity(addForce);
 
 			//Adding velocity is more natural/realistic, but for accuracy in aiming, there is also a rotation towards the new direction.
 			Vector3 newDir = _PlayerPhys._RB.velocity;
@@ -265,7 +265,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			dif *= _turnAmountByAngle_.Evaluate(dif);
 
 			newDir = Vector3.RotateTowards(newDir, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
-			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._currentRunningSpeed, false);
+			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._currentRunningSpeed);
 
 			_CharacterAnimator.SetFloat("GroundSpeed", newSpeed);
 

@@ -284,7 +284,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Sets public variables relevant to other calculations 
 	void Update () {
-		Debug.DrawRay(transform.position, Vector3.forward * 6, Color.green, 5f);
 		_playerPos = transform.position;
 
 		_frameCount++;
@@ -487,7 +486,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 
 			//If environmental velocity is in use, decrease as well to track the collisions.
-			if (_environmentalVelocity.sqrMagnitude > 10)
+			if (_environmentalVelocity.sqrMagnitude > 3)
 			{
 				if (_environmentalVelocity.sqrMagnitude > vectorDifference.sqrMagnitude)
 				{
@@ -1164,28 +1163,27 @@ public class S_PlayerPhysics : MonoBehaviour
 	public void AddCoreVelocity ( Vector3 force, bool shouldPrintForce = false ) {
 
 		_listOfCoreVelocityToAdd.Add(force);
-		if (shouldPrintForce) Debug.Log("ADD Core FORCE  " + force);
+		if (shouldPrintForce) Debug.Log("ADD Core FORCE  ");
 	}
-	public void SetCoreVelocity ( Vector3 force, bool willOverwrite = true, bool shouldPrintForce = false ) {
-		if (_isOverwritingCoreVelocity && !willOverwrite) { return; } //If a previous call set isoverwriting to true, then if this isn't doing the same it will be ignored.
+	public void SetCoreVelocity ( Vector3 force, string willOverwrite = "", bool shouldPrintForce = false ) {
+		if (_isOverwritingCoreVelocity && willOverwrite == "") { return; } //If a previous call set isoverwriting to true, then if this isn't doing the same it will be ignored.
 
-		if (willOverwrite) { _isOverwritingCoreVelocity = true; } //If true, core velocity will be fully replaced, including additions. Sets to true rather than same bool, because setting to false would overwrite this.
+		_isOverwritingCoreVelocity = willOverwrite == "Overwrite"; //If true, core velocity will be fully replaced, including additions. Sets to true rather than same bool, because setting to false would overwrite this.
 
-		_externalCoreVelocity = force == Vector3.zero ? new Vector3(0, 0.1f, 0) : force; //Will not use Vector3.zero because that upsets the check seeing if this is not default(Vector3). To avoid that, use a tiny velocity.
+		_externalCoreVelocity = force == Vector3.zero ? new Vector3(0, 0.02f, 0) : force; //Will not use Vector3.zero because that upsets the check seeing if this is not default(Vector3). To avoid that, use a tiny velocity.
 		if (shouldPrintForce) Debug.Log("Set Core FORCE");
 	}
 	//This will change the magnitude of the local lateral velocity vector in ControlledVelocity but will not change the direction.
-	public void SetLateralSpeed ( float speed, bool shouldPrintForce = false ) {
+	public void SetLateralSpeed ( float speed,  bool shouldPrintForce = false ) {
 		_externalRunningSpeed = speed; //This will be set to negative at the end of the frame, but if changed here will be applied in HandleControlledVelocity (NOT SetTotalVelocity). This is because this should only change running speed.
 		if (shouldPrintForce) Debug.Log("Set Core SPEED");
 	}
-	public void SetBothVelocities ( Vector3 force, Vector2 split, bool shouldPrintForce = false ) {
-
-		force = force == Vector3.zero ? new Vector3(0, 0.1f, 0) : force; //Because velocity is overwritten if external is not set to default(vector3), see SetTotalVelocity, if trying to set to zero, catch and set as a tiny velocity instead.
-
-		_externalCoreVelocity = force * split.x;
+	public void SetBothVelocities ( Vector3 force, Vector2 split, string willOverwrite = "", bool shouldPrintForce = false ) {
 		_environmentalVelocity = force * split.y;
-		if (shouldPrintForce) Debug.Log("Set Total FORCE");
+
+		SetCoreVelocity(force * split.x, willOverwrite, shouldPrintForce);
+		
+		if (shouldPrintForce) Debug.Log("Set Total FORCE To " +force);
 	}
 
 	//Bear in mind velocity added in this method will only last this frame, as the velocity will be recalclated without it next fixedUpdate.
@@ -1195,34 +1193,47 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//Environmental. Caused by objects in the world, but can b removed by others.
-	public void SetEnvironmentalVelocity ( Vector3 force, bool willRemoveOnGrounded, bool willRemoveOnAirAction, S_Enums.ChangeLockState whatToDoWithDeceleration = S_Enums.ChangeLockState.Ignore ) {
+	public void SetEnvironmentalVelocity ( Vector3 force, bool willRemoveOnGrounded, bool willRemoveOnAirAction,
+		S_Enums.ChangeLockState whatToDoWithDeceleration = S_Enums.ChangeLockState.Ignore, bool shouldPrintForce = true) {
+
 		_environmentalVelocity = force;
 
-		HandleDeceleration(whatToDoWithDeceleration); //This will apply or remove constraints on deceleration, as certain calls will prevent manual deceleration, while calls that remove this velocity will allow it again. But will usually be ignored.
-
-		//Because HandleDeceleration can be called to lock multiple times before being called to unlock (because Unlock should only be called when removing environmnetal velocity), make sure if decel is already locked, to remove the new lock added in the above line.
+		//Because HandleDeceleration can be called to lock multiple times before being called to unlock (because Unlock should only be called when removing environmnetal velocity),
+		//only add a new lock if it hasn't locked this way already.
 		if ((_resetEnvironmentalOnAirAction && willRemoveOnAirAction) || (_resetEnvironmentalOnGrounded && willRemoveOnGrounded)) 
-			{ HandleDeceleration(S_Enums.ChangeLockState.Unlock); } 
+		{ 
+			//Intentionally empty, so the else only happens if the above is false.
+		} 
+		else
+		{
+			//This will apply or remove constraints on deceleration, as certain calls will prevent manual deceleration, while calls that remove this velocity will allow it again. But will usually be ignored.
+			if (willRemoveOnAirAction && willRemoveOnGrounded) { whatToDoWithDeceleration = S_Enums.ChangeLockState.Lock; } 
+			HandleDecelerationWhenEnvironmentalForce(whatToDoWithDeceleration);
+		}
 
 		_resetEnvironmentalOnGrounded = willRemoveOnGrounded;
 		_resetEnvironmentalOnAirAction = willRemoveOnAirAction;
 
-		void HandleDeceleration ( S_Enums.ChangeLockState whatCase) {
-			if (willRemoveOnAirAction && willRemoveOnGrounded) { whatCase = S_Enums.ChangeLockState.Lock; }
+		if (shouldPrintForce) Debug.Log("Set Environmental FORCE  " + force);
+	}
 
-			//Due to deceleration working with core velocity at different speeds. Sometimes when environmental velocity is set, it will prevent deceleration because that would make the movement path inconsistent (as core velocity won't always be the same before environmental is added).
-			switch (whatCase)
-			{
-				//This should always be called before Unlock. As such, whenever an environmental velocity is setting willRemoveOnGrounded to true, it should do this. Because the check will call unlock if true, then stop checking.
-				case S_Enums.ChangeLockState.Lock:
-					_listOfCanDecelerates.Add(false); break;
-				//This should only be called when environmental velocity is being removed.
-				case S_Enums.ChangeLockState.Unlock:
-					_listOfCanDecelerates.RemoveAt(0); break;
-					//Ignore is the default state, which means this call won't change the deceleration ability.
-			}
+	private void HandleDecelerationWhenEnvironmentalForce ( S_Enums.ChangeLockState whatCase ) {
+
+		//Due to deceleration working with core velocity at different speeds. Sometimes when environmental velocity is set, it will prevent deceleration because that would make the movement path inconsistent
+		//(as core velocity won't always be the same before environmental is added).
+		switch (whatCase)
+		{
+			//This should always be called before Unlock. As such, whenever an environmental velocity is setting willRemoveOnGrounded to true, it should do this. Because the check will call unlock if true, then stop checking.
+			case S_Enums.ChangeLockState.Lock:
+				_listOfCanDecelerates.Add(false); break;
+			//This should only be called when environmental velocity is being removed.
+			case S_Enums.ChangeLockState.Unlock:
+				_listOfCanDecelerates.RemoveAt(0); break;
+				//Ignore is the default state, which means this call won't change the deceleration ability.
 		}
 	}
+
+
 	public void AddEnvironmentalVelocity ( Vector3 force ) {
 		_environmentalVelocity += force;
 	}

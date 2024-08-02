@@ -144,11 +144,11 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		switch(_Actions._whatAction)
 		{
 			default:
-				_PlayerPhys.AddCoreVelocity(transform.up * _bouncingPower_, false);
+				_PlayerPhys.AddCoreVelocity(transform.up * _bouncingPower_);
 				break;
 
 			case S_Enums.PrimaryPlayerStates.Bounce:
-				_PlayerPhys.AddCoreVelocity(transform.up * _bouncingPower_ * 1.5f, false);
+				_PlayerPhys.AddCoreVelocity(transform.up * _bouncingPower_ * 1.5f);
 				break;
 		}
 	}

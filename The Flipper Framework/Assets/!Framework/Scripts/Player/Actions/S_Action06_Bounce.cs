@@ -117,9 +117,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		//Physics
 		_PlayerPhys._isGravityOn = false; //Moving down will be handled here rather than through the premade gravity in physics script.
-		_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_), false); //Immediately slows down player movement and removes vertical movement.
+		_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
 		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerPhys._coreVelocity.y - 20);
-		_PlayerPhys.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0), false); // Apply downward force, this is instant rather than  ramp up like gravity.
+		_PlayerPhys.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0)); // Apply downward force, this is instant rather than  ramp up like gravity.
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  bounce following the ground direction.
 
@@ -272,12 +272,12 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		//Makes the player's movement relevant to the surface and removes vertical speed.
 		Vector3 setVel = _PlayerPhys.AlignWithNormal(newDir, normal, newSpeed);
-		_PlayerPhys.SetCoreVelocity(setVel, false);
+		_PlayerPhys.SetCoreVelocity(setVel);
 
 		//Since vertical speed is removed, add it here, but more facing upwards rather than directly along normal.
 		float dif = Vector3.Angle(normal, Vector3.up) * 0.5f;
 		normal = Vector3.Lerp(normal, Vector3.up, dif * Mathf.Deg2Rad);
-		_PlayerPhys.AddCoreVelocity(normal * _currentBounceForce, false);
+		_PlayerPhys.AddCoreVelocity(normal * _currentBounceForce);
 
 		//If not at the last index, increase the bounce count.
 		if (_Actions._bounceCount < _BounceUpSpeeds_.Count - 1)

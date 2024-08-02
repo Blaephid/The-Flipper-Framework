@@ -307,7 +307,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				}
 
 				//Pushes player in direction
-				_PlayerPhys.SetCoreVelocity(Col.transform.forward * speed, true);
+				_PlayerPhys.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
 			}
 
 			if (SpeedPadScript._willLockControl)
@@ -468,7 +468,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		for (int i = 0 ; i < frames ; i++)
 		{
 			_PlayerPhys.SetPlayerPosition(position);
-			_PlayerPhys.SetCoreVelocity(Vector3.zero, true);
+			_PlayerPhys.SetCoreVelocity(Vector3.zero, "Overwrite");
 			_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
 		}
@@ -479,7 +479,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
-		_PlayerPhys.SetCoreVelocity(coreVelocity, true); //Undoes this being set to zero during delay.
+		_PlayerPhys.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
 
 		_PlayerPhys.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_Enums.ChangeLockState.Lock); //Apply bounce
 	}

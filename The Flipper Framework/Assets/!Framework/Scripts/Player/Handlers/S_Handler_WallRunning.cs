@@ -65,7 +65,7 @@ public class S_Handler_WallRunning : MonoBehaviour
 			saveVec = _PlayerPhys._RB.velocity;
 
 			//If High enough above ground and not at an odd rotation
-			if (enoughAboveGround() && (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Default || _Actions._whatAction == S_Enums.PrimaryPlayerStates.JumpDash || (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump && _Tools.PathInteraction._currentUpreel == null)))
+			if (enoughAboveGround() && (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Default || _Actions._whatAction == S_Enums.PrimaryPlayerStates.JumpDash ))
 			{
 
 				if (_Input._camMoveInput.sqrMagnitude > 0.8f)

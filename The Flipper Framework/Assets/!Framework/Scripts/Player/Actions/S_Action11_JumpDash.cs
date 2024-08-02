@@ -170,7 +170,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		Vector3 newVec = _dashDirection * _dashSpeed; //Dash forwards
 		newVec += _MainSkin.up * _upwardsSpeed; //If has upwards force, add that as well.
-		_PlayerPhys.SetCoreVelocity(newVec, true); //Move in dash direction
+		_PlayerPhys.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
 		_PlayerPhys.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
