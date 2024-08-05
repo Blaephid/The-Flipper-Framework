@@ -1446,30 +1446,30 @@ public class S_O_CharacterStats : ScriptableObject
 	#region WallRules
 	//-------------------------------------------------------------------------------------------------
 
-	public StrucWallRunning WallRunningStats = SetWallRunning();
-	public StrucWallRunning StartWallRunningStats = SetWallRunning();
+	public StrucWallActions WallActionsStats = SetWallActions();
+	public StrucWallActions StartWallRunningStats = SetWallActions();
 
-	static StrucWallRunning SetWallRunning () {
-		return new StrucWallRunning
+	static StrucWallActions SetWallActions () {
+		return new StrucWallActions
 		{
 			wallCheckDistance = 1.2f,
 			minHeight = 5f,
 			WallLayerMask = new LayerMask(),
-			wallDuration = 0f,
 			scrapeModifier = 1f,
-			climbModifier = 1f
+			climbModifier = 1f,
+			fallOffAtFallSpeed = 15,
 		};
 	}
 
 	[System.Serializable]
-	public struct StrucWallRunning
+	public struct StrucWallActions
 	{
 		public float            wallCheckDistance;
 		public float            minHeight;
 		public LayerMask        WallLayerMask;
-		public float            wallDuration;
 		public float            scrapeModifier;
 		public float            climbModifier;
+		public float                  fallOffAtFallSpeed;
 
 	}
 
@@ -1557,7 +1557,7 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawRingRoad();
 		DrawRailStats();
 		DrawRailPosition();
-		DrawWallRunningStats();
+		DrawWallActionStats();
 
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Interactions", headerStyle);
@@ -2034,14 +2034,14 @@ public class S_O_CharacterStatsEditor : Editor
 
 		//WallRunningStats
 		#region WallRunningStats
-		void DrawWallRunningStats () {
+		void DrawWallActionStats () {
 			EditorGUILayout.Space();
-			DrawProperty("WallRunningStats", "Wall Running");
+			DrawProperty("WallActionsStats", "On Wall Actions");
 
 			Undo.RecordObject(stats, "set to Defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.WallRunningStats = stats.StartWallRunningStats;
+				stats.WallActionsStats = stats.StartWallRunningStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

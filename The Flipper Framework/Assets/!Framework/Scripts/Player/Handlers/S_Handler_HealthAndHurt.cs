@@ -385,7 +385,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		float rememberSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 
 		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
-		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
+		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.WallClimbing)
 		{
 			_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 			_HurtAction._wasHit = false;
@@ -406,7 +406,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			}
 
 			//If still not in a wallrunning state or been hurt, then rebound off the wall.
-			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.WallRunning && _Actions._whatAction != S_Enums.PrimaryPlayerStates.Hurt)
+			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatAction != S_Enums.PrimaryPlayerStates.Hurt)
 			{
 				_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[3].normalized;
 				_HurtAction._wasHit = false;

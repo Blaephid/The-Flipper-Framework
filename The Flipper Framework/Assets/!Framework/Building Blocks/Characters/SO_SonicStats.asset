@@ -2594,22 +2594,22 @@ MonoBehaviour:
   StartObjectInteractions:
     upreelSpeedKeptAfter: 0.3
     minimumSpeedCarried: 30
-  WallRunningStats:
-    wallCheckDistance: 1.2
+  WallActionsStats:
+    wallCheckDistance: 7
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2
       m_Bits: 1
-    wallDuration: 0
     scrapeModifier: 1
     climbModifier: 1
+    fallOffAtFallSpeed: 15
   StartWallRunningStats:
     wallCheckDistance: 1.2
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2
       m_Bits: 0
-    wallDuration: 0
     scrapeModifier: 1
     climbModifier: 1
+    fallOffAtFallSpeed: 15
   InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

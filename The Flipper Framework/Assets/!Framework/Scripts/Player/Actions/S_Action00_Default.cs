@@ -72,7 +72,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region Inherited
-
 	private void Start () {
 		SwitchSkin(true);
 	}
@@ -116,9 +115,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 

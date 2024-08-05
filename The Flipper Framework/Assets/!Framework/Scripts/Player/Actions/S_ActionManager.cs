@@ -280,6 +280,9 @@ public class S_ActionManager : MonoBehaviour
 			case S_Enums.PlayerSituationalStates.WallRunning:
 				_ObjectForActions.TryGetComponent(out S_Action12_WallRunning wall);
 				return wall;
+			case S_Enums.PlayerSituationalStates.WallClimbing:
+				_ObjectForActions.TryGetComponent(out S_Action15_WallClimbing wallClimb);
+				return wallClimb;
 			case S_Enums.PlayerSituationalStates.Hovering:
 				_ObjectForActions.TryGetComponent(out S_Action13_Hovering hov);
 				return hov;
@@ -413,6 +416,15 @@ public class S_ActionManager : MonoBehaviour
 				else
 				{
 					return _ObjectForActions.AddComponent<S_Action12_WallRunning>();
+				}
+			case S_Enums.PrimaryPlayerStates.WallClimbing:
+				if (_ObjectForActions.TryGetComponent(out S_Action15_WallClimbing wallClimbingAction))
+				{
+					return wallClimbingAction;
+				}
+				else
+				{
+					return _ObjectForActions.AddComponent<S_Action15_WallClimbing>();
 				}
 
 			case S_Enums.PrimaryPlayerStates.Hovering:
@@ -722,6 +734,9 @@ public class ActionManagerEditor : Editor
 			case S_Enums.PlayerSituationalStates.WallRunning:
 				AddActionToList(S_Enums.PrimaryPlayerStates.WallRunning);
 				break;
+			case S_Enums.PlayerSituationalStates.WallClimbing:
+				AddActionToList(S_Enums.PrimaryPlayerStates.WallClimbing);
+				break;
 			case S_Enums.PlayerSituationalStates.Default:
 				AddActionToList(S_Enums.PrimaryPlayerStates.Default);
 				break;
@@ -803,6 +818,9 @@ public class ActionManagerEditor : Editor
 				break;
 			case S_Enums.PrimaryPlayerStates.WallRunning:
 				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.WallRunning);
+				break;
+			case S_Enums.PrimaryPlayerStates.WallClimbing:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.WallClimbing);
 				break;
 			case S_Enums.PrimaryPlayerStates.Hovering:
 				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.Hovering);

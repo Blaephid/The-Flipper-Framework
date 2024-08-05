@@ -20,6 +20,7 @@ public class S_Enums
 		Path = 9,
 		JumpDash = 10,
 		WallRunning = 11,
+		WallClimbing = 14,
 		Hovering = 12,
 		Upreel = 13,
 	}
@@ -40,6 +41,7 @@ public class S_Enums
 		RingRoad,
 		Path,
 		WallRunning,
+		WallClimbing,
 		Hovering,
 		Upreel
 	}
@@ -89,7 +91,7 @@ public class S_Enums
 		Segmented,
 	}
 
-	public enum HomingReboundingTypes {
+	public enum HomingHitResponses {
 		BounceThrough,
 		bounceOff,
 		Rebound,
