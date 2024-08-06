@@ -99,7 +99,7 @@ public class S_Handler_WallActions : MonoBehaviour
 				_saveVelocity = _PlayerPhys._RB.velocity;
 
 				//Has to be inputting at all, check if inputting towards a wall later.
-				if (_Input._camMoveInput.sqrMagnitude > 0.8f)
+				if (_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.8f)
 				{
 					//Checks for nearby walls using raycasts
 					CheckForWall();
@@ -117,7 +117,7 @@ public class S_Handler_WallActions : MonoBehaviour
 		_isWallFront = false;
 		if (IsInputtingInCharacterAngle(_MainSkin.forward) && IsRunningFastEnough(40))
 		{
-			float distance = Mathf.Max(_wallCheckDistance_, _currentSpeed * Time.fixedDeltaTime + 3);
+			float distance = Mathf.Max(_wallCheckDistance_, _currentSpeed * Time.fixedDeltaTime + 2);
 
 			//Checks for wall in front using raycasts, outputing hits and booleans
 			_isWallFront = Physics.SphereCast(origin, 2f, _MainSkin.forward, out _FrontWallHit, distance, _WallLayerMask_);
@@ -162,8 +162,9 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	private bool IsInputtingInCharacterAngle ( Vector3 characterAngle ) {
-		Debug.DrawRay(transform.position, _Input._camMoveInput, Color.red, 10f);
-		return Vector3.Angle(_Input._camMoveInput, characterAngle) < 90;
+		
+		Debug.DrawRay(transform.position, _Input._constantInputRelevantToCharacter, Color.red, 10f);
+		return Vector3.Angle(_Input._constantInputRelevantToCharacter, characterAngle) < 90;
 	}
 
 	private bool IsRunningFastEnough ( float minSpeed = 30 ) {
@@ -176,7 +177,7 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	private bool IsInputtingTowardsWall ( Vector3 hitPoint ) {
 		Vector3 directionToWall = hitPoint - transform.position;
-		return Vector3.Angle(directionToWall.normalized, _Input._camMoveInput.normalized) < 20;
+		return Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter) < 20;
 	}
 
 	private bool IsFacingWallEnough ( Vector3 wallNormal ) {
@@ -243,10 +244,10 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	public bool IsInputtingToWall ( Vector3 directionToWall ) {
 		
-		if(_PlayerPhys._moveInput.sqrMagnitude > 0.5f)
+		if(_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.5f)
 		{
-			Vector3 relevantInput = _PlayerPhys.GetRelevantVel(_PlayerPhys._moveInput);
-			Debug.DrawRay(transform.position, relevantInput, Color.yellow, 20f);
+			Vector3 relevantInput = _Input._constantInputRelevantToCharacter;
+			Debug.DrawRay(transform.position, relevantInput * 10, Color.yellow, 20f);
 
 			return Vector3.Angle(relevantInput, directionToWall.normalized) < 90;
 		}

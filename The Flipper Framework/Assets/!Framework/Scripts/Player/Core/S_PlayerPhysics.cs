@@ -1129,7 +1129,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (_isGrounded != value)
 		{
 			//If changed to be in the air when was on the ground
-			if (_isGrounded && _isGrounded != value)
+			if (_isGrounded)
 			{
 
 				_groundingDelay = timer;
@@ -1137,7 +1137,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				_Events._OnLoseGround.Invoke();
 			}
 			//If changed to be on the ground when was in the air
-			else if (!_isGrounded && _isGrounded != value)
+			else if (!_isGrounded)
 			{
 
 				_timeOnGround = 0;
@@ -1158,6 +1158,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 				_Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
 			}
+			Debug.Log("Set Grounded");
 			_isGrounded = value;
 		}
 	}

@@ -24,8 +24,6 @@ public class S_ActionManager : MonoBehaviour
 	public S_Action00_Default _ActionDefault;
 	public S_Action04_Hurt _ActionHurt;
 	public S_Action10_FollowAutoPath Action10;
-	public S_Action11_JumpDash Action11;
-	public S_Action12_WallRunning Action12;
 
 	//Keeps track of the generated objects that handle different components. This is to prevent having all components on one object.
 	public GameObject _ObjectForActions;
@@ -62,7 +60,11 @@ public class S_ActionManager : MonoBehaviour
 	[HideInInspector]
 	public int          _jumpCount;                   //Tracks how many jumps have been performed before landing. Will be used in handling multi jumps.
 	[HideInInspector]
-	public float	_dashDelayCounter;		//Used by homing attacks and jump dashes to set as able or not.
+	public float	_dashDelayCounter;            //Used by homing attacks and jump dashes to set as able or not.
+	[HideInInspector]
+	public Vector3      _jumpAngle;		//Set externally, and in the jump action, may be used to choose the angle (E.G., Wall Climbing sets this, and if Jump detects that's the current state (enum), uses this.
+	[HideInInspector]
+	public Vector3      _dashAngle;		//Same as above but for the jumpDash action.
 
 	//Can perform actions
 
@@ -207,7 +209,7 @@ public class S_ActionManager : MonoBehaviour
 	}
 
 	//Called externally to prevent certain actions from being performed until time is up.
-	public IEnumerator lockAirMoves ( float frames ) {
+	public IEnumerator LockAirMovesForFrames ( float frames ) {
 		_areAirActionsAvailable = false;
 
 		//Apply delay, in frames.

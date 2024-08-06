@@ -141,13 +141,19 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_Input.JumpPressed = false;
 		_CamHandler._HedgeCam._shouldSetHeightWhenMoving_ = false;
 
+
 		//Visual
 		_Actions._ActionDefault.SwitchSkin(true);
 		_DropShadow.SetActive(false);
-
+		_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
+		
 		//Physics
 		_originalVelocity = _PlayerPhys._totalVelocity;
 		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
+
+		_PlayerPhys.SetIsGrounded(true); //This is to reset actions like JumpDash and Homing as if grounded
+		_PlayerPhys.SetIsGrounded(false); //Will now be treated as not grounded until the action is over.
+		_PlayerPhys._canChangeGrounded = false;
 
 		//Control
 		_PlayerPhys._listOfCanControl.Add(false);
@@ -172,6 +178,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		//Control
 		_PlayerPhys._isGravityOn = true;
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
+		_PlayerPhys._canChangeGrounded = true;
+
+		Debug.Log("STOP WALL ACTION");
 	}
 	#endregion
 
@@ -188,7 +197,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	private void RunningInteraction () {
 		//Prevents normal movement in input and physics
-		_Input.LockInputForAWhile(0f, false, Vector3.zero);
+		_Input.LockInputForAWhile(3f, false, Vector3.zero);
 
 		_CharacterAnimator.SetFloat("GroundSpeed", _runningSpeed);
 		_CharacterAnimator.SetBool("WallRight", _isWallOnRight);
@@ -324,12 +333,14 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	#region public 
 	public void CheckCanceling () {
 
+		Debug.Log(_PlayerPhys._canChangeGrounded);
+
 		_isHoldingWall = _WallHandler.IsInputtingToWall(_wallHit.point - transform.position);
 
 		//Cancel action by letting go of skid after .5 seconds
 		if (!_isHoldingWall && _counter > 0.5f || _PlayerPhys._isGrounded)
 		{
-			StopAction();
+			_Input.UnLockInput();
 			_Actions._ActionDefault.StartAction();
 		}
 	}
@@ -358,11 +369,12 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (this is S_Action15_WallClimbing && (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.WallClimbing))
+				if (this is S_Action15_WallClimbing)
 				{
-					_positionInActionList = i;
-					break;
-
+					if(_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.WallClimbing){
+						_positionInActionList = i;
+						break;
+					}
 				}
 				else if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.WallRunning)
 				{
@@ -468,7 +480,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 		_MainSkin.forward = newVec.normalized;
 		_PlayerPhys.SetCoreVelocity(newVec);
-		StopAction();
 	}
 
 	void JumpfromWall () {
@@ -511,7 +522,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		}
 
 		_switchToJump = 0;
-		StopAction();
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 	}

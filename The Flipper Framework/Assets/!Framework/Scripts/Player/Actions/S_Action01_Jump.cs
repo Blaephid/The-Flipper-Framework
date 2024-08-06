@@ -138,11 +138,16 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					}
 					return true;
 				case S_Enums.PrimaryPlayerStates.WallRunning:
-					AssignStartValues(_Actions.Action12._jumpAngle, true);
+					AssignStartValues(_Actions._jumpAngle, true);
 					StartAction();
 					return true;
+				case S_Enums.PrimaryPlayerStates.WallClimbing:
+					AssignStartValues(_Actions._jumpAngle, true);
+					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(10, 5, -20, true));
+					StartAction(); 
+					return true;
 				case S_Enums.PrimaryPlayerStates.Rail:
-					GetComponent<S_Action05_Rail>()._isGrinding = false;
+					//GetComponent<S_Action05_Rail>()._isGrinding = false;
 					AssignStartValues(transform.up, true);
 					StartAction();
 					return true;
@@ -175,6 +180,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_PlayerPhys.RemoveEnvironmentalVelocityAirAction();
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
+
+		//Prevent doing Air Action immediately.
+		_Actions.LockAirMovesForFrames(6);
 
 		//Effects
 		_CharacterAnimator.SetInteger("Action", 1);
@@ -363,7 +371,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Jump)
 				{
 					_positionInActionList = i;
 					break;

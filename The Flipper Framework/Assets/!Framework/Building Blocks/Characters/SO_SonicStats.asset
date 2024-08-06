@@ -2595,7 +2595,7 @@ MonoBehaviour:
     upreelSpeedKeptAfter: 0.3
     minimumSpeedCarried: 30
   WallActionsStats:
-    wallCheckDistance: 7
+    wallCheckDistance: 9
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2

@@ -28,13 +28,15 @@ public class S_PlayerInput : MonoBehaviour
 	// Trackers
 	#region trackers
 	[HideInInspector]
-	public Vector3     _move;
+	public Vector3     _move; //The final input acquired and passed onto PlayerPhysics. Can be locked.
 	[HideInInspector]
-	public Vector3      _inputWithoutCamera;
+	public Vector3      _inputWithoutCamera; //The input acquired just from the controller, not relevant to character or camera.
 	[HideInInspector]
-	public Vector3      _prevInputWithoutCamera;
+	public Vector3      _prevInputWithoutCamera; //The input without the camera last frame. This is to check when the used input is changed without changing the controller input (meaning the character and camera did it).
 	[HideInInspector]
-	public Vector3     _camMoveInput;
+	public Vector3     _camMoveInput; //The input relevant to the camera, but not in local space with the character.
+	[HideInInspector]
+	public Vector3     _constantInputRelevantToCharacter; //Equal to _move, but never locked (and not used in movement), called globally to check actual input for other calculations even if locked.
 
 	private Vector3     _inputCheckedLastFrame;
 
@@ -138,6 +140,7 @@ public class S_PlayerInput : MonoBehaviour
 			_inputWithoutCamera = new Vector3(moveX, 0, moveY);
 			_camMoveInput = GetInputByLocalTransform(_inputWithoutCamera);
 			_move = _camMoveInput;
+			_constantInputRelevantToCharacter = _PlayerPhys.GetRelevantVel(_camMoveInput);
 		}
 
 	}
@@ -174,7 +177,7 @@ public class S_PlayerInput : MonoBehaviour
 
 		if (_lockedCounter > _lockedTime)
 		{
-			_isInputLocked = false;
+			UnLockInput();
 		}
 	}
 	#endregion
@@ -208,6 +211,12 @@ public class S_PlayerInput : MonoBehaviour
 		_lockedCounter = 0;
 		_isInputLocked = true;
 		_isCamLocked = lockCam; //Also prevents camera control
+	}
+
+	public void UnLockInput () {
+		_lockedTime = 0;
+		_isInputLocked = false;
+		_isCamLocked = false; 
 	}
 
 	//Called externally once per frame to check if the input is different to last frame despite the actual controller input not being changed.

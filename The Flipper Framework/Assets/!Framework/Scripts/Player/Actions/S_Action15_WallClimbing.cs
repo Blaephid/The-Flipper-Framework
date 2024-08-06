@@ -16,7 +16,6 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 	[Header("Wall Climbing")]
 	private float        _goalClimbingSpeed;
 	private float       _climbWallDistance;
-	private bool        _isSwitchingToGround;
 
 	#endregion
 	#endregion
@@ -45,11 +44,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 			CheckSpeed();
 			ClimbingPhysics();
 
-			//If going from climbing wall to running on flat ground normally.
-			if (_isSwitchingToGround)
-			{
-				FromWallToGround();
-			}
+			HandleInputs();
 		}
 	}
 
@@ -93,29 +88,52 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 	//Monitors progression along the wall, checking its still there.
 	void ClimbingInteraction () {
 
+		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
+
 		Vector3 raycastOrigin = transform.position + _MainSkin.up * 0.3f;
 		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.forward, out RaycastHit tempHit, _climbWallDistance, _wallLayerMask_);
 
 		//First x seconds are too attach to the wall from starting point, so decrease check range after.
-		if (_counter > 0.3f)
+		if (_counter > 0.2f)
 		{
 			_climbWallDistance = _wallCheckDistance_;
+			_CamHandler._HedgeCam.ChangeHeight(Mathf.Sign(_goalClimbingSpeed) * -50, 80); //Moves camera to look up or down (based on which direction moving)
+		}
+		else
+		{
+			_CamHandler._HedgeCam.ChangeHeight(-50, 250); //Quickly look up to show start of climb
 		}
 
 		//If they reach the top of the wall
 		if (!_isWall)
 		{
 			//Bounces the player up to keep momentum
-			StartCoroutine(JumpOverWall(-_wallHit.normal));
+			StartCoroutine(ReachLipOfWall(-_wallHit.normal));
 		}
 		else
 		{
+			_CharacterAnimator.SetInteger("Action", 1);
 			_wallHit = tempHit;
 		}
+
+		//Setting global variables for other scripts
 
 		//Ensures the player faces the wall
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(_wallHit.normal));
 		_CurrentWall = _wallHit.collider.gameObject;
+
+		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.2f) ;
+		_Actions._dashAngle = _wallHit.normal;
+
+		//To control camera distance and FOV
+		_PlayerPhys._currentRunningSpeed = Mathf.Max(Mathf.Abs(_goalClimbingSpeed), 60);
+
+		//If the wall stops being very steep
+		if (!_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.5f) && _goalClimbingSpeed > 5)
+		{
+			//Sets variables to go to swtich to ground option in FixedUpdate
+			FromWallToGround();
+		}
 	}
 
 	//Changes current speed and decreases velocity up the wall.
@@ -143,45 +161,56 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 			newVec += (_MainSkin.forward * 20f);
 			_PlayerPhys.SetCoreVelocity(newVec);
 		}
-
-		//If the wall stops being very steep
-		if (!_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.45f))
-		{
-			//Sets variables to go to swtich to ground option in FixedUpdate
-			_isSwitchingToGround = true;
-		}
-	}
-
-
-	//Called when wall being climbed is flattening out, to transition to running along the wall as actual floor.
-	void FromWallToGround () {
-		_PlayerPhys._isGravityOn = true;
-
-		//Set rotation to put feet on ground.
-		Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z), -_MainSkin.up, out _wallHit, _climbWallDistance, _wallLayerMask_);
-
-		_PlayerPhys.AlignToGround(_wallHit.normal, true);
-		_PlayerPhys.CheckForGround();
-
-		//Set velocity to move along and push down to the ground
-		Vector3 newVec = _MainSkin.forward * (_goalClimbingSpeed);
-		newVec += -_wallHit.normal * 10f;
-
-		_PlayerPhys.SetCoreVelocity(newVec);
-		_Actions._ActionDefault.StartAction();
 	}
 
 	//Called when wall is lost, to add velocity up and over the lip, to keep going.
-	IEnumerator JumpOverWall ( Vector3 inwards ) {
+	private IEnumerator ReachLipOfWall ( Vector3 inwards ) {
 		Vector3 newVelocity = _MainSkin.up * _currentClimbingSpeed;
 
 		yield return new WaitForFixedUpdate();
-
-		Debug.Log("Lost Wall");
 		_Actions._ActionDefault.StartAction();
 
 		newVelocity += inwards * _PlayerPhys.GetRelevantVel(_originalVelocity).x;
 		_PlayerPhys.SetCoreVelocity(newVelocity);
 	}
+
+	//Called when wall being climbed is flattening out, to transition to running along the wall as actual floor.
+	private void FromWallToGround () {
+		_PlayerPhys._isGravityOn = true;
+
+		//Set rotation to put feet on ground.
+		Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z), -_MainSkin.up, out _wallHit, _climbWallDistance, _wallLayerMask_);
+
+		_PlayerPhys._canChangeGrounded = true; //This is also said in stopAction, but this is also called here so the below works.
+		_PlayerPhys.AlignToGround(_wallHit.normal, true); //Rotate so the wall is now under the feet
+		_PlayerPhys.CheckForGround(); //Check under the feet for ground.
+
+		//Set velocity to move along and push down to the ground
+		Vector3 newVec = _MainSkin.forward * (_goalClimbingSpeed);
+		newVec += -_wallHit.normal * 10f;
+
+		_Input.UnLockInput(); //Because this action sets input to lock for 30 frames, undo this immediately when regaing control.
+		StartCoroutine(StayRollingAnimationForAWhile(10));
+
+		_PlayerPhys.SetCoreVelocity(newVec);
+		_Actions._ActionDefault.StartAction();
+	}
+
+	//To ensure snapping to ground isn't sudden, hide via using the same animation as on the wall before returning to standing.
+	private IEnumerator StayRollingAnimationForAWhile (int frames) {
+
+		for(int i = 0; i < frames; i++)
+		{
+			yield return new WaitForFixedUpdate();
+			_Actions._ActionDefault._isAnimatorControlledExternally = true;
+			_Actions._ActionDefault._animationAction = 1;
+
+			_Input.LockInputForAWhile(1, false, Vector3.zero, S_Enums.LockControlDirection.CharacterForwards);
+		}
+
+		_Actions._ActionDefault._isAnimatorControlledExternally = false;
+		_Actions._ActionDefault._animationAction = 0;
+	}
+
 	#endregion
 }

@@ -88,7 +88,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 		_PlayerPhys._listOfCanControl.Add(false); //Removes ability to control velocity until empty
 		_PlayerPhys._isGravityOn = false;
-		_PlayerPhys._isGrounded = false;
+		_PlayerPhys.SetIsGrounded(false);
 		_PlayerPhys._canChangeGrounded = false;
 
 		_currentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player

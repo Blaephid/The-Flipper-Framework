@@ -391,17 +391,23 @@ public class S_HedgeCamera : MonoBehaviour
 	void HandleCameraDistance () {
 		_distanceModifier = 1;
 
+		//Set up variables to limit the view changes.
+		Vector3 actionModifier = GetDistanceModifiedByAction();
+		float minValue = actionModifier.x;
+		float maxValue = actionModifier.z;
+		float speedPercentage = Mathf.Clamp(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed * actionModifier.y, minValue, maxValue);
+
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
 		if (_shouldAffectDistanceBySpeed_)
 		{
-			float targetDistance = _cameraDistanceBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed);
+			float targetDistance = _cameraDistanceBySpeed_.Evaluate(speedPercentage);
 			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.1f);
 		}
 
 		//To make the player feel faster than they are, changes camera FOV based on speed.
 		if(_shouldAffectFOVBySpeed_)
 		{
-			float targetFOV = _cameraFOVBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed) * _baseFOV_;
+			float targetFOV = _cameraFOVBySpeed_.Evaluate(speedPercentage) * _baseFOV_;
 			_VirtualCamera.m_Lens.FieldOfView = Mathf.Lerp(_VirtualCamera.m_Lens.FieldOfView, targetFOV, 0.2f);
 			_SecondaryCamera.m_Lens.FieldOfView = _VirtualCamera.m_Lens.FieldOfView;
 		}
@@ -432,6 +438,16 @@ public class S_HedgeCamera : MonoBehaviour
 			transform.position = _FinalTarget.position + position + _hitNormal;
 		}
 
+	}
+
+	//The distance and FOV the camera changes can depend on the action (where some require greater zoom out). This returns the modifier, and min and max values.
+	private Vector3 GetDistanceModifiedByAction () {
+		switch (_Actions._whatAction) {
+			default:
+				return new Vector3(0, 1, 1);
+			case S_Enums.PrimaryPlayerStates.WallClimbing:
+				return new Vector3(0.5f, 1.3f, 1);
+		}
 	}
 
 	//See if camera should be locked and decrease counter if so.
@@ -616,15 +632,23 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 	}
 
+	public IEnumerator KeepGoingBehindCharacterForFrames(int frames, float speed, float height, bool overwrite ) {
+		for (int i = 0 ; i < frames ; i++)
+		{
+			GoBehindCharacter(speed, height, overwrite);
+			yield return new WaitForFixedUpdate();
+		}
+	}
+
 	//Called by other scripts to make the camera face the direction the character is facing.
-	public void GoBehindCharacter ( float speed, float height, bool overwrite = false ) {
+	public void GoBehindCharacter ( float speed, float height, bool evenIfLocked = false ) {
 		bool changeHeight = height != 0;
 
 		if (_isReversed)
 		{
 			RotateDirection(-_Skin.forward, speed, height, changeHeight);
 		}
-		else if (!_isLocked || overwrite)
+		else if (!_isLocked || evenIfLocked)
 		{
 			RotateDirection(_Skin.forward, speed, height, changeHeight);
 		}
@@ -655,6 +679,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Changes only the height of the camera to look up or down.
 	public void ChangeHeight ( float height, float speed ) {
+
 		if (!_isLocked)
 		{
 			//A switch is used so it's less clutured than an if statement.
@@ -664,14 +689,7 @@ public class S_HedgeCamera : MonoBehaviour
 					break;
 				default:
 				{
-					if (_PlayerPhys._isGrounded)
-					{
-						_posY = Mathf.MoveTowards(_posY, height, Time.deltaTime * speed);
-					}
-					else
-					{
-						_posY = Mathf.MoveTowards(_posY, height, Time.deltaTime * speed);
-					}
+					_posY = Mathf.MoveTowards(_posY, height, Time.deltaTime * speed);
 					break;
 				}
 			}

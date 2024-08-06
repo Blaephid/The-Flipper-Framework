@@ -275,8 +275,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				//Prevents immediately using air actions like bounce or jumps.
 				if (SpeedPadScript._lockAirMovesFor_ > 0)
 				{
-					StopCoroutine(_Actions.lockAirMoves(SpeedPadScript._lockAirMovesFor_));
-					StartCoroutine(_Actions.lockAirMoves(SpeedPadScript._lockAirMovesFor_));
+					StopCoroutine(_Actions.LockAirMovesForFrames(SpeedPadScript._lockAirMovesFor_));
+					StartCoroutine(_Actions.LockAirMovesForFrames(SpeedPadScript._lockAirMovesFor_));
 				}
 
 				//Because this is to launch the player through the sky, certain stats can have different gravities. This ensures characters will always fall the same way by overwriting their stats until landing.
@@ -405,8 +405,8 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Prevents using air moves until after some time
 		if (SpringScript._lockAirMovesTime_ > 0)
 		{
-			StopCoroutine(_Actions.lockAirMoves(SpringScript._lockAirMovesTime_)); //Overwrites coroutine if already in use, resetting the timer.
-			StartCoroutine(_Actions.lockAirMoves(SpringScript._lockAirMovesTime_));
+			StopCoroutine(_Actions.LockAirMovesForFrames(SpringScript._lockAirMovesTime_)); //Overwrites coroutine if already in use, resetting the timer.
+			StartCoroutine(_Actions.LockAirMovesForFrames(SpringScript._lockAirMovesTime_));
 		}
 
 		//Since a new character may be created with different gravity to the normal, this temporarily changes gravity to ensure all launch angle will not be affected by chracter's gravity stats.
