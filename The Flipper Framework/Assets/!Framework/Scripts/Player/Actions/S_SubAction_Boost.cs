@@ -224,7 +224,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			//Energy management.
 			_currentBoostEnergy = Mathf.Max(_currentBoostEnergy - (_energyDrainedPerSecond_ * Time.fixedDeltaTime), 0);
 
-			Vector3 currentRunningPhysics = _PlayerPhys.GetRelevantVel(_PlayerPhys._RB.velocity, false); //Get the running velocity in physics (seperate from script calculations) as this will factor in collision.
+			Vector3 currentRunningPhysics = _PlayerPhys.GetRelevantVector(_PlayerPhys._RB.velocity, false); //Get the running velocity in physics (seperate from script calculations) as this will factor in collision.
 
 			// Will end boost if released button , entered a state where without boost attached,  ran out of energy , or movement speed was decreased externally (like from a collision)
 			if (!_Input.BoostPressed || !_inAStateThatCanBoost || _currentBoostEnergy <= 0 || currentRunningPhysics.sqrMagnitude < 100) //Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
@@ -379,7 +379,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 		for (int i = 0 ; i < Frames ; i++)
 		{
-			runningVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity, false).normalized; //Every update ensures its applying against players running speed, leaving gravity alone.
+			runningVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity, false).normalized; //Every update ensures its applying against players running speed, leaving gravity alone.
 
 			if (_PlayerPhys._horizontalSpeedMagnitude < 80) { yield break; } //Won't decrease speed if player is already running under a certain speed.
 
@@ -412,7 +412,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		Vector3 inputDirection = input.normalized;
 
 		//Because input is relative to transform, temporarily make face directions operate in the same space. Without vertical value so it interacts properly with input direction.
-		_faceDirection = _PlayerPhys.GetRelevantVel(_faceDirection, false);
+		_faceDirection = _PlayerPhys.GetRelevantVector(_faceDirection, false);
 
 		_PlayerPhys._inputVelocityDifference = lateralVelocity.sqrMagnitude < 1 ? 0 : Vector3.Angle(_faceDirection, inputDirection); //The change in input in degrees, this will be used by the skid script to calculate whether should skid.
 		float inputDifference = _PlayerPhys._inputVelocityDifference;

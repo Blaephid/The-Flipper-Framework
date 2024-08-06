@@ -270,7 +270,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		if (_PlayerPhys._isGrounded) { _PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, true); }
 
 		//Make force relevant to character's current rotation
-		Vector3 releVec = _PlayerPhys.GetRelevantVel(force, false);
+		Vector3 releVec = _PlayerPhys.GetRelevantVector(force, false);
 
 		//If the new total force is higher than current speed, then apply it. Uses sqrs because it's faster with comparing magnitudes
 		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerPhys._horizontalSpeedMagnitude + _charge * 0.1f, 2))

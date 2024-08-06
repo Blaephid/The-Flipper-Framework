@@ -151,7 +151,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	private float GetSpeedToTheSide () {
-		Vector3 releventVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._totalVelocity, false);
+		Vector3 releventVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity, false);
 		return Mathf.Abs(releventVelocity.x);
 	}
 
@@ -163,7 +163,8 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	private bool IsInputtingInCharacterAngle ( Vector3 characterAngle ) {
 		
-		Debug.DrawRay(transform.position, _Input._constantInputRelevantToCharacter, Color.red, 10f);
+		Debug.DrawRay(transform.position, _Input._constantInputRelevantToCharacter, Color.green, 10f);
+		Debug.DrawRay(transform.position, _Input._camMoveInput, Color.blue, 10f);
 		return Vector3.Angle(_Input._constantInputRelevantToCharacter, characterAngle) < 90;
 	}
 
@@ -243,13 +244,12 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	public bool IsInputtingToWall ( Vector3 directionToWall ) {
-		
 		if(_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.5f)
 		{
-			Vector3 relevantInput = _Input._constantInputRelevantToCharacter;
-			Debug.DrawRay(transform.position, relevantInput * 10, Color.yellow, 20f);
+			directionToWall.y = 0;
+			directionToWall.Normalize();
 
-			return Vector3.Angle(relevantInput, directionToWall.normalized) < 90;
+			return Vector3.Angle(_Input._constantInputRelevantToCharacter, directionToWall) < 90;
 		}
 		return false;
 	}

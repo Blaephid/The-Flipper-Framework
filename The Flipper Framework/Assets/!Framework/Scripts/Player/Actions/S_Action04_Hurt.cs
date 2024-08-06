@@ -166,7 +166,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			if (_PlayerPhys._isGrounded) { upForce *= 1.25f; }
 
 			//Make direction local to player rotation so we can change the y and xz values seperately.
-			Vector3 newSpeed = _PlayerPhys.GetRelevantVel(_knockbackDirection);
+			Vector3 newSpeed = _PlayerPhys.GetRelevantVector(_knockbackDirection);
 			newSpeed.y = 0;
 			newSpeed.Normalize(); //Get the horizontal direction local to player rotation
 			newSpeed *= force;
@@ -233,7 +233,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			if (_PlayerPhys._isGrounded && _counter > 10)
 			{
 				//Get local horizontal vector
-				Vector3 newVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity);
+				Vector3 newVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity);
 				float keepY = newVelocity.y;
 				newVelocity.y = 0;
 

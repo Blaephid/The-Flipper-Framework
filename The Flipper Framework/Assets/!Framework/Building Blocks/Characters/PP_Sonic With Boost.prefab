@@ -718,6 +718,7 @@ MonoBehaviour:
   _inputWithoutCamera: {x: 0, y: 0, z: 0}
   _prevInputWithoutCamera: {x: 0, y: 0, z: 0}
   _camMoveInput: {x: 0, y: 0, z: 0}
+  _constantInputRelevantToCharacter: {x: 0, y: 0, z: 0}
   moveX: 0
   moveY: 0
   moveVec: {x: 0, y: 0}
@@ -29252,6 +29253,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
+      propertyPath: _MainActions.Array.data[2].ConnectedStates.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
       propertyPath: _MainActions.Array.data[10].ConnectedStates.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -29289,6 +29295,21 @@ PrefabInstance:
         type: 3}
       propertyPath: _MainActions.Array.data[13].SituationalStates.Array.size
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[2].ConnectedStates.Array.data[1]'
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[2].ConnectedStates.Array.data[2]'
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[2].ConnectedStates.Array.data[3]'
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29531,8 +29552,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c4bcbabe54cf5449111d2ae80752cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
+  _PlayerPhys: {fileID: 0}
+  _Input: {fileID: 0}
+  _Actions: {fileID: 0}
+  _Sounds: {fileID: 0}
+  _HomingControl: {fileID: 0}
+  _CamHandler: {fileID: 0}
+  _WallHandler: {fileID: 0}
+  _JumpBall: {fileID: 0}
+  _DropShadow: {fileID: 0}
+  _CamTarget: {fileID: 0}
+  _ConstantTarget: {fileID: 0}
+  _CoreCollider: {fileID: 0}
+  _CurrentWall: {fileID: 0}
+  _CharacterAnimator: {fileID: 0}
+  _MainSkin: {fileID: 0}
+  _CharacterTransform: {fileID: 0}
+  _scrapeModi_: 1
+  _wallCheckDistance_: 0
+  _wallLayerMask_:
+    serializedVersion: 2
+    m_Bits: 0
+  _climbModi_: 0
+  _fallOffAtFallSpeed_: 0
+  _positionInActionList: 0
+  _originalVelocity: {x: 0, y: 0, z: 0}
   _skinRotationSpeed: 4
   _runningSpeed: 0
+  _currentClimbingSpeed: 0
+  _isHoldingWall: 0
+  _counter: 0
+  _distanceFromWall: 0
+  _isWall: 0
+  _previDir: {x: 0, y: 0, z: 0}
   _jumpAngle: {x: 0, y: 0, z: 0}
 --- !u!114 &267887526892119795
 MonoBehaviour:
@@ -29565,8 +29618,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7163a1e488e3d14f9298b2b9a5aa305, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
+  _PlayerPhys: {fileID: 0}
+  _Input: {fileID: 0}
+  _Actions: {fileID: 0}
+  _Sounds: {fileID: 0}
+  _HomingControl: {fileID: 0}
+  _CamHandler: {fileID: 0}
+  _WallHandler: {fileID: 0}
+  _JumpBall: {fileID: 0}
+  _DropShadow: {fileID: 0}
+  _CamTarget: {fileID: 0}
+  _ConstantTarget: {fileID: 0}
+  _CoreCollider: {fileID: 0}
+  _CurrentWall: {fileID: 0}
+  _CharacterAnimator: {fileID: 0}
+  _MainSkin: {fileID: 0}
+  _CharacterTransform: {fileID: 0}
+  _scrapeModi_: 1
+  _wallCheckDistance_: 0
+  _wallLayerMask_:
+    serializedVersion: 2
+    m_Bits: 0
+  _climbModi_: 0
+  _fallOffAtFallSpeed_: 0
+  _positionInActionList: 0
+  _originalVelocity: {x: 0, y: 0, z: 0}
   _skinRotationSpeed: 4
-  _climbingSpeed: 0
+  _runningSpeed: 0
+  _currentClimbingSpeed: 0
+  _isHoldingWall: 0
+  _counter: 0
+  _distanceFromWall: 0
+  _isWall: 0
+  _previDir: {x: 0, y: 0, z: 0}
   _jumpAngle: {x: 0, y: 0, z: 0}
 --- !u!114 &4777535912325801024 stripped
 MonoBehaviour:

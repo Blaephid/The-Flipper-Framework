@@ -209,7 +209,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public RaycastHit             _HitGround;         //Used to check if there is ground under the player's feet, and gets data on it like the normal.
 	[HideInInspector]
 	public Vector3                _groundNormal;
-	private Vector3               _previousNormal;        //Used to prevent the player jittering between two different upwards direction due to matching the rotation of one making the other be detected.
+	private List<Vector3>              _listOfPreviousGroundNormals = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3 (0,0,0)};        //Used to prevent the player jittering between two different upwards direction due to matching the rotation of one making the other be detected.
 	private Vector3               _keepNormal;        //Used when in the air to remember up direction when the ground was lost.
 	private float                 _groundingDelay;    //Set when ground is lost and can't enter grounded state again until it's over.
 	[HideInInspector]
@@ -541,10 +541,10 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Assigns the global variables for the current movement, since it's assigned at the end of a frame, changes between frames won't be counted when using this,
 		_speedMagnitude = _totalVelocity.magnitude;
-		Vector3 releVec = GetRelevantVel(_RB.velocity, false);
+		Vector3 releVec = GetRelevantVector(_RB.velocity, false);
 		_horizontalSpeedMagnitude = releVec.magnitude;
 
-		releVec = GetRelevantVel(_coreVelocity, false);
+		releVec = GetRelevantVector(_coreVelocity, false);
 		_currentRunningSpeed = releVec.magnitude;
 
 		//Adds this new speed to a list of 3
@@ -570,7 +570,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//In order to change horizontal movement in the air, the player must not be inputting into a wall. Because moving into a slanted wall can lead to the player sliding up it while still not being grounded.
 		Vector3 spherePosition = transform.position - transform.up;
-		Vector3 direction = GetRelevantVel(_moveInput, false);
+		Vector3 direction = GetRelevantVector(_moveInput, false);
 
 		if (!Physics.SphereCast(spherePosition, _CharacterCapsule.radius, direction, out RaycastHit hit, 5, _Groundmask_))
 		{
@@ -931,7 +931,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			if(_timeOnGround > 0.05)
 			{
 				//Since stationary, remove any relative upwards force in core that might push the player off the ground.
-				velocity = GetRelevantVel(velocity);
+				velocity = GetRelevantVector(velocity);
 				velocity.y = 0;
 				velocity = transform.TransformDirection(velocity);
 			}		
@@ -1027,17 +1027,16 @@ public class S_PlayerPhysics : MonoBehaviour
 		//If on ground, then rotates to match the normal of the floor.
 		if (isGrounded)
 		{
-			//If this new normal is not the same as the normal two frames ago (means there won't be flickering between two different normals at all times).
-			if(_previousNormal != normal)
+			//Change rotation if
+			//- this new normal is not the same as the normal two frames ago (so there won't be flickering between two different normals at all times).
+			//- this normal is the same as 3 frames ago (to prevent character not rotating to goal unless normal changes constantly.)
+			if(_listOfPreviousGroundNormals[1] != normal || _listOfPreviousGroundNormals[2] == normal)
 			{
 				_keepNormal = normal;
 				Quaternion targetRotation = Quaternion.FromToRotation(transform.up, normal) * transform.rotation;
 				transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 0.6f);
-
-				//Every other update will save the normal as the normal two frames ago.
-				if (_isPositiveUpdate)
-					_previousNormal = normal;
 			}
+			
 
 		}
 		//If in the air, then stick to previous normal for a moment before rotating legs towards gravity. This avoids collision issues
@@ -1112,10 +1111,13 @@ public class S_PlayerPhysics : MonoBehaviour
 				}
 			}
 		}
+
+		_listOfPreviousGroundNormals.Insert( 0, normal);
+		_listOfPreviousGroundNormals.RemoveAt(3);
 	}
 
 	//Called anywhere to get what the input velocity is in the player's local space.
-	public Vector3 GetRelevantVel ( Vector3 vel, bool includeY = true ) {
+	public Vector3 GetRelevantVector ( Vector3 vel, bool includeY = true ) {
 		vel = transform.InverseTransformDirection(vel);
 		if (!includeY)
 		{
@@ -1158,7 +1160,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 				_Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
 			}
-			Debug.Log("Set Grounded");
 			_isGrounded = value;
 		}
 	}

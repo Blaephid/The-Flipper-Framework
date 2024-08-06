@@ -300,7 +300,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			EndJumpForce();
 		}
 		//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
-		else if(_isJumping && _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
+		else if(_isJumping && _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
 		{
 			EndJumpForce();
 		}

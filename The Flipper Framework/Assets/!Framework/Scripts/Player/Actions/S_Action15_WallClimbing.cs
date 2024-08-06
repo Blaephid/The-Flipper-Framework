@@ -39,8 +39,8 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 	private void FixedUpdate () {
 		if (_isWall)
 		{
-			CheckCanceling();
 			ClimbingInteraction();
+			CheckCanceling();
 			CheckSpeed();
 			ClimbingPhysics();
 
@@ -81,8 +81,8 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(wallHit.normal));
 
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallClimbing); //Not part of startAction because that is inherited from action12, and other stopActions should be triggered before this (E.G. so CanChangeGrounded is accurate).
 		StartAction();
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallClimbing); //Not part of startaction because that is inherited from action12
 	}
 
 	//Monitors progression along the wall, checking its still there.
@@ -90,8 +90,8 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
-		Vector3 raycastOrigin = transform.position + _MainSkin.up * 0.3f;
-		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.forward, out RaycastHit tempHit, _climbWallDistance, _wallLayerMask_);
+		_raycastOrigin = transform.position + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
+		_isWall = Physics.Raycast(_raycastOrigin, _MainSkin.forward, out RaycastHit tempHit, _climbWallDistance, _wallLayerMask_);
 
 		//First x seconds are too attach to the wall from starting point, so decrease check range after.
 		if (_counter > 0.2f)
@@ -129,7 +129,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_PlayerPhys._currentRunningSpeed = Mathf.Max(Mathf.Abs(_goalClimbingSpeed), 60);
 
 		//If the wall stops being very steep
-		if (!_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.5f) && _goalClimbingSpeed > 5)
+		if (!_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.6f) && _goalClimbingSpeed > 5)
 		{
 			//Sets variables to go to swtich to ground option in FixedUpdate
 			FromWallToGround();
@@ -170,27 +170,26 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		yield return new WaitForFixedUpdate();
 		_Actions._ActionDefault.StartAction();
 
-		newVelocity += inwards * _PlayerPhys.GetRelevantVel(_originalVelocity).x;
+		newVelocity += inwards * _PlayerPhys.GetRelevantVector(_originalVelocity).x;
 		_PlayerPhys.SetCoreVelocity(newVelocity);
 	}
 
 	//Called when wall being climbed is flattening out, to transition to running along the wall as actual floor.
 	private void FromWallToGround () {
-		_PlayerPhys._isGravityOn = true;
 
-		//Set rotation to put feet on ground.
-		Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z), -_MainSkin.up, out _wallHit, _climbWallDistance, _wallLayerMask_);
+		Debug.Log("From Wall To Ground");
 
 		_PlayerPhys._canChangeGrounded = true; //This is also said in stopAction, but this is also called here so the below works.
 		_PlayerPhys.AlignToGround(_wallHit.normal, true); //Rotate so the wall is now under the feet
 		_PlayerPhys.CheckForGround(); //Check under the feet for ground.
 
 		//Set velocity to move along and push down to the ground
-		Vector3 newVec = _MainSkin.forward * (_goalClimbingSpeed);
-		newVec += -_wallHit.normal * 10f;
+		Vector3 newVec = GetUpDirectionOfWall(_wallHit.normal) * (_goalClimbingSpeed);
 
 		_Input.UnLockInput(); //Because this action sets input to lock for 30 frames, undo this immediately when regaing control.
-		StartCoroutine(StayRollingAnimationForAWhile(10));
+		StartCoroutine(StayRollingAnimationForAWhile(7));
+
+		StartCoroutine(_CamHandler._HedgeCam.KeepGoingToHeightForFrames(30, 20, 170));
 
 		_PlayerPhys.SetCoreVelocity(newVec);
 		_Actions._ActionDefault.StartAction();
@@ -205,11 +204,12 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 			_Actions._ActionDefault._isAnimatorControlledExternally = true;
 			_Actions._ActionDefault._animationAction = 1;
 
-			_Input.LockInputForAWhile(1, false, Vector3.zero, S_Enums.LockControlDirection.CharacterForwards);
+			_Input.LockInputForAWhile(0, false, Vector3.zero, S_Enums.LockControlDirection.CharacterForwards);
 		}
 
 		_Actions._ActionDefault._isAnimatorControlledExternally = false;
 		_Actions._ActionDefault._animationAction = 0;
+		_CharacterAnimator.SetTrigger("ChangedState");
 	}
 
 	#endregion

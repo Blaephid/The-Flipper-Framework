@@ -53,19 +53,24 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	public Vector3      _originalVelocity;
 	public float        _skinRotationSpeed;
 
+
+
+
 	[Header("Wall Running")]
-	[HideInInspector]
-	public RaycastHit  _wallHit;
 	[HideInInspector]
 	public float        _runningSpeed;
 	private bool        _isWallOnRight;
 
 
 	[Header("Wall Rules")]
-	[HideInInspector]	public float       _currentClimbingSpeed;
+	[HideInInspector]
+	public RaycastHit  _wallHit;
+	[HideInInspector]   public Vector3      _raycastOrigin;
 	[HideInInspector]	public  bool        _isHoldingWall;
 	[HideInInspector]	public  float       _counter;
 	[HideInInspector]	public  float       _distanceFromWall;
+
+	[HideInInspector]   public float       _currentClimbingSpeed;
 
 	private int         _switchToJump;
 
@@ -245,7 +250,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		else
 		{
 			_CamHandler._HedgeCam.GoBehindCharacter(3, 0, false);
-			_isHoldingWall = _WallHandler.IsInputtingToWall(_wallHit.point - transform.position);
+		
 			_CurrentWall = _wallHit.collider.gameObject;
 		}
 
@@ -333,12 +338,11 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	#region public 
 	public void CheckCanceling () {
 
-		Debug.Log(_PlayerPhys._canChangeGrounded);
-
-		_isHoldingWall = _WallHandler.IsInputtingToWall(_wallHit.point - transform.position);
+		_isHoldingWall = _WallHandler.IsInputtingToWall(_wallHit.point - _raycastOrigin);
+		bool isOnGround = IsOnGround();
 
 		//Cancel action by letting go of skid after .5 seconds
-		if (!_isHoldingWall && _counter > 0.5f || _PlayerPhys._isGrounded)
+		if (!_isHoldingWall && _counter > 0.5f || isOnGround)
 		{
 			_Input.UnLockInput();
 			_Actions._ActionDefault.StartAction();
@@ -350,6 +354,18 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 right = Vector3.Cross(Vector3.up,normal).normalized;
 		return Vector3.Cross(normal, right).normalized;
 	}
+
+
+	//Because canChangeGrounded is set to false on start, use own method when checking for ground, with own values to ensure doesn't count the current wall being climbed as ground.
+	public bool IsOnGround () {
+		if(_PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
+		{
+			Vector3 rayCastStartPosition = transform.position + _wallHit.normal * 0.5f;
+			return Physics.Raycast(rayCastStartPosition, -GetUpDirectionOfWall(_wallHit.normal), out RaycastHit hitGroundTemp, 7, _PlayerPhys._Groundmask_);
+		}
+		return false;
+	}
+
 	#endregion
 
 	/// <summary>

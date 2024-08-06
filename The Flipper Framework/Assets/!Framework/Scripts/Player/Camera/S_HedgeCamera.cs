@@ -395,7 +395,7 @@ public class S_HedgeCamera : MonoBehaviour
 		Vector3 actionModifier = GetDistanceModifiedByAction();
 		float minValue = actionModifier.x;
 		float maxValue = actionModifier.z;
-		float speedPercentage = Mathf.Clamp(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed * actionModifier.y, minValue, maxValue);
+		float speedPercentage = Mathf.Clamp((_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed) * actionModifier.y, minValue, maxValue);
 
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
 		if (_shouldAffectDistanceBySpeed_)
@@ -404,7 +404,7 @@ public class S_HedgeCamera : MonoBehaviour
 			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.1f);
 		}
 
-		//To make the player feel faster than they are, changes camera FOV based on speed.
+		//To make the player feel faster than they are, changes camera Field Of View based on speed.
 		if(_shouldAffectFOVBySpeed_)
 		{
 			float targetFOV = _cameraFOVBySpeed_.Evaluate(speedPercentage) * _baseFOV_;
@@ -446,7 +446,7 @@ public class S_HedgeCamera : MonoBehaviour
 			default:
 				return new Vector3(0, 1, 1);
 			case S_Enums.PrimaryPlayerStates.WallClimbing:
-				return new Vector3(0.5f, 1.3f, 1);
+				return new Vector3(0.6f, 1.3f, 1);
 		}
 	}
 
@@ -497,7 +497,8 @@ public class S_HedgeCamera : MonoBehaviour
 		else if (_isFacingDown)
 		{
 			_isFacingDown = false;
-			StartCoroutine(MoveFromDowntoForward(60));
+			StartCoroutine(KeepGoingToHeightForFrames(10, 10, 200));
+			//StartCoroutine(MoveFromDowntoForward(60));
 		}
 		//If over a certain speed, then camera will start drifting to set height.
 		else if (_shouldSetHeightWhenMoving_ && _PlayerPhys._horizontalSpeedMagnitude >= 10)
@@ -677,9 +678,16 @@ public class S_HedgeCamera : MonoBehaviour
 		RotateDirection(_Skin.forward, 2000, 14, changeHeight);
 	}
 
+	public IEnumerator KeepGoingToHeightForFrames(int frames, float height, float speed ) {
+		for (int i = 0 ; i < frames ; i++)
+		{
+			ChangeHeight(height, speed);
+			yield return new WaitForFixedUpdate();
+		}
+	}
+
 	//Changes only the height of the camera to look up or down.
 	public void ChangeHeight ( float height, float speed ) {
-
 		if (!_isLocked)
 		{
 			//A switch is used so it's less clutured than an if statement.

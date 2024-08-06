@@ -258,7 +258,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		else if (_nextSpeed > newSpeed)
 		{
 			//Gets the local to remove players relevant upwards velocity, then converts back to world for calculations
-			newDir = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity, false).normalized;
+			newDir = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity, false).normalized;
 			newDir = transform.TransformDirection(newDir);
 			newSpeed = _nextSpeed;
 		}

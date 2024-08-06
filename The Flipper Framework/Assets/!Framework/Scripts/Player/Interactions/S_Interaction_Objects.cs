@@ -360,8 +360,8 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (SpringScript._keepHorizontal_)
 		{
 			//Since vertical will be taken over by environment, get horizontal core velocity.
-			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity, false);
-			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVel(direction * SpringScript._springForce_, false); //Combined the spring direction with force to get the only the force horizontally.
+			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity, false);
+			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * SpringScript._springForce_, false); //Combined the spring direction with force to get the only the force horizontally.
 
 			Vector3 combinedVelocityMagnitude = (launchHorizontalVelocity + newCoreVelocity); //The two put together normally so the magnitude is accurate.
 			Vector3 combinedVelocityDirection = (_PlayerPhys.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
@@ -427,7 +427,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
 		//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
 
-		Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVel(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
+		Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
 		float horizontalSpeed = launchHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
 
 		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  _PlayerPhys._horizontalSpeedMagnitude, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.

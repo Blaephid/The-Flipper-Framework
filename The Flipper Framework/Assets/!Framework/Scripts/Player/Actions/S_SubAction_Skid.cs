@@ -181,7 +181,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		if ((_PlayerPhys._inputVelocityDifference > _regularSkidAngleStartPoint_) && !_Input._isInputLocked)
 		{
 			//Uses relevant velocity rather whan world in order to not skid against vertical speed from jumping or falling.
-			Vector3 releVel = _PlayerPhys.GetRelevantVel(_PlayerPhys._RB.velocity);
+			Vector3 releVel = _PlayerPhys.GetRelevantVector(_PlayerPhys._RB.velocity);
 			
 				if (_PlayerPhys._horizontalSpeedMagnitude < _speedToStopAt_)
 				{

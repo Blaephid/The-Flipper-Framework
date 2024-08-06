@@ -140,7 +140,7 @@ public class S_PlayerInput : MonoBehaviour
 			_inputWithoutCamera = new Vector3(moveX, 0, moveY);
 			_camMoveInput = GetInputByLocalTransform(_inputWithoutCamera);
 			_move = _camMoveInput;
-			_constantInputRelevantToCharacter = _PlayerPhys.GetRelevantVel(_camMoveInput);
+			_constantInputRelevantToCharacter = _PlayerPhys.GetRelevantVector(_camMoveInput);
 		}
 
 	}
