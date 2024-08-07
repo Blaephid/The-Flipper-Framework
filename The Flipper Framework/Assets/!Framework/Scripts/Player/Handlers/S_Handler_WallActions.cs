@@ -136,19 +136,26 @@ public class S_Handler_WallActions : MonoBehaviour
 
 		if (_isScanningForRun)
 		{
-			origin += _MainSkin.forward * 0.5f;
-			Debug.DrawRay(origin, _MainSkin.right * Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide()), Color.red, 5f);
+			origin -= _MainSkin.forward * 0.2f;
+			origin -= _MainSkin.right * 0.4f;
+
+			float distance = Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide()) + 0.4f;
 
 			if (IsInputtingInCharacterAngle(_MainSkin.right) && IsRunningFastEnough(50))
 			{
+				Debug.DrawRay(origin, _MainSkin.right * distance, Color.red, 5f);
 				//Checks for nearby walls using raycasts, outputing hits and booleans
-				_isWallRight = Physics.SphereCast(origin, 2f, _MainSkin.right, out _RightWallHit, Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide()), _WallLayerMask_);
+				_isWallRight = Physics.SphereCast(origin, 2f, _MainSkin.right, out _RightWallHit, distance, _WallLayerMask_);
 				_isWallRight = IsWallNotBanned(_RightWallHit);
 			}
 
 			else if (IsInputtingInCharacterAngle(-_MainSkin.right) && IsRunningFastEnough(50))
 			{
-				_isWallLeft = Physics.SphereCast(origin, 2f, -_MainSkin.right, out _LeftWallHit, Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide() + 1), _WallLayerMask_);
+				origin += _MainSkin.right * 0.8f;
+
+				Debug.DrawRay(origin, -_MainSkin.right * distance, Color.red, 5f);
+
+				_isWallLeft = Physics.SphereCast(origin, 2f, -_MainSkin.right, out _LeftWallHit, distance, _WallLayerMask_);
 				_isWallLeft = IsWallNotBanned(_LeftWallHit);
 			}
 		}
@@ -224,12 +231,13 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	public bool TryWallRun () {
-
+		//If has detected a wall on one of the sides
 		if(_isWallLeft || _isWallRight)
 		{
+			//For less lines, set the hit to be used, prioritising the right side than the left
 			RaycastHit RelevantHit = _isWallRight ? _RightWallHit : _LeftWallHit;
 
-			if (IsWallVerticalEnough(RelevantHit.normal, 0.4f))
+  			if (IsWallVerticalEnough(RelevantHit.normal, 0.4f))
 			{
  				if (IsInputtingTowardsWall(RelevantHit.point, 75))
 				{
@@ -257,6 +265,8 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	public bool IsInputtingToWall ( Vector3 directionToWall ) {
+		Debug.DrawRay(transform.position, _Input._constantInputRelevantToCharacter, Color.cyan, 5f);
+
 		if(_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.5f)
 		{
 			directionToWall.y = 0;

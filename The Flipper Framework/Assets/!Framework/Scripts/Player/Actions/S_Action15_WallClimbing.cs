@@ -45,6 +45,11 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 			HandleInputs();
 		}
+		else
+		{
+			_Input.UnLockInput();
+			_Actions._ActionDefault.StartAction();
+		}
 	}
 
 	#endregion
@@ -85,14 +90,14 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		{
 			_CharacterAnimator.SetInteger("Action", 1);
 			_wallHit = tempHit;
-		}
+			_CurrentWall = _wallHit.collider.gameObject;
 
-		//Setting global variables for other scripts
+		}
 
 		//Ensures the player faces the wall
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(_wallHit.normal));
-		_CurrentWall = _wallHit.collider.gameObject;
 
+		//Setting global variables for other scripts
 		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.2f) ;
 		_Actions._dashAngle = _wallHit.normal;
 

@@ -134,7 +134,7 @@ public class S_PlayerInput : MonoBehaviour
 		}
 
 		//Calculate move direction
-		else if (_Camera != null)
+		if (_Camera != null)
 		{
 			//Make movement relative to camera and character
 			_inputWithoutCamera = new Vector3(moveX, 0, moveY);
@@ -155,7 +155,7 @@ public class S_PlayerInput : MonoBehaviour
 
 			//Affect input by camera
 			transformedInput = Quaternion.FromToRotation(_Camera.up, upDirection) * (_Camera.rotation * inputDirection);
-			_camMoveInput = transformedInput;
+			//_camMoveInput = transformedInput;
 
 			//Makes input relevant to character.
 			transformedInput = transform.InverseTransformDirection(transformedInput);

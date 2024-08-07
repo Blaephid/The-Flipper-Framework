@@ -147,8 +147,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 		if(_CurrentAnimator == _CharacterAnimator)
 		{
-			Debug.Log(action);
-
 			//Action
 			_CharacterAnimator.SetInteger("Action", action);
 			//Vertical speed

@@ -78,6 +78,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private int         _switchToJump;
 
 	[HideInInspector]	public bool         _isWall;
+	private Vector3                         _previousNormal;
 	[HideInInspector]	public  Vector3     _previDirection;
 	private Vector3     _previLocation;
 
@@ -110,11 +111,16 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private void FixedUpdate () {
 		if (_isWall)
 		{
-			CheckCanceling();
 			RunningInteraction();
 			RunningPhysics();
 
+			CheckCanceling();
 			HandleInputs();
+		}
+		else
+		{
+			_Input.UnLockInput();
+			_Actions._ActionDefault.StartAction();
 		}
 	}
 
@@ -206,8 +212,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		//Get information of wall
 		int wallDirection = _isWallOnRight ? 1: -1;
 		Vector3 raycastOrigin = transform.position + _MainSkin.forward * 0.3f;
-		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.right * wallDirection, out _wallHit, _checkDistance, _wallLayerMask_);
-
+		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.right * wallDirection, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
+		
+		//After time wallCheck enters its proper range, because at first needs to ensure reaches the wall.
 		if (_counter > 0.3f)
 		{
 			_checkDistance = _wallCheckDistance_.y;
@@ -218,6 +225,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.HandleAnimator(12);
 		_CharacterAnimator.SetBool("WallRight", _isWallOnRight);
 
+		//If wall is lost or stops being runnable, then restore input and return to normal control.
 		if (!_isWall || !_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.6f))
 		{
 			_Input.UnLockInput();
@@ -225,23 +233,17 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		}
 		else
 		{
+			_wallHit = tempHit;
 			_CamHandler._HedgeCam.GoBehindCharacter(3, 0, false);	
 			_CurrentWall = _wallHit.collider.gameObject;
 		}
 
-
+		_wallForward = GetWallForward(_wallHit.normal);
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _wallForward, Vector2.zero, GetUpDirectionOfWall(_wallHit.normal));
 
 		//For actions to exit the wall
 		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.4f);
 		_Actions._dashAngle = Vector3.Lerp(_wallHit.normal, _wallForward, 0.5f);
-
-		//If the wall stops being very steep
-		//if (!_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.6f))
-		//{
-		//	_Input.UnLockInput();
-		//	_Actions._ActionDefault.StartAction();
-		//}
 	}
 
 	private void RunningPhysics () {
@@ -250,27 +252,23 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		if (_isWall) //Incase RunningInteraction lost the wall
 		{
 			Vector3 wallNormal = _wallHit.normal;
-			_wallForward = GetWallForward(_wallHit.normal);
 
+			_currentClimbingSpeed = Mathf.Lerp(_currentClimbingSpeed, -50, 0.02f);
+
+			newVec.y = 0;
+			newVec += GetUpDirectionOfWall(wallNormal) * _currentClimbingSpeed;
+
+
+			float forceToWall = Mathf.Max(10, _runningSpeed * 0.2f);
+			forceToWall += Vector3.Angle(wallNormal, _previousNormal) * 2; //Too ensure sticks to wall if it's turning away.
+			_previousNormal = wallNormal;
+
+			newVec += -wallNormal * forceToWall;
+		}
+		else
+		{
 			//Apply scraping speed
-			newVec = new Vector3(newVec.x, -_currentClimbingSpeed, newVec.z);
-
-
-			////Applying force against wall for when going round curves on the outside.
-			//float forceToWall = 1f;
-			//if (_runningSpeed > 100)
-			//	forceToWall += _runningSpeed / 7;
-			//else if (_runningSpeed > 150)
-			//	forceToWall += _runningSpeed / 8;
-			//else if (_runningSpeed > 200)
-			//	forceToWall += _runningSpeed / 9;
-			//else
-			//	forceToWall += _runningSpeed / 10;
-
-			////
-			//newVec += forceToWall * -wallNormal;
-			if (_counter < 0.3f)
-				newVec += -wallNormal * Mathf.Max(5, _runningSpeed * 0.1f);
+			newVec = new Vector3(newVec.x, _currentClimbingSpeed, newVec.z);
 		}
 
 		_PlayerPhys.SetCoreVelocity(newVec);
@@ -286,7 +284,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	public void SetupRunning ( RaycastHit wallHit, bool wallRight ) {
 		Vector3 wallDirection = wallHit.point - transform.position;
-		_PlayerPhys.SetPlayerPosition(wallHit.point + (wallHit.normal * _distanceFromWall));
 
 		//Wall values
 		_wallHit = wallHit;
@@ -339,8 +336,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		//Cancel action by letting go of skid after .5 seconds
 		if (!_isHoldingWall && _counter > 0.5f || isOnGround)
 		{
-			_Input.UnLockInput();
-			_Actions._ActionDefault.StartAction();
+			_isWall = false;
 		}
 	}
 
@@ -363,6 +359,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		if(_PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
 			Vector3 rayCastStartPosition = transform.position + _wallHit.normal * 0.5f;
+			float range = (_CoreCollider.height / 2) + _CoreCollider.radius / 2 + 1.5f;
 			return Physics.Raycast(rayCastStartPosition, -GetUpDirectionOfWall(_wallHit.normal), out RaycastHit hitGroundTemp, 7, _PlayerPhys._Groundmask_);
 		}
 		return false;
