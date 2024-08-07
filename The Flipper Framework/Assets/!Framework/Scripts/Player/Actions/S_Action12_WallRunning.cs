@@ -38,7 +38,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	#region Stats
 	[Header("Wall Stats")]
 	[HideInInspector] public  float       _scrapeModi_ = 1f;
-	[HideInInspector] public  float       _wallCheckDistance_;
+	[HideInInspector] public  Vector2       _wallCheckDistance_;
 	[HideInInspector] public  LayerMask   _wallLayerMask_;
 	[HideInInspector] public  float       _climbModi_;
 	[HideInInspector] public float        _fallOffAtFallSpeed_;
@@ -69,16 +69,19 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	[HideInInspector]	public  bool        _isHoldingWall;
 	[HideInInspector]	public  float       _counter;
 	[HideInInspector]	public  float       _distanceFromWall;
+	[HideInInspector]   public float       _checkDistance;
 
 	[HideInInspector]   public float       _currentClimbingSpeed;
+
+	private Vector3     _wallForward;
 
 	private int         _switchToJump;
 
 	[HideInInspector]	public bool         _isWall;
-	[HideInInspector]	public  Vector3     _previDir;
-	private Vector3     _previLoc;
+	[HideInInspector]	public  Vector3     _previDirection;
+	private Vector3     _previLocation;
 
-	[HideInInspector]	public Vector3      _jumpAngle;
+	
 	#endregion
 	#endregion
 
@@ -105,29 +108,28 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	private void FixedUpdate () {
-
 		if (_isWall)
 		{
 			CheckCanceling();
 			RunningInteraction();
 			RunningPhysics();
-		}
-		else if (_switchToJump > 0)
-		{
-			JumpfromWall();
+
+			HandleInputs();
 		}
 	}
 
 	public bool AttemptAction () {
 		if (enabled) return false;
 
-		_WallHandler._isScanningForRun = true;
-		if (_WallHandler.TryWallRun()) { return true; }
-
 		if (this is S_Action15_WallClimbing)
 		{
 			_WallHandler._isScanningForClimb = true;
 			if (_WallHandler.TryWallClimb()) { return true; }
+		}
+		else
+		{
+			_WallHandler._isScanningForRun = true;
+			if (_WallHandler.TryWallRun()) { return true; }
 		}
 
 		return false;
@@ -138,7 +140,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_isWall = true;
 		_counter = 0;
 
-		_distanceFromWall = _CoreCollider.radius * 1.15f;
+		_distanceFromWall = _CoreCollider.radius * 1.25f;
 
 		//Universal
 		_DropShadow.SetActive(false);
@@ -184,8 +186,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_PlayerPhys._isGravityOn = true;
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
-
-		Debug.Log("STOP WALL ACTION");
 	}
 	#endregion
 
@@ -201,133 +201,79 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	private void RunningInteraction () {
-		//Prevents normal movement in input and physics
-		_Input.LockInputForAWhile(3f, false, Vector3.zero);
+		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
-		_CharacterAnimator.SetFloat("GroundSpeed", _runningSpeed);
+		//Get information of wall
+		int wallDirection = _isWallOnRight ? 1: -1;
+		Vector3 raycastOrigin = transform.position + _MainSkin.forward * 0.3f;
+		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.right * wallDirection, out _wallHit, _checkDistance, _wallLayerMask_);
+
+		if (_counter > 0.3f)
+		{
+			_checkDistance = _wallCheckDistance_.y;
+		}
+
+		//Animator
+		_PlayerPhys._currentRunningSpeed = _runningSpeed;
+		_Actions._ActionDefault.HandleAnimator(12);
 		_CharacterAnimator.SetBool("WallRight", _isWallOnRight);
 
-		//Detect current wall
-		if (_isWallOnRight)
+		if (!_isWall || !_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.6f))
 		{
-			if (_counter < 0.3f)
-				_isWall = Physics.Raycast(transform.position, _MainSkin.right, out _wallHit, _wallCheckDistance_ * 2.5f, _wallLayerMask_);
-			else
-			{
-				_isWall = Physics.Raycast(transform.position, _MainSkin.right, out _wallHit, _wallCheckDistance_ * 1.6f, _wallLayerMask_);
-
-				if (!_isWall)
-				{
-					Vector3 backPos = Vector3.Lerp(transform.position, _previLoc, 0.7f);
-					_isWall = Physics.Raycast(backPos, _MainSkin.right, out _wallHit, _wallCheckDistance_ * 2.1f, _wallLayerMask_);
-				}
-			}
+			_Input.UnLockInput();
+			_Actions._ActionDefault.StartAction();
 		}
 		else
 		{
-			if (_counter < 0.3f)
-				_isWall = Physics.Raycast(transform.position, -_MainSkin.right, out _wallHit, _wallCheckDistance_ * 2.5f, _wallLayerMask_);
-			else
-			{
-				_isWall = Physics.Raycast(transform.position, -_MainSkin.right, out _wallHit, _wallCheckDistance_ * 1.6f, _wallLayerMask_);
-				if (!_isWall)
-				{
-					Vector3 backPos = Vector3.Lerp(transform.position, _previLoc, 0.8f);
-					_isWall = Physics.Raycast(backPos, -_MainSkin.right, out _wallHit, _wallCheckDistance_ * 2.1f, _wallLayerMask_);
-				}
-			}
-
-		}
-
-		if (!_isWall)
-		{
-			_CharacterAnimator.SetInteger("Action", 0);
-			_CharacterAnimator.SetBool("Grounded", false);
-
-			StartCoroutine(loseWall());
-
-		}
-		else
-		{
-			_CamHandler._HedgeCam.GoBehindCharacter(3, 0, false);
-		
+			_CamHandler._HedgeCam.GoBehindCharacter(3, 0, false);	
 			_CurrentWall = _wallHit.collider.gameObject;
 		}
 
 
-		//If jumping off wall
-		if (_Input.JumpPressed)
-		{
-			_isWall = false;
-			_PlayerPhys.transform.position = new Vector3(_wallHit.point.x + _wallHit.normal.x * 0.9f, _wallHit.point.y + _wallHit.normal.y * 0.5f, _wallHit.point.z + _wallHit.normal.z * 0.9f);
-			//CharacterAnimator.transform.forward = Vector3.Lerp(CharacterAnimator.transform.forward, wallToRun.normal, 0.3f);
+		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _wallForward, Vector2.zero, GetUpDirectionOfWall(_wallHit.normal));
 
-			//This bool causes the jump physics to be done next frame, making things much smoother. 2 Represents jumping from a wallrun
-			_switchToJump = 2;
-		}
+		//For actions to exit the wall
+		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.4f);
+		_Actions._dashAngle = Vector3.Lerp(_wallHit.normal, _wallForward, 0.5f);
+
+		//If the wall stops being very steep
+		//if (!_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.6f))
+		//{
+		//	_Input.UnLockInput();
+		//	_Actions._ActionDefault.StartAction();
+		//}
 	}
 
 	private void RunningPhysics () {
-		Vector3 wallNormal = _wallHit.normal;
-		Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
+		Vector3 newVec = _wallForward * _runningSpeed;
 
-
-		if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
-			wallForward = -wallForward;
-
-		_previDir = wallForward;
-		_previLoc = transform.position;
-
-		//Set direction facing
-		_MainSkin.rotation = Quaternion.LookRotation(wallForward, transform.up);
-		//characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallNormal, 0.2f));
-
-
-		//Decide speed to slide down wall.
-		if (_currentClimbingSpeed > 10 && _currentClimbingSpeed < 20)
+		if (_isWall) //Incase RunningInteraction lost the wall
 		{
-			_currentClimbingSpeed *= (1.001f * _scrapeModi_);
+			Vector3 wallNormal = _wallHit.normal;
+			_wallForward = GetWallForward(_wallHit.normal);
+
+			//Apply scraping speed
+			newVec = new Vector3(newVec.x, -_currentClimbingSpeed, newVec.z);
+
+
+			////Applying force against wall for when going round curves on the outside.
+			//float forceToWall = 1f;
+			//if (_runningSpeed > 100)
+			//	forceToWall += _runningSpeed / 7;
+			//else if (_runningSpeed > 150)
+			//	forceToWall += _runningSpeed / 8;
+			//else if (_runningSpeed > 200)
+			//	forceToWall += _runningSpeed / 9;
+			//else
+			//	forceToWall += _runningSpeed / 10;
+
+			////
+			//newVec += forceToWall * -wallNormal;
+			if (_counter < 0.3f)
+				newVec += -wallNormal * Mathf.Max(5, _runningSpeed * 0.1f);
 		}
-		else if (_currentClimbingSpeed > 29)
-		{
-			_currentClimbingSpeed *= (1.0015f * _scrapeModi_);
-		}
-		else if (_currentClimbingSpeed > 2)
-		{
-			_currentClimbingSpeed += (1.0018f * _scrapeModi_);
-		}
-		else
-		{
-			_currentClimbingSpeed += (1.002f * _scrapeModi_);
-		}
-
-		//Apply scraping speed
-		Vector3 newVec = wallForward * _runningSpeed;
-		newVec = new Vector3(newVec.x, -_currentClimbingSpeed, newVec.z);
-
-
-
-
-		//Applying force against wall for when going round curves on the outside.
-		float forceToWall = 1f;
-		if (_runningSpeed > 100)
-			forceToWall += _runningSpeed / 7;
-		else if (_runningSpeed > 150)
-			forceToWall += _runningSpeed / 8;
-		else if (_runningSpeed > 200)
-			forceToWall += _runningSpeed / 9;
-		else
-			forceToWall += _runningSpeed / 10;
-
-		//
-		newVec += forceToWall * -wallNormal;
-		if (_counter < 0.3f)
-			newVec += -wallNormal * 3;
 
 		_PlayerPhys.SetCoreVelocity(newVec);
-
-		//Debug.Log(scrapingSpeed);
-		//Debug.Log(Player.p_rigidbody.velocity.y);
 	}
 	#endregion
 
@@ -336,6 +282,55 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region public 
+
+
+	public void SetupRunning ( RaycastHit wallHit, bool wallRight ) {
+		Vector3 wallDirection = wallHit.point - transform.position;
+		_PlayerPhys.SetPlayerPosition(wallHit.point + (wallHit.normal * _distanceFromWall));
+
+		//Wall values
+		_wallHit = wallHit;
+		_isWallOnRight = wallRight;
+
+		_runningSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+		_currentClimbingSpeed = _PlayerPhys._totalVelocity.y * 0.6f;
+
+		_checkDistance = Vector3.Distance(wallHit.point, transform.position) + 1; //Ensures first checks for x seconds will find the wall.
+
+		//Visual
+		_CharacterAnimator.SetInteger("Action", 14);
+		_wallForward = GetWallForward(_wallHit.normal);
+
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
+		StartAction();
+
+		////If running with the wall on the right
+		//if (wallRight)
+		//{
+		//	_isWallOnRight = true;
+
+		//	Vector3 wallForward = Vector3.Cross(wallHit.normal, transform.up);
+		//	if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
+		//		wallForward = -wallForward;
+
+
+		//	//Set direction facing
+		//	_MainSkin.rotation = Quaternion.LookRotation(wallForward, transform.up);
+
+		//}
+		////If running with the wall on the left
+		//else
+		//{
+		//	_isWallOnRight = false;
+		//	Vector3 wallForward = Vector3.Cross(wallHit.normal, transform.up);
+		//	if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
+		//		wallForward = -wallForward;
+
+		//	//Set direction facing
+		//	_MainSkin.rotation = Quaternion.LookRotation(wallForward, transform.up);
+		//}
+	}
+
 	public void CheckCanceling () {
 
 		_isHoldingWall = _WallHandler.IsInputtingToWall(_wallHit.point - _raycastOrigin);
@@ -355,6 +350,13 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		return Vector3.Cross(normal, right).normalized;
 	}
 
+	public Vector3 GetWallForward (Vector3 normal) {
+		Vector3 forward = Vector3.Cross(normal, transform.up);
+
+		if ((_MainSkin.forward - forward).sqrMagnitude > (_MainSkin.forward - -forward).sqrMagnitude)
+			forward = -forward;
+		return forward;
+	}
 
 	//Because canChangeGrounded is set to false on start, use own method when checking for ground, with own values to ensure doesn't count the current wall being climbed as ground.
 	public bool IsOnGround () {
@@ -432,113 +434,16 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	#endregion
 
 
-	public void RunningSetup ( RaycastHit wallHit, bool wallRight ) {
-		Vector3 wallDirection = wallHit.point - transform.position;
-		_PlayerPhys._RB.AddForce(wallDirection * 10f);
-
-		_PlayerPhys.SetPlayerPosition(wallHit.point + (wallHit.normal * _distanceFromWall));
-
-
-		_wallHit = wallHit;
-
-		_CharacterAnimator.SetInteger("Action", 14);
-		//CharacterAnimator.SetBool("Grounded", true);
-
-		_runningSpeed = _PlayerPhys._horizontalSpeedMagnitude;
-		_currentClimbingSpeed = _PlayerPhys._RB.velocity.y * 0.7f;
-
-		//If running with the wall on the right
-		if (wallRight)
-		{
-			_isWallOnRight = true;
-			//CharacterAnimator.transform.right = wallDirection.normalized;
-
-			Vector3 wallForward = Vector3.Cross(wallHit.normal, transform.up);
-			if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
-				wallForward = -wallForward;
-
-			//Set direction facing
-			_MainSkin.rotation = Quaternion.LookRotation(wallForward, transform.up);
-			//characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
-		}
-		//If running with the wall on the left
-		else
-		{
-			_isWallOnRight = false;
-			//CharacterAnimator.transform.right = wallDirection.normalized;
-			Vector3 wallForward = Vector3.Cross(wallHit.normal, transform.up);
-			if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
-				wallForward = -wallForward;
-
-			//Set direction facing
-			_MainSkin.rotation = Quaternion.LookRotation(wallForward, transform.up);
-			//characterTransform.rotation = Quaternion.LookRotation(wallForward, Vector3.Lerp(transform.up, wallHit.normal, 0.2f));
-		}
-
-		//Camera
-		Vector3 newCamPos = _CamTarget.position + (wallHit.normal.normalized * 1.8f);
-		newCamPos.y += 3f;
-		_CamTarget.position = newCamPos;
-		_CamHandler._HedgeCam.SetCamera(_MainSkin.forward, 2f, 0, 0.001f, 1.1f);
-		//Cam._HedgeCam._cameraMaxDistance_ = Cam._initialDistance - 2f;
-
-	}
-
-
 	/// <summary>
 	/// Other
 	/// </summary>
 	/// 
 
 	private IEnumerator loseWall () {
-		Vector3 newVec = _previDir * _runningSpeed;
+		Vector3 newVec = _previDirection * _runningSpeed;
 		yield return null;
 
 		_MainSkin.forward = newVec.normalized;
 		_PlayerPhys.SetCoreVelocity(newVec);
-	}
-
-	void JumpfromWall () {
-		Vector3 faceDir;
-
-		if (_switchToJump == 2)
-		{
-
-			_jumpAngle = Vector3.Lerp(_wallHit.normal, transform.up, 0.8f);
-
-			Vector3 wallNormal = _wallHit.normal;
-			Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
-
-
-			if ((_MainSkin.forward - wallForward).sqrMagnitude > (_MainSkin.forward - -wallForward).sqrMagnitude)
-				wallForward = -wallForward;
-
-
-			Vector3 newVec = wallForward;
-
-
-			//Debug.Log(jumpAngle);
-			if (_isWallOnRight)
-			{
-				newVec = Vector3.Lerp(newVec, -_MainSkin.right, 0.25f);
-				faceDir = Vector3.Lerp(newVec, -_MainSkin.right, 0.1f);
-				newVec *= _runningSpeed;
-			}
-			else
-			{
-				newVec = Vector3.Lerp(newVec, _MainSkin.right, 0.25f);
-				faceDir = Vector3.Lerp(newVec, _MainSkin.right, 0.1f);
-				newVec *= _runningSpeed;
-				//newVec += (CharacterAnimator.transform.right * 0.3f);
-			}
-
-			//CharacterAnimator.transform.forward = newVec.normalized;
-			_PlayerPhys.SetCoreVelocity(newVec);
-
-		}
-
-		_switchToJump = 0;
-
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump);
 	}
 }

@@ -15,7 +15,6 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 	#region trackers
 	[Header("Wall Climbing")]
 	private float        _goalClimbingSpeed;
-	private float       _climbWallDistance;
 
 	#endregion
 	#endregion
@@ -56,34 +55,6 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 	/// 
 	#region private
 
-	public void SetupClimbing ( RaycastHit wallHit ) {
-
-		//Set wall and type of movement
-		_wallHit = wallHit;
-
-		//Set speed to start movement on.
-		_currentClimbingSpeed = _PlayerPhys._totalVelocity.y;
-		if (_currentClimbingSpeed < 0)
-		{
-			_currentClimbingSpeed = Mathf.Lerp(_currentClimbingSpeed, 0, 0.5f);
-		}
-		_currentClimbingSpeed = Mathf.Clamp(_currentClimbingSpeed, -20, 90);
-
-		//Set the climbing speed based on player's speed, but won't reach it until lerped.
-		_goalClimbingSpeed = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * 0.8f, _currentClimbingSpeed);
-		_goalClimbingSpeed *= _climbModi_;
-
-		//Sets min and max climbing speed
-		_goalClimbingSpeed = 8f * (int)(_goalClimbingSpeed / 8);
-		_goalClimbingSpeed = Mathf.Clamp(_goalClimbingSpeed, 48, 176);
-
-		_climbWallDistance = Vector3.Distance(wallHit.point, transform.position) + 1; //Ensures first checks for x seconds will find the wall.
-
-		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(wallHit.normal));
-
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallClimbing); //Not part of startAction because that is inherited from action12, and other stopActions should be triggered before this (E.G. so CanChangeGrounded is accurate).
-		StartAction();
-	}
 
 	//Monitors progression along the wall, checking its still there.
 	void ClimbingInteraction () {
@@ -91,12 +62,12 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
 		_raycastOrigin = transform.position + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
-		_isWall = Physics.Raycast(_raycastOrigin, _MainSkin.forward, out RaycastHit tempHit, _climbWallDistance, _wallLayerMask_);
+		_isWall = Physics.Raycast(_raycastOrigin, _MainSkin.forward, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
 
 		//First x seconds are too attach to the wall from starting point, so decrease check range after.
 		if (_counter > 0.2f)
 		{
-			_climbWallDistance = _wallCheckDistance_;
+			_checkDistance = _wallCheckDistance_.x;
 			_CamHandler._HedgeCam.ChangeHeight(Mathf.Sign(_goalClimbingSpeed) * -50, 80); //Moves camera to look up or down (based on which direction moving)
 		}
 		else
@@ -177,8 +148,6 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 	//Called when wall being climbed is flattening out, to transition to running along the wall as actual floor.
 	private void FromWallToGround () {
 
-		Debug.Log("From Wall To Ground");
-
 		_PlayerPhys._canChangeGrounded = true; //This is also said in stopAction, but this is also called here so the below works.
 		_PlayerPhys.AlignToGround(_wallHit.normal, true); //Rotate so the wall is now under the feet
 		_PlayerPhys.CheckForGround(); //Check under the feet for ground.
@@ -213,4 +182,33 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 	}
 
 	#endregion
+
+	public void SetupClimbing ( RaycastHit wallHit ) {
+
+		//Set wall and type of movement
+		_wallHit = wallHit;
+
+		//Set speed to start movement on.
+		_currentClimbingSpeed = _PlayerPhys._totalVelocity.y;
+		if (_currentClimbingSpeed < 0)
+		{
+			_currentClimbingSpeed = Mathf.Lerp(_currentClimbingSpeed, 0, 0.5f);
+		}
+		_currentClimbingSpeed = Mathf.Clamp(_currentClimbingSpeed, -20, 90);
+
+		//Set the climbing speed based on player's speed, but won't reach it until lerped.
+		_goalClimbingSpeed = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * 0.8f, _currentClimbingSpeed);
+		_goalClimbingSpeed *= _climbModi_;
+
+		//Sets min and max climbing speed
+		_goalClimbingSpeed = 8f * (int)(_goalClimbingSpeed / 8);
+		_goalClimbingSpeed = Mathf.Clamp(_goalClimbingSpeed, 48, 176);
+
+		_checkDistance = Vector3.Distance(wallHit.point, transform.position) + 1; //Ensures first checks for x seconds will find the wall.
+
+		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(wallHit.normal));
+
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallClimbing); //Not part of startAction because that is inherited from action12, and other stopActions should be triggered before this (E.G. so CanChangeGrounded is accurate).
+		StartAction();
+	}
 }

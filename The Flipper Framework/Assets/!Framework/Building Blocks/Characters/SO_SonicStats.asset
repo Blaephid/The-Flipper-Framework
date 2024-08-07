@@ -2595,7 +2595,7 @@ MonoBehaviour:
     upreelSpeedKeptAfter: 0.3
     minimumSpeedCarried: 30
   WallActionsStats:
-    wallCheckDistance: 9
+    wallCheckDistance: {x: 8, y: 2}
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2
@@ -2604,7 +2604,7 @@ MonoBehaviour:
     climbModifier: 1
     fallOffAtFallSpeed: 15
   StartWallRunningStats:
-    wallCheckDistance: 1.2
+    wallCheckDistance: {x: 10, y: 6}
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2

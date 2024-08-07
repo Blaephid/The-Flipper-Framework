@@ -36,7 +36,7 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private float _wallCheckDistance_;
+	private Vector2 _wallCheckDistance_;
 	private LayerMask _WallLayerMask_;
 	#endregion
 
@@ -92,8 +92,13 @@ public class S_Handler_WallActions : MonoBehaviour
 		{
 			yield return new WaitForFixedUpdate();
 
+			//Set these to false so they're considered that way if not scanning, or later scans fail.
+			_isWallFront = false;
+			_isWallRight = false;
+			_isWallLeft = false;
+
 			//If High enough above ground and in an action calling WallRunning's AttemptAction()
-			if ((_isScanningForRun || _isScanningForClimb) && IsEnoughAboveGround())
+			if (IsEnoughAboveGround())
 			{
 				_currentSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 				_saveVelocity = _PlayerPhys._RB.velocity;
@@ -107,6 +112,7 @@ public class S_Handler_WallActions : MonoBehaviour
 			}
 			_isScanningForRun = false; //Set to false every frame but will be counteracted in Action WallRunning's AttemptAction()
 			_isScanningForClimb = false;
+
 		}
 	}
 
@@ -114,32 +120,37 @@ public class S_Handler_WallActions : MonoBehaviour
 	private void CheckForWall () {
 		Vector3 origin = transform.position - _MainSkin.up * 0.4f;
 
-		_isWallFront = false;
-		if (IsInputtingInCharacterAngle(_MainSkin.forward) && IsRunningFastEnough(40))
+		if (_isScanningForClimb)
 		{
-			float distance = Mathf.Max(_wallCheckDistance_, _currentSpeed * Time.fixedDeltaTime + 2);
+			if (IsInputtingInCharacterAngle(_MainSkin.forward) && IsRunningFastEnough(40))
+			{
+				float distance = Mathf.Max(_wallCheckDistance_.x, _currentSpeed * Time.fixedDeltaTime + 2);
 
-			//Checks for wall in front using raycasts, outputing hits and booleans
-			_isWallFront = Physics.SphereCast(origin, 2f, _MainSkin.forward, out _FrontWallHit, distance, _WallLayerMask_);
-			Debug.DrawRay(origin, _MainSkin.forward * distance, Color.red);
+				//Checks for wall in front using raycasts, outputing hits and booleans
+				_isWallFront = Physics.SphereCast(origin, 2f, _MainSkin.forward, out _FrontWallHit, distance, _WallLayerMask_);
 
-			//Checks if the wall can be used. Banned walls are set when the player jumps off the wall.
-			_isWallFront = IsWallNotBanned(_FrontWallHit);
+				//Checks if the wall can be used. Banned walls are set when the player jumps off the wall.
+				_isWallFront = IsWallNotBanned(_FrontWallHit);
+			}
 		}
 
-		_isWallRight = false;
-		if (IsInputtingInCharacterAngle(_MainSkin.right) && IsRunningFastEnough(50))
+		if (_isScanningForRun)
 		{
-			//Checks for nearby walls using raycasts, outputing hits and booleans
-			_isWallRight = Physics.SphereCast(origin, 3f, _MainSkin.right, out _RightWallHit, Mathf.Max(_wallCheckDistance_, GetSpeedToTheSide() + 1), _WallLayerMask_);
-			_isWallRight = IsWallNotBanned(_RightWallHit);
-		}
+			origin += _MainSkin.forward * 0.5f;
+			Debug.DrawRay(origin, _MainSkin.right * Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide()), Color.red, 5f);
 
-		_isWallLeft = false;
-		if (IsInputtingInCharacterAngle(-_MainSkin.right) && IsRunningFastEnough(50))
-		{
-			_isWallLeft = Physics.SphereCast(origin, 3f, -_MainSkin.right, out _LeftWallHit, Mathf.Max(_wallCheckDistance_, GetSpeedToTheSide() + 1), _WallLayerMask_);
-			_isWallLeft = IsWallNotBanned(_LeftWallHit);
+			if (IsInputtingInCharacterAngle(_MainSkin.right) && IsRunningFastEnough(50))
+			{
+				//Checks for nearby walls using raycasts, outputing hits and booleans
+				_isWallRight = Physics.SphereCast(origin, 2f, _MainSkin.right, out _RightWallHit, Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide()), _WallLayerMask_);
+				_isWallRight = IsWallNotBanned(_RightWallHit);
+			}
+
+			else if (IsInputtingInCharacterAngle(-_MainSkin.right) && IsRunningFastEnough(50))
+			{
+				_isWallLeft = Physics.SphereCast(origin, 2f, -_MainSkin.right, out _LeftWallHit, Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide() + 1), _WallLayerMask_);
+				_isWallLeft = IsWallNotBanned(_LeftWallHit);
+			}
 		}
 	}
 
@@ -152,7 +163,7 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	private float GetSpeedToTheSide () {
 		Vector3 releventVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity, false);
-		return Mathf.Abs(releventVelocity.x);
+		return Mathf.Abs(releventVelocity.x * Time.deltaTime * 1.5f);
 	}
 
 	private bool IsWallNotBanned ( RaycastHit HitWall ) {
@@ -176,9 +187,11 @@ public class S_Handler_WallActions : MonoBehaviour
 		return Mathf.Abs(normal.y) < limit;
 	}
 
-	private bool IsInputtingTowardsWall ( Vector3 hitPoint ) {
+	private bool IsInputtingTowardsWall ( Vector3 hitPoint, float angleLimit = 20 ) {
+		if(_Input._constantInputRelevantToCharacter.sqrMagnitude < 0.5) { return false; }
+
 		Vector3 directionToWall = hitPoint - transform.position;
-		return Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter) < 20;
+		return Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter) < angleLimit;
 	}
 
 	private bool IsFacingWallEnough ( Vector3 wallNormal ) {
@@ -214,13 +227,13 @@ public class S_Handler_WallActions : MonoBehaviour
 
 		if(_isWallLeft || _isWallRight)
 		{
-			RaycastHit RelevantHit = _isWallLeft ? _LeftWallHit : _RightWallHit;
+			RaycastHit RelevantHit = _isWallRight ? _RightWallHit : _LeftWallHit;
 
 			if (IsWallVerticalEnough(RelevantHit.normal, 0.4f))
 			{
-				if (IsInputtingTowardsWall(RelevantHit.point))
+ 				if (IsInputtingTowardsWall(RelevantHit.point, 75))
 				{
-					
+					_WallRunning.SetupRunning(RelevantHit, _isWallRight);
 					return true;
 				}
 			}

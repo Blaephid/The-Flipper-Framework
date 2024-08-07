@@ -1452,7 +1452,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucWallActions SetWallActions () {
 		return new StrucWallActions
 		{
-			wallCheckDistance = 1.2f,
+			wallCheckDistance = new Vector2 (10, 6),
 			minHeight = 5f,
 			WallLayerMask = new LayerMask(),
 			scrapeModifier = 1f,
@@ -1464,7 +1464,7 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucWallActions
 	{
-		public float            wallCheckDistance;
+		public Vector2            wallCheckDistance;
 		public float            minHeight;
 		public LayerMask        WallLayerMask;
 		public float            scrapeModifier;
