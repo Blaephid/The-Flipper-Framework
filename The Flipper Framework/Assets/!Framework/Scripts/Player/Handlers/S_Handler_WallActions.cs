@@ -134,10 +134,12 @@ public class S_Handler_WallActions : MonoBehaviour
 			}
 		}
 
+		//If running AttemptAction is being called.
 		if (_isScanningForRun)
 		{
+			//Offset origin
 			origin -= _MainSkin.forward * 0.2f;
-			origin -= _MainSkin.right * 0.4f;
+			origin -= _MainSkin.right * 0.4f; //For scanning to the right, put slightly more to the left
 
 			float distance = Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide()) + 0.4f;
 
@@ -145,17 +147,18 @@ public class S_Handler_WallActions : MonoBehaviour
 			{
 				Debug.DrawRay(origin, _MainSkin.right * distance, Color.red, 5f);
 				//Checks for nearby walls using raycasts, outputing hits and booleans
-				_isWallRight = Physics.SphereCast(origin, 2f, _MainSkin.right, out _RightWallHit, distance, _WallLayerMask_);
+				_isWallRight = Physics.BoxCast(origin, new Vector3(0.05f, 0.15f, 1f), _MainSkin.right, out _RightWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
+
 				_isWallRight = IsWallNotBanned(_RightWallHit);
 			}
 
 			else if (IsInputtingInCharacterAngle(-_MainSkin.right) && IsRunningFastEnough(50))
 			{
-				origin += _MainSkin.right * 0.8f;
+				origin += _MainSkin.right * 0.8f; //For scanning to the left, but same distance on right.
 
-				Debug.DrawRay(origin, -_MainSkin.right * distance, Color.red, 5f);
+				Debug.DrawRay(origin, -_MainSkin.right * distance, Color.red, 0.5f);
 
-				_isWallLeft = Physics.SphereCast(origin, 2f, -_MainSkin.right, out _LeftWallHit, distance, _WallLayerMask_);
+				_isWallLeft = Physics.BoxCast(origin, new Vector3 (0.05f, 0.15f, 1f), -_MainSkin.right, out _LeftWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
 				_isWallLeft = IsWallNotBanned(_LeftWallHit);
 			}
 		}
@@ -183,7 +186,7 @@ public class S_Handler_WallActions : MonoBehaviour
 		
 		Debug.DrawRay(transform.position, _Input._constantInputRelevantToCharacter, Color.green, 10f);
 		Debug.DrawRay(transform.position, _Input._camMoveInput, Color.blue, 10f);
-		return Vector3.Angle(_Input._constantInputRelevantToCharacter, characterAngle) < 90;
+		return Vector3.Angle(_Input._constantInputRelevantToCharacter, characterAngle) < 80;
 	}
 
 	private bool IsRunningFastEnough ( float minSpeed = 30 ) {
@@ -197,8 +200,11 @@ public class S_Handler_WallActions : MonoBehaviour
 	private bool IsInputtingTowardsWall ( Vector3 hitPoint, float angleLimit = 20 ) {
 		if(_Input._constantInputRelevantToCharacter.sqrMagnitude < 0.5) { return false; }
 
+		Debug.DrawLine(transform.position, hitPoint, Color.white, 10f);
+
 		Vector3 directionToWall = hitPoint - transform.position;
-		return Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter) < angleLimit;
+		float angle =Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter);
+ 		return angle < angleLimit;
 	}
 
 	private bool IsFacingWallEnough ( Vector3 wallNormal ) {
@@ -234,33 +240,24 @@ public class S_Handler_WallActions : MonoBehaviour
 		//If has detected a wall on one of the sides
 		if(_isWallLeft || _isWallRight)
 		{
-			//For less lines, set the hit to be used, prioritising the right side than the left
-			RaycastHit RelevantHit = _isWallRight ? _RightWallHit : _LeftWallHit;
+			Debug.Log("Is Wall and is left - " + _isWallLeft);
 
-  			if (IsWallVerticalEnough(RelevantHit.normal, 0.4f))
+			//For less lines, set the hit to be used, prioritising the right side than the left
+ 			RaycastHit RelevantHit = _isWallRight ? _RightWallHit : _LeftWallHit;
+
+			//Can only wallrun if intentionally inputting to the side on the controller (to prevent accidentally snapping when holding forwards into a wall).
+			if(Mathf.Abs(_Input._inputWithoutCamera.x) > 0.2f)
 			{
- 				if (IsInputtingTowardsWall(RelevantHit.point, 75))
+				if (IsWallVerticalEnough(RelevantHit.normal, 0.3f))
 				{
-					_WallRunning.SetupRunning(RelevantHit, _isWallRight);
-					return true;
+					if (IsInputtingTowardsWall(RelevantHit.point, 50))
+					{
+						_WallRunning.SetupRunning(RelevantHit, _isWallRight);
+						return true;
+					}
 				}
 			}
 		}
-
-		////If detecting a wall on left with correct angle.
-		//if (_isWallLeft && IsWallVerticalEnough(_LeftWallHit.normal, 0.4f))
-		//{
-		//	float dis = Vector3.Distance(transform.position, _LeftWallHit.point);
-		//	if (Physics.Raycast(transform.position, _Input._camMoveInput, dis + 0.1f, _WallLayerMask_))
-		//	{
-		//		//Debug.Log("Trigger Wall Left");
-		//		//Enter a wallrun with wall on left.
-		//		_WallAction.InitialEvents(false, _LeftWallHit, false);
-		//		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning);
-		//		return true;
-
-		//	}
-		//}
 		return false;
 	}
 

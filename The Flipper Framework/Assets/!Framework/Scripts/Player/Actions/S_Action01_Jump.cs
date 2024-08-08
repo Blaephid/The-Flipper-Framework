@@ -138,11 +138,11 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					}
 					return true;
 				case S_Enums.PrimaryPlayerStates.WallRunning:
-					AssignStartValues(_Actions._jumpAngle, true);
+					AssignStartValues(_Actions._jumpAngle, true, 1.5f, 1.6f);
 					StartAction();
 					return true;
 				case S_Enums.PrimaryPlayerStates.WallClimbing:
-					AssignStartValues(_Actions._jumpAngle, true);
+					AssignStartValues(_Actions._jumpAngle, true, 1.8f, 0.8f);
 					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(10, 5, -20, true));
 					StartAction(); 
 					return true;
@@ -257,13 +257,16 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	#region private
 
 	//Called when entering the action, to ready any variables needed for performing it.
-	private void AssignStartValues ( Vector3 normaltoJump, bool fromGround = false ) {
+	private void AssignStartValues ( Vector3 normaltoJump, bool fromGround = false, float speedModifier = 1, float durationModifier = 1 ) {
 		if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
 			normaltoJump = Vector3.up;
 
 		//Sets jump directionaw
 		_upwardsDirection = normaltoJump;
 		_isJumpingFromGround = fromGround;
+
+		_jumpSpeedModifier = speedModifier;
+		_jumpDurationModifier = durationModifier;
 	}
 
 	public void HandleInputs () {

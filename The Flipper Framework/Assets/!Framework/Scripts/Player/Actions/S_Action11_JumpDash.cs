@@ -117,6 +117,13 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 					StartAction();
 				}
 				break;
+			case S_Enums.PrimaryPlayerStates.WallRunning:
+				if (CheckDash())
+				{
+					SetStartDirection(_Actions._dashAngle);
+					StartAction();
+				}
+				break;
 			default:
 				if (CheckDash())
 				{

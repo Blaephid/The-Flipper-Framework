@@ -28,6 +28,7 @@ public class S_HedgeCamera : MonoBehaviour
 	[Header("Target Levels")]
 	public Transform              _BaseTarget;
 	public Transform               _FinalTarget;
+	public Transform              _TemporaryCameraTarget;
 	public Transform               _TargetByCollisions;
 	public Transform               _TargetByInput;
 	public Transform               _TargetByAngle;
@@ -306,7 +307,6 @@ public class S_HedgeCamera : MonoBehaviour
 
 
 		//The final target is the actual anchor point for the camera, and should not be changed, as it is a child of the other targets. 
-		//_FinalTarget.localPosition = Vector3.zero;
 		_TargetByCollisions.localPosition = Vector3.zero;
 
 		Vector3 targetOffset = _FinalTarget.position - _BaseTarget.position;
@@ -821,6 +821,21 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 
 		_SecondaryCamera.gameObject.SetActive(false); //Disabling the secondary camera will cause the brain to automatically transition back to primary (assuming no other virtual cameras are at play.
+	}
+
+	//Called to make the camera target at a new position, attached to the secondary target, which is set to follow another transform (usually the player or the player skin).
+	public void SetSecondaryCameraTarget (Transform newParent, Vector3 position) {
+		_TemporaryCameraTarget.parent = newParent;
+		_TemporaryCameraTarget.position = position;
+
+		_FinalTarget.parent = _TemporaryCameraTarget;
+		_FinalTarget.localPosition = Vector3.zero;
+	}
+
+	//Undoes the above method, returning the camera target to its normal place.
+	public void DisableSecondaryCameraTarget () {
+		_FinalTarget.parent = _TargetByCollisions;
+		_FinalTarget.localPosition = Vector3.zero;
 	}
 
 	#endregion
