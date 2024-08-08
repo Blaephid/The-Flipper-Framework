@@ -18,11 +18,15 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 
-	Animator _CharacterAnimator;
-	private Transform   _MainSkin;
-	Transform _PlayerSkin;
-	S_Control_SoundsPlayer _Sounds;
-	S_Trigger_Updraft _hoverForce;
+	private S_Handler_HealthAndHurt         _HurtControl;
+	private S_Interaction_Objects           _Objects;
+
+	private Animator			_CharacterAnimator;
+	private Transform			_MainSkin;
+	private Transform			_PlayerSkin;
+	private S_Control_SoundsPlayer	_Sounds;
+	private S_Trigger_Updraft		_hoverForce;
+
 	#endregion
 
 	//General
@@ -112,20 +116,22 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		bool willChangeAction = false;
-		willChangeAction = true;
-		return willChangeAction;
+		_Objects._canHover = true;
+		return false;
 	}
 
 	public void StartAction () {
+		_PlayerPhys._isGravityOn = false;
+		inWind = true;
+		forward = _PlayerSkin.forward;
 
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
+		enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
@@ -167,6 +173,9 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 		_MainSkin = _Tools.MainSkin;
 		_PlayerSkin = _Tools.CharacterModelOffset;
 		_Sounds = _Tools.SoundControl;
+
+		_HurtControl = _Tools.GetComponent<S_Handler_HealthAndHurt>();
+		_Objects = _HurtControl._Objects;
 	}
 
 	//Reponsible for assigning stats from the stats script.
@@ -176,11 +185,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	#endregion
 
 	public void InitialEvents ( S_Trigger_Updraft up ) {
-		_PlayerPhys._isGravityOn = false;
-		inWind = true;
-		forward = _PlayerSkin.forward;
 
-		_hoverForce = up;
 	}
 
 	public void updateHover ( S_Trigger_Updraft up ) {
@@ -200,18 +205,18 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	}
 
 	void getForce () {
-		float distance = transform.position.y - _hoverForce.bottom.position.y;
-		float difference = distance / (_hoverForce.top.position.y - _hoverForce.bottom.position.y);
-		floatSpeed = forceFromSource.Evaluate(difference) * _hoverForce.power;
-		Debug.Log(difference);
+		//float distance = transform.position.y - _hoverForce._EndOfRange.position.y;
+		//float difference = distance / (_hoverForce.top.position.y - _hoverForce._EndOfRange.position.y);
+		//floatSpeed = forceFromSource.Evaluate(difference) * _hoverForce._power;
+		//Debug.Log(difference);
 
-		if (difference > 0.98)
-		{
-			floatSpeed = -Mathf.Clamp(_PlayerPhys._RB.velocity.y, -100, 0);
-		}
-		else if (_PlayerPhys._RB.velocity.y > 0)
-		{
-			floatSpeed = Mathf.Clamp(floatSpeed, 0.5f, _PlayerPhys._RB.velocity.y);
-		}
+		//if (difference > 0.98)
+		//{
+		//	floatSpeed = -Mathf.Clamp(_PlayerPhys._RB.velocity.y, -100, 0);
+		//}
+		//else if (_PlayerPhys._RB.velocity.y > 0)
+		//{
+		//	floatSpeed = Mathf.Clamp(floatSpeed, 0.5f, _PlayerPhys._RB.velocity.y);
+		//}
 	}
 }

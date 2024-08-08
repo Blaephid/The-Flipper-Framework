@@ -145,7 +145,6 @@ public class S_Handler_WallActions : MonoBehaviour
 
 			if (IsInputtingInCharacterAngle(_MainSkin.right) && IsRunningFastEnough(50))
 			{
-				Debug.DrawRay(origin, _MainSkin.right * distance, Color.red, 5f);
 				//Checks for nearby walls using raycasts, outputing hits and booleans
 				_isWallRight = Physics.BoxCast(origin, new Vector3(0.05f, 0.15f, 1f), _MainSkin.right, out _RightWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
 
@@ -155,8 +154,6 @@ public class S_Handler_WallActions : MonoBehaviour
 			else if (IsInputtingInCharacterAngle(-_MainSkin.right) && IsRunningFastEnough(50))
 			{
 				origin += _MainSkin.right * 0.8f; //For scanning to the left, but same distance on right.
-
-				Debug.DrawRay(origin, -_MainSkin.right * distance, Color.red, 0.5f);
 
 				_isWallLeft = Physics.BoxCast(origin, new Vector3 (0.05f, 0.15f, 1f), -_MainSkin.right, out _LeftWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
 				_isWallLeft = IsWallNotBanned(_LeftWallHit);
@@ -184,8 +181,6 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	private bool IsInputtingInCharacterAngle ( Vector3 characterAngle ) {
 		
-		Debug.DrawRay(transform.position, _Input._constantInputRelevantToCharacter, Color.green, 10f);
-		Debug.DrawRay(transform.position, _Input._camMoveInput, Color.blue, 10f);
 		return Vector3.Angle(_Input._constantInputRelevantToCharacter, characterAngle) < 80;
 	}
 
@@ -199,8 +194,6 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	private bool IsInputtingTowardsWall ( Vector3 hitPoint, float angleLimit = 20 ) {
 		if(_Input._constantInputRelevantToCharacter.sqrMagnitude < 0.5) { return false; }
-
-		Debug.DrawLine(transform.position, hitPoint, Color.white, 10f);
 
 		Vector3 directionToWall = hitPoint - transform.position;
 		float angle =Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter);
@@ -262,8 +255,6 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	public bool IsInputtingToWall ( Vector3 directionToWall ) {
-		Debug.DrawRay(transform.position, _Input._constantInputRelevantToCharacter, Color.cyan, 5f);
-
 		if(_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.5f)
 		{
 			directionToWall.y = 0;

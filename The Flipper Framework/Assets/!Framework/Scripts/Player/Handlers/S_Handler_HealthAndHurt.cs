@@ -22,7 +22,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Manager_LevelProgress _LevelHandler;
-	private S_Interaction_Objects _Objects;
+	[HideInInspector]
+	public S_Interaction_Objects _Objects;
 	private S_Handler_Camera      _CamHandler;
 	private S_Control_SoundsPlayer _Sounds;
 	private S_Handler_CharacterAttacks      _Attacks;

@@ -26,25 +26,25 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	[Header("Scripts")]
 	//Player
-	private S_CharacterTools	_Tools;
-	private S_PlayerPhysics	_PlayerPhys;
-	private S_ActionManager	_Actions;
-	private S_PlayerInput	_Input;
-	private S_PlayerEvents	_Events;
+	private S_CharacterTools      _Tools;
+	private S_PlayerPhysics       _PlayerPhys;
+	private S_ActionManager       _Actions;
+	private S_PlayerInput         _Input;
+	private S_PlayerEvents        _Events;
 
-	private S_Handler_CharacterAttacks	_AttackHandler;
-	private S_Handler_HealthAndHurt	_HurtAndHealth;
+	private S_Handler_CharacterAttacks      _AttackHandler;
+	private S_Handler_HealthAndHurt         _HurtAndHealth;
 
 	private S_Handler_Camera      _CamHandler;
 	private S_Control_SoundsPlayer _Sounds;
 
-	private Transform		_FeetPoint;
+	private Transform             _FeetPoint;
 
 	//External
 	private GameObject                       _PlatformAnchor;
 
 	[Header("Unity Objects")]
-	private Animator	_CharacterAnimator;
+	private Animator    _CharacterAnimator;
 
 	[Header("For Rings, Springs and so on")]
 	public GameObject RingCollectParticle;
@@ -62,12 +62,18 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	// Trackers
 	#region trackers
-	private Vector3	_translateOnPlatform;
+	private Vector3     _translateOnPlatform;
 
-	[HideInInspector] 
-	public float	_displaySpeed;
+	[HideInInspector]
+	public float        _displaySpeed;
 
 	private Vector3     _previousPlatformPointPosition;
+
+	[Header("Wind Force")]
+	[HideInInspector]
+	public bool         _canHover; //Only true if Hovering AttemptAction is called, and decides if can enter said action.
+	[HideInInspector]
+	public Vector3      _windDirection;
 
 	#endregion
 
@@ -96,6 +102,11 @@ public class S_Interaction_Objects : MonoBehaviour
 		FollowPlatform();
 	}
 
+	private void FixedUpdate () {
+		_canHover = false; //This is set true in the hovering action script, and can only enter hovering if hitting a wind trigger while this is true.
+		_windDirection = Vector3.zero;
+	}
+
 	public void EventTriggerEnter ( Collider Col ) {
 		switch (Col.tag)
 		{
@@ -113,19 +124,16 @@ public class S_Interaction_Objects : MonoBehaviour
 				LaunchFromSpring(Col);
 				break;
 
-			case "Bumper":				
+			case "Bumper":
 				break;
 			case "Wind":
-				if (Col.TryGetComponent(out S_Trigger_Updraft UpdraftScript))
+				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
+				if (UpdraftScript != null)
 				{
-					if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Hovering)
+					if (Col.transform.up.y > 0.7f)
 					{
-						GetComponent<S_Action13_Hovering>().updateHover(UpdraftScript);
-					}
-					else
-					{
-						GetComponent<S_Action13_Hovering>().InitialEvents(UpdraftScript);
-						_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
+						_PlayerPhys.SetIsGrounded(false);
+						if(_canHover) _Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
 					}
 				}
 				break;
@@ -163,9 +171,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	public void EventTriggerExit ( Collider Col ) {
 		switch (Col.tag)
 		{
-			case "Wind":
-				GetComponent<S_Action13_Hovering>().inWind = false;
-				break;
 
 			case "MovingPlatform":
 				Destroy(_PlatformAnchor);
@@ -178,6 +183,16 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			case "MovingPlatform":
 				AttachAnchorToPlatform(Col);
+				break;
+
+			case "Wind":
+				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
+				if (UpdraftScript != null)
+				{
+					Vector3 thisForce = GetForceOfWind(UpdraftScript);
+					_windDirection += thisForce;
+					_PlayerPhys.AddGeneralVelocity(thisForce);
+				}
 				break;
 		}
 	}
@@ -196,8 +211,33 @@ public class S_Interaction_Objects : MonoBehaviour
 		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) _CoreUIElements.SpeedCounter.text = "0";
 	}
 
+	private Vector3 GetForceOfWind ( S_Trigger_Updraft UpdraftScript ) {
+
+		// Create a temporary game object and place it at player position in the local space of the wind
+		GameObject newGameObject = new GameObject("TEMP");
+		Transform newTransform = newGameObject.transform;
+		newTransform.position = transform.position;
+		newTransform.parent = UpdraftScript._Direction;
+
+		//Remove the vertical component, ensuring this temp object is only along the base, at any rotation. InverseTrasformDirection does not work because it does not account for rotation.
+		newTransform.localPosition = new Vector3 (newTransform.localPosition.x, 0, newTransform.localPosition.z);
+
+		//Get the player positions in regards to the wind origin, and remove the height so it is only along the base of the origin, not along the wind direction.
+		Vector3 relativePlayerPosition = newTransform.position;
+		Destroy(newGameObject);
+
+		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
+		float distance = Vector3.Distance(relativePlayerPosition, transform.position);
+
+		//Affect power by distance along in this direction
+		float power = UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._range);
+
+		Debug.DrawLine(transform.position, relativePlayerPosition, Color.green, 10f);
+		return power * UpdraftScript._Direction.up;
+	}
+
 	//When on a moving platform, check is an anchor has currently been spawned, and if not, create one.
-	private void AttachAnchorToPlatform(Collider Col) {
+	private void AttachAnchorToPlatform ( Collider Col ) {
 		if (_PlatformAnchor == null)
 		{
 			//The reason we're using an anchor reference attached as a child to the mover is because it means we can compare the changes in world position every frame, no matter what happens.
@@ -211,7 +251,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	//If there is currently a platform script saved from being in a trigger with one, adjust the players position every frame to match it.
 	private void FollowPlatform () {
 
-		if(_PlatformAnchor != null)
+		if (_PlatformAnchor != null)
 		{
 			//Get how much the anchor has moved, and apply that same movement to the player.
 			Vector3 direction = _PlatformAnchor.transform.position - _previousPlatformPointPosition;
@@ -227,7 +267,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	//Called on triggers
 
-	private void LaunchFromPadOrDashRing (Collider Col) {
+	private void LaunchFromPadOrDashRing ( Collider Col ) {
 		if (!Col.TryGetComponent(out S_Data_SpeedPad SpeedPadScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 
 		Col.GetComponent<AudioSource>().Play();
@@ -303,7 +343,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (SpeedPadScript._willSnap)
 				{
 					snapPosition += _FeetPoint.up * -_FeetPoint.localPosition.y; //Because on ground, feet should be set to pad position.
-					_PlayerPhys.SetPlayerPosition( snapPosition);
+					_PlayerPhys.SetPlayerPosition(snapPosition);
 				}
 
 				//Pushes player in direction
@@ -339,7 +379,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Events._OnTriggerAirLauncher.Invoke();
 	}
 
-	private void LaunchFromSpring (Collider Col) {
+	private void LaunchFromSpring ( Collider Col ) {
 		if (!Col.TryGetComponent(out S_Data_Spring SpringScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 
 		HitAirLauncher();
@@ -422,7 +462,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
-	private void LaunchInDirection (Vector3 direction, float launchPower, Vector3 lockPosition) {
+	private void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition ) {
 		//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
 		//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
 		//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
@@ -485,10 +525,10 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 
-	private void ActivateHintBox (Collider Col) {
-		if(!Col.TryGetComponent(out S_Data_HintRing HintRingScript)){ return; } //Ensures object has necessary script, and saves as varaible for efficiency.
+	private void ActivateHintBox ( Collider Col ) {
+		if (!Col.TryGetComponent(out S_Data_HintRing HintRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 
-		if(Col.gameObject == _CoreUIElements.HintBox._CurrentHintRing) { return; } //Do not perform function if this hint is already being displayed in the hintBox. Prevents restarting a hint when hitting it multiple times until its complete.
+		if (Col.gameObject == _CoreUIElements.HintBox._CurrentHintRing) { return; } //Do not perform function if this hint is already being displayed in the hintBox. Prevents restarting a hint when hitting it multiple times until its complete.
 		_CoreUIElements.HintBox._CurrentHintRing = Col.gameObject; //Relevant to the above check.
 
 		//Effects
@@ -533,7 +573,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					_CoreUIElements.HintBox.ShowHint(HintRingScript.hintText, HintRingScript.hintDuration);
 					break;
 			}
-		}	
+		}
 	}
 
 	//Until the players hit the ground, all gravity calculations will use the set gravity value.
@@ -566,7 +606,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	#region public 
 	//Called by the attack script to apply benefits from monitors.
 	public void TriggerMonitor ( Collider col ) {
-		if(!col.TryGetComponent(out S_Data_Monitor MonitorData)) { return; } //Ensures the collider has a monitor script.
+		if (!col.TryGetComponent(out S_Data_Monitor MonitorData)) { return; } //Ensures the collider has a monitor script.
 
 		//Monitors data
 		if (MonitorData.Type == MonitorType.Ring) //Increases player ring count.
@@ -587,19 +627,19 @@ public class S_Interaction_Objects : MonoBehaviour
 	/// </summary>
 	#region Assigning
 	private void AssignTools () {
-		_Tools =		GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_CamHandler =	_Tools.CamHandler;
-		_Actions =	_Tools._ActionManager;
-		_Events =		_Tools.PlayerEvents;
-		_Input =		_Tools.GetComponent<S_PlayerInput>();
-		_AttackHandler =	GetComponent<S_Handler_CharacterAttacks>();
-		_HurtAndHealth =	_Tools.GetComponent<S_Handler_HealthAndHurt>();
+		_Tools = GetComponentInParent<S_CharacterTools>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_CamHandler = _Tools.CamHandler;
+		_Actions = _Tools._ActionManager;
+		_Events = _Tools.PlayerEvents;
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_AttackHandler = GetComponent<S_Handler_CharacterAttacks>();
+		_HurtAndHealth = _Tools.GetComponent<S_Handler_HealthAndHurt>();
 
-		_CharacterAnimator =	_Tools.CharacterAnimator;
-		_Sounds =			_Tools.SoundControl;
-		_CoreUIElements =		_Tools.UISpawner._BaseUIElements;
-		_FeetPoint =		_Tools.FeetPoint;
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_Sounds = _Tools.SoundControl;
+		_CoreUIElements = _Tools.UISpawner._BaseUIElements;
+		_FeetPoint = _Tools.FeetPoint;
 	}
 	#endregion
 }
