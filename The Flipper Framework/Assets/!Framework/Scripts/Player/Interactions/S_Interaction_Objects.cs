@@ -10,6 +10,8 @@ using UnityEngine.InputSystem.XR;
 using UnityEngine.Windows;
 using UnityEngine.Rendering.Universal;
 using UnityEditor.PackageManager;
+using NUnit.Framework;
+using Unity.VisualScripting;
 
 
 public class S_Interaction_Objects : MonoBehaviour
@@ -74,6 +76,8 @@ public class S_Interaction_Objects : MonoBehaviour
 	public bool         _canHover; //Only true if Hovering AttemptAction is called, and decides if can enter said action.
 	[HideInInspector]
 	public Vector3      _windDirection;
+	private int         _numberOfWindForces; //How many winds are currently operating on the player. Up when entering one, down when exiting one.
+	private int         _windCounter; //0 At the start of every frame, and goes up for each wind calculaton, when equal to number of wind forces, it's at the last one.
 
 	#endregion
 
@@ -103,8 +107,11 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
+
+		//For tracking wind forces
 		_canHover = false; //This is set true in the hovering action script, and can only enter hovering if hitting a wind trigger while this is true.
 		_windDirection = Vector3.zero;
+		_windCounter = 0;
 	}
 
 	public void EventTriggerEnter ( Collider Col ) {
@@ -127,11 +134,12 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "Bumper":
 				break;
 			case "Wind":
+				_numberOfWindForces += 1;
 				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
 				if (UpdraftScript != null)
 				{
 					if (Col.transform.up.y > 0.7f)
-					{
+					{  
 						_PlayerPhys.SetIsGrounded(false);
 						if(_canHover) _Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
 					}
@@ -175,6 +183,9 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "MovingPlatform":
 				Destroy(_PlatformAnchor);
 				break;
+			case "Wind":
+				_numberOfWindForces -= 1;		
+				break;
 		}
 	}
 
@@ -191,7 +202,9 @@ public class S_Interaction_Objects : MonoBehaviour
 				{
 					Vector3 thisForce = GetForceOfWind(UpdraftScript);
 					_windDirection += thisForce;
-					_PlayerPhys.AddGeneralVelocity(thisForce);
+
+					_windCounter++;
+					ApplyWind();
 				}
 				break;
 		}
@@ -212,6 +225,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	private Vector3 GetForceOfWind ( S_Trigger_Updraft UpdraftScript ) {
+		Vector3 direction = UpdraftScript._Direction.up;
 
 		// Create a temporary game object and place it at player position in the local space of the wind
 		GameObject newGameObject = new GameObject("TEMP");
@@ -229,11 +243,50 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
 		float distance = Vector3.Distance(relativePlayerPosition, transform.position);
 
-		//Affect power by distance along in this direction
-		float power = UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._range);
+		float power = 0;
+		if (distance < 5)
+		{
+			//If under 3 units away, apply force against equal to the player's speed in that direaction, ensuring they can't fall beyond it.
+			power = _PlayerPhys.GetPlayersSpeedInGivenDirection(-direction, S_Enums.VelocityTypes.Core) + 1;
+		}
+		else
+		{
+			//Affect power by distance along in this direction
+			power = UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._range);
+		}
 
 		Debug.DrawLine(transform.position, relativePlayerPosition, Color.green, 10f);
-		return power * UpdraftScript._Direction.up;
+		return power * direction;
+	}
+
+	private void ApplyWind () {
+		//To prevent up and down differences being extremely sudden, apply to CoreVelocity is this will increase it, but if it will decrease it, apply temporary.
+		if (_windCounter == _numberOfWindForces)
+		{
+			//Split wind between vertical and lateral, because these should operate differently due to gravity interactions.
+			Vector3 lateralWind = _windDirection;
+			lateralWind.y = 0;
+			Vector3 verticalWind = new Vector3(0, _windDirection.y, 0);
+
+			//Apply lateral
+			//Get how fast the coreVelocity is moving against the wind.
+			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-lateralWind, S_Enums.VelocityTypes.CoreNoVertical);
+			//If pushing against the wind (like falling down with gravity).
+			if (dot > 0)
+				_PlayerPhys.AddGeneralVelocity(lateralWind);
+			else
+				_PlayerPhys.AddCoreVelocity(lateralWind * Time.fixedDeltaTime); //Decrease core velocity
+			
+			//Apply vertical, the other way round to combat gravity
+			dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-verticalWind, S_Enums.VelocityTypes.CoreNoLateral);
+			//If pushing against the wind (like falling down with gravity).
+			if (dot > 0)
+				_PlayerPhys.AddCoreVelocity(verticalWind * Time.fixedDeltaTime); //Decrease core velocity
+			else
+				_PlayerPhys.AddGeneralVelocity(verticalWind);
+
+
+		}
 	}
 
 	//When on a moving platform, check is an anchor has currently been spawned, and if not, create one.

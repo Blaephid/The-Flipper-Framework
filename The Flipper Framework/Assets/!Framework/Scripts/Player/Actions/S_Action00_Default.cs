@@ -29,6 +29,8 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
 
+	private CapsuleCollider		_CharacterCapsule;
+	private CapsuleCollider                 _StandingCapsule;
 	private List<SkinnedMeshRenderer>       _PlayerSkin = new List<SkinnedMeshRenderer>();
 	private SkinnedMeshRenderer             _SpinDashBall;
 	private List<SkinnedMeshRenderer>       _CurrentSkins = new List<SkinnedMeshRenderer>();
@@ -74,6 +76,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	#region Inherited
 	private void Start () {
 		SwitchSkin(true);
+		OverWriteCollider(_StandingCapsule);
 	}
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
@@ -243,6 +246,14 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		}
 	}
 
+	public void OverWriteCollider ( CapsuleCollider newCollider ) {
+		_CharacterCapsule.radius = newCollider.radius;
+		_CharacterCapsule.center = newCollider.center;
+		_CharacterCapsule.transform.localPosition = newCollider.transform.localPosition;
+		_CharacterCapsule.material = newCollider.material;
+		_CharacterCapsule.height = newCollider.height;
+	}
+
 	//Called when the ground is lost but before coyote is in effect, this confirms it's being tracked and end it after a while.
 	public IEnumerator CoyoteTime () {
 
@@ -329,6 +340,8 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_PlayerSkin.Add(_Tools.SkinRenderer);
 		_SkinOffset =	_Tools.CharacterModelOffset;
 		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
 	}
 	#endregion
 }

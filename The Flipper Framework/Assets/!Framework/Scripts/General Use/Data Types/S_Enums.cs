@@ -53,6 +53,16 @@ public class S_Enums
 		Boost = 1
 	}
 
+	//General
+	//
+	public enum VelocityTypes {
+		Total,
+		Core,
+		Environmental,
+		CoreNoVertical,
+		CoreNoLateral,
+	}
+
 
 	//Interaction
 	//

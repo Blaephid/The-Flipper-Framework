@@ -1263,6 +1263,25 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (shouldPrintRotation) Debug.Log("Change Position to  " + newRotation);
 	}
 
+	public float GetPlayersSpeedInGivenDirection(Vector3 direction, S_Enums.VelocityTypes velocityType ) {
+		direction.Normalize();
+
+		switch (velocityType)
+			{
+			case S_Enums.VelocityTypes.Total:
+				return Vector3.Dot(_totalVelocity, direction);
+			case S_Enums.VelocityTypes.Core:
+				return Vector3.Dot(_coreVelocity, direction);
+			case S_Enums.VelocityTypes.Environmental:
+				return Vector3.Dot(_environmentalVelocity, direction);
+			case S_Enums.VelocityTypes.CoreNoVertical:
+				return Vector3.Dot(new Vector3(_coreVelocity.x, 0, _coreVelocity.z), direction);
+			case S_Enums.VelocityTypes.CoreNoLateral:
+				return Vector3.Dot(new Vector3(0, _coreVelocity.y, 0), direction);
+		}
+		return 1;
+	}
+
 
 	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.
 	public IEnumerator LockFunctionForTime ( EnumControlLimitations whatToLimit, float seconds, int frames = 0 ) {

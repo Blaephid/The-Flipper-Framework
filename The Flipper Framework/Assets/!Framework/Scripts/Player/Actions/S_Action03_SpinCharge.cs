@@ -25,8 +25,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private S_Handler_Camera		_CamHandler;
 	private Transform                       _MainSkin;
 
-	private GameObject			_LowerCapsule;
-	private GameObject			_CharacterCapsule;
+	private CapsuleCollider			_LowerCapsule;
+	private CapsuleCollider			_StandingCapsule;
 
 	private Transform			_PlayerSkinTransform;
 	#endregion
@@ -120,9 +120,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_counter = 0;
 		_isPressedCurrently = true;
 
-		//Setting public
-		_LowerCapsule.SetActive(true);
-		_CharacterCapsule.SetActive(false);
+		//Change collider to be smaller
+		_Actions._ActionDefault.OverWriteCollider(_LowerCapsule);
 
 		_PlayerPhys._canStickToGround = true; //Allows following the ground when in a normal grounded state.
 
@@ -140,10 +139,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		//Setting public
-		_LowerCapsule.SetActive(false);
-		_CharacterCapsule.SetActive(true);
-
+		//Return to normal skin and collider size
+		_Actions._ActionDefault.OverWriteCollider(_StandingCapsule);
 		_Actions._ActionDefault.SwitchSkin(true);
 
 		_PlayerPhys._isRolling = false;
@@ -419,8 +416,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Effects = _Tools.EffectsControl;
 
 		_PlayerSkinTransform = _Tools.CharacterModelOffset;
-		_LowerCapsule = _Tools.CrouchCapsule;
-		_CharacterCapsule = _Tools.CharacterCapsule;	
+		_LowerCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();
+		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();	
 	}
 	#endregion
 

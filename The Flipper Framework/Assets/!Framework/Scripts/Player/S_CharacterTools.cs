@@ -21,6 +21,7 @@ public class S_CharacterTools : MonoBehaviour
 
 	[Header ("Colliders")]
 	public GameObject		CharacterCapsule;
+	public GameObject             StandingCapsule;
 	public GameObject		CrouchCapsule;
 
 	[Header("Model / Skin")]
