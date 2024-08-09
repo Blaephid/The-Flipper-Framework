@@ -41,9 +41,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	float floatSpeed = 15;
 	public AnimationCurve forceFromSource;
 
-	[HideInInspector] public bool inWind;
-	float exitWindTimer;
-	float exitWind = 0.6f;
+
 	Vector3 forward;
 	#endregion
 
@@ -57,8 +55,8 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
-
+	void Awake () {
+		StartCoroutine(DisableCanHoverEveryFixedUpdate());
 	}
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
@@ -70,49 +68,14 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 			AssignStats();
 		}
 	}
-	private void OnDisable () {
-		_CharacterAnimator.SetInteger("Action", 1);
-		_PlayerSkin.forward = _MainSkin.forward;
-		_PlayerPhys._isGravityOn = true;
-		inWind = false;
-	}
 
 	// Update is called once per frame
 	void Update () {
-		_CharacterAnimator.SetInteger("Action", 13);
 
 	}
 
 	private void FixedUpdate () {
-		updateModel();
-		_PlayerPhys.SetIsGrounded(false);
-
-		getForce();
-
-		if (inWind)
-		{
-			exitWindTimer = 0;
-
-			if (_PlayerPhys._RB.velocity.y < floatSpeed)
-			{
-				_PlayerPhys.AddCoreVelocity(_hoverForce.transform.up * floatSpeed);
-			}
-
-		}
-		else
-		{
-			exitWindTimer += Time.deltaTime;
-
-			if (_PlayerPhys._RB.velocity.y < floatSpeed)
-			{
-				_PlayerPhys.AddCoreVelocity(_hoverForce.transform.up * (floatSpeed * 0.35f));
-			}
-
-			if (exitWindTimer >= exitWind)
-			{
-				_Actions._ActionDefault.StartAction();
-			}
-		}
+		
 	}
 
 	public bool AttemptAction () {
@@ -121,9 +84,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	}
 
 	public void StartAction () {
-		_PlayerPhys._isGravityOn = false;
-		inWind = true;
-		forward = _PlayerSkin.forward;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
 		enabled = true;
@@ -133,6 +94,13 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+
+		
+	}
+
+	private IEnumerator DisableCanHoverEveryFixedUpdate () {
+		yield return new WaitForFixedUpdate();
+		_Objects._canHover = false;
 	}
 
 	#endregion
@@ -184,39 +152,4 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	}
 	#endregion
 
-	public void InitialEvents ( S_Trigger_Updraft up ) {
-
-	}
-
-	public void updateHover ( S_Trigger_Updraft up ) {
-		inWind = true;
-		_hoverForce = up;
-	}
-
-	void updateModel () {
-		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, 0, _PlayerPhys._RB.velocity.z);
-		if (VelocityMod != Vector3.zero)
-		{
-			Quaternion CharRot = Quaternion.LookRotation(VelocityMod, transform.up);
-			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, CharRot, Time.deltaTime * _Actions._ActionDefault._skinRotationSpeed);
-		}
-		_PlayerSkin.forward = forward;
-	}
-
-	void getForce () {
-		//float distance = transform.position.y - _hoverForce._EndOfRange.position.y;
-		//float difference = distance / (_hoverForce.top.position.y - _hoverForce._EndOfRange.position.y);
-		//floatSpeed = forceFromSource.Evaluate(difference) * _hoverForce._power;
-		//Debug.Log(difference);
-
-		//if (difference > 0.98)
-		//{
-		//	floatSpeed = -Mathf.Clamp(_PlayerPhys._RB.velocity.y, -100, 0);
-		//}
-		//else if (_PlayerPhys._RB.velocity.y > 0)
-		//{
-		//	floatSpeed = Mathf.Clamp(floatSpeed, 0.5f, _PlayerPhys._RB.velocity.y);
-		//}
-	}
 }

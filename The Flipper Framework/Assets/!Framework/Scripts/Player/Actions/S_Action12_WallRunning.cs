@@ -171,7 +171,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 		//Control
 		_PlayerPhys._listOfCanControl.Add(false);
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 
 		this.enabled = true;
 	}
@@ -190,7 +190,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_CamHandler._HedgeCam._shouldSetHeightWhenMoving_ = false;
 
 		//Control
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 

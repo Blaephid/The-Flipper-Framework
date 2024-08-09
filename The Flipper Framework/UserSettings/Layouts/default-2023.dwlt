@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 997
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Game
   m_RootView: {fileID: 3}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -41,10 +41,10 @@ MonoBehaviour:
     serializedVersion: 2
     x: 371
     y: 0
-    width: 314
+    width: 339
     height: 947
-  m_MinSize: {x: 100, y: 100}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 102, y: 121}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 15}
@@ -99,7 +99,7 @@ MonoBehaviour:
     height: 30
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
-  m_LastLoadedLayoutName: 
+  m_LastLoadedLayoutName: Double Screen
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 211
+  controlID: 377
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -170,7 +170,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 212
+  controlID: 378
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -190,8 +190,8 @@ MonoBehaviour:
     y: 0
     width: 371
     height: 947
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 11}
   m_Panes:
   - {fileID: 11}
@@ -213,12 +213,12 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 685
+    x: 710
     y: 0
-    width: 1235
+    width: 1210
     height: 947
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -248,9 +248,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 685
+    x: 710
     y: 73
-    width: 1234
+    width: 1209
     height: 926
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -266,17 +266,17 @@ MonoBehaviour:
   m_SerializedViewNames: []
   m_SerializedViewValues: []
   m_PlayModeViewName: GameView
-  m_ShowGizmos: 1
+  m_ShowGizmos: 0
   m_TargetDisplay: 0
   m_ClearColor: {r: 0, g: 0, b: 0, a: 0}
-  m_TargetSize: {x: 1234, y: 905}
+  m_TargetSize: {x: 1209, y: 905}
   m_TextureFilterMode: 0
   m_TextureHideFlags: 61
   m_RenderIMGUI: 1
   m_EnterPlayModeBehavior: 0
   m_UseMipMap: 0
   m_VSyncEnabled: 0
-  m_Gizmos: 1
+  m_Gizmos: 0
   m_Stats: 0
   m_SelectedSizes: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
   m_ZoomArea:
@@ -284,8 +284,8 @@ MonoBehaviour:
     m_VRangeLocked: 0
     hZoomLockedByDefault: 0
     vZoomLockedByDefault: 0
-    m_HBaseRangeMin: -617
-    m_HBaseRangeMax: 617
+    m_HBaseRangeMin: -604.5
+    m_HBaseRangeMax: 604.5
     m_VBaseRangeMin: -452.5
     m_VBaseRangeMax: 452.5
     m_HAllowExceedBaseRangeMin: 1
@@ -305,23 +305,23 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
-      width: 1234
+      width: 1209
       height: 905
     m_Scale: {x: 1, y: 1}
-    m_Translation: {x: 617, y: 452.5}
+    m_Translation: {x: 604.5, y: 452.5}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -617
+      x: -604.5
       y: -452.5
-      width: 1234
+      width: 1209
       height: 905
     m_MinimalGUI: 1
   m_defaultScale: 1
-  m_LastWindowPixelSize: {x: 1234, y: 926}
+  m_LastWindowPixelSize: {x: 1209, y: 926}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000000000000
@@ -367,9 +367,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: b200020048010200
-      m_LastClickedID: 131400
-      m_ExpandedIDs: 4e38f9ff5a38f9ffa8000200b0000200b4000200d80002000e0102003401020096010200d2010200fe0102000c02020024020200300202006e020200
+      m_SelectedIDs: 74000200
+      m_LastClickedID: 131188
+      m_ExpandedIDs: ae22faffe822faffc224faffbaff0100c2ff0100c6ff0100eaff01002000020046000200aa000200e60002001201020020010200380102004401020082010200
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -452,9 +452,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 685
+    x: 710
     y: 73
-    width: 1234
+    width: 1209
     height: 926
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -829,19 +829,6 @@ MonoBehaviour:
       layout: 4
       size: {x: 0, y: 0}
       sizeOverridden: 0
-    - dockPosition: 1
-      containerId: overlay-container--right
-      floating: 0
-      collapsed: 0
-      displayed: 1
-      snapOffset: {x: 48, y: 48}
-      snapOffsetDelta: {x: 0, y: 0}
-      snapCorner: 0
-      id: UnityEditor.SceneViewCameraOverlay
-      index: 15
-      layout: 4
-      size: {x: 240, y: 135}
-      sizeOverridden: 1
     m_ContainerData:
     - containerId: overlay-toolbar__top
       scrollOffset: 0
@@ -868,9 +855,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 3.1550364, y: -0.07794762, z: 2.6255326}
+    m_Target: {x: 3.0940974, y: 0.31514156, z: 2.591315}
     speed: 2
-    m_Value: {x: 3.1550364, y: -0.07794762, z: 2.6255326}
+    m_Value: {x: 3.0940974, y: 0.31514156, z: 2.591315}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -916,9 +903,9 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.077840626, y: -0.8347719, z: 0.12232047, w: 0.5311758}
+    m_Target: {x: 0.0160707, y: -0.8441106, z: 0.02532695, w: 0.5353417}
     speed: 2
-    m_Value: {x: 0.077840105, y: -0.8347663, z: 0.12231965, w: 0.5311723}
+    m_Value: {x: 0.016070593, y: -0.84410506, z: 0.025326785, w: 0.53533816}
   m_Size:
     m_Target: 0.8660283
     speed: 2
@@ -1589,7 +1576,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 371
     y: 73
-    width: 312
+    width: 337
     height: 926
   m_SerializedDataModeController:
     m_DataMode: 0

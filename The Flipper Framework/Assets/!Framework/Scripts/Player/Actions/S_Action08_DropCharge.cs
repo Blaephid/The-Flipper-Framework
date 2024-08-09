@@ -245,9 +245,9 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		time = Mathf.Clamp(time / 10, 0.1f, 10); //Change seconds into 0.1 seconds.
 
 		//Prevent downward velocity from gravity until completed
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 		yield return new WaitForSeconds(time);
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 	}
 
 	//Prevents force being applied until enough fixed frames have passed. This is to give some time to properly rotate to match ground.

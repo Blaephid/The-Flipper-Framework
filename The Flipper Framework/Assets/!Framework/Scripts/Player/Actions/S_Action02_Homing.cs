@@ -157,7 +157,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_currentDirection = Vector3.RotateTowards(_Skin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
 
 		//Setting public
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys._listOfCanControl.Add(false);
@@ -201,7 +201,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 			//Return control options that were lost.
 			_PlayerPhys._canChangeGrounded = true;
-			_PlayerPhys._isGravityOn = true;
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 			_PlayerPhys._listOfCanControl.RemoveAt(0);
 
 			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
@@ -335,7 +335,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 				//Restore control and switch to default action
 				_PlayerPhys.SetCoreVelocity(newSpeed);
-				_PlayerPhys._isGravityOn = true;
+				_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 				_Actions._ActionDefault._animationAction = 1;
 				_Actions._ActionDefault.StartAction();
 
@@ -347,7 +347,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				bounceUpHit();
 				//Restore control and switch to default action
 				_PlayerPhys.SetCoreVelocity(newSpeed);
-				_PlayerPhys._isGravityOn = true;
+				_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 				_Actions._ActionDefault._animationAction = 1;
 				_Actions._ActionDefault.StartAction();
 				break;
@@ -432,7 +432,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		}
 
 		//Returns control partway through the rebound.
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
 		if(_PlayerPhys._listOfCanControl.Count > 0)

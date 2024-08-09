@@ -205,7 +205,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_boostTime = 0;
 
 		//Set controls
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 		_PlayerPhys._listOfCanControl.Add(false);
 		_PlayerPhys._canChangeGrounded = false;
 
@@ -286,7 +286,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 
 		//Restore Control
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 

@@ -12,7 +12,7 @@ public class S_Trigger_Updraft : MonoBehaviour
 				new Keyframe(1f, 0.7f),
 			});
 	public float _range;
-	[Min(60)]
+	[Min(10)]
 	public float _power = 100;
 
 	public Transform _Trigger;
@@ -20,7 +20,7 @@ public class S_Trigger_Updraft : MonoBehaviour
 #if UNITY_EDITOR
 	//Affect collider object so it covers the start and reaches out to match range.
 	private void Update () {
-		_Trigger.position = transform.position + _Direction.up * (_range / 2); //Because the collider is centred to the object, move this halfway, then change size to match range in total.
+		_Trigger.position = transform.position + _Direction.up * ((_range / 2) * transform.parent.localScale.y); //Because the collider is centred to the object, move this halfway, then change size to match range in total.
 		_Trigger.localScale = new Vector3(_Trigger.localScale.x, _range, _Trigger.localScale.z);
 	}
 #endif

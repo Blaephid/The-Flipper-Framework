@@ -164,7 +164,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		//Disable normal control so it's taken care of here
 		_PlayerPhys._listOfCanControl.Add(false);
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 
 		//Set private
 		_timer = 0;
@@ -203,7 +203,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		//Physics
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 	}
 
 	#endregion

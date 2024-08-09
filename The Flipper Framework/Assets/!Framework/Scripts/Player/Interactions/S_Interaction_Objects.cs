@@ -12,6 +12,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEditor.PackageManager;
 using NUnit.Framework;
 using Unity.VisualScripting;
+using System;
 
 
 public class S_Interaction_Objects : MonoBehaviour
@@ -109,7 +110,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void FixedUpdate () {
 
 		//For tracking wind forces
-		_canHover = false; //This is set true in the hovering action script, and can only enter hovering if hitting a wind trigger while this is true.
 		_windDirection = Vector3.zero;
 		_windCounter = 0;
 	}
@@ -139,9 +139,10 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (UpdraftScript != null)
 				{
 					if (Col.transform.up.y > 0.7f)
-					{  
+					{
+						_PlayerPhys._listOfIsGravityOn.Add(false);
 						_PlayerPhys.SetIsGrounded(false);
-						if(_canHover) _Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
+						if(_canHover) _Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction();
 					}
 				}
 				break;
@@ -184,8 +185,10 @@ public class S_Interaction_Objects : MonoBehaviour
 				Destroy(_PlatformAnchor);
 				break;
 			case "Wind":
-				_numberOfWindForces -= 1;		
-				break;
+				_numberOfWindForces -= 1;
+				if (Col.transform.up.y > 0.7f)
+					_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+					break;
 		}
 	}
 
@@ -246,16 +249,13 @@ public class S_Interaction_Objects : MonoBehaviour
 		float power = 0;
 		if (distance < 5)
 		{
-			//If under 3 units away, apply force against equal to the player's speed in that direaction, ensuring they can't fall beyond it.
-			power = _PlayerPhys.GetPlayersSpeedInGivenDirection(-direction, S_Enums.VelocityTypes.Core) + 1;
+			//If under 3 units away and moving towards the wind, apply force against equal to the player's speed in that direction, ensuring they can't fall beyond it.
+			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-direction, S_Enums.VelocityTypes.Core, false);
+			if(dot > 5) { power = dot; }
 		}
-		else
-		{
-			//Affect power by distance along in this direction
-			power = UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._range);
-		}
-
-		Debug.DrawLine(transform.position, relativePlayerPosition, Color.green, 10f);
+		//Affect power by distance along in this direction
+		power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._range));
+		
 		return power * direction;
 	}
 
@@ -270,20 +270,22 @@ public class S_Interaction_Objects : MonoBehaviour
 
 			//Apply lateral
 			//Get how fast the coreVelocity is moving against the wind.
-			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-lateralWind, S_Enums.VelocityTypes.CoreNoVertical);
-			//If pushing against the wind (like falling down with gravity).
-			if (dot > 0)
-				_PlayerPhys.AddGeneralVelocity(lateralWind);
+			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-lateralWind, S_Enums.VelocityTypes.Custom, true);
+			//If player is not moving in favour of the wind.
+			if (dot > -0.7f)
+				_PlayerPhys.AddGeneralVelocity(lateralWind, false);
+			//If pushing away from the wind
 			else
-				_PlayerPhys.AddCoreVelocity(lateralWind * Time.fixedDeltaTime); //Decrease core velocity
-			
-			//Apply vertical, the other way round to combat gravity
-			dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-verticalWind, S_Enums.VelocityTypes.CoreNoLateral);
-			//If pushing against the wind (like falling down with gravity).
-			if (dot > 0)
-				_PlayerPhys.AddCoreVelocity(verticalWind * Time.fixedDeltaTime); //Decrease core velocity
-			else
-				_PlayerPhys.AddGeneralVelocity(verticalWind);
+				_PlayerPhys.AddCoreVelocity(lateralWind * Time.fixedDeltaTime);
+
+			float x = 0;
+
+			//Apply vertical, decreasing core velocity if going towards wind, to combat gravity.
+			dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(verticalWind, S_Enums.VelocityTypes.CoreNoLateral, false);
+			if (dot >= x)//If already being pushed up by wind.
+				_PlayerPhys.AddGeneralVelocity(verticalWind, false);
+			else //Fallspeed wont increase while in wind, so apply velocity until upwards force is x, overcoming gravity
+				_PlayerPhys.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(dot - x)));
 
 
 		}
@@ -421,7 +423,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void HitAirLauncher () {
 		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
-		_PlayerPhys._isGravityOn = true; //Counteracts any actions that might have disabled this.
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0); //Counteracts any actions that might have disabled this.
 
 		_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
 

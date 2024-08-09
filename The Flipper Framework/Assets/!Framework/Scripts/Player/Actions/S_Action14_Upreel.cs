@@ -87,7 +87,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 		_speedBeforeUpreel = _PlayerPhys._previousHorizontalSpeeds[1];
 
 		_PlayerPhys._listOfCanControl.Add(false); //Removes ability to control velocity until empty
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 		_PlayerPhys.SetIsGrounded(false);
 		_PlayerPhys._canChangeGrounded = false;
 
@@ -102,7 +102,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
 		_Actions._isAirDashAvailables = true;

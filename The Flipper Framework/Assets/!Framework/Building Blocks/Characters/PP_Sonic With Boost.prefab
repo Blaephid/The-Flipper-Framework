@@ -699,7 +699,7 @@ MonoBehaviour:
   _currentUpwardsFallGravity: {x: 0, y: 0, z: 0}
   _isRolling: 0
   _isBoosting: 0
-  _isGravityOn: 1
+  _listOfIsGravityOn: 
   _listOfCanTurns: 
   _listOfCanControl: 
   _listOfCanDecelerates: 
@@ -29323,7 +29323,7 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[11].ConnectedStates.Array.size
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29397,13 +29397,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
-      propertyPath: '_MainActions.Array.data[13].ConnectedStates.Array.data[1]'
+      propertyPath: '_MainActions.Array.data[11].ConnectedStates.Array.data[2]'
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
-      propertyPath: '_MainActions.Array.data[13].ConnectedStates.Array.data[2]'
+      propertyPath: '_MainActions.Array.data[11].ConnectedStates.Array.data[3]'
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[13].ConnectedStates.Array.data[1]'
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[13].ConnectedStates.Array.data[2]'
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29428,12 +29438,12 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[5]'
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[6]'
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29463,12 +29473,12 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[10].SituationalStates.Array.data[2]'
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[10].SituationalStates.Array.data[3]'
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29478,7 +29488,7 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[11].PerformableSubStates.Array.size
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29518,7 +29528,17 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[11].PerformableSubStates.Array.data[0]'
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[11].PerformableSubStates.Array.data[1]'
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[11].PerformableSubStates.Array.data[2]'
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4584081993875375216, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29705,7 +29725,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  inWind: 0
 --- !u!114 &8271661701744548211
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -116,7 +116,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_trackedVerticalSpeed = _PlayerPhys._coreVelocity.y;
 
 		//Physics
-		_PlayerPhys._isGravityOn = false; //Moving down will be handled here rather than through the premade gravity in physics script.
+		_PlayerPhys._listOfIsGravityOn.Add(false); //Moving down will be handled here rather than through the premade gravity in physics script.
 		_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
 		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerPhys._coreVelocity.y - 20);
 		_PlayerPhys.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0)); // Apply downward force, this is instant rather than  ramp up like gravity.
@@ -146,7 +146,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		StartCoroutine(AddDelay(coolDown));
 
 		//Incase this was disabled by changing action, rather than a bounce.
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 
 		_HomingTrailScript.emitTime = 0.2f;
 	}
@@ -264,7 +264,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		}
 
 		//Starts applying normal force downwards again, even before exiting action.
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 
 		Vector3 input = transform.TransformDirection(_PlayerPhys._moveInput);
 

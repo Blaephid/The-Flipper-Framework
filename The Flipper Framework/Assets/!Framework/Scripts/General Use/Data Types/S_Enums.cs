@@ -61,6 +61,7 @@ public class S_Enums
 		Environmental,
 		CoreNoVertical,
 		CoreNoLateral,
+		Custom
 	}
 
 
