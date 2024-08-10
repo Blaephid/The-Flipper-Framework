@@ -142,9 +142,9 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	public bool AttemptAction () {
 		_inAStateThatCanBoost = true; //This will lead to a back and forth with it being set to false every frame. This means as soon as this method stops being called, this will be false.
 
-		if (_Input.BoostPressed)
+		if (_Input._BoostPressed)
 		{
-			_Input.RollPressed = false;
+			_Input._RollPressed = false;
 			if (!_PlayerPhys._isBoosting)//Will only trigger start action if not already boosting.
 			{
 				if (_canStartBoost && _currentBoostEnergy > _energyDrainedOnStart_ && _canBoostBecauseHasntBoostedInAir)
@@ -227,7 +227,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			Vector3 currentRunningPhysics = _PlayerPhys.GetRelevantVector(_PlayerPhys._RB.velocity, false); //Get the running velocity in physics (seperate from script calculations) as this will factor in collision.
 
 			// Will end boost if released button , entered a state where without boost attached,  ran out of energy , or movement speed was decreased externally (like from a collision)
-			if (!_Input.BoostPressed || !_inAStateThatCanBoost || _currentBoostEnergy <= 0 || currentRunningPhysics.sqrMagnitude < 100) //Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
+			if (!_Input._BoostPressed || !_inAStateThatCanBoost || _currentBoostEnergy <= 0 || currentRunningPhysics.sqrMagnitude < 100) //Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
 			{
 				EndBoost();
 			}
@@ -259,7 +259,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 			//Remember that the turning method will be called by the delegate in PlayerPhysics, not here. 
 
-			_Input.RollPressed = false; //This will ensure the player won't crouch or roll and instead stay boosting.
+			_Input._RollPressed = false; //This will ensure the player won't crouch or roll and instead stay boosting.
 		}
 		//If not currently boosting, then check if should gain energy each frame.
 		else if (_gainEnergyOverTime_) { GainEnergyFromTime(); }
@@ -271,7 +271,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		_PlayerPhys._isBoosting = false;
 
 		//Controls
-		_Input.BoostPressed = false;
+		_Input._BoostPressed = false;
 		StartCoroutine(DelayBoostStart());
 
 		//Physics
@@ -279,7 +279,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		if (!skipSlowing) StartCoroutine(SlowSpeedOnEnd(_speedLostOnEndBoost_, _framesToLoseSpeed_)); //Player lose speed when ending a boost
 
 		//Control
-		_Input.BoostPressed = false; //Incase end boost was called not letting go of the button.
+		_Input._BoostPressed = false; //Incase end boost was called not letting go of the button.
 		_Actions._ActionDefault._isAnimatorControlledExternally = false; //The main action now takes over animations again.
 
 		//Effects

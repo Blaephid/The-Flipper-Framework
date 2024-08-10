@@ -152,7 +152,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		//Universal
 		_DropShadow.SetActive(false);
 		_JumpBall.SetActive(false);
-		_Input.JumpPressed = false;
+		_Input._JumpPressed = false;
 		_CamHandler._HedgeCam._shouldSetHeightWhenMoving_ = false;
 
 

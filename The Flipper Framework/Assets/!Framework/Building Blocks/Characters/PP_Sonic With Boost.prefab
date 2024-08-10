@@ -29343,7 +29343,7 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[9].SituationalStates.Array.size
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29719,12 +29719,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b4131b28bfe78a40b3fee2d33ab913a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forceFromSource:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!114 &8271661701744548211
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,6 +13,7 @@ using UnityEditor.PackageManager;
 using NUnit.Framework;
 using Unity.VisualScripting;
 using System;
+using System.Xml.Linq;
 
 
 public class S_Interaction_Objects : MonoBehaviour
@@ -75,8 +76,9 @@ public class S_Interaction_Objects : MonoBehaviour
 	[Header("Wind Force")]
 	[HideInInspector]
 	public bool         _canHover; //Only true if Hovering AttemptAction is called, and decides if can enter said action.
+	private Vector3      _currentWindDirection;
 	[HideInInspector]
-	public Vector3      _windDirection;
+	public Vector3      _totalWindDirection;
 	private int         _numberOfWindForces; //How many winds are currently operating on the player. Up when entering one, down when exiting one.
 	private int         _windCounter; //0 At the start of every frame, and goes up for each wind calculaton, when equal to number of wind forces, it's at the last one.
 
@@ -110,7 +112,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void FixedUpdate () {
 
 		//For tracking wind forces
-		_windDirection = Vector3.zero;
+		_currentWindDirection = Vector3.zero;
 		_windCounter = 0;
 	}
 
@@ -142,7 +144,6 @@ public class S_Interaction_Objects : MonoBehaviour
 					{
 						_PlayerPhys._listOfIsGravityOn.Add(false);
 						_PlayerPhys.SetIsGrounded(false);
-						if(_canHover) _Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction();
 					}
 				}
 				break;
@@ -180,7 +181,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	public void EventTriggerExit ( Collider Col ) {
 		switch (Col.tag)
 		{
-
 			case "MovingPlatform":
 				Destroy(_PlatformAnchor);
 				break;
@@ -188,6 +188,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				_numberOfWindForces -= 1;
 				if (Col.transform.up.y > 0.7f)
 					_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+				if (_numberOfWindForces == 0)
+					_totalWindDirection = Vector3.zero;
 					break;
 		}
 	}
@@ -204,7 +206,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (UpdraftScript != null)
 				{
 					Vector3 thisForce = GetForceOfWind(UpdraftScript);
-					_windDirection += thisForce;
+					_currentWindDirection += thisForce;
 
 					_windCounter++;
 					ApplyWind();
@@ -227,6 +229,10 @@ public class S_Interaction_Objects : MonoBehaviour
 		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) _CoreUIElements.SpeedCounter.text = "0";
 	}
 
+	//
+	//Wind Interactions
+	//
+	//Takes an origin of wind and gets how much force to apply onto the player from it, based on its power and distance in the wind direction
 	private Vector3 GetForceOfWind ( S_Trigger_Updraft UpdraftScript ) {
 		Vector3 direction = UpdraftScript._Direction.up;
 
@@ -254,19 +260,22 @@ public class S_Interaction_Objects : MonoBehaviour
 			if(dot > 5) { power = dot; }
 		}
 		//Affect power by distance along in this direction
-		power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._range));
+		power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._getRange));
 		
 		return power * direction;
 	}
 
+	//After going over each wind force, apply all at once, either as general or core velocity, split vertical and lateral.
 	private void ApplyWind () {
 		//To prevent up and down differences being extremely sudden, apply to CoreVelocity is this will increase it, but if it will decrease it, apply temporary.
 		if (_windCounter == _numberOfWindForces)
 		{
+			_totalWindDirection = _currentWindDirection; //Saves the total wind force so other scripts can access it before current is set to zero again next frame.
+
 			//Split wind between vertical and lateral, because these should operate differently due to gravity interactions.
-			Vector3 lateralWind = _windDirection;
+			Vector3 lateralWind = _currentWindDirection;
 			lateralWind.y = 0;
-			Vector3 verticalWind = new Vector3(0, _windDirection.y, 0);
+			Vector3 verticalWind = new Vector3(0, _currentWindDirection.y, 0);
 
 			//Apply lateral
 			//Get how fast the coreVelocity is moving against the wind.
@@ -287,7 +296,12 @@ public class S_Interaction_Objects : MonoBehaviour
 			else //Fallspeed wont increase while in wind, so apply velocity until upwards force is x, overcoming gravity
 				_PlayerPhys.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(dot - x)));
 
-
+			//If being blown upwards, enter the hovering state to change actions and animation.
+			//canHover can only be set to true by the Hovering AttemptAction, so GetComponent is safe, and Hovering being enabled shouldn't enable canhover.
+			if (_canHover && _totalWindDirection.normalized.y > 0.72f)
+			{
+				 _Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction(); //Not placed in enterTrigger incase was already in the trigger, but not in a state that could enter the hover action.
+			}
 		}
 	}
 
@@ -443,9 +457,9 @@ public class S_Interaction_Objects : MonoBehaviour
 		_CharacterAnimator.SetBool("Grounded", false);
 
 		//Prevents immediate air actions.
-		_Input.JumpPressed = false;
-		_Input.SpecialPressed = false;
-		_Input.BouncePressed = false;
+		_Input._JumpPressed = false;
+		_Input._SpecialPressed = false;
+		_Input._BouncePressed = false;
 
 		Vector3 direction = SpringScript._BounceTransform.up;
 		//Calculate force
@@ -590,7 +604,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		HintRingScript.hintSound.Play();
 
 		//Using mouse is set when _PlayerInput detects a camera or move input coming from a keyboard or mouse, and this ensures the correct text will be displayed to match the controller device.
-		if (_Input.usingMouse)
+		if (_Input._isUsingMouse)
 		{
 			_CoreUIElements.HintBox.ShowHint(HintRingScript.hintText, HintRingScript.hintDuration);
 		}

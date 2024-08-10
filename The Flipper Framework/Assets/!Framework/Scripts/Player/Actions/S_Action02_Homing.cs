@@ -123,7 +123,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			_HomingHandler._isScanning = true;
 
 			//Must have a valid target when pressed
-			if (_HomingHandler._TargetObject && _Input.HomingPressed)
+			if (_HomingHandler._TargetObject && _Input._HomingPressed)
 			{
 				//Homing attack must be currently allowed
 				if (_Actions._isAirDashAvailables && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount))
@@ -163,7 +163,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_PlayerPhys._listOfCanControl.Add(false);
 
 		_PlayerPhys.SetIsGrounded(false);
-		_Input.JumpPressed = false;
+		_Input._JumpPressed = false;
 
 		//Effects
 		_JumpBall.SetActive(false);
@@ -330,7 +330,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		switch (whatResponse)
 		{
 			case S_Enums.HomingHitResponses.BounceThrough:
-				if (_Input.HomingPressed) { additiveHit(); }
+				if (_Input._HomingPressed) { additiveHit(); }
 				else { bounceUpHit(); }
 
 				//Restore control and switch to default action
@@ -356,8 +356,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//An additive hit that keeps momentum
 		void additiveHit () {
 			//Disable inputs so actions don't happen immediately after hitting
-			_Input.SpecialPressed = false;
-			_Input.HomingPressed = false;
+			_Input._SpecialPressed = false;
+			_Input._HomingPressed = false;
 
 			GetDirectionPostHit();
 

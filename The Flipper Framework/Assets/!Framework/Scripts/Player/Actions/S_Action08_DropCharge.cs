@@ -89,7 +89,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		if (!_PlayerPhys._isGrounded && _Input.RollPressed && _PlayerPhys._RB.velocity.y < 40f)
+		if (!_PlayerPhys._isGrounded && _Input._RollPressed && _PlayerPhys._RB.velocity.y < 40f)
 		{
 			if (!Physics.Raycast(_FeetPoint.position, -transform.up, _minimumHeightToDropCharge_, _PlayerPhys._Groundmask_))
 			{
@@ -154,7 +154,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 			_charge = Mathf.Clamp(_charge + (_chargingSpeed_ * Time.deltaTime), 0, _maximunCharge_); //Increase charge
 
 			//If input is released, then end sound and prepare to end action after a delay.
-			if (!_Input.RollPressed)
+			if (!_Input._RollPressed)
 			{
 				_isCharging = false;
 				StartCoroutine(DelayEndingAction());
@@ -163,7 +163,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		//Won't increase charge, but can return to charging if input is pressed again.
 		else
 		{
-			if (_Input.RollPressed)
+			if (_Input._RollPressed)
 			{
 				_isCharging = true;
 				StopCoroutine(DelayEndingAction());
@@ -189,7 +189,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private void CheckGround () {
 
 		//Pressing the special button will cause a dash while still in the air, affected by charge.
-		if (_Input.SpecialPressed && _charge > _minimunCharge_)
+		if (_Input._SpecialPressed && _charge > _minimunCharge_)
 		{
 			AirRelease();
 		}
@@ -214,9 +214,9 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private void AirRelease () {
 
 		//Since activated by pressing a button, ensure none others are pressed so there aren't immediate transitions.
-		_Input.JumpPressed = false;
-		_Input.SpecialPressed = false;
-		_Input.HomingPressed = false;
+		_Input._JumpPressed = false;
+		_Input._SpecialPressed = false;
+		_Input._HomingPressed = false;
 
 		_charge *= 0.6f; //Launcing in the air has less power than grounded.
 

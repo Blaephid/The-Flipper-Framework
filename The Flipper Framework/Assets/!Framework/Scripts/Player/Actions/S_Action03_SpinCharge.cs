@@ -101,7 +101,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	//Checks if this action can currently be performed, based on the input and environmental factors.
 	public bool AttemptAction () {
 		//Pressed on the ground
-		if (_Input.spinChargePressed && _PlayerPhys._isGrounded)
+		if (_Input._SpinChargePressed && _PlayerPhys._isGrounded)
 		{
 			//At a slow enough speed and not on too sharp of a slope.
 			if (_PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerPhys._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
@@ -169,7 +169,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Effects.GetSpinDashDust(), _maximunCharge_);
 
 		//If not pressed, sets the player as exiting
-		if (!_Input.spinChargePressed)
+		if (!_Input._SpinChargePressed)
 		{
 			if (_isPressedCurrently)
 				StartCoroutine(DelayRelease());
@@ -341,7 +341,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player leaves or loses the ground
 	public void EventOnGroundLost () {
-		_Input.SpecialPressed = false; // Ensures an action like a jump dash won't be performed immediately.
+		_Input._SpecialPressed = false; // Ensures an action like a jump dash won't be performed immediately.
 		_Effects.EndSpinDash();
 
 		StartCoroutine(DelayOnFall());

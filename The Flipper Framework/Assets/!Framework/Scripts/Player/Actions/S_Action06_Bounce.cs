@@ -95,7 +95,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 
 		//Can only bounce if it isn't locked in the actionManager, and not moving too fast up.
-		if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)
+		if (_Input._BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)
 		{
 			StartAction();
 			return true;
@@ -146,7 +146,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		StartCoroutine(AddDelay(coolDown));
 
 		//Incase this was disabled by changing action, rather than a bounce.
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		if(!_hasBounced)
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 
 		_HomingTrailScript.emitTime = 0.2f;
 	}
@@ -226,7 +227,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		_counter = 0; //Starts the process of waiting after bounce before exiting action.
 
-		_Input.BouncePressed = false; //Prevents the action from being hold spammed.
+		_Input._BouncePressed = false; //Prevents the action from being hold spammed.
 
 		_PlayerPhys.SetIsGrounded(true); //Resets air actions like homing attacks, air dashes, etc.
 

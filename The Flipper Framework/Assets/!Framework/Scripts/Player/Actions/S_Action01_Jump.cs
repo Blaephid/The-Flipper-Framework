@@ -106,11 +106,11 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	//Called when checking if this action is to be performed, including inputs.
 	public bool AttemptAction () {
-		if (_Input.JumpPressed)
+		if (_Input._JumpPressed)
 		{
 			switch (_Actions._whatAction)
 			{
-				case S_Enums.PrimaryPlayerStates.Default:
+				 default:
 					//Normal grounded Jump
 					if (_PlayerPhys._isGrounded)
 					{
@@ -126,7 +126,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					//Jump when in the air
 					else if (_Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
 					{
-						AssignStartValues(Vector3.up, false);
+						AssignStartValues(transform.up, false);
 						StartAction();
 					}
 					return true;
@@ -151,10 +151,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					AssignStartValues(transform.up, true);
 					StartAction();
 					return true;
-				default:
-					AssignStartValues(transform.up, _PlayerPhys._isGrounded);
-					StartAction();
-					return true;
+	
 			}
 		}
 		return false;
@@ -171,7 +168,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_counter = 0;
 
 		//Setting public
-		_Input.RollPressed = false;
+		_Input._RollPressed = false;
 		_Actions._actionTimeCounter = 0;
 
 		//Physics
@@ -293,12 +290,12 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	private void ApplyForce() {
 		//Ending Jump Early
-		if (!_Input.JumpPressed && _counter > _thisMinDuration && _isJumping)
+		if (!_Input._JumpPressed && _counter > _thisMinDuration && _isJumping)
 		{
 			EndJumpForce();
 		}
 		//Ending jump after max duration
-		else if (_counter > _thisMaxDuration && _isJumping && _Input.JumpPressed)
+		else if (_counter > _thisMaxDuration && _isJumping && _Input._JumpPressed)
 		{
 			EndJumpForce();
 		}
@@ -334,7 +331,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private void EndJumpForce () {
 		_counter = _thisMaxDuration;
 		_isJumping = false;
-		_Input.JumpPressed = false;
+		_Input._JumpPressed = false;
 	}
 
 	private void CheckShouldEndAction() {
@@ -342,7 +339,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		if (_PlayerPhys._isGrounded && _counter > Mathf.Max(_slopedJumpDuration, 0.25f))
 		{ 
 			//Prevents holding jump to keep doing so forever.
-			_Input.JumpPressed = false;
+			_Input._JumpPressed = false;
 
 			_Actions._ActionDefault.StartAction();
 		}

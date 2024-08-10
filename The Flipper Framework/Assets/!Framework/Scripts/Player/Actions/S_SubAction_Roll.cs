@@ -89,7 +89,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 				if (_PlayerPhys._isGrounded)
 				{
 					//Enter Rolling state, must be moving fast enought first.
-					if (_Input.RollPressed && !_isRollingFromThis && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
+					if (_Input._RollPressed && !_isRollingFromThis && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
 						_whatCurrentAction = _Actions._whatAction; //If the current action stops matching this, then the player has switched actions while rolling
 						_Actions._whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
@@ -99,7 +99,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 					}
 
 					//End rolling state
-					if (_isRollingFromThis && !_Input.RollPressed && _rollCounter > _minRollTime_)
+					if (_isRollingFromThis && !_Input._RollPressed && _rollCounter > _minRollTime_)
 					{
 						UnCurl();
 					}

@@ -137,7 +137,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		//This is called no matter the action, so it used as function to check the always relevant data.
 		bool CheckDash () {
 			//Can't be grounded or have the action locked by external means.
-			willChangeAction = !_PlayerPhys._isGrounded && _Actions._areAirActionsAvailable && _Actions._isAirDashAvailables && _Input.SpecialPressed;
+			willChangeAction = !_PlayerPhys._isGrounded && _Actions._areAirActionsAvailable && _Actions._isAirDashAvailables && _Input._SpecialPressed;
 			return willChangeAction;
 		}
 	}
@@ -157,7 +157,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(true);
 
 		//Control
-		_Input.HomingPressed = false;
+		_Input._HomingPressed = false;
 		_Actions._isAirDashAvailables = false; //Can't be used again until this is true
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
@@ -199,7 +199,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		//Inputs
-		_Input.SpecialPressed = false;
+		_Input._SpecialPressed = false;
 
 		//Physics
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
@@ -256,7 +256,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		{
 			EndDashManually();
 		}
-		else if (_timer > _minDuration_ && !_Input.SpecialPressed)
+		else if (_timer > _minDuration_ && !_Input._SpecialPressed)
 		{
 			EndDashManually();
 		}

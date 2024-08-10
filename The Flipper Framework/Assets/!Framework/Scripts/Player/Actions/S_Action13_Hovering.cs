@@ -23,30 +23,24 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 
 	private Animator			_CharacterAnimator;
 	private Transform			_MainSkin;
-	private Transform			_PlayerSkin;
+	private Transform			_SkinOffset;
 	private S_Control_SoundsPlayer	_Sounds;
-	private S_Trigger_Updraft		_hoverForce;
+
+	private  GameObject            _JumpBall;
 
 	#endregion
 
-	//General
-	#region General Properties
-
-	//Stats
-	#region Stats
-	#endregion
 
 	// Trackers
 	#region trackers
-	float floatSpeed = 15;
-	public AnimationCurve forceFromSource;
+	private int	 _positionInActionList;
 
-
-	Vector3 forward;
-	#endregion
+	private Vector3	_startForwardDirection;
+	private float	_counter;
 
 	#endregion
 	#endregion
+
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -55,27 +49,29 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Awake () {
-		StartCoroutine(DisableCanHoverEveryFixedUpdate());
-	}
-
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		if (_PlayerPhys == null)
-		{
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-		}
+	void OnEnable () {
+		ReadyAction();
+		StartCoroutine(DisableCanHoverEveryFixedUpdate ());
 	}
 
 	// Update is called once per frame
 	void Update () {
-
+		_Actions._ActionDefault.SetSkinRotationToVelocity(10);
+		_SkinOffset.forward = _startForwardDirection; //Because the hover animation spins around, this ensures the player skin doesn't rotate against the animation, even though the main skin goes towards velocity.
 	}
 
 	private void FixedUpdate () {
+		//This action mainly only exists to have unique connections with inputs and disable other actions. It currently has no unique properties as Interaction_Objects applies the wind force
+		HandleInputs ();
+		_Actions._ActionDefault.HandleAnimator(13);
+
+		_counter += Time.fixedDeltaTime;
 		
+		//As soon as there stopes being wind force upwards, end action.
+		if (_Objects._totalWindDirection.normalized.y < 0.7f && _counter > 0.2f)
+		{
+			_Actions._ActionDefault.StartAction();
+		}	
 	}
 
 	public bool AttemptAction () {
@@ -84,7 +80,15 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	}
 
 	public void StartAction () {
-		_PlayerPhys._listOfIsGravityOn.Add(false);
+		//Visuals
+		_CharacterAnimator.SetTrigger("ChangedState");
+		_Actions._ActionDefault.SwitchSkin(true);
+		_JumpBall.SetActive(false);
+
+		_Input._JumpPressed = false;
+
+		_counter = 0;
+		_startForwardDirection = _MainSkin.forward;
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
 		enabled = true;
@@ -93,16 +97,10 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { return; } //If first time, then return after setting to disabled.	
 
-		
+		_SkinOffset.localEulerAngles = Vector3.zero;
 	}
-
-	private IEnumerator DisableCanHoverEveryFixedUpdate () {
-		yield return new WaitForFixedUpdate();
-		_Objects._canHover = false;
-	}
-
 	#endregion
 
 	/// <summary>
@@ -110,25 +108,45 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
-	public void HandleInputs () {
-
+	//Ensures canHover is false at the start of the frame, then set to true if AttemptAction() is called. In a coroutine rather than fixed update so it goes even if this script is disabled
+	private IEnumerator DisableCanHoverEveryFixedUpdate () {
+		while (true)
+		{
+			yield return new WaitForFixedUpdate();
+			_Objects._canHover = false;
+		}
 	}
 
-	#endregion
-
-	/// <summary>
-	/// Public ----------------------------------------------------------------------------------
-	/// </summary>
-	/// 
-	#region public 
-
+	public void HandleInputs () {
+		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+		_Actions.HandleInputs(_positionInActionList);
+	}
 	#endregion
 
 	/// <summary>
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Assigning
+
+	public void ReadyAction () {
+		if (_PlayerPhys == null)
+		{
+			//Assign all external values needed for gameplay.
+			_Tools = GetComponentInParent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
+
+			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
+			{
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Hovering)
+				{
+					_positionInActionList = i;
+					break;
+				}
+			}
+		}
+	}
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
@@ -139,8 +157,9 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;
-		_PlayerSkin = _Tools.CharacterModelOffset;
+		_SkinOffset = _Tools.CharacterModelOffset;
 		_Sounds = _Tools.SoundControl;
+		_JumpBall = _Tools.JumpBall;
 
 		_HurtControl = _Tools.GetComponent<S_Handler_HealthAndHurt>();
 		_Objects = _HurtControl._Objects;

@@ -62,20 +62,20 @@ public class S_PlayerInput : MonoBehaviour
 	[HideInInspector]
 	public float			mouseSensi;
 
-	[HideInInspector] public bool		JumpPressed;
-	[HideInInspector] public bool		RollPressed;
-	[HideInInspector] public bool		SpecialPressed;
-	[HideInInspector] public bool		BoostPressed;
-	[HideInInspector] public bool		LeftStepPressed;
-	[HideInInspector] public bool		RightStepPressed;
-	[HideInInspector] public bool		BouncePressed;
-	[HideInInspector] public bool		InteractPressed;
-	[HideInInspector] public bool		CamResetPressed;
-	[HideInInspector] public bool		HomingPressed;
-	[HideInInspector] public bool		spinChargePressed;
-	[HideInInspector] public bool		killBindPressed;
+	[HideInInspector] public bool		_JumpPressed;
+	[HideInInspector] public bool		_RollPressed;
+	[HideInInspector] public bool		_SpecialPressed;
+	[HideInInspector] public bool		_BoostPressed;
+	[HideInInspector] public bool		_LeftStepPressed;
+	[HideInInspector] public bool		_RightStepPressed;
+	[HideInInspector] public bool		_BouncePressed;
+	[HideInInspector] public bool		_InteractPressed;
+	[HideInInspector] public bool		_CamResetPressed;
+	[HideInInspector] public bool		_HomingPressed;
+	[HideInInspector] public bool		_SpinChargePressed;
+	[HideInInspector] public bool		_KillBindPressed;
 
-	[HideInInspector] public bool		usingMouse = false;
+	[HideInInspector] public bool		_isUsingMouse = false;
 
 	#endregion
 	#endregion
@@ -239,7 +239,7 @@ public class S_PlayerInput : MonoBehaviour
 	#region inputSystem
 	public void MoveInput ( InputAction.CallbackContext ctx ) {
 		moveVec = ctx.ReadValue<Vector2>();
-		usingMouse = false;
+		_isUsingMouse = false;
 		moveX = moveVec.x;
 		moveY = moveVec.y;
 	}
@@ -248,18 +248,18 @@ public class S_PlayerInput : MonoBehaviour
 		moveVec = ctx.ReadValue<Vector2>();
 		moveX = moveVec.x;
 		moveY = moveVec.y;
-		usingMouse = true;
+		_isUsingMouse = true;
 	}
 
 	public void CamInput ( InputAction.CallbackContext ctx ) {
-		usingMouse = false;
+		_isUsingMouse = false;
 		CurrentCamMovement = ctx.ReadValue<Vector2>();
 		moveCamX = CurrentCamMovement.x * camSensi;
 		moveCamY = CurrentCamMovement.y * camSensi;
 	}
 
 	public void CamMouseInput ( InputAction.CallbackContext ctx ) {
-		usingMouse = true;
+		_isUsingMouse = true;
 		CurrentCamMovement = ctx.ReadValue<Vector2>();
 		moveCamX = CurrentCamMovement.x * mouseSensi;
 		moveCamY = CurrentCamMovement.y * mouseSensi;
@@ -268,56 +268,56 @@ public class S_PlayerInput : MonoBehaviour
 	public void Jump ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			JumpPressed = ctx.ReadValueAsButton();
+			_JumpPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Roll ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			RollPressed = ctx.ReadValueAsButton();
+			_RollPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void LeftStep ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			LeftStepPressed = ctx.ReadValueAsButton();
+			_LeftStepPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void RightStep ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			RightStepPressed = ctx.ReadValueAsButton();
+			_RightStepPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Special ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			SpecialPressed = ctx.ReadValueAsButton();
+			_SpecialPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Boost ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			BoostPressed = ctx.ReadValueAsButton();
+			_BoostPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Homing ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			HomingPressed = ctx.ReadValueAsButton();
+			_HomingPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Interact ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			InteractPressed = ctx.ReadValueAsButton();
+			_InteractPressed = ctx.ReadValueAsButton();
 		}
 	}
 
@@ -326,13 +326,13 @@ public class S_PlayerInput : MonoBehaviour
 		{
 			if (!_PlayerPhys._isGrounded)
 			{
-				BouncePressed = ctx.ReadValueAsButton();
+				_BouncePressed = ctx.ReadValueAsButton();
 			}
 		}
 
 		else if (ctx.canceled)
 		{
-			BouncePressed = ctx.ReadValueAsButton();
+			_BouncePressed = ctx.ReadValueAsButton();
 		}
 	}
 
@@ -340,31 +340,31 @@ public class S_PlayerInput : MonoBehaviour
 		if (ctx.performed)
 		{
 			if (_PlayerPhys._isGrounded)
-				spinChargePressed = ctx.ReadValueAsButton();
+				_SpinChargePressed = ctx.ReadValueAsButton();
 
 		}
 		else if (ctx.canceled)
 		{
-			spinChargePressed = ctx.ReadValueAsButton();
+			_SpinChargePressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void KillBind ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed)
 		{
-			killBindPressed = ctx.ReadValueAsButton();
+			_KillBindPressed = ctx.ReadValueAsButton();
 
 		}
 		else if (ctx.canceled)
 		{
-			killBindPressed = ctx.ReadValueAsButton();
+			_KillBindPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void CamReset ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed)
 		{
-			CamResetPressed = !CamResetPressed;
+			_CamResetPressed = !_CamResetPressed;
 		}
 	}
 	#endregion

@@ -88,10 +88,9 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		}
 		else
 		{
-			_CharacterAnimator.SetInteger("Action", 1);
+			_Actions._ActionDefault.HandleAnimator(1);
 			_wallHit = tempHit;
 			_CurrentWall = _wallHit.collider.gameObject;
-
 		}
 
 		//Ensures the player faces the wall

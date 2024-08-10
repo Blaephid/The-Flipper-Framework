@@ -110,7 +110,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		HandleDamaged();
 
 		//For debugging purposes, kill the player at any time by pressing a button.
-		if (_Input.killBindPressed)
+		if (_Input._KillBindPressed)
 		{
 			Die();
 		}

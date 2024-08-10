@@ -146,13 +146,13 @@ public class S_Handler_Camera : MonoBehaviour
 	//Certain actions will call this in input, where if button is pressed under right speed, then camera will reset to behind character's back.
 	public void AttemptCameraReset () {
 		//Set Camera to back
-		if (_Input.CamResetPressed)
+		if (_Input._CamResetPressed)
 		{
 			if(!_HedgeCam._isLocked) {
 				if (_Input.moveVec == Vector2.zero && _PlayerPhys._horizontalSpeedMagnitude < 5f)
 				{
 					_HedgeCam.SetCameraToDirection(_MainSkin.forward, 0.25f, 0, 12, Quaternion.identity, false);
-					_Input.CamResetPressed = false;
+					_Input._CamResetPressed = false;
 				}
 			}
 		}
