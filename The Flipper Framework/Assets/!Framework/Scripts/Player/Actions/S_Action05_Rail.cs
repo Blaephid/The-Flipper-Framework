@@ -165,7 +165,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		if (!enabled || !_isGrinding) { return; }
 
-		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; } //This is to make the code easier to read, as a single variable name is easier than an element in a public list.
+		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
+		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; } 
 
 		if (_canInput) { HandleInputs(); }
 		MoveOnRail();

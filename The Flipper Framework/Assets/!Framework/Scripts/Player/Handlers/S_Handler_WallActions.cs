@@ -311,26 +311,4 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 	#endregion
 
-
-	private void OnCollisionEnter ( Collision collision ) {
-		if (collision.collider.gameObject.layer == 0)
-		{
-			StartCoroutine(buffering());
-		}
-	}
-
-	IEnumerator buffering () {
-		Vector3 theVec = _saveVelocity;
-		float theSpeed = _currentSpeed;
-
-		for (int i = 0 ; i < 8 ; i++)
-		{
-			yield return new WaitForFixedUpdate();
-			_saveVelocity = theVec;
-			_currentSpeed = theSpeed;
-		}
-	}
-
-
-
 }

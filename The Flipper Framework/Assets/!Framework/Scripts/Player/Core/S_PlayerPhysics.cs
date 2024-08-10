@@ -130,7 +130,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public DelegateAccelerationAndTurning   CallAccelerationAndTurning; //This delegate will be called in controlled velocity to return changes to acceleration and turning. This will usually be the base one in this script, but may be changed externally depending on the action.
 
 	[HideInInspector]
-	public bool                   _arePhysicsOn = true;         //If false, no changes to velocity will be calculated or applied.
+	public bool                   _arePhysicsOn = true;         //If false, no changes to velocity will be calculated or applied. This script will be inactive.
 
 	[HideInInspector]
 	public Vector3                _coreVelocity;                //Core velocity is the velocity under the player's control. Whether it be through movement, actions or more. It cannot exceed maximum speed. Most calculations are based on this
@@ -314,7 +314,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	#region private
 
 	//Manages the character's physics, calling the relevant functions.
-	void HandleGeneralPhysics () {
+	public void HandleGeneralPhysics () {
 		if (!_arePhysicsOn) { return; }
 
 		//Get curve positions, which will be used in calculations for this frame.
@@ -507,7 +507,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//After every other calculation has been made, all of the new velocities and combined and set to the rigidbody.
 	//This includes the core and environmental velocities, but also the others that have been added into lists using the addvelocity methods.
-	private void SetTotalVelocity () {
+	public void SetTotalVelocity () {
 
 		//Core velocity that's been calculated across this script. Either assigns what it should be, or adds the stored force pushes.
 		if (_externalCoreVelocity != default(Vector3))
@@ -613,7 +613,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles core velocity, which is the velocity directly under the player's control (seperate from environmental velocity which is placed on the character by other things).
 	//This turns, decreases and/or increases the velocity based on input.
-	Vector3 HandleControlledVelocity ( Vector2 modifier ) {
+	public Vector3 HandleControlledVelocity ( Vector2 modifier ) {
 
 		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
 		if (_listOfCanControl.Count != 0)
@@ -781,7 +781,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles interactions with slopes (non flat ground), both positive and negative, relative to the player's current rotation.
 	//This includes adding force downhill, aiding or hampering running, as well as falling off when too slow.
-	private Vector3 HandleSlopePhysics ( Vector3 worldVelocity ) {
+	public Vector3 HandleSlopePhysics ( Vector3 worldVelocity ) {
 		if(!_isUsingSlopePhysics_) { return worldVelocity; }
 
 
@@ -856,7 +856,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles the player's velocity following the path of the ground. This does not set the rotation to match it, but does prevent them from flying off or colliding with slopes.
 	//This also handles stepping up over small ledges.
-	private Vector3 StickToGround ( Vector3 velocity ) {
+	public Vector3 StickToGround ( Vector3 velocity ) {
 
 		if(!_canStickToGround) { return velocity; }
 

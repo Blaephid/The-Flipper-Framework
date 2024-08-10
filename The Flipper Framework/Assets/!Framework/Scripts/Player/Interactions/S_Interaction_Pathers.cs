@@ -63,7 +63,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 	{
 		rail,
 		zipline,
-		upreel,
 		automation,
 	}
 

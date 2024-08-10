@@ -23,10 +23,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	private CurveSample _Sample;
 	private Animator	_CharacterAnimator;
-	private Transform   _MainSkin;
 	[HideInInspector]
 	public Collider	_PatherStarter;
-	private Transform	_Skin;
+	private Transform	_MainSkin;
 	private Transform	_PathTransform;
 	#endregion
 
@@ -49,11 +48,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private Quaternion	_charRot;
 
 	// Setting up Values
-	private float	_range = 0f;
+	private float	_pointOnSpline = 0f;
 	[HideInInspector]
 	public float	_playerSpeed;
 	private float	_pathTopSpeed;
 	private bool	_isGoingBackwards;
+	private int         _moveDirection;
 
 	//Camera testing
 	public float	_targetDistance = 10;
@@ -63,6 +63,10 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	public float	_originalRayToGroundRot;
 	[HideInInspector] 
 	public float	_originalRayToGround;
+
+	private Vector3     _sampleUpwards;
+	private Vector3     _sampleForwards;
+	private Vector3     _sampleLocation;
 	#endregion
 	#endregion
 
@@ -81,7 +85,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyAction();
-		_OGSkinLocPos = _Skin.transform.localPosition;
+		_OGSkinLocPos = _MainSkin.transform.localPosition;
 	}
 
 	// Update is called once per frame
@@ -91,17 +95,32 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	private void FixedUpdate () {
 		_Input.LockInputForAWhile(1f, true, Vector3.zero);
-		PathMove();
+
+		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
+		if (_Actions._listOfSpeedOnPaths.Count > 0) { _playerSpeed = _Actions._listOfSpeedOnPaths[0]; } 
+		MoveAlongPath();
+		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _playerSpeed; }//Apples all changes to grind speed.
 	}
 
-	public bool AttemptAction () {
-		
+	public bool AttemptAction () {		
 		_Pathers._canEnterAutoPath = true;
 		return false;
 	}
 
 	public void StartAction () {
+		_PlayerPhys._arePhysicsOn = false;
 
+		_MainSkin.transform.localPosition = _MainSkin.transform.localPosition;
+
+		if (transform.eulerAngles.y < -89)
+		{
+			_PlayerPhys.transform.eulerAngles = new Vector3(0, -89, 0);
+		}
+
+		_CharacterAnimator.SetBool("Grounded", true);
+
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Path);
+		enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -109,10 +128,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		if (_Skin != null)
+		_PlayerPhys._arePhysicsOn = true;
+
+		if (_MainSkin != null)
 		{
-			_Skin.transform.localPosition = _OGSkinLocPos;
-			_Skin.localRotation = Quaternion.identity;
+			_MainSkin.transform.localPosition = _OGSkinLocPos;
+			_MainSkin.localRotation = Quaternion.identity;
 		}
 	}
 
@@ -123,6 +144,104 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region private
+	private void SetToPath () {
+
+		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
+	}
+
+	private void MoveAlongPath () {
+
+		GetNewPointOnSpline();
+
+		PlaceOnSpline();
+		//if ((Physics.Raycast(splinePoint + (_sampleUpwards * 2), -transform.up, out RaycastHit hitRot, 2.2f + _Tools.Stats.FindingGround.rayToGroundDistance, _PlayerPhys._Groundmask_)))
+		//{
+		//	Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
+		//	_PlayerPhys.SetPlayerPosition(((_Sample.location) + _PathTransform.position) + FootPos);
+		//}
+		//else
+		//{
+		//	Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
+		//	_PlayerPhys.SetPlayerPosition(((_Sample.location) + _PathTransform.position) + FootPos);
+		//}
+		_PlayerPhys.CheckForGround();
+		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
+
+		float inputDirection = Mathf.Sign(Vector3.Dot(_sampleForwards, _PlayerPhys._moveInput));
+		_PlayerPhys._moveInput = _sampleForwards * inputDirection;
+
+		Vector3 physCoreVelocity = _PlayerPhys.HandleControlledVelocity(Vector2.one);
+		if (_PlayerPhys._isGrounded)
+		{
+			physCoreVelocity = _PlayerPhys.StickToGround(physCoreVelocity);
+			physCoreVelocity = _PlayerPhys.HandleSlopePhysics(physCoreVelocity);
+		}
+		_playerSpeed = physCoreVelocity.magnitude;
+
+		_PlayerPhys.SetBothVelocities(_sampleForwards * _moveDirection * _playerSpeed, Vector2.right);
+
+		if (_pointOnSpline == _Pathers._PathSpline.Length || _pointOnSpline == 0)
+		{
+				ExitPath();
+		}
+	}
+
+	private void GetNewPointOnSpline () {
+		//Increase the Amount of distance through the Spline by DeltaTime
+		float travelAmount = (Time.deltaTime * _playerSpeed);
+		_moveDirection = _isGoingBackwards ? -1 : 1;
+
+		// Increase/Decrease Range depending on direction
+		_pointOnSpline += travelAmount * _moveDirection;
+		_pointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _Pathers._PathSpline.Length);
+
+		//Get Sample of the Path to put player
+		_Sample = _Pathers._PathSpline.GetSampleAtDistance(_pointOnSpline);
+		_sampleForwards = _Sample.tangent;
+		_sampleUpwards = _Sample.up;
+		_sampleLocation = _Sample.location + _Pathers._PathSpline.transform.position;
+	}
+
+	private void PlaceOnSpline () {
+		//Place at position so feet are on the spline, setting to ground if close to sample.
+		Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
+		_PlayerPhys.SetPlayerPosition(_sampleLocation + FootPos);
+		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(_sampleForwards, _sampleUpwards));
+	}
+
+	private void ExitPath () {
+
+
+		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
+
+		//Set Player Speed correctly for smoothness
+		if (!_isGoingBackwards)
+		{
+			_Sample = _Pathers._PathSpline.GetSampleAtDistance(_Pathers._PathSpline.Length);
+			_PlayerPhys._RB.velocity = _Sample.tangent * (_playerSpeed);
+
+		}
+		else
+		{
+			_Sample = _Pathers._PathSpline.GetSampleAtDistance(0);
+			_PlayerPhys._RB.velocity = -_Sample.tangent * (_playerSpeed);
+
+		}
+
+		_MainSkin.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, _PlayerPhys._HitGround.normal);
+
+		_CamHandler.SetBehind(0);
+		_Input.LockInputForAWhile(30f, true, _MainSkin.forward);
+
+		//Deactivates any cinemachine that might be attached.
+		if (_Pathers._currentExternalCamera != null)
+		{
+			_Pathers._currentExternalCamera.DeactivateCam(18);
+			_Pathers._currentExternalCamera = null;
+		}
+
+		_Actions._ActionDefault.StartAction();
+	}
 
 	public void HandleInputs () {
 
@@ -135,7 +254,22 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region public 
+	public void AssignForThisAutoPath ( float Range, Transform PathPos, bool back, float speed, float pathspeed = 0f ) {
 
+
+		//Setting up the path to follow
+		_pointOnSpline = Range;
+		_PathTransform = PathPos;
+
+		_pathTopSpeed = pathspeed;
+
+		_playerSpeed = _PlayerPhys._RB.velocity.magnitude;
+
+		if (_playerSpeed < speed)
+			_playerSpeed = speed;
+
+		_isGoingBackwards = back;
+	}
 	#endregion
 
 	/// <summary>
@@ -175,7 +309,6 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_MainSkin = _Tools.MainSkin;
 		_Sounds = _Tools.SoundControl;
 		_CamHandler = _Tools.CamHandler._HedgeCam;
-		_Skin = _Tools.MainSkin;
 	}
 
 	//Reponsible for assigning stats from the stats script.
@@ -183,207 +316,6 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	}
 	#endregion
-
-
-	public void AssignForThisAutoPath ( float Range, Transform PathPos, bool back, float speed, float pathspeed = 0f ) {
-
-		//Disable colliders to prevent jankiness
-		//Path_Int.playerCol.enabled = false;
-
-
-		_Skin.transform.localPosition = _Skin.transform.localPosition;
-
-
-		//fix for camera jumping
-		//rotYFix = transform.rotation.eulerAngles.y;
-		//transform.rotation = Quaternion.identity;
-
-		if (transform.eulerAngles.y < -89)
-		{
-			_PlayerPhys.transform.eulerAngles = new Vector3(0, -89, 0);
-		}
-
-
-		//Setting up the path to follow
-		_range = Range;
-		_PathTransform = PathPos;
-
-		_pathTopSpeed = pathspeed;
-
-		_playerSpeed = _PlayerPhys._RB.velocity.magnitude;
-
-		if (_playerSpeed < speed)
-			_playerSpeed = speed;
-
-		_isGoingBackwards = back;
-		_CharacterAnimator.SetBool("Grounded", true);
-
-	}
-
-
-	public void PathMove () {
-		//Increase the Amount of distance through the Spline by DeltaTime
-		float ammount = (Time.deltaTime * _playerSpeed);
-
-		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
-
-		//Slowly increases player speed.
-		if (_playerSpeed < _PlayerPhys._currentTopSpeed || _playerSpeed < _pathTopSpeed)
-		{
-			if (_playerSpeed < _PlayerPhys._currentTopSpeed * 0.7f)
-				_playerSpeed += .14f;
-			else
-				_playerSpeed += .07f;
-
-		}
-
-		//Simple Slope effects
-		if (_PlayerPhys._groundNormal.y < 1 && _PlayerPhys._groundNormal != Vector3.zero)
-		{
-			//UpHill
-			if (_PlayerPhys._RB.velocity.y > 0f)
-			{
-				_playerSpeed -= (1f - _PlayerPhys._groundNormal.y) * 0.1f;
-			}
-
-			//DownHill
-			if (_PlayerPhys._RB.velocity.y < 0f)
-			{
-				_playerSpeed += (1f - _PlayerPhys._groundNormal.y) * 0.1f;
-			}
-		}
-
-		//Leave path at low speed
-		if (_playerSpeed < 10f)
-		{
-			ExitPath();
-		}
-
-		// Increase/Decrease Range depending on direction
-
-		if (!_isGoingBackwards)
-		{
-			//range += ammount / dist;
-			_range += ammount;
-		}
-		else
-		{
-			//range -= ammount / dist;
-			_range -= ammount;
-		}
-
-		//Check so for the size of the Spline
-		if (_range < _Pathers._PathSpline.Length && _range > 0)
-		{
-			//Get Sample of the Path to put player
-			_Sample = _Pathers._PathSpline.GetSampleAtDistance(_range);
-
-			//Set player Position and rotation on Path
-			//Quaternion rot = (Quaternion.FromToRotation(Skin.transform.up, sample.Rotation * Vector3.up) * Skin.rotation);
-			//Skin.rotation = rot;
-			//CharacterAnimator.transform.rotation = rot;
-
-
-			if ((Physics.Raycast(_Sample.location + (transform.up * 2), -transform.up, out RaycastHit hitRot, 2.2f + _Tools.Stats.FindingGround.rayToGroundDistance, _PlayerPhys._Groundmask_)))
-			{
-				//Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
-				//transform.position = (hitRot.point + PathTransform.position) + FootPos;
-
-				Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
-				_PlayerPhys.SetPlayerPosition(((_Sample.location) + _PathTransform.position) + FootPos);
-			}
-			else
-			{
-				Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
-				_PlayerPhys.SetPlayerPosition(((_Sample.location) + _PathTransform.position) + FootPos)	;
-			}
-
-
-
-			//Moves the player to the position of the Upreel
-			//Vector3 HandPos = transform.position - HandGripPoint.position;
-			//transform.position = currentUpreel.HandleGripPos.position + HandPos;
-
-
-			//Set Player Speed correctly for smoothness
-			if (!_isGoingBackwards)
-			{
-				_PlayerPhys._RB.velocity = _Sample.tangent * (_playerSpeed);
-
-
-				//remove camera tracking at the end of the path to be safe from strange turns
-				//if (range > Rail_int.RailSpline.Length * 0.9f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f;}
-			}
-			else
-			{
-				_PlayerPhys._RB.velocity = -_Sample.tangent * (_playerSpeed);
-
-				//remove camera tracking at the end of the path to be safe from strange turns
-				//if (range < 0.1f) { Player.MainCamera.GetComponent<HedgeCamera>().Timer = 0f; }
-			}
-
-		}
-		else
-		{
-			//Check if the Spline is loop and resets position
-			if (_Pathers._PathSpline.IsLoop)
-			{
-				if (!_isGoingBackwards)
-				{
-					_range = _range - _Pathers._PathSpline.Length;
-					PathMove();
-				}
-				else
-				{
-					_range = _range + _Pathers._PathSpline.Length;
-					PathMove();
-				}
-			}
-			else
-			{
-				ExitPath();
-			}
-		}
-
-	}
-
-	public void ExitPath () {
-
-
-		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
-
-		//Set Player Speed correctly for smoothness
-		if (!_isGoingBackwards)
-		{
-			_Sample = _Pathers._PathSpline.GetSampleAtDistance(_Pathers._PathSpline.Length);
-			_PlayerPhys._RB.velocity = _Sample.tangent * (_playerSpeed);
-
-		}
-		else
-		{
-			_Sample = _Pathers._PathSpline.GetSampleAtDistance(0);
-			_PlayerPhys._RB.velocity = -_Sample.tangent * (_playerSpeed);
-
-		}
-
-		_MainSkin.rotation = Quaternion.LookRotation(_PlayerPhys._RB.velocity, _PlayerPhys._HitGround.normal);
-
-		_CamHandler.SetBehind(0);
-		_Input.LockInputForAWhile(30f, true, _MainSkin.forward);
-
-		//Reenables Colliders
-		//Path_Int.playerCol.enabled = true;
-
-
-		//Deactivates any cinemachine that might be attached.
-		if (_Pathers._currentExternalCamera != null)
-		{
-			_Pathers._currentExternalCamera.DeactivateCam(18);
-			_Pathers._currentExternalCamera = null;
-		}
-
-		_Actions._ActionDefault.StartAction();
-	}
 }
 
 
