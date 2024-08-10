@@ -23,7 +23,6 @@ public class S_ActionManager : MonoBehaviour
 	[Header("Actions")]
 	public S_Action00_Default _ActionDefault;
 	public S_Action04_Hurt _ActionHurt;
-	public S_Action10_FollowAutoPath Action10;
 
 	//Keeps track of the generated objects that handle different components. This is to prevent having all components on one object.
 	public GameObject _ObjectForActions;

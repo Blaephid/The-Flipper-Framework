@@ -17,12 +17,13 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Action05_Rail       _RailAction;
-	private S_Action14_Upreel	_UpreelAction;
+	private S_CharacterTools		_Tools;
+	private S_PlayerPhysics		_PlayerPhys;
+	private S_PlayerInput		_Input;
+	private S_ActionManager		_Actions;
+	private S_Action05_Rail		_RailAction;
+	private S_Action10_FollowAutoPath	_PathAction;
+	private S_Action14_Upreel		_UpreelAction;
 
 	[HideInInspector]
 	public S_Trigger_CineCamera   _currentExternalCamera;
@@ -45,7 +46,12 @@ public class S_Interaction_Pathers : MonoBehaviour
 	// Trackers
 	#region trackers
 
-	private bool                  _canEnterAutoPath = false;    //Set to false when enterring a path trigger, and true when leaving it. Prevents multiple collisions with the same trigger, and allows entering a trigger to start OR end.
+	[HideInInspector]
+	public    bool                _canEnterAutoPath = false;
+	[HideInInspector]
+	public    bool                _canExitAutoPath = false;
+	[HideInInspector]
+	public bool                  _isCurrentlyInAutoTrigger = false;    //Set to true when enterring a path trigger, and false when leaving it. Prevents multiple collisions with the same trigger, and allows entering a trigger to start OR end.
 	[HideInInspector]
 	public bool                   _canGrindOnRail;              //Set to false every frame, but then to true if in the AttemptAction method of the grind action.
 
@@ -71,7 +77,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 	// Start is called before the first frame update
 	void Start () {
-		StartCoroutine(DisablingGrindingOnRailAtIntervals());
+		StartCoroutine(DisablingEnteringPathsAtIntervals());
 	}
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
@@ -80,7 +86,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	private void Update () {
-		
+
 	}
 
 	public void EventTriggerEnter ( Collider col ) {
@@ -98,12 +104,15 @@ public class S_Interaction_Pathers : MonoBehaviour
 				break;
 
 			case "Upreel":
-				_UpreelAction.StartUpreel(col);
+				if(_UpreelAction != null)
+					_UpreelAction.StartUpreel(col);
 				break;
 
 			case "PathTrigger":
-				if (!_canEnterAutoPath)
-					StartCoroutine(SetOnPath(col));
+				if (_canExitAutoPath)
+					_Actions._ActionDefault.StartAction();
+				else if (!_isCurrentlyInAutoTrigger && _canEnterAutoPath)
+					SetOnPath(col);
 				break;
 		}
 	}
@@ -116,21 +125,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				//Can only enter a rail if not already on one and in an action with grinding set as a situational action in the action manager.
 				if (!_canGrindOnRail) { return; }
 
-				Spline ThisSpline = col.gameObject.GetComponentInParent<Spline>(); //Create a temporary variable to check this rail before confirming it.
-
-				Vector3 offset = Vector3.zero;
-				if(col.GetComponentInParent<S_PlaceOnSpline>())
-				{
-					offset = col.GetComponentInParent<S_PlaceOnSpline>().Offset3d;
-				}
-
-				Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
-
-				//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
-				if (rangeAndDis.y < Mathf.Clamp(_PlayerPhys._speedMagnitude / 25, 2f, 6f))
-				{
-					SetOnRail(true, col, rangeAndDis);
-				}
+				CheckRail(col);
 				break;
 		}
 	}
@@ -140,7 +135,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		switch (col.gameObject.tag)
 		{
 			case "PathTrigger":
-				_canEnterAutoPath = false; //Since collision with trigger layers isn't disabled, this prevents being set on a path multiple times in one collider.
+				_isCurrentlyInAutoTrigger = false; //Since collision with trigger layers isn't disabled, this prevents being set on a path multiple times in one collider.
 				break;
 		}
 	}
@@ -154,14 +149,33 @@ public class S_Interaction_Pathers : MonoBehaviour
 	#region private
 
 
-	//This will constantly run in the background, disabling canGrindOnRail, which is enabled in the grinding script AttemptAction method. These two counterballance, meaning as long as AttemptAction is being called, this will be true, but when it stops, this will be false
-	private IEnumerator DisablingGrindingOnRailAtIntervals () {
+	//This will constantly run in the background, disabling checks to enter paths, enabled in AttemptAction methods. These counterballance, so as long as AttemptAction is called, these are true, but when it stops, these will stay false
+	private IEnumerator DisablingEnteringPathsAtIntervals () {
 		while (true)
 		{
 			yield return new WaitForSeconds(0.04f);
 			yield return new WaitForFixedUpdate();
 			yield return new WaitForEndOfFrame();
 			_canGrindOnRail = false; //Set true in the grinding action script whenever attempt action is called. This will mean currently in an action that can enter grind rails. 
+			_canEnterAutoPath = false;
+		}
+	}
+
+	private void CheckRail ( Collider Col ) {
+		Spline ThisSpline = Col.gameObject.GetComponentInParent<Spline>(); //Create a temporary variable to check this rail before confirming it.
+
+		Vector3 offset = Vector3.zero;
+		if (Col.GetComponentInParent<S_PlaceOnSpline>())
+		{
+			offset = Col.GetComponentInParent<S_PlaceOnSpline>().Offset3d;
+		}
+
+		Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
+
+		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
+		if (rangeAndDis.y < Mathf.Clamp(_PlayerPhys._speedMagnitude / 25, 2f, 6f))
+		{
+			SetOnRail(true, Col, rangeAndDis);
 		}
 	}
 
@@ -229,62 +243,47 @@ public class S_Interaction_Pathers : MonoBehaviour
 		_RailAction.StartAction();
 	}
 
-	IEnumerator SetOnPath ( Collider col ) {
-		_canEnterAutoPath = true;
+	private void SetOnPath ( Collider col ) {
+		_isCurrentlyInAutoTrigger = true; //To prevent this being called multiple times with the same trigger.
 
-		//If the player is already on a path, then hitting this trigger will end it.
-		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Path || col.gameObject.name == "End")
+		float speedGo = 0f;
+
+		//If the path is being started by a path speed pad
+		if (col.TryGetComponent(out S_Data_SpeedPad SpeedPadScript))
 		{
-			//See MoveAlongPath for more
-			_Actions.Action10.ExitPath();
+			_PathSpline = SpeedPadScript._Path;
+			speedGo = Mathf.Max(SpeedPadScript._speedToSet_, _PlayerPhys._horizontalSpeedMagnitude);
 		}
 
-		else
+		//If the path is being started by a normal trigger
+		else if (col.gameObject.GetComponentInParent<Spline>())
+			_PathSpline = col.gameObject.GetComponentInParent<Spline>();
+
+		//If the player has been given a path to follow. This cuts out speed pads that don't have attached paths.
+		if (_PathSpline != null)
 		{
-			float speedGo = 0f;
+			//Sets the player to start at the start and move forwards
+			bool back = false;
+			float range = 0f;
 
-			//If the path is being started by a path speed pad
-			if (col.TryGetComponent(out S_Data_SpeedPad SpeedPadScript))
+			//If entering an Exit trigger, the player will be set to move backwards and start at the end.
+			if (col.gameObject.name == "Exit")
 			{
-				_PathSpline = SpeedPadScript._Path;
-				speedGo = Mathf.Max(SpeedPadScript._speedToSet_, _PlayerPhys._horizontalSpeedMagnitude);
+				back = true;
+				range = _PathSpline.Length - 1f;
 			}
 
-			//If the path is being started by a normal trigger
-			else if (col.gameObject.GetComponentInParent<Spline>() && col.gameObject.CompareTag("PathTrigger"))
-				_PathSpline = col.gameObject.GetComponentInParent<Spline>();
-			else
-				_PathSpline = null;
-
-			//If the player has been given a path to follow. This cuts out speed pads that don't have attached paths.
-			if (_PathSpline != null)
+			//If the paths has a set camera angle.
+			if (col.gameObject.GetComponent<S_Trigger_CineCamera>())
 			{
-				//noDelay, the coroutine and otherCol. enabled are used to prevent the player colliding with the trigger multiple times for all of their attached colliders
-
-				//Sets the player to start at the start and move forwards
-				bool back = false;
-				float range = 0f;
-
-				//If entering an Exit trigger, the player will be set to move backwards and start at the end.
-				if (col.gameObject.name == "Exit")
-				{
-					back = true;
-					range = _PathSpline.Length - 1f;
-				}
-
-				//If the paths has a set camera angle.
-				if (col.gameObject.GetComponent<S_Trigger_CineCamera>())
-				{
-					_currentExternalCamera = col.gameObject.GetComponent<S_Trigger_CineCamera>();
-					_currentExternalCamera.ActivateCam(8f);
-				}
-
-				//Starts the player moving along the path using the path follow action
-				_Actions.Action10.InitialEvents(range, _PathSpline.transform, back, speedGo);
-				_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Path);
+				_currentExternalCamera = col.gameObject.GetComponent<S_Trigger_CineCamera>();
+				_currentExternalCamera.ActivateCam(8f);
 			}
+
+			//Starts the player moving along the path using the path follow action
+			_PathAction.AssignForThisAutoPath(range, _PathSpline.transform, back, speedGo);
+			_PathAction.StartAction();
 		}
-		yield return new WaitForEndOfFrame();
 
 	}
 
@@ -327,7 +326,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 			Vector3 checkPos = thisSpline.transform.position + //Object position
 				(thisSpline.transform.rotation * (thisSpline.GetSampleAtDistance(n).location + (thisSpline.GetSampleAtDistance(n).Rotation * offset))); //Place on spline relative to object rotation and offset.
-			//The distance between the point at distance n along the spline, and the current collider position.
+																	      //The distance between the point at distance n along the spline, and the current collider position.
 			float dist = Vector3.Distance(checkPos,colliderPosition);
 
 			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
@@ -379,8 +378,11 @@ public class S_Interaction_Pathers : MonoBehaviour
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Actions = _Tools._ActionManager;
-		_RailAction = _Actions._ObjectForActions.GetComponent<S_Action05_Rail>();
-		_UpreelAction = _Actions._ObjectForActions.GetComponent<S_Action14_Upreel>();
+
+		//Can afford to directly search for these actions as they will only be read if their AttemptAcions are called.
+		_Actions._ObjectForActions.TryGetComponent(out _RailAction);
+		_Actions._ObjectForActions.TryGetComponent(out _PathAction);
+		_Actions._ObjectForActions.TryGetComponent(out _UpreelAction);
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_characterCapsule = _Tools.CharacterCapsule.GetComponent<Collider>();
@@ -390,7 +392,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
-		
+
 	}
 	#endregion
 

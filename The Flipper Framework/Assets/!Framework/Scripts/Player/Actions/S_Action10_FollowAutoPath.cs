@@ -18,7 +18,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Control_SoundsPlayer _Sounds;
-	private S_Interaction_Pathers _Path_Int;
+	private S_Interaction_Pathers _Pathers;
 	private S_HedgeCamera	_CamHandler;
 
 	private CurveSample _Sample;
@@ -30,8 +30,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private Transform	_PathTransform;
 	#endregion
 
-	//General
-	#region General Properties
+
 
 	//Stats
 	#region Stats
@@ -39,6 +38,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
+	private int         _positionInActionList;
+
 	private Vector3	_OGSkinLocPos;
 
 	public float	_skinRotationSpeed;
@@ -64,7 +65,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	public float	_originalRayToGround;
 	#endregion
 	#endregion
-	#endregion
+
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -79,38 +80,13 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
-		if (_PlayerPhys == null)
-		{
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-		}
+		ReadyAction();
 		_OGSkinLocPos = _Skin.transform.localPosition;
-	}
-	private void OnDisable () {
-		if (_Skin != null)
-		{
-			_Skin.transform.localPosition = _OGSkinLocPos;
-			_Skin.localRotation = Quaternion.identity;
-		}
 	}
 
 	// Update is called once per frame
 	void Update () {
-		//CameraFocus();
 
-		//Set Animator Parameters as player is always running
-
-		_CharacterAnimator.SetInteger("Action", 0);
-		_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
-		_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._RB.velocity.magnitude);
-		_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
-
-
-		//Set Animation Angle
-		Vector3 VelocityMod = new Vector3(_PlayerPhys._RB.velocity.x, _PlayerPhys._RB.velocity.y, _PlayerPhys._RB.velocity.z);
-		Quaternion CharRot = Quaternion.LookRotation(VelocityMod, _Sample.up);
-		_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, CharRot, Time.deltaTime * _skinRotationSpeed);
 	}
 
 	private void FixedUpdate () {
@@ -119,9 +95,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		bool willChangeAction = false;
-		willChangeAction = true;
-		return willChangeAction;
+		
+		_Pathers._canEnterAutoPath = true;
+		return false;
 	}
 
 	public void StartAction () {
@@ -130,10 +106,14 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+
+		if (_Skin != null)
+		{
+			_Skin.transform.localPosition = _OGSkinLocPos;
+			_Skin.localRotation = Quaternion.identity;
+		}
 	}
 
 	#endregion
@@ -163,11 +143,32 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
+	//Assigns all external elements of the action.
+	public void ReadyAction () {
+		if (_PlayerPhys == null)
+		{
+			//Assign all external values needed for gameplay.
+			_Tools = GetComponentInParent<S_CharacterTools>();
+			AssignTools();
+			AssignStats();
+
+			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
+			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
+			{
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Path)
+				{
+					_positionInActionList = i;
+					break;
+				}
+			}
+		}
+	}
+
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_Path_Int = GetComponent<S_Interaction_Pathers>();
+		_Pathers = _Tools.PathInteraction;
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
@@ -184,7 +185,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	#endregion
 
 
-	public void InitialEvents ( float Range, Transform PathPos, bool back, float speed, float pathspeed = 0f ) {
+	public void AssignForThisAutoPath ( float Range, Transform PathPos, bool back, float speed, float pathspeed = 0f ) {
 
 		//Disable colliders to prevent jankiness
 		//Path_Int.playerCol.enabled = false;
@@ -272,10 +273,10 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		}
 
 		//Check so for the size of the Spline
-		if (_range < _Path_Int._PathSpline.Length && _range > 0)
+		if (_range < _Pathers._PathSpline.Length && _range > 0)
 		{
 			//Get Sample of the Path to put player
-			_Sample = _Path_Int._PathSpline.GetSampleAtDistance(_range);
+			_Sample = _Pathers._PathSpline.GetSampleAtDistance(_range);
 
 			//Set player Position and rotation on Path
 			//Quaternion rot = (Quaternion.FromToRotation(Skin.transform.up, sample.Rotation * Vector3.up) * Skin.rotation);
@@ -288,12 +289,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 				//Vector3 FootPos = transform.position - Path_Int.feetPoint.position;
 				//transform.position = (hitRot.point + PathTransform.position) + FootPos;
 
-				Vector3 FootPos = transform.position - _Path_Int._FeetTransform.position;
+				Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
 				_PlayerPhys.SetPlayerPosition(((_Sample.location) + _PathTransform.position) + FootPos);
 			}
 			else
 			{
-				Vector3 FootPos = transform.position - _Path_Int._FeetTransform.position;
+				Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
 				_PlayerPhys.SetPlayerPosition(((_Sample.location) + _PathTransform.position) + FootPos)	;
 			}
 
@@ -325,16 +326,16 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		else
 		{
 			//Check if the Spline is loop and resets position
-			if (_Path_Int._PathSpline.IsLoop)
+			if (_Pathers._PathSpline.IsLoop)
 			{
 				if (!_isGoingBackwards)
 				{
-					_range = _range - _Path_Int._PathSpline.Length;
+					_range = _range - _Pathers._PathSpline.Length;
 					PathMove();
 				}
 				else
 				{
-					_range = _range + _Path_Int._PathSpline.Length;
+					_range = _range + _Pathers._PathSpline.Length;
 					PathMove();
 				}
 			}
@@ -354,13 +355,13 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		//Set Player Speed correctly for smoothness
 		if (!_isGoingBackwards)
 		{
-			_Sample = _Path_Int._PathSpline.GetSampleAtDistance(_Path_Int._PathSpline.Length);
+			_Sample = _Pathers._PathSpline.GetSampleAtDistance(_Pathers._PathSpline.Length);
 			_PlayerPhys._RB.velocity = _Sample.tangent * (_playerSpeed);
 
 		}
 		else
 		{
-			_Sample = _Path_Int._PathSpline.GetSampleAtDistance(0);
+			_Sample = _Pathers._PathSpline.GetSampleAtDistance(0);
 			_PlayerPhys._RB.velocity = -_Sample.tangent * (_playerSpeed);
 
 		}
@@ -375,10 +376,10 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 
 		//Deactivates any cinemachine that might be attached.
-		if (_Path_Int._currentExternalCamera != null)
+		if (_Pathers._currentExternalCamera != null)
 		{
-			_Path_Int._currentExternalCamera.DeactivateCam(18);
-			_Path_Int._currentExternalCamera = null;
+			_Pathers._currentExternalCamera.DeactivateCam(18);
+			_Pathers._currentExternalCamera = null;
 		}
 
 		_Actions._ActionDefault.StartAction();
