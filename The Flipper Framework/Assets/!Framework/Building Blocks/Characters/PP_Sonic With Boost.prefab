@@ -726,19 +726,19 @@ MonoBehaviour:
   moveCamX: 0
   moveCamY: 0
   mouseSensi: 0
-  JumpPressed: 0
-  RollPressed: 0
-  SpecialPressed: 0
-  BoostPressed: 0
-  LeftStepPressed: 0
-  RightStepPressed: 0
-  BouncePressed: 0
-  InteractPressed: 0
-  CamResetPressed: 0
-  HomingPressed: 0
-  spinChargePressed: 0
-  killBindPressed: 0
-  usingMouse: 0
+  _JumpPressed: 0
+  _RollPressed: 0
+  _SpecialPressed: 0
+  _BoostPressed: 0
+  _LeftStepPressed: 0
+  _RightStepPressed: 0
+  _BouncePressed: 0
+  _InteractPressed: 0
+  _CamResetPressed: 0
+  _HomingPressed: 0
+  _SpinChargePressed: 0
+  _KillBindPressed: 0
+  _isUsingMouse: 0
 --- !u!114 &8583335634310275265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11855,8 +11855,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959734744651521527}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.621, z: -10}
+  m_LocalRotation: {x: 0.27583182, y: 0.6433936, z: -0.2681336, w: 0.6618655}
+  m_LocalPosition: {x: 117.52316, y: 29.897415, z: 88.86786}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11894,9 +11894,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
+  near clip plane: 0.1
   far clip plane: 5000
-  field of view: 90
+  field of view: 60.000004
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -29338,12 +29338,12 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[2].SituationalStates.Array.size
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[9].SituationalStates.Array.size
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29433,27 +29433,42 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[4]'
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[5]'
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[6]'
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
-        type: 3}
-      propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[2]'
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
-      propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[3]'
+      propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[6]'
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[7]'
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _MainActions.Array.data[8].PerformableSubStates.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[2]'
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[3]'
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[4]'
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29519,6 +29534,16 @@ PrefabInstance:
         type: 3}
       propertyPath: '_MainActions.Array.data[13].SituationalStates.Array.data[1]'
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[8].PerformableSubStates.Array.data[0]'
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[8].PerformableSubStates.Array.data[1]'
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}

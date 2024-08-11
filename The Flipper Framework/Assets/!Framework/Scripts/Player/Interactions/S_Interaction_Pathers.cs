@@ -108,7 +108,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				break;
 
 			case "PathTrigger":
-				if (_canExitAutoPath)
+				if (_canExitAutoPath && !_isCurrentlyInAutoTrigger)
 					_Actions._ActionDefault.StartAction();
 				else if (!_isCurrentlyInAutoTrigger && _canEnterAutoPath)
 					SetOnPath(col);
@@ -243,46 +243,45 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	private void SetOnPath ( Collider col ) {
-		_isCurrentlyInAutoTrigger = true; //To prevent this being called multiple times with the same trigger.
+		S_Trigger_Path PathTrigger = col.GetComponentInParent<S_Trigger_Path>();
 
+		if (!PathTrigger) {return;}
+
+		_isCurrentlyInAutoTrigger = true; //To prevent this being called multiple times with the same trigger.
 		float speedGo = 0f;
+
+		//Sets the player to start at the start and move forwards
+		bool back = false;
+		bool willPlaceOnSpline = false;
+
 
 		//If the path is being started by a path speed pad
 		if (col.TryGetComponent(out S_Data_SpeedPad SpeedPadScript))
 		{
+			willPlaceOnSpline = true;
 			_PathSpline = SpeedPadScript._Path;
 			speedGo = Mathf.Max(SpeedPadScript._speedToSet_, _PlayerPhys._horizontalSpeedMagnitude);
 		}
 
 		//If the path is being started by a normal trigger
-		else if (col.gameObject.GetComponentInParent<Spline>())
-			_PathSpline = col.gameObject.GetComponentInParent<Spline>();
+		else
+			_PathSpline = PathTrigger.spline;
 
 		//If the player has been given a path to follow. This cuts out speed pads that don't have attached paths.
-		if (_PathSpline != null)
+		if (!_PathSpline) { return; }
+
+		Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, _PathSpline, Vector2.zero);
+
+		//If entering an Exit trigger, the player will be set to move backwards and start at the end.
+		if (col.gameObject.name == "Exit")
 		{
-			//Sets the player to start at the start and move forwards
-			bool back = false;
-			float range = 0f;
-
-			//If entering an Exit trigger, the player will be set to move backwards and start at the end.
-			if (col.gameObject.name == "Exit")
-			{
-				back = true;
-				range = _PathSpline.Length - 1f;
-			}
-
-			//If the paths has a set camera angle.
-			if (col.gameObject.GetComponent<S_Trigger_CineCamera>())
-			{
-				_currentExternalCamera = col.gameObject.GetComponent<S_Trigger_CineCamera>();
-				_currentExternalCamera.ActivateCam(8f);
-			}
-
-			//Starts the player moving along the path using the path follow action
-			_PathAction.AssignForThisAutoPath(range, _PathSpline.transform, back, speedGo);
-			_PathAction.StartAction();
+			back = true;
 		}
+
+		//Starts the player moving along the path using the path follow action
+		_PathAction.AssignForThisAutoPath(rangeAndDis.x, _PathSpline.transform, back, speedGo, PathTrigger._speedLimits, willPlaceOnSpline);
+		_PathAction.StartAction();
+		
 
 	}
 

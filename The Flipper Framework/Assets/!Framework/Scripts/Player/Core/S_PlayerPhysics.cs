@@ -315,13 +315,14 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Manages the character's physics, calling the relevant functions.
 	public void HandleGeneralPhysics () {
-		if (!_arePhysicsOn) { return; }
 
 		//Get curve positions, which will be used in calculations for this frame.
 		_curvePosAcell = _AccelBySpeed_.Evaluate(_currentRunningSpeed / _currentTopSpeed);
 		_curvePosDecell = _DecelBySpeed_.Evaluate(_currentRunningSpeed / _currentMaxSpeed);
 		_curvePosDrag = _DragBySpeed_.Evaluate(_currentRunningSpeed / _currentMaxSpeed);
 		_curvePosSlopePower = _slopePowerBySpeed_.Evaluate(_currentRunningSpeed / _currentMaxSpeed);
+
+		if (!_arePhysicsOn) { return; }
 
 		//Set if the player is grounded based on current situation.
 		CheckForGround();
@@ -362,6 +363,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Uses the ray to check for ground, if found, sets grounded to true and takes the normal.
 		Vector3 rayCastStartPosition = transform.position + (transform.up * 0.5f);
+
 		if (Physics.Raycast(rayCastStartPosition, -transform.up, out RaycastHit hitGroundTemp, 0.5f + groundCheckerDistance, _Groundmask_))
 		{
 			Vector3 tempNormal = hitGroundTemp.normal;
@@ -564,13 +566,13 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		_timeOnGround += Time.deltaTime;
 
-		_coreVelocity = HandleControlledVelocity(new Vector2(1, 1));
+		_coreVelocity = HandleControlledVelocity(_coreVelocity,new Vector2(1, 1));
 		_coreVelocity = StickToGround(_coreVelocity);
 		_coreVelocity = HandleSlopePhysics(_coreVelocity);
 	}
 
 	//Calls methods relevant to general control and gravity, while applying the turn and accelleration modifiers depending on a number of factors while in the air.
-	private Vector3 HandleAirMovement ( Vector3 coreVelocity ) {
+	public Vector3 HandleAirMovement ( Vector3 coreVelocity ) {
 
 		//In order to change horizontal movement in the air, the player must not be inputting into a wall. Because moving into a slanted wall can lead to the player sliding up it while still not being grounded.
 		Vector3 spherePosition = transform.position - transform.up;
@@ -601,7 +603,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 
 			//Handles lateral velocity.
-			coreVelocity = HandleControlledVelocity(new Vector2(airTurnMod, airAccelMod));
+			coreVelocity = HandleControlledVelocity(_coreVelocity,new Vector2(airTurnMod, airAccelMod));
 		}
 
 		//Apply Gravity (vertical velocity)
@@ -613,24 +615,26 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles core velocity, which is the velocity directly under the player's control (seperate from environmental velocity which is placed on the character by other things).
 	//This turns, decreases and/or increases the velocity based on input.
-	public Vector3 HandleControlledVelocity ( Vector2 modifier ) {
+	public Vector3 HandleControlledVelocity (Vector3 startVelocity, Vector2 modifier ) {
 
 		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
 		if (_listOfCanControl.Count != 0)
 		{
 			_externalRunningSpeed = -1;
-			return _coreVelocity;
+			return startVelocity;
 		}
 
 		//Original by Damizean, edited by Blaephid
 
 		//Gets current running velocity, then splits it into horizontal and vertical velocity relative to the character.
 		//This means running up a wall will have zero vertical velocity because the character isn't moveing up relative to their rotation.Only the lateral velocity will be changed in this method.
-		Vector3 localVelocity = transform.InverseTransformDirection(_coreVelocity);
+		Vector3 localVelocity = transform.InverseTransformDirection(startVelocity);
 		Vector3 lateralVelocity = new Vector3(localVelocity.x, 0.0f, localVelocity.z);
 		Vector3 lateralVelocityBeforeChanges = lateralVelocity;
 
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
+
+		Debug.DrawRay(transform.position, _moveInput * 2, Color.red);
 
 		//Apply changes to the lateral velocity based on input.
 		lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier); //Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
@@ -674,7 +678,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;
-		float inputMagnitude = Mathf.Max(Mathf.Abs(input.x), Mathf.Abs(input.z));
+		float inputMagnitude = Mathf.Max(Mathf.Abs(_Input._inputWithoutCamera.x), Mathf.Abs(_Input._inputWithoutCamera.z));
 
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
@@ -781,7 +785,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles interactions with slopes (non flat ground), both positive and negative, relative to the player's current rotation.
 	//This includes adding force downhill, aiding or hampering running, as well as falling off when too slow.
-	public Vector3 HandleSlopePhysics ( Vector3 worldVelocity ) {
+	public Vector3 HandleSlopePhysics ( Vector3 worldVelocity, bool canFall = true ) {
 		if(!_isUsingSlopePhysics_) { return worldVelocity; }
 
 
@@ -801,7 +805,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//If moving too slow compared to the limit
 		float speedRequirement = _SlopeSpeedLimitByAngle_.Evaluate(_groundNormal.y);
-		if (_horizontalSpeedMagnitude < speedRequirement)
+		if (canFall && _horizontalSpeedMagnitude < speedRequirement)
 		{
 			//Then fall off and away from the slope.
 			SetIsGrounded(false, 1f);
@@ -1037,8 +1041,6 @@ public class S_PlayerPhysics : MonoBehaviour
 				Quaternion targetRotation = Quaternion.FromToRotation(transform.up, normal) * transform.rotation;
 				transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 0.6f);
 			}
-			
-
 		}
 		//If in the air, then stick to previous normal for a moment before rotating legs towards gravity. This avoids collision issues
 		else
@@ -1171,7 +1173,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (shouldPrintForce) Debug.Log("ADD Core FORCE  ");
 	}
 	public void SetCoreVelocity ( Vector3 force, string willOverwrite = "", bool shouldPrintForce = false ) {
-		if (_isOverwritingCoreVelocity && willOverwrite == "") { return; } //If a previous call set isoverwriting to true, then if this isn't doing the same it will be ignored.
+		if (_isOverwritingCoreVelocity && willOverwrite == "") 
+		{ return; } //If a previous call set isoverwriting to true, then if this isn't doing the same it will be ignored.
 
 		_isOverwritingCoreVelocity = willOverwrite == "Overwrite"; //If true, core velocity will be fully replaced, including additions. Sets to true rather than same bool, because setting to false would overwrite this.
 

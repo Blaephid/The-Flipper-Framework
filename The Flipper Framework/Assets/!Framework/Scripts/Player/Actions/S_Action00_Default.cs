@@ -107,7 +107,8 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_PlayerPhys._canStickToGround = true; //Allows following the ground when in a normal grounded state.
 
 		//Set Effects
-		_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
+		if(_CharacterAnimator.GetInteger("Action") != 0)
+			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		enabled = true;

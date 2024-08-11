@@ -140,7 +140,7 @@ public class S_PlayerInput : MonoBehaviour
 			_inputWithoutCamera = new Vector3(moveX, 0, moveY);
 			_camMoveInput = GetInputByLocalTransform(_inputWithoutCamera);
 			_move = _camMoveInput;
-			_constantInputRelevantToCharacter = _PlayerPhys.GetRelevantVector(_camMoveInput);
+			_constantInputRelevantToCharacter = Vector3.ProjectOnPlane(_camMoveInput, transform.up);
 		}
 
 	}
@@ -233,7 +233,6 @@ public class S_PlayerInput : MonoBehaviour
 		_inputCheckedLastFrame = inputDirection;
 		return isCamera;
 	}
-
 
 	#endregion
 	#region inputSystem
