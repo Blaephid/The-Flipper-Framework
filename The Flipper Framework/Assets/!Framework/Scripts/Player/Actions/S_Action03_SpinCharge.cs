@@ -25,8 +25,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private S_Handler_Camera		_CamHandler;
 	private Transform                       _MainSkin;
 
-	private GameObject			_LowerCapsule;
-	private GameObject			_CharacterCapsule;
+	private CapsuleCollider			_LowerCapsule;
+	private CapsuleCollider			_StandingCapsule;
 
 	private Transform			_PlayerSkinTransform;
 	#endregion
@@ -101,7 +101,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	//Checks if this action can currently be performed, based on the input and environmental factors.
 	public bool AttemptAction () {
 		//Pressed on the ground
-		if (_Input.spinChargePressed && _PlayerPhys._isGrounded)
+		if (_Input._SpinChargePressed && _PlayerPhys._isGrounded)
 		{
 			//At a slow enough speed and not on too sharp of a slope.
 			if (_PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerPhys._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
@@ -120,9 +120,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_counter = 0;
 		_isPressedCurrently = true;
 
-		//Setting public
-		_LowerCapsule.SetActive(true);
-		_CharacterCapsule.SetActive(false);
+		//Change collider to be smaller
+		_Actions._ActionDefault.OverWriteCollider(_LowerCapsule);
 
 		_PlayerPhys._canStickToGround = true; //Allows following the ground when in a normal grounded state.
 
@@ -140,10 +139,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		enabled = false;
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
-		//Setting public
-		_LowerCapsule.SetActive(false);
-		_CharacterCapsule.SetActive(true);
-
+		//Return to normal skin and collider size
+		_Actions._ActionDefault.OverWriteCollider(_StandingCapsule);
 		_Actions._ActionDefault.SwitchSkin(true);
 
 		_PlayerPhys._isRolling = false;
@@ -172,7 +169,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Effects.GetSpinDashDust(), _maximunCharge_);
 
 		//If not pressed, sets the player as exiting
-		if (!_Input.spinChargePressed)
+		if (!_Input._SpinChargePressed)
 		{
 			if (_isPressedCurrently)
 				StartCoroutine(DelayRelease());
@@ -205,7 +202,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		float stillForce = _spinDashStillForce_ * _speedLossByTime_.Evaluate(_counter);
 		if (_PlayerPhys._horizontalSpeedMagnitude > 20)
 		{
-			_PlayerPhys.AddCoreVelocity(- _PlayerPhys._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerPhys._horizontalSpeedMagnitude), false);
+			_PlayerPhys.AddCoreVelocity(- _PlayerPhys._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerPhys._horizontalSpeedMagnitude));
 		}
 	}
 
@@ -256,7 +253,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed);
 			addForce *= newSpeed; //Adds speed to direction to get the force
 
-			_PlayerPhys.AddCoreVelocity(addForce, false);
+			_PlayerPhys.AddCoreVelocity(addForce);
 
 			//Adding velocity is more natural/realistic, but for accuracy in aiming, there is also a rotation towards the new direction.
 			Vector3 newDir = _PlayerPhys._RB.velocity;
@@ -265,7 +262,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			dif *= _turnAmountByAngle_.Evaluate(dif);
 
 			newDir = Vector3.RotateTowards(newDir, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
-			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._currentRunningSpeed, false);
+			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._currentRunningSpeed);
 
 			_CharacterAnimator.SetFloat("GroundSpeed", newSpeed);
 
@@ -344,7 +341,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player leaves or loses the ground
 	public void EventOnGroundLost () {
-		_Input.SpecialPressed = false; // Ensures an action like a jump dash won't be performed immediately.
+		_Input._SpecialPressed = false; // Ensures an action like a jump dash won't be performed immediately.
 		_Effects.EndSpinDash();
 
 		StartCoroutine(DelayOnFall());
@@ -419,8 +416,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Effects = _Tools.EffectsControl;
 
 		_PlayerSkinTransform = _Tools.CharacterModelOffset;
-		_LowerCapsule = _Tools.CrouchCapsule;
-		_CharacterCapsule = _Tools.CharacterCapsule;	
+		_LowerCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();
+		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();	
 	}
 	#endregion
 

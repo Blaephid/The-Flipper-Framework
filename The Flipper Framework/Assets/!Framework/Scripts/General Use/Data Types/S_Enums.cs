@@ -20,7 +20,9 @@ public class S_Enums
 		Path = 9,
 		JumpDash = 10,
 		WallRunning = 11,
-		Hovering = 12
+		WallClimbing = 14,
+		Hovering = 12,
+		Upreel = 13,
 	}
 
 	public enum PlayerControlledStates {
@@ -39,7 +41,9 @@ public class S_Enums
 		RingRoad,
 		Path,
 		WallRunning,
+		WallClimbing,
 		Hovering,
+		Upreel
 	}
 
 	public enum SubPlayerStates {
@@ -47,6 +51,17 @@ public class S_Enums
 		Quickstepping = 4,
 		Rolling = 3,
 		Boost = 1
+	}
+
+	//General
+	//
+	public enum VelocityTypes {
+		Total,
+		Core,
+		Environmental,
+		CoreNoVertical,
+		CoreNoLateral,
+		Custom
 	}
 
 
@@ -87,7 +102,7 @@ public class S_Enums
 		Segmented,
 	}
 
-	public enum HomingReboundingTypes {
+	public enum HomingHitResponses {
 		BounceThrough,
 		bounceOff,
 		Rebound,
@@ -111,7 +126,7 @@ public class S_Enums
 	}
 
 	public enum LockControlDirection {
-		NoChange,
+		Change,
 		NoInput,
 		CharacterForwards,
 	}

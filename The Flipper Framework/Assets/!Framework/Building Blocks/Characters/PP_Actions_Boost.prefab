@@ -27,13 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2082340463121117628}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7657858712053285337}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8078855911337762256
 MonoBehaviour:
@@ -112,6 +112,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2987150101943081207}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -122,7 +123,6 @@ Transform:
   - {fileID: 5198940895051518610}
   - {fileID: 4877044261644330271}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4436607989046450415
 MonoBehaviour:
@@ -151,7 +151,7 @@ MonoBehaviour:
   _MainActions:
   - State: 0
     ConnectedStates: 0000000001000000020000000300000005000000
-    SituationalStates: 0000000001000000020000000300000004000000
+    SituationalStates: 000000000100000002000000030000000400000007000000
     PerformableSubStates: 000000000100000004000000
   - State: 1
     ConnectedStates: 00000000010000000300000005000000
@@ -159,11 +159,11 @@ MonoBehaviour:
     PerformableSubStates: 
   - State: 2
     ConnectedStates: 
-    SituationalStates: 00000000010000000200000003000000
+    SituationalStates: 0000000001000000020000000300000007000000
     PerformableSubStates: 000000000100000004000000
   - State: 3
     ConnectedStates: 
-    SituationalStates: 000000000100000002000000
+    SituationalStates: 00000000010000000200000007000000
     PerformableSubStates: 00000000
   - State: 4
     ConnectedStates: 00000000
@@ -175,7 +175,7 @@ MonoBehaviour:
     PerformableSubStates: 01000000
   - State: 6
     ConnectedStates: 0000000005000000
-    SituationalStates: 0000000001000000
+    SituationalStates: 000000000100000007000000
     PerformableSubStates: 0100000004000000
   - State: 7
     ConnectedStates: 000000000100000003000000
@@ -187,7 +187,11 @@ MonoBehaviour:
     PerformableSubStates: 
   - State: 10
     ConnectedStates: 00000000
-    SituationalStates: 0000000001000000
+    SituationalStates: 000000000100000007000000
+    PerformableSubStates: 
+  - State: 13
+    ConnectedStates: 
+    SituationalStates: 0100000000000000
     PerformableSubStates: 
   InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
   _addState: 0
@@ -227,18 +231,6 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 996890313225717832}
         m_TargetAssemblyTypeName: S_Action02_Homing, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: S_Action08_DropCharge, Assembly-CSharp
         m_MethodName: EventOnGrounded
         m_Mode: 1
         m_Arguments:
@@ -572,13 +564,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3925212191463152497}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7657858712053285337}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4559098073210278401
 MonoBehaviour:
@@ -613,9 +605,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentExternalCamera: {fileID: 0}
-  _PathSpline: {fileID: 0}
-  _currentUpreel: {fileID: 0}
   _FeetTransform: {fileID: 0}
+  _PathSpline: {fileID: 0}
   _canGrindOnRail: 0
 --- !u!114 &7735271407916250093
 MonoBehaviour:
@@ -698,13 +689,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6765472363586466154}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7657858712053285337}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8680034794976259033
 MonoBehaviour:
@@ -746,6 +737,7 @@ GameObject:
   - component: {fileID: 7401810815362698741}
   - component: {fileID: 4731894732532396599}
   - component: {fileID: 5674882071896522453}
+  - component: {fileID: 1808404644376647470}
   m_Layer: 0
   m_Name: Main Actions
   m_TagString: Untagged
@@ -760,13 +752,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8040024586553236849}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7657858712053285337}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &665524752473779417
 MonoBehaviour:
@@ -968,3 +960,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _skinRotationSpeed: 6
+--- !u!114 &1808404644376647470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8040024586553236849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba0d88c045e601341b6f95f1153abd98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _currentUpreel: {fileID: 0}

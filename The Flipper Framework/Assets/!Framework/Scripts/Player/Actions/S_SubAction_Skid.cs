@@ -150,20 +150,20 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		if (_PlayerPhys._inputVelocityDifference > _regularSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
 
-			if(_PlayerPhys._horizontalSpeedMagnitude > -_regularSkiddingIntensity_ || _isSkidding)
+			if(_PlayerPhys._currentRunningSpeed > -_regularSkiddingIntensity_ || _isSkidding)
 			{
 				StartAction();
 
 				//If under a certain speed, stop immediately.
-				if (_PlayerPhys._horizontalSpeedMagnitude < _speedToStopAt_)
+				if (_PlayerPhys._currentRunningSpeed < _speedToStopAt_)
 				{
-					_PlayerPhys.AddCoreVelocity(-_PlayerPhys._RB.velocity.normalized * _PlayerPhys._horizontalSpeedMagnitude * 1.5f);
+					_PlayerPhys.AddCoreVelocity(-_PlayerPhys._coreVelocity.normalized * _PlayerPhys._currentRunningSpeed * 1.5f);
 					StopAction();
 				}
 				//Add force against the character to slow them down.
 				else
 				{
-					_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * _regularSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
+					_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * _regularSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
 				return true;
 			}	
@@ -181,11 +181,11 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		if ((_PlayerPhys._inputVelocityDifference > _regularSkidAngleStartPoint_) && !_Input._isInputLocked)
 		{
 			//Uses relevant velocity rather whan world in order to not skid against vertical speed from jumping or falling.
-			Vector3 releVel = _PlayerPhys.GetRelevantVel(_PlayerPhys._RB.velocity);
+			Vector3 releVel = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity);
 			
-				if (_PlayerPhys._horizontalSpeedMagnitude < _speedToStopAt_)
+				if (_PlayerPhys._currentRunningSpeed < _speedToStopAt_)
 				{
-					_PlayerPhys.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _PlayerPhys._horizontalSpeedMagnitude * 0.95f);
+					_PlayerPhys.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _PlayerPhys._currentRunningSpeed * 0.95f);
 				}
 				else
 				{
@@ -204,7 +204,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 			//Different start point from the other two skid types.
 		if (_PlayerPhys._inputVelocityDifference > _spinSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
-			_PlayerPhys.AddCoreVelocity(_PlayerPhys._RB.velocity.normalized * _regularSkiddingIntensity_ * 0.6f);
+			_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * _regularSkiddingIntensity_ * 0.6f);
 			return true;
 		}
 		return false;

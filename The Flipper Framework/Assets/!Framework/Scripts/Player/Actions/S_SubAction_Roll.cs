@@ -23,8 +23,8 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	private S_ActionManager       _Actions;
 	private S_Action00_Default    _Action00;
 
-	private GameObject            _CharacterCapsule;
-	private GameObject            _RollingCapsule;
+	private CapsuleCollider           _StandingCapsule;
+	private CapsuleCollider            _RollingCapsule;
 	private Animator              _CharacterAnimator;
 
 	#endregion
@@ -65,16 +65,18 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	private void FixedUpdate () {
 
-		//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
-		if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatAction)))
+		if (_PlayerPhys._isRolling)
 		{
-			UnCurl();
+			//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
+			if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatAction)))
+			{
+				UnCurl();
+			}
+
+			//While isRolling is set externally, the counter tracks when it is.
+			else if (_isRollingFromThis)
+				_rollCounter += Time.deltaTime;
 		}
-
-		//While isRolling is set externally, the counter tracks when it is.
-		else if (_isRollingFromThis)
-			_rollCounter += Time.deltaTime;
-
 	}
 
 	//Called when attempting to perform an action, checking and preparing inputs.
@@ -87,7 +89,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 				if (_PlayerPhys._isGrounded)
 				{
 					//Enter Rolling state, must be moving fast enought first.
-					if (_Input.RollPressed && !_isRollingFromThis && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
+					if (_Input._RollPressed && !_isRollingFromThis && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
 						_whatCurrentAction = _Actions._whatAction; //If the current action stops matching this, then the player has switched actions while rolling
 						_Actions._whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
@@ -97,7 +99,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 					}
 
 					//End rolling state
-					if (_isRollingFromThis && !_Input.RollPressed && _rollCounter > _minRollTime_)
+					if (_isRollingFromThis && !_Input._RollPressed && _rollCounter > _minRollTime_)
 					{
 						UnCurl();
 					}
@@ -128,8 +130,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	//When the player wants to stop rolling while on the ground, check if there's enough room to stand up.
 	public void UnCurl () {
-		CapsuleCollider col = _CharacterCapsule.GetComponent<CapsuleCollider>();
-		if (_PlayerPhys._isRolling && !Physics.BoxCast(col.transform.position, new Vector3(col.radius, col.height / 2.1f, col.radius), Vector3.zero, transform.rotation, 0))
+		if (_PlayerPhys._isRolling && !Physics.BoxCast(_StandingCapsule.transform.position, new Vector3(_StandingCapsule.radius, _StandingCapsule.height / 2.1f, _StandingCapsule.radius), Vector3.zero, transform.rotation, 0))
 		{
 			SetIsRolling(false);
 		}
@@ -144,16 +145,14 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 			if (value)
 			{
 				//Make shorter to slide under spaces
-				_RollingCapsule.SetActive(true);
-				_CharacterCapsule.SetActive(false);
+				_Actions._ActionDefault.OverWriteCollider(_RollingCapsule);
 			}
 			//Set to not rolling from was
 			else
 			{
 
 				//Make taller again to slide under spaces
-				_CharacterCapsule.SetActive(true);
-				_RollingCapsule.SetActive(false);
+				_Actions._ActionDefault.OverWriteCollider(_StandingCapsule);
 				_rollCounter = 0f;
 			}
 
@@ -176,8 +175,8 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		_Sounds = _Tools.SoundControl;
 		_Actions = _Tools._ActionManager;
 		_Action00 = _Actions._ActionDefault;
-		_CharacterCapsule = _Tools.CharacterCapsule;
-		_RollingCapsule = _Tools.CrouchCapsule;
+		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
+		_RollingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
 		_CharacterAnimator = _Tools.CharacterAnimator;
 	}
 

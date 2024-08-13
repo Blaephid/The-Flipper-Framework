@@ -23,9 +23,6 @@ public class S_ActionManager : MonoBehaviour
 	[Header("Actions")]
 	public S_Action00_Default _ActionDefault;
 	public S_Action04_Hurt _ActionHurt;
-	public S_Action10_FollowAutoPath Action10;
-	public S_Action11_JumpDash Action11;
-	public S_Action12_WallRunning Action12;
 
 	//Keeps track of the generated objects that handle different components. This is to prevent having all components on one object.
 	public GameObject _ObjectForActions;
@@ -62,7 +59,11 @@ public class S_ActionManager : MonoBehaviour
 	[HideInInspector]
 	public int          _jumpCount;                   //Tracks how many jumps have been performed before landing. Will be used in handling multi jumps.
 	[HideInInspector]
-	public float	_dashDelayCounter;		//Used by homing attacks and jump dashes to set as able or not.
+	public float	_dashDelayCounter;            //Used by homing attacks and jump dashes to set as able or not.
+	[HideInInspector]
+	public Vector3      _jumpAngle;		//Set externally, and in the jump action, may be used to choose the angle (E.G., Wall Climbing sets this, and if Jump detects that's the current state (enum), uses this.
+	[HideInInspector]
+	public Vector3      _dashAngle;		//Same as above but for the jumpDash action.
 
 	//Can perform actions
 
@@ -100,21 +101,22 @@ public class S_ActionManager : MonoBehaviour
 			//Makes lists of scripts matching what states are assigned for this state to transition to or activate.
 
 			action.ConnectedActions = new List<IMainAction>();
-			foreach (S_Enums.PlayerControlledStates connectedState in action.ConnectedStates)
+			for (int a = 0 ; a < action.ConnectedStates.Count ; a++)
 			{
-				action.ConnectedActions.Add(AssignControlledScriptByEnum(connectedState));
+				action.ConnectedActions.Add(AssignControlledScriptByEnum(action.ConnectedStates[a]));
 			}
 
 			action.SituationalActions = new List<IMainAction>();
-			foreach (S_Enums.PlayerSituationalStates situationalState in action.SituationalStates)
+			for (int a = 0 ; a < action.SituationalStates.Count ; a++)
 			{
-				action.SituationalActions.Add(AssignSituationalScriptByEnum(situationalState));
+				action.SituationalActions.Add(AssignSituationalScriptByEnum(action.SituationalStates[a]));
 			}
 
+
 			action.SubActions = new List<ISubAction>();
-			foreach (S_Enums.SubPlayerStates subState in action.PerformableSubStates)
+			for (int a = 0 ; a < action.PerformableSubStates.Count ; a++)
 			{
-				action.SubActions.Add(AssignSubScript(subState));
+				action.SubActions.Add(AssignSubScript(action.PerformableSubStates[a]));
 			}
 
 			//Assigns the script related to this state
@@ -141,9 +143,9 @@ public class S_ActionManager : MonoBehaviour
 		}
 
 		//Current action is set when  handle inputs is called, this goes through each situation action and calls methods that should allow them to be checked. Meaning it can only be enetered if it's called this frame
-		foreach (IMainAction situationAction in _currentAction.SituationalActions)
+		for (int a = 0 ; a < _currentAction.SituationalActions.Count ; a++)
 		{
-			situationAction.AttemptAction();
+			_currentAction.SituationalActions[a].AttemptAction();
 		}
 	}
 
@@ -157,9 +159,10 @@ public class S_ActionManager : MonoBehaviour
 	//Go through every action attached to this manager and call the inherited StopAction method (because interface).
 	public void DeactivateAllActions (bool firstTime = false) {
 
-		foreach (S_Structs.StrucMainActionTracker track in _MainActions)
+		for (int a = 0 ; a < _MainActions.Count ; a++)
 		{
-			if(track.State != _whatAction)
+			S_Structs.StrucMainActionTracker track = _MainActions[a];
+			if (track.State != _whatAction)
 			{
 				track.Action.StopAction(firstTime); //The stop action methods should all contain the same check if enabled and then disable the script if so.
 			}
@@ -183,16 +186,16 @@ public class S_ActionManager : MonoBehaviour
 
 		//Checks if any subactions attached to this action should be performed ontop. 
 		//When one returns true, it is being switched to, so end the method. This take priority over main actions.
-		foreach (ISubAction subAction in _currentAction.SubActions)
+		for (int a = 0 ; a < _currentAction.SubActions.Count ; a++)
 		{
-			performAction = subAction.AttemptAction();
+			performAction = _currentAction.SubActions[a].AttemptAction();
 			if (performAction) { return; }
 		}
 
 		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
-		foreach (IMainAction mainAction in _currentAction.ConnectedActions)
+		for (int a = 0 ; a < _currentAction.ConnectedActions.Count ; a++)
 		{
-			performAction = mainAction.AttemptAction();
+			performAction = _currentAction.ConnectedActions[a].AttemptAction();
 			if (performAction) { return; }
 		}
 	}
@@ -205,7 +208,7 @@ public class S_ActionManager : MonoBehaviour
 	}
 
 	//Called externally to prevent certain actions from being performed until time is up.
-	public IEnumerator lockAirMoves ( float frames ) {
+	public IEnumerator LockAirMovesForFrames ( float frames ) {
 		_areAirActionsAvailable = false;
 
 		//Apply delay, in frames.
@@ -278,9 +281,15 @@ public class S_ActionManager : MonoBehaviour
 			case S_Enums.PlayerSituationalStates.WallRunning:
 				_ObjectForActions.TryGetComponent(out S_Action12_WallRunning wall);
 				return wall;
+			case S_Enums.PlayerSituationalStates.WallClimbing:
+				_ObjectForActions.TryGetComponent(out S_Action15_WallClimbing wallClimb);
+				return wallClimb;
 			case S_Enums.PlayerSituationalStates.Hovering:
 				_ObjectForActions.TryGetComponent(out S_Action13_Hovering hov);
 				return hov;
+			case S_Enums.PlayerSituationalStates.Upreel:
+				_ObjectForActions.TryGetComponent(out S_Action14_Upreel up);
+				return up;
 		}
 		return null;
 	}
@@ -409,6 +418,15 @@ public class S_ActionManager : MonoBehaviour
 				{
 					return _ObjectForActions.AddComponent<S_Action12_WallRunning>();
 				}
+			case S_Enums.PrimaryPlayerStates.WallClimbing:
+				if (_ObjectForActions.TryGetComponent(out S_Action15_WallClimbing wallClimbingAction))
+				{
+					return wallClimbingAction;
+				}
+				else
+				{
+					return _ObjectForActions.AddComponent<S_Action15_WallClimbing>();
+				}
 
 			case S_Enums.PrimaryPlayerStates.Hovering:
 				if (_ObjectForActions.TryGetComponent(out S_Action13_Hovering hoveringAction))
@@ -418,6 +436,15 @@ public class S_ActionManager : MonoBehaviour
 				else
 				{
 					return _ObjectForActions.AddComponent<S_Action13_Hovering>();
+				}
+			case S_Enums.PrimaryPlayerStates.Upreel:
+				if (_ObjectForActions.TryGetComponent(out S_Action14_Upreel upreelAction))
+				{
+					return upreelAction;
+				}
+				else
+				{
+					return _ObjectForActions.AddComponent<S_Action14_Upreel>();
 				}
 		}
 		return null;
@@ -602,16 +629,16 @@ public class ActionManagerEditor : Editor
 					//Go through all of the connected states for each state, and make sure those states are also in the list.
 					if(action.SituationalStates.Count > 0)
 					{
-						foreach (S_Enums.PlayerSituationalStates state in action.SituationalStates)
+						for (int a = 0 ; a < action.SituationalStates.Count ; a++)
 						{
-							AddSituationalActionToList(state);
+							AddSituationalActionToList(action.SituationalStates[a]);
 						}
 					}
 					if(action.ConnectedStates.Count > 0)
 					{
-						foreach (S_Enums.PlayerControlledStates state in action.ConnectedStates)
+						for (int a = 0 ; a < action.ConnectedStates.Count ; a++)
 						{
-							AddControledActionToList(state);
+							AddControledActionToList(action.ConnectedStates[a]);
 						}
 					}
 
@@ -630,9 +657,9 @@ public class ActionManagerEditor : Editor
 					//Ensures the component is attached to the game objects.
 					_ActionMan.AssignMainActionScriptByEnum(action.State);
 					//Ensures the same with the subactions
-					foreach (S_Enums.SubPlayerStates SS in action.PerformableSubStates)
+					for (int a = 0 ; a < action.PerformableSubStates.Count ; a++)
 					{
-						_ActionMan.AssignSubScript(SS);
+						_ActionMan.AssignSubScript(action.PerformableSubStates[a]);
 					}
 
 					//To apply this, the action has to be removed from the list, and this added in its place.
@@ -708,6 +735,9 @@ public class ActionManagerEditor : Editor
 			case S_Enums.PlayerSituationalStates.WallRunning:
 				AddActionToList(S_Enums.PrimaryPlayerStates.WallRunning);
 				break;
+			case S_Enums.PlayerSituationalStates.WallClimbing:
+				AddActionToList(S_Enums.PrimaryPlayerStates.WallClimbing);
+				break;
 			case S_Enums.PlayerSituationalStates.Default:
 				AddActionToList(S_Enums.PrimaryPlayerStates.Default);
 				break;
@@ -716,6 +746,9 @@ public class ActionManagerEditor : Editor
 				break;
 			case S_Enums.PlayerSituationalStates.Hurt:
 				AddActionToList(S_Enums.PrimaryPlayerStates.Hurt);
+				break;
+			case S_Enums.PlayerSituationalStates.Upreel:
+				AddActionToList(S_Enums.PrimaryPlayerStates.Upreel);
 				break;
 		}
 	}
@@ -787,8 +820,14 @@ public class ActionManagerEditor : Editor
 			case S_Enums.PrimaryPlayerStates.WallRunning:
 				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.WallRunning);
 				break;
+			case S_Enums.PrimaryPlayerStates.WallClimbing:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.WallClimbing);
+				break;
 			case S_Enums.PrimaryPlayerStates.Hovering:
 				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.Hovering);
+				break;
+			case S_Enums.PrimaryPlayerStates.Upreel:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_Enums.PlayerSituationalStates.Upreel);
 				break;
 
 		}

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Linq;
 //using Luminosity.IO;
 
 namespace SplineMesh
@@ -116,8 +117,9 @@ namespace SplineMesh
 					firstSet = false;
 				}
 
-				foreach (GameObject model in models)
+				for (int i = 0 ; i < models.Length ; i++)
 				{
+					GameObject model = models[i];
 					if ((RailSpline.IsLoop) && (tempRange < 0 || tempRange > thisSpline.Length))
 					{
 						if (!backwards)
@@ -143,14 +145,17 @@ namespace SplineMesh
 						}
 					}
 
-
 					CurveSample tempSample = thisSpline.GetSampleAtDistance(tempRange);
 					setPos(tempSample, model);
 
 					if (backwards)
+					{
 						tempRange += modelDistance;
+					}
 					else
+					{
 						tempRange -= modelDistance;
+					}
 				}
 			}
 		}

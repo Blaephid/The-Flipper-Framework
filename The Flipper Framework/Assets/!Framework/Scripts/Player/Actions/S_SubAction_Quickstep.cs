@@ -96,13 +96,13 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		if (_PlayerPhys._horizontalSpeedMagnitude > 10f && !enabled)
 		{
 			//Gets an input and makes it relevant to camera, then start the action if it's still there.
-			if (_Input.RightStepPressed)
+			if (_Input._RightStepPressed)
 			{
 				PressRight();
 				StartAction();
 				willStartAction = true;
 			}
-			else if (_Input.LeftStepPressed)
+			else if (_Input._LeftStepPressed)
 			{
 				PressLeft();
 				StartAction();
@@ -114,7 +114,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 
 	//Called when the action is enabled and readies all variables for it to be performed.
 	public void StartAction() {	
-		if (_Input.RightStepPressed)
+		if (_Input._RightStepPressed)
 		{
 			_isSteppingRight = true;
 		}
@@ -129,8 +129,8 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		_Actions._whatSubAction = S_Enums.SubPlayerStates.Quickstepping;
 
 		//Prevents buttons from being held to spam.
-		_Input.RightStepPressed = false;
-		_Input.LeftStepPressed = false;
+		_Input._RightStepPressed = false;
+		_Input._LeftStepPressed = false;
 
 		_canStep = true;
 
@@ -206,8 +206,8 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		bool _isFacing = Vector3.Dot(_MainSkin.forward, direction.normalized) < 0f;
 		if (_isFacing)
 		{
-			_Input.RightStepPressed = false;
-			_Input.LeftStepPressed = true;
+			_Input._RightStepPressed = false;
+			_Input._LeftStepPressed = true;
 		}
 	}
 	public void PressLeft () {
@@ -215,8 +215,8 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		bool Facing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < 0f;
 		if (Facing)
 		{
-			_Input.RightStepPressed = true;
-			_Input.LeftStepPressed = false;
+			_Input._RightStepPressed = true;
+			_Input._LeftStepPressed = false;
 		}
 	}
 	#endregion

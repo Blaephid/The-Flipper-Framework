@@ -101,13 +101,14 @@ public class S_VolumeTrailRenderer : MonoBehaviour {
         }
 
 		ArrayList remove = new ArrayList();
-		int i = 0;
-		foreach (TubeVertex p in vertices) {
-			// cull old points first
-			if (Time.time - p.timeCreated > lifeTime) {
+		for (int i = 0 ; i < vertices.Count ; i++)
+		{
+			TubeVertex p = vertices[i];
+			// Cull old points first
+			if (Time.time - p.timeCreated > lifeTime)
+			{
 				remove.Add(p);
 			}
-			i++;
 		}
 
 		foreach (TubeVertex p in remove) {

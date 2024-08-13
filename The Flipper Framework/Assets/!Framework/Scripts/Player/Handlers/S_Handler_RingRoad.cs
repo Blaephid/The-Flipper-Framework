@@ -83,7 +83,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 					break;
 			}
 			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
-			if (_isScanning)
+			if (_isScanning && _Actions._whatAction != S_Enums.PrimaryPlayerStates.RingRoad)//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
 			{
 				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, transform.position);
 			}
@@ -94,10 +94,11 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 	//Called by this script at intervals, and by the ring road action when a ring has been picked up. Gets nereby rings, then calls a method to get a target from them.
 	public void ScanForRings ( Vector2 modifier, Vector3 direction, Vector3 position ) {
+		direction.Normalize();
 
 		//Modifier x increase raidus, modifer y increase range sphere is cast along, direction and position will usually based on the character, but when creating a path will go from target to target.
 		List<Transform> TargetsInRange = GetTargetsInRange(_targetSearchDistance_ * modifier.x, _targetSearchDistance_ * modifier.y, direction, position);
-		_TargetRing = OrderTargets(TargetsInRange, position);
+		_TargetRing = OrderTargets(TargetsInRange, position, direction);
 	}
 
 
@@ -108,8 +109,9 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 		//Since a cast returns hits, convert those to a list of transforms.
 		List<Transform>  TargetsInRange = new List<Transform>();
-		foreach (RaycastHit Target in HitsInRange)
+		for (int i = 0 ; i < HitsInRange.Length ; i++)
 		{
+			RaycastHit Target = HitsInRange[i];
 			//If the transform of this hit isn't in the new list, add it.
 			if (!TargetsInRange.Contains(Target.collider.transform))
 			{
@@ -120,23 +122,29 @@ public class S_Handler_RingRoad : MonoBehaviour
 	}
 
 	//Go through each target found, and ready a list of them to be ordered in.
-	Transform OrderTargets ( List<Transform> TargetsInRange, Vector3 scannerPosition ) {
+	Transform OrderTargets ( List<Transform> TargetsInRange, Vector3 scannerPosition, Vector3 scannerDirection ) {
 
 		int checkLimit = 0; //Used to prevent too many checks in one frame, no matter how many rings in range at once.
 		_ListOfCloseTargets.Clear(); //This new empty list will be used for the ordered targets.
-		_ListOfCloseTargets.Add(null);
+		_ListOfCloseTargets.Add(null); //If none are found, will return null
 
 		//Go through each collider and check it. If list is empty, then this will be skipped and null wull be returned.
-		foreach (Transform Target in TargetsInRange)
+		for (int i = 0 ; i < TargetsInRange.Count ; i++)
 		{
+			Transform Target = TargetsInRange[i];
 			if (Target != null) //Called in case the collider was lost since scanned (like if the ring was picked up).
 			{
-				PlaceTargetInOrder(Target, scannerPosition); //Compared this one to what's already been set as closest this scan (will return the new one if closest is null) 
+				//Only add to list if in the direction the scan was going, so ones found behind the intended direction are not included
+				Vector3 directionToTarget = Target.position - scannerPosition;
+				if (Vector3.Angle(directionToTarget.normalized, scannerDirection) < 110)
+				{
+					PlaceTargetInOrder(Target, scannerPosition); //Compare this one to what's already been set as closest this scan (will return the new one if closest is null) 
 
-				//As said above, limits checks per scan.
-				checkLimit++;
-				if (checkLimit > 5)
-					break;
+					//As said above, limits checks per scan.
+					checkLimit++;
+					if (checkLimit > 4)
+						break;
+				}
 			}
 		}
 		return _ListOfCloseTargets[0];
@@ -154,7 +162,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 			//If the first target checked this scan, then set immediately.
 			if(_ListOfCloseTargets[i] == null)
 			{
-				_ListOfCloseTargets[i] = SetTarget(thisTarget);
+				_ListOfCloseTargets[i] = thisTarget;
 				return; //Going through loop again after editing it would cause issues.
 			}
 
@@ -162,17 +170,12 @@ public class S_Handler_RingRoad : MonoBehaviour
 			float tempDistance = Vector3.Distance(scannerCentre, _ListOfCloseTargets[i].position);
 			if(thisDistanceFromScanner < tempDistance)
 			{
-				_ListOfCloseTargets.Insert(i, SetTarget(thisTarget));
+				_ListOfCloseTargets.Insert(i, thisTarget);
 				return;
 			}
 		}
 		//If hasn't returned yet, then this target is furthest, so add it at the end.
 		_ListOfCloseTargets.Add(thisTarget);
-
-		//Allows checks when setting a target (such as debugs)
-		Transform SetTarget ( Transform Target) {
-			return Target;
-		}
 	}
 	#endregion
 

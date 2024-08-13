@@ -1406,7 +1406,6 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			offsetRail = 2f,
 			offsetZip = -6f,
-			upreel = 0.3f
 		};
 	}
 
@@ -1418,8 +1417,6 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    offsetRail;
 		[Tooltip("Surface: How much below the the spline the player should be to be visibly holding onto the handle.")]
 		public float    offsetZip;
-		[Tooltip("Surface: How much below the the handle the player should be to be visibly holding onto it.")]
-		public float    upreel;
 	}
 	#endregion
 
@@ -1430,7 +1427,8 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucInteractions SetStrucInteractions () {
 		return new StrucInteractions
 		{
-			UpreelSpeedKeptAfter = 0.5f,
+			upreelSpeedKeptAfter = 0.3f,
+			minimumSpeedCarried = 30,
 		};
 	}
 
@@ -1439,7 +1437,8 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucInteractions
 	{
 		[Range(0,1)]
-		public float UpreelSpeedKeptAfter;
+		public float upreelSpeedKeptAfter;
+		public float minimumSpeedCarried;
 
 	}
 	#endregion
@@ -1447,30 +1446,30 @@ public class S_O_CharacterStats : ScriptableObject
 	#region WallRules
 	//-------------------------------------------------------------------------------------------------
 
-	public StrucWallRunning WallRunningStats = SetWallRunning();
-	public StrucWallRunning StartWallRunningStats = SetWallRunning();
+	public StrucWallActions WallActionsStats = SetWallActions();
+	public StrucWallActions StartWallRunningStats = SetWallActions();
 
-	static StrucWallRunning SetWallRunning () {
-		return new StrucWallRunning
+	static StrucWallActions SetWallActions () {
+		return new StrucWallActions
 		{
-			wallCheckDistance = 1.2f,
+			wallCheckDistance = new Vector2 (10, 6),
 			minHeight = 5f,
 			WallLayerMask = new LayerMask(),
-			wallDuration = 0f,
 			scrapeModifier = 1f,
-			climbModifier = 1f
+			climbModifier = 1f,
+			fallOffAtFallSpeed = 15,
 		};
 	}
 
 	[System.Serializable]
-	public struct StrucWallRunning
+	public struct StrucWallActions
 	{
-		public float            wallCheckDistance;
+		public Vector2            wallCheckDistance;
 		public float            minHeight;
 		public LayerMask        WallLayerMask;
-		public float            wallDuration;
 		public float            scrapeModifier;
 		public float            climbModifier;
+		public float                  fallOffAtFallSpeed;
 
 	}
 
@@ -1558,7 +1557,7 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawRingRoad();
 		DrawRailStats();
 		DrawRailPosition();
-		DrawWallRunningStats();
+		DrawWallActionStats();
 
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Interactions", headerStyle);
@@ -2035,14 +2034,14 @@ public class S_O_CharacterStatsEditor : Editor
 
 		//WallRunningStats
 		#region WallRunningStats
-		void DrawWallRunningStats () {
+		void DrawWallActionStats () {
 			EditorGUILayout.Space();
-			DrawProperty("WallRunningStats", "Wall Running");
+			DrawProperty("WallActionsStats", "On Wall Actions");
 
 			Undo.RecordObject(stats, "set to Defaults");
 			if (GUILayout.Button("Default", ResetToDefaultButton))
 			{
-				stats.WallRunningStats = stats.StartWallRunningStats;
+				stats.WallActionsStats = stats.StartWallRunningStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

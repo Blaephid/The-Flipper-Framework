@@ -106,11 +106,33 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	//Called when checking if this action is to be performed, including inputs.
 	public bool AttemptAction () {
-		if (_Input.JumpPressed)
+		if (_Input._JumpPressed)
 		{
 			switch (_Actions._whatAction)
 			{
-				case S_Enums.PrimaryPlayerStates.Default:
+
+				case S_Enums.PrimaryPlayerStates.Jump:
+					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
+					{
+						AssignStartValues(Vector3.up, false);
+						StartAction();
+					}
+					return true;
+				case S_Enums.PrimaryPlayerStates.WallRunning:
+					AssignStartValues(_Actions._jumpAngle, true, 1.5f, 1.6f);
+					StartAction();
+					return true;
+				case S_Enums.PrimaryPlayerStates.WallClimbing:
+					AssignStartValues(_Actions._jumpAngle, true, 1.8f, 0.8f);
+					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(10, 5, -20, true));
+					StartAction(); 
+					return true;
+				case S_Enums.PrimaryPlayerStates.Rail:
+					//GetComponent<S_Action05_Rail>()._isGrinding = false;
+					AssignStartValues(transform.up, true);
+					StartAction();
+					return true;
+				default:
 					//Normal grounded Jump
 					if (_PlayerPhys._isGrounded)
 					{
@@ -126,29 +148,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					//Jump when in the air
 					else if (_Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
 					{
-						AssignStartValues(Vector3.up, false);
+						AssignStartValues(transform.up, false);
 						StartAction();
 					}
-					return true;
-				case S_Enums.PrimaryPlayerStates.Jump:
-					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
-					{
-						AssignStartValues(Vector3.up, false);
-						StartAction();
-					}
-					return true;
-				case S_Enums.PrimaryPlayerStates.WallRunning:
-					AssignStartValues(_Actions.Action12._jumpAngle, true);
-					StartAction();
-					return true;
-				case S_Enums.PrimaryPlayerStates.Rail:
-					GetComponent<S_Action05_Rail>()._isGrinding = false;
-					AssignStartValues(transform.up, true);
-					StartAction();
-					return true;
-				default:
-					AssignStartValues(transform.up, _PlayerPhys._isGrounded);
-					StartAction();
 					return true;
 			}
 		}
@@ -166,7 +168,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_counter = 0;
 
 		//Setting public
-		_Input.RollPressed = false;
+		_Input._RollPressed = false;
 		_Actions._actionTimeCounter = 0;
 
 		//Physics
@@ -176,6 +178,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
 
+		//Prevent doing Air Action immediately.
+		_Actions.LockAirMovesForFrames(6);
+
 		//Effects
 		_CharacterAnimator.SetInteger("Action", 1);
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -184,7 +189,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Snap off of ground to make sure player jumps
-		_PlayerPhys.transform.position += (_upwardsDirection * 0.3f);
+		_PlayerPhys.SetPlayerPosition(_PlayerPhys.transform.position + (_upwardsDirection * 0.3f));
 
 		//If performing a grounded jump. JumpCount may be changed externally to allow for this.
 		if (_isJumpingFromGround)
@@ -195,10 +200,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			_thisMaxDuration = _maxJumpTime_ * _jumpDurationModifier;
 
 			//Jump higher depending based on speed, if jumping upwards off a slope the players running up.
-			if (_PlayerPhys._RB.velocity.y > 5 && _upwardsDirection.y > 1)
+			if (_PlayerPhys._RB.velocity.y > 5 && _upwardsDirection.y < 1)
 			{
 				_jumpSlopeSpeed = Mathf.Max( _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_, _thisJumpSpeed);
-				_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
+   				_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 			}
 			else
 			{
@@ -249,13 +254,16 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	#region private
 
 	//Called when entering the action, to ready any variables needed for performing it.
-	private void AssignStartValues ( Vector3 normaltoJump, bool fromGround = false ) {
+	private void AssignStartValues ( Vector3 normaltoJump, bool fromGround = false, float speedModifier = 1, float durationModifier = 1 ) {
 		if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
 			normaltoJump = Vector3.up;
 
-		//Sets jump direction
+		//Sets jump directionaw
 		_upwardsDirection = normaltoJump;
 		_isJumpingFromGround = fromGround;
+
+		_jumpSpeedModifier = speedModifier;
+		_jumpDurationModifier = durationModifier;
 	}
 
 	public void HandleInputs () {
@@ -271,7 +279,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 		//Take some horizontal speed on jump and remove vertical speed to ensure jump is an upwards force.
 		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._RB.velocity.y, 2), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
-		_PlayerPhys.SetCoreVelocity(newVel, true, false);
+		_PlayerPhys.SetCoreVelocity(newVel, "Overwrite");
 
 		//Add particle effect during jump
 		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
@@ -282,17 +290,17 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	private void ApplyForce() {
 		//Ending Jump Early
-		if (!_Input.JumpPressed && _counter > _thisMinDuration && _isJumping)
+		if (!_Input._JumpPressed && _counter > _thisMinDuration && _isJumping)
 		{
 			EndJumpForce();
 		}
 		//Ending jump after max duration
-		else if (_counter > _thisMaxDuration && _isJumping && _Input.JumpPressed)
+		else if (_counter > _thisMaxDuration && _isJumping && _Input._JumpPressed)
 		{
 			EndJumpForce();
 		}
 		//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
-		else if(_isJumping && _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
+		else if(_isJumping && _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
 		{
 			EndJumpForce();
 		}
@@ -303,13 +311,13 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Jump move at angle
 			if (_counter < _slopedJumpDuration && _jumpSlopeSpeed > 0)
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f * modifierThisFrame), false);
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f * modifierThisFrame), false); //Extra speed to ballance out direction
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f * modifierThisFrame));
+				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f * modifierThisFrame)); //Extra speed to ballance out direction
 			}
 			//Move straight up in world.
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed) * modifierThisFrame, false);
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed) * modifierThisFrame);
 			}
 		}
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.
@@ -323,7 +331,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private void EndJumpForce () {
 		_counter = _thisMaxDuration;
 		_isJumping = false;
-		_Input.JumpPressed = false;
+		_Input._JumpPressed = false;
 	}
 
 	private void CheckShouldEndAction() {
@@ -331,7 +339,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		if (_PlayerPhys._isGrounded && _counter > Mathf.Max(_slopedJumpDuration, 0.25f))
 		{ 
 			//Prevents holding jump to keep doing so forever.
-			_Input.JumpPressed = false;
+			_Input._JumpPressed = false;
 
 			_Actions._ActionDefault.StartAction();
 		}
@@ -363,7 +371,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
+				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Jump)
 				{
 					_positionInActionList = i;
 					break;

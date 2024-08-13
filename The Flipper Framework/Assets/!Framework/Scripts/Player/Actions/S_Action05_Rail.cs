@@ -165,10 +165,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		if (!enabled || !_isGrinding) { return; }
 
-		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; } //This is to make the code easier to read, as a single variable name is easier than an element in a public list.
+		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
+		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; } 
 
-		if (_canInput) { HandleInputs(); }
 		MoveOnRail();
+		if (_canInput) { HandleInputs(); }
 
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _grindingSpeed; }//Apples all changes to grind speed.
 	}
@@ -205,11 +206,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_boostTime = 0;
 
 		//Set controls
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 		_PlayerPhys._listOfCanControl.Add(false);
 		_PlayerPhys._canChangeGrounded = false;
 
-		_Input.JumpPressed = false;
+		_Input._JumpPressed = false;
 
 		//Animator
 		_Actions._ActionDefault.SwitchSkin(true);
@@ -275,7 +276,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			switch (_whatKindOfRail)
 			{
 				case S_Interaction_Pathers.PathTypes.zipline:
-					_PlayerPhys.SetCoreVelocity(_sampleForwards * _grindingSpeed, true);  //Ensure player carries on momentum
+					_PlayerPhys.SetCoreVelocity(_sampleForwards * _grindingSpeed, "Overwrite");  //Ensure player carries on momentum
 					_PlayerPhys._groundNormal = Vector3.up; // Fix rotation
 
 					//After a delay, restore zipline collisions and physics
@@ -286,14 +287,14 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 
 		//Restore Control
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
 		//To prevent instant actions
-		_Input.RollPressed = false;
-		_Input.SpecialPressed = false;
-		_Input.BouncePressed = false;
+		_Input._RollPressed = false;
+		_Input._SpecialPressed = false;
+		_Input._BouncePressed = false;
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
@@ -461,7 +462,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				//If the end of a zipline, then the handle must go flying off the end, so disable trigger for player and homing target, but renable collider with world.
 				_ZipHandle.GetComponent<CapsuleCollider>().enabled = false;
 				if (_ZipHandle.GetComponentInChildren<MeshCollider>()) { _ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; }
-				GameObject target = _ZipHandle.transform.GetComponent<S_Control_Zipline>().homingtgt;
+				GameObject target = _ZipHandle.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
 				target.SetActive(false);
 
 				//_PlayerPhys.SetCoreVelocity(_ZipBody.velocity); //Make sure zip handle flies off
@@ -475,8 +476,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 
 		//Prevent instant stepping.
-		_Input.LeftStepPressed = false;
-		_Input.RightStepPressed = false;
+		_Input._LeftStepPressed = false;
+		_Input._RightStepPressed = false;
+
+		_PlayerPhys._canChangeGrounded = true;
+		_PlayerPhys.CheckForGround();
 
 		//End action
 		StartCoroutine(_Actions._ActionDefault.CoyoteTime());
@@ -567,11 +571,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			case S_Interaction_Pathers.PathTypes.rail:
 
 				//Crouching, relevant to slope physics.
-				_isCrouching = _Input.RollPressed;
+				_isCrouching = _Input._RollPressed;
 				_CharacterAnimator.SetBool("isRolling", _isCrouching);
 
 				//RailTrick to accelerate, but only after delay
-				if (_Input.SpecialPressed && _pushTimer > _pushFowardDelay_)
+				if (_Input._SpecialPressed && _pushTimer > _pushFowardDelay_)
 				{
 					//Will only increase speed if under the max trick speed.
 					if (_grindingSpeed < _pushFowardmaxSpeed_)
@@ -580,7 +584,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					}
 					_isFacingRight = !_isFacingRight; //This will cause the animator to perform a small hop and face the other way.
 					_pushTimer = 0f; //Resets timer so delay must be exceeded again.
-					_Input.SpecialPressed = false; //Prevents it being spammed by holding		
+					_Input._SpecialPressed = false; //Prevents it being spammed by holding		
 				}
 
 				CheckHopping();
@@ -588,15 +592,15 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 			case S_Interaction_Pathers.PathTypes.zipline:
 				float aimForRotation = 0;
-				if (_Input.RightStepPressed) { aimForRotation = 1; }
-				else if (_Input.LeftStepPressed) { aimForRotation = -1; }
+				if (_Input._RightStepPressed) { aimForRotation = 1; }
+				else if (_Input._LeftStepPressed) { aimForRotation = -1; }
 
 				//_pulleyRotate is used in the RailGrind method, so here lerp towards the new goal rather than make it instant.
 				_pulleyRotate = Mathf.MoveTowards(_pulleyRotate, aimForRotation, 3.5f * Time.deltaTime);
 				break;
 		}
 		//Breaking
-		_isBraking = _Input.BouncePressed;
+		_isBraking = _Input._BouncePressed;
 	}
 
 	private void CheckHopping () {
@@ -605,27 +609,27 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
 			Vector3 Direction = _MainSkin.position - _CamHandler.transform.position;
 			bool isFacing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < -0.5f;
-			if (_Input.RightStepPressed && isFacing)
+			if (_Input._RightStepPressed && isFacing)
 			{
-				_Input.RightStepPressed = false;
-				_Input.LeftStepPressed = true;
+				_Input._RightStepPressed = false;
+				_Input._LeftStepPressed = true;
 			}
-			else if (_Input.LeftStepPressed && isFacing)
+			else if (_Input._LeftStepPressed && isFacing)
 			{
-				_Input.RightStepPressed = true;
-				_Input.LeftStepPressed = false;
+				_Input._RightStepPressed = true;
+				_Input._LeftStepPressed = false;
 			}
 
 			//If there is still an input, set the distance to step, which will be taken and handled in PerformHop();
-			if (_Input.RightStepPressed || _Input.LeftStepPressed)
+			if (_Input._RightStepPressed || _Input._LeftStepPressed)
 			{
 				_distanceToStep = _hopDistance_;
-				_isSteppingRight = _Input.RightStepPressed; //Right step has priority over left
+				_isSteppingRight = _Input._RightStepPressed; //Right step has priority over left
 
 				//Disable inputs until the hop is over
 				_canInput = false;
-				_Input.RightStepPressed = false;
-				_Input.LeftStepPressed = false;
+				_Input._RightStepPressed = false;
+				_Input._LeftStepPressed = false;
 			}
 		}
 	}

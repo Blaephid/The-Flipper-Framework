@@ -17,13 +17,13 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer _HomingTrailScript;
-	private S_Handler_Camera	_CamHandler;
-	private S_Control_SoundsPlayer	_Sounds;
-	private S_Control_EffectsPlayer	_Effects;
+	private S_Handler_Camera      _CamHandler;
+	private S_Control_SoundsPlayer          _Sounds;
+	private S_Control_EffectsPlayer         _Effects;
 
-	private Animator	_CharacterAnimator;
+	private Animator    _CharacterAnimator;
 	private Transform   _MainSkin;
-	private GameObject	_JumpBall;
+	private GameObject  _JumpBall;
 	#endregion
 
 
@@ -31,20 +31,20 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	#region Stats
 	private S_Enums.JumpDashTypes _WhatType_;
 
-	private float	_airDashSpeed_;
+	private float       _airDashSpeed_;
 	private float       _airDashIncrease_;
 	private float       _turnSpeed_;
 
 	private float       _speedAfterDash_;
 	private float       _framesToSpendChangingSpeed_;
 
-	private float	_maxDuration_;
-	private float	_minDuration_;
+	private float       _maxDuration_;
+	private float       _minDuration_;
 
 	private float       _verticalAngle_;
-	private float	_horizontalAngle_;
+	private float       _horizontalAngle_;
 
-	private float	_faceDownwardsSpeed_ = 0.02f;
+	private float       _faceDownwardsSpeed_ = 0.02f;
 	private float       _maxDownwardsSpeed_  = -5f;
 
 	private int         _lockMoveInputOnStart_ = 0;
@@ -55,12 +55,12 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	#region trackers
 	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
-	public float	_skinRotationSpeed;
+	public float        _skinRotationSpeed;
 
-	private float	_timer;		//Tracks how long has been in this action
-	private float	_dashSpeed;	//Generated at start of action, based on player speed and stats.
-	private Vector3	_dashDirection;	//Generated at start of action, based on input, stats and movement.
-	private float	_upwardsSpeed;          //Generated at start of action, based on input, stats and movement.
+	private float       _timer;             //Tracks how long has been in this action
+	private float       _dashSpeed;         //Generated at start of action, based on player speed and stats.
+	private Vector3     _dashDirection;     //Generated at start of action, based on input, stats and movement.
+	private float       _upwardsSpeed;          //Generated at start of action, based on input, stats and movement.
 
 	private Vector3     _input;
 	#endregion
@@ -73,10 +73,6 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Start () {
-
-	}
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
@@ -100,29 +96,49 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 		bool willChangeAction = false;
 
-		switch(_Actions._whatAction)
+		switch (_Actions._whatAction)
 		{
 			//Regular requires a seperate check in addition to other actions.
 			case S_Enums.PrimaryPlayerStates.Default:
 				if (_Actions._ActionDefault._canDashDuringFall_)
 				{
-					CheckDash();
+					if (CheckDash())
+					{
+						SetStartDirection(_MainSkin.forward);
+						StartAction();
+					}
+				}
+				break;
+			case S_Enums.PrimaryPlayerStates.WallClimbing:
+				if (CheckDash())
+				{
+					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(30, 8, 0, true));
+					SetStartDirection(_Actions._dashAngle);
+					StartAction();
+				}
+				break;
+			case S_Enums.PrimaryPlayerStates.WallRunning:
+				if (CheckDash())
+				{
+					SetStartDirection(_Actions._dashAngle);
+					StartAction();
 				}
 				break;
 			default:
-				CheckDash();
+				if (CheckDash())
+				{
+					SetStartDirection(_MainSkin.forward);
+					StartAction();
+				}
 				break;
 		}
 		return willChangeAction;
 
 		//This is called no matter the action, so it used as function to check the always relevant data.
-		void CheckDash() {
+		bool CheckDash () {
 			//Can't be grounded or have the action locked by external means.
-			if (!_PlayerPhys._isGrounded && _Actions._areAirActionsAvailable && _Actions._isAirDashAvailables && _Input.SpecialPressed)
-			{
-				StartAction();
-				willChangeAction = true; //Used because returning here would just return to the main method, not the caller.
-			}
+			willChangeAction = !_PlayerPhys._isGrounded && _Actions._areAirActionsAvailable && _Actions._isAirDashAvailables && _Input._SpecialPressed;
+			return willChangeAction;
 		}
 	}
 
@@ -141,20 +157,20 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(true);
 
 		//Control
-		_Input.HomingPressed = false;
+		_Input._HomingPressed = false;
 		_Actions._isAirDashAvailables = false; //Can't be used again until this is true
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
 
 		//Disable normal control so it's taken care of here
 		_PlayerPhys._listOfCanControl.Add(false);
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 
 		//Set private
 		_timer = 0;
 
 		//Create vector to move in
-		_dashSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed +  _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
+		_dashSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
 
 		//Rotate right or left on a large scale based on input
 		MakeFullTurn();
@@ -170,7 +186,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		Vector3 newVec = _dashDirection * _dashSpeed; //Dash forwards
 		newVec += _MainSkin.up * _upwardsSpeed; //If has upwards force, add that as well.
-		_PlayerPhys.SetCoreVelocity(newVec, true); //Move in dash direction
+		_PlayerPhys.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
 		_PlayerPhys.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
@@ -183,11 +199,11 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 
 		//Inputs
-		_Input.SpecialPressed = false;
+		_Input._SpecialPressed = false;
 
 		//Physics
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 	}
 
 	#endregion
@@ -206,18 +222,18 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private void HandleMovement () {
 
 		//To make the big turn performable by humans, adds a time it can still be performed.
-		if(_timer < 0.01f)
+		if (_timer < 0.01f)
 		{
-			MakeFullTurn() ;
+			MakeFullTurn();
 		}
-		else if(_timer > 0.03f)
+		else if (_timer > 0.03f)
 		{
 			//Input based on if stick is pushed more vertically or horizontally
 			float inputMag = Mathf.Max(Mathf.Abs(_PlayerPhys._moveInput.x), Mathf.Abs(_PlayerPhys._moveInput.z));
 
 			//Get direction to rotate towards. To avoid rotating down and under, then if over ninety then go right or left.
 			Vector3 _input = transform.TransformDirection(_PlayerPhys._moveInput);
-			if(Vector3.Angle(_input, _dashDirection) > 80)
+			if (Vector3.Angle(_input, _dashDirection) > 80)
 			{
 				_input = Vector3.Angle(_PlayerPhys._moveInput, _MainSkin.right) < 90 ? _MainSkin.right : -_MainSkin.right;
 			}
@@ -240,7 +256,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		{
 			EndDashManually();
 		}
-		else if(_timer > _minDuration_ && !_Input.SpecialPressed)
+		else if (_timer > _minDuration_ && !_Input._SpecialPressed)
 		{
 			EndDashManually();
 		}
@@ -260,15 +276,15 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	}
 
 	//Over several frames will add velocity in increments adding up to the total change.
-	private IEnumerator ChangeSpeedSmoothly (float newSpeed) {
+	private IEnumerator ChangeSpeedSmoothly ( float newSpeed ) {
 		float increments = newSpeed / _framesToSpendChangingSpeed_; //Gets the increments to change speed in.
 
 		//For the number of frames the stat has split it over.
-		for(int i = 0 ; i < _framesToSpendChangingSpeed_ ; i++)
+		for (int i = 0 ; i < _framesToSpendChangingSpeed_ ; i++)
 		{
 			yield return new WaitForFixedUpdate();
 
-			if(_PlayerPhys._horizontalSpeedMagnitude > newSpeed) { break; } //If something has changed (like hitting a wall), then ignore this.
+			if (_PlayerPhys._horizontalSpeedMagnitude > newSpeed) { break; } //If something has changed (like hitting a wall), then ignore this.
 			else
 			{
 				_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * increments); //Depending on increments, will either increase speed or decrease it as it goes.
@@ -276,11 +292,13 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		}
 	}
 
+	private void SetStartDirection ( Vector3 forward ) {
+		_dashDirection = forward;
+		_dashDirection.y = 0;
+	}
+
 	//Change _dashDirection on a large scale, rather than small turns adding up over time.
 	private void MakeFullTurn () {
-
-		_dashDirection = _MainSkin.forward;
-		_dashDirection.y = 0;
 
 		//Aiming Vertically
 		_upwardsSpeed = _verticalAngle_;
@@ -334,40 +352,40 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Input =		_Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_Actions =	_Tools._ActionManager;
-		_CamHandler =	_Tools.CamHandler;
-		_Sounds =			_Tools.SoundControl;
-		_Effects =		_Tools.EffectsControl;
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_Actions = _Tools._ActionManager;
+		_CamHandler = _Tools.CamHandler;
+		_Sounds = _Tools.SoundControl;
+		_Effects = _Tools.EffectsControl;
 
-		_CharacterAnimator =	_Tools.CharacterAnimator;
-		_MainSkin =		_Tools.MainSkin;
-		_HomingTrailScript =	_Tools.HomingTrailScript;
-		_JumpBall =		_Tools.JumpBall;
+		_CharacterAnimator = _Tools.CharacterAnimator;
+		_MainSkin = _Tools.MainSkin;
+		_HomingTrailScript = _Tools.HomingTrailScript;
+		_JumpBall = _Tools.JumpBall;
 	}
 
 	//Reponsible for assigning stats from the stats script.
 	private void AssignStats () {
-		_airDashSpeed_ =		_Tools.Stats.JumpDashStats.dashSpeed;
-		_airDashIncrease_ =		_Tools.Stats.JumpDashStats.dashIncrease;
-		_turnSpeed_ =		_Tools.Stats.JumpDashStats.turnSpeed;
+		_airDashSpeed_ = _Tools.Stats.JumpDashStats.dashSpeed;
+		_airDashIncrease_ = _Tools.Stats.JumpDashStats.dashIncrease;
+		_turnSpeed_ = _Tools.Stats.JumpDashStats.turnSpeed;
 
-		_maxDuration_ =		_Tools.Stats.JumpDashStats.maxDuration;
-		_minDuration_ =		_Tools.Stats.JumpDashStats.minDuration;
+		_maxDuration_ = _Tools.Stats.JumpDashStats.maxDuration;
+		_minDuration_ = _Tools.Stats.JumpDashStats.minDuration;
 
-		_WhatType_ =		_Tools.Stats.JumpDashStats.behaviour;
+		_WhatType_ = _Tools.Stats.JumpDashStats.behaviour;
 
-		_verticalAngle_ =		_Tools.Stats.JumpDashStats.forceUpwards;
-		_horizontalAngle_ =		_Tools.Stats.JumpDashStats.horizontalAngle;
+		_verticalAngle_ = _Tools.Stats.JumpDashStats.forceUpwards;
+		_horizontalAngle_ = _Tools.Stats.JumpDashStats.horizontalAngle;
 
-		_faceDownwardsSpeed_ =	_Tools.Stats.JumpDashStats.faceDownwardsSpeed;
-		_maxDownwardsSpeed_ =	_Tools.Stats.JumpDashStats.maxDownwardsSpeed;
+		_faceDownwardsSpeed_ = _Tools.Stats.JumpDashStats.faceDownwardsSpeed;
+		_maxDownwardsSpeed_ = _Tools.Stats.JumpDashStats.maxDownwardsSpeed;
 
-		_lockMoveInputOnStart_ =	_Tools.Stats.JumpDashStats.lockMoveInputOnStart;
-		_lockMoveInputOnEnd_ =	_Tools.Stats.JumpDashStats.lockMoveInputOnEnd;
-		_speedAfterDash_ =		_Tools.Stats.JumpDashStats.speedAfterDash;
-		_framesToSpendChangingSpeed_ =_Tools.Stats.JumpDashStats.framesToChangeSpeed;
+		_lockMoveInputOnStart_ = _Tools.Stats.JumpDashStats.lockMoveInputOnStart;
+		_lockMoveInputOnEnd_ = _Tools.Stats.JumpDashStats.lockMoveInputOnEnd;
+		_speedAfterDash_ = _Tools.Stats.JumpDashStats.speedAfterDash;
+		_framesToSpendChangingSpeed_ = _Tools.Stats.JumpDashStats.framesToChangeSpeed;
 	}
 	#endregion
 

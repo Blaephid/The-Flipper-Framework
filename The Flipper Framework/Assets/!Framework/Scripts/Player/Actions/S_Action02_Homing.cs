@@ -123,7 +123,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			_HomingHandler._isScanning = true;
 
 			//Must have a valid target when pressed
-			if (_HomingHandler._TargetObject && _Input.HomingPressed)
+			if (_HomingHandler._TargetObject && _Input._HomingPressed)
 			{
 				//Homing attack must be currently allowed
 				if (_Actions._isAirDashAvailables && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount))
@@ -157,13 +157,13 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_currentDirection = Vector3.RotateTowards(_Skin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
 
 		//Setting public
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys._listOfCanControl.Add(false);
 
 		_PlayerPhys.SetIsGrounded(false);
-		_Input.JumpPressed = false;
+		_Input._JumpPressed = false;
 
 		//Effects
 		_JumpBall.SetActive(false);
@@ -183,7 +183,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 
 		_speedBeforeAttack = Mathf.Max(_speedBeforeAttack, _minSpeedGainOnHit_);
-
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -200,12 +199,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		{
 			_Actions.AddDashDelay(_HomingHandler._homingDelay_);
 
-			//Return control options that were lost.
-			_PlayerPhys._canChangeGrounded = true;
-			_PlayerPhys._isGravityOn = true;
-			_PlayerPhys._listOfCanControl.RemoveAt(0);
-
-			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
+			StopHoming();
 		}
 	}
 
@@ -215,7 +209,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//If something is blocking the way, bounce off it.
 		if (Physics.Linecast(transform.position, collision.contacts[0].point, out RaycastHit hit, _PlayerPhys._Groundmask_))
 		{
-			Debug.Log("Rebound");
 			StartCoroutine(HittingObstacle(hit.normal));
 		}
 	}
@@ -297,11 +290,23 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		}
 		_currentDirection = Vector3.RotateTowards(_currentDirection, newDirection, Mathf.Deg2Rad * thisTurn, 0.0f);
 
+
 		_PlayerPhys.SetBothVelocities(_currentDirection * _Actions._listOfSpeedOnPaths[0], new Vector2 (1, 0)); //Move in direction but remove all environmental velocity.
 	}
 
-	public void HandleInputs () {
+	//Undoes the homing movement but doesn't end the actions (as special interactions may keep happening).
+	private void StopHoming () {
+		_isHoming = false;
 
+		//Return control options that were lost.
+		_PlayerPhys._canChangeGrounded = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		_PlayerPhys._listOfCanControl.RemoveAt(0);
+
+		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
+	}
+
+	public void HandleInputs () {
 		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 		_Actions.HandleInputs(_positionInActionList);	
 	}
@@ -315,7 +320,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	#region public 
 
 	//What happens to the character after they hit a target, the directions they bounce based on input, stats and target.
-	public void HittingTarget ( S_Enums.HomingReboundingTypes whatRebound ) {
+	public void HittingTarget ( S_Enums.HomingHitResponses whatResponse ) {
 		_HomingHandler._TargetObject = null;
 		_HomingHandler._PreviousTarget = null;
 
@@ -329,27 +334,26 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		Vector3 newSpeed = Vector3.zero;
 
-		switch (whatRebound)
+		switch (whatResponse)
 		{
-			case S_Enums.HomingReboundingTypes.BounceThrough:
-				if (_Input.HomingPressed) { additiveHit(); }
+			case S_Enums.HomingHitResponses.BounceThrough:
+				if (_Input._HomingPressed) { additiveHit(); }
 				else { bounceUpHit(); }
 
 				//Restore control and switch to default action
 				_PlayerPhys.SetCoreVelocity(newSpeed);
-				_PlayerPhys._isGravityOn = true;
+
 				_Actions._ActionDefault._animationAction = 1;
 				_Actions._ActionDefault.StartAction();
 
 				break;
-			case S_Enums.HomingReboundingTypes.Rebound:
+			case S_Enums.HomingHitResponses.Rebound:
 				StartCoroutine(HittingObstacle());
 				return;
-			case S_Enums.HomingReboundingTypes.bounceOff:
+			case S_Enums.HomingHitResponses.bounceOff:
 				bounceUpHit();
 				//Restore control and switch to default action
 				_PlayerPhys.SetCoreVelocity(newSpeed);
-				_PlayerPhys._isGravityOn = true;
 				_Actions._ActionDefault._animationAction = 1;
 				_Actions._ActionDefault.StartAction();
 				break;
@@ -358,8 +362,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//An additive hit that keeps momentum
 		void additiveHit () {
 			//Disable inputs so actions don't happen immediately after hitting
-			_Input.SpecialPressed = false;
-			_Input.HomingPressed = false;
+			_Input._SpecialPressed = false;
+			_Input._HomingPressed = false;
 
 			GetDirectionPostHit();
 
@@ -368,6 +372,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			newSpeed.Normalize();
 			newSpeed *= Mathf.Min(_speedBeforeAttack, _Actions._listOfSpeedOnPaths[0]);
 			newSpeed.y = _homingBouncingPower_;
+
+			StopHoming();
 
 		}
 
@@ -378,6 +384,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			newSpeed.Normalize();
 			newSpeed *= 3;
 			newSpeed.y = _homingBouncingPower_; ;
+
+			StopHoming ();
 		}
 
 		void GetDirectionPostHit () {
@@ -404,7 +412,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	//Applies knockback and a temporary locked state
 	public IEnumerator HittingObstacle ( Vector3 wallNormal = default(Vector3), float force = 25 ) {
-		_isHoming = false; //Prevents the rest of the code in Update and FixedUpdate from happening.
+		_isHoming = false;
 
 		float duration = 0.6f * 55;
 
@@ -417,7 +425,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			faceDirection = Vector3.Lerp(faceDirection, wallNormal, 0.5f);
 		}
 
-		_PlayerPhys.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0), true);
+		_PlayerPhys.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0));
 		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
 
 		//Bounce backwards and upwards 
@@ -434,10 +442,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		}
 
 		//Returns control partway through the rebound.
-		_PlayerPhys._isGravityOn = true;
-		_PlayerPhys._canChangeGrounded = true;
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
-		_Actions._listOfSpeedOnPaths.RemoveAt(0);
+		StopHoming();
 
 		for (int i = 0 ; i < duration * 0.8f && !_PlayerPhys._isGrounded ; i++)
 		{

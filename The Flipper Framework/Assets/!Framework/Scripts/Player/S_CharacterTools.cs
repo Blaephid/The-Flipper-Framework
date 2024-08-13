@@ -21,12 +21,17 @@ public class S_CharacterTools : MonoBehaviour
 
 	[Header ("Colliders")]
 	public GameObject		CharacterCapsule;
+	public GameObject             StandingCapsule;
 	public GameObject		CrouchCapsule;
 
 	[Header("Model / Skin")]
-	public SkinnedMeshRenderer[]	PlayerSkins;
+	public SkinnedMeshRenderer	SkinRenderer;
 	public Transform		MainSkin;
 	public Transform		CharacterModelOffset;
+
+	[Header("Mouth Sides")]
+	public Transform              Head;
+	public Transform		LeftMouth, RightMouth;
 
 	[Header("Balls")]
 	public GameObject	JumpBall;

@@ -149,9 +149,9 @@ public class S_Control_MovingPlatform : MonoBehaviour
 	//To allow simulation to run without affecting move lists (because distance are inverted on return), use a copy list of moves so the original isn't changed every draw.
 	private void SetPlayListAsStart () {
 		_ListOfMovesForSimulation.Clear();
-		foreach (strucMove move in _ListOfMovesOnStart)
+		for (int i = 0 ; i < _ListOfMovesOnStart.Count ; i++)
 		{
-			_ListOfMovesForSimulation.Add(move);
+			_ListOfMovesForSimulation.Add(_ListOfMovesOnStart[i]);
 		}
 	}
 

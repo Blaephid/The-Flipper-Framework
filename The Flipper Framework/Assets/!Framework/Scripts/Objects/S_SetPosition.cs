@@ -9,9 +9,9 @@ public class S_SetPosition : MonoBehaviour
 
 	// Update is called once per frame
 	void LateUpdate () {
-		if(_TransformForPosition != null)
+		if (_TransformForPosition != null)
 			transform.position = _TransformForPosition.position;
-		if(_TransformForRotation != null)
+		if (_TransformForRotation != null)
 			transform.rotation = _TransformForRotation.rotation;
 	}
 }

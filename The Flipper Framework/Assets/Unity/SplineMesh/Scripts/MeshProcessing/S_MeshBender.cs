@@ -222,8 +222,9 @@ namespace SplineMesh
 			sampleCache.Clear();
 			var bentVertices = new List<MeshVertex>(source.Vertices.Count);
 			// for each mesh vertex, we found its projection on the curve
-			foreach (var vert in source.Vertices)
+			for (int i = 0 ; i < source.Vertices.Count ; i++)
 			{
+				var vert = source.Vertices[i];
 				float distance = vert.position.x - source.MinX;
 				CurveSample sample;
 				if (!sampleCache.TryGetValue(distance, out sample))
@@ -375,15 +376,16 @@ namespace SplineMesh
 			//sampleCache.Clear();
 
 			// for each mesh vertex, we found its projection on the curve
-			foreach (var vert in source.Vertices)
+			for (int i = 0 ; i < source.Vertices.Count ; i++)
 			{
+				var vert = source.Vertices[i];
 				float distanceRate = source.Length == 0 ? 0 : Math.Abs(vert.position.x - source.MinX) / source.Length;
 				CurveSample sample;
 				if (!sampleCache.TryGetValue(distanceRate, out sample))
 				{
 					if (!useSpline)
 					{
-						float distance = Mathf.Clamp(curve.Length * distanceRate, vert.position.x - source.MinX + sampleAtDistance, curve.Length); //A percentage point along the curve, between the end and the offset set as a parameter
+						float distance = Mathf.Clamp(curve.Length * distanceRate, vert.position.x - source.MinX + sampleAtDistance, curve.Length); // A percentage point along the curve, between the end and the offset set as a parameter
 						sample = curve.GetSampleAtDistance(distance);
 					}
 					else

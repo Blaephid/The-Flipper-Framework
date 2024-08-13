@@ -95,7 +95,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 
 		//Can only bounce if it isn't locked in the actionManager, and not moving too fast up.
-		if (_Input.BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)
+		if (_Input._BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)
 		{
 			StartAction();
 			return true;
@@ -116,10 +116,10 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_trackedVerticalSpeed = _PlayerPhys._coreVelocity.y;
 
 		//Physics
-		_PlayerPhys._isGravityOn = false; //Moving down will be handled here rather than through the premade gravity in physics script.
-		_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_), false); //Immediately slows down player movement and removes vertical movement.
+		_PlayerPhys._listOfIsGravityOn.Add(false); //Moving down will be handled here rather than through the premade gravity in physics script.
+		_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
 		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerPhys._coreVelocity.y - 20);
-		_PlayerPhys.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0), false); // Apply downward force, this is instant rather than  ramp up like gravity.
+		_PlayerPhys.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0)); // Apply downward force, this is instant rather than  ramp up like gravity.
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  bounce following the ground direction.
 
@@ -146,7 +146,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		StartCoroutine(AddDelay(coolDown));
 
 		//Incase this was disabled by changing action, rather than a bounce.
-		_PlayerPhys._isGravityOn = true;
+		if(!_hasBounced)
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 
 		_HomingTrailScript.emitTime = 0.2f;
 	}
@@ -226,7 +227,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		_counter = 0; //Starts the process of waiting after bounce before exiting action.
 
-		_Input.BouncePressed = false; //Prevents the action from being hold spammed.
+		_Input._BouncePressed = false; //Prevents the action from being hold spammed.
 
 		_PlayerPhys.SetIsGrounded(true); //Resets air actions like homing attacks, air dashes, etc.
 
@@ -258,13 +259,13 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		else if (_nextSpeed > newSpeed)
 		{
 			//Gets the local to remove players relevant upwards velocity, then converts back to world for calculations
-			newDir = _PlayerPhys.GetRelevantVel(_PlayerPhys._coreVelocity, false).normalized;
+			newDir = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity, false).normalized;
 			newDir = transform.TransformDirection(newDir);
 			newSpeed = _nextSpeed;
 		}
 
 		//Starts applying normal force downwards again, even before exiting action.
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 
 		Vector3 input = transform.TransformDirection(_PlayerPhys._moveInput);
 
@@ -272,12 +273,12 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		//Makes the player's movement relevant to the surface and removes vertical speed.
 		Vector3 setVel = _PlayerPhys.AlignWithNormal(newDir, normal, newSpeed);
-		_PlayerPhys.SetCoreVelocity(setVel, false);
+		_PlayerPhys.SetCoreVelocity(setVel);
 
 		//Since vertical speed is removed, add it here, but more facing upwards rather than directly along normal.
 		float dif = Vector3.Angle(normal, Vector3.up) * 0.5f;
 		normal = Vector3.Lerp(normal, Vector3.up, dif * Mathf.Deg2Rad);
-		_PlayerPhys.AddCoreVelocity(normal * _currentBounceForce, false);
+		_PlayerPhys.AddCoreVelocity(normal * _currentBounceForce);
 
 		//If not at the last index, increase the bounce count.
 		if (_Actions._bounceCount < _BounceUpSpeeds_.Count - 1)

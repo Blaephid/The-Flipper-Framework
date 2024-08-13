@@ -82,19 +82,26 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	void Update () {
 		//Set Animator Parameters
 		_Actions._ActionDefault.HandleAnimator(7);
-		PlaceOnCreatedPath();
+
+		//If player is near the end of the path, try to create the path here as well as FixedUpdate, incase player was moving too fast and there are more rings.
+		if(_positionAlongPath / _CreatedSpline.Length > 0.85f)
+		{
+			CreatePath();
+		}
 	}
 
 	private void FixedUpdate () {
 		CreatePath();
 		_counter++;
 
+		PlaceOnCreatedPath();
+
 		HandleInputs();
 	}
 
 	public bool AttemptAction () {
 		_RoadHandler._isScanning = true; //This makes it so the scanner will only happen if this method is called by another action (decided in the action manager).
-		if (_Input.InteractPressed && _RoadHandler._TargetRing != null && !enabled)
+		if (_Input._InteractPressed && _RoadHandler._TargetRing != null && !enabled)
 		{
 			StartAction();
 			return true;
@@ -106,10 +113,11 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	public void StartAction () {
 
 		//Physics
-		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.right); //Prevent character moving outside of the path.
+		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one); //Prevent character moving outside of the path.
 		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys.SetIsGrounded(false);
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 
 		//Effects
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -155,6 +163,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
 
 		_PlayerPhys._canChangeGrounded = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
@@ -180,15 +189,26 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	private void CreatePath () {
 
+		int lastNode = _CreatedSpline.nodes.Count - 1;
+
+		//Spline is created by looking for more valid targets through each target.
+		//So this makes a scan for rings which wouldn't happen otherwise, but from the most recent target, in the direction from penultimate node to last.
+		if (_CreatedSpline.nodes.Count > 2) 
+			_RoadHandler.ScanForRings(new Vector2(1f, 3f), (_CreatedSpline.nodes[lastNode].Position - _CreatedSpline.nodes[lastNode - 1].Position), _CreatedSpline.nodes[lastNode].Position); //Called now because when being performed there needs to be constant updates to targets.
+		else
+			_RoadHandler.ScanForRings(new Vector2(1.2f, 1.5f), _directionToGo, _CreatedSpline.nodes.Count > 0 ? _CreatedSpline.nodes[lastNode].Position : transform.position);
+
 		//Goes through the list of targets from closest to furthers (see Handler_RingRoad).
-		foreach (Transform Target in _RoadHandler._ListOfCloseTargets)
+		for (int i = 0 ; i < _RoadHandler._ListOfCloseTargets.Count ; i++)
 		{
+			Transform Target = _RoadHandler._ListOfCloseTargets[i];
+
 			if (Target != null) //If still a valid object (because rings could be picked up).
 			{
 				//If not used yet.
 				if (!_ListOfRingsInRoad.Contains(Target))
 				{
-					//Create a new node in the spline, expanding it so it can be followed.
+					//Create a new node in the spline.
 					_CreatedSpline.AddNode(new SplineNode(Target.position, Target.position));
 
 					//This ensures the player won't miss the ring when moving along spline at high speed.
@@ -198,19 +218,12 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 				}
 			}
 		}
-
-		//Spline is created by looking for more valid targets through each target. So this makes a scan for rings which wouldn't happen otherwise, but from the most recent target, in the direction from penultimate node to last.
-		if (_CreatedSpline.nodes.Count > 1)
-			_RoadHandler.ScanForRings(new Vector2(0.4f, 1.8f), _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 1].Position - _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 2].Position, _CreatedSpline.nodes[_CreatedSpline.nodes.Count - 1].Position); //Called now because when being performed there needs to be constant updates to targets.
-		else if (_CreatedSpline.nodes.Count > 0)
-			_RoadHandler.ScanForRings(new Vector2(2.5f, 0.1f), _directionToGo.normalized, _CreatedSpline.nodes[0].Position);
-
 	}
 
 	private void PlaceOnCreatedPath () {
 		if (_counter < 3) { return; } //Gives time to create a spline before moving along it.
 
-		_positionAlongPath += Time.deltaTime * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
+		_positionAlongPath += Mathf.Min(Time.deltaTime, Time.fixedDeltaTime) * _Actions._listOfSpeedOnPaths[0]; //Increase distance on spline by speed.
 
 		//If still on the spline.
 		if (_positionAlongPath < _CreatedSpline.Length)
@@ -218,15 +231,16 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			//Get the world transform point of that point on the spline.
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
 
-			//Place player on it (since called in update, not fixed update, won't be too jittery).
-			_PlayerPhys.SetPlayerPosition( Sample.location);
-
 			//Rotate towards the next ring, according to the created spline.
 			_directionToGo = Sample.tangent;
 			Quaternion targetRotation = Quaternion.LookRotation(Sample.tangent);
 			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, targetRotation, 0.6f);
 
-			_PlayerPhys._horizontalSpeedMagnitude = _Actions._listOfSpeedOnPaths[0];
+			//Place player on it (since called in update, not fixed update, won't be too jittery).
+			_PlayerPhys.SetPlayerPosition(Sample.location);
+			_PlayerPhys.SetBothVelocities(Sample.tangent * _Actions._listOfSpeedOnPaths[0], Vector2.right); //Ensures each ring will be collected and the move will look smooth even if only updating in FixedUpdate
+
+			//_PlayerPhys._horizontalSpeedMagnitude = _Actions._listOfSpeedOnPaths[0];
 		}
 		else
 		{

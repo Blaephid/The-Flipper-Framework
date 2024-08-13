@@ -1246,7 +1246,7 @@ MonoBehaviour:
     speedToStopAt: 10
   JumpStats:
     jumpSpeed: 8
-    jumpSlopeConversion: 0.03
+    jumpSlopeConversion: 0.2
     JumpForceByTime:
       serializedVersion: 2
       m_Curve:
@@ -2089,11 +2089,11 @@ MonoBehaviour:
     coolDownModiferBySpeed: 0.003
     cameraPauseEffect: {x: 2, y: 30}
   RingRoadStats:
-    dashSpeed: 190
+    dashSpeed: 120
     minimumEndingSpeed: 80
     speedGained: 1.2
     willCarrySpeed: 1
-    searchDistance: 12
+    searchDistance: 9
     RingRoadLayer:
       serializedVersion: 2
       m_Bits: 262144
@@ -2131,7 +2131,7 @@ MonoBehaviour:
     framesToLoseSpeed: 30
     cooldown: 0.5
     hasAirBoost: 0
-    boostFramesInAir: 40
+    boostFramesInAir: 60
     AngleOfAligningToEndBoost: 80
     gainEnergyFromRings: 1
     gainEnergyOverTime: 0
@@ -2585,31 +2585,31 @@ MonoBehaviour:
   RailPosition:
     offsetRail: 2
     offsetZip: -6
-    upreel: 0.3
   StartRailPosition:
     offsetRail: 2
     offsetZip: -6
-    upreel: 0.3
   ObjectInteractions:
-    UpreelSpeedKeptAfter: 0.5
+    upreelSpeedKeptAfter: 0.3
+    minimumSpeedCarried: 30
   StartObjectInteractions:
-    UpreelSpeedKeptAfter: 0.5
-  WallRunningStats:
-    wallCheckDistance: 1.2
+    upreelSpeedKeptAfter: 0.3
+    minimumSpeedCarried: 30
+  WallActionsStats:
+    wallCheckDistance: {x: 8, y: 2}
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2
-      m_Bits: 0
-    wallDuration: 0
+      m_Bits: 1
     scrapeModifier: 1
     climbModifier: 1
+    fallOffAtFallSpeed: 15
   StartWallRunningStats:
-    wallCheckDistance: 1.2
+    wallCheckDistance: {x: 10, y: 6}
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2
       m_Bits: 0
-    wallDuration: 0
     scrapeModifier: 1
     climbModifier: 1
+    fallOffAtFallSpeed: 15
   InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

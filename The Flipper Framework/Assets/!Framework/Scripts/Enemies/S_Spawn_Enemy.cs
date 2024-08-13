@@ -11,6 +11,7 @@ public class S_Spawn_Enemy : S_Spawners
 	public override void SpawnObject () {
 		Instantiate(_SpawnerData._TeleportSparkle, transform.position, transform.rotation);
 		_ObjectClone = (GameObject)Instantiate(_SpawnerData._ObjectToSpawn, transform.position, transform.rotation);
+		_ObjectClone.transform.parent = transform; //Set as a child of this object so the hierarchy is cleaner.
 
 		if (_SpawnerData._willRespawnWhenDestroyed && _ObjectClone.TryGetComponent(out S_AI_Health AIHealth))
 		{

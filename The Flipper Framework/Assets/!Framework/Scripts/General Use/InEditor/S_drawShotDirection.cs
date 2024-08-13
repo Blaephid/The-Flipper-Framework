@@ -130,7 +130,7 @@ public class S_drawShotDirection : MonoBehaviour
 		for (int i = 1 ; i < iterations ; i++)
 		{
 			//Affect simulated core velocity using the actual methods.
-			_simCoreVel = S_PlayerPhysics.ApplyGravity(_simCoreVel, _fallGravity, _upGravity, _maxFall, vel);
+			_simCoreVel = S_PlayerPhysics.ApplyGravityToIncreaseFallSpeed(_simCoreVel, _fallGravity, _upGravity, _maxFall, vel);
 			Vector3 lateralVel = new Vector3(_simCoreVel.x, 0, _simCoreVel.z);
 
 			float decelAmount = _constantDeceleration;

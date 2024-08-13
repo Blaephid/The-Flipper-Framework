@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class S_Trigger_LoadLevelBeats : MonoBehaviour
@@ -14,7 +15,7 @@ public class S_Trigger_LoadLevelBeats : MonoBehaviour
         if(other.CompareTag("Player"))
         {
             //Debug.Log("Player Enters");
-            StartCoroutine(doSpawn());
+            StartCoroutine(DoSpawn());
         }
     }
 
@@ -36,32 +37,33 @@ public class S_Trigger_LoadLevelBeats : MonoBehaviour
         isSpawning = false;
 
         deSpawning = true;
-        foreach(GameObject section in SetSection)
-        {
-            section.SetActive(false);
-            yield return new WaitForFixedUpdate();
+		for (int i = 0 ; i < SetSection.Length ; i++)
+		{
+			GameObject section = SetSection[i];
+			section.SetActive(false);
+			yield return new WaitForFixedUpdate();
 
-            if (!deSpawning) { yield break; }
-        }
+			if (!deSpawning) { yield break; }
+		}
 
-        deSpawning = false;
+		deSpawning = false;
     }
 
-    IEnumerator doSpawn()
+    IEnumerator DoSpawn()
     {
         deSpawning = false;
 
         isSpawning = true;
         yield return new WaitForFixedUpdate();
 
-        foreach (GameObject section in SetSection)
-        {
-            section.SetActive(true);
-            yield return new WaitForFixedUpdate();
+		for (int i = 0 ; i < SetSection.Length ; i++)
+		{
+			SetSection[i].SetActive(true);
+			yield return new WaitForFixedUpdate();
 
-            if (!isSpawning) { yield break; }
-        }
+			if (!isSpawning) { yield break; }
+		}
 
-        isSpawning=false;
+		isSpawning =false;
     }
 }

@@ -28,13 +28,15 @@ public class S_PlayerInput : MonoBehaviour
 	// Trackers
 	#region trackers
 	[HideInInspector]
-	public Vector3     _move;
+	public Vector3     _move; //The final input acquired and passed onto PlayerPhysics. Can be locked.
 	[HideInInspector]
-	public Vector3      _inputWithoutCamera;
+	public Vector3      _inputWithoutCamera; //The input acquired just from the controller, not relevant to character or camera.
 	[HideInInspector]
-	public Vector3      _prevInputWithoutCamera;
+	public Vector3      _prevInputWithoutCamera; //The input without the camera last frame. This is to check when the used input is changed without changing the controller input (meaning the character and camera did it).
 	[HideInInspector]
-	public Vector3     _camMoveInput;
+	public Vector3     _camMoveInput; //The input relevant to the camera, but not in local space with the character.
+	[HideInInspector]
+	public Vector3     _constantInputRelevantToCharacter; //Equal to _move, but never locked (and not used in movement), called globally to check actual input for other calculations even if locked.
 
 	private Vector3     _inputCheckedLastFrame;
 
@@ -60,20 +62,20 @@ public class S_PlayerInput : MonoBehaviour
 	[HideInInspector]
 	public float			mouseSensi;
 
-	[HideInInspector] public bool		JumpPressed;
-	[HideInInspector] public bool		RollPressed;
-	[HideInInspector] public bool		SpecialPressed;
-	[HideInInspector] public bool		BoostPressed;
-	[HideInInspector] public bool		LeftStepPressed;
-	[HideInInspector] public bool		RightStepPressed;
-	[HideInInspector] public bool		BouncePressed;
-	[HideInInspector] public bool		InteractPressed;
-	[HideInInspector] public bool		CamResetPressed;
-	[HideInInspector] public bool		HomingPressed;
-	[HideInInspector] public bool		spinChargePressed;
-	[HideInInspector] public bool		killBindPressed;
+	[HideInInspector] public bool		_JumpPressed;
+	[HideInInspector] public bool		_RollPressed;
+	[HideInInspector] public bool		_SpecialPressed;
+	[HideInInspector] public bool		_BoostPressed;
+	[HideInInspector] public bool		_LeftStepPressed;
+	[HideInInspector] public bool		_RightStepPressed;
+	[HideInInspector] public bool		_BouncePressed;
+	[HideInInspector] public bool		_InteractPressed;
+	[HideInInspector] public bool		_CamResetPressed;
+	[HideInInspector] public bool		_HomingPressed;
+	[HideInInspector] public bool		_SpinChargePressed;
+	[HideInInspector] public bool		_KillBindPressed;
 
-	[HideInInspector] public bool		usingMouse = false;
+	[HideInInspector] public bool		_isUsingMouse = false;
 
 	#endregion
 	#endregion
@@ -132,12 +134,14 @@ public class S_PlayerInput : MonoBehaviour
 		}
 
 		//Calculate move direction
-		else if (_Camera != null)
+		if (_Camera != null)
 		{
 			//Make movement relative to camera and character
 			_inputWithoutCamera = new Vector3(moveX, 0, moveY);
 			_camMoveInput = GetInputByLocalTransform(_inputWithoutCamera);
 			_move = _camMoveInput;
+			_constantInputRelevantToCharacter = transform.TransformDirection(_camMoveInput);
+			//_constantInputRelevantToCharacter = Vector3.ProjectOnPlane(_camMoveInput, transform.up);
 		}
 
 	}
@@ -152,7 +156,7 @@ public class S_PlayerInput : MonoBehaviour
 
 			//Affect input by camera
 			transformedInput = Quaternion.FromToRotation(_Camera.up, upDirection) * (_Camera.rotation * inputDirection);
-			_camMoveInput = transformedInput;
+			//_camMoveInput = transformedInput;
 
 			//Makes input relevant to character.
 			transformedInput = transform.InverseTransformDirection(transformedInput);
@@ -174,7 +178,7 @@ public class S_PlayerInput : MonoBehaviour
 
 		if (_lockedCounter > _lockedTime)
 		{
-			_isInputLocked = false;
+			UnLockInput();
 		}
 	}
 	#endregion
@@ -185,19 +189,20 @@ public class S_PlayerInput : MonoBehaviour
 	/// 
 	#region public 
 	//Called by other scripts to set the input to a specific thing, unable to change for a period of time.
-	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_Enums.LockControlDirection whatLock = S_Enums.LockControlDirection.NoChange) {
+	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_Enums.LockControlDirection whatLock = S_Enums.LockControlDirection.Change) {
 
-		//While the enum won't be used freqeuntly, it is short shand for removing input or setting player to forwards without having to calculate it before being called.
+		//While the enum won't be used freqeuntly, it is short hand for removing input or setting player to forwards without having to calculate it before being called.
 		switch (whatLock)
 		{
 			//If enum is not set in the call, move becomes the input given.
-			case S_Enums.LockControlDirection.NoChange:
+			case S_Enums.LockControlDirection.Change:
 				_move = newInput; break;
 			case S_Enums.LockControlDirection.NoInput:
 				_move = Vector3.zero; break;
 			case S_Enums.LockControlDirection.CharacterForwards:
-				_move = _MainSkin.forward; break;
+				_move = transform.InverseTransformDirection(_MainSkin.forward); break;
 		}
+
 		_PlayerPhys._moveInput = _move;
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.
@@ -207,6 +212,12 @@ public class S_PlayerInput : MonoBehaviour
 		_lockedCounter = 0;
 		_isInputLocked = true;
 		_isCamLocked = lockCam; //Also prevents camera control
+	}
+
+	public void UnLockInput () {
+		_lockedTime = 0;
+		_isInputLocked = false;
+		_isCamLocked = false; 
 	}
 
 	//Called externally once per frame to check if the input is different to last frame despite the actual controller input not being changed.
@@ -224,12 +235,11 @@ public class S_PlayerInput : MonoBehaviour
 		return isCamera;
 	}
 
-
 	#endregion
 	#region inputSystem
 	public void MoveInput ( InputAction.CallbackContext ctx ) {
 		moveVec = ctx.ReadValue<Vector2>();
-		usingMouse = false;
+		_isUsingMouse = false;
 		moveX = moveVec.x;
 		moveY = moveVec.y;
 	}
@@ -238,18 +248,18 @@ public class S_PlayerInput : MonoBehaviour
 		moveVec = ctx.ReadValue<Vector2>();
 		moveX = moveVec.x;
 		moveY = moveVec.y;
-		usingMouse = true;
+		_isUsingMouse = true;
 	}
 
 	public void CamInput ( InputAction.CallbackContext ctx ) {
-		usingMouse = false;
+		_isUsingMouse = false;
 		CurrentCamMovement = ctx.ReadValue<Vector2>();
 		moveCamX = CurrentCamMovement.x * camSensi;
 		moveCamY = CurrentCamMovement.y * camSensi;
 	}
 
 	public void CamMouseInput ( InputAction.CallbackContext ctx ) {
-		usingMouse = true;
+		_isUsingMouse = true;
 		CurrentCamMovement = ctx.ReadValue<Vector2>();
 		moveCamX = CurrentCamMovement.x * mouseSensi;
 		moveCamY = CurrentCamMovement.y * mouseSensi;
@@ -258,56 +268,56 @@ public class S_PlayerInput : MonoBehaviour
 	public void Jump ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			JumpPressed = ctx.ReadValueAsButton();
+			_JumpPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Roll ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			RollPressed = ctx.ReadValueAsButton();
+			_RollPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void LeftStep ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			LeftStepPressed = ctx.ReadValueAsButton();
+			_LeftStepPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void RightStep ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			RightStepPressed = ctx.ReadValueAsButton();
+			_RightStepPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Special ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			SpecialPressed = ctx.ReadValueAsButton();
+			_SpecialPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Boost ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			BoostPressed = ctx.ReadValueAsButton();
+			_BoostPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Homing ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			HomingPressed = ctx.ReadValueAsButton();
+			_HomingPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void Interact ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed || ctx.canceled)
 		{
-			InteractPressed = ctx.ReadValueAsButton();
+			_InteractPressed = ctx.ReadValueAsButton();
 		}
 	}
 
@@ -316,13 +326,13 @@ public class S_PlayerInput : MonoBehaviour
 		{
 			if (!_PlayerPhys._isGrounded)
 			{
-				BouncePressed = ctx.ReadValueAsButton();
+				_BouncePressed = ctx.ReadValueAsButton();
 			}
 		}
 
 		else if (ctx.canceled)
 		{
-			BouncePressed = ctx.ReadValueAsButton();
+			_BouncePressed = ctx.ReadValueAsButton();
 		}
 	}
 
@@ -330,31 +340,31 @@ public class S_PlayerInput : MonoBehaviour
 		if (ctx.performed)
 		{
 			if (_PlayerPhys._isGrounded)
-				spinChargePressed = ctx.ReadValueAsButton();
+				_SpinChargePressed = ctx.ReadValueAsButton();
 
 		}
 		else if (ctx.canceled)
 		{
-			spinChargePressed = ctx.ReadValueAsButton();
+			_SpinChargePressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void KillBind ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed)
 		{
-			killBindPressed = ctx.ReadValueAsButton();
+			_KillBindPressed = ctx.ReadValueAsButton();
 
 		}
 		else if (ctx.canceled)
 		{
-			killBindPressed = ctx.ReadValueAsButton();
+			_KillBindPressed = ctx.ReadValueAsButton();
 		}
 	}
 
 	public void CamReset ( InputAction.CallbackContext ctx ) {
 		if (ctx.performed)
 		{
-			CamResetPressed = !CamResetPressed;
+			_CamResetPressed = !_CamResetPressed;
 		}
 	}
 	#endregion

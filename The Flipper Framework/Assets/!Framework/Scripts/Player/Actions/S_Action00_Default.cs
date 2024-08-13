@@ -3,6 +3,7 @@ using System.Collections;
 using System.Security.Cryptography;
 using UnityEditor;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class S_Action00_Default : MonoBehaviour, IMainAction
 {
@@ -28,7 +29,9 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
 
-	private SkinnedMeshRenderer[]           _PlayerSkin;
+	private CapsuleCollider		_CharacterCapsule;
+	private CapsuleCollider                 _StandingCapsule;
+	private List<SkinnedMeshRenderer>       _PlayerSkin = new List<SkinnedMeshRenderer>();
 	private SkinnedMeshRenderer             _SpinDashBall;
 	private List<SkinnedMeshRenderer>       _CurrentSkins = new List<SkinnedMeshRenderer>();
 
@@ -71,9 +74,9 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region Inherited
-
 	private void Start () {
 		SwitchSkin(true);
+		OverWriteCollider(_StandingCapsule);
 	}
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
@@ -98,15 +101,14 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	public void StartAction () {
 		if(enabled) { return; } //Because this method can be called when this state is already active (object interactions), end early if so.
 
-		ReadyAction();
-
 		//Set private
 		_isCoyoteInEffect = _PlayerPhys._isGrounded;
 
 		_PlayerPhys._canStickToGround = true; //Allows following the ground when in a normal grounded state.
 
 		//Set Effects
-		_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
+		if(_CharacterAnimator.GetInteger("Action") != 0)
+			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
 		enabled = true;
@@ -117,9 +119,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
 		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
 	}
 
@@ -220,10 +220,11 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
 
 		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
-		for (int i = 0 ; i < _PlayerSkin.Length ; i++)
+		for (int i = 0 ; i < _PlayerSkin.Count ; i++)
 		{
-			_PlayerSkin[i].enabled = setMainSkin;
-			if (_PlayerSkin[i].enabled) { _CurrentSkins.Add(_PlayerSkin[i]); }
+			SkinnedMeshRenderer Skin = _PlayerSkin[i];
+			Skin.enabled = setMainSkin;
+			if (Skin.enabled) { _CurrentSkins.Add(Skin); }
 		}
 
 		_SpinDashBall.enabled = !setMainSkin;
@@ -240,10 +241,18 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 
 	public void HideCurrentSkins(bool hide) {
-		foreach (SkinnedMeshRenderer sk in _CurrentSkins)
+		for (int i = 0 ; i < _CurrentSkins.Count ; i++)
 		{
-			sk.enabled = hide;
+			_CurrentSkins[i].enabled = hide;
 		}
+	}
+
+	public void OverWriteCollider ( CapsuleCollider newCollider ) {
+		_CharacterCapsule.radius = newCollider.radius;
+		_CharacterCapsule.center = newCollider.center;
+		_CharacterCapsule.transform.localPosition = newCollider.transform.localPosition;
+		_CharacterCapsule.material = newCollider.material;
+		_CharacterCapsule.height = newCollider.height;
 	}
 
 	//Called when the ground is lost but before coyote is in effect, this confirms it's being tracked and end it after a while.
@@ -329,9 +338,11 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_BallAnimator =	_Tools.BallAnimator;
 		_CurrentAnimator =	_CharacterAnimator;
 		_MainSkin =	_Tools.MainSkin;
-		_PlayerSkin =	_Tools.PlayerSkins;
+		_PlayerSkin.Add(_Tools.SkinRenderer);
 		_SkinOffset =	_Tools.CharacterModelOffset;
 		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
 	}
 	#endregion
 }

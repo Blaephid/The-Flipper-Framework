@@ -89,7 +89,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		if (!_PlayerPhys._isGrounded && _Input.RollPressed && _PlayerPhys._RB.velocity.y < 40f)
+		if (!_PlayerPhys._isGrounded && _Input._RollPressed && _PlayerPhys._RB.velocity.y < 40f)
 		{
 			if (!Physics.Raycast(_FeetPoint.position, -transform.up, _minimumHeightToDropCharge_, _PlayerPhys._Groundmask_))
 			{
@@ -154,7 +154,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 			_charge = Mathf.Clamp(_charge + (_chargingSpeed_ * Time.deltaTime), 0, _maximunCharge_); //Increase charge
 
 			//If input is released, then end sound and prepare to end action after a delay.
-			if (!_Input.RollPressed)
+			if (!_Input._RollPressed)
 			{
 				_isCharging = false;
 				StartCoroutine(DelayEndingAction());
@@ -163,7 +163,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		//Won't increase charge, but can return to charging if input is pressed again.
 		else
 		{
-			if (_Input.RollPressed)
+			if (_Input._RollPressed)
 			{
 				_isCharging = true;
 				StopCoroutine(DelayEndingAction());
@@ -189,7 +189,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private void CheckGround () {
 
 		//Pressing the special button will cause a dash while still in the air, affected by charge.
-		if (_Input.SpecialPressed && _charge > _minimunCharge_)
+		if (_Input._SpecialPressed && _charge > _minimunCharge_)
 		{
 			AirRelease();
 		}
@@ -214,9 +214,9 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	private void AirRelease () {
 
 		//Since activated by pressing a button, ensure none others are pressed so there aren't immediate transitions.
-		_Input.JumpPressed = false;
-		_Input.SpecialPressed = false;
-		_Input.HomingPressed = false;
+		_Input._JumpPressed = false;
+		_Input._SpecialPressed = false;
+		_Input._HomingPressed = false;
 
 		_charge *= 0.6f; //Launcing in the air has less power than grounded.
 
@@ -245,9 +245,9 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		time = Mathf.Clamp(time / 10, 0.1f, 10); //Change seconds into 0.1 seconds.
 
 		//Prevent downward velocity from gravity until completed
-		_PlayerPhys._isGravityOn = false;
+		_PlayerPhys._listOfIsGravityOn.Add(false);
 		yield return new WaitForSeconds(time);
-		_PlayerPhys._isGravityOn = true;
+		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 	}
 
 	//Prevents force being applied until enough fixed frames have passed. This is to give some time to properly rotate to match ground.
@@ -270,12 +270,12 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		if (_PlayerPhys._isGrounded) { _PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, true); }
 
 		//Make force relevant to character's current rotation
-		Vector3 releVec = _PlayerPhys.GetRelevantVel(force, false);
+		Vector3 releVec = _PlayerPhys.GetRelevantVector(force, false);
 
 		//If the new total force is higher than current speed, then apply it. Uses sqrs because it's faster with comparing magnitudes
 		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerPhys._horizontalSpeedMagnitude + _charge * 0.1f, 2))
 		{
-			_PlayerPhys.SetCoreVelocity(force, true);
+			_PlayerPhys.SetCoreVelocity(force, "Overwrite");
 			_CamHandler._HedgeCam.ChangeHeight(18, 25f); //Ensures camera will go behind the player as they launch forwards from falling.
 		}
 		//Else, just add force to increase total speed. This will also happen if the new speed it only slightly more than the movement speed.

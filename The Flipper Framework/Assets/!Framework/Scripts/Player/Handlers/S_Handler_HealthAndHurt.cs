@@ -2,7 +2,9 @@
 using UnityEngine.UI;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEditor;
 
 public class S_Handler_HealthAndHurt : MonoBehaviour
 {
@@ -20,7 +22,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Manager_LevelProgress _LevelHandler;
-	private S_Interaction_Objects _Objects;
+	[HideInInspector]
+	public S_Interaction_Objects _Objects;
 	private S_Handler_Camera      _CamHandler;
 	private S_Control_SoundsPlayer _Sounds;
 	private S_Handler_CharacterAttacks      _Attacks;
@@ -28,7 +31,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	private GameObject            _JumpBall;
 	private Animator              _CharacterAnimator;
-	private SkinnedMeshRenderer[] _SonicSkins;
+	private List<SkinnedMeshRenderer> _SonicSkins = new List<SkinnedMeshRenderer>();
 	private Transform             _MainSkin;
 	private CapsuleCollider	_CharacterCapsule;
 	private GameObject            _ShieldObject;
@@ -107,7 +110,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		HandleDamaged();
 
 		//For debugging purposes, kill the player at any time by pressing a button.
-		if (_Input.killBindPressed)
+		if (_Input._KillBindPressed)
 		{
 			Die();
 		}
@@ -362,7 +365,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private void TryBonk () {
 
 		Vector3 movingDirection = _PlayerPhys._RB.velocity.normalized; //Project on plane makes direction relevant to transform so it will only check in front of player, not below or above
-		float distance = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * Time.deltaTime * 2.5f, 2); //Uses timme.delta time to check where the character should probably be next frame.
+		float distance = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * Time.fixedDeltaTime + 1, 2); //Uses timme.delta time to check where the character should probably be next frame.
 		Vector3 sphereStartOffset = transform.up * (_CharacterCapsule.height / 2); // Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
 
 		//Checks for a wall, and if the direction of it is similar to movement direction, ready bonk.
@@ -383,7 +386,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		float rememberSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 
 		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
-		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.WallRunning)
+		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.WallClimbing)
 		{
 			_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 			_HurtAction._wasHit = false;
@@ -398,13 +401,13 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 				if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
 
-					_PlayerPhys.SetBothVelocities(Vector3.zero, new Vector2(1, 0));
+					_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
 				_PlayerPhys._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
 				_MainSkin.forward = rememberDirection;
 			}
 
 			//If still not in a wallrunning state or been hurt, then rebound off the wall.
-			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.WallRunning && _Actions._whatAction != S_Enums.PrimaryPlayerStates.Hurt)
+			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatAction != S_Enums.PrimaryPlayerStates.Hurt)
 			{
 				_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[3].normalized;
 				_HurtAction._wasHit = false;
@@ -593,7 +596,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_JumpBall =		_Tools.JumpBall;
 		_Sounds =			_Tools.SoundControl;
 		_CharacterAnimator =	_Tools.CharacterAnimator;
-		_SonicSkins =		_Tools.PlayerSkins;
+
+		_SonicSkins.Add(_Tools.SkinRenderer);
 		_MovingRing =		_Tools.MovingRingObject;
 		_ShieldObject =		_Tools.Shield;
 	}
