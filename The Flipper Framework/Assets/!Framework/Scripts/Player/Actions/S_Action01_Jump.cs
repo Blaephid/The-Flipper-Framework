@@ -110,26 +110,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		{
 			switch (_Actions._whatAction)
 			{
-				 default:
-					//Normal grounded Jump
-					if (_PlayerPhys._isGrounded)
-					{
-						AssignStartValues(_PlayerPhys._groundNormal, true);
-						StartAction();
-					}
-					//Jump from regular action due to coyote time
-					else if (_Actions._ActionDefault.enabled && _Actions._ActionDefault._isCoyoteInEffect)
-					{
-						AssignStartValues(_Actions._ActionDefault._coyoteRememberDirection, true);
-						StartAction();
-					}
-					//Jump when in the air
-					else if (_Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
-					{
-						AssignStartValues(transform.up, false);
-						StartAction();
-					}
-					return true;
+
 				case S_Enums.PrimaryPlayerStates.Jump:
 					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
 					{
@@ -151,7 +132,26 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					AssignStartValues(transform.up, true);
 					StartAction();
 					return true;
-	
+				default:
+					//Normal grounded Jump
+					if (_PlayerPhys._isGrounded)
+					{
+						AssignStartValues(_PlayerPhys._groundNormal, true);
+						StartAction();
+					}
+					//Jump from regular action due to coyote time
+					else if (_Actions._ActionDefault.enabled && _Actions._ActionDefault._isCoyoteInEffect)
+					{
+						AssignStartValues(_Actions._ActionDefault._coyoteRememberDirection, true);
+						StartAction();
+					}
+					//Jump when in the air
+					else if (_Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
+					{
+						AssignStartValues(transform.up, false);
+						StartAction();
+					}
+					return true;
 			}
 		}
 		return false;

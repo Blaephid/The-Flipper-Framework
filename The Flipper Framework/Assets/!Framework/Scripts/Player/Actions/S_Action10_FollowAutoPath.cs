@@ -50,6 +50,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private Vector3     _sampleLocation;
 
 	//Values for movement
+	private Vector3     _physicsCoreVelocity;
 	[HideInInspector]
 	public float        _playerSpeed;
 	private float       _pathMaxSpeed;
@@ -57,6 +58,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	private bool        _isGoingBackwards;
 	private int         _moveDirection;
+	private bool        _canReverse;
 
 
 	#endregion
@@ -119,6 +121,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_Input.LockInputForAWhile(15, true, Vector3.zero, S_Enums.LockControlDirection.CharacterForwards);
 
 		_Pathers._canExitAutoPath = false; //Will no longer cancel action when hitting a trigger.
+
+		_PlayerPhys._currentMinSpeed = 0;
+		_PlayerPhys._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
 	}
 
 	#endregion
@@ -135,9 +140,13 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(transform.forward, _sampleUpwards));
 		_PlayerPhys.CheckForGround();
-		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
 
 		SetVelocityAlongSpline(); 
+		MoveTowardsPathMiddle();
+
+		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
+
+		ApplyVelocity();
 
 		//If at the end of the path, all movement will still have been done, but will now cancel.
 		if (_pointOnSpline == _Pathers._PathSpline.Length - 1 || _pointOnSpline == 0)
@@ -145,6 +154,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 				ExitPath();
 		}
 	}
+
+	//Take speed and return new distace on spline
 
 	private void GetNewPointOnSpline () {
 		//Increase the Amount of distance through the Spline by DeltaTime
@@ -155,6 +166,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_pointOnSpline += travelAmount * _moveDirection;
 	}
 
+	//Take the distance and return the necessary data from that point, including parent transforms.
 	private void GetSampleOfSpline () {
 		_pointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _Pathers._PathSpline.Length - 1);
 
@@ -173,13 +185,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(transform.forward, _sampleUpwards));
 	}
 
+	//Rotate player to move in the spline direction immediately
 	private void SetRunningInDirectionOfSpline () {
 
 		//Ensure starts going down the same direction every time.
-		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity);
+		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity);
 		Vector3 verticalVelocity = transform.up * relevantVelocity.y; //Seperates this so player can fall to the ground while still following the path.
-
-		_playerSpeed = Mathf.Clamp(_PlayerPhys._currentRunningSpeed, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
 
 		_PlayerPhys.SetBothVelocities((_sampleForwards * _playerSpeed) + verticalVelocity, Vector2.right, "Overwrite");
 		_PlayerPhys.SetTotalVelocity(); //Because arePhysicsEnabled was just disabled, enable here to ensure it goes through before overwritten by this script next update.
@@ -187,51 +198,76 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	//Takes manual control of PlayerPhysics methods to move believably despite taking control of the input directions to ensure stays on the spline.
 	private void SetVelocityAlongSpline () {
-		Vector3 physCoreVelocity = _PlayerPhys._coreVelocity;
+		_physicsCoreVelocity = _PlayerPhys._coreVelocity;
 
 		//If inputting enough in direction of spline, go forwards
 		Vector3 input = _Input._constantInputRelevantToCharacter;
 		float dot = Vector3.Dot(_sampleForwards, input.normalized);
+
+		float direction = 0;
+		float decelerationValue = 1;            //direction must be above 0 so turning still happens, so to apply deceleration, use a seperate modifer.
 		if (input.sqrMagnitude > 0)
 		{
 			//If brought to a stop and inputting away from the spline, then turn around.
-			if (dot < -0.5 && _PlayerPhys._currentRunningSpeed < 7) 
+			if (_canReverse && dot < -0.5 && _PlayerPhys._currentRunningSpeed < 7)
 			{
 				_sampleForwards = -_sampleForwards;
-				physCoreVelocity = _sampleForwards * 1;
+				_physicsCoreVelocity = _sampleForwards * 1;
 				_isGoingBackwards = !_isGoingBackwards;
-				dot = 1;
-			} 
-			else { dot = dot > -0.7 ? 1 : 0; }
+				direction = 1;
+			}
+			else  
+			{
+				direction = dot > -0.7 || !_canReverse ? 1 : 0.2f;
+			}
 		}
-		else
-			dot = 0;
-		_PlayerPhys._moveInput = _sampleForwards * dot; ;
+		else      //Otherwise, not inputting. 	
+		{
+			direction = _pathMinSpeed > 0 ? 1 : 0.2f;
+			decelerationValue = 0;
+		}
+	
+		//Ensure player is either inputting alon or against the path, translated to current rotation.
+		_PlayerPhys._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction); 
 
 		//Call methods after input is changed, acting as if mvoing normally just in the desired direction
 		if (_PlayerPhys._isGrounded)
 		{
-			physCoreVelocity = _PlayerPhys.HandleControlledVelocity(physCoreVelocity,Vector2.one);
-			physCoreVelocity = _PlayerPhys.HandleSlopePhysics(physCoreVelocity);
-			physCoreVelocity = _PlayerPhys.StickToGround(physCoreVelocity);
+			_PlayerPhys._timeOnGround += Time.deltaTime;
+
+			_physicsCoreVelocity = _PlayerPhys.HandleControlledVelocity(_physicsCoreVelocity,new Vector2 (3, 1), decelerationValue);
+			_physicsCoreVelocity = _PlayerPhys.HandleSlopePhysics(_physicsCoreVelocity, false);
+			_physicsCoreVelocity = _PlayerPhys.StickToGround(_physicsCoreVelocity);
 		}
 		else
 		{
-			physCoreVelocity = _PlayerPhys.HandleAirMovement(physCoreVelocity);
+			_physicsCoreVelocity = _PlayerPhys.HandleAirMovement(_physicsCoreVelocity);
 		}
+	}
 
-		//Takes the changes to velocity and applies the lateral changes to the intended direction.
-		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(physCoreVelocity);
-		Vector3 verticalVelocity = transform.up * relevantVelocity.y; //Seperates this so player can fall to the ground while still following the path.
-		verticalVelocity = Vector3.zero;
-		relevantVelocity.y = 0;
-		_playerSpeed = Mathf.Clamp(relevantVelocity.magnitude, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
+	private void ApplyVelocity () {
+		Debug.DrawRay(transform.position, _PlayerPhys._moveInput, Color.green, 100f);
+		Debug.DrawRay(transform.position - transform.up * 0.5f, _physicsCoreVelocity * Time.fixedDeltaTime, Color.yellow, 100f);
 
-		Debug.DrawRay(transform.position - transform.up * 0.5f, physCoreVelocity * Time.fixedDeltaTime, Color.yellow, 100f);
-
-		//_PlayerPhys.SetBothVelocities((_sampleForwards * _playerSpeed) + verticalVelocity, Vector2.right, "Overwrite");
-		_PlayerPhys.SetBothVelocities(physCoreVelocity, Vector2.right, "Overwrite");
+		_PlayerPhys.SetBothVelocities(_physicsCoreVelocity, Vector2.right, "Overwrite");
 		_PlayerPhys.SetTotalVelocity();
+
+		_playerSpeed = _PlayerPhys._currentRunningSpeed;
+	}
+
+	//Apply an additional velocity this frame to slowly move to the path itself, rather than be at an offset.
+	private void MoveTowardsPathMiddle () {
+		if (_PlayerPhys._isGrounded && _playerSpeed > 20)
+		{
+			Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
+			Vector3 direction = _sampleLocation - _Pathers._FeetTransform.position;
+
+			//Don't apply any velocity upwards, so take relevant to player, remove veritcal, then return.
+			direction = _PlayerPhys.GetRelevantVector(direction, false);
+			direction = transform.TransformDirection(direction);
+
+			_PlayerPhys.AddGeneralVelocity(direction.normalized * 3, false);
+		}
 	}
 
 	private void ExitPath () {
@@ -257,19 +293,23 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region public 
-	public void AssignForThisAutoPath ( float range, Transform PathTransform, bool isGoingBack, float startSpeed, Vector2 speedClamps, bool willLockToStart ) {
+	public void AssignForThisAutoPath ( float range, Transform PathTransform, bool isGoingBack, float startSpeed, S_Trigger_Path Path, bool willLockToStart ) {
 
 		//Setting up the path to follow
 		_pointOnSpline = range;
 		_PathTransform = PathTransform;
 
 		//Speed and direction to move this action
-		_pathMinSpeed = speedClamps.x;
-		_pathMaxSpeed = speedClamps.y;
+		_pathMinSpeed = Path._speedLimits.x;
+		_PlayerPhys._currentMinSpeed = _pathMinSpeed;
+		_pathMaxSpeed = Path._speedLimits.y;
+		_PlayerPhys._currentMaxSpeed = _pathMaxSpeed;
 		_playerSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed, startSpeed);
+		_playerSpeed = Mathf.Clamp(_playerSpeed, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
 
 		_isGoingBackwards = isGoingBack;
 		_moveDirection = _isGoingBackwards ? -1 : 1;
+		_canReverse = Path._canPlayerReverse;
 
 		GetSampleOfSpline();
 		if (willLockToStart) { PlaceOnSpline(); }

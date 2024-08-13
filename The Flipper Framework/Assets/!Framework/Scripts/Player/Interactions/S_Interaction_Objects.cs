@@ -437,7 +437,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void HitAirLauncher () {
 		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0); //Counteracts any actions that might have disabled this.
+		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
 
 		_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
 

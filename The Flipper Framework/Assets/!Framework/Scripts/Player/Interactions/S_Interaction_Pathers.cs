@@ -279,10 +279,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 		}
 
 		//Starts the player moving along the path using the path follow action
-		_PathAction.AssignForThisAutoPath(rangeAndDis.x, _PathSpline.transform, back, speedGo, PathTrigger._speedLimits, willPlaceOnSpline);
+		_PathAction.AssignForThisAutoPath(rangeAndDis.x, _PathSpline.transform, back, speedGo, PathTrigger, willPlaceOnSpline);
 		_PathAction.StartAction();
-		
-
 	}
 
 	#endregion

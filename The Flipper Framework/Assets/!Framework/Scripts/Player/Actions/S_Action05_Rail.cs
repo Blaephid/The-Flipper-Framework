@@ -168,8 +168,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; } 
 
-		if (_canInput) { HandleInputs(); }
 		MoveOnRail();
+		if (_canInput) { HandleInputs(); }
 
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _grindingSpeed; }//Apples all changes to grind speed.
 	}

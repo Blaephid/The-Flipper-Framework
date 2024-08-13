@@ -407,6 +407,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	//This is called via a delegate and replaces the default turning and acceleration present in PlayerPhysics. It takes the same inputs, but will return a different output.
 	public Vector3 CustomTurningAndAcceleration ( Vector3 lateralVelocity, Vector3 input, Vector2 modifier ) {
 		if (_PlayerPhys._moveInput.sqrMagnitude < 0.1f) { _PlayerPhys._moveInput = _faceDirection; } //Ensures there will always be an input forwards if nothing else.
+		if (input.sqrMagnitude < 0.1f) { input = _faceDirection; }
 
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;

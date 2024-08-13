@@ -11,10 +11,13 @@ using UnityEngine.Profiling;
 [DisallowMultipleComponent]
 public class S_Trigger_Path : MonoBehaviour
 {
+
+	[Header("Path Data")]
 	public Spline spline;
-
 	public Vector2 _speedLimits = new Vector2(30, 200);
+	public bool         _canPlayerReverse = false;
 
+	[Header("Triggers")]
 	public bool _willUpdateInRealTime = true;
 
 	[SerializeField] bool _hasEnterTrigger = true;

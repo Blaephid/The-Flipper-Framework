@@ -177,6 +177,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	public float                  _currentTopSpeed;   //Player cannot exceed this speed by just running on flat ground. May be changed across gameplay.
 	[HideInInspector]
 	public float                  _currentMaxSpeed;   //Player's core velocity can not exceed this by any means.
+	[HideInInspector]
+	public float                  _currentMinSpeed;   //Player's running velocity can not go below this. Should be 0, and only temporarily set for certain actions.
 
 	//Updated each frame to get current place on animation curves relevant to movement.
 	private float                 _currentRunAccell;
@@ -615,7 +617,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles core velocity, which is the velocity directly under the player's control (seperate from environmental velocity which is placed on the character by other things).
 	//This turns, decreases and/or increases the velocity based on input.
-	public Vector3 HandleControlledVelocity (Vector3 startVelocity, Vector2 modifier ) {
+	public Vector3 HandleControlledVelocity (Vector3 startVelocity, Vector2 modifier, float decelerationModifier = 1) {
 
 		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
 		if (_listOfCanControl.Count != 0)
@@ -634,12 +636,13 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
-		Debug.DrawRay(transform.position, _moveInput * 2, Color.red);
+		Debug.DrawRay(transform.position, _Input._constantInputRelevantToCharacter, Color.red);
+		Debug.DrawRay(transform.position, _moveInput * 2, Color.blue);
 
 		//Apply changes to the lateral velocity based on input.
 		lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier); //Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
-		
-		lateralVelocity = Decelerate(lateralVelocity, _moveInput, _curvePosDecell);
+
+		lateralVelocity = Decelerate(lateralVelocity, _moveInput * decelerationModifier, _curvePosDecell);
 
 		//If external core speed has been set to a positive value this frame, overwrite running speed without losing direction.
 		if (_externalRunningSpeed >= 0 && lateralVelocity.magnitude > -1)
@@ -647,6 +650,14 @@ public class S_PlayerPhysics : MonoBehaviour
 			if (lateralVelocity.sqrMagnitude < 0.1f) { lateralVelocity = _MainSkin.forward; } //Ensures speed will always be applied, even if there's currently no velocity.
 			lateralVelocity = lateralVelocity.normalized * _externalRunningSpeed;
 			_externalRunningSpeed = -1; //Set to a negative value so core speeds of 0 can be set externally.
+		}
+		//Enforces the min speed if there is one, but only checks if close to it.
+		else if (_currentMinSpeed > 0 && _currentRunningSpeed < _currentMinSpeed + 5)
+		{
+			if(lateralVelocity.sqrMagnitude < Mathf.Pow(_currentMinSpeed, 2))
+			{
+				lateralVelocity = lateralVelocity.normalized * _currentMinSpeed;
+			}
 		}
 
 		//Before taking off, no matter the acceleration, there will be one frame before the player starts gaining speed, this is to give an easy change to remove speed if trying to move into an obstacle.
@@ -756,7 +767,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Manual decelerations can only happen if nothing is denying them.
 		if (_listOfCanDecelerates.Count == 0)
 			{         //If there is no input, ready conventional deceleration.
-				if (Mathf.Approximately(input.sqrMagnitude, 0))
+				if (input.sqrMagnitude < 0.1)
 				{
 					if (_isGrounded)
 					{
@@ -785,32 +796,35 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Handles interactions with slopes (non flat ground), both positive and negative, relative to the player's current rotation.
 	//This includes adding force downhill, aiding or hampering running, as well as falling off when too slow.
-	public Vector3 HandleSlopePhysics ( Vector3 worldVelocity, bool canFall = true ) {
+	public Vector3 HandleSlopePhysics ( Vector3 worldVelocity, bool canChangeDirectionOfVelocity = true ) {
 		if(!_isUsingSlopePhysics_) { return worldVelocity; }
 
 
 		Vector3 slopeVelocity = Vector3.zero;
 
-		//If just landed, apply additional speed dependant on slope angle.
-		if (_wasInAir)
+		if (canChangeDirectionOfVelocity)
 		{
-			//Get magnitude,higher if rolling.
-			float force = _isRolling ?  _landingConversionFactor_ * _rollingLandingBoost_ :  _landingConversionFactor_;
-			//Make a vector taking the direction of the ground when projected on itself (meaning downwards), with the magnitude of force.
-			Vector3 addVelocity = AlignWithNormal(_groundNormal, _groundNormal, force);
+			//If just landed, apply additional speed dependant on slope angle.
+			if (_wasInAir)
+			{
+				//Get magnitude,higher if rolling.
+				float force = _isRolling ?  _landingConversionFactor_ * _rollingLandingBoost_ :  _landingConversionFactor_;
+				//Make a vector taking the direction of the ground when projected on itself (meaning downwards), with the magnitude of force.
+				Vector3 addVelocity = AlignWithNormal(_groundNormal, _groundNormal, force);
 
-			slopeVelocity += addVelocity; //Apply
-			_wasInAir = false;
-		}
+				slopeVelocity += addVelocity; //Apply
+				_wasInAir = false;
+			}
 
-		//If moving too slow compared to the limit
-		float speedRequirement = _SlopeSpeedLimitByAngle_.Evaluate(_groundNormal.y);
-		if (canFall && _horizontalSpeedMagnitude < speedRequirement)
-		{
-			//Then fall off and away from the slope.
-			SetIsGrounded(false, 1f);
-			AddCoreVelocity(_groundNormal * 5f);
-			_keepNormalCounter = _keepNormalForThis_ - 0.1f;
+			//If moving too slow compared to the limit
+			float speedRequirement = _SlopeSpeedLimitByAngle_.Evaluate(_groundNormal.y);
+			if (_horizontalSpeedMagnitude < speedRequirement)
+			{
+				//Then fall off and away from the slope.
+				SetIsGrounded(false, 1f);
+				AddCoreVelocity(_groundNormal * 5f);
+				_keepNormalCounter = _keepNormalForThis_ - 0.1f;
+			}
 		}
 
 		//Slope power
@@ -881,8 +895,6 @@ public class S_PlayerPhysics : MonoBehaviour
 				float upwardsDirectionDifference = Vector3.Angle(currentGroundNormal, hitSticking.normal);
 				float limit = _upwardsLimitByCurrentSlope_.Evaluate(currentGroundNormal.y);
 
-				//if(upwardsDirectionDifference > 0.5f)
-
 				//If the angle difference between current slope and encountered one is under the limit (higher if starting from flat ground)		
 				if (upwardsDirectionDifference / 180 < limit)
 				{
@@ -901,8 +913,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				else
 				{
 					StepOver(raycastStartPosition, rayCastDirection, currentGroundNormal);
-				}
-				
+				}		
 			}
 
 			// If there is no wall, then we may be dealing with a positive slope (like the outside of a loop, where the ground is relatively lower).
