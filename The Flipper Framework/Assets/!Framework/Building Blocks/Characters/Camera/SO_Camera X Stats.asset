@@ -583,7 +583,7 @@ MonoBehaviour:
     rotateCharacterBeforeCameraFollows: 0.2
     followFacingDirectionSpeed: 0.5
   RotateBehindStats:
-    LockCamAtHighSpeed: 200
+    LockCamAtHighSpeed: 500
     afterMoveXDelay: 0.4
     rotateToBehindSpeed: 5
     rotateCharacterBeforeCameraFollows: 0.18

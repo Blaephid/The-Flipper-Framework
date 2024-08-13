@@ -1103,7 +1103,7 @@ public class S_PlayerPhysics : MonoBehaviour
 						Vector3 cross = Vector3.Cross(_rotateSidewaysTowards, transform.up);
 
 						Quaternion targetRot = Quaternion.FromToRotation(transform.up, cross) * transform.rotation;
-						transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 7f);
+						transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 11f);
 					}
 					//When flipped over, set y value of the right side to zero to ensure not tilted anymore, and ready main rotation to sort any remaining rotation differences.
 					else
