@@ -345,7 +345,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (SpeedPadScript._isOnRail_)
 		{
 			//Attaches the player to the rail this rail booster is on.
-			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.Rail)
+			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Rail)
 			{
 				_PlayerPhys.SetPlayerPosition(SpeedPadScript._PositionToLockTo.position);
 			}

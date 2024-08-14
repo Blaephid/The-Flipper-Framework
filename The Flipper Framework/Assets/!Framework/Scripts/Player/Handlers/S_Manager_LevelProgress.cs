@@ -56,7 +56,9 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
+	void Awake () {
+		
+
 		_Tools =		GetComponentInParent<S_CharacterTools>();
 		_CamHandler =	_Tools.CamHandler;
 		_Actions =	_Tools._ActionManager;

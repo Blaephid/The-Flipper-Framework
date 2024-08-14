@@ -29,6 +29,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private CapsuleCollider			_StandingCapsule;
 
 	private Transform			_PlayerSkinTransform;
+
+	private Transform                       _MainCamera;
 	#endregion
 
 	//General
@@ -82,11 +84,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	// Update is called once per frame
 	void Update () {
 		SetAnimatorAndRotation();
@@ -137,7 +134,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	public void StopAction(bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		//Return to normal skin and collider size
 		_Actions._ActionDefault.OverWriteCollider(_StandingCapsule);
@@ -307,7 +304,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		void FaceByCamera () {
 			if (_Input._move.sqrMagnitude > 0.1f)
 			{
-				_characterRotation = Quaternion.LookRotation(_Tools.MainCamera.transform.forward - _PlayerPhys._groundNormal * Vector3.Dot(_Tools.MainCamera.transform.forward, _PlayerPhys._groundNormal), transform.up);
+				_characterRotation = Quaternion.LookRotation(_MainCamera.forward - _PlayerPhys._groundNormal * Vector3.Dot(_MainCamera.forward, _PlayerPhys._groundNormal), transform.up);
 			}
 		}
 
@@ -414,6 +411,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_BallAnimator = _Tools.BallAnimator;
 		_Sounds = _Tools.SoundControl;
 		_Effects = _Tools.EffectsControl;
+		_MainCamera = Camera.main.transform;
 
 		_PlayerSkinTransform = _Tools.CharacterModelOffset;
 		_LowerCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();

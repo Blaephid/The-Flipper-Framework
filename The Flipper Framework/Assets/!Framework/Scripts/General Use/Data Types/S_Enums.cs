@@ -8,6 +8,7 @@ public class S_Enums
 	//How they're ordered here is also how they're ordered in priority, so the action manager will list then in this order, the higher, the sooner it will be checked (so if boost is above quickstep, it will be called before).
 	public enum PrimaryPlayerStates
 	{
+		None = -1,
 		Default = 0,
 		Jump = 2,
 		Homing = 3,

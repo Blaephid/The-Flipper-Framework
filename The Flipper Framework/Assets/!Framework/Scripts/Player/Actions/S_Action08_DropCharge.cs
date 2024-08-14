@@ -65,11 +65,6 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 	}
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	private void OnDisable () {
 		_DropEffect.Stop();
 	}
@@ -127,7 +122,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		if (_DropEffect.isPlaying)
 		{
@@ -178,7 +173,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		yield return new WaitForSeconds(0.45f);
 
 		//If coroutine is not stopped or interupted, then end the action
-		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.DropCharge)
+		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.DropCharge)
 		{
 			_Actions._ActionDefault._animationAction = 1;
 			_Actions._ActionDefault.StartAction();
@@ -315,7 +310,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		while (true)
 		{
 			yield return new WaitForFixedUpdate();
-			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.DropCharge)
+			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.DropCharge)
 			{
 				yield return new WaitForFixedUpdate();
 				_charge = 0;

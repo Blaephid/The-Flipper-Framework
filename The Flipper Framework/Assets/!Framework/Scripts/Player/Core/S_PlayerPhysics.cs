@@ -99,6 +99,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _rollingDecel_;
 
 	[Header("Stick To Ground")]
+	private float                 _forceTowardsGround_;
 	private Vector2               _stickingLerps_ = new Vector2(0.885f, 1.5f);
 	private float                 _stickingNormalLimit_ = 0.4f;
 	private float                 _stickCastAhead_ = 1.9f;
@@ -147,7 +148,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _externalRunningSpeed;                  //Replaces core velocity magnitude this frame, but keeps direction and applied forces.
 	private bool                  _isOverwritingCoreVelocity;   //Set to true if core velocity should be completely replaced, including any aditions that would be made. If false, added forces will still be applied.
 
-	private float                 _stickToGroundForce = 1.6f; //Not set externally, but acts as a stat that will not be changed, and will decide how much force to apply on the character to keep them on the ground while stationary.
 	private Vector3                 _velocityToNotCountWhenCheckingForAChange; //Will be set to invert ground sticking force. So if the above is applied while stationary, this will be set to the opposite and used during comparisons between frames.
 
 
@@ -264,7 +264,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	#region Inherited
 
 	//On start, assigns stats.
-	private void Start () {
+	private void Awake () {
 		_Tools = GetComponent<S_CharacterTools>();
 		AssignTools();
 		AssignStats();
@@ -381,11 +381,10 @@ public class S_PlayerPhysics : MonoBehaviour
 				offSetForCheck = Vector3.RotateTowards(offSetForCheck, Vector3.Cross(offSetForCheck, transform.up), i * rotateValue, 0);
 				Vector3 thisStartPosition = rayCastStartPosition + offSetForCheck * 0.75f;
 
-				//If it finds ground, saves the normal as between the two, adding this up to an average.
 				if (Physics.Raycast(thisStartPosition, -transform.up, out RaycastHit hitSecondTemp, 0.5f + groundCheckerDistance, _Groundmask_))
 				{
 					//If this instance is too much of an outlier, ignore it because it is probably a wall.
-					if(Vector3.Angle(tempNormal.normalized, hitSecondTemp.normal) < 80)
+					if(Vector3.Angle(tempNormal.normalized, hitSecondTemp.normal) < 50)
 						tempNormal += hitSecondTemp.normal;
 				}
 			}
@@ -429,6 +428,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Only apply the changes if physics decreased the speed.
 		if(currentSpeed < previousSpeed)
 		{
+			Debug.Log("Going slower");
+
 			currentSpeed = currentVelocity.magnitude;
 			previousSpeed = previousVelocity.magnitude;
 
@@ -440,14 +441,17 @@ public class S_PlayerPhysics : MonoBehaviour
 
 			//----Undoing Changes----
 
-			// If already moving and the change is just making the player bounce off either too sharply, or to be going more upwards, then ignore the change.
-			if (currentSpeed > 2f && (angleChange > 0.45 || (angleChange > 0.15 && angleChange < 90 && Vector3.Angle(currentVelocity, transform.up) + 10 < Vector3.Angle(previousVelocity, transform.up))))
+			// If already moving and the change is just making the player bounce off either too sharply, or to be going more upwards, then IGNORE
+			if (currentSpeed > 5f  && (angleChange > 0.45 || (angleChange > 0.15 && angleChange < 70)  //If still at speed and made to move higher upwards
+				&& Vector3.Angle(currentVelocity, transform.up) + 10 < Vector3.Angle(previousVelocity, transform.up)
+				&& speedDifference < Mathf.Min(10f, previousSpeed * 0.4f)))
 			{
+				Debug.Log("Undo change to velocity");
 				currentVelocity = previousVelocity;
-				currentSpeed = previousSpeed;
+				//currentSpeed = previousSpeed;
 			}
 			//But if the difference in speed is minor(such as lightly colliding with a slope when going up), then ignore the change.
-			else if (speedDifference < 15 && speedDifference > 0.1f && currentSpeed > 5)
+			else if (speedDifference < 15 && speedDifference > 0.1f)
 			{
 				//These sudden changes will almost always be caused by collision, but running into a wall at an angle redirects the player, while running into a floor or ceiling should be ignored.
 				//If only having horizontal velocity changed, don't change direction by increase speed slightly to what it was before for smoothness.
@@ -473,7 +477,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			Vector3 vectorDifference =  currentVelocity - previousVelocity;
 
 			//Since collisions will very rarely put velocity to 0 exactly, add some wiggle room to end player movement if currentVelocity has not been reverted. This will only trigger if player was already moving.
-			if (currentSpeed < 0.7f && previousSpeed > currentSpeed + 0.05)
+			if (currentSpeed < 1f && previousSpeed > currentSpeed + 0.05)
 			{
 				_coreVelocity = Vector3.zero;
 			}
@@ -585,7 +589,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			//Gets the air control modifiers.
 			float airAccelMod = _airControlAmmount_.y;
 			float airTurnMod = _airControlAmmount_.x;
-			switch (_Actions._whatAction)
+			switch (_Actions._whatCurrentAction)
 			{
 				case S_Enums.PrimaryPlayerStates.Jump:
 					if (_Actions._actionTimeCounter < _jumpExtraControlThreshold_)
@@ -876,6 +880,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	//This also handles stepping up over small ledges.
 	public Vector3 StickToGround ( Vector3 velocity ) {
 
+		Debug.Log("Stick");
+
 		if(!_canStickToGround) { return velocity; }
 
 		//If moving and has been grounded for long enough. The time on ground is to prevent gravity force before landing being carried over to shoot player forwards on landing.
@@ -937,8 +943,9 @@ public class S_PlayerPhysics : MonoBehaviour
 					Vector3 Dir = AlignWithNormal(velocity, currentGroundNormal, velocity.magnitude);
 					velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.y);
 
+
 					// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
-					AddGeneralVelocity(-currentGroundNormal * 1.1f, false);
+					AddGeneralVelocity(-currentGroundNormal * _forceTowardsGround_, false);
 				}
 			}
 		}
@@ -952,9 +959,9 @@ public class S_PlayerPhysics : MonoBehaviour
 				velocity = GetRelevantVector(velocity);
 				velocity.y = 0;
 				velocity = transform.TransformDirection(velocity);
-			}		
+			}
 
-			AddGeneralVelocity(-_groundNormal * _stickToGroundForce, false);
+			AddGeneralVelocity(-_groundNormal *_forceTowardsGround_ * 1.2f, false);
 		}
 		return velocity;
 	}
@@ -1402,7 +1409,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_gravityWhenMovingUp_ = _Tools.Stats.WhenInAir.upGravity;
 		_keepNormalForThis_ = _Tools.Stats.WhenInAir.keepNormalForThis;
 
-
+		_forceTowardsGround_ = _Tools.Stats.GreedysStickToGround.forceTowardsGround;
 		_stickingLerps_ = _Tools.Stats.GreedysStickToGround.stickingLerps;
 		_stickingNormalLimit_ = _Tools.Stats.GreedysStickToGround.stickingNormalLimit;
 		_stickCastAhead_ = _Tools.Stats.GreedysStickToGround.stickCastAhead;

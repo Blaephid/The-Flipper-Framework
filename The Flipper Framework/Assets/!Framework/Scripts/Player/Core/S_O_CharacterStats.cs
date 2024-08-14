@@ -277,6 +277,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucStickToGround SetStrucGreedyStick () {
 		return new StrucStickToGround
 		{
+			forceTowardsGround = 2,
 			stickingLerps = new Vector2(0.98f, 1.02f),
 			stickingNormalLimit = 0.519f,
 			stickCastAhead = 1.7f,
@@ -294,6 +295,7 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucStickToGround
 	{
+		public float        forceTowardsGround;
 		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (loops), and Y is positive Slopes (imagine running on the outside of a loop). ")]
 		public Vector2      stickingLerps;
 		[Range(0, 1)]

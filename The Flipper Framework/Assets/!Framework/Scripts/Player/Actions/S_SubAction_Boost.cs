@@ -116,7 +116,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		//If currently enabled, then apply rotation and animations to character.
 		if (_PlayerPhys._isBoosting)
 		{
-			switch (_Actions._whatAction)
+			switch (_Actions._whatCurrentAction)
 			{
 				case S_Enums.PrimaryPlayerStates.Default:
 					_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction); // Means animation will reflect jumping or being grounded.;

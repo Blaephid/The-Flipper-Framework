@@ -135,11 +135,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	}
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	// Update is called once per frame
 	void Update () {
 		if(!enabled || !_isGrinding) { return; }
@@ -237,7 +232,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		_grindingSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 		//What action before this one.
-		switch (_Actions._whatAction)
+		switch (_Actions._whatCurrentAction)
 		{
 			// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
 			case S_Enums.PrimaryPlayerStates.Homing:
@@ -264,14 +259,14 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
-		if (!enabled) { return; }
+		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		_isGrinding = false;
 
 		//If left this action to perform a jump,
-		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump)
+		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Jump)
 		{
 			switch (_whatKindOfRail)
 			{
@@ -734,7 +729,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					set = false; //If speed higher than what will be set, go through the other option instead.
 			}
 			//Keep checking if on a rail before applying this.
-			if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Rail)
+			if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Rail)
 			{
 				_grindingSpeed += addSpeed;
 				_isBoosted = true;

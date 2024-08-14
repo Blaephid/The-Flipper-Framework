@@ -84,16 +84,11 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
-
+	void Awake () {
+		ReadyScript();
 		_IconTransform.parent = null; //Makes it seperate to player object so it doesn't move with them.
 
 		StartCoroutine(ScanForTargets(_timeBetweenScans_)); //For efficiency, this is not done every frame, instead being every x seconds.
-	}
-
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyScript();
 	}
 
 	#endregion
@@ -354,7 +349,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;
-		_MainCamera = _Tools.MainCamera;
+		_MainCamera = Camera.main.transform;
 		_IconTransform = _Tools.homingIcons.transform;
 		_NormalIcon = _Tools.NormalIcon;
 		_DamageIcon = _Tools.DamageIcon;

@@ -87,12 +87,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-		_JumpBall.SetActive(false);
-	}
-
 	// Update is called once per frame
 	void Update () {
 
@@ -187,10 +181,8 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		_timer = 0;
 
@@ -300,8 +292,11 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		//Return control options that were lost.
 		_PlayerPhys._canChangeGrounded = true;
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
+
+		Debug.Log("Stop Homing");
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 	}

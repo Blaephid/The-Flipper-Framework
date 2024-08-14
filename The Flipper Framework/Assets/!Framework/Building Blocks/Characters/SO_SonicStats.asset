@@ -1194,7 +1194,7 @@ MonoBehaviour:
     GroundMask:
       serializedVersion: 2
       m_Bits: 1
-    groundDifferenceLimit: 0.356
+    groundDifferenceLimit: 0.267
     rayToGroundDistance: 1.3
     raytoGroundSpeedRatio: 0.0101
     raytoGroundSpeedMax: 2.6

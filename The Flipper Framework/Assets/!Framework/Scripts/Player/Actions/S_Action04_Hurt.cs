@@ -75,7 +75,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	#region Inherited
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
+	private void Awake () {
 		ReadyAction();
 	}
 
@@ -200,7 +200,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+
 		_counter = 0;
 	}
 	#endregion

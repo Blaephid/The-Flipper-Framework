@@ -38,7 +38,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		if(!_hasHitThisFrame) //Will only try once per update.
 		{
 			//Certain actions will count as attacks, other require other states.
-			switch (_Actions._whatAction)
+			switch (_Actions._whatCurrentAction)
 			{
 				//If in default, will only attack if rolling.
 				case S_Enums.PrimaryPlayerStates.Default:
@@ -141,7 +141,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 	//Bounces player upwards, amount depending on player state.
 	void AttackFromJump () {
-		switch(_Actions._whatAction)
+		switch(_Actions._whatCurrentAction)
 		{
 			default:
 				_PlayerPhys.AddCoreVelocity(transform.up * _bouncingPower_);

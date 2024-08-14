@@ -76,14 +76,14 @@ public class S_Handler_RingRoad : MonoBehaviour
 		{
 			//For efficiency, there must be a gap between scans. This will only be a frame if currently performing the action (as this needs to be smoothly updated).
 			//Ring road is currently not here because it will call ScanForRings seperately.
-			switch (_Actions._whatAction)
+			switch (_Actions._whatCurrentAction)
 			{
 				default:
 					yield return new WaitForSeconds(0.05f);
 					break;
 			}
 			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
-			if (_isScanning && _Actions._whatAction != S_Enums.PrimaryPlayerStates.RingRoad)//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
+			if (_isScanning && _Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.RingRoad)//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
 			{
 				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, transform.position);
 			}

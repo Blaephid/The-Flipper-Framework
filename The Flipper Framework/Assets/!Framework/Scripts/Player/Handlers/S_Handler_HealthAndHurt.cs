@@ -347,7 +347,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Bonking refers to rebounding off solid surfaces when moving into them at high speed.
 	//Depending on the current state, will check if should bonk against walls based on speed
 	private void CheckBonk () {
-		switch (_Actions._whatAction)
+		switch (_Actions._whatCurrentAction)
 		{
 			case S_Enums.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._horizontalSpeedMagnitude > _minSpeedToBonk_.x) TryBonk();
@@ -386,7 +386,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		float rememberSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 
 		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
-		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.WallClimbing)
+		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallClimbing)
 		{
 			_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
 			_HurtAction._wasHit = false;
@@ -399,7 +399,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			{
 				yield return new WaitForFixedUpdate();
 
-				if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
+				if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
 
 					_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
 				_PlayerPhys._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
@@ -407,7 +407,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			}
 
 			//If still not in a wallrunning state or been hurt, then rebound off the wall.
-			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatAction != S_Enums.PrimaryPlayerStates.Hurt)
+			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Hurt)
 			{
 				_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[3].normalized;
 				_HurtAction._wasHit = false;

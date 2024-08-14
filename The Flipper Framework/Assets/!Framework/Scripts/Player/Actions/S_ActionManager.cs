@@ -33,7 +33,7 @@ public class S_ActionManager : MonoBehaviour
 	// Trackers
 	#region trackers
 	//Tracking states in game
-	public S_Enums.PrimaryPlayerStates	_whatAction;
+	public S_Enums.PrimaryPlayerStates	_whatCurrentAction = S_Enums.PrimaryPlayerStates.None;
 	public S_Enums.SubPlayerStates	_whatSubAction;
 	public S_Enums.PlayerAttackStates       _whatCurrentAttack;
 	public S_Enums.PrimaryPlayerStates	_whatPreviousAction { get; set; }
@@ -84,7 +84,9 @@ public class S_ActionManager : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
+	void Awake () {
+
+		if (_Tools != null) return;
 
 		//Assigning
 		_Tools =		GetComponentInParent<S_CharacterTools>();
@@ -127,10 +129,11 @@ public class S_ActionManager : MonoBehaviour
 		}
 
 		//Set player to start in default action.
-		_currentAction = _MainActions[0];
 		DeactivateAllActions(true);
-		ChangeAction(S_Enums.PrimaryPlayerStates.Default);
-		_ActionDefault.enabled = true;
+		_currentAction = _MainActions[0];
+		//ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+		//_ActionDefault.enabled = true;
+		_ActionDefault.StartAction();
 	}
 
 	private void FixedUpdate () {
@@ -162,7 +165,7 @@ public class S_ActionManager : MonoBehaviour
 		for (int a = 0 ; a < _MainActions.Count ; a++)
 		{
 			S_Structs.StrucMainActionTracker track = _MainActions[a];
-			if (track.State != _whatAction)
+			if (track.State != _whatCurrentAction)
 			{
 				track.Action.StopAction(firstTime); //The stop action methods should all contain the same check if enabled and then disable the script if so.
 			}
@@ -202,8 +205,8 @@ public class S_ActionManager : MonoBehaviour
 
 	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.
 	public void ChangeAction ( S_Enums.PrimaryPlayerStates ActionToChange) {
-		_whatPreviousAction = _whatAction;
-		_whatAction = ActionToChange;
+		_whatPreviousAction = _whatCurrentAction;
+		_whatCurrentAction = ActionToChange;
 		DeactivateAllActions();
 	}
 

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 65000014051784484}
   - component: {fileID: 114000012005501162}
   - component: {fileID: 82000010920544288}
+  - component: {fileID: 5119825325252721446}
   m_Layer: 12
   m_Name: Pr_Spring
   m_TagString: Spring
@@ -198,6 +199,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &5119825325252721446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010088463082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _debugForce: 1
+  _calculations: 80
+  _SpringScript: {fileID: 114000012005501162}
+  _DashRingScript: {fileID: 0}
+  _force: 100
+  _ShotCenter: {fileID: 1037319718031247092}
+  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
+    type: 2}
+  _simCoreVel: {x: 0, y: -234.34601, z: 0}
+  _simEnVel: {x: 0, y: 100, z: 0}
 --- !u!1 &1603864838323800
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,7 +516,6 @@ GameObject:
   - component: {fileID: 3151143816729521545}
   - component: {fileID: 4356081788851813714}
   - component: {fileID: 5425391631396093520}
-  - component: {fileID: 3557544580039836571}
   m_Layer: 12
   m_Name: True direction
   m_TagString: Untagged
@@ -580,28 +602,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whatAction: 0
   _delayInSeconds: 0
---- !u!114 &3557544580039836571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6678024692031967453}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _debugForce: 1
-  _calculations: 80
-  _SpringScript: {fileID: 114000012005501162}
-  _DashRingScript: {fileID: 0}
-  _force: 100
-  _ShotCenter: {fileID: 1037319718031247092}
-  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
-    type: 2}
-  _simCoreVel: {x: -1.0729266, y: -234.65097, z: 0}
-  _simEnVel: {x: -53.64633, y: 84.392365, z: 0}
 --- !u!1001 &2118252095637961541
 PrefabInstance:
   m_ObjectHideFlags: 0

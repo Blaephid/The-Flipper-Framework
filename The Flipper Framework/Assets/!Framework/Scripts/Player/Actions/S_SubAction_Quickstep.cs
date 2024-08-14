@@ -53,16 +53,13 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
-		AssignTools();
-		_StepPlayermask_ = _Tools.Stats.QuickstepStats.StepLayerMask;
-
-		enabled = false;
-	}
-
-	// Update is called once per frame
-	void Update () {
-		
+	void Awake () {
+		if(_Tools == null)
+		{
+			AssignTools();
+			_StepPlayermask_ = _Tools.Stats.QuickstepStats.StepLayerMask;
+			enabled = false;
+		}
 	}
 
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
@@ -74,7 +71,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		else if (!_inAir && !_PlayerPhys._isGrounded)
 			_inAir = true;
 		//If changed action during the step, end the step.
-		if (_whatActionWasOn != _Actions._whatAction)
+		if (_whatActionWasOn != _Actions._whatCurrentAction)
 			enabled = false;
 
 		if (_distanceToStep_ > 0)
@@ -125,7 +122,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		enabled = true;
 		
 		//Used for checking if the main action changes during the step.
-		_whatActionWasOn = _Actions._whatAction;
+		_whatActionWasOn = _Actions._whatCurrentAction;
 		_Actions._whatSubAction = S_Enums.SubPlayerStates.Quickstepping;
 
 		//Prevents buttons from being held to spam.

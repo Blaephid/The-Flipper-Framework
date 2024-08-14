@@ -16,7 +16,7 @@ public class S_Handler_Camera : MonoBehaviour
 
 	[HideInInspector] public float _initialDistance;
 
-	void Start () {
+	void Awake () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();

@@ -68,7 +68,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		if (_PlayerPhys._isRolling)
 		{
 			//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
-			if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatAction)))
+			if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatCurrentAction)))
 			{
 				UnCurl();
 			}
@@ -81,7 +81,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	public bool AttemptAction () {
-		switch(_Actions._whatAction)
+		switch(_Actions._whatCurrentAction)
 		{
 			//Any action with this on
 			default:
@@ -91,7 +91,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 					//Enter Rolling state, must be moving fast enought first.
 					if (_Input._RollPressed && !_isRollingFromThis && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
-						_whatCurrentAction = _Actions._whatAction; //If the current action stops matching this, then the player has switched actions while rolling
+						_whatCurrentAction = _Actions._whatCurrentAction; //If the current action stops matching this, then the player has switched actions while rolling
 						_Actions._whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
 						
 						Curl();

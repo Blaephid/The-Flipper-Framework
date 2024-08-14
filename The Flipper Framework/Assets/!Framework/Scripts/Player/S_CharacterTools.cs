@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -47,9 +48,9 @@ public class S_CharacterTools : MonoBehaviour
 	public GameObject	DamageIcon;
 
 	[Header("Camera Related")]
-	public Transform		MainCamera;
 	public Transform		CameraTarget;
 	public Transform		ConstantTarget;
+	public CinemachineBrain       MainCamera;
 
 
 	[Header("Prefabs")]

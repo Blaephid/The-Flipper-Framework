@@ -73,16 +73,10 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	// Update is called once per frame
 	void Update () {
 		//Set Animator Parameters and rotation
-		_Actions._ActionDefault.HandleAnimator(11);
+		_Actions._ActionDefault.HandleAnimator(11);	
 		_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
 	}
 
@@ -96,7 +90,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 		bool willChangeAction = false;
 
-		switch (_Actions._whatAction)
+		switch (_Actions._whatCurrentAction)
 		{
 			//Regular requires a seperate check in addition to other actions.
 			case S_Enums.PrimaryPlayerStates.Default:
@@ -196,14 +190,15 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		//Inputs
 		_Input._SpecialPressed = false;
 
 		//Physics
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		if(_PlayerPhys._listOfIsGravityOn.Count > 0 )
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 	}
 
 	#endregion

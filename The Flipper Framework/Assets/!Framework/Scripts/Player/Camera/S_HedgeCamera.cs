@@ -38,7 +38,7 @@ public class S_HedgeCamera : MonoBehaviour
 	[Header("Cameras")]
 
 	public CinemachineVirtualCamera         _SecondaryCamera;
-	public CinemachineBrain       _Brain;
+	private CinemachineBrain		_MainCameraBrain;
 
 	private Transform              _PlayerTransformReal;
 
@@ -442,7 +442,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//The distance and FOV the camera changes can depend on the action (where some require greater zoom out). This returns the modifier, and min and max values.
 	private Vector3 GetDistanceModifiedByAction () {
-		switch (_Actions._whatAction) {
+		switch (_Actions._whatCurrentAction) {
 			default:
 				return new Vector3(0, 1, 1);
 			case S_Enums.PrimaryPlayerStates.WallClimbing:
@@ -479,7 +479,7 @@ public class S_HedgeCamera : MonoBehaviour
 		float verticalSpeed = _PlayerTransformReal.InverseTransformDirection(_PlayerPhys._RB.velocity).y;
 
 		//Making the camera face down when in the air for long enough.
-		bool isRightAction = _Actions._whatAction == S_Enums.PrimaryPlayerStates.Jump || _Actions._whatAction == S_Enums.PrimaryPlayerStates.Default || _Actions._whatAction == S_Enums.PrimaryPlayerStates.DropCharge;
+		bool isRightAction = _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Jump || _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default || _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.DropCharge;
 
 		if (_shouldFaceDownWhenInAir_ && !_PlayerPhys._isGrounded && verticalSpeed < _fallSpeedThreshold_ && isRightAction)
 		{
@@ -521,7 +521,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//Certain actions will have different requirements for the camera to move behind. The switch sets the requirements before the if statement checks against them.
 		float minSpeed;
 		bool skipDelay = false;
-		switch (_Actions._whatAction)
+		switch (_Actions._whatCurrentAction)
 		{
 			default:
 				minSpeed = _lockCamAtSpeed_;
@@ -691,7 +691,7 @@ public class S_HedgeCamera : MonoBehaviour
 		if (!_isLocked)
 		{
 			//A switch is used so it's less clutured than an if statement.
-			switch (_Actions._whatAction)
+			switch (_Actions._whatCurrentAction)
 			{
 				case S_Enums.PrimaryPlayerStates.Rail:
 					break;
@@ -807,7 +807,7 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 
 		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
-		_Brain.m_DefaultBlend.m_Time = frames.y / 55; //Convert to seconds
+		_MainCameraBrain.m_DefaultBlend.m_Time = frames.y / 55; //Convert to seconds
 
 		//Sets the secondary camera to the position of the primary, then makes it take over display.
 		_SecondaryCamera.transform.position = transform.position;
@@ -857,6 +857,8 @@ public class S_HedgeCamera : MonoBehaviour
 
 		_SecondaryCamera.gameObject.SetActive(false);
 		_SecondaryCamera.transform.parent = null;
+
+		_MainCameraBrain = _Tools.MainCamera;
 
 		_Actions = _Tools._ActionManager;
 	}

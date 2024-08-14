@@ -56,9 +56,12 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
-		AssignTools();
-		AssignStats();
+	void Awake () {
+		if(_Tools == null)
+		{
+			AssignTools();
+			AssignStats();
+		}
 	}
 
 	// Update is called once per frame
@@ -67,7 +70,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	}
 
 	private void FixedUpdate () {
-		if(_whatCurrentAction != _Actions._whatAction) 
+		if(_whatCurrentAction != _Actions._whatCurrentAction) 
 		{ 
 			StopAction();
 			enabled = false;
@@ -78,10 +81,10 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	//Called when attempting to perform an action, checking and preparing inputs.
 	public bool AttemptAction () {
 		bool willStartAction = false;
-		_whatCurrentAction = _Actions._whatAction;
+		_whatCurrentAction = _Actions._whatCurrentAction;
 
 		//Different actions require different skids, even though they all call this function.
-		switch (_Actions._whatAction)
+		switch (_Actions._whatCurrentAction)
 		{
 			case S_Enums.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._isGrounded)
