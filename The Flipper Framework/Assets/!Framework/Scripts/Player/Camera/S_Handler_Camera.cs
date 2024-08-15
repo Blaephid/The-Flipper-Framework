@@ -36,7 +36,7 @@ public class S_Handler_Camera : MonoBehaviour
 				{
 					//Rotates the camera in direction and prevents controlled rotation.
 					case TriggerType.LockToDirection:
-						SetHedgeCamera(cameraData, col.transform.forward);
+						SetHedgeCamera(cameraData, cameraData.forward);
 						LockCamera(true);
 						changeDistance(cameraData);
 						break;
@@ -57,15 +57,16 @@ public class S_Handler_Camera : MonoBehaviour
 
 					//Allow controlled rotation but manually rotate in direction.
 					case TriggerType.SetFreeAndLookTowards:
-						SetHedgeCamera(cameraData, col.transform.forward);
+						SetHedgeCamera(cameraData, cameraData.forward);
 						changeDistance(cameraData);
 						LockCamera(false);
 						break;
 
+
 					//Make camera face behind player.
 					case TriggerType.Reverse:				
 						_HedgeCam._isReversed = true;
-						SetHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
+						SetHedgeCamera(cameraData, -_MainSkin.forward);
 						changeDistance(cameraData);
 						LockCamera(false);
 						break;
@@ -73,7 +74,7 @@ public class S_Handler_Camera : MonoBehaviour
 						//Make camera face behind player and disable rotation.
 					case TriggerType.ReverseAndLockControl:
 						_HedgeCam._isReversed = true;
-						SetHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
+						SetHedgeCamera(cameraData, -_MainSkin.forward);
 						changeDistance(cameraData);
 						LockCamera(true) ;
 						break;

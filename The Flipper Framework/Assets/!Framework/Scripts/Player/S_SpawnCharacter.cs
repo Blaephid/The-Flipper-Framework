@@ -33,6 +33,7 @@ public class S_SpawnCharacter : MonoBehaviour {
 			yield return new WaitForFixedUpdate();
 		}
 
+		
 		if (GameObject.Find("CharacterSelector") != null)
 		{
 			_CharacterToSpawn = GameObject.Find("CharacterSelector").GetComponent<S_CharacterSelect>().DesiredCharacter;
@@ -43,11 +44,7 @@ public class S_SpawnCharacter : MonoBehaviour {
 		}
 
 		GameObject Player = Instantiate(_CharacterToSpawn, transform.position, Quaternion.identity, transform);
-
-		S_CharacterTools Tools = Player.GetComponentInChildren<S_CharacterTools>();
-		Tools.MainCamera = _CameraBrain;
-
-		_SpawnedPlayer = Tools.transform;
+		//Check S_CharacterTools Awake For assigning references to this. It's there because the Awakes of Player happen before any more code in this method.
 
 		yield return null;
 	}

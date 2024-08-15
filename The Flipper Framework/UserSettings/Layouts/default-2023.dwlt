@@ -101,7 +101,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 271
+  controlID: 97
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 0
-  controlID: 239
+  controlID: 96
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -255,7 +255,7 @@ MonoBehaviour:
     height: 30
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
-  m_LastLoadedLayoutName: Double Screen
+  m_LastLoadedLayoutName: 
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -300,7 +300,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 352
+  controlID: 166
 --- !u!114 &13
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -326,7 +326,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 353
+  controlID: 167
 --- !u!114 &14
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -479,11 +479,32 @@ MonoBehaviour:
     m_ContainerData: []
     m_OverlaysVisible: 1
   m_ViewTransforms:
-    m_KeySerializationHelper: []
-    m_ValueSerializationHelper: []
+    m_KeySerializationHelper:
+    - {fileID: 1107000013791777052, guid: 085ed2283b69cd4438c44ba49751406e, type: 2}
+    m_ValueSerializationHelper:
+    - e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
   m_PreviewAnimator: {fileID: 0}
-  m_AnimatorController: {fileID: 0}
-  m_BreadCrumbs: []
+  m_AnimatorController: {fileID: 9100000, guid: 085ed2283b69cd4438c44ba49751406e,
+    type: 2}
+  m_BreadCrumbs:
+  - m_Target: {fileID: 1107000013791777052, guid: 085ed2283b69cd4438c44ba49751406e,
+      type: 2}
+    m_ScrollPosition: {x: 0, y: 0}
   stateMachineGraph: {fileID: 0}
   stateMachineGraphGUI: {fileID: 0}
   blendTreeGraph: {fileID: 0}
@@ -534,7 +555,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: -191152
+  m_LastSelectedObjectID: -6834
 --- !u!114 &19
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1438,7 +1459,7 @@ MonoBehaviour:
     m_ContainerData: []
     m_OverlaysVisible: 1
   m_SearchFilter:
-    m_NameFilter: so_
+    m_NameFilter: wallrunning
     m_ClassNames: []
     m_AssetLabels: []
     m_AssetBundleNames: []
@@ -1452,7 +1473,7 @@ MonoBehaviour:
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
-    m_OriginalText: so_
+    m_OriginalText: wallrunning
     m_ImportLogFlags: 0
     m_FilterByTypeIntersection: 0
   m_ViewMode: 1
@@ -1465,9 +1486,9 @@ MonoBehaviour:
     m_IsLocked: 1
   m_FolderTreeState:
     scrollPos: {x: 0, y: 7}
-    m_SelectedIDs: 9a320100
-    m_LastClickedID: 78490
-    m_ExpandedIDs: 00000000929e000092a00000c0a0000026a100000633010000ca9a3bffffff7f
+    m_SelectedIDs: baa60000
+    m_LastClickedID: 42682
+    m_ExpandedIDs: 0000000080a400005ca60000a8a6000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1495,7 +1516,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000929e000000ca9a3bffffff7f
+    m_ExpandedIDs: 0000000080a40000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1526,18 +1547,18 @@ MonoBehaviour:
     m_ExpandedInstanceIDs: 
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: Pr_CharacterSpawner
-      m_OriginalName: Pr_CharacterSpawner
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 36132
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 3}
     m_CreateAssetUtility:
@@ -1599,7 +1620,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/!Framework/Building Blocks/Characters
+    - Assets/!Framework/Scripts/Player/Actions
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1609,16 +1630,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 53
   m_LastFolders:
-  - Assets/!Framework/Building Blocks/Characters
+  - Assets/!Framework/Scripts/Player/Actions
   m_LastFoldersGridSize: 53
   m_LastProjectPath: C:\GitHub_Django\Bumper-Engine-2\The Flipper Framework
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 255}
-    m_SelectedIDs: 84ce0000
-    m_LastClickedID: 52868
-    m_ExpandedIDs: 00000000929e000092a000009ebd000084ce00009232010094320100aa1e030000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 143}
+    m_SelectedIDs: a8601000
+    m_LastClickedID: 1073320
+    m_ExpandedIDs: 0000000080a400005ca6000094a6000096a60000a6a60000c2720400d672040000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1646,7 +1667,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000929e000000ca9a3bffffff7f
+    m_ExpandedIDs: 0000000080a40000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1893,9 +1914,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 5015fdff
-      m_LastClickedID: -191152
-      m_ExpandedIDs: 94e4f2ffa4e4f2ff56e5f2ffe624f7ff32f6fcff40f6fcff44f6fcff48f6fcffea05fdff3a15fdff5015fdff1819fdff2019fdff1c20fdffe824fdffea24fdff522ffdff3036fdffc0fafffff8a300001aa4000034a4000030a5000082a5000036a60000f0a6000022a700001ea800002ca80000b2a80000f0a9000012aa000048aa000022ac00003cac00003aad000080ad0000bead0000c2ad000016ae000066b00000
+      m_SelectedIDs: 1891e0ff
+      m_LastClickedID: -2060008
+      m_ExpandedIDs: 1c91e0ffc4c8e8ff701cf1ff98c9f1ffaac3ffff80c7ffff72d8ffffe2daffffeadaffffeedaffff4ee5fffffcfaffff887e0000687f0000d27f00001c8100000882000046830000148400006c8400001c8500005e8500001089000086890000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -2394,9 +2415,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -770.53174, y: 146.03331, z: 799.9301}
+    m_Target: {x: 1141.6866, y: 227.1102, z: -292.60892}
     speed: 2
-    m_Value: {x: -770.53174, y: 146.03331, z: 799.9301}
+    m_Value: {x: 1141.6866, y: 227.1102, z: -292.60892}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -2442,13 +2463,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.24870944, y: 0.019762846, z: -0.005076206, w: -0.96837276}
+    m_Target: {x: -0.012938704, y: 0.97133535, z: -0.23242268, w: -0.051350955}
     speed: 2
-    m_Value: {x: -0.24870716, y: 0.019762665, z: -0.0050761593, w: -0.9683639}
+    m_Value: {x: -0.012859674, y: 0.971529, z: -0.23092884, w: -0.051362157}
   m_Size:
-    m_Target: 1.8914428
+    m_Target: 12.124355
     speed: 2
-    m_Value: 1.8914428
+    m_Value: 12.124355
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -2891,11 +2912,6 @@ MonoBehaviour:
       \"isPartOfComposite\": true\n                },\n                {\n                   
       \"name\": \"\",\n                    \"id\": \"f04bf7c4-d7f0-47cb-97cc-f08baa1ffe0b\",\n                   
       \"path\": \"<Mouse>/leftButton\",\n                    \"interactions\": \"\",\n                   
-      \"processors\": \"\",\n                    \"groups\": \"\",\n                   
-      \"action\": \"Boost\",\n                    \"isComposite\": false,\n                   
-      \"isPartOfComposite\": false\n                },\n                {\n                   
-      \"name\": \"\",\n                    \"id\": \"d3e66ee4-a6d1-44bb-95a2-d6a9560f615b\",\n                   
-      \"path\": \"<Keyboard>/shift\",\n                    \"interactions\": \"\",\n                   
       \"processors\": \"\",\n                    \"groups\": \"\",\n                   
       \"action\": \"Boost\",\n                    \"isComposite\": false,\n                   
       \"isPartOfComposite\": false\n                },\n                {\n                   

@@ -228,7 +228,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//Get how much the character is facing the same way as the point.
 		CurveSample sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
 		_sampleForwards = _RailTransform.rotation * sample.tangent;
-		float facingDot = Vector3.Dot(_PlayerPhys._RB.velocity.normalized, _sampleForwards);
+		float facingDot = Vector3.Dot(_PlayerPhys._totalVelocity.normalized, _sampleForwards);
 
 		_grindingSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 		//What action before this one.
@@ -532,13 +532,13 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		//use player vertical speed to find if player is going up or down
 		//if going uphill on rail
-		if (_PlayerPhys._RB.velocity.y > 0.05f)
+		if (_PlayerPhys._totalVelocity.y > 0.05f)
 		{
 			//Get main modifier and multiply by position on curve and general hill modifer used for other slope physics.
 			force *= _isCrouching ? _upHillMultiplierCrouching_ : _upHillMultiplier_;
 			force *= -1;
 		}
-		else if (_PlayerPhys._RB.velocity.y < -0.05f)
+		else if (_PlayerPhys._totalVelocity.y < -0.05f)
 		{
 			//Downhill
 			force *= _isCrouching ? _downHillMultiplierCrouching_ : _downHillMultiplier_;

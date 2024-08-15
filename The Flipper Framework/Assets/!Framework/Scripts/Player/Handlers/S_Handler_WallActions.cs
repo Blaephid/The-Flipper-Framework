@@ -239,7 +239,7 @@ public class S_Handler_WallActions : MonoBehaviour
  			RaycastHit RelevantHit = _isWallRight ? _RightWallHit : _LeftWallHit;
 
 			//Can only wallrun if intentionally inputting to the side on the controller (to prevent accidentally snapping when holding forwards into a wall).
-			if(Mathf.Abs(_Input._inputWithoutCamera.x) > 0.2f)
+			if(Mathf.Abs(_Input._inputOnController.x) > 0.2f)
 			{
 				if (IsWallVerticalEnough(RelevantHit.normal, 0.3f))
 				{

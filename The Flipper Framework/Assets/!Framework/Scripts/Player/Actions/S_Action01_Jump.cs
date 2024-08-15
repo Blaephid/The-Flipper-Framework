@@ -196,9 +196,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			_thisMaxDuration = _maxJumpTime_ * _jumpDurationModifier;
 
 			//Jump higher depending based on speed, if jumping upwards off a slope the players running up.
-			if (_PlayerPhys._RB.velocity.y > 5 && _upwardsDirection.y < 1)
+			if (_PlayerPhys._totalVelocity.y > 5 && _upwardsDirection.y < 1)
 			{
-				_jumpSlopeSpeed = Mathf.Max( _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_, _thisJumpSpeed);
+				_jumpSlopeSpeed = Mathf.Max( _PlayerPhys._totalVelocity.y * _jumpSlopeConversion_, _thisJumpSpeed);
    				_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 			}
 			else
@@ -272,7 +272,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private void JumpInAir () {
 
 		//Take some horizontal speed on jump and remove vertical speed to ensure jump is an upwards force.
-		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._RB.velocity.y, 2), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
+		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._totalVelocity.y, 2), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
 		_PlayerPhys.SetCoreVelocity(newVel, "Overwrite");
 
 		//Add particle effect during jump

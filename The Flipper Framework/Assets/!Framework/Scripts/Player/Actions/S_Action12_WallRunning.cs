@@ -209,6 +209,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private void RunningInteraction () {
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
+		_raycastOrigin = transform.position + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
+
 		//Get information of wall
 		int wallDirection = _isWallOnRight ? 1: -1;
 		Vector3 raycastOrigin = transform.position + _MainSkin.forward * 0.3f;
@@ -312,7 +314,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	public void CheckCanceling () {
 
-		_isHoldingWall = _WallHandler.IsInputtingToWall(_wallHit.point - _raycastOrigin);
+		Vector3 wallDirection = _wallHit.point - _raycastOrigin;
+		_isHoldingWall = _WallHandler.IsInputtingToWall(wallDirection);
 		bool isOnGround = IsOnGround();
 
 		//Cancel action by letting go of skid after .5 seconds

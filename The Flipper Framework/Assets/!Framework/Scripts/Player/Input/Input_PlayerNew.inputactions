@@ -690,17 +690,6 @@
                 },
                 {
                     "name": "",
-                    "id": "d3e66ee4-a6d1-44bb-95a2-d6a9560f615b",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Boost",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "e18022d5-a1d3-45c5-9dd6-0d68b537ae7f",
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "",

@@ -59,7 +59,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private bool        _isGoingBackwards;
 	private int         _moveDirection;
 	private bool        _canReverse;
+	private bool        _canSlow;
 
+	private int         _willLockFor;
 
 	#endregion
 	#endregion
@@ -99,6 +101,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_PlayerPhys._arePhysicsOn = false;
 		_Pathers._canExitAutoPath = true; //Will no longer cancel action when hitting a trigger.
 
+		_Actions._listOfSpeedOnPaths.Add(_playerSpeed);
+
 		if (_CharacterAnimator.GetInteger("Action") != 0)
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
@@ -113,9 +117,10 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		_PlayerPhys._arePhysicsOn = true;
-		_Input.LockInputForAWhile(15, true, Vector3.zero, S_Enums.LockControlDirection.CharacterForwards);
 
 		_Pathers._canExitAutoPath = false; //Will no longer cancel action when hitting a trigger.
+
+		_Actions._listOfSpeedOnPaths.RemoveAt(0);
 
 		_PlayerPhys._currentMinSpeed = 0;
 		_PlayerPhys._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
@@ -201,7 +206,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		float direction = 0;
 		float decelerationValue = 1;            //direction must be above 0 so turning still happens, so to apply deceleration, use a seperate modifer.
-		if (input.sqrMagnitude > 0)
+		if (input.sqrMagnitude > 0 || !_canSlow)
 		{
 			//If brought to a stop and inputting away from the spline, then turn around.
 			if (_canReverse && dot < -0.5 && _PlayerPhys._currentRunningSpeed < 7)
@@ -213,6 +218,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			}
 			else  
 			{
+				_Input._inputOnController = Vector2.one;
 				direction = dot > -0.7 || !_canReverse ? 1 : 0.2f;
 			}
 		}
@@ -244,7 +250,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		Debug.DrawRay(transform.position, _PlayerPhys._moveInput, Color.green, 100f);
 		Debug.DrawRay(transform.position - transform.up * 0.5f, _physicsCoreVelocity * Time.fixedDeltaTime, Color.yellow, 100f);
 
-		_PlayerPhys.SetBothVelocities(_physicsCoreVelocity, Vector2.right, "Overwrite");
+		_PlayerPhys.SetBothVelocities(_physicsCoreVelocity, Vector2.right);
 		_PlayerPhys.SetTotalVelocity();
 
 		_playerSpeed = _PlayerPhys._currentRunningSpeed;
@@ -267,12 +273,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	private void ExitPath () {
 
-		//Deactivates any cinemachine that might be attached.
-		if (_Pathers._currentExternalCamera != null)
-		{
-			_Pathers._currentExternalCamera.DeactivateCam(18);
-			_Pathers._currentExternalCamera = null;
-		}
+		Debug.DrawRay(transform.position, _sampleForwards * 20, Color.yellow, 10f);
+		_Input.LockInputForAWhile(_willLockFor, false, _sampleForwards, S_Enums.LockControlDirection.Change);
 
 		_Actions._ActionDefault.StartAction();
 	}
@@ -305,6 +307,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_isGoingBackwards = isGoingBack;
 		_moveDirection = _isGoingBackwards ? -1 : 1;
 		_canReverse = Path._canPlayerReverse;
+		_canSlow = Path._canPlayerSlow;
+		_willLockFor = Path._lockPlayerFor;
 
 		GetSampleOfSpline();
 		if (willLockToStart) { PlaceOnSpline(); }

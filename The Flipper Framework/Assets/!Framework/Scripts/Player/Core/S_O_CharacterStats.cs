@@ -324,7 +324,7 @@ public class S_O_CharacterStats : ScriptableObject
 			rayToGroundDistance = 1.4f,
 			raytoGroundSpeedRatio = 0.01f,
 			raytoGroundSpeedMax = 2.6f,
-			groundDifferenceLimit = 0.3f,
+			groundAngleDifferenceLimit = 30f,
 		};
 	}
 
@@ -333,9 +333,9 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("Core: The layer an object must be set to, to be considered ground the player can run on.")]
 		public LayerMask    GroundMask;
-		[Range(0, 1)]
-		[Tooltip("Core: The maximum difference between the current rotation and floor when checking if grounded. If the floor is too different to this then won't be grounded. 1 = 180 degrees")]
-		public float        groundDifferenceLimit;
+		[Range(0, 180)]
+		[Tooltip("Core: The maximum difference between the current rotation and floor when checking if grounded. If the floor is too different to this then won't be grounded.")]
+		public float        groundAngleDifferenceLimit;
 		[Tooltip("Core: The max range downwards of the ground checker.")]
 		public float        rayToGroundDistance;
 		[Tooltip("Core: Adds current horizontal speed multiplied by this to the ground checker when running along the ground. Combats how it's easier to lose when at higher speed.")]

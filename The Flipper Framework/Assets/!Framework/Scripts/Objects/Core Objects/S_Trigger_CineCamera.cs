@@ -5,18 +5,25 @@ using Cinemachine;
 
 public class S_Trigger_CineCamera : MonoBehaviour
 {
-	[Header ("Major settings.")]
-	public bool endCine = false;
+	[Header("Main")]
 	public bool Active = true;
-	public bool isEnabled = true;
-	public bool onExit = true;
-	public float timeDelay = 0;
+
+	private bool canTrigger = true;
+
+	[Header ("Starting")]
 	public bool startAtCameraPoint;
 	public Vector3 startOffset;
+
+
+	[Header ("Ending")]
+	public bool endCine = false;
+	public bool onExit = true;
+	public float timeDelay = 0;
 
 	[Header("Attached Elements")]
 	public CinemachineVirtualCamera virCam;
 	public GameObject attachedCam;
+	public S_Trigger_CineCamera CameraToEnd;
 
 	[Header("Works with these actions")]
 	public bool RegularAction = true;
@@ -24,8 +31,6 @@ public class S_Trigger_CineCamera : MonoBehaviour
 	public bool RailAction = false;
 	public bool wallRunAction = false;
 	public bool RingRoadAction = false;
-
-
 
 	private Vector3 camPosit;
 	private Quaternion camRotit;
@@ -58,7 +63,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
 
 
 	private void OnTriggerEnter ( Collider other ) {
-		if (other.tag == "Player" && isEnabled)
+		if (other.tag == "Player" && canTrigger)
 		{
 			if (!endCine)
 			{
@@ -66,17 +71,18 @@ public class S_Trigger_CineCamera : MonoBehaviour
 				Actions = _PlayerTools._ActionManager;
 			}
 			else
-				DeactivateCam(lockTime);
+			{
+				if(CameraToEnd)
+					CameraToEnd.DeactivateCam(lockTime);
+			}
 		}
 	}
 	private void OnTriggerStay ( Collider col ) {
-		if (col.tag == "Player" && isEnabled && !endCine)
+		if (col.tag == "Player" && canTrigger && !endCine && Active)
 		{
-			if (!isActive && _PlayerTools != null)
+			if (!isActive)
 			{
-				if (Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Path || (Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) || (Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction)
-				    || (Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) || (Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) || (Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction))
-				{
+				
 					isActive = true;
 					hedgeCam = _PlayerTools.CamHandler._VirtCam;
 
@@ -92,17 +98,16 @@ public class S_Trigger_CineCamera : MonoBehaviour
 					{
 						virCam.Follow = _PlayerTools.transform;
 					}
-
-				}
+			
 			}
 			else
 			{
-				if (!(
-				    Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) &&
-				    !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction) && onExit)
-				{
-					DeactivateCam(0);
-				}
+				//if (!(
+				//    Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) &&
+				//    !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction) && onExit)
+				//{
+				//	DeactivateCam(0);
+				//}
 			}
 
 		}
@@ -113,8 +118,10 @@ public class S_Trigger_CineCamera : MonoBehaviour
 		{
 			if (col.tag == "Player" && onExit)
 			{
-				DeactivateCam(lockTime);
-
+				if (onExit)
+					DeactivateCam(lockTime);
+				else
+					canTrigger = true;
 			}
 		}
 	}
@@ -127,13 +134,15 @@ public class S_Trigger_CineCamera : MonoBehaviour
 			attachedCam.transform.rotation = _PlayerTools.GetComponent<S_Handler_Camera>()._HedgeCam.transform.rotation;
 		}
 
-		attachedCam.transform.position += startOffset;
+		canTrigger = false;
 
+		attachedCam.transform.position += startOffset;
 		attachedCam.SetActive(true);
-		hedgeCam = _PlayerTools.CamHandler._VirtCam;
-		hedgeCam.gameObject.SetActive(false);
-		if (disableFor > 0)
-			_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true, _PlayerTools.GetComponent<S_PlayerPhysics>()._moveInput);
+
+		//hedgeCam = _PlayerTools.CamHandler._VirtCam;
+		//hedgeCam.gameObject.SetActive(false);
+		//if (disableFor > 0)
+		//	_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true, _PlayerTools.GetComponent<S_PlayerPhysics>()._moveInput);
 
 		if (timeDelay != 0)
 		{
@@ -143,13 +152,14 @@ public class S_Trigger_CineCamera : MonoBehaviour
 	}
 
 	IEnumerator TimeLimit () {
-		isEnabled = false;
+		canTrigger = false;
 		yield return new WaitForSeconds(timeDelay);
 		DeactivateCam(lockTime);
-		isEnabled = true;
+		canTrigger = true;
 	}
 
 	public void DeactivateCam ( float disableFor ) {
+		canTrigger = true;
 
 		if (setBehind)
 		{
@@ -159,7 +169,6 @@ public class S_Trigger_CineCamera : MonoBehaviour
 		isActive = false;
 		attachedCam.transform.position = camPosit;
 		attachedCam.transform.rotation = camRotit;
-		hedgeCam.gameObject.SetActive(true);
 		attachedCam.SetActive(false);
 		if (disableFor > 0)
 			_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true, _PlayerTools.GetComponent<S_PlayerPhysics>()._moveInput);

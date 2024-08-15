@@ -138,6 +138,7 @@ public class S_ActionManager : MonoBehaviour
 
 	private void FixedUpdate () {
 
+
 		//The counter is set and referenced outside of this script, this counts it down and must be zero or lower to allow homing attacks.
 		if (_dashDelayCounter > 0)
 		{

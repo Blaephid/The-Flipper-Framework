@@ -618,6 +618,7 @@ MonoBehaviour:
   DamageIcon: {fileID: 2745194534614791651}
   CameraTarget: {fileID: 6355604061925188031}
   ConstantTarget: {fileID: 5864465826205128439}
+  MainCamera: {fileID: 0}
   MovingRingObject: {fileID: 1000010258715224, guid: 5594771c7bfdd2f41abf18862493d3ec,
     type: 3}
   HandGripPoint: {fileID: 3378693890348075912}
@@ -716,7 +717,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _move: {x: 0, y: 0, z: 0}
-  _inputWithoutCamera: {x: 0, y: 0, z: 0}
+  _inputOnController: {x: 0, y: 0, z: 0}
   _prevInputWithoutCamera: {x: 0, y: 0, z: 0}
   _camMoveInput: {x: 0, y: 0, z: 0}
   _constantInputRelevantToCharacter: {x: 0, y: 0, z: 0}
@@ -1184,8 +1185,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
+  m_Radius: 0
+  m_Height: 0
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &116143740374014708
@@ -11112,7 +11113,6 @@ Transform:
   - {fileID: 7701543600000960190}
   - {fileID: 3681496815328022534}
   - {fileID: 4113952736785990819}
-  - {fileID: 6281468032168078379}
   m_Father: {fileID: 6420733220765619769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &6883456381342523622
@@ -12324,6 +12324,7 @@ Transform:
   m_Children:
   - {fileID: 2990453842665127441}
   - {fileID: 4084557757137312}
+  - {fileID: 6281468032168078379}
   m_Father: {fileID: 4242608932995106}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &3378010807672333325
@@ -22685,7 +22686,7 @@ Transform:
   - {fileID: 4695150684650470}
   - {fileID: 3378693890348075912}
   - {fileID: 8412749811221693294}
-  m_Father: {fileID: 2990453842665127441}
+  m_Father: {fileID: 6420733220765619769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6804416940593327597
 GameObject:
@@ -22975,7 +22976,7 @@ Transform:
   m_GameObject: {fileID: 7874859071667184223}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.986, z: 0}
+  m_LocalPosition: {x: 0, y: -0.9546, z: 0}
   m_LocalScale: {x: 0.058556397, y: 0.058556397, z: 0.058556397}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23040,7 +23041,6 @@ MonoBehaviour:
   _TargetByAngle: {fileID: 3676360873521850425}
   _PlayerTransformCopy: {fileID: 4591767841459208}
   _SecondaryCamera: {fileID: 3053389768707675931}
-  _Brain: {fileID: 0}
   _shouldSetHeightWhenMoving_: 0
   _cameraMaxDistance_: -11
   _lockCamAtSpeed_: 130

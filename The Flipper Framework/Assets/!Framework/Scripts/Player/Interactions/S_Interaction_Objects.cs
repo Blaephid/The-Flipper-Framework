@@ -411,12 +411,15 @@ public class S_Interaction_Objects : MonoBehaviour
 				//Apply location to start moving from.
 				if (SpeedPadScript._willSnap)
 				{
-					snapPosition += _FeetPoint.up * -_FeetPoint.localPosition.y; //Because on ground, feet should be set to pad position.
+					snapPosition -= _PlayerPhys._feetOffsetFromCentre; //Because on ground, feet should be set to pad position.
 					_PlayerPhys.SetPlayerPosition(snapPosition);
 				}
 
 				//Pushes player in direction
 				_PlayerPhys.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
+
+				if (_Actions._listOfSpeedOnPaths.Count > 0) 
+				{  _Actions._listOfSpeedOnPaths[0] = speed; }
 			}
 
 			if (SpeedPadScript._willLockControl)
@@ -439,7 +442,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
 
-		_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
+		//_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
 
 		//Returns air actions
 		_Actions._isAirDashAvailables = true;

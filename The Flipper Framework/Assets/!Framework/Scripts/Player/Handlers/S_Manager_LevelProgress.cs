@@ -71,6 +71,8 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_resumePosition =	_MainSkin.position;
 		_resumeRotation =	_MainSkin.rotation;
 		_resumeForwards =	_MainSkin.forward;
+
+		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 	}
 
 	// Update is called once per frame
@@ -190,9 +192,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 		//In case was killed by something that bypassed shield.
 		_HealthAndHurt.SetShield(false);
-		
-		//Ensures rotation is correct and can lead into instant movement.
-		_PlayerPhys.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
 
 		//Camera
 		_CamHandler._HedgeCam._isReversed = false;
@@ -201,6 +200,9 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		//Transform
 		_PlayerPhys.SetPlayerPosition(_resumePosition);
 		_MainSkin.forward = _resumeForwards;
+
+		//Ensures rotation is correct and can lead into instant movement.
+		_PlayerPhys.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
 
 	}
 

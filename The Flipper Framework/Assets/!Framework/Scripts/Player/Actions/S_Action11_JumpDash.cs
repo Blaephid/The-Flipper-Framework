@@ -234,7 +234,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 			}
 
 			//Rotate from current direction to new one, based on input and stats
-			_dashDirection = Vector3.RotateTowards(_dashDirection, _input, inputMag * _turnSpeed_ * Time.deltaTime, 0f);
+			_dashDirection = Vector3.RotateTowards(_dashDirection, _input, inputMag * _turnSpeed_ * Time.deltaTime * Mathf.Deg2Rad, 0f);
 		}
 		//Since gravity is not being applied, use this to slowly aim more downwards.
 		_upwardsSpeed = Mathf.MoveTowards(_upwardsSpeed, _maxDownwardsSpeed_, _faceDownwardsSpeed_);
@@ -249,21 +249,22 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		//End dash if at max time, min time but let go of button, or grounded.
 		if (_timer > _maxDuration_)
 		{
-			EndDashManually();
+			EndDashManually(_lockMoveInputOnEnd_);
 		}
 		else if (_timer > _minDuration_ && !_Input._SpecialPressed)
 		{
-			EndDashManually();
+			EndDashManually(_lockMoveInputOnEnd_);
 		}
 		else if (_PlayerPhys._isGrounded)
 		{
-			EndDashManually();
+			EndDashManually(2);
 		}
 	}
 
 	//Called when the dash has finished (seperate from stop action because this won't be called on interuptions like hitting a rail)
-	private void EndDashManually () {
-		_Input.LockInputForAWhile(_lockMoveInputOnEnd_, false, _MainSkin.forward);
+	private void EndDashManually (int lockFrames) {
+		_Input.UnLockInput(); //To ensure this overwrites previous locks.
+		_Input.LockInputForAWhile(lockFrames, false, _MainSkin.forward);
 
 		StartCoroutine(ChangeSpeedSmoothly(_speedAfterDash_));
 
@@ -279,7 +280,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		{
 			yield return new WaitForFixedUpdate();
 
-			if (_PlayerPhys._horizontalSpeedMagnitude > newSpeed) { break; } //If something has changed (like hitting a wall), then ignore this.
+			if (_PlayerPhys._horizontalSpeedMagnitude > newSpeed || _PlayerPhys._isGrounded) { break; } //If something has changed (like hitting a wall), then ignore this.
 			else
 			{
 				_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * increments); //Depending on increments, will either increase speed or decrease it as it goes.

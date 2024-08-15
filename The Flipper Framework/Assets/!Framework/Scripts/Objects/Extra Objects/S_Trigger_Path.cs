@@ -16,6 +16,8 @@ public class S_Trigger_Path : MonoBehaviour
 	public Spline spline;
 	public Vector2 _speedLimits = new Vector2(30, 200);
 	public bool         _canPlayerReverse = false;
+	public bool         _canPlayerSlow = false;
+	public int          _lockPlayerFor = 40;
 
 	[Header("Triggers")]
 	public bool _willUpdateInRealTime = true;
