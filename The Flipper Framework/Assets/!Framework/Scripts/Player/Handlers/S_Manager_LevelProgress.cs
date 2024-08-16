@@ -146,9 +146,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	}
 
 	private void PlayStageCompleteScene ( Collider col ) {
-		//Data to show.
-		LoadingScreenControl.StageName1 = _nextLevelNameLeft;
-		LoadingScreenControl.StageName2 = _nextLevelNameRight;
 
 		SceneManager.LoadScene("Sc_StageCompleteScreen"); //Switch to scene
 

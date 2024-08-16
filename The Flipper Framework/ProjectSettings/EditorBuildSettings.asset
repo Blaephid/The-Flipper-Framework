@@ -6,13 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Game/Scenes/Menus/Sc_LogoScreen.unity
+    path: Assets/Game/Scenes/Menus/Sc_FlipperTitleScreen.unity
+    guid: 92018b07f5721f34aad83bc60904bae7
+  - enabled: 1
+    path: Assets/Game/Scenes/Menus/Sc_FlipperStageSelect.unity
+    guid: 5676cf941754d7b45bd92c1841a071df
+  - enabled: 0
+    path: Assets/Game/Scenes/Menus/Sc_BumperTitleScreen.unity
     guid: c78a0b8e582aa4e46bde58cf11387512
-  - enabled: 1
-    path: Assets/Game/Scenes/Menus/Sc_CharacterSelect.unity
+  - enabled: 0
+    path: Assets/Game/Scenes/Menus/Sc_BumperCharacterSelect.unity
     guid: ea0a3e63699b64c4998de08244c8ffae
-  - enabled: 1
-    path: Assets/Game/Scenes/Menus/Sc_StageSelect.unity
+  - enabled: 0
+    path: Assets/Game/Scenes/Menus/Sc_BumperStageSelect.unity
     guid: a5e78746880fd1c4ebf434977a2b6f73
   - enabled: 1
     path: Assets/Game/Scenes/Zones/Altitude Limit/Sc_AltitudeLimit.unity

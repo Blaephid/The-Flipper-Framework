@@ -33,10 +33,10 @@ public class S_SpawnCharacter : MonoBehaviour {
 			yield return new WaitForFixedUpdate();
 		}
 
-		
-		if (GameObject.Find("CharacterSelector") != null)
+		S_SelectMenu ExternalCharacterSelected = FindFirstObjectByType<S_SelectMenu>();
+		if (ExternalCharacterSelected != null)
 		{
-			_CharacterToSpawn = GameObject.Find("CharacterSelector").GetComponent<S_CharacterSelect>().DesiredCharacter;
+			_CharacterToSpawn = ExternalCharacterSelected._SelectedCharacter;
 		}
 		else
 		{

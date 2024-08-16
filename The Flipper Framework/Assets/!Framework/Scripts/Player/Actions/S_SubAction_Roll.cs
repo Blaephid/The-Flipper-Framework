@@ -53,9 +53,12 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
-		AssignTools();
-		AssignStats();
+	void Awake () {
+		if (!_PlayerPhys)
+		{
+			AssignTools();
+			AssignStats();
+		}
 	}
 
 	// Update is called once per frame
