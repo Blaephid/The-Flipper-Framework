@@ -64,7 +64,7 @@ namespace SplineMesh
 		[Space]
 		public bool alingwithterrain = false;
 
-
+#if UNITY_EDITOR
 		private void OnEnable () {
 			CheckNow();
 		}
@@ -214,5 +214,6 @@ namespace SplineMesh
 				//Debug.Log("No surface found for " + obj.name,this);
 			}
 		}
+#endif
 	}
 }

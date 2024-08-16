@@ -20,10 +20,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Sc_Playground.unity
     guid: b8e9635bc70746f40a8b47ccfe43ead6
-  - enabled: 1
+  - enabled: 0
     path: Assets/Game/Scenes/Zones/TutorialLevel/Sc_TutorialLevel.unity
     guid: 5d5a07e66893ed1499a6c775b483b179
   - enabled: 1
     path: Assets/Game/Scenes/Menus/Sc_StageCompleteScreen.unity
     guid: b5e761390600d8b43adfb7c1bf33fde4
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

@@ -384,7 +384,9 @@ public class S_O_CameraStats : ScriptableObject
 	}
 	#endregion
 
+#if UNITY_EDITOR
 	public S_O_CustomInspectorStyle InspectorTheme;
+#endif
 }
 
 #if UNITY_EDITOR

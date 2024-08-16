@@ -1247,7 +1247,7 @@ MonoBehaviour:
     skiddingIntensityInAir: -2.5
     speedToStopAt: 10
   JumpStats:
-    jumpSpeed: 10
+    jumpSpeed: 7.5
     jumpSlopeConversion: 0.2
     JumpForceByTime:
       serializedVersion: 2
@@ -1262,8 +1262,26 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.2
-        value: 1
+        time: 0.13543044
+        value: 1.8527796
+        inSlope: -3.1842735
+        outSlope: -3.1842735
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.6867499
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.40971294
+        value: 0.9879548
+        inSlope: -0.7859535
+        outSlope: -0.7859535
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.4433647
+      - serializedVersion: 3
+        time: 0.78811324
+        value: 0.5038323
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1271,26 +1289,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.4
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.8
-        value: 0.7
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0.5
+        time: 1.01741
+        value: 0.20822072
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1300,7 +1300,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    jumpDuration: {x: 0.08, y: 0.2}
+    jumpDuration: {x: 0.012, y: 0.2}
     startSlopedJumpDuration: 0.2
     CoyoteTimeBySpeed:
       serializedVersion: 2
@@ -1448,8 +1448,8 @@ MonoBehaviour:
     jumpExtraControlThreshold: 0.16
   MultipleJumpStats:
     maxJumpCount: 2
-    doubleJumpSpeed: 8
-    doubleJumpDuration: {x: 0.08, y: 0.15}
+    doubleJumpSpeed: 6
+    doubleJumpDuration: {x: 0.1, y: 0.18}
     speedLossOnDoubleJump: 0.98
   StartMultipleJumpStats:
     maxJumpCount: 2

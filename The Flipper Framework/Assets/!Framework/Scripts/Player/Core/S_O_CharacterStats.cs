@@ -1475,8 +1475,9 @@ public class S_O_CharacterStats : ScriptableObject
 
 	}
 
-
+#if UNITY_EDITOR
 	public S_O_CustomInspectorStyle InspectorTheme;
+#endif
 
 }
 #endregion

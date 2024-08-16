@@ -3,8 +3,6 @@ using UnityEngine;
 using SplineMesh;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.PackageManager.UI;
-using UnityEngine.Profiling;
 
 [ExecuteInEditMode]
 [SelectionBase]

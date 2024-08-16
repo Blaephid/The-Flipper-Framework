@@ -689,6 +689,7 @@ MonoBehaviour:
   _curvePosSlopePower: 0
   _inputVelocityDifference: 1
   _playerPos: {x: 0, y: 0, z: 0}
+  _feetOffsetFromCentre: {x: 0, y: 0, z: 0}
   _isGrounded: 0
   _isCurrentlyOnSlope: 0
   _canChangeGrounded: 1
@@ -1024,7 +1025,7 @@ MonoBehaviour:
     m_ActionName: 'CharacterActions/Boost[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 608962366876272667}
         m_TargetAssemblyTypeName: S_State_CameraMode, Assembly-CSharp
         m_MethodName: InputMoveCam
         m_Mode: 0
@@ -1040,7 +1041,7 @@ MonoBehaviour:
     m_ActionName: 'Camera Mode/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 608962366876272667}
         m_TargetAssemblyTypeName: S_State_CameraMode, Assembly-CSharp
         m_MethodName: InputRotateCam
         m_Mode: 0
@@ -1056,7 +1057,7 @@ MonoBehaviour:
     m_ActionName: 'Camera Mode/Rotate[/Mouse/delta]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 608962366876272667}
         m_TargetAssemblyTypeName: S_State_CameraMode, Assembly-CSharp
         m_MethodName: InputEnterMode
         m_Mode: 0
@@ -1072,7 +1073,7 @@ MonoBehaviour:
     m_ActionName: 'Character Controls/Enter Camera Mode[/Keyboard/c]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 608962366876272667}
         m_TargetAssemblyTypeName: S_State_CameraMode, Assembly-CSharp
         m_MethodName: InputElevate
         m_Mode: 0
@@ -1088,7 +1089,7 @@ MonoBehaviour:
     m_ActionName: 'Camera Mode/Elevate[/Keyboard/space,/Keyboard/shift]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 608962366876272667}
         m_TargetAssemblyTypeName: S_State_CameraMode, Assembly-CSharp
         m_MethodName: InputEnterMode
         m_Mode: 0
@@ -29032,6 +29033,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
+      propertyPath: _addState
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
       propertyPath: _MainActions.Array.size
       value: 14
       objectReference: {fileID: 0}
@@ -29068,7 +29074,12 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[11].ConnectedStates.Array.size
-      value: 3
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _MainActions.Array.data[12].ConnectedStates.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29098,7 +29109,7 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[11].SituationalStates.Array.size
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29149,6 +29160,16 @@ PrefabInstance:
         type: 3}
       propertyPath: '_MainActions.Array.data[11].ConnectedStates.Array.data[3]'
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[12].ConnectedStates.Array.data[1]'
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[12].ConnectedStates.Array.data[2]'
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29248,7 +29269,7 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[11].PerformableSubStates.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29401,6 +29422,18 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8271661701744548211}
   m_SourcePrefab: {fileID: 100100000, guid: 0e8f736d2dd9706438972762531b3f8f, type: 3}
+--- !u!114 &608962366876272667 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8072374280709137346}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8ee23dc6d27d4e40ae051cbf4c71f1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1891784863422079515 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7657858712053285337, guid: 0e8f736d2dd9706438972762531b3f8f,

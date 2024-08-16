@@ -6,6 +6,7 @@ using UnityEngine.Windows;
 using System.Runtime.CompilerServices;
 using UnityEditor;
 
+#if UNITY_EDITOR
 public class S_TakeScreenShots : MonoBehaviour
 {
 	[SerializeField] string fileName = "Screenshot";
@@ -31,3 +32,4 @@ public class S_TakeScreenShots : MonoBehaviour
 		Reset();
 	}
 }
+#endif

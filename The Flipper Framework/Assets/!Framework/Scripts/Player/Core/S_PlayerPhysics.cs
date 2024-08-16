@@ -2,12 +2,6 @@
 using System.Collections;
 using TMPro;
 using System.Collections.Generic;
-using static UnityEngine.Rendering.DebugUI;
-using UnityEngine.Windows;
-using UnityEditor;
-using System.Linq;
-using UnityEngine.Events;
-using UnityEditor.PackageManager;
 
 [RequireComponent(typeof(Rigidbody))]
 public class S_PlayerPhysics : MonoBehaviour

@@ -8,7 +8,9 @@ namespace templates
 
 	public class MainScript : ScriptableObject
 	{
+#if UNITY_EDITOR
 		public S_O_CustomInspectorStyle InspectorTheme;
+#endif
 	}
 
 #if UNITY_EDITOR

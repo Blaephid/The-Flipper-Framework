@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
-using System.Runtime.CompilerServices;
 using Cinemachine;
-using UnityEditor.Build;
 //using UnityEngine.UIElements;
 
 [RequireComponent(typeof(CinemachineVirtualCamera))]

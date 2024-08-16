@@ -176,7 +176,9 @@ public class S_State_CameraMode : MonoBehaviour
 	}
 
 	public void TakeShot () {
+#if UNITY_EDITOR
 		_VirtualCamera.GetComponent<S_TakeScreenShots>();
+#endif
 	}
 	#endregion
 }

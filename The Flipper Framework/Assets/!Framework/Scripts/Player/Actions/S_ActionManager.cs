@@ -46,7 +46,9 @@ public class S_ActionManager : MonoBehaviour
 	private S_Structs.StrucMainActionTracker	_currentAction; //Which struct in the above list is currently active.
 
 	//Inspector
+#if UNITY_EDITOR
 	public S_O_CustomInspectorStyle		InspectorTheme; // Will decide the apperance in the inspector.
+#endif
 	public S_Enums.PrimaryPlayerStates                _addState; //Used only by the inspector in order to add states for other states to transition into.
 
 	//Specific action trackers

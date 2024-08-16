@@ -6,15 +6,6 @@ using UnityEngine.InputSystem.DualShock;
 using UnityEngine.InputSystem.XInput;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Switch;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.Windows;
-using UnityEngine.Rendering.Universal;
-using UnityEditor.PackageManager;
-using NUnit.Framework;
-using Unity.VisualScripting;
-using System;
-using System.Xml.Linq;
-
 
 public class S_Interaction_Objects : MonoBehaviour
 {

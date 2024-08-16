@@ -282,7 +282,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 
 		//Restore Control
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
