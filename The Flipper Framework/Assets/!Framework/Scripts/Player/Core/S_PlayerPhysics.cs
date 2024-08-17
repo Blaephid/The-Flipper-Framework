@@ -848,14 +848,15 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Slope power
 		//If slope angle is less than limit, meaning on a slope
-		if (_groundNormal.y < _slopeEffectLimit_ && _horizontalSpeedMagnitude > 5)
+		if (_groundNormal.y < _slopeEffectLimit_ && _horizontalSpeedMagnitude > 3)
 		{
 			_isCurrentlyOnSlope = true;
 
 			//Get force to always apply whether up or down hill
 			Vector3 force = new Vector3(0, -_curvePosSlopePower, 0);
 			force *= _generalHillMultiplier_;
-			force *= ((1 - (Mathf.Abs(_groundNormal.y) / 10)) + 1); //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
+			float steepForce = 0.8f - (Mathf.Abs(_groundNormal.y) / 2) + 1;
+			force *= steepForce; //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
 
 			//If moving uphill
 			if (worldVelocity.y > _upHillThreshold)
@@ -880,9 +881,11 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 
 			//This force is then added to the current velocity. but aimed towards down the slope, leading to a more realistic and natural effect than just changing speed.
-			Vector3 downSlopeForce = AlignWithNormal(new Vector3(_groundNormal.x, 0, _groundNormal.y), _groundNormal, force.y);
-			force = Vector3.Lerp(force, downSlopeForce, 0.35f);
+			Vector3 downSlopeForce = AlignWithNormal(new Vector3(_groundNormal.x, 0, _groundNormal.y), _groundNormal, -force.y);
+			float amountToRotate = Vector3.Angle(force, downSlopeForce) * Mathf.Deg2Rad;
+			force = Vector3.RotateTowards(force, downSlopeForce, amountToRotate * 0.7f, 0);
 
+			Debug.DrawRay(transform.position, force, Color.red, 10);
 			slopeVelocity += force;
 
 		}

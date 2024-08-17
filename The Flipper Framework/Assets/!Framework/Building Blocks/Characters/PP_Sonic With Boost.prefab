@@ -28973,6 +28973,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
+      propertyPath: _OnTriggerStay.m_PersistentCalls.m_Calls.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _OnTriggerEnter.m_PersistentCalls.m_Calls.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3624239064362977154, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
       propertyPath: _OnTriggerStay.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 5416488146372199807}

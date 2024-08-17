@@ -138,7 +138,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	// Update is called once per frame
 	void Update () {
 		if(!enabled || !_isGrinding) { return; }
-		PlaceOnRail();
+		//PlaceOnRail();
 		PerformHop();
 
 		SoundControl();
@@ -161,8 +161,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (!enabled || !_isGrinding) { return; }
 
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
-		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; } 
+		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
 
+		PlaceOnRail();
 		MoveOnRail();
 		if (_canInput) { HandleInputs(); }
 
@@ -314,9 +315,10 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		_pointOnSpline += travelAmount * _movingDirection;
 
+		float clampedPoint = Mathf.Clamp(_pointOnSpline, 0, _Rail_int._PathSpline.Length);
 		//If this point is on the spline.
-		if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
-		{
+		//if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
+		//{
 			//Get the data of the spline at that point along it (rotation, location, etc)
 			_Sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
 			_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
@@ -358,7 +360,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					_PlayerPhys.SetPlayerPosition( newPos + (_ZipHandle.transform.up * _offsetZip_));
 					break;
 			}
-		}
+		//}
 
 	}
 	//Takes the data from the previous method but handles physics for smoothing and applying if lost rail.
@@ -370,7 +372,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		HandleRailSpeed(); //Make changes to player speed based on angle
 
 		//If this point is on the spline.
-		if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
+		if (_pointOnSpline <= _Rail_int._PathSpline.Length && _pointOnSpline >= 0)
 		{
 			//Set Player Speed correctly so that it becomes smooth grinding
 			_PlayerPhys.SetBothVelocities(_sampleForwards * _grindingSpeed, new Vector2(1, 0));

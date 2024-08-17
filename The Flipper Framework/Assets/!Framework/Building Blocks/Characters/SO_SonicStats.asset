@@ -1005,7 +1005,7 @@ MonoBehaviour:
     uphillThreshold: 1
   SlopeStats:
     isUsingSlopePhysics: 1
-    slopeEffectLimit: 0.92
+    slopeEffectLimit: 0.95
     SpeedLimitBySlopeAngle:
       serializedVersion: 2
       m_Curve:
@@ -1049,8 +1049,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     generalHillMultiplier: 1
-    uphillMultiplier: 0.3
-    downhillMultiplier: 0.4
+    uphillMultiplier: 0.35
+    downhillMultiplier: 0.3
     SlopePowerByCurrentSpeed:
       serializedVersion: 2
       m_Curve:
@@ -1079,8 +1079,8 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 0.6
+        time: -0.0008468628
+        value: 0.40056765
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1088,8 +1088,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
-        value: 1
+        time: 0.42105103
+        value: 1.009552
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1097,28 +1097,19 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 4
-        value: 1.2
-        inSlope: 0
-        outSlope: 0
+        time: 1.0203869
+        value: 1.5018142
+        inSlope: 0.008002143
+        outSlope: 0.008002143
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 10
-        value: 1.3
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        outWeight: 0.5231277
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     landingConversionFactor: 2
-    downhillThreshold: -1.7
+    downhillThreshold: -1
     uphillThreshold: 1
   StartStickToGround:
     forceTowardsGround: 2
@@ -1215,7 +1206,7 @@ MonoBehaviour:
     fallGravity: {x: 0, y: -1.5, z: 0}
     upGravity: {x: 0, y: -1.45, z: 0}
   RollingStats:
-    rollingDownhillBoost: 1.9
+    rollingDownhillBoost: 1.7
     rollingUphillBoost: 1.2
     rollingStartSpeed: 5
     rollingTurningModifier: 0.6

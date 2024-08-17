@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8078855911337762256}
   - component: {fileID: 9013961443372638042}
   - component: {fileID: 3464681610144582972}
-  - component: {fileID: 6432330605133699478}
   m_Layer: 0
   m_Name: Sub Actions
   m_TagString: Untagged
@@ -75,18 +74,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rollCounter: 0
---- !u!114 &6432330605133699478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2082340463121117628}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2ceabd5df025344eaf5838bb80ef600, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2987150101943081207
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,17 +134,17 @@ MonoBehaviour:
   _listOfSpeedOnPaths: []
   _MainActions:
   - State: 0
-    ConnectedStates: 0000000001000000020000000300000005000000
+    ConnectedStates: 000000000100000002000000030000000400000005000000
     SituationalStates: 0000000001000000020000000300000004000000050000000600000007000000
-    PerformableSubStates: 000000000100000004000000
+    PerformableSubStates: 000000000300000004000000
   - State: 1
     ConnectedStates: 00000000010000000300000005000000
     SituationalStates: 0000000001000000020000000300000004000000
     PerformableSubStates: 
   - State: 2
-    ConnectedStates: 00000000010000000300000005000000
+    ConnectedStates: 0000000001000000030000000400000005000000
     SituationalStates: 0000000001000000020000000300000004000000050000000600000007000000
-    PerformableSubStates: 000000000100000004000000
+    PerformableSubStates: 0000000004000000
   - State: 3
     ConnectedStates: 
     SituationalStates: 00000000010000000200000007000000
@@ -169,30 +156,34 @@ MonoBehaviour:
   - State: 5
     ConnectedStates: 00000000
     SituationalStates: 0000000001000000
-    PerformableSubStates: 01000000
+    PerformableSubStates: 
   - State: 6
-    ConnectedStates: 0000000005000000
+    ConnectedStates: 000000000400000005000000
     SituationalStates: 000000000100000007000000
-    PerformableSubStates: 0100000004000000
+    PerformableSubStates: 04000000
   - State: 7
     ConnectedStates: 000000000100000003000000
     SituationalStates: 0000000001000000
-    PerformableSubStates: 01000000
+    PerformableSubStates: 
+  - State: 8
+    ConnectedStates: 000000000300000005000000
+    SituationalStates: 000000000100000002000000030000000400000007000000
+    PerformableSubStates: 0000000004000000
   - State: 9
     ConnectedStates: 
     SituationalStates: 0000000001000000
-    PerformableSubStates: 0100000004000000
+    PerformableSubStates: 04000000
   - State: 10
     ConnectedStates: 00000000
     SituationalStates: 0000000001000000040000000500000006000000
     PerformableSubStates: 
   - State: 11
-    ConnectedStates: 000000000100000005000000
+    ConnectedStates: 00000000010000000400000005000000
     SituationalStates: 00000000010000000200000003000000
-    PerformableSubStates: 01000000
+    PerformableSubStates: 
   - State: 12
     ConnectedStates: 
-    SituationalStates: 
+    SituationalStates: 0000000001000000
     PerformableSubStates: 
   - State: 13
     ConnectedStates: 
@@ -300,18 +291,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 6432330605133699478}
-        m_TargetAssemblyTypeName: S_SubAction_Boost, Assembly-CSharp
-        m_MethodName: EventOnGrounded
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 391286721165643762}
         m_TargetAssemblyTypeName: S_Handler_WallActions, Assembly-CSharp
         m_MethodName: EventOnGrounded
@@ -351,24 +330,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 6432330605133699478}
-        m_TargetAssemblyTypeName: S_SubAction_Boost, Assembly-CSharp
-        m_MethodName: EventOnLoseGround
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   _OnTriggerEnter:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
-        m_MethodName: EventTriggerEnter
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -428,7 +395,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
-        m_MethodName: EventTriggerEnter
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -494,7 +461,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
-        m_MethodName: EventCollisionEnter
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -509,7 +476,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
-        m_MethodName: EventTriggerStay
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -545,7 +512,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: S_Handler_HealthAndHurt, Assembly-CSharp
-        m_MethodName: EventTriggerStay
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -770,6 +737,7 @@ GameObject:
   - component: {fileID: 8402612575521108964}
   - component: {fileID: 2394129168238109761}
   - component: {fileID: 3399936635228185353}
+  - component: {fileID: 18308483529194356}
   m_Layer: 0
   m_Name: Main Actions
   m_TagString: Untagged
@@ -1122,3 +1090,18 @@ MonoBehaviour:
   _currentClimbingSpeed: 0
   _isWall: 0
   _previDirection: {x: 0, y: 0, z: 0}
+--- !u!114 &18308483529194356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8040024586553236849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ea18ef60704e74ba507d7e1ade1a2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _DropEffect: {fileID: 0}
+  _charge: 0
+  _releaseShakeAmmount: 3

@@ -517,6 +517,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: CharacterSelector
   willReplaceOldInstancesWithThis: 1
+  CarryAcrossMenuScenes: 1
+  CarryAcrossCharacterScenes: 1
 --- !u!114 &865911156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1931,6 +1933,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 885432209595196621, guid: 1f35fae6470f53744893b85574ac69aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 885432209595196621, guid: 1f35fae6470f53744893b85574ac69aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2243415999614320585, guid: 1f35fae6470f53744893b85574ac69aa,
         type: 3}
       propertyPath: m_Pivot.x
