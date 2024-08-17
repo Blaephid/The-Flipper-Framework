@@ -364,8 +364,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		if (Physics.Raycast(rayCastStartPosition, -transform.up, out RaycastHit hitGroundTemp, 0.5f + groundCheckerDistance, _Groundmask_))
 		{
-			Debug.DrawRay(rayCastStartPosition, -transform.up * (0.5f + groundCheckerDistance), Color.gray, 10f);
-
 			Vector3 tempNormal = hitGroundTemp.normal;
 
 			//Because terrain can be bumpy, find an average normal between multiple around the same area.
@@ -378,8 +376,6 @@ public class S_PlayerPhysics : MonoBehaviour
 				//Gets a new position for this check instance, by rotating to the right from the last.
 				offSetForCheck = Vector3.RotateTowards(offSetForCheck, Vector3.Cross(offSetForCheck, transform.up), Mathf.Deg2Rad * rotateValue, 0);
 				Vector3 thisStartPosition = rayCastStartPosition + offSetForCheck;
-
-				Debug.DrawRay(thisStartPosition, -transform.up * i, Color.black);
 
 				if (Physics.Raycast(thisStartPosition, -transform.up, out RaycastHit hitSecondTemp, 0.5f + groundCheckerDistance, _Groundmask_))
 				{
@@ -430,10 +426,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		if(currentSpeed < previousSpeed)
 		{
 
-			Debug.DrawRay(transform.position, currentVelocity * Time.fixedDeltaTime, Color.yellow, 10f);
-			Debug.DrawRay(transform.position, -currentVelocity * Time.fixedDeltaTime, Color.yellow, 10f);
-			Debug.DrawRay(transform.position, previousVelocity * Time.fixedDeltaTime, Color.cyan, 10f);
-
 			currentSpeed = currentVelocity.magnitude;
 			previousSpeed = previousVelocity.magnitude;
 
@@ -450,7 +442,6 @@ public class S_PlayerPhysics : MonoBehaviour
 				&& Vector3.Angle(currentVelocity, transform.up) - 5 < Vector3.Angle(previousVelocity, transform.up) //If new velocity is taking the player noticeably more upwards
 				&& speedDifference < Mathf.Min(5f, previousSpeed * 0.1f)) //If not too much speed was lost
 			{
-				Debug.DrawRay(transform.position, -_MainSkin.right, Color.red, 10f);
 				//While this undoes changes, if running into a wall and the velocity keeps resetting, then the player would slide up the wall slowly.
 				currentVelocity = previousVelocity;
 				currentSpeed = previousSpeed;
@@ -462,22 +453,16 @@ public class S_PlayerPhysics : MonoBehaviour
 				//If only having horizontal velocity changed, don't change direction by increase speed slightly to what it was before for smoothness.
 				if (Mathf.Abs(currentVelocity.normalized.y - previousVelocity.normalized.y) < 0.2f)
 				{
-					Debug.DrawRay(transform.position, _MainSkin.right, Color.green, 10f);
 					currentSpeed = Mathf.Lerp(currentSpeed, previousSpeed, 0.1f);
 					currentVelocity = currentVelocity.normalized * currentSpeed;
 				}
 				//If changing vertically, this will either be an issue with bumping into the ground while running, or landing and converting fall speed to run speed.
 				else if(_isGrounded)
 				{
-					Debug.DrawRay(transform.position, -_MainSkin.right, Color.green, 10f);
 					currentVelocity = currentVelocity.normalized * previousSpeed;
 					//currentVelocity = previousVelocity;
 					currentSpeed = previousSpeed;
 				}
-			}
-			else
-			{
-				Debug.DrawRay(transform.position, -_MainSkin.right, Color.blue, 10f);
 			}
 
 			//----Confirming Changes-----
@@ -544,14 +529,10 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Calculate total velocity this frame.
 		_totalVelocity = _coreVelocity + _environmentalVelocity;
-		Debug.DrawRay(transform.position, _totalVelocity * Time.fixedDeltaTime, Color.white, 10f);
 		for (int i = 0 ; i < _listOfVelocityToAddThisUpdate.Count ; i++)
 		{
 			_totalVelocity += _listOfVelocityToAddThisUpdate[i];
 		}
-
-		Debug.DrawRay(transform.position, _totalVelocity * Time.fixedDeltaTime, Color.white, 10f);
-
 
 		//Clear the lists to prevent forces carrying over multiple frames.
 		_listOfCoreVelocityToAdd.Clear();
@@ -711,8 +692,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.
 
-		Debug.DrawRay(transform.position, transform.TransformDirection(inputDirection), Color.blue, 10f);
-
 		_inputVelocityDifference = lateralVelocity.sqrMagnitude < 1 ? 0 : Vector3.Angle(lateralVelocity, inputDirection); //The change in input in degrees, this will be used by the skid script to calculate whether should skid.
 		float deviationFromInput = _inputVelocityDifference  / 180.0f;
 
@@ -853,7 +832,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			_isCurrentlyOnSlope = true;
 
 			//Get force to always apply whether up or down hill
-			Vector3 force = new Vector3(0, -_curvePosSlopePower, 0);
+			float force =  -_curvePosSlopePower;
 			force *= _generalHillMultiplier_;
 			float steepForce = 0.8f - (Mathf.Abs(_groundNormal.y) / 2) + 1;
 			force *= steepForce; //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
@@ -865,7 +844,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				_timeUpHill += Time.fixedDeltaTime;
 				force *= _UpHillByTime_.Evaluate(_timeUpHill);
 
-				force *= _uphillMultiplier_; //Affect by unique stat for uphill.
+				force *= -_uphillMultiplier_; //Affect by unique stat for uphill, and ensure the force is going the other way 
 				force = _isRolling ? force * _rollingUphillBoost_ : force; //Add more force if rolling.
 			}
 			//If moving downhill
@@ -881,12 +860,12 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 
 			//This force is then added to the current velocity. but aimed towards down the slope, leading to a more realistic and natural effect than just changing speed.
-			Vector3 downSlopeForce = AlignWithNormal(new Vector3(_groundNormal.x, 0, _groundNormal.y), _groundNormal, -force.y);
-			float amountToRotate = Vector3.Angle(force, downSlopeForce) * Mathf.Deg2Rad;
-			force = Vector3.RotateTowards(force, downSlopeForce, amountToRotate * 0.7f, 0);
+			Vector3 downSlopeForce = AlignWithNormal(new Vector3(_groundNormal.x, 0, _groundNormal.y), _groundNormal, -force);
+			float amountToRotate = Vector3.Angle(Vector3.down, downSlopeForce) * Mathf.Deg2Rad;
+			downSlopeForce = Vector3.RotateTowards(Vector3.down, downSlopeForce, amountToRotate * 0.7f, 0);
 
-			Debug.DrawRay(transform.position, force, Color.red, 10);
-			slopeVelocity += force;
+			Debug.DrawRay(transform.position, downSlopeForce, Color.red, 10);
+			slopeVelocity += downSlopeForce;
 
 		}
 		else { _timeUpHill = 0; }
@@ -928,8 +907,7 @@ public class S_PlayerPhysics : MonoBehaviour
 					//If player is too far from ground, set back to buffer position.
 					if (_placeAboveGroundBuffer_ > 0 && (_FeetTransform.position - _HitGround.point).sqrMagnitude > _placeAboveGroundBuffer_ * _placeAboveGroundBuffer_)
 					{
-						//AddGeneralVelocity(-currentGroundNormal * Vector3.Distance(_FeetTransform.position, _HitGround.point) / Time.fixedDeltaTime, false);
-						Debug.DrawRay(_HitGround.point, _groundNormal * (_placeAboveGroundBuffer_ + -_FeetTransform.localPosition.y) , Color.magenta, 10f);
+
 						Vector3 newPos = _HitGround.point + _groundNormal * _placeAboveGroundBuffer_ - _feetOffsetFromCentre;
 						SetPlayerPosition(newPos);
 					}
@@ -1188,6 +1166,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			else if (_isGrounded)
 			{
 				_timeOnGround = 0;
+				_timeUpHill = 0;
 
 				//If hasn't completed aligning to face upwards when was upside down, then end that prematurely and retern turning.
 				if (_isUpsideDown)

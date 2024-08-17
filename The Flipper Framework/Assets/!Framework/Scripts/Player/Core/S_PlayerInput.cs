@@ -89,7 +89,7 @@ public class S_PlayerInput : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
+	void Awake () {
 		// Set up the reference.
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();

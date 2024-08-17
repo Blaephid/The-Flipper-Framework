@@ -179,7 +179,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		_Actions = _Tools._ActionManager;
 		_Action00 = _Actions._ActionDefault;
 		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
-		_RollingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
+		_RollingCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();
 		_CharacterAnimator = _Tools.CharacterAnimator;
 	}
 
