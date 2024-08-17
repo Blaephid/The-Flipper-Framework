@@ -283,25 +283,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f92537ab1025b7740af8066810e49070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  endCine: 0
-  Active: 1
-  isEnabled: 1
-  onExit: 0
-  timeDelay: 0
-  startAtCameraPoint: 0
-  startOffset: {x: 0, y: 0, z: 0}
-  virCam: {fileID: 6276180955197928732}
-  attachedCam: {fileID: 6276180955197928734}
-  RegularAction: 1
-  JumpAction: 1
-  RailAction: 1
-  wallRunAction: 1
-  RingRoadAction: 0
+  _willAcitvateCamera: 1
+  _CinematicCamComponent: {fileID: 6276180955197928732}
+  _CinematicCamObject: {fileID: 6276180955197928734}
+  _EndThisTriggerInstead: {fileID: 0}
+  _ListOfActionsThisWorksOn: 0000000002000000040000000100000005000000060000000700000008000000030000000a000000
+  _willDeactivateCameraIfActonChanges: 0
+  _moveCinematicCamToMainCamPoint: 0
+  _startOffset: {x: 0, y: 0, z: 0}
+  _endOnEnterTrigger: 0
+  _endOnExitTrigger: 1
+  _delayEndForFrames: 0
   lookPlayer: 1
-  followPlayer: 1
-  disableMove: 1
-  setBehind: 1
-  lockTime: 5
+  followPlayer: 0
+  _willSetCameraBehind: 1
+  _lockPlayerInputFor: 5
+  _LockInputTo_: 2
 --- !u!1 &6276180955197928734
 GameObject:
   m_ObjectHideFlags: 0

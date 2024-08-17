@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000011923364308}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.000000059604645, y: -0, z: -0.5876336, w: 0.8091272}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000013130497754}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -71.979}
 --- !u!33 &33000012443735406
 MeshFilter:
@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 4000013130497754}
   - component: {fileID: 65000010017290134}
   - component: {fileID: 114000010754803480}
+  - component: {fileID: 4628160381923001816}
   - component: {fileID: 82000010483717982}
   m_Layer: 0
   m_Name: Pr_DashRing
@@ -109,6 +110,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000013037187298}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
   m_LocalPosition: {x: 159.76059, y: 50, z: -261.4}
   m_LocalScale: {x: 4.084314, y: 4.084314, z: 4.084314}
@@ -117,7 +119,6 @@ Transform:
   - {fileID: 4000013981200658}
   - {fileID: 3885937149502337261}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!65 &65000010017290134
 BoxCollider:
@@ -127,9 +128,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000013037187298}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 2.2224262, y: 2.53, z: 0.85}
   m_Center: {x: -0.056821976, y: 0.07761679, z: -0.03282783}
 --- !u!114 &114000010754803480
@@ -161,6 +170,28 @@ MonoBehaviour:
   _lockInputTo_: 1
   _overwriteGravity_: {x: 0, y: 0, z: 0}
   _lockAirMovesFor_: 30
+--- !u!114 &4628160381923001816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013037187298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _debugForce: 1
+  _calculations: 60
+  _SpringScript: {fileID: 0}
+  _DashRingScript: {fileID: 114000010754803480}
+  _force: 80
+  _ShotCenter: {fileID: 4000013130497754}
+  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
+    type: 2}
+  _simCoreVel: {x: -0.3002949, y: -175.20245, z: 1.6272191}
+  _simEnVel: {x: -12.011796, y: 44.935173, z: 65.08876}
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0
@@ -270,7 +301,6 @@ GameObject:
   - component: {fileID: 3514529406219168338}
   - component: {fileID: 1375498123779447062}
   - component: {fileID: 126034879377962833}
-  - component: {fileID: 1829543084453734850}
   m_Layer: 6
   m_Name: Ref_Direction
   m_TagString: Untagged
@@ -285,13 +315,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2568351612008521427}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.561}
   m_LocalScale: {x: 0.09678003, y: 0.14405777, z: 1.4461806}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000013130497754}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3514529406219168338
 MeshFilter:
@@ -357,25 +387,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whatAction: 0
   _delayInSeconds: 0
---- !u!114 &1829543084453734850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2568351612008521427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _debugForce: 1
-  _calculations: 60
-  _SpringScript: {fileID: 0}
-  _DashRingScript: {fileID: 114000010754803480}
-  _force: 80
-  _ShotCenter: {fileID: 4000013130497754}
-  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
-    type: 2}
-  _simCoreVel: {x: 0, y: -188.7999, z: -2}
-  _simEnVel: {x: 0, y: 0, z: -80}

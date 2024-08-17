@@ -98,10 +98,15 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	private bool                   _isBraking;        //Set by input, if true will decrease speed.
 
 	private Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
+	private Vector3               _sampleLocation;
 	private Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
 
 	//Quaternion rot;
 	private Vector3               _setOffSet;         //Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
+
+
+	private bool                  _isRailLost;        //Set to true when point on spline surpasses the limit, to inform later if statements that update.
+
 
 	//Stepping
 	private bool        _canInput = true;   //Set true when entering a rail, but set false when rail hopping. Must be two to perform any actions.
@@ -120,7 +125,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	public float        _boostTime;
 
 	[HideInInspector]
-	public bool	_isGrinding; //USed to ensure no calculations are made from this still being active for possibly one frame called by Update when ending action.
+	public bool         _isGrinding; //USed to ensure no calculations are made from this still being active for possibly one frame called by Update when ending action.
 	#endregion
 	#endregion
 
@@ -137,7 +142,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-		if(!enabled || !_isGrinding) { return; }
+		if (!enabled || !_isGrinding) { return; }
 		//PlaceOnRail();
 		PerformHop();
 
@@ -189,6 +194,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		//Set private 
 		_isGrinding = true;
+		_isRailLost = false;
 		_canInput = true;
 		_pushTimer = _pushFowardDelay_;
 		_distanceToStep = 0; //Ensure not immediately stepping when called
@@ -283,7 +289,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		}
 
 		//Restore Control
-		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
+		if (_PlayerPhys._listOfIsGravityOn.Count > 0)
 			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
@@ -314,81 +320,72 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_movingDirection = _isGoingBackwards ? -1 : 1;
 
 		_pointOnSpline += travelAmount * _movingDirection;
+		_isRailLost = _pointOnSpline < 0 || _pointOnSpline > _Rail_int._PathSpline.Length;
+		float clampedPoint = Mathf.Clamp(_pointOnSpline, 0, _Rail_int._PathSpline.Length - 1);
 
-		float clampedPoint = Mathf.Clamp(_pointOnSpline, 0, _Rail_int._PathSpline.Length);
-		//If this point is on the spline.
-		//if (_pointOnSpline < _Rail_int._PathSpline.Length && _pointOnSpline > 0)
-		//{
-			//Get the data of the spline at that point along it (rotation, location, etc)
-			_Sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
-			_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
-			_sampleUpwards = (_RailTransform.rotation * _Sample.up);
+		//Get the data of the spline at that point along it (rotation, location, etc)
+		_Sample = _Rail_int._PathSpline.GetSampleAtDistance(clampedPoint);
+		_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
+		_sampleUpwards = (_RailTransform.rotation * _Sample.up);
+		_sampleLocation = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
 
-			//Set player Position and rotation on Rail
-			switch (_whatKindOfRail)
-			{
-				//Place character in world space on point in rail
-				case S_Interaction_Pathers.PathTypes.rail:
+		//Set player Position and rotation on Rail
+		switch (_whatKindOfRail)
+		{
+			//Place character in world space on point in rail
+			case S_Interaction_Pathers.PathTypes.rail:
 
-					_PlayerPhys.transform.up = _sampleUpwards;
+				_PlayerPhys.transform.up = _sampleUpwards;
+				if(!_isRailLost)
 					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards, default(Vector3), _sampleUpwards);
+				else
+					_Actions._ActionDefault.SetSkinRotationToVelocity(0, _sampleForwards, default(Vector3), _sampleUpwards); //Turn is complete and isntant so player always ends facing the right direction.
 
-					Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
+				Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
 
-					//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
-					Vector3 newPos = _RailTransform.position + ( _RailTransform.rotation * _Sample.location);
-					newPos += (_sampleUpwards * _offsetRail_) + relativeOffset;
-					_PlayerPhys.SetPlayerPosition(newPos);
-					break;
+				//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
+				Vector3 newPos = _sampleLocation;
+				newPos += (_sampleUpwards * _offsetRail_) + relativeOffset;
+				_PlayerPhys.SetPlayerPosition(newPos);
+				break;
 
-				case S_Interaction_Pathers.PathTypes.zipline:
+			case S_Interaction_Pathers.PathTypes.zipline:
 
-					//Set ziphandle rotation to follow sample
-					_ZipHandle.rotation = _RailTransform.rotation * _Sample.Rotation;
-					//Since the handle and by extent the player can be tilted up to the sides (not changing forward direction), adjust the eueler angles to reflect this.
-					//_pulleyRotate is handled in input, but applied here.
-					_ZipHandle.eulerAngles = new Vector3(_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f * _movingDirection);
+				//Set ziphandle rotation to follow sample
+				_ZipHandle.rotation = _RailTransform.rotation * _Sample.Rotation;
+				//Since the handle and by extent the player can be tilted up to the sides (not changing forward direction), adjust the eueler angles to reflect this.
+				//_pulleyRotate is handled in input, but applied here.
+				_ZipHandle.eulerAngles = new Vector3(_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f * _movingDirection);
 
-					//_PlayerPhys.transform.up = _PlayerPhys.transform.rotation * (_RailTransform.rotation * _Sample.up);
-					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards);
-					_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _pulleyRotate * 70f);
+				//_PlayerPhys.transform.up = _PlayerPhys.transform.rotation * (_RailTransform.rotation * _Sample.up);
+				_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards);
+				_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _pulleyRotate * 70f);
 
-					//Similar to on rail, but place handle first, and player relevant to that.
-					newPos = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
-					newPos += _setOffSet;
-					_ZipHandle.transform.position = newPos;
-					_PlayerPhys.SetPlayerPosition( newPos + (_ZipHandle.transform.up * _offsetZip_));
-					break;
-			}
-		//}
+				//Similar to on rail, but place handle first, and player relevant to that.
+				newPos = _sampleLocation;
+				newPos += _setOffSet;
+				_ZipHandle.transform.position = newPos;
+				_PlayerPhys.SetPlayerPosition(newPos + (_ZipHandle.transform.up * _offsetZip_));
+				break;
+		}
 
 	}
 	//Takes the data from the previous method but handles physics for smoothing and applying if lost rail.
 	public void MoveOnRail () {
 
-		if(!_isGrinding) { return; }
+		if (!_isGrinding) { return; }
 		_PlayerPhys.SetIsGrounded(true, 0.5f);
 
 		HandleRailSpeed(); //Make changes to player speed based on angle
 
-		//If this point is on the spline.
-		if (_pointOnSpline <= _Rail_int._PathSpline.Length && _pointOnSpline >= 0)
-		{
-			//Set Player Speed correctly so that it becomes smooth grinding
-			_PlayerPhys.SetBothVelocities(_sampleForwards * _grindingSpeed, new Vector2(1, 0));
-			if (_ZipBody) { _ZipBody.velocity = _sampleForwards * _grindingSpeed; }
-		}
-		else
-		{
-			//Since has gone beyond the spline, treat the player as leaving on the very end to make consistent calculations.
-			if (!_isGoingBackwards)
-				_Sample = _Rail_int._PathSpline.GetSampleAtDistance(_Rail_int._PathSpline.Length - 1);
-			else
-				_Sample = _Rail_int._PathSpline.GetSampleAtDistance(0);
+		//Set Player Speed correctly so that it becomes smooth grinding
+		_PlayerPhys.SetBothVelocities(_sampleForwards * _grindingSpeed, new Vector2(1, 0));
+		if (_ZipBody) { _ZipBody.velocity = _sampleForwards * _grindingSpeed; }
 
-			_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
+		
+		if(_isRailLost)	
 			CheckLoseRail();
-		}
+		
 	}
 
 	//Checks the properties of the rail to see if should enter 
@@ -398,12 +395,15 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (_Rail_int._PathSpline.IsLoop)
 		{
 			_pointOnSpline = _pointOnSpline + (_Rail_int._PathSpline.Length * -_movingDirection);
+			_isRailLost = false;
 			return;
 		}
 
 		//Or if this rail has either a next rail or previous rail attached.
 		else if (_ConnectedRails != null)
 		{
+			_isRailLost = false;
+
 			//If going forwards, and the rail has a rail off the end, then go onto it.
 			if (!_isGoingBackwards && _ConnectedRails.nextRail != null && _ConnectedRails.nextRail.isActiveAndEnabled)
 			{
@@ -531,7 +531,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//Start a force to apply based on the curve position and general modifier for all slopes handled in physics script 
 		float force = _generalHillModifier;
 		force *= (1 - (Mathf.Abs(_PlayerPhys.transform.up.y) / 10)) + 1; //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
-		//float AbsYPow = Mathf.Abs(_PlayerPhys._RB.velocity.normalized.y * _PlayerPhys._RB.velocity.normalized.y);
+								     //float AbsYPow = Mathf.Abs(_PlayerPhys._RB.velocity.normalized.y * _PlayerPhys._RB.velocity.normalized.y);
 
 		//use player vertical speed to find if player is going up or down
 		//if going uphill on rail
@@ -779,17 +779,17 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
-		_Actions =	_Tools._ActionManager;
-		_Input =		_Tools.GetComponent<S_PlayerInput>();
-		_Rail_int =	_Tools.PathInteraction;
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_CamHandler =	_Tools.CamHandler._HedgeCam;
+		_Actions = _Tools._ActionManager;
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_Rail_int = _Tools.PathInteraction;
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_CamHandler = _Tools.CamHandler._HedgeCam;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin =	_Tools.MainSkin;
-		_Sounds =		_Tools.SoundControl;
+		_MainSkin = _Tools.MainSkin;
+		_Sounds = _Tools.SoundControl;
 
-		_JumpBall =	_Tools.JumpBall;
+		_JumpBall = _Tools.JumpBall;
 	}
 
 	//Reponsible for assigning stats from the stats script.

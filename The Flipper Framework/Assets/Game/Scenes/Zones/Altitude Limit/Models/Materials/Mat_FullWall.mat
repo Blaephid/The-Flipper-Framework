@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mat_FullWall
-  m_Shader: {fileID: -6465566751694194690, guid: 1b18731a1efc3984698ee6eeafbbb202,
+  m_Shader: {fileID: -6465566751694194690, guid: c34dbf387e37f684fae55406651b6fa9,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -99,6 +99,10 @@ Material:
         m_Offset: {x: 1, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 2800000, guid: 1e6fead43ac55f341b86004f4ca0bf57, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -180,6 +184,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.227
     - _GlossyReflections: 1
+    - _LocalSpace: 0
+    - _Local_Space: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -204,6 +210,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Scale: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _Side_Scale: {r: 0.05, g: 0.05, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Top_Scale: {r: 0.1, g: 0.1, b: 0, a: 0}

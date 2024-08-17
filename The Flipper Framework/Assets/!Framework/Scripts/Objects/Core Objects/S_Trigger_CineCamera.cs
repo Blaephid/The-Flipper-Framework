@@ -5,172 +5,184 @@ using Cinemachine;
 
 public class S_Trigger_CineCamera : MonoBehaviour
 {
+
+	//Stats
 	[Header("Main")]
-	public bool Active = true;
-
-	private bool canTrigger = true;
-
-	[Header ("Starting")]
-	public bool startAtCameraPoint;
-	public Vector3 startOffset;
-
-
-	[Header ("Ending")]
-	public bool endCine = false;
-	public bool onExit = true;
-	public float timeDelay = 0;
+	[Tooltip("Will only activates its camera if this is true.")]
+	public bool _willAcitvateCamera = true;
 
 	[Header("Attached Elements")]
-	public CinemachineVirtualCamera virCam;
-	public GameObject attachedCam;
-	public S_Trigger_CineCamera CameraToEnd;
+	[Tooltip("Controls the properties of the cinemachine component, by setting it to follow or look at the player.")]
+	public CinemachineVirtualCamera         _CinematicCamComponent;
+	[Tooltip("The gameObject that will be set to active or inactive. Likely the same as the above.")]
+	public GameObject                       _CinematicCamObject;
+	[Tooltip("If not empty, anytime this trigger ends its camera, it will instead end the camera of a different trigger, using the properties FROM THAT ONE. Use if you don't want to just have one large trigger.")]
+	public S_Trigger_CineCamera             _EndThisTriggerInstead;
 
 	[Header("Works with these actions")]
-	public bool RegularAction = true;
-	public bool JumpAction = false;
-	public bool RailAction = false;
-	public bool wallRunAction = false;
-	public bool RingRoadAction = false;
+	[Tooltip("Waits until the player is in one of the following actions before triggering the camera. Allow more control, as large triggers can sometimes be cumbersome.")]
+	public S_Enums.PrimaryPlayerStates[]    _ListOfActionsThisWorksOn;
+	[Tooltip("If true, the camera will deactivate if the player enters an action not in the above list.")]
+	public bool                             _willDeactivateCameraIfActonChanges = false;
 
-	private Vector3 camPosit;
-	private Quaternion camRotit;
+	[Header ("Starting")]
+	[Tooltip("If true, when activated the cinematic camera will be at the point the main camera already is")]
+	public bool         _moveCinematicCamToMainCamPoint;
+	[Tooltip("Adds this to the position of wherever the camera is on start (position resets on deactivate)")]
+	public Vector3      _startOffset;
+
+	[Header ("Ending")]
+	public bool         _endOnEnterTrigger = false;
+	public bool         _endOnExitTrigger = true;
+	public float        _delayEndForFrames = 0;
 
 	[Header("Effects on/with Player")]
+	[Tooltip("See Cinemachine Virtual Camera component. If this is true, the players transform becomes what the virtual camera looks at.")]
 	public bool lookPlayer;
+	[Tooltip("See Cinemachine Virtual Camera component. If this is true, the players transform becomes what the virtual camera follows, using its own parameters.")]
 	public bool followPlayer;
 
-	public bool disableMove;
+	[Header("On End")]
+	[Tooltip("If true, when the main camera returns to the player, it will be behind them.")]
+	public bool         _willSetCameraBehind = true;
+	public int          _lockPlayerInputFor = 5;
+	public S_Enums.LockControlDirection _LockInputTo_;
 
+	//Private
+	private Vector3 cameraOriginalPosition;
+	private Quaternion cameraOriginalRotation;
 
-	CinemachineVirtualCamera hedgeCam;
+	private bool _isCurrentlyActive = false;
 
-	S_CharacterTools _PlayerTools;
-	S_ActionManager Actions;
-
-	[Header("On Cancel")]
-	public bool setBehind = true;
-	public float lockTime = 5f;
-
-	bool isActive = false;
+	//Player
+	private S_CharacterTools      _PlayerTools;
+	private S_ActionManager       _PlayerActions;
+	private S_Handler_Camera      _PlayerCameraHandler;
 
 	// Start is called before the first frame update
 
 	void Awake () {
-		camPosit = attachedCam.transform.position;
-		camRotit = attachedCam.transform.rotation;
-		attachedCam.SetActive(false);
+		//Ensure cinematic camera isn't on and save its starting transform.
+		cameraOriginalPosition = _CinematicCamObject.transform.position;
+		cameraOriginalRotation = _CinematicCamObject.transform.rotation;
+		_CinematicCamObject.SetActive(false);
 	}
 
 
 	private void OnTriggerEnter ( Collider other ) {
-		if (other.tag == "Player" && canTrigger)
+		if (other.tag == "Player")
 		{
-			if (!endCine)
+			if (_endOnEnterTrigger)
+			{
+				EndThisOrAnotherCamera();
+			}
+
+			//Set this camera up to detect player. Cameras are activated in Trigger Stay so it waits for the player to be in the right actions.
+			else if (_willAcitvateCamera)
 			{
 				_PlayerTools = other.GetComponentInParent<S_CharacterTools>();
-				Actions = _PlayerTools._ActionManager;
-			}
-			else
-			{
-				if(CameraToEnd)
-					CameraToEnd.DeactivateCam(lockTime);
+				_PlayerActions = _PlayerTools._ActionManager;
+				_PlayerCameraHandler = _PlayerTools.CamHandler;
 			}
 		}
 	}
 	private void OnTriggerStay ( Collider col ) {
-		if (col.tag == "Player" && canTrigger && !endCine && Active)
+		if (col.tag == "Player")
 		{
-			if (!isActive)
+			//Only check if the player has already been saved to check its actions.
+			if (_PlayerActions != null && _willAcitvateCamera)
 			{
-				
-					isActive = true;
-					hedgeCam = _PlayerTools.CamHandler._VirtCam;
+				bool isPlayerIsRightAction = false;
 
+				//Check if players current action is one this cinematic is set to work with.
+				for (int i = 0 ; i < _ListOfActionsThisWorksOn.Length ; i++)
+				{
+					if (_PlayerActions._whatCurrentAction == _ListOfActionsThisWorksOn[i])
+						isPlayerIsRightAction = true;
+				}
 
-					ActivateCam(5f);
-
-					if (lookPlayer)
+				if (!isPlayerIsRightAction)
+				{
+					if (_willDeactivateCameraIfActonChanges)
 					{
-						virCam.LookAt = _PlayerTools.transform;
+						EndThisOrAnotherCamera();
 					}
-
-					if (followPlayer)
-					{
-						virCam.Follow = _PlayerTools.transform;
-					}
-			
+				}
+				else
+				{
+					ActivateCam();
+				}
 			}
-			else
-			{
-				//if (!(
-				//    Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default && RegularAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Jump && JumpAction) &&
-				//    !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Rail && RailAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallRunning && wallRunAction) && !(Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.RingRoad && RingRoadAction) && onExit)
-				//{
-				//	DeactivateCam(0);
-				//}
-			}
-
 		}
 	}
 
 	void OnTriggerExit ( Collider col ) {
-		if (isActive)
+		if (col.tag == "Player")
 		{
-			if (col.tag == "Player" && onExit)
+			if (_isCurrentlyActive && _endOnExitTrigger)
 			{
-				if (onExit)
-					DeactivateCam(lockTime);
-				else
-					canTrigger = true;
+				EndThisOrAnotherCamera();
 			}
 		}
 	}
 
-	public void ActivateCam ( float disableFor ) {
-
-		if (startAtCameraPoint)
-		{
-			attachedCam.transform.position = _PlayerTools.GetComponent<S_Handler_Camera>()._HedgeCam.transform.position;
-			attachedCam.transform.rotation = _PlayerTools.GetComponent<S_Handler_Camera>()._HedgeCam.transform.rotation;
-		}
-
-		canTrigger = false;
-
-		attachedCam.transform.position += startOffset;
-		attachedCam.SetActive(true);
-
-		//hedgeCam = _PlayerTools.CamHandler._VirtCam;
-		//hedgeCam.gameObject.SetActive(false);
-		//if (disableFor > 0)
-		//	_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true, _PlayerTools.GetComponent<S_PlayerPhysics>()._moveInput);
-
-		if (timeDelay != 0)
-		{
-			StartCoroutine(TimeLimit());
-		}
-
+	//End this or the cinematic camera input in its place.
+	private void EndThisOrAnotherCamera () {
+		if (_EndThisTriggerInstead)
+			StartCoroutine(_EndThisTriggerInstead.DeactivateCam());
+		else
+			StartCoroutine(DeactivateCam());
 	}
 
-	IEnumerator TimeLimit () {
-		canTrigger = false;
-		yield return new WaitForSeconds(timeDelay);
-		DeactivateCam(lockTime);
-		canTrigger = true;
-	}
+	public void ActivateCam () {
 
-	public void DeactivateCam ( float disableFor ) {
-		canTrigger = true;
+		if (_isCurrentlyActive) return;
 
-		if (setBehind)
+		_isCurrentlyActive = true;
+
+		//If the cinematic is supposed to start from the player cameras current position.
+		if (_moveCinematicCamToMainCamPoint)
 		{
-			_PlayerTools.GetComponent<S_CharacterTools>().CamHandler._HedgeCam.SetBehind(0);
+			_CinematicCamObject.transform.position = _PlayerCameraHandler._HedgeCam.transform.position;
+			_CinematicCamObject.transform.rotation = _PlayerCameraHandler._HedgeCam.transform.rotation;
 		}
 
-		isActive = false;
-		attachedCam.transform.position = camPosit;
-		attachedCam.transform.rotation = camRotit;
-		attachedCam.SetActive(false);
-		if (disableFor > 0)
-			_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(disableFor, true, _PlayerTools.GetComponent<S_PlayerPhysics>()._moveInput);
+		//Apply requirements onto cinemachine
+		if (lookPlayer)
+			_CinematicCamComponent.LookAt = _PlayerTools.transform;
+
+		if (followPlayer)
+			_CinematicCamComponent.Follow = _PlayerTools.transform;
+
+		_CinematicCamObject.transform.position += _startOffset;
+
+		_CinematicCamObject.SetActive(true); //Blending is handled by the blend object attached to the main camera cinemachine brain.
+	}
+
+	public IEnumerator DeactivateCam () {
+		if (!_isCurrentlyActive) { yield break; }
+
+		//Wait a number of frames before deactivating cinema camera.
+		for (int i = 0 ; i < _delayEndForFrames ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+
+		//Deactivate
+		_isCurrentlyActive = false;
+		_PlayerActions = null;
+
+		//Player
+		if (_willSetCameraBehind)
+			_PlayerCameraHandler._HedgeCam.SetBehind(0);
+		if (_lockPlayerInputFor > 0)
+			_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(_lockPlayerInputFor, true, Vector3.zero, _LockInputTo_);
+
+		//Reset camera
+		_CinematicCamObject.transform.position = cameraOriginalPosition;
+		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
+
+
+		_CinematicCamObject.SetActive(false); //Blending is handled by the blend object attached to the main camera cinemachine brain.
 	}
 }

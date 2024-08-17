@@ -6,8 +6,8 @@ using System.Collections.Generic;
 public class S_Control_MovingPlatform : MonoBehaviour
 {
 	[Header("Projection")]
-	public bool         _projectPath;
-	public int          _calculations;
+	public bool         _projectPath = true;
+	public int          _calculations = 500;
 
 	[Header("In Game")]
 	public bool         _isActive = true;
