@@ -269,6 +269,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
+      propertyPath: _MainActions.Array.size
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _MainActions.Array.data[0].SituationalStates.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _MainActions.Array.data[2].SituationalStates.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _MainActions.Array.data[10].SituationalStates.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
       propertyPath: '_MainActions.Array.data[10].ConnectedStates.Array.data[2]'
       value: 4
       objectReference: {fileID: 0}
@@ -279,7 +299,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
+      propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[6]'
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
       propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[8]'
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[6]'
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
@@ -357,7 +387,8 @@ PrefabInstance:
       propertyPath: _VirtualCamera
       value: 
       objectReference: {fileID: 6781992325786300764}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3399936635228185353, guid: 749dc6a02381bea4d992b33d7c015589, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

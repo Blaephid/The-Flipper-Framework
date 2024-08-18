@@ -696,7 +696,6 @@ MonoBehaviour:
   _canStickToGround: 1
   _groundNormal: {x: 0, y: 0, z: 0}
   _timeOnGround: 0
-  _wasInAir: 0
   _currentFallGravity: {x: 0, y: 0, z: 0}
   _currentUpwardsFallGravity: {x: 0, y: 0, z: 0}
   _isRolling: 0
@@ -29006,6 +29005,36 @@ PrefabInstance:
       propertyPath: _OnCollisionEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 5416488146372199807}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _MainActions.Array.size
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _MainActions.Array.data[0].SituationalStates.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _MainActions.Array.data[2].SituationalStates.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _MainActions.Array.data[9].SituationalStates.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[6]'
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[6]'
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4584081993875375216, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _VirtCam

@@ -368,9 +368,9 @@ public class S_PlayerPhysics : MonoBehaviour
 			Vector3 tempNormal = hitGroundTemp.normal;
 
 			//Because terrain can be bumpy, find an average normal between multiple around the same area.
-			int numberOfChecks = 6; //How many checks to perform. Changing this value will automatically affect the calculations so it will always be even.
+			int numberOfChecks = 5; //How many checks to perform. Changing this value will automatically affect the calculations so it will always be even.
 			float rotateValue = 360 / numberOfChecks; //How much to rotate each instance to add up to a full rotation.
-			Vector3 offSetForCheck = _horizontalSpeedMagnitude > 10 ? _totalVelocity * Time.fixedDeltaTime * 0.7f : _MainSkin.forward * 0.4f; //The offset from the main check that will rotate
+			Vector3 offSetForCheck = _horizontalSpeedMagnitude > 10 ? -_totalVelocity * Time.fixedDeltaTime * 1f : _MainSkin.forward * 0.5f; //The offset from the main check that will rotate
 
 			for (int i = 0 ; i < numberOfChecks ; i++)
 			{
@@ -381,7 +381,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				if (Physics.Raycast(thisStartPosition, -transform.up, out RaycastHit hitSecondTemp, 0.8f + groundCheckerDistance, _Groundmask_))
 				{
 					//If this instance is too much of an outlier, ignore it because it is probably a wall.
-					if (Vector3.Angle(tempNormal.normalized, hitSecondTemp.normal) < 70)
+					if (Vector3.Angle(tempNormal.normalized, hitSecondTemp.normal) < 60)
 						tempNormal += hitSecondTemp.normal;
 				}
 			}

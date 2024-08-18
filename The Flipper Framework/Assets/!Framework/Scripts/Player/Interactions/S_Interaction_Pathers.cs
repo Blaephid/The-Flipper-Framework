@@ -163,6 +163,10 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private void CheckRail ( Collider Col ) {
 		Spline ThisSpline = Col.gameObject.GetComponentInParent<Spline>(); //Create a temporary variable to check this rail before confirming it.
 
+		//Can only get on a rail if players feet are towards the top of it (meaning upwards directions are similar.)
+		float angleBetweenUpwardsDirections = Vector3.Angle(transform.position, Col.transform.up);
+		if(angleBetweenUpwardsDirections > 90) { return;  }
+
 		Vector3 offset = Vector3.zero;
 		if (Col.GetComponentInParent<S_PlaceOnSpline>())
 		{
