@@ -153,7 +153,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (!_Actions._canChangeActions && !overwrite) { return; }
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
 

@@ -110,7 +110,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	}
 
 	//Called when the action is enabled and readies all variables for it to be performed.
-	public void StartAction() {	
+	public void StartAction(bool overwrite = false) {	
 		if (_Input._RightStepPressed)
 		{
 			_isSteppingRight = true;

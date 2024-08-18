@@ -98,7 +98,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		_hasBounced = false; //Tracks when to end the action.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.

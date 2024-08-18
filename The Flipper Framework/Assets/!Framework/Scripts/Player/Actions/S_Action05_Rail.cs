@@ -180,8 +180,10 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction (bool overwrite = false) {
 		if (!_canEnterRail) { return; }
+		if (!_Actions._canChangeActions && !overwrite) { return; }
+
 		_canEnterRail = false;
 
 		//ignore further rail collisions

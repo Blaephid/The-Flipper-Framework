@@ -208,7 +208,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_goalClimbingSpeed = 8f * (int)(_goalClimbingSpeed / 8);
 		_goalClimbingSpeed = Mathf.Clamp(_goalClimbingSpeed, 48, 176);
 
-		_checkDistance = Vector3.Distance(wallHit.point, transform.position) + 1; //Ensures first checks for x seconds will find the wall.
+		_checkDistance = wallHit.distance + 1; //Ensures first checks for x seconds will find the wall.
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(wallHit.normal));
 

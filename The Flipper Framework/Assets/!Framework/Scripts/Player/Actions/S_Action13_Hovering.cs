@@ -78,7 +78,9 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction (bool overwrite = false) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		//Visuals
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_Actions._ActionDefault.SwitchSkin(true);

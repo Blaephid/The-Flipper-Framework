@@ -306,10 +306,8 @@ public class S_HedgeCamera : MonoBehaviour
 		//The final target is the actual anchor point for the camera, and should not be changed, as it is a child of the other targets. 
 		_TargetByCollisions.localPosition = Vector3.zero;
 
-		Vector3 targetOffset = _FinalTarget.position - _BaseTarget.position;
-		float targetOffsetDistance = Vector3.Distance(_FinalTarget.position , _BaseTarget.position) + 0.2f;
 		//But to prevent the target going through surfaces (and by extent the camera) move it if there would be a collision closer to the centre.
-		if (Physics.Raycast(_BaseTarget.position, targetOffset, out RaycastHit hit, targetOffsetDistance, _CollidableLayers_))
+		if (Physics.Linecast(_BaseTarget.position, _FinalTarget.position, out RaycastHit hit, _CollidableLayers_))
 		{
 			_TargetByCollisions.position = Vector3.LerpUnclamped(hit.point, _BaseTarget.position, 0.8f);
 		}

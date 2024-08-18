@@ -113,7 +113,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	}
 
 	//Called when skidding is started and _isSkiddin is used to prevent the sound being played multiple times.
-	public void StartAction() {
+	public void StartAction(bool overwrite = false) {
 		if (!_isSkidding)
 		{
 			_Actions._whatSubAction = S_Enums.SubPlayerStates.Skidding;

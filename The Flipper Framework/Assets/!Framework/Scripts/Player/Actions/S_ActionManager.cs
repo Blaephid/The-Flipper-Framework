@@ -39,6 +39,9 @@ public class S_ActionManager : MonoBehaviour
 	public S_Enums.PrimaryPlayerStates	_whatPreviousAction { get; set; }
 
 	[HideInInspector]
+	public bool         _canChangeActions = true;	//All StartActions should check this, and return if its false, unless they are set to overwrite this.
+
+	[HideInInspector]
 	public List<float>                            _listOfSpeedOnPaths = new List<float>();	//Certain actions will move the player along the spline, this will be used to track the speed for any actions that do so. It is used as a list rather than a singular as it will allow speeds to be added and removed with the action, then the most recent is the only one used.
 
 	//Actions

@@ -97,7 +97,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		_PlayerPhys._arePhysicsOn = false;
 		_Pathers._canExitAutoPath = true; //Will no longer cancel action when hitting a trigger.
 

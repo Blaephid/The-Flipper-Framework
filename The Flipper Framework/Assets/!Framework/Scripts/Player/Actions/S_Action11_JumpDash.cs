@@ -136,7 +136,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		}
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Effects
 		_Sounds.AirDashSound();

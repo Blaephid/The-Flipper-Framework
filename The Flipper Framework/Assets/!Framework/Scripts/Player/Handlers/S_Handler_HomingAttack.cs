@@ -45,8 +45,8 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	#region Stats
 	private float       _targetSearchDistance_ = 10;
 	private float       _faceRange_ = 66;
-	private int         _minTargetDistance_;
-	private int         _maxTargetDistance_;
+	private float         _minTargetDistanceSquared_;
+	private float         _maxTargetDistanceSquared_;
 	private float       _currentTargetPriority_;
 	private float       _cameraDirectionPriority_;
 	private LayerMask   _TargetLayer_;
@@ -67,7 +67,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	[HideInInspector]
 	public bool         _isScanning = false;          //Will only go through the target searching and calculations when this is true
 
-	private float       _currentTargetDistance;
+	private float       _currentTargetDistanceSquared;
 	[HideInInspector]
 	public bool         _isHomingAvailable;
 
@@ -149,22 +149,22 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private Transform GetClosestTarget ( LayerMask TargetMask, float radius ) {
 
 		Transform closestTarget = null;
-		_currentTargetDistance = 0;
+		_currentTargetDistanceSquared = 0;
 		int checkLimit = 0;
 
-		//First, send a spherecast in direction camera is facing, this has more range than normal checks. This takes pririty as it allows for precision.
+		//First, send a spherecast in direction camera is facing, this has more range than normal checks. This takes priority as it allows for precision.
 		RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, _radiusOfCameraTargetCheck_, _MainCamera.forward, _faceRange_ * radius, TargetMask);
 		if (NewTargetsInRange.Length > 0)
 		{
 			for (int i = 0 ; i < NewTargetsInRange.Length ; i++)
 			{
 				RaycastHit hit = NewTargetsInRange[i];
-				float distance = hit.distance;
+				float distanceSquared = Mathf.Pow(hit.distance, 2);
 				//If hit has the homing target component and is far enough away, then compare to current closest.
-				if (hit.collider.gameObject.GetComponent<S_Data_HomingTarget>() && distance > _minTargetDistance_)
+				if (hit.collider.gameObject.GetComponent<S_Data_HomingTarget>() && distanceSquared > _minTargetDistanceSquared_)
 				{
 					Transform newTarget = hit.collider.transform;
-					closestTarget = CheckTarget(newTarget, distance * _cameraDirectionPriority_, closestTarget, _facingAmount_);
+					closestTarget = CheckTarget(newTarget, distanceSquared * _cameraDirectionPriority_, closestTarget, _facingAmount_);
 				}
 
 				//For efficiency, cannot check more than 3 objects
@@ -181,13 +181,13 @@ public class S_Handler_HomingAttack : MonoBehaviour
 			for (int i = 0 ; i < TargetsInRange.Length ; i++)
 			{
 				Collider hit = TargetsInRange[i];
-				float distance = Vector3.Distance(transform.position, hit.transform.position);
+				float distanceSquared = S_CoreMethods.GetDistanceOfVectors(transform.position, hit.transform.position);
 
 				//If has the homing target component and is far enough away, then compare to current closest.
-				if (hit.gameObject.GetComponent<S_Data_HomingTarget>() && distance > _minTargetDistance_)
+				if (hit.gameObject.GetComponent<S_Data_HomingTarget>() && distanceSquared > _minTargetDistanceSquared_)
 				{
 					Transform newTarget = hit.gameObject.transform;
-					closestTarget = CheckTarget(newTarget, distance, closestTarget, _facingAmount_);
+					closestTarget = CheckTarget(newTarget, distanceSquared, closestTarget, _facingAmount_);
 				}
 
 				//For efficiency, cannot check more than 3 objects
@@ -199,18 +199,20 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		//If there is currently already a target, compare it to the new closest, with a modification to distance that makes it seem closer, and therefore higher priority.
 		if (_PreviousTarget != null)
 		{
-			float distance = Vector3.Distance(transform.position, _PreviousTarget.transform.position);
-			closestTarget = CheckTarget(_PreviousTarget.transform, distance * _currentTargetPriority_, closestTarget, _facingAmount_);
+			float distanceSquared = S_CoreMethods.GetDistanceOfVectors(transform.position, _PreviousTarget.transform.position);
+			closestTarget = CheckTarget(_PreviousTarget.transform, distanceSquared * _currentTargetPriority_, closestTarget, _facingAmount_);
 		}
 
 		return closestTarget;
 	}
 
 	//Takes in a target and return the closer of it or the current one.
-	private Transform CheckTarget ( Transform newTarget, float distance, Transform closest, float facingAmount, bool skipIsOnScreen = false ) {
+	private Transform CheckTarget ( Transform newTarget, float distanceSquared, Transform closest, float facingAmount, bool skipIsOnScreen = false ) {
 
 		//If this new target is out of the maximum range, then ignore it, no matter the check. Gets its own distance because the distance parameter won't always be the exact distance.
-		if (Vector3.Distance(transform.position, newTarget.position) > _maxTargetDistance_ ) { return closest; } 
+		if (S_CoreMethods.GetDistanceOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_ ) { return closest; } 
+
+
 		//Make sure Sonic is facing the target enough
 		Vector3 direction = (newTarget.position - transform.position).normalized;
 		float angle = Vector3.Angle(new Vector3(_MainSkin.forward.x, 0, _MainSkin.forward.z), new Vector3 (direction.x, 0, direction.z));
@@ -225,7 +227,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		}
 
 		//If the above are true, and the distance to this new target is less than the one to the closest, this becomes the target.
-		if ((distance < _currentTargetDistance || _currentTargetDistance == 0f) && isFacing && isOnScreen)
+		if ((distanceSquared < _currentTargetDistanceSquared || _currentTargetDistanceSquared == 0f) && isFacing && isOnScreen)
 		{
 			SetTarget();
 		}
@@ -235,9 +237,9 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		//Makes final checks and sets the new target and its distance
 		void SetTarget () {
 			//Checks if the target is accessible.
-			if (!Physics.Linecast(transform.position, newTarget.position, _BlockingLayers_) && distance < _maxTargetDistance_)
+			if (!Physics.Linecast(transform.position, newTarget.position, _BlockingLayers_) && distanceSquared < _maxTargetDistanceSquared_)
 			{
-				_currentTargetDistance = distance;
+				_currentTargetDistanceSquared = distanceSquared;
 				closest = newTarget;
 			}
 		}
@@ -291,8 +293,8 @@ public class S_Handler_HomingAttack : MonoBehaviour
 			_IconTransform.position = _TargetObject.transform.position; //Places icon on target
 
 			//Effects icon size by camera distance
-			float camDist = Vector3.Distance(transform.position, _MainCamera.position);
-			_IconTransform.localScale = (Vector3.one * _iconScale_) + (Vector3.one * (camDist * _iconDistanceScaling_));
+			float camDist = S_CoreMethods.GetDistanceOfVectors(transform.position, _MainCamera.position);
+			_IconTransform.localScale = (Vector3.one * _iconScale_) + (Vector3.one * (camDist * Mathf.Pow(_iconDistanceScaling_, 2)));
 
 			//If this is a new target, then play sound and animation.
 			if (_targetPlayedAnimationOn != _TargetObject)
@@ -362,8 +364,8 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private void AssignStats () {
 		_targetSearchDistance_ = _Tools.Stats.HomingSearch.targetSearchDistance;
 		_faceRange_ = _Tools.Stats.HomingSearch.distanceModifierInCameraDirection;
-		_minTargetDistance_ = _Tools.Stats.HomingSearch.minimumTargetDistance;
-		_maxTargetDistance_ = _Tools.Stats.HomingSearch.maximumTargetDistance;
+		_minTargetDistanceSquared_ = Mathf.Pow(_Tools.Stats.HomingSearch.minimumTargetDistance, 2);
+		_maxTargetDistanceSquared_ = Mathf.Pow( _Tools.Stats.HomingSearch.maximumTargetDistance,2);
 		_TargetLayer_ = _Tools.Stats.HomingSearch.TargetLayer;
 		_BlockingLayers_ = _Tools.Stats.HomingSearch.blockingLayers;
 		_facingAmount_ = _Tools.Stats.HomingSearch.facingAmount;

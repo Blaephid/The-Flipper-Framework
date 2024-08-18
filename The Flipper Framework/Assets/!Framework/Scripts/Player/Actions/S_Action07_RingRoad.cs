@@ -105,7 +105,8 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Physics
 		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one); //Prevent character moving outside of the path.

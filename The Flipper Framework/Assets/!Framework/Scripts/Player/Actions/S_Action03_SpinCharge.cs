@@ -111,7 +111,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 
 	//Called when the action should be enabled.
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		//Setting private
 		_currentCharge = 20;
 		_counter = 0;

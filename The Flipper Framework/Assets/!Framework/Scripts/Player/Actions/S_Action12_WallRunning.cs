@@ -139,7 +139,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	//Due to requiring additional data for the wall, this is called in the SetUp methods, unlike AttemptAction.
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		_isWall = true;
 		_counter = 0;
 
@@ -299,7 +301,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_runningSpeed = _PlayerPhys._horizontalSpeedMagnitude;
 		_currentClimbingSpeed = _PlayerPhys._totalVelocity.y * 0.4f;
 
-		_checkDistance = Vector3.Distance(wallHit.point, transform.position) + 2; //Ensures first checks for x seconds will find the wall.
+		_checkDistance = wallHit.distance + 2; //Ensures first checks for x seconds will find the wall.
 		_checkDistance = Mathf.Max(_checkDistance, _wallCheckDistance_.y * 1.5f);
 
 		//Visual

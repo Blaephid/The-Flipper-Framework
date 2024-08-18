@@ -56,8 +56,8 @@ namespace templates
 			return false;
 		}
 
-		public void StartAction () {
-
+		public void StartAction (bool overwrite = false) {
+			if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 		}
 
 		public void StopAction ( bool isFirstTime = false ) {

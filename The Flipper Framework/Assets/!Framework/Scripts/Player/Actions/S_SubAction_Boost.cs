@@ -160,7 +160,9 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	}
 
 	//Called when the action is enabled and readies all variables for it to be performed.
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		//Flow Control
 		_PlayerPhys._isBoosting = true;
 		_canStartBoost = false;

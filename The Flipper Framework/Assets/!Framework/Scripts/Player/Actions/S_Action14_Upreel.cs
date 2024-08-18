@@ -76,7 +76,9 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		//Set same animation as when on a zipline.
 		_CharacterAnimator.SetInteger("Action", 9);
 		_CharacterAnimator.SetTrigger("ChangedState");

@@ -1108,7 +1108,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    landingConversionFactor: 2
+    landingConversionFactor: 0.2
     downhillThreshold: -1
     uphillThreshold: 1
   StartStickToGround:
@@ -1179,7 +1179,7 @@ MonoBehaviour:
     GroundMask:
       serializedVersion: 2
       m_Bits: 0
-    groundAngleDifferenceLimit: 30
+    groundAngleDifferenceLimit: {x: 30, y: 50, z: 20}
     rayToGroundDistance: 1.4
     raytoGroundSpeedRatio: 0.01
     raytoGroundSpeedMax: 2.6
@@ -1187,7 +1187,7 @@ MonoBehaviour:
     GroundMask:
       serializedVersion: 2
       m_Bits: 1
-    groundAngleDifferenceLimit: 30
+    groundAngleDifferenceLimit: {x: 30, y: 70, z: 50}
     rayToGroundDistance: 1.3
     raytoGroundSpeedRatio: 0.0101
     raytoGroundSpeedMax: 2.6
@@ -1210,7 +1210,7 @@ MonoBehaviour:
     rollingUphillBoost: 1.2
     rollingStartSpeed: 5
     rollingTurningModifier: 0.6
-    rollingLandingBoost: 1.4
+    rollingLandingBoost: 1.2
     minRollingTime: 0.4
   StartRollingStats:
     rollingDownhillBoost: 1.9

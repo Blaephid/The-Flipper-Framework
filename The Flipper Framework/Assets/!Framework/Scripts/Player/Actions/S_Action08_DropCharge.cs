@@ -95,7 +95,8 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.DropCharge);
 		this.enabled = true;

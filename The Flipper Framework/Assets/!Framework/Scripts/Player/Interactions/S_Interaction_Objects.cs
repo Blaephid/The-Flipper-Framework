@@ -241,17 +241,17 @@ public class S_Interaction_Objects : MonoBehaviour
 		Destroy(newGameObject);
 
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
-		float distance = Vector3.Distance(relativePlayerPosition, transform.position);
+		float distanceSquared = S_CoreMethods.GetDistanceOfVectors(relativePlayerPosition, transform.position);
 
 		float power = 0;
-		if (distance < 5)
+		if (distanceSquared < 25)
 		{
 			//If under 3 units away and moving towards the wind, apply force against equal to the player's speed in that direction, ensuring they can't fall beyond it.
 			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-direction, S_Enums.VelocityTypes.Core, false);
 			if(dot > 5) { power = dot; }
 		}
 		//Affect power by distance along in this direction
-		power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._getRange));
+		power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared));
 		
 		return power * direction;
 	}
@@ -555,6 +555,9 @@ public class S_Interaction_Objects : MonoBehaviour
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
 	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 position, Vector3 coreVelocity, int frames = 3 ) {
 
+		_Actions._canChangeActions = false;
+		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.
+
 		_PlayerPhys._listOfCanControl.Add(false); //Prevents any input interactions changing core velocity while locked here.
 
 		//Player rotation. Will be determined by the force direction. Usually based on core, but if that isnt present, based on environment.
@@ -570,13 +573,14 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Keep the player in position, with zero velocity, until delay is over.
 		for (int i = 0 ; i < frames ; i++)
 		{
+			_Actions._ActionDefault.StartAction(); //Ensures player cant change into another action, like a rail, while hitting a spring.
 			_PlayerPhys.SetPlayerPosition(position);
 			_PlayerPhys.SetCoreVelocity(Vector3.zero, "Overwrite");
 			_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
 		}
 
-		_Actions._ActionDefault.StartAction(); //Ensures player is still in correct state after delay.
+		_Actions._canChangeActions = true;
 
 		_PlayerPhys.SetPlayerPosition(position); //Ensures player is set to inside of spring, so bounce is consistant. 
 

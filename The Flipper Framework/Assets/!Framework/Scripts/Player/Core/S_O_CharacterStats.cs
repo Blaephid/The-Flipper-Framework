@@ -233,7 +233,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(4f, 1.2f),
 				new Keyframe(10f, 1.3f),
 			}),
-			landingConversionFactor = 2,
+			landingConversionFactor = 0.4f,
 		};
 	}
 
@@ -324,7 +324,7 @@ public class S_O_CharacterStats : ScriptableObject
 			rayToGroundDistance = 1.4f,
 			raytoGroundSpeedRatio = 0.01f,
 			raytoGroundSpeedMax = 2.6f,
-			groundAngleDifferenceLimit = 30f,
+			groundAngleDifferenceLimit = new Vector3 (30, 80, 50),
 		};
 	}
 
@@ -333,9 +333,8 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("Core: The layer an object must be set to, to be considered ground the player can run on.")]
 		public LayerMask    GroundMask;
-		[Range(0, 180)]
-		[Tooltip("Core: The maximum difference between the current rotation and floor when checking if grounded. If the floor is too different to this then won't be grounded.")]
-		public float        groundAngleDifferenceLimit;
+		[Tooltip("Core: The maximum difference between the current upwards direction and floor when checking if grounded. Difference above this means not being grounded. x = base, y = when in the air, z = when grounded but enw ground is uphill.")]
+		public Vector3        groundAngleDifferenceLimit;
 		[Tooltip("Core: The max range downwards of the ground checker.")]
 		public float        rayToGroundDistance;
 		[Tooltip("Core: Adds current horizontal speed multiplied by this to the ground checker when running along the ground. Combats how it's easier to lose when at higher speed.")]
@@ -394,7 +393,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucRolling SetStrucRolling () {
 		return new StrucRolling
 		{
-			rollingLandingBoost = 1.4f,
+			rollingLandingBoost = 1.3f,
 			rollingDownhillBoost = 1.9f,
 			minRollingTime = 0.4f,
 			rollingUphillBoost = 1.2f,

@@ -100,7 +100,9 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		//Effects
 		_JumpBall.SetActive(false);
 		_Sounds.PainVoicePlay();

@@ -69,7 +69,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	[HideInInspector]
 	public Vector3      _targetDirection;             //Set at the start of the action to be used by other scripts on hit.
-	private float       _distanceFromTarget;          //Updated each frame as certain movements will be edited when close to the target
+	private float       _distanceFromTargetSquared;          //Updated each frame as certain movements will be edited when close to the target
 	private Vector3     _currentDirection;            //Updated each frame to get the current direction
 	private Vector3     _horizontalDirection;         //Same as above but without vertical
 	private Vector3     _currentInput;
@@ -130,9 +130,11 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Homing);
-		this.enabled = true;
+		enabled = true;
 
 		ReadyAction();
 
@@ -227,11 +229,11 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		//Get direction to move in.
 		Vector3 newDirection = _Target.position - transform.position;
-		_distanceFromTarget = Vector3.Distance(_Target.position, transform.position);
+		_distanceFromTargetSquared = S_CoreMethods.GetDistanceOfVectors(_Target.position, transform.position);
 		float thisTurn =  _homingTurnSpeed_;
 
-		//Set Player location when close enough, for precision.
-		if (_distanceFromTarget < (_Actions._listOfSpeedOnPaths[0] * Time.deltaTime))
+		//Set Player location when close enough, for precision. Remember to square anything compared to a distance as the method we made does not square root the answer.
+		if (_distanceFromTargetSquared < Mathf.Pow((_Actions._listOfSpeedOnPaths[0] * Time.deltaTime), 2))
 		{
 			_PlayerPhys.SetPlayerPosition(_Target.transform.position);
 			return;
@@ -239,7 +241,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Turn faster when close to target and fast to make missing very hard.
 		else
 		{
-			if (_distanceFromTarget < 30)
+			if (_distanceFromTargetSquared < 30)
 				thisTurn *= 1.75f;
 			if (_Actions._listOfSpeedOnPaths[0] > 90)
 				thisTurn *= 1.3f;
@@ -267,7 +269,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 				//Get a horizontal direction between the two but don't change vertical.
 				float percentageRelevantDif = Vector3.Angle(_horizontalDirection, useInput) * 0.8f;
-				if (_distanceFromTarget < 30)
+				if (_distanceFromTargetSquared < 30)
 				{
 					percentageRelevantDif *= 0.3f;
 				}
@@ -295,8 +297,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
 			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
-
-		Debug.Log("Stop Homing");
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 	}
