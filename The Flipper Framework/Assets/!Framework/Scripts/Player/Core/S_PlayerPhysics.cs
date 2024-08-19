@@ -381,7 +381,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				if (Physics.Raycast(thisStartPosition, -transform.up, out RaycastHit hitSecondTemp, 0.8f + groundCheckerDistance, _Groundmask_))
 				{
 					//If this instance is too much of an outlier, ignore it because it is probably a wall.
-					if (Vector3.Angle(tempNormal.normalized, hitSecondTemp.normal) < 60)
+					if (Vector3.Angle(tempNormal.normalized, hitSecondTemp.normal) < 75)
 						tempNormal += hitSecondTemp.normal;
 				}
 			}
@@ -1326,6 +1326,9 @@ public class S_PlayerPhysics : MonoBehaviour
 		transform.position = newPosition;
 
 		if (shouldPrintLocation) Debug.Log("Change Position to  ");
+	}
+	public void AddToPlayerPosition (Vector3 Add) {
+		transform.Translate(Add);
 	}
 
 	public void SetPlayerRotation ( Quaternion newRotation, bool shouldPrintRotation = false ) {

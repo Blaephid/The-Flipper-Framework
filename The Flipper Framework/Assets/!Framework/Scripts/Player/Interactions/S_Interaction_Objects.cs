@@ -98,6 +98,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	private void Update () {
 		FollowPlatform();
+
 	}
 
 	private void FixedUpdate () {
@@ -166,6 +167,9 @@ public class S_Interaction_Objects : MonoBehaviour
 					}
 				}
 				break;
+			case "MovingPlatform":
+				AttachAnchorToPlatform(Col);
+				break;
 		}
 	}
 
@@ -174,6 +178,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			case "MovingPlatform":
 				Destroy(_PlatformAnchor);
+				_PlatformAnchor = null;
 				break;
 			case "Wind":
 				_numberOfWindForces -= 1;
@@ -189,7 +194,8 @@ public class S_Interaction_Objects : MonoBehaviour
 		switch (Col.tag)
 		{
 			case "MovingPlatform":
-				AttachAnchorToPlatform(Col);
+				//AttachAnchorToPlatform(Col);
+				//FollowPlatform();
 				break;
 
 			case "Wind":
@@ -318,9 +324,11 @@ public class S_Interaction_Objects : MonoBehaviour
 			//The reason we're using an anchor reference attached as a child to the mover is because it means we can compare the changes in world position every frame, no matter what happens.
 			//For instance, if the object is rotating, this anchor will reflect that as it will move around as a child of the rotating.
 			_PlatformAnchor = GameObject.Instantiate(new GameObject("Anchor"), _PlayerPhys.transform.position, Quaternion.identity);
-			_PlatformAnchor.transform.parent = Col.transform;
-			_previousPlatformPointPosition = _PlatformAnchor.transform.position;
 		}
+		else
+			_PlatformAnchor.transform.position = _PlayerPhys.transform.position;
+		_PlatformAnchor.transform.parent = Col.transform;
+		_previousPlatformPointPosition = _PlatformAnchor.transform.position;
 	}
 
 	//If there is currently a platform script saved from being in a trigger with one, adjust the players position every frame to match it.
@@ -328,15 +336,23 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		if (_PlatformAnchor != null)
 		{
+			Debug.DrawRay(_PlatformAnchor.transform.position, Vector3.up /2, Color.red, 10f);
+			Debug.DrawRay(_previousPlatformPointPosition, Vector3.down /2, Color.yellow, 10f);
+			Debug.DrawLine(_PlatformAnchor.transform.position, _previousPlatformPointPosition, Color.white, 10f);
+
 			//Get how much the anchor has moved, and apply that same movement to the player.
 			Vector3 direction = _PlatformAnchor.transform.position - _previousPlatformPointPosition;
 			_previousPlatformPointPosition = _PlatformAnchor.transform.position;
 
+			//_PlayerPhys.AddGeneralVelocity(direction / Time.fixedDeltaTime, false);
+
 			//These alternate approaches are because when moving, changing rigidbody is smoother, when not, changing transform is smoother.
-			if (_PlayerPhys._coreVelocity.sqrMagnitude < 5)
-				_PlayerPhys.transform.position += direction;
+			if (_PlayerPhys._totalVelocity.sqrMagnitude < 5)
+				_PlayerPhys.SetPlayerPosition(_PlayerPhys.transform.position + direction);
 			else
+			{
 				_PlayerPhys._RB.position += direction;
+			}
 		}
 	}
 

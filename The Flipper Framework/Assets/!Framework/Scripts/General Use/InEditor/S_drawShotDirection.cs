@@ -9,7 +9,7 @@ public class S_drawShotDirection : MonoBehaviour
 	[Header("Gizmo")]
 	[Tooltip("If true, creates a series of gizmos that show the trajectory of the player after being launched by this. The red lines are the path and positions every frame. The blue line represents when the control lock ends.")]
 	public bool	_debugForce;
-	[Range(0f, 100f), Tooltip("This is how many phyiscs checks this gizmo should make. This means how many FixedUpdates would be called for the player when calculating their movement after the bounce.")]
+	[Range(0f, 150f), Tooltip("This is how many phyiscs checks this gizmo should make. This means how many FixedUpdates would be called for the player when calculating their movement after the bounce.")]
 	public int	_calculations = 1;
 
 	[Header("Launcher")]
