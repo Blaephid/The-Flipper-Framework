@@ -1516,9 +1516,9 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 1
     cameraDirectionPriority: 0.5
-    facingAmount: 100
-    currentTargetPriority: 0.4
-    timeToKeepTarget: {x: 0.18, y: 0.35}
+    facingAmount: 110
+    currentTargetPriority: 0.3
+    timeToKeepTarget: {x: 0.25, y: 0.2}
     iconScale: 1.5
     iconDistanceScaling: 0.2
   StartHomingSearch:
@@ -1541,7 +1541,7 @@ MonoBehaviour:
     iconScale: 1.5
     iconDistanceScaling: 0.2
   HomingStats:
-    canBePerformedOnGround: 0
+    canBePerformedOnGround: 1
     canDashWhenFalling: 1
     homingCountLimit: 0
     attackSpeed: 100
@@ -1549,9 +1549,9 @@ MonoBehaviour:
     turnSpeed: 7
     successDelay: 0.3
     minimumSpeedOnHit: 60
-    lerpToNewInputOnHit: 0.2
-    lerpToPreviousDirectionOnHit: 0.85
-    canBeControlled: 1
+    lerpToNewInputOnHit: 0.292
+    lerpToPreviousDirectionOnHit: 0.782
+    canBeControlled: 0
     maximumSpeed: 140
     minimumSpeed: 60
     deceleration: 55

@@ -461,7 +461,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			//Converting speed from landing onto running downhill
 			if (fromAirToGround)
 			{
-				Vector4 newVelocityAndSpeed = LandOnSlope(velocityThisFrame, velocityLastFrame, speedThisFrame);
+				Vector4 newVelocityAndSpeed = LandOnSlope(velocityThisFrame, velocityLastFrame, speedThisFrame, speedLastFrame);
 				velocityThisFrame = newVelocityAndSpeed;
 				speedThisFrame = newVelocityAndSpeed.w;
 			}
@@ -823,9 +823,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//If just landed, apply additional speed dependant on slope angle.
-	public Vector4 LandOnSlope ( Vector4 currentVelocity, Vector3 previousVelocity, float physicsCalculatedSpeed ) {
+	public Vector4 LandOnSlope ( Vector4 currentVelocity, Vector3 previousVelocity, float physicsCalculatedSpeed, float previousSpeed ) {
 
-		float newSpeed = _previousHorizontalSpeeds[1];
+		float newSpeed = Mathf.Max(_previousHorizontalSpeeds[1], _previousRunningSpeeds[1]);
 		Vector3 horizontalDirection = _totalVelocity.normalized;
 		horizontalDirection.y = 0;
 
@@ -1333,31 +1333,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		if (shouldPrintRotation) Debug.Log("Change Position to  " + newRotation);
 	}
-
-	public float GetPlayersSpeedInGivenDirection ( Vector3 direction, S_Enums.VelocityTypes velocityType, bool isNormalized, Vector3 custom = default(Vector3) ) {
-		direction.Normalize();
-		Vector3 velocity = Vector3.one;
-
-		switch (velocityType)
-		{
-			case S_Enums.VelocityTypes.Total:
-				velocity = _totalVelocity; break;
-			case S_Enums.VelocityTypes.Core:
-				velocity = _coreVelocity; break;
-			case S_Enums.VelocityTypes.Environmental:
-				velocity = _environmentalVelocity; break;
-			case S_Enums.VelocityTypes.CoreNoVertical:
-				velocity = new Vector3(_coreVelocity.x, 0, _coreVelocity.z); break;
-			case S_Enums.VelocityTypes.CoreNoLateral:
-				velocity = new Vector3(0, _coreVelocity.y, 0); break;
-			case S_Enums.VelocityTypes.Custom:
-				velocity = custom; break;
-		}
-		velocity = isNormalized ? velocity.normalized : velocity;
-
-		return Vector3.Dot(velocity, direction);
-	}
-
 
 	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.
 	public IEnumerator LockFunctionForTime ( EnumControlLimitations whatToLimit, float seconds, int frames = 0 ) {

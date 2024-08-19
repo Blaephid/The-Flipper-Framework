@@ -196,6 +196,9 @@ public class S_Interaction_Objects : MonoBehaviour
 				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
 				if (UpdraftScript != null)
 				{
+					if(_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Homing
+						|| _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
+
 					Vector3 thisForce = GetForceOfWind(UpdraftScript);
 					_currentWindDirection += thisForce;
 
@@ -244,15 +247,17 @@ public class S_Interaction_Objects : MonoBehaviour
 		float distanceSquared = S_CoreMethods.GetDistanceOfVectors(relativePlayerPosition, transform.position);
 
 		float power = 0;
-		if (distanceSquared < 25)
+		if (distanceSquared < 9)
 		{
 			//If under 3 units away and moving towards the wind, apply force against equal to the player's speed in that direction, ensuring they can't fall beyond it.
-			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-direction, S_Enums.VelocityTypes.Core, false);
-			if(dot > 5) { power = dot; }
+			Vector3 WindProjectedAgainstVelocity = Vector3.Project(_PlayerPhys._coreVelocity, -direction);
+			if(WindProjectedAgainstVelocity.sqrMagnitude > 1) { power = WindProjectedAgainstVelocity.magnitude; }
 		}
-		//Affect power by distance along in this direction
-		power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared));
-		
+		else
+			//Affect power by distance along in this direction
+			//power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared));
+			power =  UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared);
+
 		return power * direction;
 	}
 
@@ -268,28 +273,38 @@ public class S_Interaction_Objects : MonoBehaviour
 			lateralWind.y = 0;
 			Vector3 verticalWind = new Vector3(0, _currentWindDirection.y, 0);
 
-			//Apply lateral
-			//Get how fast the coreVelocity is moving against the wind.
-			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-lateralWind, S_Enums.VelocityTypes.Custom, true);
-			//If player is not moving in favour of the wind.
-			if (dot > -0.7f)
-				_PlayerPhys.AddGeneralVelocity(lateralWind, false);
-			//If pushing away from the wind
-			else
-				_PlayerPhys.AddCoreVelocity(lateralWind * Time.fixedDeltaTime);
 
-			float x = 0;
+			//Apply lateral
+			Vector3 relevantCoreVelocity = new Vector3 (_PlayerPhys._coreVelocity.x, 0, _PlayerPhys._coreVelocity.z);
+			Vector3 nextVelocity = relevantCoreVelocity + lateralWind;
+
+			//If the wind will increase velocity overall, then apply to coreVelocity so it remains, rather than just being temporary like with the constant general.
+			if ( nextVelocity.sqrMagnitude > relevantCoreVelocity.sqrMagnitude)
+			{
+				lateralWind = S_CoreMethods.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
+
+				//If added normally, then running perpendicular to the wind, the full force would be added, but immediately turned away, increasing velocity in the unintended direction.
+				//So only add the amount specifically in the wind direction, using project.
+				Vector3 nextSpeedInFanDirection = Vector3.Project(nextVelocity, lateralWind);
+				Vector3 increase = nextSpeedInFanDirection - relevantCoreVelocity;
+
+				if(relevantCoreVelocity.sqrMagnitude > increase.sqrMagnitude * Time.fixedDeltaTime + 1)
+					_PlayerPhys.AddCoreVelocity(increase * Time.fixedDeltaTime * 0.5f);
+			}
+
+			_PlayerPhys.AddGeneralVelocity(lateralWind, false); //Using general velocity so the player believably is still running at speed, even if going nowhere in the world.
+
 
 			//Apply vertical, decreasing core velocity if going towards wind, to combat gravity.
-			dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(verticalWind, S_Enums.VelocityTypes.CoreNoLateral, false);
-			if (dot >= x)//If already being pushed up by wind.
+			float x = 0;
+			if (_PlayerPhys._coreVelocity.y >= x)//If already being pushed up by wind
 				_PlayerPhys.AddGeneralVelocity(verticalWind, false);
 			else //Fallspeed wont increase while in wind, so apply velocity until upwards force is x, overcoming gravity
-				_PlayerPhys.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(dot - x)));
+				_PlayerPhys.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(_PlayerPhys._coreVelocity.y - x)));
 
 			//If being blown upwards, enter the hovering state to change actions and animation.
 			//canHover can only be set to true by the Hovering AttemptAction, so GetComponent is safe, and Hovering being enabled shouldn't enable canhover.
-			if (_canHover && _totalWindDirection.normalized.y > 0.72f)
+			if (_canHover && _totalWindDirection.normalized.y > 0.72f && _totalWindDirection.y > 10)
 			{
 				 _Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction(); //Not placed in enterTrigger incase was already in the trigger, but not in a state that could enter the hover action.
 			}
@@ -505,6 +520,12 @@ public class S_Interaction_Objects : MonoBehaviour
 			_Input.LockInputForAWhile(SpringScript._lockForFrames_, false, Vector3.zero, SpringScript._LockInputTo_);
 		}
 
+		//If needed, rotate character in set direction, this will be run after the player rotation is set to velocity in ApplyForceAfterDelay, overwriting it.
+		if(SpringScript._SetPlayerForwardsTo_ != null)
+		{
+			_Actions._ActionDefault.SetSkinRotationToVelocity(0, SpringScript._SetPlayerForwardsTo_.forward, Vector2.zero, transform.up);
+		}
+
 		//Prevents using air moves until after some time
 		if (SpringScript._lockAirMovesTime_ > 0)
 		{
@@ -587,7 +608,6 @@ public class S_Interaction_Objects : MonoBehaviour
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
 		_PlayerPhys.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
-
 		_PlayerPhys.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_Enums.ChangeLockState.Lock); //Apply bounce
 	}
 

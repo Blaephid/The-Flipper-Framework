@@ -79,6 +79,9 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 	public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Upreel);
+		enabled = true;
+
 		//Set same animation as when on a zipline.
 		_CharacterAnimator.SetInteger("Action", 9);
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -95,14 +98,12 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 		_currentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Upreel);
-		enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction();  return; } //If first time, then return after setting to disabled.
 
 		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;

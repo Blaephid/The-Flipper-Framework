@@ -296,9 +296,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_PlayerPhys._canChangeGrounded = true;
 		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
 			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
-
-		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
+		if(_PlayerPhys._listOfCanControl.Count > 0)
+			_PlayerPhys._listOfCanControl.RemoveAt(0);
+		if(_Actions._listOfSpeedOnPaths.Count > 0)
+			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 	}
 
 	public void HandleInputs () {

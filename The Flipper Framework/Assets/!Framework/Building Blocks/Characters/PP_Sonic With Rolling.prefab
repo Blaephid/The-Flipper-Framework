@@ -269,23 +269,48 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
+      propertyPath: _addState
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
       propertyPath: _MainActions.Array.size
       value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
       propertyPath: _MainActions.Array.data[0].SituationalStates.Array.size
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
       propertyPath: _MainActions.Array.data[2].SituationalStates.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _MainActions.Array.data[3].SituationalStates.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _MainActions.Array.data[6].SituationalStates.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _MainActions.Array.data[8].SituationalStates.Array.size
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
       propertyPath: _MainActions.Array.data[10].SituationalStates.Array.size
-      value: 4
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _MainActions.Array.data[12].SituationalStates.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
@@ -299,8 +324,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
+      propertyPath: _MainActions.Array.data[0].PerformableSubStates.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
       propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[6]'
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[7]'
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
@@ -311,6 +346,51 @@ PrefabInstance:
         type: 3}
       propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[6]'
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[7]'
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[3].SituationalStates.Array.data[4]'
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[3].SituationalStates.Array.data[5]'
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[3].SituationalStates.Array.data[6]'
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[6].SituationalStates.Array.data[3]'
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[8].SituationalStates.Array.data[6]'
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[10].SituationalStates.Array.data[4]'
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[12].SituationalStates.Array.data[2]'
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[0].PerformableSubStates.Array.data[3]'
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
