@@ -299,7 +299,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_isWallOnRight = wallRight;
 
 		_runningSpeed = _PlayerPhys._horizontalSpeedMagnitude;
-		_currentClimbingSpeed = _PlayerPhys._totalVelocity.y * 0.4f;
+		_currentClimbingSpeed = _PlayerPhys._worldVelocity.y * 0.4f;
 
 		_checkDistance = wallHit.distance + 2; //Ensures first checks for x seconds will find the wall.
 		_checkDistance = Mathf.Max(_checkDistance, _wallCheckDistance_.y * 1.5f);
@@ -345,7 +345,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	//Because canChangeGrounded is set to false on start, use own method when checking for ground, with own values to ensure doesn't count the current wall being climbed as ground.
 	public bool IsOnGround () {
-		if(_PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
+		if(_PlayerPhys.GetRelevantVector(_PlayerPhys._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
 			Vector3 rayCastStartPosition = transform.position + _wallHit.normal * 0.5f;
 			float range = (_CoreCollider.height / 2) + (_CoreCollider.radius / 2) + 0.5f;

@@ -321,7 +321,7 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucFindGround
 		{
 			GroundMask = new LayerMask(),
-			rayToGroundDistance = 1.4f,
+			rayToGroundDistance = new Vector2(1.4f, 0.8f),
 			raytoGroundSpeedRatio = 0.01f,
 			raytoGroundSpeedMax = 2.6f,
 			groundAngleDifferenceLimit = new Vector3 (30, 80, 50),
@@ -335,8 +335,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public LayerMask    GroundMask;
 		[Tooltip("Core: The maximum difference between the current upwards direction and floor when checking if grounded. Difference above this means not being grounded. x = base, y = when in the air, z = when grounded but enw ground is uphill.")]
 		public Vector3        groundAngleDifferenceLimit;
-		[Tooltip("Core: The max range downwards of the ground checker.")]
-		public float        rayToGroundDistance;
+		[Tooltip("Core: The max range downwards of the ground checker, x is when grounded, y is when in the air.")]
+		public Vector2        rayToGroundDistance;
 		[Tooltip("Core: Adds current horizontal speed multiplied by this to the ground checker when running along the ground. Combats how it's easier to lose when at higher speed.")]
 		public float        raytoGroundSpeedRatio;
 		[Tooltip("Core: The maximum range the ground checker can reach when increased by the above ratio.")]

@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class S_Control_MovingPlatform : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class S_Control_MovingPlatform : MonoBehaviour
 
 	[Header("In Game")]
 	public bool         _isActive = true;
+	public bool         _canCarryPlayer = true;
 	private float       _counterForMove;
 
 	public List<strucMove> _ListOfMovesOnStart = new List<strucMove>() { new strucMove {
@@ -65,28 +67,53 @@ public class S_Control_MovingPlatform : MonoBehaviour
 		public float                  _YDelay;
 	}
 
+	private Rigidbody   _RB;
 
-	public Vector3 _currentPosition { get; set; }
-	public Vector3 TranslateVector { get; set; }
-
-
-	Vector3 _startPosition;
+	public Vector3	_currentPosition { get; set; }
+	private Vector3	_startPosition;
+	[HideInInspector]
+	public bool	_isPhysicsActive = false;
 
 
 	void Start () {
 		_startPosition = transform.position;
 		_currentPosition = transform.position;
 
+		if (_canCarryPlayer)
+		{
+			_RB = GetComponent<Rigidbody>();
+		}
+
 		SetPlayListAsStart();
 	}
 
+	//Normally, the platform/object will move by having a new location set.
 	private void Update () {
-		if (_isActive)
+		if(!_isPhysicsActive && _isActive)
 		{
-			Debug.DrawRay(transform.position, Vector3.up, Color.cyan);
 			Vector3 destination = MovePlatform(0, Time.deltaTime);
-			Vector3 direction = destination - transform.position;
-			transform.position = destination;
+			Vector3 location = _canCarryPlayer ? _RB.position : transform.position;
+
+			if (_canCarryPlayer)
+			{
+				_RB.velocity = Vector3.zero;
+				_RB.position = destination;
+			}
+			else
+				transform.position = destination;
+		}
+	}
+
+	//But to ensure a platform can push a player, or smoothly carry them when on top, isPhysicsActive is set to true IF the player enters a trigger on the same object (not in parent).
+	private void FixedUpdate () {
+		if (_isActive && _isPhysicsActive)
+		{
+			Vector3 destination = MovePlatform(0, Time.deltaTime);
+
+			//Instead of going straight to a new location, apply velocity that will take it there in one frame. 
+			Vector3 direction = destination - _RB.position;
+			_RB.velocity = direction / Time.deltaTime;
+			return;
 		}
 	}
 
@@ -177,7 +204,6 @@ public class S_Control_MovingPlatform : MonoBehaviour
 				MovePlatform(0, Time.fixedDeltaTime);
 
 				Gizmos.color = Color.red;
-				Gizmos.DrawLine(lineStart, _currentPosition);
 			}
 		}
 	}

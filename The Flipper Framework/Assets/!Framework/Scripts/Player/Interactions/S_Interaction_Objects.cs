@@ -95,7 +95,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		_CoreUIElements.RingsCounter.text = ": " + (int)_HurtAndHealth._ringAmount;
 
-		FollowPlatform();
+		
 	}
 
 	private void Update () {
@@ -168,8 +168,8 @@ public class S_Interaction_Objects : MonoBehaviour
 					}
 				}
 				break;
-			case "MovingPlatform":
-				AttachAnchorToPlatform(Col);
+			case "Enable Objects Physics":
+				SetMovingPlatformAsActive(Col, true);
 				break;
 		}
 	}
@@ -181,6 +181,11 @@ public class S_Interaction_Objects : MonoBehaviour
 				Destroy(_PlatformAnchor);
 				_PlatformAnchor = null;
 				break;
+
+			case "Enable Objects Physics":
+				SetMovingPlatformAsActive(Col, false);
+				break;
+
 			case "Wind":
 				_numberOfWindForces -= 1;
 				if (Col.transform.up.y > 0.7f)
@@ -195,8 +200,8 @@ public class S_Interaction_Objects : MonoBehaviour
 		switch (Col.tag)
 		{
 			case "MovingPlatform":
-				//AttachAnchorToPlatform(Col);
-				//FollowPlatform();
+				FollowPlatform();
+				AttachAnchorToPlatform(Col);
 				break;
 
 			case "Wind":
@@ -318,8 +323,18 @@ public class S_Interaction_Objects : MonoBehaviour
 		}
 	}
 
+	//If the trigger is on the same object as the movePlatform component, then switch the platform to move with physics rather than transform. This is for more accurate interactions when close but cheaper interactions further away.
+	private void SetMovingPlatformAsActive(Collider Col ,bool activePhysics ) {
+		if (Col.TryGetComponent(out S_Control_MovingPlatform Control))
+		{
+			if(Control._canCarryPlayer)
+				Control._isPhysicsActive = activePhysics; //See the S_ControlMoving Platform script for how it switches to applying velocity every fixedUpdate.
+		}
+	}
+
 	//When on a moving platform, check is an anchor has currently been spawned, and if not, create one.
 	private void AttachAnchorToPlatform ( Collider Col ) {
+
 		if (_PlatformAnchor == null)
 		{
 			//The reason we're using an anchor reference attached as a child to the mover is because it means we can compare the changes in world position every frame, no matter what happens.
@@ -327,9 +342,10 @@ public class S_Interaction_Objects : MonoBehaviour
 			_PlatformAnchor = GameObject.Instantiate(new GameObject("Anchor"), _PlayerPhys.transform.position, Quaternion.identity);
 		}
 		else
-			_PlatformAnchor.transform.position = _PlayerPhys.transform.position;
+			_PlatformAnchor.transform.position = transform.position;
+
 		_PlatformAnchor.transform.parent = Col.transform;
-		_previousPlatformPointPosition = _PlatformAnchor.transform.position;
+		_previousPlatformPointPosition = transform.position;
 	}
 
 	//If there is currently a platform script saved from being in a trigger with one, adjust the players position every frame to match it.
@@ -337,23 +353,12 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		if (_PlatformAnchor != null)
 		{
-			Debug.DrawRay(_PlatformAnchor.transform.position, Vector3.right /2, Color.red);
-			Debug.DrawRay(_previousPlatformPointPosition, Vector3.right /2, Color.yellow);
-			Debug.DrawLine(_PlatformAnchor.transform.position, _previousPlatformPointPosition, Color.white, 10f);
-
 			//Get how much the anchor has moved, and apply that same movement to the player.
 			Vector3 direction = _PlatformAnchor.transform.position - _previousPlatformPointPosition;
 			_previousPlatformPointPosition = _PlatformAnchor.transform.position;
 
-			//_PlayerPhys.AddGeneralVelocity(direction / Time.fixedDeltaTime, false);
-
-			//These alternate approaches are because when moving, changing rigidbody is smoother, when not, changing transform is smoother.
-			if (_PlayerPhys._totalVelocity.sqrMagnitude < 5)
-				_PlayerPhys.SetPlayerPosition(_PlayerPhys.transform.position + direction);
-			else
-			{
-				_PlayerPhys._RB.position += direction;
-			}
+			_PlayerPhys.AddGeneralVelocity(direction / Time.fixedDeltaTime, true);
+			return;
 		}
 	}
 
@@ -465,7 +470,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
 
-		//_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
+		_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
 
 		//Returns air actions
 		_Actions._isAirDashAvailables = true;

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1094775691890660957}
   - component: {fileID: 7807071036049646430}
   m_Layer: 0
-  m_Name: Trigger
+  m_Name: Trigger Making Player Follow
   m_TagString: MovingPlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 836938691107634276}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0.161}
+  m_LocalPosition: {x: 0, y: 0, z: 0.076}
   m_LocalScale: {x: 1.5328096, y: 1.5662775, z: 0.46}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51,7 +51,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 0.64}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2693771720908685372
 GameObject:
@@ -62,11 +62,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2693771720908685312}
-  - component: {fileID: 2693771720908685313}
   - component: {fileID: 380900782277107515}
+  - component: {fileID: 14871955398979821}
+  - component: {fileID: 8083539092300281782}
   m_Layer: 0
   m_Name: Pr_Moving Platform AL
-  m_TagString: Untagged
+  m_TagString: Enable Objects Physics
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -88,33 +89,6 @@ Transform:
   - {fileID: 1094775691890660957}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!54 &2693771720908685313
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2693771720908685372}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &380900782277107515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,9 +101,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9d02b444549974b946d5f306e77118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _projectPath: 0
-  _calculations: 0
+  _projectPath: 1
+  _calculations: 500
   _isActive: 1
+  _canCarryPlayer: 1
   _ListOfMovesOnStart:
   - _XSpeedByTime_:
       serializedVersion: 2
@@ -242,6 +217,55 @@ MonoBehaviour:
     _YSpeed_: 5
     _willReturnOnY: 1
     _YDelay: 0
+  _isPhysicsActive: 0
+--- !u!54 &14871955398979821
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2693771720908685372}
+  serializedVersion: 4
+  m_Mass: 500
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 112
+  m_CollisionDetection: 2
+--- !u!65 &8083539092300281782
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2693771720908685372}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 8, y: 8, z: 8}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2693771722125761437
 GameObject:
   m_ObjectHideFlags: 0

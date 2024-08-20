@@ -193,7 +193,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_wallHit = wallHit;
 
 		//Set speed to start movement on.
-		_currentClimbingSpeed = _PlayerPhys._totalVelocity.y;
+		_currentClimbingSpeed = _PlayerPhys._worldVelocity.y;
 		if (_currentClimbingSpeed < 0)
 		{
 			_currentClimbingSpeed = Mathf.Lerp(_currentClimbingSpeed, 0, 0.5f);

@@ -191,7 +191,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private void SetRunningInDirectionOfSpline () {
 
 		//Ensure starts going down the same direction every time.
-		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity);
+		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._worldVelocity);
 		Vector3 verticalVelocity = transform.up * relevantVelocity.y; //Seperates this so player can fall to the ground while still following the path.
 
 		_PlayerPhys.SetBothVelocities((_sampleForwards * _playerSpeed) + verticalVelocity, Vector2.right, "Overwrite");
@@ -249,8 +249,6 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	}
 
 	private void ApplyVelocity () {
-		Debug.DrawRay(transform.position, _PlayerPhys._moveInput, Color.green, 100f);
-		Debug.DrawRay(transform.position - transform.up * 0.5f, _physicsCoreVelocity * Time.fixedDeltaTime, Color.yellow, 100f);
 
 		_PlayerPhys.SetBothVelocities(_physicsCoreVelocity, Vector2.right);
 		_PlayerPhys.SetTotalVelocity();
@@ -274,8 +272,6 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	}
 
 	private void ExitPath () {
-
-		Debug.DrawRay(transform.position, _sampleForwards * 20, Color.yellow, 10f);
 		_Input.LockInputForAWhile(_willLockFor, false, _sampleForwards, S_Enums.LockControlDirection.Change);
 
 		_Actions._ActionDefault.StartAction();

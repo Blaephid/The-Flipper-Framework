@@ -27,6 +27,8 @@ TagManager:
   - Pit
   - MovingPlatform
   - Upreel
+  - CancelHoming
+  - Enable Objects Physics
   layers:
   - Default
   - TransparentFX

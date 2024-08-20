@@ -197,13 +197,20 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			_thisMaxDuration = _maxJumpTime_ * _jumpDurationModifier;
 
 			//Jump higher depending based on speed, if jumping upwards off a slope the players running up.
-			if (_PlayerPhys._totalVelocity.y > 5 && _upwardsDirection.y < 1)
+			if (_PlayerPhys._worldVelocity.y > 5 && _upwardsDirection.y < 1)
 			{
 				_jumpSlopeSpeed = Mathf.Max( _PlayerPhys._totalVelocity.y * _jumpSlopeConversion_, _thisJumpSpeed);
    				_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 			}
 			else
 			{
+				//If being moved upwards but not running upwards, add to jump to ensure can overcome that (like on a platform moving upwards.)
+				//World velocity is the actual direction moving, because Total And RB are set already because all of S_PlayerPhysics happens before this.
+				Vector3 forceAlreadyMovingUpwards = _PlayerPhys.GetRelevantVector(_PlayerPhys._worldVelocity, true);
+
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * Mathf.Max(0, forceAlreadyMovingUpwards.y));
+				Debug.Log("Add + " + _upwardsDirection * Mathf.Max(0, forceAlreadyMovingUpwards.y));
+
 				_jumpSlopeSpeed = 0; //Means slope jump force won't be applied this jump
 			}
 			_Actions._jumpCount = 1; //Number of jumps set to 1, allowing for double jumps.
@@ -273,7 +280,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private void JumpInAir () {
 
 		//Take some horizontal speed on jump and remove vertical speed to ensure jump is an upwards force.
-		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._totalVelocity.y, 2), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
+		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._worldVelocity.y, 2), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
 		_PlayerPhys.SetCoreVelocity(newVel, "Overwrite");
 
 		//Add particle effect during jump
@@ -284,38 +291,44 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	}
 
 	private void ApplyForce() {
-		//Ending Jump Early
-		if (!_Input._JumpPressed && _counter > _thisMinDuration && _isJumping)
+
+		if (_isJumping)
 		{
-			EndJumpForce();
-		}
-		//Ending jump after max duration
-		else if (_counter > _thisMaxDuration && _isJumping && _Input._JumpPressed)
-		{
-			EndJumpForce();
-		}
-		//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
-		else if(_isJumping && _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
-		{
-			EndJumpForce();
-		}
-		//If there are no interuptions, apply jump force.
-		else if (_isJumping)
-		{
+			//Ending Jump Early
+			if (!_Input._JumpPressed && _counter > _thisMinDuration && _isJumping)
+			{
+				EndJumpForce();
+			}
+			//Ending jump after max duration
+			else if (_counter > _thisMaxDuration && _isJumping && _Input._JumpPressed)
+			{
+ 				EndJumpForce();
+			}
+			//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
+			else if (_isJumping && _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
+			{
+				EndJumpForce();
+			}
+
+			//Apply jump force, even if EndJumpForce was called this frame.
 			float modifierThisFrame = _JumpForceByTime_.Evaluate(_counter / _thisMaxDuration ); //Get a modifier to adjust jump force this frame based on how long has been jumping for out of maximum time.
-			//Jump move at angle
+												//Jump move at angle
 			if (_counter < _slopedJumpDuration && _jumpSlopeSpeed > 0)
 			{
 				float forceThisFrame = (_jumpSlopeSpeed * modifierThisFrame);
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (forceThisFrame * 0.95f));
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (forceThisFrame * 0.05f)); //Extra speed to ballance out direction
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (forceThisFrame * 0.9f));
+				_PlayerPhys.AddCoreVelocity(Vector3.up * (forceThisFrame * 0.1f)); //Extra speed to ballance out direction
+
+				Debug.Log("Sloped Jump Of  " + forceThisFrame);
 			}
 			//Move straight up in world.
 			else
 			{
 				float forceThisFrame = (_thisJumpSpeed * modifierThisFrame);
 				_PlayerPhys.AddCoreVelocity(_upwardsDirection * forceThisFrame);
-			}
+
+				Debug.Log("Straight Jump Of  " + forceThisFrame);
+			}		
 		}
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.
 		else
@@ -326,7 +339,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	//Called when the jump should stop applying force, but before exiting the state.
 	private void EndJumpForce () {
-		_counter = _thisMaxDuration;
+		_counter = _thisMaxDuration; //Set to the jump this frame will be at end speed.
 		_isJumping = false;
 		_Input._JumpPressed = false;
 	}
