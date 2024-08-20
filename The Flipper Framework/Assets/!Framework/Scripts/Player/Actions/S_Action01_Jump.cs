@@ -306,13 +306,15 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Jump move at angle
 			if (_counter < _slopedJumpDuration && _jumpSlopeSpeed > 0)
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f * modifierThisFrame));
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f * modifierThisFrame)); //Extra speed to ballance out direction
+				float forceThisFrame = (_jumpSlopeSpeed * modifierThisFrame);
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (forceThisFrame * 0.95f));
+				_PlayerPhys.AddCoreVelocity(Vector3.up * (forceThisFrame * 0.05f)); //Extra speed to ballance out direction
 			}
 			//Move straight up in world.
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed) * modifierThisFrame);
+				float forceThisFrame = (_thisJumpSpeed * modifierThisFrame);
+				_PlayerPhys.AddCoreVelocity(_upwardsDirection * forceThisFrame);
 			}
 		}
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.

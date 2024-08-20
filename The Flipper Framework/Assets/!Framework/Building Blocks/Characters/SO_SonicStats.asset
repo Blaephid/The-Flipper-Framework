@@ -113,7 +113,7 @@ MonoBehaviour:
   AccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4
-    angleToAccelerate: 120
+    angleToAccelerate: 70
     AccelBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -127,8 +127,17 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.23233552
-        value: 1.7781134
+        time: 0.14655346
+        value: 1.5054858
+        inSlope: 0.17781135
+        outSlope: 0.17781135
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 1
+      - serializedVersion: 3
+        time: 0.2644902
+        value: 1.4960827
         inSlope: -0.13208015
         outSlope: -0.13208015
         tangentMode: 0
@@ -826,8 +835,8 @@ MonoBehaviour:
       m_RotationOrder: 4
   DecelerationStats:
     moveDeceleration: 4
-    airManualDecel: 1.5
-    airConstantDecel: 0
+    airManualDecel: 1.8
+    airConstantDecel: 0.05
     rollingFlatDecell: 0.5
     DecelBySpeed:
       serializedVersion: 2
@@ -1235,8 +1244,8 @@ MonoBehaviour:
     canSkidInAir: 1
     shouldSkiddingDisableTurning: 1
     skiddingIntensity: -5
-    skiddingIntensityInAir: -2.5
-    speedToStopAt: 10
+    skiddingIntensityInAir: -4
+    speedToStopAt: 5
   StartSkiddingStats:
     angleToPerformSkid: 160
     angleToPerformSpinSkid: 140

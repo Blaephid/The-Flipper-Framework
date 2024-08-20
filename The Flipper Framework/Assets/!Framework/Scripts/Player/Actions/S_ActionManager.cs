@@ -193,13 +193,6 @@ public class S_ActionManager : MonoBehaviour
 
 		_currentAction = _MainActions[currentActionInList]; //This will allow the update method to check situation actions
 
-		//Checks if any subactions attached to this action should be performed ontop. 
-		//When one returns true, it is being switched to, so end the method. This take priority over main actions.
-		for (int a = 0 ; a < _currentAction.SubActions.Count ; a++)
-		{
-			performAction = _currentAction.SubActions[a].AttemptAction();
-			if (performAction) { return; }
-		}
 
 		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
 		for (int a = 0 ; a < _currentAction.ConnectedActions.Count ; a++)
@@ -207,6 +200,16 @@ public class S_ActionManager : MonoBehaviour
 			performAction = _currentAction.ConnectedActions[a].AttemptAction();
 			if (performAction) { return; }
 		}
+
+
+		//Checks if any subactions attached to this action should be performed ontop. 
+		//When one returns true, it is being switched to, so end the method.
+		for (int a = 0 ; a < _currentAction.SubActions.Count ; a++)
+		{
+			performAction = _currentAction.SubActions[a].AttemptAction();
+			if (performAction) { return; }
+		}
+
 	}
 
 	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.

@@ -83,7 +83,10 @@ public class S_Control_MovingPlatform : MonoBehaviour
 	private void Update () {
 		if (_isActive)
 		{
-			transform.position = MovePlatform(0, Time.deltaTime);
+			Debug.DrawRay(transform.position, Vector3.up, Color.cyan);
+			Vector3 destination = MovePlatform(0, Time.deltaTime);
+			Vector3 direction = destination - transform.position;
+			transform.position = destination;
 		}
 	}
 

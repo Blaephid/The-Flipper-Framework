@@ -94,11 +94,12 @@ public class S_Interaction_Objects : MonoBehaviour
 		UpdateSpeed();
 
 		_CoreUIElements.RingsCounter.text = ": " + (int)_HurtAndHealth._ringAmount;
+
+		FollowPlatform();
 	}
 
 	private void Update () {
-		FollowPlatform();
-
+		//FollowPlatform();
 	}
 
 	private void FixedUpdate () {
@@ -336,8 +337,8 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		if (_PlatformAnchor != null)
 		{
-			Debug.DrawRay(_PlatformAnchor.transform.position, Vector3.up /2, Color.red, 10f);
-			Debug.DrawRay(_previousPlatformPointPosition, Vector3.down /2, Color.yellow, 10f);
+			Debug.DrawRay(_PlatformAnchor.transform.position, Vector3.right /2, Color.red);
+			Debug.DrawRay(_previousPlatformPointPosition, Vector3.right /2, Color.yellow);
 			Debug.DrawLine(_PlatformAnchor.transform.position, _previousPlatformPointPosition, Color.white, 10f);
 
 			//Get how much the anchor has moved, and apply that same movement to the player.
