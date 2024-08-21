@@ -209,8 +209,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 				Vector3 forceAlreadyMovingUpwards = _PlayerPhys.GetRelevantVector(_PlayerPhys._worldVelocity, true);
 
 				_PlayerPhys.AddCoreVelocity(_upwardsDirection * Mathf.Max(0, forceAlreadyMovingUpwards.y));
-				Debug.Log("Add + " + _upwardsDirection * Mathf.Max(0, forceAlreadyMovingUpwards.y));
-
 				_jumpSlopeSpeed = 0; //Means slope jump force won't be applied this jump
 			}
 			_Actions._jumpCount = 1; //Number of jumps set to 1, allowing for double jumps.
@@ -318,16 +316,12 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 				float forceThisFrame = (_jumpSlopeSpeed * modifierThisFrame);
 				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (forceThisFrame * 0.9f));
 				_PlayerPhys.AddCoreVelocity(Vector3.up * (forceThisFrame * 0.1f)); //Extra speed to ballance out direction
-
-				Debug.Log("Sloped Jump Of  " + forceThisFrame);
 			}
 			//Move straight up in world.
 			else
 			{
 				float forceThisFrame = (_thisJumpSpeed * modifierThisFrame);
 				_PlayerPhys.AddCoreVelocity(_upwardsDirection * forceThisFrame);
-
-				Debug.Log("Straight Jump Of  " + forceThisFrame);
 			}		
 		}
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.

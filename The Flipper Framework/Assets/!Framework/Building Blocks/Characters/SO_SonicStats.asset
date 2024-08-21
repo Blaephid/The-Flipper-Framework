@@ -1028,8 +1028,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.65445083
-        value: 75.3139
+        time: -0.3
+        value: 75.54974
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1037,8 +1037,35 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.9711104
-        value: 75.54974
+        time: 0
+        value: 45
+        inSlope: -114.96878
+        outSlope: -114.96878
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.3
+        value: 10
+        inSlope: -187.54198
+        outSlope: -187.54198
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.5
+        value: 0
+        inSlope: -2.9447315
+        outSlope: -2.9447315
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 1
+      - serializedVersion: 3
+        time: 1
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1155,7 +1182,7 @@ MonoBehaviour:
   GreedysStickToGround:
     forceTowardsGround: 4
     stickingLerps: {x: 0.99, y: 0.96}
-    stickingNormalLimit: 0.531
+    stickingNormalLimit: 0.459
     stickCastAhead: 1.5
     groundBuffer: 0.05
     rotationResetThreshold: -0.05
@@ -1196,8 +1223,8 @@ MonoBehaviour:
     GroundMask:
       serializedVersion: 2
       m_Bits: 1
-    groundAngleDifferenceLimit: {x: 20, y: 85, z: 75}
-    rayToGroundDistance: {x: 1.4, y: 1}
+    groundAngleDifferenceLimit: {x: 20, y: 65, z: 75}
+    rayToGroundDistance: {x: 1.4, y: 1.2}
     raytoGroundSpeedRatio: 0.018
     raytoGroundSpeedMax: 2.6
   WhenInAir:
