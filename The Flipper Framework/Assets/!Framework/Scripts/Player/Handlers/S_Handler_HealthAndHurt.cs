@@ -296,6 +296,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			{
 				_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
 				_LevelHandler.RespawnObjects();
+				_CamHandler.ResetOnDeath();
 
 				_counter = _invincibilityTime_; //Ends the counter for flickering so the character will be fully visible on respawn.
 			}

@@ -458,8 +458,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			//If pad is set to, rotate camera horizontally towards dash direction.
 			if (SpeedPadScript._willAffectCamera_)
 			{
-				Quaternion targetRotation = Quaternion.LookRotation(Col.transform.forward, _PlayerPhys.transform.up);
-				_CamHandler._HedgeCam.SetCameraNoHeight(Col.transform.forward, SpeedPadScript._CameraRotateTime_.x, SpeedPadScript._CameraRotateTime_.y, targetRotation, false, false);
+				_CamHandler._HedgeCam.SetCameraNoSeperateHeight(Col.transform.forward, SpeedPadScript._CameraRotateTime_.x, SpeedPadScript._CameraRotateTime_.y, Vector3.zero, false);
 			}
 
 		}

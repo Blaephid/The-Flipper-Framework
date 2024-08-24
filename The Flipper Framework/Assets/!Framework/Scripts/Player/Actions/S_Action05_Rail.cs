@@ -189,8 +189,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		//ignore further rail collisions
 		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, true);
 
-		if (enabled) { _PlayerPhys._listOfCanControl.RemoveAt(0); } //Because this action can transfer into itself through rail hopping, undo the lock that would usually be undone in StopAction. This prevents multiple from stacking up.
-
 		//Prevents raill hopping temporarily
 		StartCoroutine(DelayHopOnLanding());
 
@@ -203,56 +201,60 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		_Rail_int._canGrindOnRail = false; //Prevents calling this multiple times in one update
 
-		_isCrouching = false;
-		_pulleyRotate = 0f;
-
-		_isBoosted = false;
-		_boostTime = 0;
-
-		//Set controls
-		_PlayerPhys._listOfIsGravityOn.Add(false);
-		_PlayerPhys._listOfCanControl.Add(false);
-		_PlayerPhys._canChangeGrounded = false;
-
-		_Input._JumpPressed = false;
-
-		//Animator
-		_Actions._ActionDefault.SwitchSkin(true);
-		_CharacterAnimator.SetTrigger("ChangedState");
-		switch (_whatKindOfRail)
-		{
-			case S_Interaction_Pathers.PathTypes.rail:
-				_CharacterAnimator.SetBool("GrindRight", _isFacingRight);   //Sets which direction the character animation is facing. Tracked between rails to hopping doesn't change it.
-				_CharacterAnimator.SetInteger("Action", 10);
-				break;
-			case S_Interaction_Pathers.PathTypes.zipline:
-				_ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; //Ensures there won't be weird collisions along the zipline.
-				_CharacterAnimator.SetInteger("Action", 9);
-				break;
-		}
-
-		//If got onto this rail from anything except a rail hop, set speed to physics.
-		_Actions._listOfSpeedOnPaths.Add(_PlayerPhys._speedMagnitude);
-
 		//Get how much the character is facing the same way as the point.
 		CurveSample sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
 		_sampleForwards = _RailTransform.rotation * sample.tangent;
 		float facingDot = Vector3.Dot(_PlayerPhys._worldVelocity.normalized, _sampleForwards);
 
-		_grindingSpeed = _PlayerPhys._horizontalSpeedMagnitude;
-		//What action before this one.
-		switch (_Actions._whatCurrentAction)
+		//Because this action can start itself by hopping from one rail to another, only do this if hasn't just done so.
+		if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Rail)
 		{
-			// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
-			case S_Enums.PrimaryPlayerStates.Homing:
-				facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _sampleForwards);
-				_grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
-				break;
-			//If it was a drop charge, add speed from the charge to the grind speed.
-			case S_Enums.PrimaryPlayerStates.DropCharge:
-				float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
-				_grindingSpeed = Mathf.Clamp(charge, _grindingSpeed + (charge / 6), 160);
-				break;
+			_isCrouching = false;
+			_pulleyRotate = 0f;
+
+			_isBoosted = false;
+			_boostTime = 0;
+
+			//Set controls
+			_PlayerPhys._listOfIsGravityOn.Add(false);
+			_PlayerPhys._listOfCanControl.Add(false);
+			_PlayerPhys._canChangeGrounded = false;
+
+			_Input._JumpPressed = false;
+
+			//Animator
+			_Actions._ActionDefault.SwitchSkin(true);
+			_CharacterAnimator.SetTrigger("ChangedState");
+			switch (_whatKindOfRail)
+			{
+				case S_Interaction_Pathers.PathTypes.rail:
+					_CharacterAnimator.SetBool("GrindRight", _isFacingRight);   //Sets which direction the character animation is facing. Tracked between rails to hopping doesn't change it.
+					_CharacterAnimator.SetInteger("Action", 10);
+					break;
+				case S_Interaction_Pathers.PathTypes.zipline:
+					_ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; //Ensures there won't be weird collisions along the zipline.
+					_CharacterAnimator.SetInteger("Action", 9);
+					break;
+			}
+
+			//If got onto this rail from anything except a rail hop, set speed to physics.
+			_Actions._listOfSpeedOnPaths.Add(_PlayerPhys._speedMagnitude);
+
+			_grindingSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+			//What action before this one.
+			switch (_Actions._whatCurrentAction)
+			{
+				// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
+				case S_Enums.PrimaryPlayerStates.Homing:
+					facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _sampleForwards);
+					_grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
+					break;
+				//If it was a drop charge, add speed from the charge to the grind speed.
+				case S_Enums.PrimaryPlayerStates.DropCharge:
+					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
+					_grindingSpeed = Mathf.Clamp(charge, _grindingSpeed + (charge / 6), 160);
+					break;
+			}
 		}
 
 		// Get Direction for the Rail

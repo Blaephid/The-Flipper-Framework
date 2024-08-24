@@ -152,7 +152,7 @@ public class S_HedgeCamera : MonoBehaviour
 	//Effects
 	private Vector3               _lookAtDir;
 	private bool                  _willChangeHeight;
-	private bool                  _shouldAlignToExternal;
+	private bool                  _isPlayerTransformCopyControlledExternally;
 	private Quaternion            _externalAlignment;
 
 	private float                 _distanceModifier = 1;
@@ -226,9 +226,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//If LookTimer is currently below zero, then direct the camera towards the point of interest
 		if (_lookTimer < 0 || _lookTimer == 1)
 		{
-			//Get new height or current height if it isn't to be changed.
-			float heightToGo = _heightToLook != 0 ? _heightToLook : _posY;
-			RotateDirection(_lookAtDir, _lockedRotationSpeed, heightToGo, _willChangeHeight);
+			RotateDirection(_lookAtDir, _lockedRotationSpeed, _heightToLook, _willChangeHeight);
 
 			//Count down timer to zero
 			if (_lookTimer < 0)
@@ -236,7 +234,7 @@ public class S_HedgeCamera : MonoBehaviour
 				_lookTimer = Mathf.Clamp(_lookTimer + Time.deltaTime, _lookTimer, 0);
 				if (_lookTimer == 0)
 				{
-					_shouldAlignToExternal = false;
+					_isPlayerTransformCopyControlledExternally = false;
 				}
 			}
 		}
@@ -322,23 +320,21 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Handles the PlayerTransformCopy, making it match the actual player, or its own angle. This will later be used as a reference for the camera to rotate around.
 	void AlignPlayerTransformCopy () {
-
+		if(!_isPlayerTransformCopyControlledExternally) { return; }
 		Quaternion newRot = _PlayerTransformCopy.rotation;
 		Quaternion targetRot = Quaternion.identity;
 		bool willLerp = false;
 
-		//Sometimes the copy will be set externally in the setcamera functions, this avoids the atumomatic.
-		if ((_lookTimer < 0 || _lookTimer == 1) && _shouldAlignToExternal)
-		{
-			targetRot = _externalAlignment;
-			willLerp = true;
-		}
 		//If the player is currently on a steeper angle than the set negative angle (E.G. on a horizontal wall), then make the transform copy relative to this ground as well.
-		//Once the threshold is acceeded, the copy will keep following until it returns to upright.
-		else if (_PlayerTransformReal.up.y < _angleThreshold_.x || _PlayerTransformCopy.up.y < 1f)
+		//Once the threshold is acceeded, then keep doing this until copy returns to normal.
+		if (_PlayerTransformReal.up.y < _angleThreshold_.x || _PlayerTransformCopy.up.y < 1f)
 		{
 			targetRot = _PlayerTransformReal.rotation;
-			if (_PlayerTransformReal.up.y > _angleThreshold_.y) { targetRot = Quaternion.FromToRotation(_PlayerTransformReal.up, Vector3.up) * _PlayerTransformReal.rotation; }
+
+			//If exited angle limit, new target is facing up again.
+			if (_PlayerTransformReal.up.y > _angleThreshold_.y) 
+			{ targetRot = Quaternion.FromToRotation(_PlayerTransformReal.up, Vector3.up) * _PlayerTransformReal.rotation; }
+
 			willLerp = true;
 		}
 
@@ -356,10 +352,10 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 	}
 
-	//Changes variables and elements to the camera movement depinding if the player is moving towards or away from it.
+	//Changes variables and elements to the camera movement depending if the player is moving towards or away from it.
 	void ChangeBasedOnFacing () {
 		//Get player and camera direction without vertical since vertical damping is not used.
-		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerPhys._RB.velocity);
+		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerPhys._worldVelocity);
 		playerVelocity.y = 0;
 		Vector3 cameraDirectionWithoutY = _PlayerTransformCopy.InverseTransformDirection(transform.forward);
 		cameraDirectionWithoutY.y = 0;
@@ -608,23 +604,20 @@ public class S_HedgeCamera : MonoBehaviour
 		float xSpeed = speed;
 		if (_posX < 90 && eulerY > 270) { eulerY -= 360; }
 		else if (_posX > 270 && eulerY < 90) { eulerY += 360; }
-		_posX = Mathf.Lerp(_posX, eulerY, Time.deltaTime * xSpeed);
 
+		_posX = Mathf.Lerp(_posX, eulerY, Time.deltaTime * xSpeed);
+		//True either if hieght is set manually, or told to include vertical in look direction.
 		if (changeHeight)
 		{
-			//Y position will be acquired either from a designated height or part of the direction.
-			if (_posY != height)
-			{
-				_posY = Mathf.MoveTowards(_posY, height, speed);
-			}
-			else
-			{
-				float yTarget = eulers.x;
-				if (yTarget > 180) { yTarget -= 360; }
-				if (yTarget < -180) { yTarget += 360; }
+			//Get y height to look accurately in set direction
+			float yTarget = eulers.x;
+			if (yTarget > 180) { yTarget -= 360; }
+			if (yTarget < -180) { yTarget += 360; }
 
-				_posY = Mathf.MoveTowards(_posY, yTarget, speed);
-			}
+			//If height was not preset, then use this.
+			height = height != 0 ? height : yTarget;
+
+			_posY = Mathf.MoveTowards(_posY, height, speed);
 		}
 	}
 
@@ -718,36 +711,34 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	//Tells the camera to look in the direction, changing eulers over the next few frames to do so. See camera movement and rotate direction for more.
-	public void SetCameraToDirection ( Vector3 dir, float duration, float heightSet, float speed, Quaternion target, bool align ) {
+	public void SetCameraWithSeperateHeight ( Vector3 dir, float duration, float heightSet, float speed, Vector3 externalAlignment ) {
 
 		_lookAtDir = dir;
 		_lookTimer = duration > 0 ? -duration : 1;
 		_heightToLook = heightSet;
 		_lockedRotationSpeed = speed;
-		_externalAlignment = target;
-		_shouldAlignToExternal = align;
 		_willChangeHeight = true;
+
+		AlignPlayerTransformExternally(externalAlignment);
 	}
 
 	//Tell camera to look in direction but not change height seperately from the target.
-	public void SetCameraNoHeight ( Vector3 dir, float duration, float speed, Quaternion target, bool align, bool changeHeight ) {
+	public void SetCameraNoSeperateHeight ( Vector3 dir, float duration, float speed, Vector3 externalAlignment, bool directionIncludesHeight ) {
 		_lookAtDir = dir;
 		_lookTimer = duration > 0 ? -duration : 1;
 		_heightToLook = 0;
 		_lockedRotationSpeed = speed;
-		_externalAlignment = target;
-		_shouldAlignToExternal = align;
-		_willChangeHeight = changeHeight;
+		_willChangeHeight = directionIncludesHeight;
+
+		AlignPlayerTransformExternally(externalAlignment);
 	}
 
-	//Set camera to direction but with a change to movement input.
-	public void SetCamera ( Vector3 dir, float duration, float heightSet, float speed, float lagSet ) {
-
-		_lookAtDir = dir;
-		_lookTimer = duration > 0 ? -duration : 1;
-		_heightToLook = heightSet;
-		_lockedRotationSpeed = speed;
-		_moveModifier = lagSet;
+	void AlignPlayerTransformExternally (Vector3 externalAlignmentUp) {
+		if (externalAlignmentUp != Vector3.zero)
+		{
+			_PlayerTransformCopy.rotation = Quaternion.LookRotation(_PlayerTransformCopy.forward, externalAlignmentUp);
+			_isPlayerTransformCopyControlledExternally = true;
+		}
 	}
 
 	//Only changes height

@@ -176,7 +176,7 @@ MonoBehaviour:
   _speedToSet_: 100
   _willCarrySpeed_: 1
   _willSnap: 0
-  _willAffectCamera_: 1
+  _willAffectCamera_: 0
   _CameraRotateTime_: {x: 0.15, y: 20}
   _PositionToLockTo: {fileID: 7047104281063144656}
   _willLockControl: 1

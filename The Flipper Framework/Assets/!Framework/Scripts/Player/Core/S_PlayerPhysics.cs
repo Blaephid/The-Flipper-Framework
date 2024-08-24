@@ -625,11 +625,12 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Calls methods relevant to general control and gravity, while applying the turn and accelleration modifiers depending on a number of factors while in the air.
 	public Vector3 HandleAirMovement ( Vector3 coreVelocity ) {
 
-		//In order to change horizontal movement in the air, the player must not be inputting into a wall. Because moving into a slanted wall can lead to the player sliding up it while still not being grounded.
-		Vector3 spherePosition = transform.position - transform.up;
-		Vector3 direction = GetRelevantVector(_moveInput, false);
+		//In order to change horizontal movement in the air, the player must not be inputting into a wall.
+		//Because moving into a slanted wall can lead to the player sliding up it while still not being grounded.
+		Vector3 spherePosition = _FeetTransform.position + (transform.up * (_CharacterCapsule.radius * 0.45f)) ;
+		Vector3 direction = _Input._constantInputRelevantToCharacter;
 
-		if (!Physics.SphereCast(spherePosition, _CharacterCapsule.radius, direction, out RaycastHit hit, 5, _Groundmask_))
+		if (!Physics.SphereCast(spherePosition, _CharacterCapsule.radius * 0.95f, direction, out RaycastHit hit, 2, _Groundmask_))
 		{
 			//Gets the air control modifiers.
 			float airAccelMod = _airControlAmmount_.y;
@@ -1357,7 +1358,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 	}
 
-	public void SetPlayerPosition ( Vector3 newPosition, bool shouldPrintLocation = true ) {
+	public void SetPlayerPosition ( Vector3 newPosition, bool shouldPrintLocation = false) {
 		transform.position = newPosition;
 
 		if (shouldPrintLocation) Debug.Log("Change Position to  ");
