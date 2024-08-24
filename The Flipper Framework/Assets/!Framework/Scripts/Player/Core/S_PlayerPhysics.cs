@@ -102,7 +102,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private AnimationCurve        _upwardsLimitByCurrentSlope_;
 	[HideInInspector]
 	public float                  _placeAboveGroundBuffer_ = 0.6115f;
-	private Vector2                _rayToGroundDistance_ ;
+	[HideInInspector]
+	public Vector2                _rayToGroundDistance_ ;
 	private float                 _raytoGroundSpeedRatio_ = 0.01f;
 	private float                 _raytoGroundSpeedMax_ = 2.4f;
 	private float                 _rotationResetThreshold_ = -0.1f;
@@ -406,8 +407,6 @@ public class S_PlayerPhysics : MonoBehaviour
 				useGroundDifferentLimit = _groundDifferenceLimit_.y;
 			else //or should be a higher limit if going uphill, calculated if new normal is pointing away moving direction
 			{
-				Vector3 lateralDirection = new Vector3(_worldVelocity.x, 0 , _worldVelocity.z);
-				Vector3 lateralTempNormal = new Vector3(tempNormal.x, 0, tempNormal.z);
 				//If the directions without vertical lead to the normal facing away from move direction.
 				//useGroundDifferentLimit = Vector3.Angle(lateralDirection, lateralTempNormal) > 85f ? _groundDifferenceLimit_.z : useGroundDifferentLimit;
 				if(Vector3.Angle(tempNormal, -_worldVelocity) < Vector3.Angle(_HitGround.normal, -_worldVelocity))
@@ -657,11 +656,16 @@ public class S_PlayerPhysics : MonoBehaviour
 			//Handles lateral velocity.
 			coreVelocity = HandleControlledVelocity(_coreVelocity, new Vector2(airTurnMod, airAccelMod));
 		}
+		coreVelocity = CheckGravity(coreVelocity);
+		
+		return coreVelocity;
+	}
 
+	//A seperate public method so it can be called without HandleAirMovement or needing to call all of its used fields.
+	public Vector3 CheckGravity (Vector3 coreVelocity) {
 		//Apply Gravity (vertical velocity)
 		if (_listOfIsGravityOn.Count == 0)
 			coreVelocity = ApplyGravityToIncreaseFallSpeed(coreVelocity, _currentFallGravity, _currentUpwardsFallGravity, _maxFallingSpeed_, _totalVelocity);
-
 		return coreVelocity;
 	}
 
@@ -931,7 +935,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	private bool IsTooSlowOnSlope (Vector3 normal) {
 		//If moving too slow compared to the limit
 		float speedRequirement = _SlopeSpeedLimitByAngle_.Evaluate(normal.y);
-		Debug.Log("Requirement of  " + speedRequirement + " due to  " + normal.y);
 		return (_horizontalSpeedMagnitude < speedRequirement);
 	}
 

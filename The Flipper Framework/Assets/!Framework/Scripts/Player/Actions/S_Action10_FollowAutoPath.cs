@@ -100,9 +100,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
+		//Physics
 		_PlayerPhys._arePhysicsOn = false;
-		_Pathers._canExitAutoPath = true; //Will no longer cancel action when hitting a trigger.
+		_PlayerPhys._canStickToGround = true;
+		_PlayerPhys._rayToGroundDistance_ *= 2;
 
+		_Pathers._canExitAutoPath = true; //Will no longer cancel action when hitting a trigger.
 		_Actions._listOfSpeedOnPaths.Add(_playerSpeed);
 
 		if (_CharacterAnimator.GetInteger("Action") != 0)
@@ -119,6 +122,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		_PlayerPhys._arePhysicsOn = true;
+		_PlayerPhys._rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;
 
 		_Pathers._canExitAutoPath = false; //Will no longer cancel action when hitting a trigger.
 
@@ -231,7 +235,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		}
 	
 		//Ensure player is either inputting alon or against the path, translated to current rotation.
-		_PlayerPhys._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction); 
+		_PlayerPhys._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction);
+		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_Enums.LockControlDirection.Change);
 
 		//Call methods after input is changed, acting as if mvoing normally just in the desired direction
 		if (_PlayerPhys._isGrounded)
@@ -244,7 +249,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		}
 		else
 		{
-			_physicsCoreVelocity = _PlayerPhys.HandleAirMovement(_physicsCoreVelocity);
+			//Doesnt call handle air velocity because it creates its own modifiers to turn speed.
+			_physicsCoreVelocity = _PlayerPhys.HandleControlledVelocity(_physicsCoreVelocity, new Vector2(3, 0.8f));
+			_physicsCoreVelocity = _PlayerPhys.CheckGravity(_physicsCoreVelocity);
 		}
 	}
 
@@ -267,7 +274,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			direction = _PlayerPhys.GetRelevantVector(direction, false);
 			direction = transform.TransformDirection(direction);
 
-			_PlayerPhys.AddGeneralVelocity(direction.normalized * 3, false);
+			_PlayerPhys.AddGeneralVelocity(direction.normalized * 4, false);
 		}
 	}
 

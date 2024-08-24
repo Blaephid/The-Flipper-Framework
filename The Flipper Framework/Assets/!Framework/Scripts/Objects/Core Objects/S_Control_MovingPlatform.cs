@@ -204,6 +204,7 @@ public class S_Control_MovingPlatform : MonoBehaviour
 				MovePlatform(0, Time.fixedDeltaTime);
 
 				Gizmos.color = Color.red;
+				Gizmos.DrawLine(lineStart, _currentPosition);
 			}
 		}
 	}

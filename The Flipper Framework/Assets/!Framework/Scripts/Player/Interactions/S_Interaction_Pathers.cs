@@ -282,6 +282,11 @@ public class S_Interaction_Pathers : MonoBehaviour
 			back = true;
 		}
 
+		if (PathTrigger._removeVerticalVelocityOnStart)
+		{
+			_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._coreVelocity.x, 0, _PlayerPhys._coreVelocity.z));
+		}
+
 		//Starts the player moving along the path using the path follow action
 		_PathAction.AssignForThisAutoPath(rangeAndDistanceSquared.x, _PathSpline.transform, back, speedGo, PathTrigger, willPlaceOnSpline);
 		_PathAction.StartAction();

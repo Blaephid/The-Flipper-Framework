@@ -17,6 +17,9 @@ public class S_Trigger_Path : MonoBehaviour
 	public bool         _canPlayerSlow = false;
 	public int          _lockPlayerFor = 40;
 
+	[Header("Immediate")]
+	public bool         _removeVerticalVelocityOnStart = true;
+
 	[Header("Triggers")]
 	public bool _willUpdateInRealTime = true;
 

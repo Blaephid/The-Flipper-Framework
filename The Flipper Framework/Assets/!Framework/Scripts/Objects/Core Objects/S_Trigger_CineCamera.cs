@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using System;
 
 public class S_Trigger_CineCamera : MonoBehaviour
 {
@@ -157,6 +158,19 @@ public class S_Trigger_CineCamera : MonoBehaviour
 		_CinematicCamObject.transform.position += _startOffset;
 
 		_CinematicCamObject.SetActive(true); //Blending is handled by the blend object attached to the main camera cinemachine brain.
+
+		S_Manager_LevelProgress.OnReset += ResetCamera; //Ensures camera will end if player dies when its active.
+	}
+
+	public void ResetCamera ( object sender, EventArgs e ) {
+		//Deactivate
+		_isCurrentlyActive = false;
+		_PlayerActions = null;
+
+		_CinematicCamObject.transform.position = cameraOriginalPosition;
+		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
+
+		_CinematicCamObject.SetActive(false); //Blending is handled by the blend object attached to the main camera cinemachine brain.
 	}
 
 	public IEnumerator DeactivateCam () {
@@ -168,21 +182,12 @@ public class S_Trigger_CineCamera : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
-		//Deactivate
-		_isCurrentlyActive = false;
-		_PlayerActions = null;
-
 		//Player
 		if (_willSetCameraBehind)
 			_PlayerCameraHandler._HedgeCam.SetBehind(0);
 		if (_lockPlayerInputFor > 0)
 			_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(_lockPlayerInputFor, true, Vector3.zero, _LockInputTo_);
 
-		//Reset camera
-		_CinematicCamObject.transform.position = cameraOriginalPosition;
-		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
-
-
-		_CinematicCamObject.SetActive(false); //Blending is handled by the blend object attached to the main camera cinemachine brain.
+		ResetCamera(null, null);
 	}
 }
