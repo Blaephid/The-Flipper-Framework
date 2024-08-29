@@ -1459,18 +1459,28 @@ public class S_O_CharacterStats : ScriptableObject
 			scrapeModifier = 1f,
 			climbModifier = 1f,
 			fallOffAtFallSpeed = 15,
+
+			jumpFromClimbingModifiers = new Vector2(0.8f, 1.3f),
+			jumpFromRunningModifiers = new Vector2(1.4f, 0.8f)
 		};
 	}
 
 	[System.Serializable]
 	public struct StrucWallActions
 	{
+		[Header ("Finding Walls")]
 		public Vector2            wallCheckDistance;
 		public float            minHeight;
 		public LayerMask        WallLayerMask;
+		[Header("On Walls")]
 		public float            scrapeModifier;
+		[Tooltip("Surface - Climbing speed is prior horizontal speed times this")]
 		public float            climbModifier;
 		public float                  fallOffAtFallSpeed;
+
+		[Header("Wall Effects on other actions")]
+		public Vector2      jumpFromClimbingModifiers;
+		public Vector2      jumpFromRunningModifiers;
 
 	}
 

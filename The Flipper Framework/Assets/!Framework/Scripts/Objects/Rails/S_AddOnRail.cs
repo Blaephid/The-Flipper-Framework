@@ -28,16 +28,20 @@ public class S_AddOnRail : MonoBehaviour
 
 	[HideInInspector] public bool toUpdate = false;
 
+#if UNITY_EDITOR
 
 	private void OnEnable () {
+		if (Application.isPlaying) return;
 		toUpdate = true;
 	}
 
 
 	private void OnValidate () {
+		if (Application.isPlaying) return;
 		if (AddThis.Length == 0) return;
 		toUpdate = true;
 	}
+#endif
 
 	public void switchTrigger () {
 		if (altNextRail != null)
@@ -54,7 +58,7 @@ public class S_AddOnRail : MonoBehaviour
 		}
 	}
 
-
+#if UNITY_EDITOR
 	private void Update () {
 		// we can prevent the generated content to be updated during playmode to preserve baked data saved in the scene
 		if (Application.isPlaying) return;
@@ -97,7 +101,6 @@ public class S_AddOnRail : MonoBehaviour
 		}
 	}
 
-	// Update is called once per frame
 	void Place () {
 		offset = new Vector3(GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
 		//offset = Vector3.zero;
@@ -134,5 +137,6 @@ public class S_AddOnRail : MonoBehaviour
 
 		}
 	}
+#endif
 
 }

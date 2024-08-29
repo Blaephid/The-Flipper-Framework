@@ -320,7 +320,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Handles the PlayerTransformCopy, making it match the actual player, or its own angle. This will later be used as a reference for the camera to rotate around.
 	void AlignPlayerTransformCopy () {
-		if(!_isPlayerTransformCopyControlledExternally) { return; }
+		if(_isPlayerTransformCopyControlledExternally) { return; }
 		Quaternion newRot = _PlayerTransformCopy.rotation;
 		Quaternion targetRot = Quaternion.identity;
 		bool willLerp = false;
@@ -329,11 +329,11 @@ public class S_HedgeCamera : MonoBehaviour
 		//Once the threshold is acceeded, then keep doing this until copy returns to normal.
 		if (_PlayerTransformReal.up.y < _angleThreshold_.x || _PlayerTransformCopy.up.y < 1f)
 		{
-			targetRot = _PlayerTransformReal.rotation;
-
-			//If exited angle limit, new target is facing up again.
+			//If exited angle limit, new target is facing up again, otherwise, only aim to change up direction
 			if (_PlayerTransformReal.up.y > _angleThreshold_.y) 
-			{ targetRot = Quaternion.FromToRotation(_PlayerTransformReal.up, Vector3.up) * _PlayerTransformReal.rotation; }
+				targetRot = Quaternion.FromToRotation(_PlayerTransformCopy.up, Vector3.up) * _PlayerTransformCopy.rotation;
+			else
+				targetRot = Quaternion.FromToRotation(_PlayerTransformCopy.up, _PlayerTransformReal.up) * _PlayerTransformCopy.rotation;
 
 			willLerp = true;
 		}

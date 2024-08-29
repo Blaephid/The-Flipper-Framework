@@ -34,6 +34,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private AnimationCurve	_JumpForceByTime_;
 	private float		_jumpSlopeConversion_;
 
+	private Vector2               _wallClimbingJumpModifiers_;
+	private Vector2		_wallRunningJumpModifiers_;
+
 	//Additional jumps
 	private int         _maxJumps_;
 	private float       _doubleJumpSpeed_;
@@ -115,11 +118,11 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					}
 					return true;
 				case S_Enums.PrimaryPlayerStates.WallRunning:
-					AssignStartValues(_Actions._jumpAngle, true, 1.5f, 1.6f);
+					AssignStartValues(_Actions._jumpAngle, true, _wallRunningJumpModifiers_.x, _wallRunningJumpModifiers_.y);
 					StartAction();
 					return true;
 				case S_Enums.PrimaryPlayerStates.WallClimbing:
-					AssignStartValues(_Actions._jumpAngle, true, 1.8f, 0.8f);
+					AssignStartValues(_Actions._jumpAngle, true, _wallClimbingJumpModifiers_.x, _wallClimbingJumpModifiers_.y);
 					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(10, 5, -20, true));
 					StartAction(); 
 					return true;
@@ -412,6 +415,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_doubleJumpSpeed_ = _Tools.Stats.MultipleJumpStats.doubleJumpSpeed;
 
 		_speedLossOnDoubleJump_ = _Tools.Stats.MultipleJumpStats.speedLossOnDoubleJump;
+
+		_wallClimbingJumpModifiers_ = _Tools.Stats.WallActionsStats.jumpFromClimbingModifiers;
+		_wallRunningJumpModifiers_ = _Tools.Stats.WallActionsStats.jumpFromRunningModifiers;
 	}
 	#endregion
 }

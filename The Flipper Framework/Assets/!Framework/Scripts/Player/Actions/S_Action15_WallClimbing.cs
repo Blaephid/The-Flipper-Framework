@@ -201,12 +201,11 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_currentClimbingSpeed = Mathf.Clamp(_currentClimbingSpeed, -20, 90);
 
 		//Set the climbing speed based on player's speed, but won't reach it until lerped.
-		_goalClimbingSpeed = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * 0.8f, _currentClimbingSpeed);
-		_goalClimbingSpeed *= _climbModi_;
+		_goalClimbingSpeed = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * _climbModi_, _currentClimbingSpeed);
 
-		//Sets min and max climbing speed
-		_goalClimbingSpeed = 8f * (int)(_goalClimbingSpeed / 8);
-		_goalClimbingSpeed = Mathf.Clamp(_goalClimbingSpeed, 48, 176);
+		//Sets min and max climbing speed while ensuring climbing is in increments of x
+		_goalClimbingSpeed = 10f * (int)(_goalClimbingSpeed / 10);
+		_goalClimbingSpeed = Mathf.Clamp(_goalClimbingSpeed, 50, 160);
 
 		_checkDistance = wallHit.distance + 1; //Ensures first checks for x seconds will find the wall.
 

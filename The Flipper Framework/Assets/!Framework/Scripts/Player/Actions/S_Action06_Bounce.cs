@@ -262,7 +262,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		}
 
 		//Starts applying normal force downwards again, even before exiting action.
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		if(_PlayerPhys._listOfIsGravityOn.Count > 0) 
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 
 		Vector3 input = transform.TransformDirection(_PlayerPhys._moveInput);
 

@@ -469,7 +469,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
 
-		_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
+		//_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
 
 		//Returns air actions
 		_Actions._isAirDashAvailables = true;

@@ -303,6 +303,10 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_Input._SpecialPressed = false;
 		_Input._BouncePressed = false;
 
+		//If left, they would still be called if the player went from a zipline onto a rail as they wouldn't be overwritten.
+		_ZipBody = null;
+		_ZipHandle = null;
+
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
 		StartCoroutine(DelayCollision());

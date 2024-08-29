@@ -164,5 +164,9 @@ public class S_Handler_Camera : MonoBehaviour
 
 	public void ResetOnDeath () {
 		LockCamera(false);
+
+		_HedgeCam._cameraMaxDistance_ = _initialDistance;
+		_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
+
 	}
 }

@@ -196,6 +196,12 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 		//Return camera to normal position
 		_CamHandler._HedgeCam.DisableSecondaryCameraTarget();
+
+		//In case action change was intentional (not from losing grip on a wall) make sure player moves away from wall.
+		if(_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Default)
+		{
+			_Input.LockInputForAWhile(4, false, _wallHit.normal, S_Enums.LockControlDirection.Change);
+		}
 	}
 	#endregion
 
@@ -220,11 +226,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 raycastOrigin = transform.position + _MainSkin.forward * 0.3f;
 		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.right * wallDirection, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
 		
-		//After time wallCheck enters its proper range, because at first needs to ensure reaches the wall.
-		//if (_counter > 0.3f)
-		//{
-		//	_checkDistance = _wallCheckDistance_.y;
-		//}
 
 		//Animator
 		_PlayerPhys._currentRunningSpeed = _runningSpeed;
@@ -248,7 +249,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _wallForward, Vector2.zero, GetUpDirectionOfWall(_wallHit.normal));
 
 		//For actions to exit the wall
-		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.7f);
+		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.5f);
 		_Actions._dashAngle = Vector3.Lerp(_wallHit.normal, _wallForward, 0.6f);
 	}
 
@@ -259,7 +260,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		{
 			Vector3 wallNormal = _wallHit.normal;
 
-			_currentClimbingSpeed = Mathf.Lerp(_currentClimbingSpeed, -50, 0.02f);
+			float differenceBetweenCurrentAndGoalScrapSpeed = Mathf.Abs(_currentClimbingSpeed - -40);
+			float increaseScrapeSpeedBy = Mathf.Clamp(differenceBetweenCurrentAndGoalScrapSpeed * 0.02f * _scrapeModi_, 0.02f, 0.5f);
+			_currentClimbingSpeed = Mathf.MoveTowards(_currentClimbingSpeed, -40, increaseScrapeSpeedBy);
 
 			newVec.y = 0;
 			newVec += GetUpDirectionOfWall(wallNormal) * _currentClimbingSpeed;
@@ -289,8 +292,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 
 	public void SetupRunning ( RaycastHit wallHit, bool wallRight ) {
-
-		Debug.Log("Start Running");
 
 		Vector3 wallDirection = wallHit.point - transform.position;
 

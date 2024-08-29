@@ -113,7 +113,7 @@ MonoBehaviour:
   AccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4
-    angleToAccelerate: 70
+    angleToAccelerate: 55
     AccelBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -1256,7 +1256,7 @@ MonoBehaviour:
     rollingLandingBoost: 1.4
     minRollingTime: 0.4
   SkiddingStats:
-    angleToPerformSkid: 140
+    angleToPerformSkid: 130
     angleToPerformSpinSkid: 140
     angleToPerformHomingSkid: 130
     canSkidInAir: 1
@@ -2498,8 +2498,8 @@ MonoBehaviour:
     railTopSpeed: 80
     minimumStartSpeed: 20
     RailPushFowardmaxSpeed: 100
-    RailPushFowardIncrements: 5
-    RailPushFowardDelay: 0.42
+    RailPushFowardIncrements: 10
+    RailPushFowardDelay: 0.35
     PushBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -2552,14 +2552,14 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     RailSlopePower: 2.5
-    RailUpHillMultiplier: {x: 1.9, y: 2.3}
-    RailDownHillMultiplier: {x: 0.5, y: 0.75}
-    railDecaySpeed: 0.13
+    RailUpHillMultiplier: {x: 1.2, y: 1.8}
+    RailDownHillMultiplier: {x: 0.6, y: 0.85}
+    railDecaySpeed: 0.015
     RailPlayerBrakePower: 0.97
-    railBoostDecaySpeed: 0.45
-    railBoostDecayTime: 0.45
+    railBoostDecaySpeed: 0.4
+    railBoostDecayTime: 0.4
     hopDelay: 0.3
-    hopSpeed: 70
+    hopSpeed: 80
     hopDistance: 12
   StartRailStats:
     railMaxSpeed: 125
@@ -2647,9 +2647,11 @@ MonoBehaviour:
     WallLayerMask:
       serializedVersion: 2
       m_Bits: 1
-    scrapeModifier: 1
+    scrapeModifier: 0.3
     climbModifier: 1
     fallOffAtFallSpeed: 15
+    jumpFromClimbingModifiers: {x: 0.8, y: 1.3}
+    jumpFromRunningModifiers: {x: 0.8, y: 1.5}
   StartWallRunningStats:
     wallCheckDistance: {x: 10, y: 6}
     minHeight: 5
@@ -2659,4 +2661,6 @@ MonoBehaviour:
     scrapeModifier: 1
     climbModifier: 1
     fallOffAtFallSpeed: 15
+    jumpFromClimbingModifiers: {x: 0, y: 0}
+    jumpFromRunningModifiers: {x: 0, y: 0}
   InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
