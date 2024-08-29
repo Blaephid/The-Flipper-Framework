@@ -241,7 +241,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 				newVelocity.y = 0;
 
 				//Decrease speed
-				newVelocity = _PlayerPhys.Decelerate(newVelocity, Vector3.zero, 1.2f);
+				newVelocity = _PlayerPhys._PlayerMovement.Decelerate(newVelocity, Vector3.zero, 1.2f);
 
 				//Return vertical velocity and interpret as world space again
 				newVelocity.y = keepY;

@@ -42,7 +42,7 @@ public class S_PullItems : MonoBehaviour
     public void AddToList()
     {
 
-        Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
+        Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerPhys._horizontalSpeedMagnitude / _PlayerPhys._PlayerMovement._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
 		for (int i = 0 ; i < rings.Length ; i++)
 		{
 			Collider r = rings[i];

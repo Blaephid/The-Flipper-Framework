@@ -21,6 +21,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	//Unity
 	#region Unity Specific Properties
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerMovement	_PlayerMovement;
 	private S_CharacterTools      _Tools;
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
@@ -161,7 +162,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//Called when the action is enabled and readies all variables for it to be performed.
 	public void StartAction ( bool overwrite = false ) {
-		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+		if (!_Actions._canChangeActions && !overwrite) { return; }
 
 		//Flow Control
 		_PlayerPhys._isBoosting = true;
@@ -173,7 +174,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		//Get speeds to start boost at and reach after some time.
 		_currentSpeed = _Actions._listOfSpeedOnPaths.Count > 0 ? _Actions._listOfSpeedOnPaths[0] : _PlayerPhys._horizontalSpeedMagnitude; //The boost speed will be set to and increase from either the running speed, or path speed if currently in use.
 		_currentSpeed = Mathf.Max(_currentSpeed, _startBoostSpeed_); //Ensures will start from a noticeable speed, then increase to full boost speed.
-		_goalSpeed = Mathf.Max(_boostSpeed_, Mathf.Min(_currentSpeed + 10, _PlayerPhys._currentMaxSpeed)); //This is how fast the boost will move, and speed will lerp towards it. It will either be boost speed, of if over that, a slight increase, not exceeding max speed.
+		_goalSpeed = Mathf.Max(_boostSpeed_, Mathf.Min(_currentSpeed + 10, _PlayerMovement._currentMaxSpeed)); //This is how fast the boost will move, and speed will lerp towards it. It will either be boost speed, of if over that, a slight increase, not exceeding max speed.
 
 		StopCoroutine(LerpToGoalSpeed(0)); //If already in motion for a boost just before, this ends that calculation, before starting a new one.
 		StartCoroutine(LerpToGoalSpeed(_framesToReachBoostSpeed_)); //Starts a coroutine to get to needed speed.
@@ -182,7 +183,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		_faceDirectionOffset = Vector2.zero;
 
 		//Physics
-		_PlayerPhys._currentMaxSpeed = _maxSpeedWhileBoosting_;
+		_PlayerMovement._currentMaxSpeed = _maxSpeedWhileBoosting_;
 
 		if (!_PlayerPhys._isGrounded)
 		{
@@ -197,7 +198,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		}
 
 		//Control
-		_PlayerPhys.CallAccelerationAndTurning = CustomTurningAndAcceleration; //Changing this delegate will change what method to call to handle turning from the default to the custom one in this script.
+		_PlayerMovement.CallAccelerationAndTurning = CustomTurningAndAcceleration; //Changing this delegate will change what method to call to handle turning from the default to the custom one in this script.
 
 		_Actions._ActionDefault._isAnimatorControlledExternally = true; //This script will point the character manually.
 		_isStrafing = false; //Will start by not strafing, though this might be changed immediately depending on player input.
@@ -277,7 +278,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		StartCoroutine(DelayBoostStart());
 
 		//Physics
-		_PlayerPhys.CallAccelerationAndTurning = _PlayerPhys.DefaultAccelerateAndTurn; //Changes the method delegated for calculating acceleration and turning back to the correct one.
+		_PlayerMovement.CallAccelerationAndTurning = _PlayerMovement.DefaultAccelerateAndTurn; //Changes the method delegated for calculating acceleration and turning back to the correct one.
 		if (!skipSlowing) StartCoroutine(SlowSpeedOnEnd(_speedLostOnEndBoost_, _framesToLoseSpeed_)); //Player lose speed when ending a boost
 
 		//Control
@@ -395,7 +396,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			yield return new WaitForFixedUpdate();
 		}
 
-		_PlayerPhys._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed; // When all extra speed is lost, this resets the max speed players can reach to what it should be.
+		_PlayerMovement._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed; // When all extra speed is lost, this resets the max speed players can reach to what it should be.
 	}
 
 	#endregion
@@ -408,7 +409,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//This is called via a delegate and replaces the default turning and acceleration present in PlayerPhysics. It takes the same inputs, but will return a different output.
 	public Vector3 CustomTurningAndAcceleration ( Vector3 lateralVelocity, Vector3 input, Vector2 modifier ) {
-		if (_PlayerPhys._moveInput.sqrMagnitude < 0.1f) { _PlayerPhys._moveInput = _faceDirection; } //Ensures there will always be an input forwards if nothing else.
+		if (_PlayerMovement._moveInput.sqrMagnitude < 0.1f) { _PlayerMovement._moveInput = _faceDirection; } //Ensures there will always be an input forwards if nothing else.
 		if (input.sqrMagnitude < 0.1f) { input = _faceDirection; }
 
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
@@ -417,11 +418,11 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		//Because input is relative to transform, temporarily make face directions operate in the same space. Without vertical value so it interacts properly with input direction.
 		_faceDirection = _PlayerPhys.GetRelevantVector(_faceDirection, false);
 
-		_PlayerPhys._inputVelocityDifference = lateralVelocity.sqrMagnitude < 1 ? 0 : Vector3.Angle(_faceDirection, inputDirection); //The change in input in degrees, this will be used by the skid script to calculate whether should skid.
-		float inputDifference = _PlayerPhys._inputVelocityDifference;
+		_PlayerMovement._inputVelocityDifference = lateralVelocity.sqrMagnitude < 1 ? 0 : Vector3.Angle(_faceDirection, inputDirection); //The change in input in degrees, this will be used by the skid script to calculate whether should skid.
+		float inputDifference = _PlayerMovement._inputVelocityDifference;
 
 		//If inputting backwards, ignore turning, this gives the chance to perform a skid.
-		if (_PlayerPhys._inputVelocityDifference > 150)
+		if (_PlayerMovement._inputVelocityDifference > 150)
 		{
 			inputDirection = _faceDirection;
 			inputDifference = 0;
@@ -566,6 +567,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	private void AssignTools () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();

@@ -512,7 +512,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (_grindingSpeed > _railTopSpeed_)
 			_grindingSpeed -= _decaySpeed_;
 
-		_grindingSpeed = Mathf.Clamp(_grindingSpeed, 10, _PlayerPhys._currentMaxSpeed);
+		_grindingSpeed = Mathf.Clamp(_grindingSpeed, 10, _PlayerPhys._PlayerMovement._currentMaxSpeed);
 	}
 
 	//Set to true outside of this script. But when boosted on a rail will gain a bunch of speed at once before having some of it quickly drop off.

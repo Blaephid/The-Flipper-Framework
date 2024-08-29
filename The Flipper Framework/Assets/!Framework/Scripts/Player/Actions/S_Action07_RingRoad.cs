@@ -141,7 +141,8 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_speedBeforeAction = _PlayerPhys._horizontalSpeedMagnitude;
 		_Actions._listOfSpeedOnPaths.Add(Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f)); //Speed to move at, always faster than was moving before.
 
-		_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
+		//_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
+		_directionToGo = _PlayerPhys._worldVelocity.normalized; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
 		this.enabled = true;

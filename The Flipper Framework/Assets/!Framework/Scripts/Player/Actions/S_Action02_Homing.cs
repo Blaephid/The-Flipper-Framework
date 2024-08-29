@@ -15,6 +15,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerMovement	_PlayerMovement;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer  _HomingTrailScript;
@@ -248,10 +249,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		}
 
 		//If there is input, then alter direction slightly to left or right.
-		if (_PlayerPhys._moveInput.sqrMagnitude > 0.2f && _canBeControlled_ && _timer > 0.02f)
+		if (_PlayerMovement._moveInput.sqrMagnitude > 0.2f && _canBeControlled_ && _timer > 0.02f)
 		{
 			//Get horizontal input
-			_currentInput =  transform.TransformDirection(_PlayerPhys._moveInput);
+			_currentInput =  transform.TransformDirection(_PlayerMovement._moveInput);
 			_currentInput.y = 0;
 
 			//Get current horizontal direction
@@ -387,12 +388,12 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		void GetDirectionPostHit () {
 			//Get current movement direction
 
-			if (_PlayerPhys._moveInput.sqrMagnitude < 0.1)
+			if (_PlayerMovement._moveInput.sqrMagnitude < 0.1)
 			{
 				newSpeed = _PlayerPhys._coreVelocity.normalized;
 			}
 			//If trying to move in the direction taken by the attack at the end, then will move that way
-			else if (Vector3.Angle(_PlayerPhys._coreVelocity.normalized, _PlayerPhys._moveInput) / 180 < _lerpToNewInput_)
+			else if (Vector3.Angle(_PlayerPhys._coreVelocity.normalized, _PlayerMovement._moveInput) / 180 < _lerpToNewInput_)
 			{
 				newSpeed = _PlayerPhys._coreVelocity.normalized;
 			}
@@ -506,6 +507,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_HomingHandler = GetComponent<S_Handler_HomingAttack>();
 		_Sounds = _Tools.SoundControl;

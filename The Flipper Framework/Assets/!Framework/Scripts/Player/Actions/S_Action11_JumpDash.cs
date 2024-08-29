@@ -14,6 +14,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerMovement      _PlayerMovement;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer _HomingTrailScript;
@@ -225,13 +226,13 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		else if (_timer > 0.03f)
 		{
 			//Input based on if stick is pushed more vertically or horizontally
-			float inputMag = Mathf.Max(Mathf.Abs(_PlayerPhys._moveInput.x), Mathf.Abs(_PlayerPhys._moveInput.z));
+			float inputMag = Mathf.Max(Mathf.Abs(_PlayerMovement._moveInput.x), Mathf.Abs(_PlayerMovement._moveInput.z));
 
 			//Get direction to rotate towards. To avoid rotating down and under, then if over ninety then go right or left.
-			Vector3 _input = transform.TransformDirection(_PlayerPhys._moveInput);
+			Vector3 _input = transform.TransformDirection(_PlayerMovement._moveInput);
 			if (Vector3.Angle(_input, _dashDirection) > 80)
 			{
-				_input = Vector3.Angle(_PlayerPhys._moveInput, _MainSkin.right) < 90 ? _MainSkin.right : -_MainSkin.right;
+				_input = Vector3.Angle(_PlayerMovement._moveInput, _MainSkin.right) < 90 ? _MainSkin.right : -_MainSkin.right;
 			}
 
 			//Rotate from current direction to new one, based on input and stats
@@ -301,7 +302,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_upwardsSpeed = _verticalAngle_;
 
 		//Aiming Horizontally
-		_input = transform.TransformDirection(_PlayerPhys._moveInput);
+		_input = transform.TransformDirection(_PlayerMovement._moveInput);
 		_dashDirection = Vector3.RotateTowards(_dashDirection, _PlayerPhys.AlignWithNormal(_input, _MainSkin.up, 1), _horizontalAngle_ * Mathf.Deg2Rad, 0); //This will cause the player to dash in input direction (relevant to current character up), with a determined max angle
 
 		_MainSkin.forward = _dashDirection;
@@ -351,6 +352,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Sounds = _Tools.SoundControl;

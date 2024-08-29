@@ -17,6 +17,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private S_PlayerInput		_Input;
 	private S_ActionManager                 _Actions;
 	private S_PlayerPhysics                 _PlayerPhys;
+	private S_PlayerMovement                _PlayerMove;
 	private S_Control_SoundsPlayer           _Sounds;
 	private S_Control_EffectsPlayer         _Effects;
 
@@ -193,7 +194,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	//Changes how the player moves when in this state.
 	private void AffectMovement () {
 
-		_PlayerPhys._moveInput *= 0.65f; //Limits input, lessening turning and deceleration
+		_PlayerMove._moveInput *= 0.65f; //Limits input, lessening turning and deceleration
 		
 		if(_shouldSetRolling_) _PlayerPhys._isRolling = true; // set every frame to counterballanced the rolling subaction
 
@@ -249,7 +250,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 				newSpeed *= _forceGainByAngle_.Evaluate(dif);
 
 			//And the current speed (typically lower when at higher speed)
-			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed);
+			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerMove._currentMaxSpeed);
 			addForce *= newSpeed; //Adds speed to direction to get the force
 
 			_PlayerPhys.AddCoreVelocity(addForce);
@@ -315,9 +316,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			Vector3 faceDirection = _PlayerPhys._RB.velocity.sqrMagnitude > 1 ? _PlayerPhys._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
 
 			//Rotate slightly to player input
-			if (_PlayerPhys._moveInput.sqrMagnitude > 0.2)
+			if (_PlayerMove._moveInput.sqrMagnitude > 0.2)
 			{
-				Vector3 inputDirection = transform.TransformDirection(_PlayerPhys._moveInput.normalized);
+				Vector3 inputDirection = transform.TransformDirection(_PlayerMove._moveInput.normalized);
 				faceDirection = Vector3.RotateTowards(faceDirection, inputDirection, Mathf.Deg2Rad * 100, 0);
 			}
 
@@ -404,6 +405,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerMove = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();

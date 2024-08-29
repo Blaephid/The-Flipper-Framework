@@ -16,6 +16,7 @@ public class S_PlayerInput : MonoBehaviour
 	#region Unity Specific
 
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerMovement	_PlayerMovement;
 	private S_Handler_Camera      _CamHandler;
 	private S_CharacterTools      _Tools;
 
@@ -93,6 +94,7 @@ public class S_PlayerInput : MonoBehaviour
 		// Set up the reference.
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 		_CamHandler = _Tools.CamHandler;
 		_MainSkin = _Tools.MainSkin;
 
@@ -126,11 +128,11 @@ public class S_PlayerInput : MonoBehaviour
 
 		if (!_isInputLocked)
 		{
-			_PlayerPhys._moveInput = _move;
+			_PlayerMovement._moveInput = _move;
 		}
 		else
 		{
-			_PlayerPhys._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
+			_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
 		}
 	}
 
@@ -223,7 +225,7 @@ public class S_PlayerInput : MonoBehaviour
 				_lockedMoveInput = _MainSkin.forward; break;
 		}
 
-		_PlayerPhys._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
+		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.
 		_lockedTime = Mathf.Max(frames, _lockedTime - _lockedCounter);

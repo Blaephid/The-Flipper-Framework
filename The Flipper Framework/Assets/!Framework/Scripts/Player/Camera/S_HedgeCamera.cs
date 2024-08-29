@@ -18,6 +18,7 @@ public class S_HedgeCamera : MonoBehaviour
 	public S_CharacterTools       _Tools;
 
 	public S_PlayerPhysics        _PlayerPhys;
+	private S_PlayerMovement	_PlayerMovement;
 	public Transform              _Skin;
 	private S_ActionManager        _Actions;
 	public S_PlayerInput          _Input;
@@ -271,7 +272,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//Gets the players current input direction and moves the target in that direction.
 		if (_shouldMoveInInputDirection_)
 		{
-			Vector3 inputDirection = _PlayerPhys.transform.TransformDirection(_PlayerPhys._moveInput);
+			Vector3 inputDirection = _PlayerPhys.transform.TransformDirection(_PlayerMovement._moveInput);
 			_predictAheadPosition = Vector3.MoveTowards(_predictAheadPosition, inputDirection * _inputPredictonDistance_, _cameraMoveToInputSpeed_ * Time.deltaTime);
 
 		}
@@ -386,7 +387,7 @@ public class S_HedgeCamera : MonoBehaviour
 		Vector3 actionModifier = GetDistanceModifiedByAction();
 		float minValue = actionModifier.x;
 		float maxValue = actionModifier.z;
-		float speedPercentage = Mathf.Clamp((_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed) * actionModifier.y, minValue, maxValue);
+		float speedPercentage = Mathf.Clamp((_PlayerPhys._currentRunningSpeed / _PlayerMovement._currentMaxSpeed) * actionModifier.y, minValue, maxValue);
 
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
 		if (_shouldAffectDistanceBySpeed_)
@@ -847,6 +848,7 @@ public class S_HedgeCamera : MonoBehaviour
 		_MainCameraBrain = _Tools.MainCamera;
 
 		_Actions = _Tools._ActionManager;
+		_PlayerMovement = _PlayerPhys.GetComponent<S_PlayerMovement>();
 	}
 
 	void SetStats () {

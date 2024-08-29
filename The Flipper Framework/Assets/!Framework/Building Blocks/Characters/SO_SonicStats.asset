@@ -1115,8 +1115,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.42105103
-        value: 1.009552
+        time: 0.5222626
+        value: 1.0069733
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1124,8 +1124,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1.016145
-        value: 1.1148208
+        time: 0.9992802
+        value: 1.0505232
         inSlope: 0.008002143
         outSlope: 0.008002143
         tangentMode: 0
@@ -1133,8 +1133,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.5231277
       - serializedVersion: 3
-        time: 2.0233798
-        value: 1.4920487
+        time: 1.9727817
+        value: 1.1499963
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1181,10 +1181,10 @@ MonoBehaviour:
     stepHeight: 1
   GreedysStickToGround:
     forceTowardsGround: 4
-    stickingLerps: {x: 0.99, y: 0.96}
+    stickingLerps: {x: 1.005, y: 0.96}
     stickingNormalLimit: 0.459
-    stickCastAhead: 1.5
-    groundBuffer: 0.05
+    stickCastAhead: 1.35
+    groundBuffer: 0.12
     rotationResetThreshold: -0.05
     upwardsLimitByCurrentSlope:
       serializedVersion: 2

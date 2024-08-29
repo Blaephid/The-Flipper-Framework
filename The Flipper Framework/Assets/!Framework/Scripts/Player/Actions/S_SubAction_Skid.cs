@@ -17,6 +17,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	//Unity
 	#region Unity Specific Properties
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerMovement	_PlayerMovement;
 	private S_CharacterTools      _Tools;
 	private S_PlayerInput         _Input;
 	private S_Control_SoundsPlayer _Sounds;
@@ -150,7 +151,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	private bool TryRegularSkid () {
 
 		//If the input direction is different enough to the current movement direction, then a skid should be performed.
-		if (_PlayerPhys._inputVelocityDifference > _regularSkidAngleStartPoint_ && !_Input._isInputLocked)
+		if (_PlayerMovement._inputVelocityDifference > _regularSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
 
 			if(_PlayerPhys._currentRunningSpeed > -_regularSkiddingIntensity_ || _isSkidding)
@@ -181,7 +182,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		if(!_canSkidInAir_) { return false; }
 
 		//If the input direction is different enough to the current movement direction, then a skid should be performed. 
-		if ((_PlayerPhys._inputVelocityDifference > _regularSkidAngleStartPoint_) && !_Input._isInputLocked)
+		if ((_PlayerMovement._inputVelocityDifference > _regularSkidAngleStartPoint_) && !_Input._isInputLocked)
 		{
 			//Uses relevant velocity rather whan world in order to not skid against vertical speed from jumping or falling.
 			Vector3 releVel = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity);
@@ -205,7 +206,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	private bool TrySpinSkid () {
 		
 			//Different start point from the other two skid types.
-		if (_PlayerPhys._inputVelocityDifference > _spinSkidAngleStartPoint_ && !_Input._isInputLocked)
+		if (_PlayerMovement._inputVelocityDifference > _spinSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
 			_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * _regularSkiddingIntensity_ * 0.6f);
 			return true;
@@ -225,6 +226,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
 		_Actions = _Tools._ActionManager;
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 	}
 
 	private void AssignStats() {

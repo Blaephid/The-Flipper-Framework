@@ -16,6 +16,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerMovement	_PlayerMovement;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Control_SoundsPlayer _Sounds;
@@ -128,8 +129,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0);
 
-		_PlayerPhys._currentMinSpeed = 0;
-		_PlayerPhys._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
+		_PlayerMovement._currentMinSpeed = 0;
+		_PlayerMovement._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
 	}
 
 	#endregion
@@ -235,7 +236,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		}
 	
 		//Ensure player is either inputting alon or against the path, translated to current rotation.
-		_PlayerPhys._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction);
+		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction);
 		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_Enums.LockControlDirection.Change);
 
 		//Call methods after input is changed, acting as if mvoing normally just in the desired direction
@@ -243,14 +244,14 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		{
 			_PlayerPhys._timeOnGround += Time.deltaTime;
 
-			_physicsCoreVelocity = _PlayerPhys.HandleControlledVelocity(_physicsCoreVelocity,new Vector2 (3, 1), decelerationValue);
+			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity,new Vector2 (3, 1), decelerationValue);
 			_physicsCoreVelocity = _PlayerPhys.HandleSlopePhysics(_physicsCoreVelocity, false);
 			_physicsCoreVelocity = _PlayerPhys.StickToGround(_physicsCoreVelocity);
 		}
 		else
 		{
 			//Doesnt call handle air velocity because it creates its own modifiers to turn speed.
-			_physicsCoreVelocity = _PlayerPhys.HandleControlledVelocity(_physicsCoreVelocity, new Vector2(3, 0.8f));
+			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity, new Vector2(3, 0.8f));
 			_physicsCoreVelocity = _PlayerPhys.CheckGravity(_physicsCoreVelocity);
 		}
 	}
@@ -303,9 +304,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		//Speed and direction to move this action
 		_pathMinSpeed = Path._speedLimits.x;
-		_PlayerPhys._currentMinSpeed = _pathMinSpeed;
+		_PlayerMovement._currentMinSpeed = _pathMinSpeed;
 		_pathMaxSpeed = Path._speedLimits.y;
-		_PlayerPhys._currentMaxSpeed = _pathMaxSpeed;
+		_PlayerMovement._currentMaxSpeed = _pathMaxSpeed;
 		_playerSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed, startSpeed);
 		_playerSpeed = Mathf.Clamp(_playerSpeed, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
 

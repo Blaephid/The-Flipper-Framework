@@ -527,6 +527,7 @@ GameObject:
   - component: {fileID: 114421511878716788}
   - component: {fileID: 8583335634310275265}
   - component: {fileID: 5416488146372199807}
+  - component: {fileID: 1170264400203800284}
   m_Layer: 8
   m_Name: Player_Sonic
   m_TagString: Player
@@ -647,12 +648,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf837daebff4b9748af103d6635b5e0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _PlayerMovement: {fileID: 0}
   _RB: {fileID: 0}
-  _moveDeceleration_: 1.3
   _isUsingSlopePhysics_: 1
+  _maxFallingSpeed_: 0
   _gravityWhenMovingUp_: {x: 0, y: 0, z: 0}
   _startFallGravity_: {x: 0, y: 0, z: 0}
   _placeAboveGroundBuffer_: 0.6115
+  _rayToGroundDistance_: {x: 0, y: 0}
   _Groundmask_:
     serializedVersion: 2
     m_Bits: 0
@@ -661,11 +664,13 @@ MonoBehaviour:
   _coreVelocity: {x: 0, y: 0, z: 0}
   _environmentalVelocity: {x: 0, y: 0, z: 0}
   _totalVelocity: {x: 0, y: 0, z: 0}
+  _worldVelocity: {x: 0, y: 0, z: 0}
   _previousVelocities:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
+  _externalRunningSpeed: 0
   _resetEnvironmentalOnGrounded: 0
   _resetEnvironmentalOnAirAction: 0
   _speedMagnitude: 0
@@ -680,14 +685,7 @@ MonoBehaviour:
   - 1
   - 2
   - 3
-  _moveInput: {x: 0, y: 0, z: 0}
-  _trackMoveInput: {x: 0, y: 0, z: 0}
-  _currentTopSpeed: 0
-  _currentMaxSpeed: 0
-  _currentMinSpeed: 0
-  _curvePosDrag: 0
   _curvePosSlopePower: 0
-  _inputVelocityDifference: 1
   _playerPos: {x: 0, y: 0, z: 0}
   _feetOffsetFromCentre: {x: 0, y: 0, z: 0}
   _isGrounded: 0
@@ -1132,6 +1130,28 @@ MonoBehaviour:
   _hasShield: 0
   _inHurtStateBeforeDamage: 0
   _wasHurtWithoutKnockback: 0
+--- !u!114 &1170264400203800284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979695856965714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 752e439cae374d6418664b246815a00b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _moveDeceleration_: 1.3
+  _moveInput: {x: 0, y: 0, z: 0}
+  _trackMoveInput: {x: 0, y: 0, z: 0}
+  _currentTopSpeed: 0
+  _currentMaxSpeed: 0
+  _currentMinSpeed: 0
+  _curvePosAcell: 0
+  _curvePosDecell: 0
+  _curvePosDrag: 0
+  _inputVelocityDifference: 1
 --- !u!1 &38880623587908062
 GameObject:
   m_ObjectHideFlags: 0
@@ -29027,6 +29047,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
+      propertyPath: _MainActions.Array.data[11].SituationalStates.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
       propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[6]'
       value: 7
       objectReference: {fileID: 0}
@@ -29034,6 +29059,11 @@ PrefabInstance:
         type: 3}
       propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[6]'
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[11].SituationalStates.Array.data[0]'
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4584081993875375216, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29105,7 +29135,8 @@ PrefabInstance:
       propertyPath: _VirtualCamera
       value: 
       objectReference: {fileID: 1504729745689472983}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3399936635228185353, guid: 0e8f736d2dd9706438972762531b3f8f, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

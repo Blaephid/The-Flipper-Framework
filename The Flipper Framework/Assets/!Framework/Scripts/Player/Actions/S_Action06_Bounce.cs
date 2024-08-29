@@ -265,7 +265,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		if(_PlayerPhys._listOfIsGravityOn.Count > 0) 
 			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 
-		Vector3 input = transform.TransformDirection(_PlayerPhys._moveInput);
+		Vector3 input = transform.TransformDirection(_PlayerPhys._PlayerMovement._moveInput);
 
 		newDir = Vector3.Lerp(newDir, input, _lerpTowardsInput_);
 
