@@ -574,11 +574,12 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucQuickstep SetStrucQuickstep () {
 		return new StrucQuickstep
 		{
-			stepSpeed = 55f,
+			stepDuration = 55f,
 			stepDistance = 8f,
-			airStepSpeed = 48f,
+			airStepDuration = 48f,
 			airStepDistance = 7f,
-			StepLayerMask = new LayerMask()
+			StepLayerMask = new LayerMask(),
+			cooldown = new Vector2(5, 20)
 		};
 	}
 
@@ -588,17 +589,19 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Header("Grounded")]
 		[Tooltip("Surface: The speed to move left or right when stepping. This is a force, so the distance traveled will equal this multiplied by time between frames.")]
-		public float        stepSpeed;
+		public float        stepDuration;
 		[Tooltip("Surface: How far to the right or left to move in total when performing a step (will stop if hits an obstruction)")]
 		public float        stepDistance;
 		[Header("In Air")]
 		[Tooltip("Surface: Same as above but when the step is started in the air.")]
-		public float        airStepSpeed;
+		public float        airStepDuration;
 		[Tooltip("Surface: Same as above but when the step is started in the air.")]
 		public float        airStepDistance;
 		[Header("Interaction")]
 		[Tooltip("Core: Objects on this layer will end a step if in the way of the left or right movement.")]
 		public LayerMask    StepLayerMask;
+		[Tooltip("Core: How long in frames after step ends, before it can be performed again. X = ended on ground, Y = ended in air.")]
+		public Vector2      cooldown;
 
 	}
 	#endregion

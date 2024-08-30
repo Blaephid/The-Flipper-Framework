@@ -16,6 +16,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_PlayerMovement	_PlayerMovement;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
@@ -196,16 +197,16 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private void SetRunningInDirectionOfSpline () {
 
 		//Ensure starts going down the same direction every time.
-		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._worldVelocity);
+		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity);
 		Vector3 verticalVelocity = transform.up * relevantVelocity.y; //Seperates this so player can fall to the ground while still following the path.
 
-		_PlayerPhys.SetBothVelocities((_sampleForwards * _playerSpeed) + verticalVelocity, Vector2.right, "Overwrite");
-		_PlayerPhys.SetTotalVelocity(); //Because arePhysicsEnabled was just disabled, enable here to ensure it goes through before overwritten by this script next update.
+		_PlayerVel.SetBothVelocities((_sampleForwards * _playerSpeed) + verticalVelocity, Vector2.right, "Overwrite");
+		//Set total velocity in PlayerVelocity fixedUpdate is still called after every other script.
 	}
 
 	//Takes manual control of PlayerPhysics methods to move believably despite taking control of the input directions to ensure stays on the spline.
 	private void SetVelocityAlongSpline () {
-		_physicsCoreVelocity = _PlayerPhys._coreVelocity;
+		_physicsCoreVelocity = _PlayerVel._coreVelocity;
 
 		//If inputting enough in direction of spline, go forwards
 		Vector3 input = _Input._constantInputRelevantToCharacter;
@@ -216,7 +217,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		if (input.sqrMagnitude > 0 || !_canSlow)
 		{
 			//If brought to a stop and inputting away from the spline, then turn around.
-			if (_canReverse && dot < -0.5 && _PlayerPhys._currentRunningSpeed < 7)
+			if (_canReverse && dot < -0.5 && _PlayerVel._currentRunningSpeed < 7)
 			{
 				_sampleForwards = -_sampleForwards;
 				_physicsCoreVelocity = _sampleForwards * 1;
@@ -258,10 +259,11 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	private void ApplyVelocity () {
 
-		_PlayerPhys.SetBothVelocities(_physicsCoreVelocity, Vector2.right);
-		_PlayerPhys.SetTotalVelocity();
+		_PlayerVel.SetBothVelocities(_physicsCoreVelocity, Vector2.right);
+		//_PlayerVel.SetTotalVelocity();
+		//Set total velocity in PlayerVelocity fixedUpdate is still called after every other script.
 
-		_playerSpeed = _PlayerPhys._currentRunningSpeed;
+		_playerSpeed = _PlayerVel._currentRunningSpeed;
 	}
 
 	//Apply an additional velocity this frame to slowly move to the path itself, rather than be at an offset.
@@ -275,7 +277,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			direction = _PlayerPhys.GetRelevantVector(direction, false);
 			direction = transform.TransformDirection(direction);
 
-			_PlayerPhys.AddGeneralVelocity(direction.normalized * 4, false);
+			_PlayerVel.AddGeneralVelocity(direction.normalized * 4, false, false);
 		}
 	}
 
@@ -307,7 +309,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_PlayerMovement._currentMinSpeed = _pathMinSpeed;
 		_pathMaxSpeed = Path._speedLimits.y;
 		_PlayerMovement._currentMaxSpeed = _pathMaxSpeed;
-		_playerSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed, startSpeed);
+		_playerSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed, startSpeed);
 		_playerSpeed = Mathf.Clamp(_playerSpeed, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
 
 		_isGoingBackwards = isGoingBack;
@@ -354,6 +356,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Pathers = _Tools.PathInteraction;
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;

@@ -17,6 +17,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	//Unity
 	#region Unity Specific Properties
 	private S_PlayerPhysics	_PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_CharacterTools	_Tools;
 	private S_ActionManager	_Actions;
 	private S_Handler_Camera	_CamHandler;
@@ -31,7 +32,8 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	//Stats
 	#region Stats
 	private float	_distanceToStep_;
-	private float	_quickStepSpeed_;
+	private float	_stepDuration_;
+	private Vector2     _quickStepCooldown_;
 	private LayerMask	_StepPlayermask_;
 	#endregion
 
@@ -41,6 +43,8 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	private bool	_isSteppingRight;
 	private bool	_canStep;
 	private bool	_inAir;
+
+	private float       _thisStepSpeed;
 	#endregion
 
 	#endregion
@@ -58,6 +62,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		{
 			AssignTools();
 			_StepPlayermask_ = _Tools.Stats.QuickstepStats.StepLayerMask;
+			_quickStepCooldown_ = _Tools.Stats.QuickstepStats.cooldown;
 			enabled = false;
 		}
 	}
@@ -65,21 +70,22 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
 	private void FixedUpdate () {
 
-		//If performed in the air but lands, end the step
-		if (_inAir && _PlayerPhys._isGrounded)
-			enabled = false;
-		else if (!_inAir && !_PlayerPhys._isGrounded)
-			_inAir = true;
-		//If changed action during the step, end the step.
-		if (_whatActionWasOn != _Actions._whatCurrentAction)
-			enabled = false;
-
 		if (_distanceToStep_ > 0)
 		{
+			//If performed in the air but lands, end the step
+			if (_inAir && _PlayerPhys._isGrounded)
+				_distanceToStep_ = 0;
+			else if (!_inAir && !_PlayerPhys._isGrounded)
+				_distanceToStep_ = 0;
+			//If changed action during the step, end the step.
+			if (_whatActionWasOn != _Actions._whatCurrentAction)
+				_distanceToStep_ = 0;
+
 			PerformStep();
 		}
-		else
+		if (_distanceToStep_ == 0) 
 		{
+			_distanceToStep_ = -1;  //To prevent the cooldown being called repeatedly.
 			StartCoroutine(CoolDown());
 		}
 	}
@@ -87,26 +93,25 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	public bool AttemptAction() {
-		bool willStartAction = false;
 
-		//Enable Quickstep if a position to do so, otherwise end the function.
-		if (_PlayerPhys._horizontalSpeedMagnitude > 10f && !enabled)
+		//Enable Quickstep if in a position to do so, otherwise end the function.
+		if (_PlayerVel._horizontalSpeedMagnitude > 10f && !enabled)
 		{
 			//Gets an input and makes it relevant to camera, then start the action if it's still there.
 			if (_Input._RightStepPressed)
 			{
 				PressRight();
 				StartAction();
-				willStartAction = true;
+				return true;
 			}
 			else if (_Input._LeftStepPressed)
 			{
 				PressLeft();
 				StartAction();
-				willStartAction=true;
+				return true;
 			}
 		}
-		return willStartAction;
+		return false;
 	}
 
 	//Called when the action is enabled and readies all variables for it to be performed.
@@ -129,8 +134,6 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		_Input._RightStepPressed = false;
 		_Input._LeftStepPressed = false;
 
-		_canStep = true;
-
 		SetSpeedAndDistance();
 	}
 
@@ -144,22 +147,20 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	//Called every frame to move the character to the left or right.
 	private void PerformStep () {
 
-		float toTravel = _quickStepSpeed_;
+		float toTravel = _thisStepSpeed;
 
 		//Get placement from step and direction of it.
 		float dir = _isSteppingRight ? 1 : -1;
 
-		//Check sides based on step direction for if there's a wall preventing the step. If there isn't, change position.
-		if (!Physics.BoxCast(transform.position, new Vector3(0, _CharacterCapsule.height / 2, _CharacterCapsule.radius), _MainSkin.right * dir, _MainSkin.rotation, 1.5f, _StepPlayermask_) && _canStep)
-		{
-			_PlayerPhys.AddGeneralVelocity(_MainSkin.transform.right * dir * toTravel); //This will add velocity to this frame, that will be ignored next update.		
-		}
-		else
-			enabled = false;
+		Vector3 velocityInStepDirection = _MainSkin.transform.right * dir * (_thisStepSpeed / Time.fixedDeltaTime);
+		velocityInStepDirection = _PlayerPhys.GetRelevantVector(velocityInStepDirection, false);
+		velocityInStepDirection = transform.TransformDirection(velocityInStepDirection);
+
+		Debug.DrawRay(transform.position, velocityInStepDirection, Color.white, 10f);
+		_PlayerVel.AddGeneralVelocity(velocityInStepDirection, false, false); //This will add velocity to this frame, that will be ignored next update.		
 
 		//Decrease distance by how far moved, this is used to track when the step ends.
-		toTravel = Mathf.Clamp(toTravel * Time.fixedDeltaTime, 0, _distanceToStep_);
-		_distanceToStep_ -= toTravel;
+		_distanceToStep_ = Mathf.Max(_distanceToStep_ - toTravel, 0);
 	}
 
 
@@ -167,26 +168,27 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	private void SetSpeedAndDistance () {
 		if (_PlayerPhys._isGrounded)
 		{
-			_quickStepSpeed_ = _Tools.Stats.QuickstepStats.stepSpeed;
+			_stepDuration_ = _Tools.Stats.QuickstepStats.stepDuration;
 			_distanceToStep_ = _Tools.Stats.QuickstepStats.stepDistance;
 			_inAir = false;
 		}
 		else
 		{
 			_distanceToStep_ = _Tools.Stats.QuickstepStats.airStepDistance;
-			_quickStepSpeed_ = _Tools.Stats.QuickstepStats.airStepSpeed;
+			_stepDuration_ = _Tools.Stats.QuickstepStats.airStepDuration;
 			_inAir = true;
 		}
+		_thisStepSpeed = _distanceToStep_ / _stepDuration_;
 	}
 
-	//Called when the action has finished and makes it so it can't be performed again until the time is up.
+	//Called when the action has finished and makes it so it can't be performed again until the frame count is up
 	IEnumerator CoolDown () {
-		if (_PlayerPhys._isGrounded)
-			yield return new WaitForSeconds(0.05f);
-		else
-			yield return new WaitForSeconds(0.20f);
+		int framesToDelay =(int) (_PlayerPhys._isGrounded ? _quickStepCooldown_.x : _quickStepCooldown_.y);
 
-		this.enabled = false;
+		for(int i = 0; i < framesToDelay; i++)
+			yield return new WaitForFixedUpdate();
+
+		enabled = false;
 	}
 
 	#endregion
@@ -222,6 +224,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	private void AssignTools () {
 		_Tools =		GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
 		_Actions =	_Tools._ActionManager;
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
 

@@ -15,6 +15,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity      _PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 
@@ -99,7 +100,7 @@ public class S_Handler_WallActions : MonoBehaviour
 			//If High enough above ground and in an action calling WallRunning's AttemptAction()
 			if (IsEnoughAboveGround())
 			{
-				_currentSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+				_currentSpeed = _PlayerVel._horizontalSpeedMagnitude;
 				_saveVelocity = _PlayerPhys._RB.velocity;
 
 				//Has to be inputting at all, check if inputting towards a wall later.
@@ -168,7 +169,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	private float GetSpeedToTheSide () {
-		Vector3 releventVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity, false);
+		Vector3 releventVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._totalVelocity, false);
 		return Mathf.Abs(releventVelocity.x * Time.deltaTime * 1.5f);
 	}
 
@@ -291,6 +292,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 
 		_WallRunning = _Actions._ObjectForActions.GetComponent<S_Action12_WallRunning>();

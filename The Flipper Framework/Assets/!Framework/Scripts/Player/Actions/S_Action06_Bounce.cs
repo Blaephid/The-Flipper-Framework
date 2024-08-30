@@ -16,6 +16,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Control_SoundsPlayer _Sounds;
@@ -106,17 +107,17 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
 		this.enabled = true;
 
-		_memorisedSpeed = _PlayerPhys._currentRunningSpeed; //Stores the running speed the player was before bouncing.
+		_memorisedSpeed = _PlayerVel._currentRunningSpeed; //Stores the running speed the player was before bouncing.
 		_nextSpeed = _memorisedSpeed; //This will decrease as the action goes on, then resetting the player's movement to it after completing the bounce.
 
 		_isBounceAvailable = false; //Can't perform a bounce while in a bounce.
-		_trackedVerticalSpeed = _PlayerPhys._coreVelocity.y;
+		_trackedVerticalSpeed = _PlayerVel._coreVelocity.y;
 
 		//Physics
 		_PlayerPhys._listOfIsGravityOn.Add(false); //Moving down will be handled here rather than through the premade gravity in physics script.
-		_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
-		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerPhys._coreVelocity.y - 20);
-		_PlayerPhys.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0)); // Apply downward force, this is instant rather than  ramp up like gravity.
+		_PlayerVel.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
+		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerVel._coreVelocity.y - 20);
+		_PlayerVel.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0)); // Apply downward force, this is instant rather than  ramp up like gravity.
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  bounce following the ground direction.
 
@@ -124,7 +125,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false); //Ball animation rather than character ones.
 		_BallAnimator.SetInteger("Action", 1); //Ensures it is set to jump first, because it will then transition from that to bounce.
 
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2 ( -_PlayerPhys._coreVelocity.y, -thisDropSpeed), 1f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2 ( -_PlayerVel._coreVelocity.y, -thisDropSpeed), 1f)); //The camera will fall back before catching up.
 
 		_Sounds.BounceStartSound();
 
@@ -139,7 +140,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		//Apply a cooldown so this can't be performed again immediately.
 		float coolDown = _bounceCoolDown_;
-		coolDown = Mathf.Clamp(coolDown - (_PlayerPhys._horizontalSpeedMagnitude * _cooldownModifierBySpeed_), 0.05f, coolDown);
+		coolDown = Mathf.Clamp(coolDown - (_PlayerVel._horizontalSpeedMagnitude * _cooldownModifierBySpeed_), 0.05f, coolDown);
 		StartCoroutine(AddDelay(coolDown));
 
 		//Incase this was disabled by changing action, rather than a bounce.
@@ -166,7 +167,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	private void CheckForGround () {
 
 		//Check if on the ground, either by using the ground check or physics, or a different one based on fall speed with a capsule (to ensure not hitting a corner and not bouncing).
-		bool isRaycasthit = Physics.SphereCast(transform.position,_CharacterCapsule.radius, -transform.up, out _HitGround, (_PlayerPhys._coreVelocity.y * Time.deltaTime * 0.8f), _PlayerPhys._Groundmask_);
+		bool isRaycasthit = Physics.SphereCast(transform.position,_CharacterCapsule.radius, -transform.up, out _HitGround, (_PlayerVel._coreVelocity.y * Time.deltaTime * 0.8f), _PlayerPhys._Groundmask_);
 		bool isGroundHit = _PlayerPhys._isGrounded || isRaycasthit;
 
 		RaycastHit UseHit = isRaycasthit ? _HitGround : _PlayerPhys._HitGround; //Get which one to use
@@ -197,7 +198,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		if (!_hasBounced)
 		{
 			//Increases or decreases speed of animation (see ball animator "Bounce").
-			_trackedVerticalSpeed = Mathf.Lerp(_trackedVerticalSpeed, _PlayerPhys._coreVelocity.y, 0.05f);
+			_trackedVerticalSpeed = Mathf.Lerp(_trackedVerticalSpeed, _PlayerVel._coreVelocity.y, 0.05f);
 			_BallAnimator.SetFloat("VerticalSpeed", _trackedVerticalSpeed);
 			_BallAnimator.SetInteger("Action", 6); //Causes a transition through the jump animation
 
@@ -209,7 +210,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			}
 			 else if(vertSpeed > _maxDropSpeed_)
 			{
-				_PlayerPhys.AddCoreVelocity(Vector3.down * 2.5f);
+				_PlayerVel.AddCoreVelocity(Vector3.down * 2.5f);
 			}
 		}
 	}
@@ -244,10 +245,10 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Physics
-		Vector3 newDir= _PlayerPhys._coreVelocity.normalized;
-		float newSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+		Vector3 newDir= _PlayerVel._coreVelocity.normalized;
+		float newSpeed = _PlayerVel._horizontalSpeedMagnitude;
 		//Player will always be push forwards at least slightly.
-		if (_PlayerPhys._horizontalSpeedMagnitude < _minimumPushForce_)
+		if (_PlayerVel._horizontalSpeedMagnitude < _minimumPushForce_)
 		{
 			newDir = _MainSkin.forward;
 			newSpeed = _minimumPushForce_;
@@ -256,7 +257,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		else if (_nextSpeed > newSpeed)
 		{
 			//Gets the local to remove players relevant upwards velocity, then converts back to world for calculations
-			newDir = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity, false).normalized;
+			newDir = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity, false).normalized;
 			newDir = transform.TransformDirection(newDir);
 			newSpeed = _nextSpeed;
 		}
@@ -271,12 +272,12 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		//Makes the player's movement relevant to the surface and removes vertical speed.
 		Vector3 setVel = _PlayerPhys.AlignWithNormal(newDir, normal, newSpeed);
-		_PlayerPhys.SetCoreVelocity(setVel);
+		_PlayerVel.SetCoreVelocity(setVel);
 
 		//Since vertical speed is removed, add it here, but more facing upwards rather than directly along normal.
 		float dif = Vector3.Angle(normal, Vector3.up) * 0.5f;
 		normal = Vector3.Lerp(normal, Vector3.up, dif * Mathf.Deg2Rad);
-		_PlayerPhys.AddCoreVelocity(normal * _currentBounceForce);
+		_PlayerVel.AddCoreVelocity(normal * _currentBounceForce);
 
 		//If not at the last index, increase the bounce count.
 		if (_Actions._bounceCount < _BounceUpSpeeds_.Count - 1)
@@ -330,6 +331,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input =	_Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
 		_Actions =	_Tools._ActionManager;
 
 		_MainSkin =		_Tools.MainSkin;

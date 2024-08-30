@@ -6,6 +6,7 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 {
 
 	private S_PlayerPhysics _PlayerPhys;
+	private S_PlayerVelocity _PlayerVelocity;
 	public S_CharacterTools _Tools;
 	private S_Handler_Camera _CamHandler;
 
@@ -34,6 +35,7 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_JumpDashParticle = _Tools.JumpDashParticle;
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVelocity = _Tools.GetComponent<S_PlayerVelocity>();
 		_CamHandler = _Tools.CamHandler;
 
 		_Head = _Tools.Head;
@@ -45,23 +47,23 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 
 		HandleMouths();
 
-		if (_PlayerPhys._currentRunningSpeed > RunningDustThreshold && _PlayerPhys._isGrounded && RunningDust != null)
+		if (_PlayerVelocity._currentRunningSpeed > RunningDustThreshold && _PlayerPhys._isGrounded && RunningDust != null)
 		{
 			RunningDust.Emit(Random.Range(0, 20));
 		}
 
-		if (_PlayerPhys._currentRunningSpeed > SpeedLinesThreshold && SpeedLinesCharacter != null && SpeedLinesCharacter.isPlaying == false)
+		if (_PlayerVelocity._currentRunningSpeed > SpeedLinesThreshold && SpeedLinesCharacter != null && SpeedLinesCharacter.isPlaying == false)
 		{
 			SpeedLinesCharacter.Play();
 		}
-		else if ((_PlayerPhys._currentRunningSpeed < SpeedLinesThreshold - 5 && SpeedLinesCharacter.isPlaying == true) || Mathf.Abs(_PlayerPhys._coreVelocity.y) > _PlayerPhys._currentRunningSpeed)
+		else if ((_PlayerVelocity._currentRunningSpeed < SpeedLinesThreshold - 5 && SpeedLinesCharacter.isPlaying == true) || Mathf.Abs(_PlayerVelocity._coreVelocity.y) > _PlayerVelocity._currentRunningSpeed)
 		{
 			SpeedLinesCharacter.Stop();
 		}
 
-		if (_PlayerPhys._horizontalSpeedMagnitude > 70)
+		if (_PlayerVelocity._horizontalSpeedMagnitude > 70)
 		{
-			_SpeedLinesScreen.SetFloat("Intensity", (_PlayerPhys._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed) * 2);
+			_SpeedLinesScreen.SetFloat("Intensity", (_PlayerVelocity._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed) * 2);
 		}
 		else
 			_SpeedLinesScreen.SetFloat("Intensity", 0);
@@ -118,8 +120,8 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 	public void AirDashParticle () {
 		GameObject JumpDashParticleClone = Instantiate(_JumpDashParticle, _Tools.transform.position, Quaternion.identity) as GameObject;
 
-		if (_PlayerPhys._speedMagnitude > 60)
-			JumpDashParticleClone.transform.localScale = new Vector3(_PlayerPhys._speedMagnitude / 60f, _PlayerPhys._speedMagnitude / 60f, _PlayerPhys._speedMagnitude / 60f);
+		if (_PlayerVelocity._speedMagnitude > 60)
+			JumpDashParticleClone.transform.localScale = new Vector3(_PlayerVelocity._speedMagnitude / 60f, _PlayerVelocity._speedMagnitude / 60f, _PlayerVelocity._speedMagnitude / 60f);
 
 		JumpDashParticleClone.transform.position = _Tools.transform.position;
 		JumpDashParticleClone.transform.rotation = _Tools.MainSkin.transform.rotation;

@@ -18,6 +18,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity      _PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Handler_RingRoad    _RoadHandler;
@@ -109,7 +110,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Physics
-		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one); //Prevent character moving outside of the path.
+		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one); //Prevent character moving outside of the path.
 		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys.SetIsGrounded(false);
@@ -132,17 +133,17 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_CreatedSpline = GO.AddComponent<Spline>();
 
 		//Set private
-		_speedBeforeAction = _PlayerPhys._horizontalSpeedMagnitude; //Gets speed to return to later
+		_speedBeforeAction = _PlayerVel._horizontalSpeedMagnitude; //Gets speed to return to later
 		_ListOfRingsInRoad.Clear(); //Used to track if a target has been used as a node for the spline.
 
 		_positionAlongPath = 0; //The spline is created from player location, so start at 0.
 		_counter = 0;
 
-		_speedBeforeAction = _PlayerPhys._horizontalSpeedMagnitude;
+		_speedBeforeAction = _PlayerVel._horizontalSpeedMagnitude;
 		_Actions._listOfSpeedOnPaths.Add(Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f)); //Speed to move at, always faster than was moving before.
 
 		//_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
-		_directionToGo = _PlayerPhys._worldVelocity.normalized; //This will be changed to reflect the spline later, but this allows checking and movement before that.
+		_directionToGo = _PlayerVel._worldVelocity.normalized; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
 		this.enabled = true;
@@ -235,7 +236,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 			//Place player on it (since called in update, not fixed update, won't be too jittery).
 			_PlayerPhys.SetPlayerPosition(Sample.location);
-			_PlayerPhys.SetBothVelocities(Sample.tangent * _Actions._listOfSpeedOnPaths[0], Vector2.right); //Ensures each ring will be collected and the move will look smooth even if only updating in FixedUpdate
+			_PlayerVel.SetBothVelocities(Sample.tangent * _Actions._listOfSpeedOnPaths[0], Vector2.right); //Ensures each ring will be collected and the move will look smooth even if only updating in FixedUpdate
 
 			//_PlayerPhys._horizontalSpeedMagnitude = _Actions._listOfSpeedOnPaths[0];
 		}
@@ -260,7 +261,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _directionToGo);
 
 		_PlayerPhys.SetPlayerPosition( Sample.location);
-		_PlayerPhys.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
+		_PlayerVel.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
 		float differentSpeedOnExit = _Actions._listOfSpeedOnPaths[0] - endingSpeedResult;
@@ -277,7 +278,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		for (int i = 0 ; i < frames ; i++)
 		{
 			yield return new WaitForFixedUpdate ();
-			_PlayerPhys.AddGeneralVelocity(_PlayerPhys._coreVelocity.normalized * tempSpeed);
+			_PlayerVel.AddGeneralVelocity(_PlayerVel._coreVelocity.normalized * tempSpeed);
 			tempSpeed -= increments; //Go down in increments. When at zero, the player will have smoothly gone down to the actual speed rather than jump.
 		}
 	}
@@ -312,6 +313,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 		_Actions = _Tools._ActionManager;
 		_RoadHandler = GetComponent<S_Handler_RingRoad>();

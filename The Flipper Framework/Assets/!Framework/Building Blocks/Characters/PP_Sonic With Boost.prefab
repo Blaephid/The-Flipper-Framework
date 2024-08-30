@@ -528,6 +528,7 @@ GameObject:
   - component: {fileID: 8583335634310275265}
   - component: {fileID: 5416488146372199807}
   - component: {fileID: 1170264400203800284}
+  - component: {fileID: 576209267428233278}
   m_Layer: 8
   m_Name: Player_Sonic
   m_TagString: Player
@@ -649,6 +650,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _PlayerMovement: {fileID: 0}
+  _PlayerVelocity: {fileID: 0}
   _RB: {fileID: 0}
   _isUsingSlopePhysics_: 1
   _maxFallingSpeed_: 0
@@ -661,30 +663,6 @@ MonoBehaviour:
     m_Bits: 0
   _frameCount: 0
   _arePhysicsOn: 1
-  _coreVelocity: {x: 0, y: 0, z: 0}
-  _environmentalVelocity: {x: 0, y: 0, z: 0}
-  _totalVelocity: {x: 0, y: 0, z: 0}
-  _worldVelocity: {x: 0, y: 0, z: 0}
-  _previousVelocities:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  _externalRunningSpeed: 0
-  _resetEnvironmentalOnGrounded: 0
-  _resetEnvironmentalOnAirAction: 0
-  _speedMagnitude: 0
-  _horizontalSpeedMagnitude: 0
-  _currentRunningSpeed: 0
-  _previousHorizontalSpeeds:
-  - 1
-  - 2
-  - 3
-  - 4
-  _previousRunningSpeeds:
-  - 1
-  - 2
-  - 3
   _curvePosSlopePower: 0
   _playerPos: {x: 0, y: 0, z: 0}
   _feetOffsetFromCentre: {x: 0, y: 0, z: 0}
@@ -694,6 +672,7 @@ MonoBehaviour:
   _canStickToGround: 1
   _groundNormal: {x: 0, y: 0, z: 0}
   _timeOnGround: 0
+  _wasInAirLastFrame: 0
   _currentFallGravity: {x: 0, y: 0, z: 0}
   _currentUpwardsFallGravity: {x: 0, y: 0, z: 0}
   _isRolling: 0
@@ -1152,6 +1131,42 @@ MonoBehaviour:
   _curvePosDecell: 0
   _curvePosDrag: 0
   _inputVelocityDifference: 1
+--- !u!114 &576209267428233278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979695856965714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8d60032704009c479240c8b1bff6de3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _coreVelocity: {x: 0, y: 0, z: 0}
+  _environmentalVelocity: {x: 0, y: 0, z: 0}
+  _totalVelocity: {x: 0, y: 0, z: 0}
+  _worldVelocity: {x: 0, y: 0, z: 0}
+  _previousVelocities:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  _externalRunningSpeed: 0
+  _speedMagnitude: 0
+  _horizontalSpeedMagnitude: 0
+  _currentRunningSpeed: 0
+  _previousHorizontalSpeeds:
+  - 1
+  - 2
+  - 3
+  - 4
+  _previousRunningSpeeds:
+  - 1
+  - 2
+  - 3
+  _resetEnvironmentalOnGrounded: 0
+  _resetEnvironmentalOnAirAction: 0
 --- !u!1 &38880623587908062
 GameObject:
   m_ObjectHideFlags: 0
@@ -12519,6 +12534,89 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 5c24b6f66bc523947b1be673ed1c5bea, type: 3}
   - {fileID: 8300000, guid: a832a4ecdcad04749bfeb9121185caf1, type: 3}
   pitchBendingRate: 1
+--- !u!1 &3781078590449387767
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7324871054751607818}
+  - component: {fileID: 2355655169563072180}
+  - component: {fileID: 521884047984923863}
+  m_Layer: 8
+  m_Name: Sphere
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &7324871054751607818
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3781078590449387767}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.37243998, y: 0.37243998, z: 0.37243998}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3676360873521850425}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &2355655169563072180
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3781078590449387767}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &521884047984923863
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3781078590449387767}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 22240359299b5724c86762d72d29c51b, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4422975758816975122
 GameObject:
   m_ObjectHideFlags: 0
@@ -22608,6 +22706,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8560779294445687780}
+  - {fileID: 7324871054751607818}
   m_Father: {fileID: 4616195427816144340}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6691994230343257580

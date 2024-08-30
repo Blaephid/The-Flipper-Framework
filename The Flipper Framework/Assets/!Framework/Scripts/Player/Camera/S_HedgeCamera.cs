@@ -18,6 +18,7 @@ public class S_HedgeCamera : MonoBehaviour
 	public S_CharacterTools       _Tools;
 
 	public S_PlayerPhysics        _PlayerPhys;
+	private S_PlayerVelocity       _PlayerVel;
 	private S_PlayerMovement	_PlayerMovement;
 	public Transform              _Skin;
 	private S_ActionManager        _Actions;
@@ -243,7 +244,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//Changes the x and y values of the camera by input, changing speed based on a number of factors, such as if stationary and external modifiers.
 		if (!_isLocked && _canMove)
 		{
-			float camMoveSpeed = _PlayerPhys._speedMagnitude > 10 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
+			float camMoveSpeed = _PlayerVel._speedMagnitude > 10 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
 			camMoveSpeed *= _moveModifier;
 			float movementX = _Input.moveCamX * _inputXSpeed_ * _invertedX;
 			float movementY = _Input.moveCamY * _inputYSpeed_ * _invertedY;
@@ -272,9 +273,8 @@ public class S_HedgeCamera : MonoBehaviour
 		//Gets the players current input direction and moves the target in that direction.
 		if (_shouldMoveInInputDirection_)
 		{
-			Vector3 inputDirection = _PlayerPhys.transform.TransformDirection(_PlayerMovement._moveInput);
+			Vector3 inputDirection = _PlayerVel._horizontalSpeedMagnitude > 10 ? _Input._constantInputRelevantToCharacter : Vector3.zero;
 			_predictAheadPosition = Vector3.MoveTowards(_predictAheadPosition, inputDirection * _inputPredictonDistance_, _cameraMoveToInputSpeed_ * Time.deltaTime);
-
 		}
 
 		//Moves the target slightly away from the character when looking left, right, up or down.
@@ -283,12 +283,14 @@ public class S_HedgeCamera : MonoBehaviour
 			//Get where to move target based on how up or down camera is currently looking.
 			float y = _moveUpByAngle_.Evaluate(GetFaceDirection(transform.forward, false).y);
 
-			//Get how far to move away from the character based on difference between camera and character direction, looping it back down if it goes inn front of the player.
+			//Get how far to move away from the character based on difference between camera and character direction,
+			//looping it back down if it goes in front of the player.
 			float angle = Vector3.Angle(GetFaceDirection(transform.forward), GetFaceDirection(_Skin.forward)) / 90;
 			if (angle > 1) { angle = 2 - angle; }
 			else if (angle < -1) { angle = -2 - angle; }
 
-			//Get which direction (clockwise or counterclockwise) the camera has rotated from the character, and makes the angle negative or positive.
+			//Get which direction (clockwise or counterclockwise) the camera has rotated from the character,
+			//and makes the angle negative or positive.
 			Vector3 crossProduct = Vector3.Cross(new Vector3 (transform.forward.x, 0, transform.forward.z).normalized, _Skin.forward);
 			crossProduct = _Skin.transform.InverseTransformDirection(crossProduct);
 			angle *= Mathf.Sign(crossProduct.y);
@@ -298,25 +300,32 @@ public class S_HedgeCamera : MonoBehaviour
 			//Move the offset towards a place relative to the character.
 			Vector3 goal = (_Skin.up * y) + (_Skin.right * xz);
 			_AngleOffset = Vector3.Lerp(_AngleOffset, goal, 0.1f);
-			_TargetByAngle.localPosition = _AngleOffset;
 		}
 
+		//Apply, ensuring matches player rotation.
+		_TargetByInput.localPosition = _PlayerPhys.GetRelevantVector(_predictAheadPosition);
+		_TargetByAngle.localPosition = Vector3.zero;
+		_TargetByAngle.position += _AngleOffset;
 
-		//The final target is the actual anchor point for the camera, and should not be changed, as it is a child of the other targets. 
-		_TargetByCollisions.localPosition = Vector3.zero;
+		//To ensure distance is only slighlty beyond offset, use a linecast to avoid getting the actual distance value.
+		Vector3 targetOffset = _TargetByCollisions.parent.position - _BaseTarget.position;
+		targetOffset += targetOffset.normalized * 0.2f;
 
 		//But to prevent the target going through surfaces (and by extent the camera) move it if there would be a collision closer to the centre.
-		if (Physics.Linecast(_BaseTarget.position, _FinalTarget.position, out RaycastHit hit, _CollidableLayers_))
+		if (Physics.Linecast(_BaseTarget.position, _BaseTarget.position + targetOffset, out RaycastHit hit, _CollidableLayers_))
 		{
-			_TargetByCollisions.position = Vector3.LerpUnclamped(hit.point, _BaseTarget.position, 0.8f);
+			//This is the lowest in the hierachy, so move world position, not local.
+			_TargetByCollisions.position = hit.point + hit.normal * 0.3f;
 		}
-		//If no wall to block the target, then apply the calculations.
 		else
 		{
-			_TargetByInput.localPosition = _predictAheadPosition;
-			_TargetByAngle.localPosition = _AngleOffset;
+			bool isCollisionTargetCloserThanParent =
+			(_BaseTarget.position - _TargetByCollisions.position).sqrMagnitude < (_BaseTarget.position - _TargetByCollisions.parent.position).sqrMagnitude;
+			if (isCollisionTargetCloserThanParent)
+				_TargetByCollisions.localPosition = Vector3.Lerp(_TargetByCollisions.localPosition, Vector3.zero, 0.2f);
 		}
 
+		//The final target is the actual anchor point for the camera, and should not be changed, as it is a child of the other targets. 
 	}
 
 	//Handles the PlayerTransformCopy, making it match the actual player, or its own angle. This will later be used as a reference for the camera to rotate around.
@@ -356,7 +365,7 @@ public class S_HedgeCamera : MonoBehaviour
 	//Changes variables and elements to the camera movement depending if the player is moving towards or away from it.
 	void ChangeBasedOnFacing () {
 		//Get player and camera direction without vertical since vertical damping is not used.
-		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerPhys._worldVelocity);
+		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerVel._worldVelocity);
 		playerVelocity.y = 0;
 		Vector3 cameraDirectionWithoutY = _PlayerTransformCopy.InverseTransformDirection(transform.forward);
 		cameraDirectionWithoutY.y = 0;
@@ -387,7 +396,7 @@ public class S_HedgeCamera : MonoBehaviour
 		Vector3 actionModifier = GetDistanceModifiedByAction();
 		float minValue = actionModifier.x;
 		float maxValue = actionModifier.z;
-		float speedPercentage = Mathf.Clamp((_PlayerPhys._currentRunningSpeed / _PlayerMovement._currentMaxSpeed) * actionModifier.y, minValue, maxValue);
+		float speedPercentage = Mathf.Clamp((_PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed) * actionModifier.y, minValue, maxValue);
 
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
 		if (_shouldAffectDistanceBySpeed_)
@@ -493,7 +502,7 @@ public class S_HedgeCamera : MonoBehaviour
 			//StartCoroutine(MoveFromDowntoForward(60));
 		}
 		//If over a certain speed, then camera will start drifting to set height.
-		else if (_shouldSetHeightWhenMoving_ && _PlayerPhys._horizontalSpeedMagnitude >= 10)
+		else if (_shouldSetHeightWhenMoving_ && _PlayerVel._horizontalSpeedMagnitude >= 10)
 		{
 			if (_equalHeightTimer < 0)
 				_equalHeightTimer += Time.deltaTime;
@@ -530,7 +539,7 @@ public class S_HedgeCamera : MonoBehaviour
 		float dif = Vector3.Angle(GetFaceDirection(transform.forward), _currentFaceDirection) / 180;
 
 		//If moving fast enough, the delay from moving the camera has expired, and the player is facing a different enough angle to the camera, then it will move behind. MinSpeed at 0 means it won't happen.
-		if (_PlayerPhys._horizontalSpeedMagnitude > minSpeed && minSpeed > 0 && ((_backBehindTimer >= 0 && (dif >= _rotateCharacterBeforeCameraFollows_ || _isRotatingBehind)) || skipDelay))
+		if (_PlayerVel._horizontalSpeedMagnitude > minSpeed && minSpeed > 0 && ((_backBehindTimer >= 0 && (dif >= _rotateCharacterBeforeCameraFollows_ || _isRotatingBehind)) || skipDelay))
 		{
 			GoBehindCharacter(_rotateToBehindSpeed_, 0, false);
 		}
@@ -747,6 +756,7 @@ public class S_HedgeCamera : MonoBehaviour
 		_lookTimer = duration > 0 ? -duration : 1;
 		_lockedRotationSpeed = speed;
 		_heightToLook = heightSet;
+		_willChangeHeight = true;
 	}
 
 	//
@@ -849,6 +859,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 		_Actions = _Tools._ActionManager;
 		_PlayerMovement = _PlayerPhys.GetComponent<S_PlayerMovement>();
+		_PlayerVel = _PlayerPhys.GetComponent<S_PlayerVelocity>();
 	}
 
 	void SetStats () {

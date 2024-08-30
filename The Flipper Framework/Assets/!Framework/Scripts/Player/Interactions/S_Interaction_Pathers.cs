@@ -19,6 +19,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	#region Unity Specific Properties
 	private S_CharacterTools		_Tools;
 	private S_PlayerPhysics		_PlayerPhys;
+	private S_PlayerVelocity		_PlayerVel;
 	private S_PlayerInput		_Input;
 	private S_ActionManager		_Actions;
 	private S_Action05_Rail		_RailAction;
@@ -176,7 +177,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		Vector2 rangeAndDisstanceSquared = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
 
 		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
-		if (rangeAndDisstanceSquared.y < Mathf.Pow(Mathf.Clamp(_PlayerPhys._speedMagnitude / 15, 2f, 10f), 2))
+		if (rangeAndDisstanceSquared.y < Mathf.Pow(Mathf.Clamp(_PlayerVel._speedMagnitude / 15, 2f, 10f), 2))
 		{
 			SetOnRail(true, Col, rangeAndDisstanceSquared);
 		}
@@ -264,7 +265,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 			willPlaceOnSpline = true;
 			_PathSpline = SpeedPadScript._Path;
-			speedGo = Mathf.Max(SpeedPadScript._speedToSet_, _PlayerPhys._horizontalSpeedMagnitude);
+			speedGo = Mathf.Max(SpeedPadScript._speedToSet_, _PlayerVel._horizontalSpeedMagnitude);
 		}
 
 		//If the path is being started by a normal trigger
@@ -284,7 +285,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 		if (PathTrigger._removeVerticalVelocityOnStart)
 		{
-			_PlayerPhys.SetCoreVelocity(new Vector3(_PlayerPhys._coreVelocity.x, 0, _PlayerPhys._coreVelocity.z));
+			_PlayerVel.SetCoreVelocity(new Vector3(_PlayerVel._coreVelocity.x, 0, _PlayerVel._coreVelocity.z));
 		}
 
 		//Starts the player moving along the path using the path follow action
@@ -382,6 +383,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 
 		//Can afford to directly search for these actions as they will only be read if their AttemptAcions are called.

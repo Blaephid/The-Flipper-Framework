@@ -22,6 +22,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 	private S_ActionManager		_Actions;
 	private S_PlayerPhysics	_PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_Handler_Camera	_CamHandler;
 	private S_PlayerInput	_Input;
 
@@ -63,6 +64,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_CamHandler =	_Tools.CamHandler;
 		_Actions =	_Tools._ActionManager;
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
 		_HealthAndHurt =	_Tools.GetComponent<S_Handler_HealthAndHurt>();
 
@@ -199,7 +201,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_MainSkin.forward = _resumeForwards;
 
 		//Ensures rotation is correct and can lead into instant movement.
-		_PlayerPhys.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
+		_PlayerVel.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
 
 	}
 

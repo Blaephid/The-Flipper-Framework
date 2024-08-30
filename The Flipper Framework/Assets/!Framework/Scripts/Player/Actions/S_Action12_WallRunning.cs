@@ -17,6 +17,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	[HideInInspector]	public  S_CharacterTools                _Tools;
 	[HideInInspector]	public  S_PlayerPhysics                 _PlayerPhys;
+	[HideInInspector]   public  S_PlayerVelocity                _PlayerVel;
 	[HideInInspector]	public  S_PlayerInput                   _Input;
 	[HideInInspector]	public  S_ActionManager                 _Actions;
 	[HideInInspector]	public  S_Control_SoundsPlayer          _Sounds;
@@ -160,8 +161,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 		
 		//Physics
-		_originalVelocity = _PlayerPhys._totalVelocity;
-		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
+		_originalVelocity = _PlayerVel._totalVelocity;
+		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 
 		_PlayerPhys.SetIsGrounded(true); //This is to reset actions like JumpDash and Homing as if grounded
 		_PlayerPhys.SetIsGrounded(false); //Will now be treated as not grounded until the action is over.
@@ -228,7 +229,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		
 
 		//Animator
-		_PlayerPhys._currentRunningSpeed = _runningSpeed;
+		_PlayerVel._currentRunningSpeed = _runningSpeed;
 		_Actions._ActionDefault.HandleAnimator(12);
 		_CharacterAnimator.SetBool("WallRight", _isWallOnRight);
 
@@ -251,6 +252,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		//For actions to exit the wall
 		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.5f);
 		_Actions._dashAngle = Vector3.Lerp(_wallHit.normal, _wallForward, 0.6f);
+		_Actions._dashAngle = Vector3.Lerp(_Actions._dashAngle, Vector3.up, 0.2f);
 	}
 
 	private void RunningPhysics () {
@@ -280,7 +282,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			newVec = new Vector3(newVec.x, _currentClimbingSpeed, newVec.z);
 		}
 
-		_PlayerPhys.SetCoreVelocity(newVec);
+		_PlayerVel.SetCoreVelocity(newVec);
 	}
 	#endregion
 
@@ -299,8 +301,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_wallHit = wallHit;
 		_isWallOnRight = wallRight;
 
-		_runningSpeed = _PlayerPhys._horizontalSpeedMagnitude;
-		_currentClimbingSpeed = _PlayerPhys._worldVelocity.y * 0.4f;
+		_runningSpeed = _PlayerVel._horizontalSpeedMagnitude;
+		_currentClimbingSpeed = _PlayerVel._worldVelocity.y * 0.4f;
 
 		_checkDistance = wallHit.distance + 2; //Ensures first checks for x seconds will find the wall.
 		_checkDistance = Mathf.Max(_checkDistance, _wallCheckDistance_.y * 1.5f);
@@ -346,7 +348,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	//Because canChangeGrounded is set to false on start, use own method when checking for ground, with own values to ensure doesn't count the current wall being climbed as ground.
 	public bool IsOnGround () {
-		if(_PlayerPhys.GetRelevantVector(_PlayerPhys._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
+		if(_PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
 			Vector3 rayCastStartPosition = transform.position + _wallHit.normal * 0.5f;
 			float range = (_CoreCollider.height / 2) + (_CoreCollider.radius / 2) + 0.5f;
@@ -393,6 +395,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	//Responsible for assigning objects and components from the tools script.
 	public void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();

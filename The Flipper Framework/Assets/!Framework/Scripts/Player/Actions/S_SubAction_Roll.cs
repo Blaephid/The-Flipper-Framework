@@ -17,6 +17,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	//Unity
 	#region Unity Specific Properties
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_CharacterTools      _Tools;
 	private S_PlayerInput         _Input;
 	private S_Control_SoundsPlayer _Sounds;
@@ -92,7 +93,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 				if (_PlayerPhys._isGrounded)
 				{
 					//Enter Rolling state, must be moving fast enought first.
-					if (_Input._RollPressed && !_isRollingFromThis && _PlayerPhys._horizontalSpeedMagnitude > _rollingStartSpeed_)
+					if (_Input._RollPressed && !_isRollingFromThis && _PlayerVel._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
 						_whatCurrentAction = _Actions._whatCurrentAction; //If the current action stops matching this, then the player has switched actions while rolling
 						_Actions._whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
@@ -174,6 +175,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	private void AssignTools () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
 		_Actions = _Tools._ActionManager;

@@ -17,6 +17,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	//Unity
 	#region Unity Specific Properties
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_PlayerMovement	_PlayerMovement;
 	private S_CharacterTools      _Tools;
 	private S_PlayerInput         _Input;
@@ -154,20 +155,20 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		if (_PlayerMovement._inputVelocityDifference > _regularSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
 
-			if(_PlayerPhys._currentRunningSpeed > -_regularSkiddingIntensity_ || _isSkidding)
+			if(_PlayerVel._currentRunningSpeed > -_regularSkiddingIntensity_ || _isSkidding)
 			{
 				StartAction();
 
 				//If under a certain speed, stop immediately.
-				if (_PlayerPhys._currentRunningSpeed < _speedToStopAt_)
+				if (_PlayerVel._currentRunningSpeed < _speedToStopAt_)
 				{
-					_PlayerPhys.AddCoreVelocity(-_PlayerPhys._coreVelocity.normalized * _PlayerPhys._currentRunningSpeed * 1.5f);
+					_PlayerVel.AddCoreVelocity(-_PlayerVel._coreVelocity.normalized * _PlayerVel._currentRunningSpeed * 1.5f);
 					StopAction();
 				}
 				//Add force against the character to slow them down.
 				else
 				{
-					_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * _regularSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
+					_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * _regularSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
 				return true;
 			}	
@@ -185,15 +186,15 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		if ((_PlayerMovement._inputVelocityDifference > _regularSkidAngleStartPoint_) && !_Input._isInputLocked)
 		{
 			//Uses relevant velocity rather whan world in order to not skid against vertical speed from jumping or falling.
-			Vector3 releVel = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity);
+			Vector3 releVel = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity);
 			
-				if (_PlayerPhys._currentRunningSpeed < _speedToStopAt_)
+				if (_PlayerVel._currentRunningSpeed < _speedToStopAt_)
 				{
-					_PlayerPhys.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _PlayerPhys._currentRunningSpeed * 0.95f);
+					_PlayerVel.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _PlayerVel._currentRunningSpeed * 0.95f);
 				}
 				else
 				{
-					_PlayerPhys.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _airSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
+					_PlayerVel.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _airSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
 			return true;
 		}
@@ -208,7 +209,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 			//Different start point from the other two skid types.
 		if (_PlayerMovement._inputVelocityDifference > _spinSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
-			_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * _regularSkiddingIntensity_ * 0.6f);
+			_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * _regularSkiddingIntensity_ * 0.6f);
 			return true;
 		}
 		return false;
@@ -223,6 +224,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	private void AssignTools() {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Sounds = _Tools.SoundControl;
 		_Actions = _Tools._ActionManager;

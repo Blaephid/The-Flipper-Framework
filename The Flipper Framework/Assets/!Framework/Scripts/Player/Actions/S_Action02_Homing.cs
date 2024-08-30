@@ -15,6 +15,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_PlayerMovement	_PlayerMovement;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
@@ -145,7 +146,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_homingCount++;
 
 		_timer = 0;
-		_speedBeforeAttack = _PlayerPhys._horizontalSpeedMagnitude; //Saved so it can be called back to on hit or end of action.
+		_speedBeforeAttack = _PlayerVel._horizontalSpeedMagnitude; //Saved so it can be called back to on hit or end of action.
 		_directionBeforeAttack = _PlayerPhys._RB.velocity.normalized;
 
 		//Gets the direction to move in, rotate a lot faster than normal for the first frame.
@@ -286,7 +287,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_currentDirection = Vector3.RotateTowards(_currentDirection, newDirection, Mathf.Deg2Rad * thisTurn, 0.0f);
 
 
-		_PlayerPhys.SetBothVelocities(_currentDirection * _Actions._listOfSpeedOnPaths[0], new Vector2 (1, 0)); //Move in direction but remove all environmental velocity.
+		_PlayerVel.SetBothVelocities(_currentDirection * _Actions._listOfSpeedOnPaths[0], new Vector2 (1, 0)); //Move in direction but remove all environmental velocity.
 	}
 
 	//Undoes the homing movement but doesn't end the actions (as special interactions may keep happening).
@@ -338,7 +339,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				else { bounceUpHit(); }
 
 				//Restore control and switch to default action
-				_PlayerPhys.SetCoreVelocity(newSpeed);
+				_PlayerVel.SetCoreVelocity(newSpeed);
 
 				_Actions._ActionDefault._animationAction = 1;
 				_Actions._ActionDefault.StartAction();
@@ -350,7 +351,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			case S_Enums.HomingHitResponses.bounceOff:
 				bounceUpHit();
 				//Restore control and switch to default action
-				_PlayerPhys.SetCoreVelocity(newSpeed);
+				_PlayerVel.SetCoreVelocity(newSpeed);
 				_Actions._ActionDefault._animationAction = 1;
 				_Actions._ActionDefault.StartAction();
 				break;
@@ -390,19 +391,19 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 			if (_PlayerMovement._moveInput.sqrMagnitude < 0.1)
 			{
-				newSpeed = _PlayerPhys._coreVelocity.normalized;
+				newSpeed = _PlayerVel._coreVelocity.normalized;
 			}
 			//If trying to move in the direction taken by the attack at the end, then will move that way
-			else if (Vector3.Angle(_PlayerPhys._coreVelocity.normalized, _PlayerMovement._moveInput) / 180 < _lerpToNewInput_)
+			else if (Vector3.Angle(_PlayerVel._coreVelocity.normalized, _PlayerMovement._moveInput) / 180 < _lerpToNewInput_)
 			{
-				newSpeed = _PlayerPhys._coreVelocity.normalized;
+				newSpeed = _PlayerVel._coreVelocity.normalized;
 			}
 			//otherwise will move in previous direction.
 			else
 			{
 				//Rotate towards previous direction by percentage
 				float partDifference = Vector3.Angle(newSpeed, _directionBeforeAttack) * _lerpToPreviousDirection_;
-				newSpeed = Vector3.RotateTowards(_PlayerPhys._coreVelocity.normalized, _directionBeforeAttack, partDifference * Mathf.Deg2Rad, 0);
+				newSpeed = Vector3.RotateTowards(_PlayerVel._coreVelocity.normalized, _directionBeforeAttack, partDifference * Mathf.Deg2Rad, 0);
 			}
 		}
 	}
@@ -416,20 +417,20 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_PlayerPhys._canChangeGrounded = true;
 
 		//Gets a direction to make the player face and rebound away from. This is either the way they were already going, or slightly affected by what they hit.
-		Vector3 faceDirection = _PlayerPhys._previousVelocities[2].normalized;
+		Vector3 faceDirection = _PlayerVel._previousVelocities[2].normalized;
 		if (wallNormal != default(Vector3))
 		{
 			faceDirection = Vector3.Lerp(faceDirection, wallNormal, 0.5f);
 		}
 
-		_PlayerPhys.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0));
+		_PlayerVel.SetBothVelocities(Vector3.up * 2, new Vector2(1, 0));
 		yield return new WaitForFixedUpdate();//For optimisation, freezes movement for a bit before applying the new physics.
 
 		//Bounce backwards and upwards 
 
 		Vector3 reboundDirection = -faceDirection; 
 		if(reboundDirection.y < 0.4f && reboundDirection.y > -0.4f) reboundDirection = new Vector3(-faceDirection.x, 0.8f, -faceDirection.z); //If rebound is too horizontal, ensure it bounces upwards slighty.
-		_PlayerPhys.SetBothVelocities(reboundDirection * force, new Vector2(1,0));
+		_PlayerVel.SetBothVelocities(reboundDirection * force, new Vector2(1,0));
 
 		for (int i = 0 ; i < duration * 0.2f && !_PlayerPhys._isGrounded ; i++)
 		{
@@ -507,6 +508,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_HomingHandler = GetComponent<S_Handler_HomingAttack>();

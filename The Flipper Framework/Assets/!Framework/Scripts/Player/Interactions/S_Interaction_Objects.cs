@@ -23,6 +23,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	//Player
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_ActionManager       _Actions;
 	private S_PlayerInput         _Input;
 	private S_PlayerEvents        _Events;
@@ -93,7 +94,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void LateUpdate () {
 		UpdateSpeed();
 
-		_CoreUIElements.RingsCounter.text = ": " + (int)_HurtAndHealth._ringAmount;
+		_CoreUIElements.RingsCounter.text = ""+ (int)_HurtAndHealth._ringAmount;
 
 		
 	}
@@ -231,7 +232,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	//Called every frame
 	private void UpdateSpeed () {
 		//If a text element of the UI has been set for speed, update it to show current running speed.
-		if (_CoreUIElements.SpeedCounter != null && _PlayerPhys._speedMagnitude > 10f) _CoreUIElements.SpeedCounter.text = _PlayerPhys._currentRunningSpeed.ToString("F0");
+		if (_CoreUIElements.SpeedCounter != null && _PlayerVel._speedMagnitude > 10f) _CoreUIElements.SpeedCounter.text = _PlayerVel._currentRunningSpeed.ToString("F0");
 		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) _CoreUIElements.SpeedCounter.text = "0";
 	}
 
@@ -262,7 +263,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (distanceSquared < 9)
 		{
 			//If under 3 units away and moving towards the wind, apply force against equal to the player's speed in that direction, ensuring they can't fall beyond it.
-			Vector3 WindProjectedAgainstVelocity = Vector3.Project(_PlayerPhys._coreVelocity, -direction);
+			Vector3 WindProjectedAgainstVelocity = Vector3.Project(_PlayerVel._coreVelocity, -direction);
 			if(WindProjectedAgainstVelocity.sqrMagnitude > 1) { power = WindProjectedAgainstVelocity.magnitude; }
 		}
 		else
@@ -287,7 +288,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 
 			//Apply lateral
-			Vector3 relevantCoreVelocity = new Vector3 (_PlayerPhys._coreVelocity.x, 0, _PlayerPhys._coreVelocity.z);
+			Vector3 relevantCoreVelocity = new Vector3 (_PlayerVel._coreVelocity.x, 0, _PlayerVel._coreVelocity.z);
 			Vector3 nextVelocity = relevantCoreVelocity + lateralWind;
 
 			//If the wind will increase velocity overall, then apply to coreVelocity so it remains, rather than just being temporary like with the constant general.
@@ -301,18 +302,18 @@ public class S_Interaction_Objects : MonoBehaviour
 				Vector3 increase = nextSpeedInFanDirection - relevantCoreVelocity;
 
 				if(relevantCoreVelocity.sqrMagnitude > increase.sqrMagnitude * Time.fixedDeltaTime + 1)
-					_PlayerPhys.AddCoreVelocity(increase * Time.fixedDeltaTime * 0.5f);
+					_PlayerVel.AddCoreVelocity(increase * Time.fixedDeltaTime * 0.5f);
 			}
 
-			_PlayerPhys.AddGeneralVelocity(lateralWind, false); //Using general velocity so the player believably is still running at speed, even if going nowhere in the world.
+			_PlayerVel.AddGeneralVelocity(lateralWind, false, true); //Using general velocity so the player believably is still running at speed, even if going nowhere in the world.
 
 
 			//Apply vertical, decreasing core velocity if going towards wind, to combat gravity.
 			float x = 0;
-			if (_PlayerPhys._coreVelocity.y >= x)//If already being pushed up by wind
-				_PlayerPhys.AddGeneralVelocity(verticalWind, false);
+			if (_PlayerVel._coreVelocity.y >= x)//If already being pushed up by wind
+				_PlayerVel.AddGeneralVelocity(verticalWind, false, true);
 			else //Fallspeed wont increase while in wind, so apply velocity until upwards force is x, overcoming gravity
-				_PlayerPhys.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(_PlayerPhys._coreVelocity.y - x)));
+				_PlayerVel.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(_PlayerVel._coreVelocity.y - x)));
 
 			//If being blown upwards, enter the hovering state to change actions and animation.
 			//canHover can only be set to true by the Hovering AttemptAction, so GetComponent is safe, and Hovering being enabled shouldn't enable canhover.
@@ -339,7 +340,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			//The reason we're using an anchor reference attached as a child to the mover is because it means we can compare the changes in world position every frame, no matter what happens.
 			//For instance, if the object is rotating, this anchor will reflect that as it will move around as a child of the rotating.
-			_PlatformAnchor = GameObject.Instantiate(new GameObject("Anchor"), _PlayerPhys.transform.position, Quaternion.identity);
+			_PlatformAnchor = GameObject.Instantiate(new GameObject("Anchor"), _PlayerVel.transform.position, Quaternion.identity);
 		}
 		else
 			_PlatformAnchor.transform.position = transform.position;
@@ -357,7 +358,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			Vector3 direction = _PlatformAnchor.transform.position - _previousPlatformPointPosition;
 			_previousPlatformPointPosition = _PlatformAnchor.transform.position;
 
-			_PlayerPhys.AddGeneralVelocity(direction / Time.fixedDeltaTime, true);
+			_PlayerVel.AddGeneralVelocity(direction / Time.fixedDeltaTime, true, false);
 			return;
 		}
 	}
@@ -398,7 +399,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			float speed = SpeedPadScript._speedToSet_;
 			if (SpeedPadScript._willCarrySpeed_)
 			{
-				speed = Mathf.Max(speed, _PlayerPhys._currentRunningSpeed);
+				speed = Mathf.Max(speed, _PlayerVel._currentRunningSpeed);
 			}
 
 			//Dash ring
@@ -444,7 +445,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				}
 
 				//Pushes player in direction
-				_PlayerPhys.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
+				_PlayerVel.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
 
 				if (_Actions._listOfSpeedOnPaths.Count > 0) 
 				{  _Actions._listOfSpeedOnPaths[0] = speed; }
@@ -499,11 +500,11 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (SpringScript._keepHorizontal_)
 		{
 			//Since vertical will be taken over by environment, get horizontal core velocity.
-			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity, false);
+			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity, false);
 			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * SpringScript._springForce_, false); //Combined the spring direction with force to get the only the force horizontally.
 
 			Vector3 combinedVelocityMagnitude = (launchHorizontalVelocity + newCoreVelocity); //The two put together normally so the magnitude is accurate.
-			Vector3 combinedVelocityDirection = (_PlayerPhys.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
+			Vector3 combinedVelocityDirection = (_PlayerVel.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
 			Vector3 upDirection = new Vector3(0, direction.y, 0);
 
 			//If the velocity after bounce is greater than velocity going in to bounce, the take the larger of the two that made it, without losing direction. This will prevent speed increasing too much.
@@ -575,10 +576,10 @@ public class S_Interaction_Objects : MonoBehaviour
 		Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
 		float horizontalSpeed = launchHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
 
-		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  _PlayerPhys._horizontalSpeedMagnitude, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  _PlayerVel._horizontalSpeedMagnitude, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
 
 		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
-		float coreSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+		float coreSpeed = _PlayerVel._horizontalSpeedMagnitude;
 		if (coreSpeed > horizontalSpeed)
 		{
 			horizontalEnvSpeed = 1; //Ensure's theres still a direction even though this won't factor in much to world velocity.
@@ -589,7 +590,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		Vector3 totalEnvironment = (launchHorizontalVelocity.normalized * horizontalEnvSpeed) + (new Vector3(0, (direction * launchPower).y,0));
 
-		launchHorizontalVelocity = _PlayerPhys.transform.TransformDirection(launchHorizontalVelocity);
+		launchHorizontalVelocity = _PlayerVel.transform.TransformDirection(launchHorizontalVelocity);
 
 		StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed));
 	}
@@ -617,8 +618,8 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			_Actions._ActionDefault.StartAction(); //Ensures player cant change into another action, like a rail, while hitting a spring.
 			_PlayerPhys.SetPlayerPosition(position);
-			_PlayerPhys.SetCoreVelocity(Vector3.zero, "Overwrite");
-			_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
+			_PlayerVel.SetCoreVelocity(Vector3.zero, "Overwrite");
+			_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
 		}
 
@@ -628,8 +629,8 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
-		_PlayerPhys.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
-		_PlayerPhys.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_Enums.ChangeLockState.Lock); //Apply bounce
+		_PlayerVel.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
+		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_Enums.ChangeLockState.Lock); //Apply bounce
 	}
 
 
@@ -737,6 +738,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void AssignTools () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_CamHandler = _Tools.CamHandler;
 		_Actions = _Tools._ActionManager;
 		_Events = _Tools.PlayerEvents;

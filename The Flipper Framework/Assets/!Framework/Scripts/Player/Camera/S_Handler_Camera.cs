@@ -153,7 +153,7 @@ public class S_Handler_Camera : MonoBehaviour
 		if (_Input._CamResetPressed)
 		{
 			if(!_HedgeCam._isLocked) {
-				if (_Input.moveVec == Vector2.zero && _PlayerPhys._horizontalSpeedMagnitude < 5f)
+				if (_Input.moveVec == Vector2.zero && _PlayerPhys._PlayerVelocity._horizontalSpeedMagnitude < 5f)
 				{
 					_HedgeCam.SetCameraWithSeperateHeight(_MainSkin.forward, 0.25f, 0, 12, Vector3.zero);
 					_Input._CamResetPressed = false;

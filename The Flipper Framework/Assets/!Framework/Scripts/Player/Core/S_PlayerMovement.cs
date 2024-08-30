@@ -17,6 +17,7 @@ public class S_PlayerMovement : MonoBehaviour
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Control_SoundsPlayer _Sounds;
@@ -111,9 +112,9 @@ public class S_PlayerMovement : MonoBehaviour
 
 	private void FixedUpdate () {
 		//Get curve positions, which will be used in calculations for this frame.
-		_curvePosAcell = _AccelBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _currentTopSpeed);
-		_curvePosDecell = _DecelBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _currentMaxSpeed);
-		_curvePosDrag = _DragBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _currentMaxSpeed);
+		_curvePosAcell = _AccelBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _currentTopSpeed);
+		_curvePosDecell = _DecelBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _currentMaxSpeed);
+		_curvePosDrag = _DragBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _currentMaxSpeed);
 	}
 
 	//Handles core velocity, which is the velocity directly under the player's control (seperate from environmental velocity which is placed on the character by other things).
@@ -123,7 +124,7 @@ public class S_PlayerMovement : MonoBehaviour
 		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
 		if (_PlayerPhys._listOfCanControl.Count != 0)
 		{
-			_PlayerPhys._externalRunningSpeed = -1;
+			_PlayerVel._externalRunningSpeed = -1;
 			return startVelocity;
 		}
 
@@ -143,14 +144,14 @@ public class S_PlayerMovement : MonoBehaviour
 		lateralVelocity = Decelerate(lateralVelocity, _moveInput * decelerationModifier, _curvePosDecell);
 
 		//If external core speed has been set to a positive value this frame, overwrite running speed without losing direction.
-		if (_PlayerPhys._externalRunningSpeed >= 0 && lateralVelocity.magnitude > -1)
+		if (_PlayerVel._externalRunningSpeed >= 0 && lateralVelocity.magnitude > -1)
 		{
 			if (lateralVelocity.sqrMagnitude < 0.1f) { lateralVelocity = _MainSkin.forward; } //Ensures speed will always be applied, even if there's currently no velocity.
-			lateralVelocity = lateralVelocity.normalized * _PlayerPhys._externalRunningSpeed;
-			_PlayerPhys._externalRunningSpeed = -1; //Set to a negative value so core speeds of 0 can be set externally.
+			lateralVelocity = lateralVelocity.normalized * _PlayerVel._externalRunningSpeed;
+			_PlayerVel._externalRunningSpeed = -1; //Set to a negative value so core speeds of 0 can be set externally.
 		}
 		//Enforces the min speed if there is one, but only checks if close to it.
-		else if (_currentMinSpeed > 0 && _PlayerPhys._currentRunningSpeed < _currentMinSpeed + 5)
+		else if (_currentMinSpeed > 0 && _PlayerVel._currentRunningSpeed < _currentMinSpeed + 5)
 		{
 			if (lateralVelocity.sqrMagnitude < Mathf.Pow(_currentMinSpeed, 2))
 			{
@@ -166,7 +167,7 @@ public class S_PlayerMovement : MonoBehaviour
 
 		// Clamp horizontal running speed. coreVelocity can never exceed the player moving laterally faster than this.
 		localVelocity = lateralVelocity + verticalVelocity;
-		if (_PlayerPhys._currentRunningSpeed > _currentMaxSpeed)
+		if (_PlayerVel._currentRunningSpeed > _currentMaxSpeed)
 		{
 			Vector3 ReducedSpeed = localVelocity;
 			float keepY = localVelocity.y;
@@ -216,7 +217,7 @@ public class S_PlayerMovement : MonoBehaviour
 
 			float turnRate = (_PlayerPhys._isRolling ? _rollingTurningModifier_ : 1.0f);
 			turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
-			turnRate *= _TurnRateBySpeed_.Evaluate((_PlayerPhys._coreVelocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
+			turnRate *= _TurnRateBySpeed_.Evaluate((_PlayerVel._coreVelocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
 
 			if (_Input.IsTurningBecauseOfCamera(inputDirection))
 			{
@@ -234,7 +235,7 @@ public class S_PlayerMovement : MonoBehaviour
 		Vector3 setVelocity = lateralVelocity.sqrMagnitude > 0 ? lateralVelocity : inputDirection;
 		float accelRate = 0;
 
-		if (deviationFromInput < _angleToAccelerate_ || _PlayerPhys._currentRunningSpeed < 10) //Will only accelerate if inputing in direction enough, unless under certain speed.
+		if (deviationFromInput < _angleToAccelerate_ || _PlayerVel._currentRunningSpeed < 10) //Will only accelerate if inputing in direction enough, unless under certain speed.
 		{
 			accelRate = (_PlayerPhys._isRolling && _PlayerPhys._isGrounded ? _currentRollAccell : _currentRunAccell) * inputMagnitude;
 			accelRate *= _curvePosAcell;
@@ -276,13 +277,13 @@ public class S_PlayerMovement : MonoBehaviour
 				}
 			}
 			//If grounded and rolling but not on a slope, even with input, ready deceleration. 
-			else if (_PlayerPhys._isRolling && _PlayerPhys._groundNormal.y > _slopeEffectLimit_ && _PlayerPhys._currentRunningSpeed > 10)
+			else if (_PlayerPhys._isRolling && _PlayerPhys._groundNormal.y > _slopeEffectLimit_ && _PlayerVel._currentRunningSpeed > 10)
 			{
 				decelAmount = _rollingDecel_ * modifier;
 			}
 		}
 		//If in air, a constant deceleration is applied in addition to any others.
-		if (!_PlayerPhys._isGrounded && _PlayerPhys._currentRunningSpeed > 14)
+		if (!_PlayerPhys._isGrounded && _PlayerVel._currentRunningSpeed > 14)
 		{
 			decelAmount += _constantAirDecel_;
 		}
@@ -332,6 +333,7 @@ public class S_PlayerMovement : MonoBehaviour
 		_Actions = _Tools._ActionManager;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+		_PlayerVel = GetComponent<S_PlayerVelocity>();
 
 		_MainSkin = _Tools.MainSkin;
 	}

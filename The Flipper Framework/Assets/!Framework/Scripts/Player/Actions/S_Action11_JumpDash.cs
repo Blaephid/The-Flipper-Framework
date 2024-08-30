@@ -14,6 +14,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_PlayerMovement      _PlayerMovement;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
@@ -166,7 +167,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_timer = 0;
 
 		//Create vector to move in
-		_dashSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
+		_dashSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
 
 		//Rotate right or left on a large scale based on input
 		MakeFullTurn();
@@ -182,8 +183,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		Vector3 newVec = _dashDirection * _dashSpeed; //Dash forwards
 		newVec += _MainSkin.up * _upwardsSpeed; //If has upwards force, add that as well.
-		_PlayerPhys.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
-		_PlayerPhys.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
+		_PlayerVel.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
+		_PlayerVel.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
 		this.enabled = true;
@@ -244,7 +245,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		//Build and set velocity.
 		Vector3 newVec = _dashDirection.normalized * _dashSpeed;
 		newVec += _MainSkin.up * _upwardsSpeed;
-		_PlayerPhys.SetCoreVelocity(newVec);
+		_PlayerVel.SetCoreVelocity(newVec);
 	}
 
 	private void CheckTimer () {
@@ -282,10 +283,10 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		{
 			yield return new WaitForFixedUpdate();
 
-			if (_PlayerPhys._horizontalSpeedMagnitude > newSpeed || _PlayerPhys._isGrounded) { break; } //If something has changed (like hitting a wall), then ignore this.
+			if (_PlayerVel._horizontalSpeedMagnitude > newSpeed || _PlayerPhys._isGrounded) { break; } //If something has changed (like hitting a wall), then ignore this.
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * increments); //Depending on increments, will either increase speed or decrease it as it goes.
+				_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * increments); //Depending on increments, will either increase speed or decrease it as it goes.
 			}
 		}
 	}
@@ -352,6 +353,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;

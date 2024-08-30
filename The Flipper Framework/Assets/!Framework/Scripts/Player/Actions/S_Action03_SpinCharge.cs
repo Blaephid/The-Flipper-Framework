@@ -17,6 +17,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private S_PlayerInput		_Input;
 	private S_ActionManager                 _Actions;
 	private S_PlayerPhysics                 _PlayerPhys;
+	private S_PlayerVelocity		_PlayerVel;
 	private S_PlayerMovement                _PlayerMove;
 	private S_Control_SoundsPlayer           _Sounds;
 	private S_Control_EffectsPlayer         _Effects;
@@ -102,7 +103,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		if (_Input._SpinChargePressed && _PlayerPhys._isGrounded)
 		{
 			//At a slow enough speed and not on too sharp of a slope.
-			if (_PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerPhys._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
+			if (_PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerVel._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
 			{
 				StartAction();
 				return true;
@@ -200,9 +201,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 		//Apply a force against the player movement to decrease speed.
 		float stillForce = _spinDashStillForce_ * _speedLossByTime_.Evaluate(_counter);
-		if (_PlayerPhys._horizontalSpeedMagnitude > 20)
+		if (_PlayerVel._horizontalSpeedMagnitude > 20)
 		{
-			_PlayerPhys.AddCoreVelocity(- _PlayerPhys._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerPhys._horizontalSpeedMagnitude));
+			_PlayerVel.AddCoreVelocity(- _PlayerVel._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerVel._horizontalSpeedMagnitude));
 		}
 	}
 
@@ -246,14 +247,14 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 			//The angle between movement direction and this new force (typically higher with bigger angles)
 			float dif = Vector3.Dot(addForce.normalized, _PlayerPhys._RB.velocity.normalized);
-			if (_PlayerPhys._currentRunningSpeed > 20)
+			if (_PlayerVel._currentRunningSpeed > 20)
 				newSpeed *= _forceGainByAngle_.Evaluate(dif);
 
 			//And the current speed (typically lower when at higher speed)
-			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerMove._currentMaxSpeed);
+			newSpeed *= _gainBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _PlayerMove._currentMaxSpeed);
 			addForce *= newSpeed; //Adds speed to direction to get the force
 
-			_PlayerPhys.AddCoreVelocity(addForce);
+			_PlayerVel.AddCoreVelocity(addForce);
 
 			//Adding velocity is more natural/realistic, but for accuracy in aiming, there is also a rotation towards the new direction.
 			Vector3 newDir = _PlayerPhys._RB.velocity;
@@ -262,7 +263,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			dif *= _turnAmountByAngle_.Evaluate(dif);
 
 			newDir = Vector3.RotateTowards(newDir, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
-			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._currentRunningSpeed);
+			_PlayerVel.SetCoreVelocity(newDir * _PlayerVel._currentRunningSpeed);
 
 			_CharacterAnimator.SetFloat("GroundSpeed", newSpeed);
 
@@ -275,7 +276,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _currentCharge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(shake, (int)_releaseShakeAmmount_.w));
 
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerPhys._horizontalSpeedMagnitude, newSpeed), 0.25f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, newSpeed), 0.25f)); //The camera will fall back before catching up.
 
 	}
 
@@ -313,7 +314,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 		//Follows movement with a slight lerp towards input (since turning is not instant)
 		void FaceByInput () {
-			Vector3 faceDirection = _PlayerPhys._RB.velocity.sqrMagnitude > 1 ? _PlayerPhys._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
+			Vector3 faceDirection = _PlayerPhys._RB.velocity.sqrMagnitude > 1 ? _PlayerVel._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
 
 			//Rotate slightly to player input
 			if (_PlayerMove._moveInput.sqrMagnitude > 0.2)
@@ -405,6 +406,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_PlayerMove = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;

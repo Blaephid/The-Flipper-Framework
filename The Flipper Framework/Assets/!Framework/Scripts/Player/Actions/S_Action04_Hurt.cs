@@ -15,6 +15,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Control_SoundsPlayer	_Sounds;
@@ -118,16 +119,16 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 		//For checking for a wall. 
 		Vector3 boxSize = new Vector3(_CharacterCapsule.radius, _CharacterCapsule.height, _CharacterCapsule.radius); //Based on player collider size
-		float checkDistance = _PlayerPhys._previousHorizontalSpeeds[3] * Time.deltaTime * 3; //Direction and speed are obtained from previous frames because there has now been a collision that may have affected them this frame.
-		Vector3 checkDirection = _PlayerPhys._previousVelocities[3].normalized;
+		float checkDistance = _PlayerVel._previousHorizontalSpeeds[3] * Time.deltaTime * 3; //Direction and speed are obtained from previous frames because there has now been a collision that may have affected them this frame.
+		Vector3 checkDirection = _PlayerVel._previousVelocities[3].normalized;
 		
 		//If going to keep moving in direction
 		//Knockback direction will have been set to zero in the hurt handler if not resetting speed on hit. If there isn't a solid object infront, then dont bounce back.
 		if (_knockbackDirection == Vector3.zero && !Physics.BoxCast(transform.position, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
 		{
 			//Apply slight force against and upwards.
-			_PlayerPhys.AddCoreVelocity(-_PlayerPhys._RB.velocity.normalized * _knockbackForce_ * 0.2f);
-			_PlayerPhys.AddCoreVelocity(transform.up * _knockbackUpwardsForce_);
+			_PlayerVel.AddCoreVelocity(-_PlayerPhys._RB.velocity.normalized * _knockbackForce_ * 0.2f);
+			_PlayerVel.AddCoreVelocity(transform.up * _knockbackUpwardsForce_);
 
 			lockControlFor = _PlayerPhys._isGrounded ? _controlLockGround_.x : _controlLockAir_.x;
 			_lockInStateFor = _stateLengthWithoutKnockback_;
@@ -141,7 +142,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		//If being knocked back and Speed should be reset.
 		else
 		{
-			Vector3 movePlacement = -_PlayerPhys._previousVelocities[3] * Time.deltaTime * 0.5f;
+			Vector3 movePlacement = -_PlayerVel._previousVelocities[3] * Time.deltaTime * 0.5f;
 			movePlacement += transform.up;
 			_PlayerPhys.SetPlayerPosition(transform.position + movePlacement); //Places character back the way they were moving to avoid weird collisions.
 
@@ -188,8 +189,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 			_faceDirection = -newSpeed;
 
-			_PlayerPhys.SetCoreVelocity(Vector3.zero, "Overwrite");
-			_PlayerPhys.SetEnvironmentalVelocity(newSpeed, true, true);
+			_PlayerVel.SetCoreVelocity(Vector3.zero, "Overwrite");
+			_PlayerVel.SetEnvironmentalVelocity(newSpeed, true, true);
 
 			_lockInputToThis = Vector3.zero; //Locks input as nothing being input, preventing skidding against the knockback until unlocked.
 		}
@@ -236,7 +237,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			if (_PlayerPhys._isGrounded && _counter > 10)
 			{
 				//Get local horizontal vector
-				Vector3 newVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity);
+				Vector3 newVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity);
 				float keepY = newVelocity.y;
 				newVelocity.y = 0;
 
@@ -247,7 +248,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 				newVelocity.y = keepY;
 				newVelocity = transform.TransformDirection(newVelocity);
 
-				_PlayerPhys.SetCoreVelocity(newVelocity);
+				_PlayerVel.SetCoreVelocity(newVelocity);
 			}
 		}
 	}
@@ -262,7 +263,6 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		else if (_counter > _lockInStateFor && !_Input._isInputLocked && !_HurtControl._isDead)
 		{
 			_isEndingAction = true;
-			_CharacterAnimator.SetInteger("Action", 0);
 			_CharacterAnimator.SetBool("Dead", false);
 			_CharacterAnimator.SetFloat("GroundSpeed", 0);
 		}
@@ -341,6 +341,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 		_HurtControl = GetComponentInParent<S_Handler_HealthAndHurt>();
 
