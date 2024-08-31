@@ -1520,8 +1520,8 @@ MonoBehaviour:
     doubleJumpDuration: {x: 0.04, y: 0.14}
     speedLossOnDoubleJump: 0.98
   QuickstepStats:
-    stepDuration: 2
-    stepDistance: 8
+    stepDuration: 7
+    stepDistance: 10
     airStepDuration: 10
     airStepDistance: 12
     StepLayerMask:
