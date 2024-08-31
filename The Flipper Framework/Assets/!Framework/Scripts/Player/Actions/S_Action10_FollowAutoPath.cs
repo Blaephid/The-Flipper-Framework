@@ -357,6 +357,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_Pathers = _Tools.PathInteraction;
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;

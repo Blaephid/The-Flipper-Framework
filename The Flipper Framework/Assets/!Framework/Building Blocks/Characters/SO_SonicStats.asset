@@ -1065,13 +1065,22 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 6
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
+      - serializedVersion: 3
+        time: 0.05
+        value: 6
+        inSlope: -0.8379965
+        outSlope: -0.8379965
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.25
         value: 3
@@ -2178,19 +2187,19 @@ MonoBehaviour:
     cameraPauseEffect: {x: 3, y: 40}
   BoostStats:
     startBoostSpeed: 70
-    framesToReachBoostSpeed: 5
-    boostSpeed: 80
+    framesToReachBoostSpeed: 7
+    boostSpeed: 140
     maxSpeedWhileBoosting: 170
-    regainBoostSpeed: 2
+    regainBoostSpeed: 3
     turnCharacterThreshold: 55
     boostTurnSpeed: 2
-    faceTurnSpeed: 10
-    speedLostOnEndBoost: 15
+    faceTurnSpeed: 12
+    speedLostOnEndBoost: 20
     framesToLoseSpeed: 30
     cooldown: 0.5
     hasAirBoost: 0
-    boostFramesInAir: 60
-    AngleOfAligningToEndBoost: 80
+    boostFramesInAir: 45
+    AngleOfAligningToEndBoost: 70
     gainEnergyFromRings: 1
     gainEnergyOverTime: 0
     energyGainPerRing: 4
@@ -2198,7 +2207,7 @@ MonoBehaviour:
     maxBoostEnergy: 100
     energyDrainedPerSecond: 0
     energyDrainedOnStart: 0
-    cameraPauseEffect: {x: 2, y: 40}
+    cameraPauseEffect: {x: 2, y: 50}
   StartBoostStats:
     startBoostSpeed: 70
     framesToReachBoostSpeed: 5

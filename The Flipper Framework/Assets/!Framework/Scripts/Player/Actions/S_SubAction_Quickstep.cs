@@ -156,7 +156,6 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		velocityInStepDirection = _PlayerPhys.GetRelevantVector(velocityInStepDirection, false);
 		velocityInStepDirection = transform.TransformDirection(velocityInStepDirection);
 
-		Debug.DrawRay(transform.position, velocityInStepDirection, Color.white, 10f);
 		_PlayerVel.AddGeneralVelocity(velocityInStepDirection, false, false); //This will add velocity to this frame, that will be ignored next update.		
 
 		//Decrease distance by how far moved, this is used to track when the step ends.
