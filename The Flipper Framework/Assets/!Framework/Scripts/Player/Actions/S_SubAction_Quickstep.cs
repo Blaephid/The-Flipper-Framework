@@ -24,6 +24,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	private S_PlayerInput	_Input;
 	private Transform             _MainSkin;
 	private CapsuleCollider       _CharacterCapsule;
+	private S_Control_SoundsPlayer _Sounds;
 	#endregion
 
 	//General
@@ -134,6 +135,8 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		_Input._RightStepPressed = false;
 		_Input._LeftStepPressed = false;
 
+		_Sounds.QuickStepSound();
+
 		SetSpeedAndDistance();
 	}
 
@@ -227,6 +230,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		_Actions =	_Tools._ActionManager;
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
 
+		_Sounds =		_Tools.SoundControl;
 		_MainSkin =	_Tools.MainSkin;
 		_CamHandler =	_Tools.CamHandler;
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();

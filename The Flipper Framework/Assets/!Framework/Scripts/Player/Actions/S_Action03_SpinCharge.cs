@@ -233,7 +233,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		//Only launches forwards if charged long enough.
 		if (_currentCharge < _minimunCharge_)
 		{
-			_Sounds.Source2.Stop();
+			_Sounds.GeneralSource.Stop();
 			_Actions._ActionDefault.StartAction();
 		}
 		else

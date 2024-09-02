@@ -28,6 +28,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
 	private S_PlayerInput         _Input;
+	private S_Control_SoundsPlayer _Sounds;
 
 	private Transform             _MainSkin;
 
@@ -221,6 +222,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		//Effects
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2), 0.5f)); //The camera will fall back before catching up.
 
+		_Sounds.BoostStartSound();
+
 		//Make the boost effects fade in rather than appear instantly.
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
 		StartCoroutine(SetBoostEffectVisibility(0, 1, 8));
@@ -302,6 +305,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		//Effects
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
 		StartCoroutine(SetBoostEffectVisibility(1, 0.1f, 12));
+		_Sounds.BoostSource2.Stop();
 	}
 
 	//Lerps towards boost speed rather than change speed instantly. maxFrames is how many frames it will take to reach this from a speed less than the startBoostSpees stat.
@@ -611,6 +615,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 
+		_Sounds = _Tools.SoundControl;
 		_MainSkin = _Tools.MainSkin;
 		_CharacterAnimator = _Tools.CharacterAnimator;	
 

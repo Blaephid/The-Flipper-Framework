@@ -170,7 +170,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 	//When releasing button, add a delay before exiting the action. This is to make launching when grounded easier as players will naturally release the button right before the ground.
 	private IEnumerator DelayEndingAction () {
-		_Sounds.Source2.Stop(); //Ends sounds, to show no longer charging.
+		_Sounds.GeneralSource.Stop(); //Ends sounds, to show no longer charging.
 
 		yield return new WaitForSeconds(0.45f);
 
