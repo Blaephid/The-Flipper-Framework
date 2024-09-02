@@ -612,8 +612,10 @@ public class S_HedgeCamera : MonoBehaviour
 
 		//Lerp can't compute looping where -1 is actually 359. This lies to it about having higher and lower values so it moves accurately. These are then back to within 360 later.
 		float xSpeed = speed;
-		if (_posX < 90 && eulerY > 270) { eulerY -= 360; }
-		else if (_posX > 270 && eulerY < 90) { eulerY += 360; }
+		//if (_posX < 90 && eulerY > 270) { eulerY -= 360; }
+		//else if (_posX > 270 && eulerY < 90) { eulerY += 360; }
+		if (_posX - eulerY < -180) { eulerY -= 360; }
+		else if (eulerY - _posX < -180) { eulerY += 360; }
 
 		_posX = Mathf.Lerp(_posX, eulerY, Time.deltaTime * xSpeed);
 		//True either if hieght is set manually, or told to include vertical in look direction.

@@ -1083,6 +1083,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 9a5c38f1-dd51-4cfe-b6fa-136d7438ef30
     m_ActionName: Quick Time Event/New action
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 904315995234001590}
+        m_TargetAssemblyTypeName: S_Manager_LevelProgress, Assembly-CSharp
+        m_MethodName: ReturnToTitleScreenImmediately
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: be8dd1f9-3572-4198-8416-b6ab8d6578af
+    m_ActionName: 'Character Controls/RestartBind[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Character Controls
@@ -29250,6 +29266,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8ee23dc6d27d4e40ae051cbf4c71f1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &904315995234001590 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8974006341597823348, guid: 0e8f736d2dd9706438972762531b3f8f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8072374280709137346}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da02b53e7cffa2549856b2800d6d0816, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1891784863422079515 stripped

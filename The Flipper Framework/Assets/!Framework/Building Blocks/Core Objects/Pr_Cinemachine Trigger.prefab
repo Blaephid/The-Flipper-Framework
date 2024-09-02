@@ -283,7 +283,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f92537ab1025b7740af8066810e49070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _willAcitvateCamera: 1
+  _willActivateCamera: 1
+  _defaultCameraToFaceTrigger: 1
   _CinematicCamComponent: {fileID: 6276180955197928732}
   _CinematicCamObject: {fileID: 6276180955197928734}
   _EndThisTriggerInstead: {fileID: 0}
@@ -324,7 +325,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6276180955197928734}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.041879464, y: 0.10989423, z: -0.35363552, w: 0.9279608}
+  m_LocalRotation: {x: 0.26033688, y: 0.19210614, z: -0.05293813, w: 0.9447315}
   m_LocalPosition: {x: -0.338, y: 0.611, z: -0.6739999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -348,7 +349,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 20
+  m_Priority: 40
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}

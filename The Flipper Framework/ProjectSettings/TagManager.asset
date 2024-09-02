@@ -29,6 +29,7 @@ TagManager:
   - Upreel
   - CancelHoming
   - Enable Objects Physics
+  - Player Effect
   layers:
   - Default
   - TransparentFX

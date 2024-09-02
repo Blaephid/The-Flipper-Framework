@@ -2,6 +2,7 @@
 using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEditor.SearchService;
 
 public class S_Manager_LevelProgress : MonoBehaviour
 {
@@ -133,14 +134,14 @@ public class S_Manager_LevelProgress : MonoBehaviour
 			_readyCount += Time.deltaTime;
 
 			//Fade to black.
-			if (_readyCount > 1.5f)
+			if (_readyCount > 0.2f)
 			{
 				Color alpha = Color.black;
 				_HealthAndHurt._FadeOutImage.color = Color.Lerp(_HealthAndHurt._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
 			}
 
 			//Activates the stage complete screen.
-			if (_readyCount > 2.6f)
+			if (_readyCount > 1.5f)
 			{
 				PlayStageCompleteScene(_GoalRingObject);
 			}
@@ -211,4 +212,16 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_resumeForwards = position.forward;
 	}
 	#endregion
+
+	//Temporary Debug Command to reset. Called by an input set in editor.
+	public void ReturnToTitleScreenImmediately () {
+		ReturnToTitleScreen();
+	}
+
+	public static void ReturnToTitleScreen () {
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		S_CarryAcrossScenes.whatIsCurrentSceneType = S_CarryAcrossScenes.EnumGameSceneTypes.Menus;
+		SceneManager.LoadScene(0);
+	}
 }

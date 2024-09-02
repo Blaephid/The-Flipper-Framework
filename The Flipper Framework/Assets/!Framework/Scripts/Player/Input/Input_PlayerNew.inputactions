@@ -123,15 +123,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "KillBind",
-                    "type": "Button",
-                    "id": "a583bc34-1310-4e7c-a19a-6871a044e276",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Move Cam",
                     "type": "PassThrough",
                     "id": "e3aeaf97-de8e-4711-9b49-53d70a1bd978",
@@ -153,6 +144,24 @@
                     "name": "Enter Camera Mode",
                     "type": "Button",
                     "id": "e894a6ba-c6b7-449f-9208-d28f55fc15c9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "KillBind",
+                    "type": "Button",
+                    "id": "a583bc34-1310-4e7c-a19a-6871a044e276",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RestartBind",
+                    "type": "Button",
+                    "id": "be8dd1f9-3572-4198-8416-b6ab8d6578af",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -612,17 +621,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "c595eaf9-a57e-4940-9046-2f0644858083",
-                    "path": "<Keyboard>/k",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "KillBind",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "2D Vector",
                     "id": "fb5cbc24-8601-4a65-a9c2-4db3c76ffd7d",
                     "path": "2DVector",
@@ -856,11 +854,33 @@
                 {
                     "name": "",
                     "id": "ec904d49-dd7b-49be-aed8-6b6942141a83",
-                    "path": "<Keyboard>/p",
+                    "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Enter Camera Mode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "be5c2649-3643-46a5-9a0f-1c1e69010fb3",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RestartBind",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c595eaf9-a57e-4940-9046-2f0644858083",
+                    "path": "<Keyboard>/k",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "KillBind",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1032,7 +1052,7 @@
                 {
                     "name": "",
                     "id": "c0d2837c-1541-4439-8ba6-4bad678feb4e",
-                    "path": "<Keyboard>/p",
+                    "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

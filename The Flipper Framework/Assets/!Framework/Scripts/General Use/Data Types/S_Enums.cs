@@ -131,4 +131,11 @@ public class S_Enums
 		NoInput,
 		CharacterForwards,
 	}
+
+	public enum ChangeGroundedState {
+		DontChange,
+		SetToYes,
+		SetToNo,
+		SetToOppositeThenBack,
+	}
 }

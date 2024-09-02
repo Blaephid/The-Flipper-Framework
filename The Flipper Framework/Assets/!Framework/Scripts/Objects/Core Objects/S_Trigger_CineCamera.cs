@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using System;
+using UnityEditor;
 
 public class S_Trigger_CineCamera : MonoBehaviour
 {
@@ -10,7 +11,9 @@ public class S_Trigger_CineCamera : MonoBehaviour
 	//Stats
 	[Header("Main")]
 	[Tooltip("Will only activates its camera if this is true.")]
-	public bool _willAcitvateCamera = true;
+	public bool _willActivateCamera = true;
+	[Tooltip("If true then the cinematic camera will start each scene looking towards the trigger. Helps align it, especially if using LookAtTarget.")]
+	public bool _defaultCameraToFaceTrigger = true;
 
 	[Header("Attached Elements")]
 	[Tooltip("Controls the properties of the cinemachine component, by setting it to follow or look at the player.")]
@@ -63,12 +66,29 @@ public class S_Trigger_CineCamera : MonoBehaviour
 	// Start is called before the first frame update
 
 	void Awake () {
+		FaceCinematicCameraIn();
+
 		//Ensure cinematic camera isn't on and save its starting transform.
 		cameraOriginalPosition = _CinematicCamObject.transform.position;
 		cameraOriginalRotation = _CinematicCamObject.transform.rotation;
 		_CinematicCamObject.SetActive(false);
+
 	}
 
+#if UNITY_EDITOR
+	private void OnValidate () {
+		if (!Application.isPlaying)
+			FaceCinematicCameraIn();
+	}
+#endif
+
+	private void FaceCinematicCameraIn () {
+		if (_willActivateCamera && _defaultCameraToFaceTrigger)
+		{
+			Vector3 direction = (transform.position - _CinematicCamObject.transform.position).normalized;
+			_CinematicCamObject.transform.forward = direction;
+		}
+	}
 
 	private void OnTriggerEnter ( Collider other ) {
 		if (other.tag == "Player")
@@ -79,7 +99,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
 			}
 
 			//Set this camera up to detect player. Cameras are activated in Trigger Stay so it waits for the player to be in the right actions.
-			else if (_willAcitvateCamera)
+			else if (_willActivateCamera)
 			{
 				_PlayerTools = other.GetComponentInParent<S_CharacterTools>();
 				_PlayerActions = _PlayerTools._ActionManager;
@@ -91,7 +111,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
 		if (col.tag == "Player")
 		{
 			//Only check if the player has already been saved to check its actions.
-			if (_PlayerActions != null && _willAcitvateCamera)
+			if (_PlayerActions != null && _willActivateCamera)
 			{
 				bool isPlayerIsRightAction = false;
 

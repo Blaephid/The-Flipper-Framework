@@ -35,6 +35,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	private GameObject                      _BoostCone;
 	private MeshRenderer[]                  _ListOfSubCones;
 
+	private Animator    _CharacterAnimator;
+
 	//Used to display boost energy to player.
 	private S_UI_Boost            _BoostUI;
 	#endregion
@@ -124,14 +126,18 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			switch (_Actions._whatCurrentAction)
 			{
 				case S_Enums.PrimaryPlayerStates.Default:
-					_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction); // Means animation will reflect jumping or being grounded.;
+					if (_PlayerPhys._isGrounded)
+						_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction); // Means animation will reflect jumping or being grounded.;
+					else
+						_Actions._ActionDefault.HandleAnimator(11);
+					_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 					break;
 				case S_Enums.PrimaryPlayerStates.Jump:
 					_Actions._ActionDefault.HandleAnimator(1);
+					_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 					break;
 			}
 
-			_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 			_savedSkinDirection = _MainSkin.forward;
 		}
 	}
@@ -192,7 +198,9 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		if (!_PlayerPhys._isGrounded)
 		{
 			_canBoostBecauseHasntBoostedInAir = false; //This will prevent the boost being used again until grounded.
-
+			_CharacterAnimator.SetInteger("Action", 11);
+			_CharacterAnimator.SetTrigger("ChangedState");
+			
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_)); //Starts air boost parameters rather than normal boost.
 			_PlayerVel.SetBothVelocities(_faceDirection * _currentSpeed, new Vector2(1, 0));
 		}
@@ -523,6 +531,12 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//These events must be set in the PlayerPhysics component, and will happen when the player goes from grounded to airborne, or vice versa.
 	public void EventOnGrounded () {
+		if (!_canBoostBecauseHasntBoostedInAir)
+		{
+			_CharacterAnimator.SetInteger("Action", 0);
+			_CharacterAnimator.SetTrigger("ChangedState");
+		}
+
 		_canBoostBecauseHasntBoostedInAir = true; //This allows another boost to be performed in the air (because this started from the ground. }
 	}
 	public void EventOnLoseGround () {
@@ -598,6 +612,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 
 		_MainSkin = _Tools.MainSkin;
+		_CharacterAnimator = _Tools.CharacterAnimator;	
 
 		_BoostCone = _Tools.BoostCone;
 		_BoostCone.SetActive(false);

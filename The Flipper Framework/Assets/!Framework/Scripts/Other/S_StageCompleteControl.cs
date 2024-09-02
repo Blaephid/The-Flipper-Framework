@@ -22,10 +22,7 @@ public class S_StageCompleteControl : MonoBehaviour
 			Anim.SetInteger("Action", 1);
 			if (counter > End + 2.3f)
 			{
-				Cursor.lockState = CursorLockMode.None;
-				Cursor.visible = true;
-				S_CarryAcrossScenes.whatIsCurrentSceneType = S_CarryAcrossScenes.EnumGameSceneTypes.Menus;
-				SceneManager.LoadScene(0);
+				S_Manager_LevelProgress.ReturnToTitleScreen();
 			}
 		}
 	}

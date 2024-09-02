@@ -82,6 +82,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Visuals
+		_CharacterAnimator.SetInteger("Action", 13);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_Actions._ActionDefault.SwitchSkin(true);
 		_JumpBall.SetActive(false);

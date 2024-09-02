@@ -6,6 +6,7 @@ using UnityEngine.InputSystem.DualShock;
 using UnityEngine.InputSystem.XInput;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Switch;
+using UnityEngine.ProBuilder;
 
 public class S_Interaction_Objects : MonoBehaviour
 {
@@ -136,6 +137,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				{
 					if (Col.transform.up.y > 0.7f)
 					{
+						StartCoroutine(RemoveAdditionalVerticalVelocity(_PlayerVel._coreVelocity.y));
 						_PlayerPhys._listOfIsGravityOn.Add(false);
 						_PlayerPhys.SetIsGrounded(false);
 					}
@@ -172,6 +174,9 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "Enable Objects Physics":
 				SetMovingPlatformAsActive(Col, true);
 				break;
+
+			case "Player Effects":
+				ApplyEffectsOnPlayer(Col); break;
 		}
 	}
 
@@ -239,6 +244,33 @@ public class S_Interaction_Objects : MonoBehaviour
 	//
 	//Wind Interactions
 	//
+
+	//If entering wind with force upwards already (like from a jump), this would carry the whole way, so only use gravity to remove this, but not go against the wind.
+	private IEnumerator RemoveAdditionalVerticalVelocity(float coreVelocityUpwards ) {
+		yield return new WaitForFixedUpdate();
+
+		//If the force applied by the wind is substantially more than the core velocity before, then just remove the core velocity immediately
+		if (coreVelocityUpwards * 1.5f < _PlayerVel._worldVelocity.y)
+		{
+			_PlayerVel.AddCoreVelocity(Vector3.down * coreVelocityUpwards);
+		}
+		//Otherwise, remove it with normal gravity calculations.
+		else
+		{
+			while (coreVelocityUpwards > 0 && _PlayerVel._coreVelocity.y > 0)
+			{
+				//Calculate how much gravity would have an affect on this velocity, then apply it seperately, so only this is being counteracted.
+				//(Allowing the player speed up to slow but not counteract the wind).
+				Vector3 forceDownwards = Vector3.up;
+				forceDownwards = _PlayerPhys.CheckGravity(forceDownwards * coreVelocityUpwards, true);
+				float change = forceDownwards.y - coreVelocityUpwards;
+				coreVelocityUpwards = change;
+
+				_PlayerVel.AddCoreVelocity(Vector3.down * change);
+			}
+		}
+	}
+
 	//Takes an origin of wind and gets how much force to apply onto the player from it, based on its power and distance in the wind direction
 	private Vector3 GetForceOfWind ( S_Trigger_Updraft UpdraftScript ) {
 		Vector3 direction = UpdraftScript._Direction.up;
@@ -317,7 +349,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 			//If being blown upwards, enter the hovering state to change actions and animation.
 			//canHover can only be set to true by the Hovering AttemptAction, so GetComponent is safe, and Hovering being enabled shouldn't enable canhover.
-			if (_canHover && _totalWindDirection.normalized.y > 0.72f && _totalWindDirection.y > 10)
+			if (_canHover && _totalWindDirection.normalized.y > 0.72f && _totalWindDirection.y > 5)
 			{
 				 _Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction(); //Not placed in enterTrigger incase was already in the trigger, but not in a state that could enter the hover action.
 			}
@@ -432,8 +464,13 @@ public class S_Interaction_Objects : MonoBehaviour
 				//Effects
 				_CharacterAnimator.SetBool("Grounded", true);
 
-				//Set rotation to immediately be in line with pad.
-				transform.up = Col.transform.up;
+				if (!_PlayerPhys._isGrounded)
+				{
+					_PlayerPhys.SetIsGrounded(true);
+					_PlayerPhys._groundNormal = Col.transform.up;
+					_PlayerPhys.AlignToGround(Col.transform.up, true);
+				}
+
 				_Actions._ActionDefault.SetSkinRotationToVelocity(0, Col.transform.forward);
 
 
@@ -469,8 +506,9 @@ public class S_Interaction_Objects : MonoBehaviour
 		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
-
-		//_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
+		
+		//Sets player to immediately face upwards to launch direction is always correct.
+		_PlayerPhys.SetPlayerRotation(Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation, true);
 
 		//Returns air actions
 		_Actions._isAirDashAvailables = true;
@@ -582,7 +620,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		float coreSpeed = _PlayerVel._horizontalSpeedMagnitude;
 		if (coreSpeed > horizontalSpeed)
 		{
-			horizontalEnvSpeed = 1; //Ensure's theres still a direction even though this won't factor in much to world velocity.
+			horizontalEnvSpeed = 1; //Ensures theres still a direction even though this won't factor in much to world velocity.
 			coreSpeed = horizontalSpeed; //In this case, bounce will be entirely through core velocity, not environmental.
 		}
 
@@ -623,6 +661,10 @@ public class S_Interaction_Objects : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
+		Debug.DrawRay(transform.position, coreVelocity, Color.yellow, 10f);
+		Debug.DrawRay(transform.position, environmentalVelocity, Color.cyan, 10f);
+		Debug.DrawRay(transform.position, coreVelocity + environmentalVelocity, Color.red, 10f);
+
 		_Actions._canChangeActions = true;
 
 		_PlayerPhys.SetPlayerPosition(position); //Ensures player is set to inside of spring, so bounce is consistant. 
@@ -633,6 +675,25 @@ public class S_Interaction_Objects : MonoBehaviour
 		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_Enums.ChangeLockState.Lock); //Apply bounce
 	}
 
+	private void ApplyEffectsOnPlayer (Collider Col) {
+
+		if (!Col.TryGetComponent(out S_Trigger_PlayerEffect Effects)) { return; }
+
+		switch (Effects._setPlayerGrounded)
+		{
+			case S_Enums.ChangeGroundedState.SetToNo:
+				_PlayerPhys.SetIsGrounded(false); break;
+			case S_Enums.ChangeGroundedState.SetToYes:
+				_PlayerPhys.SetIsGrounded(true); break;
+			case S_Enums.ChangeGroundedState.SetToOppositeThenBack:
+				bool current = _PlayerPhys._isGrounded;
+				_PlayerPhys.SetIsGrounded(!current); _PlayerPhys.SetIsGrounded(current);
+				break;
+		}
+
+		if (Effects._lockPlayerInputFor > 0)
+			_Input.LockInputForAWhile(Effects._lockPlayerInputFor, true, Vector3.zero, Effects._LockInputTo_);
+	}
 
 	private void ActivateHintBox ( Collider Col ) {
 		if (!Col.TryGetComponent(out S_Data_HintRing HintRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.

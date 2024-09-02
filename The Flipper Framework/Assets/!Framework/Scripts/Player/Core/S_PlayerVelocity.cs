@@ -304,11 +304,15 @@ public class S_PlayerVelocity : MonoBehaviour
 		if (_isOverwritingCoreVelocity && willOverwrite == "")
 		{ return; } //If a previous call set isoverwriting to true, then if this isn't doing the same it will be ignored.
 
+		//If both lateral values are set to minus 1, this means we only want to change the vertical velocity.
+		if(force.x == -1 && force.z == -1) { force = new Vector3(_coreVelocity.x, force.y, _coreVelocity.z); }
+
 		_isOverwritingCoreVelocity = willOverwrite == "Overwrite"; //If true, core velocity will be fully replaced, including additions. Sets to true rather than same bool, because setting to false would overwrite this.
 
 		_externalCoreVelocity = force == Vector3.zero ? new Vector3(0, 0.02f, 0) : force; //Will not use Vector3.zero because that upsets the check seeing if this is not default(Vector3). To avoid that, use a tiny velocity.
 		if (shouldPrintForce) Debug.Log("Set Core FORCE");
 	}
+
 	//This will change the magnitude of the local lateral velocity vector in ControlledVelocity but will not change the direction.
 	public void SetLateralSpeed ( float speed, bool shouldPrintForce = true ) {
 		_externalRunningSpeed = speed; //This will be set to negative at the end of the frame, but if changed here will be applied in HandleControlledVelocity (NOT SetTotalVelocity). This is because this should only change running speed.

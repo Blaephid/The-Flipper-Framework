@@ -414,9 +414,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//A seperate public method so it can be called without HandleAirMovement or needing to call all of its used fields.
-	public Vector3 CheckGravity ( Vector3 coreVelocity ) {
+	public Vector3 CheckGravity ( Vector3 coreVelocity, bool overwrite = false ) {
 		//Apply Gravity (vertical velocity)
-		if (_listOfIsGravityOn.Count == 0)
+		if (_listOfIsGravityOn.Count == 0 || overwrite)
 			coreVelocity = ApplyGravityToIncreaseFallSpeed(coreVelocity, _currentFallGravity, _currentUpwardsFallGravity, _maxFallingSpeed_, _PlayerVelocity._worldVelocity);
 		return coreVelocity;
 	}
@@ -849,9 +849,12 @@ public class S_PlayerPhysics : MonoBehaviour
 		transform.Translate(Add);
 	}
 
-	public void SetPlayerRotation ( Quaternion newRotation, bool shouldPrintRotation = false ) {
-		//transform.rotation = newRotation;
-		_RB.MoveRotation(newRotation);
+	public void SetPlayerRotation ( Quaternion newRotation, bool immediately = false, bool shouldPrintRotation = false ) {
+		if(immediately)
+			transform.rotation = newRotation;
+		//Using rigidBody is smoother but wont take effect this frame, so if you need to rotate for specific calculations, change the transform.
+		else
+			_RB.MoveRotation(newRotation);
 
 		if (shouldPrintRotation) Debug.Log("Change Position to  " + newRotation);
 	}
