@@ -2,7 +2,6 @@
 using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using UnityEditor.SearchService;
 
 public class S_Manager_LevelProgress : MonoBehaviour
 {
@@ -134,14 +133,14 @@ public class S_Manager_LevelProgress : MonoBehaviour
 			_readyCount += Time.deltaTime;
 
 			//Fade to black.
-			if (_readyCount > 0.2f)
+			if (_readyCount > 0.1f)
 			{
 				Color alpha = Color.black;
 				_HealthAndHurt._FadeOutImage.color = Color.Lerp(_HealthAndHurt._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
 			}
 
 			//Activates the stage complete screen.
-			if (_readyCount > 1.5f)
+			if (_readyCount > 0.6f)
 			{
 				PlayStageCompleteScene(_GoalRingObject);
 			}
