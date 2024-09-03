@@ -199,8 +199,9 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		BoostSource1.Play();
 	}
 
-	public void SpinningSound () {
-		if (!(GeneralSource.clip == SpinDashRelease))
+	public void StartRollingSound () {
+		//Wont play the sound if spin charge release is currently audible, as they conflict.
+		if (!(GeneralSource.clip == SpinDashRelease && GeneralSource.isPlaying))
 		{
 			BoostSource2.clip = Spin;
 			BoostSource2.Play();

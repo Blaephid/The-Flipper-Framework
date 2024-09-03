@@ -967,6 +967,12 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    SlopePowerDownByCurrentSpeed:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
     UpHillEffectByTime:
       serializedVersion: 2
       m_Curve:
@@ -1058,7 +1064,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     generalHillMultiplier: 1
-    uphillMultiplier: 0.2
+    uphillMultiplier: 0.28
     downhillMultiplier: 0.3
     SlopePowerByCurrentSpeed:
       serializedVersion: 2
@@ -1100,8 +1106,86 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1.0068238
-        value: 0.7996961
+        time: 0.7369424
+        value: 0.89599323
+        inSlope: -0.55370396
+        outSlope: -0.55370396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.9942353
+        value: 0.16351071
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    SlopePowerDownByCurrentSpeed:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.08
+        value: 0
+        inSlope: 0.33930302
+        outSlope: 0.33930302
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.1
+        value: 1
+        inSlope: -0.0000016829521
+        outSlope: -0.0000016829521
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.23611149
+      - serializedVersion: 3
+        time: 0.5165283
+        value: 0.989733
+        inSlope: -0.065906554
+        outSlope: -0.065906554
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.4257487
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8665585
+        value: 0.70779127
+        inSlope: -1.1196592
+        outSlope: -1.1196592
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.9166555
+        value: 0.15
+        inSlope: -0.03771157
+        outSlope: -0.03771157
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1.0083339
+        value: 0.12111206
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1124,7 +1208,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.23423547
+        time: 0.20093316
         value: 0.49763983
         inSlope: 0.8240505
         outSlope: 0.8240505
@@ -1133,8 +1217,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.49410248
-        value: 1.0050583
+        time: 0.4441452
+        value: 1.006813
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1166,7 +1250,7 @@ MonoBehaviour:
     downhillThreshold: -0.4
     uphillThreshold: 0.5
   StartStickToGround:
-    forceTowardsGround: 2
+    forceTowardsGround: {x: 3, y: 4.5}
     stickingLerps: {x: 0.98, y: 1.02}
     stickingNormalLimit: 0.519
     stickCastAhead: 1.7
@@ -1198,7 +1282,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     stepHeight: 1
   GreedysStickToGround:
-    forceTowardsGround: 4
+    forceTowardsGround: {x: 3, y: 4.5}
     stickingLerps: {x: 1.005, y: 0.96}
     stickingNormalLimit: 0.459
     stickCastAhead: 1.35

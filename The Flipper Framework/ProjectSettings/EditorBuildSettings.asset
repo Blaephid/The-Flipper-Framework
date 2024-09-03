@@ -24,10 +24,10 @@ EditorBuildSettings:
     path: Assets/Game/Scenes/Zones/Altitude Limit/Sc_AltitudeLimit.unity
     guid: 975ff8a3a5aaa15418195c73ef31af20
   - enabled: 1
-    path: Assets/Sc_Playground.unity
+    path: Assets/!Framework/Sc_Testing Grounds.unity
     guid: b8e9635bc70746f40a8b47ccfe43ead6
   - enabled: 0
-    path: Assets/Game/Scenes/Zones/TutorialLevel/Sc_TutorialLevel.unity
+    path: Assets/Game/Scenes/Zones/TutorialLevel (Outdated)/Sc_TutorialLevel.unity
     guid: 5d5a07e66893ed1499a6c775b483b179
   - enabled: 1
     path: Assets/Game/Scenes/Menus/Sc_StageCompleteScreen.unity

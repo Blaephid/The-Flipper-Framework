@@ -127,7 +127,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	public void Curl () {
 		if (!_PlayerPhys._isRolling)
 		{
-			_Sounds.SpinningSound();
+			_Sounds.StartRollingSound();
 			SetIsRolling(true);
 		}
 	}

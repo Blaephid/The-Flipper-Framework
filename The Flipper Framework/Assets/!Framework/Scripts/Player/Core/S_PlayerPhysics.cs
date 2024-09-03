@@ -56,7 +56,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _downHillThreshold_ = -7;
 	private float                 _upHillThreshold = -7;
 
-	private AnimationCurve        _slopePowerBySpeed_;
+	private AnimationCurve        _slopePowerUpBySpeed_;
+	private AnimationCurve        _slopePowerDownBySpeed_;
 	private AnimationCurve        _UpHillByTime_;
 
 	[Header("Air Movement Extras")]
@@ -78,7 +79,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _rollingUphillBoost_;
 
 	[Header("Stick To Ground")]
-	private float                 _forceTowardsGround_;
+	private Vector2                _forceTowardsGround_;
 	private Vector2               _stickingLerps_ = new Vector2(0.885f, 1.5f);
 	private float                 _stickingNormalLimit_ = 0.4f;
 	private float                 _stickCastAhead_ = 1.9f;
@@ -109,8 +110,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	public bool                   _arePhysicsOn = true;         //If false, no changes to velocity will be calculated or applied. This script will be inactive.
 
 	//Updated each frame to get current place on animation curves relevant to movement.
-	[HideInInspector]
-	public float                  _curvePosSlopePower;
+	private float                  _curvePosSlopePowerUphill;
+	private float                  _curvePosSlopePowerDownhill;
 
 
 	[HideInInspector]
@@ -271,8 +272,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 		for (int i = 0 ; i < _ListOfCollisionsStartedThisFrame.Count ; i++)
 		{
-			if(_ListOfCollisionsStartedThisFrame[i] != null);
-				_Events._OnCollisionEnter.Invoke(_ListOfCollisionsStartedThisFrame[i]);
+			_Events._OnCollisionEnter.Invoke(_ListOfCollisionsStartedThisFrame[i]);
 		}
 	}
 
@@ -299,7 +299,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		Profiler.BeginSample("PlayerPhysics");
 
 		//Get curve positions, which will be used in calculations for this frame.
-		_curvePosSlopePower = _slopePowerBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
+		_curvePosSlopePowerUphill = _slopePowerUpBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
+		_curvePosSlopePowerDownhill = _slopePowerDownBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
 
 		if (!_arePhysicsOn) { RespondToCollisions(); return; }
 
@@ -353,10 +354,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 			if (_isGrounded)
 			{
-				//castEndPosition = transform.position - transform.up * (0.5f + 1.f);
-
 				//Because terrain can be bumpy, find an average normal between multiple around the same area.
-				float[] checksAtRotations = new float[]{60,120,120 }; //Each element is a check, and the value is how much to rotate (relative to player up), before checking.
+				float[] checksAtRotations = new float[]{0,60,120,120 }; //Each element is a check, and the value is how much to rotate (relative to player up), before checking.
 				Vector3 offSetForCheck = _PlayerVelocity._horizontalSpeedMagnitude > 30 ? _PlayerVelocity._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.5f; //The offset from the main check that will rotate
 
 				for (int i = 0 ; i < checksAtRotations.Length ; i++)
@@ -496,8 +495,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			_isCurrentlyOnSlope = true;
 
 			//Get force to always apply whether up or down hill
-			float force =  _curvePosSlopePower;
-			force *= _generalHillMultiplier_;
+			float force = _generalHillMultiplier_;
 			float steepForce = 0.8f - (Mathf.Abs(_groundNormal.y) / 2) + 1;
 			force *= steepForce; //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
 
@@ -507,6 +505,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				//Increase time uphill so after force can be more after a while.
 				_timeUpHill += Time.fixedDeltaTime;
 				force *= _UpHillByTime_.Evaluate(_timeUpHill);
+				force *=  _curvePosSlopePowerUphill;
 
 				force *= _uphillMultiplier_; //Affect by unique stat for uphill, and ensure the force is going the other way 
 				force = _isRolling ? force * _rollingUphillBoost_ : force; //Add more force if rolling.
@@ -518,8 +517,9 @@ public class S_PlayerPhysics : MonoBehaviour
 				//Decrease timeUpHill.
 				float decreaseTimeUpHillBy = Time.fixedDeltaTime * 0.5f; //not as quickly as how it increases so zigzagging down and up won't work.
 				decreaseTimeUpHillBy *= 1 + (_PlayerVelocity._totalVelocity.normalized.y); //Decrease more depending on how downwards is moving. If going straight downwards, then this becomes x2, making it equal to any uphill.
-
 				_timeUpHill -= Mathf.Clamp(_timeUpHill - decreaseTimeUpHillBy, 0, _timeUpHill); //Apply, but can't go under 0
+
+				force *= _curvePosSlopePowerDownhill;
 				force *= _downhillMultiplier_; //Affect by unique stat for downhill
 				force = _isRolling ? force * _rollingDownhillBoost_ : force; //Add more force if rolling.
 			}
@@ -597,7 +597,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				velocity.y = 0;
 				velocity = transform.TransformDirection(velocity);
 			}
-			_PlayerVelocity.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_ * 1.2f, false, false);
+			_PlayerVelocity.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false);
 		}
 		return velocity;
 	}
@@ -624,6 +624,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private Vector3 AlignToDownwardsOrCurrentSlope ( Vector3 raycastStartPosition, Vector3 rayCastDirection, Vector3 currentGroundNormal, Vector3 velocity ) {
 		float lerpAmount = _stickingLerps_.x;
 
+		float forceDown = _forceTowardsGround_.x;
+
 		//Shoots a raycast under the ground where the player would be next frame, meaning it will only be true if the ground next frame will be lower than this frame.
 		raycastStartPosition = _HitGround.point - (_groundNormal * 0.02f);
 		raycastStartPosition += (rayCastDirection * (_PlayerVelocity._horizontalSpeedMagnitude * Time.deltaTime));
@@ -635,13 +637,14 @@ public class S_PlayerPhysics : MonoBehaviour
 			{
 				currentGroundNormal = hitSticking.normal;
 				lerpAmount = _stickingLerps_.y;
+				forceDown = _forceTowardsGround_.y;
 			}
 		}
 		Vector3 Dir = AlignWithNormal(velocity, currentGroundNormal, velocity.magnitude);
 		velocity = Vector3.LerpUnclamped(velocity, Dir, lerpAmount);
 
 		// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
-		_PlayerVelocity.AddGeneralVelocity(-currentGroundNormal * _forceTowardsGround_, false, false);
+		_PlayerVelocity.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
 
 		return velocity;
 	}
@@ -957,7 +960,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		_downhillMultiplier_ = _Tools.Stats.SlopeStats.downhillMultiplier;
 		_downHillThreshold_ = _Tools.Stats.SlopeStats.downhillThreshold;
 		_upHillThreshold = _Tools.Stats.SlopeStats.uphillThreshold;
-		_slopePowerBySpeed_ = _Tools.Stats.SlopeStats.SlopePowerByCurrentSpeed;
+		_slopePowerUpBySpeed_ = _Tools.Stats.SlopeStats.SlopePowerByCurrentSpeed;
+		_slopePowerDownBySpeed_ = _Tools.Stats.SlopeStats.SlopePowerDownByCurrentSpeed;
 		_airControlAmmount_ = _Tools.Stats.WhenInAir.controlAmmount;
 
 		_jumpExtraControlThreshold_ = _Tools.Stats.JumpStats.jumpExtraControlThreshold;
