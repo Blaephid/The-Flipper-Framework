@@ -390,7 +390,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
 		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallClimbing)
 		{
-			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[1].normalized;
+			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 			_HurtAction._wasHit = false;
 			_Actions._ActionHurt.StartAction();
 		}
@@ -411,7 +411,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			//If still not in a wallrunning state or been hurt, then rebound off the wall.
 			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Hurt)
 			{
-				_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[3].normalized;
+				_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[3].normalized;
 				_HurtAction._wasHit = false;
 				_Actions._ActionHurt.StartAction();
 			}
@@ -461,7 +461,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 				//Won't be damaged until the EventOnGrounded action in the hurt script. This will then call the CheckHealth script
 				case S_Enums.HurtResponses.Frontiers:
 					_inHurtStateBeforeDamage = true;
-					_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[1].normalized;
+					_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
@@ -470,7 +470,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 					_HurtAction._wasHit = true;
 					if (_ringAmount > 0 || _hasShield)
 					{
-						_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[1].normalized;
+						_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 						_inHurtStateBeforeDamage = true;
 						_HurtAction.StartAction();
 					}
@@ -490,7 +490,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		}
 
 		void DieWithoutDelay () {
-			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[1].normalized;
+			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 			_HurtAction._knockbackDirection.y = -0.5f;
 			Die();
 		}

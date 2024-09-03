@@ -144,7 +144,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	// Update is called once per frame
 	void Update () {
 		if (!enabled || !_isGrinding) { return; }
-		//PlaceOnRail();
 		PerformHop();
 
 		SoundControl();
@@ -184,6 +183,10 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	public void StartAction (bool overwrite = false) {
 		if (!_canEnterRail) { return; }
 		if (!_Actions._canChangeActions && !overwrite) { return; }
+
+		//Effects
+		_Sounds.RailLandSound();
+
 
 		_canEnterRail = false;
 
@@ -274,6 +277,9 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
 		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+
+		//Effects
+		_Sounds.FeetSource.Stop();
 
 		_isGrinding = false;
 
@@ -456,6 +462,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	//Called when the player is at the end of a rail and being launched off.
 	private void LoseRail () {
+
 		_Input.LockInputForAWhile(5f, false, _sampleForwards); //Prevent instant turning off the end of the rail
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 10));
 		_distanceToStep = 0; //Stop a step that might be happening
@@ -630,15 +637,22 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			//If there is still an input, set the distance to step, which will be taken and handled in PerformHop();
 			if (_Input._RightStepPressed || _Input._LeftStepPressed)
 			{
-				_distanceToStep = _hopDistance_;
-				_isSteppingRight = _Input._RightStepPressed; //Right step has priority over left
-
-				//Disable inputs until the hop is over
-				_canInput = false;
-				_Input._RightStepPressed = false;
-				_Input._LeftStepPressed = false;
+				StartHop();
 			}
 		}
+	}
+
+	private void StartHop () {
+		_Sounds.FeetSource.Stop();
+		_Sounds.QuickStepSound();
+
+		_distanceToStep = _hopDistance_;
+		_isSteppingRight = _Input._RightStepPressed; //Right step has priority over left
+
+		//Disable inputs until the hop is over
+		_canInput = false;
+		_Input._RightStepPressed = false;
+		_Input._LeftStepPressed = false;
 	}
 
 	private void PerformHop () {
@@ -696,8 +710,8 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	//Effects
 	void SoundControl () {
-		//Player Rail Sound
-
+		if(_distanceToStep == 0)
+			_Sounds.RailGrindSound();
 	}
 	#endregion
 

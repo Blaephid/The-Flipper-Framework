@@ -2492,7 +2492,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   KnockbackStats:
-    whatResponse: 4
+    whatResponse: 3
     recoilFrom:
       serializedVersion: 2
       m_Bits: 4097

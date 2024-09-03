@@ -179,6 +179,12 @@ public class S_PlayerPhysics : MonoBehaviour
 		canDecelerate,
 	}
 
+	//COLLISION TRACKERS
+	private List<Collider> _ListOfTriggersEnteredThisFrame = new List<Collider>();
+	private List<Collider> _ListOfTriggersExitedThisFrame= new List<Collider>();
+	private List<Collision> _ListOfCollisionsStartedThisFrame= new List<Collision>();
+	private List<Collider> _ListOfTriggersStayedinThisFrame= new List<Collider>();
+
 	#endregion
 	#endregion
 
@@ -203,7 +209,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		HandleGeneralPhysics();
 
-		_isPositiveUpdate = !_isPositiveUpdate; //Alternates at the end of an update, so will be the oppositve value enxt call.
+		_isPositiveUpdate = !_isPositiveUpdate; //Alternates at the end of an update, so will be the oppositve value next call.
 	}
 
 	private void Update () {
@@ -220,19 +226,62 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	///----Collision Trackers
+	//To allow actions with OnTriggerEnter options to be in children of the RigidBody, we use an event to pass down the info.
+	//HOWEVER, because S_PlayerVelocity.CheckAndApplyVelocityChanges is called AFTER these (because it has to happen after collision calculations),
+	//We don't invoke these events until after said method is called, as onTrigger can lead to velocity changes that go haywire against the calculations made there.
 	private void OnTriggerEnter ( Collider other ) {
-		_Events._OnTriggerEnter.Invoke(other);
+		_ListOfTriggersEnteredThisFrame.Add(other);
+		//_Events._OnTriggerEnter.Invoke(other);
 	}
 	private void OnTriggerExit ( Collider other ) {
-		_Events._OnTriggerExit.Invoke(other);
+		_ListOfTriggersExitedThisFrame.Add(other);
+		//_Events._OnTriggerExit.Invoke(other);
 	}
 
 	private void OnCollisionEnter ( Collision collision ) {
-		_Events._OnCollisionEnter.Invoke(collision);
+		_ListOfCollisionsStartedThisFrame.Add(collision);
+		//_Events._OnCollisionEnter.Invoke(collision);
 	}
 
 	private void OnTriggerStay ( Collider other ) {
-		_Events._OnTriggerStay.Invoke(other);
+		_ListOfTriggersStayedinThisFrame.Add(other);
+		//_Events._OnTriggerStay.Invoke(other);
+	}
+
+	//Because we set velocity seperately, the numbers we have aren't always accurate to the actual velocity in world.
+	//So we have to check what has happened since they were set and factor in those changes.
+	//This must be done first, even before any ontrigger or on collision events, because those can lead to action or velocity changes that mess up the controller.
+	public void RespondToCollisions () {
+		_PlayerVelocity.CheckAndApplyVelocityChanges();
+
+		for (int i = 0 ; i < _ListOfTriggersEnteredThisFrame.Count ; i++)
+		{
+			if(_ListOfTriggersEnteredThisFrame[i] != null) //Check, because the object might handle its own responses, which happen after its added but before this.
+				_Events._OnTriggerEnter.Invoke(_ListOfTriggersEnteredThisFrame[i]);
+		}
+		for (int i = 0 ; i < _ListOfTriggersExitedThisFrame.Count ; i++)
+		{
+			if (_ListOfTriggersExitedThisFrame[i] != null)
+				_Events._OnTriggerExit.Invoke(_ListOfTriggersExitedThisFrame[i]);
+		}
+		for (int i = 0 ; i < _ListOfTriggersStayedinThisFrame.Count ; i++)
+		{
+			if(_ListOfTriggersStayedinThisFrame[i] != null)
+				_Events._OnTriggerStay.Invoke(_ListOfTriggersStayedinThisFrame[i]);
+		}
+		for (int i = 0 ; i < _ListOfCollisionsStartedThisFrame.Count ; i++)
+		{
+			if(_ListOfCollisionsStartedThisFrame[i] != null);
+				_Events._OnCollisionEnter.Invoke(_ListOfCollisionsStartedThisFrame[i]);
+		}
+	}
+
+	//This must happen every fixedUpdate, no matter the options, so is called in S_PlayerVelocity because it is always the last class called.
+	public void ClearListsOfCollisions () {
+		_ListOfCollisionsStartedThisFrame.Clear();
+		_ListOfTriggersEnteredThisFrame.Clear();
+		_ListOfTriggersExitedThisFrame.Clear();
+		_ListOfTriggersStayedinThisFrame.Clear();
 	}
 
 	#endregion
@@ -252,16 +301,15 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Get curve positions, which will be used in calculations for this frame.
 		_curvePosSlopePower = _slopePowerBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
 
-		if (!_arePhysicsOn) { return; }
+		if (!_arePhysicsOn) { RespondToCollisions(); return; }
 
 		//Set if the player is grounded based on current situation.
 		CheckForGround();
 
-		//if(_isGrounded)
 		AlignToGround(_groundNormal, _isGrounded);
 
 		//Handle any changes to the velocity between updates. This is why this must be the first method called.
-		_PlayerVelocity.CheckAndApplyVelocityChanges();
+		RespondToCollisions();
 
 		//Calls the appropriate movement handler.
 		if (_isGrounded)
@@ -766,7 +814,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				{
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
 					SetPlayerRotation(Quaternion.RotateTowards(transform.rotation, targetRot, 180f * Time.deltaTime));
-					//If this change has lead to being aligned upwards
+					//If the rotation amoung is less than the difference, then the rotation will complete to face upwards.
 					if (Quaternion.Angle(targetRot, transform.rotation) < 180 * Time.deltaTime)
 					{
 						if (_isUpsideDown)
@@ -836,8 +884,9 @@ public class S_PlayerPhysics : MonoBehaviour
 
 
 	public void SetPlayerPosition ( Vector3 newPosition, bool shouldPrintLocation = false ) {
-		transform.position = newPosition;
+		Debug.DrawLine(transform.position, newPosition, Color.magenta, 10f);
 
+		transform.position = newPosition;
 		if (shouldPrintLocation) Debug.Log("Change Position to  ");
 	}
 	public void AddToPlayerPosition ( Vector3 Add ) {

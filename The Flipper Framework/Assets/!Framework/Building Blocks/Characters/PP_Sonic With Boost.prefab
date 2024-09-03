@@ -1163,7 +1163,8 @@ MonoBehaviour:
   _environmentalVelocity: {x: 0, y: 0, z: 0}
   _totalVelocity: {x: 0, y: 0, z: 0}
   _worldVelocity: {x: 0, y: 0, z: 0}
-  _previousVelocities:
+  _previousVelocity:
+  - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
@@ -11046,6 +11047,135 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &512476521522453715
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5521476318399213190}
+  - component: {fileID: 4891223430312928544}
+  m_Layer: 8
+  m_Name: Extra Source (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5521476318399213190
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512476521522453715}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5248242399243314084}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &4891223430312928544
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512476521522453715}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
+    type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.6
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 0
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 1
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!1 &574856982485912673
 GameObject:
   m_ObjectHideFlags: 0
@@ -12576,6 +12706,7 @@ MonoBehaviour:
   Player: {fileID: 114945863342939534}
   FeetSource: {fileID: 3198402377888245107}
   GeneralSource: {fileID: 8702740769466636153}
+  ExtraSource: {fileID: 4891223430312928544}
   DamageSource: {fileID: 5588273889387088404}
   VoiceSource: {fileID: 6508523196832110084}
   BoostSource1: {fileID: 2841651073039112787}
@@ -12585,9 +12716,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 08f3e296fbbaf754aba5db408c679e54, type: 3}
   - {fileID: 8300000, guid: 36dae0e8c593e494a86473239c05b9df, type: 3}
   - {fileID: 8300000, guid: f013f48ec182aae418cd879906581612, type: 3}
-  Jumping: {fileID: 8300000, guid: 3bba3c4c5e5906141b4c25e9d21b14f2, type: 3}
-  AirDash: {fileID: 8300000, guid: 622ac4179e2830a458a527d1b3c43288, type: 3}
-  HomingAttack: {fileID: 8300000, guid: 622ac4179e2830a458a527d1b3c43288, type: 3}
+  Jumping: {fileID: 8300000, guid: 05f66e6fae6f6034db6c5b7c6e030b8e, type: 3}
+  HomingAttack: {fileID: 8300000, guid: b5adfb1bc96b1d949ab1e5d4e487421c, type: 3}
+  JumpDash: {fileID: 8300000, guid: 8cc1dda703c71814dadc4ea61a52649b, type: 3}
   BounceStart: {fileID: 0}
   BounceImpact: {fileID: 8300000, guid: 31d1e3fe64ecaec489b1328f0c36ccce, type: 3}
   StompImpact: {fileID: 8300000, guid: 67554f5f7038a1f4d9b86f2a2125198d, type: 3}
@@ -12595,12 +12726,17 @@ MonoBehaviour:
   SpinDashRelease: {fileID: 8300000, guid: 8358a9d58966b5d4a9120c45588585f4, type: 3}
   Skidding: {fileID: 8300000, guid: ca0a4ad67a8b4284db81cd6cc0b19516, type: 3}
   Spin: {fileID: 8300000, guid: 9dd9e670ffd68874e90cffb7c831c63d, type: 3}
-  QuickStep: {fileID: 0}
+  QuickStep: {fileID: 8300000, guid: 80fb69f673b0c054a8573f8321282019, type: 3}
   BoostStart: {fileID: 8300000, guid: a7b244c348016894eb0213ffd93f536f, type: 3}
   BoostRepeat: {fileID: 8300000, guid: 311fd5a7b7b37d844bd494dc11823e1f, type: 3}
+  LightSpeedDash: {fileID: 8300000, guid: 19613954f26b6f048a66b4ddc5849d65, type: 3}
+  RailLand: {fileID: 8300000, guid: 93a84366925771e4cabcce63ed85de4d, type: 3}
+  RailGrind: {fileID: 8300000, guid: a8aaa711c4ab83b4681bccfb2c3e80d3, type: 3}
   RingLoss: {fileID: 8300000, guid: 7c4ba3120c02cb043ab0198dabd01d16, type: 3}
   Die: {fileID: 8300000, guid: 0d1153847e106544d8c06ef14b47a622, type: 3}
   Spiked: {fileID: 8300000, guid: 22c0a4a11dd9d7c48b32442d93a8f401, type: 3}
+  Bonk: {fileID: 8300000, guid: b99c03758b6883d4e8124bf20d8402c9, type: 3}
+  HitByDanger: {fileID: 8300000, guid: ee727cbd504feb04c89141b70e7e42aa, type: 3}
   CombatVoiceClips:
   - {fileID: 8300000, guid: 22a16f262c9d0714f8dd7438a6397814, type: 3}
   - {fileID: 8300000, guid: 5d94c7cfa49276648b57eb00c7198fae, type: 3}
@@ -28660,6 +28796,7 @@ Transform:
   - {fileID: 3440876232930046938}
   - {fileID: 3681496815328022534}
   - {fileID: 5938188208219221839}
+  - {fileID: 5521476318399213190}
   - {fileID: 1609455079171966463}
   m_Father: {fileID: 6420733220765619769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

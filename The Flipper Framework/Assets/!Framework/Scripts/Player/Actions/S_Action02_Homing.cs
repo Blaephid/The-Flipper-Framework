@@ -417,7 +417,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		_PlayerPhys._canChangeGrounded = true;
 
 		//Gets a direction to make the player face and rebound away from. This is either the way they were already going, or slightly affected by what they hit.
-		Vector3 faceDirection = _PlayerVel._previousVelocities[2].normalized;
+		Vector3 faceDirection = _PlayerVel._previousVelocity[2].normalized;
 		if (wallNormal != default(Vector3))
 		{
 			faceDirection = Vector3.Lerp(faceDirection, wallNormal, 0.5f);

@@ -8,8 +8,9 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	public S_PlayerPhysics Player;
 
 	[Header("Audio Sources")]
-	public AudioSource	FeetSource;
+	public AudioSource  FeetSource;
 	public AudioSource GeneralSource;
+	public AudioSource ExtraSource;
 	public AudioSource DamageSource;
 	public AudioSource VoiceSource;
 	public AudioSource BoostSource1, BoostSource2;
@@ -20,8 +21,8 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	[Header("Actions")]
 	[Header("Air")]
 	public AudioClip Jumping;
-	public AudioClip AirDash;
 	public AudioClip HomingAttack;
+	public AudioClip JumpDash;
 	public AudioClip BounceStart;
 	public AudioClip BounceImpact;
 	public AudioClip StompImpact;
@@ -37,10 +38,17 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	public AudioClip BoostStart;
 	public AudioClip BoostRepeat;
 
+	[Header("Other Actions")]
+	public AudioClip LightSpeedDash;
+	public AudioClip RailLand;
+	public AudioClip RailGrind;
+
 	[Header("Damage")]
 	public AudioClip RingLoss;
 	public AudioClip Die;
 	public AudioClip Spiked;
+	public AudioClip Bonk;
+	public AudioClip HitByDanger;
 
 	[Header("Voice")]
 	public AudioClip[] CombatVoiceClips;
@@ -49,12 +57,8 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 
 	public float pitchBendingRate = 1;
 
-	public void Test ( string i ) {
 
-	}
-
-	void Start () {
-	}
+	#region VoiceSource
 
 	public void CombatVoicePlay () {
 		int rand = Random.Range(0, CombatVoiceClips.Length);
@@ -71,11 +75,15 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		VoiceSource.clip = PainVoiceClips[rand];
 		VoiceSource.Play();
 	}
+	#endregion
+
+	#region FeetSource
 
 	//This is called by an Animation event in specific animations. Any walking/running animation will call this.
 	//Make sure the animator component is on the same object as this script. And that this method isn't renamed.
 	public void FootStepSoundPlay () {
-		if (FootSteps.Length > 0 && !FeetSource.isPlaying)
+		//if (FootSteps.Length > 0 && !FeetSource.isPlaying)
+		if (FootSteps.Length > 0 )
 		{
 			int rand = Random.Range (0, FootSteps.Length);
 			FeetSource.clip = FootSteps[rand];
@@ -83,10 +91,14 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		}
 	}
 
-	public void QuickStepSound () {
-		FeetSource.clip = QuickStep;
+	public void RailGrindSound () {
+		if (FeetSource.isPlaying) { return; }
+		FeetSource.clip = RailGrind;
 		FeetSource.Play();
 	}
+	#endregion
+
+	#region GeneralSource
 
 	public void JumpSound () {
 		if (JumpingVoiceClips.Length > 0)
@@ -108,17 +120,16 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 			CombatVoicePlay();
 		}
 	}
-	public void AirDashSound () {
-		GeneralSource.clip = AirDash;
+
+	public void JumpDashSound () {
+		GeneralSource.clip = JumpDash;
 		GeneralSource.Play();
 	}
-	public void SpinningSound () {
-		if (!(GeneralSource.clip == SpinDashRelease && GeneralSource.isPlaying))
-		{
-			GeneralSource.clip = Spin;
-			GeneralSource.Play();
-		}
+	public void LightSpeedDashSound () {
+		GeneralSource.clip = LightSpeedDash;
+		GeneralSource.Play();
 	}
+
 	public void SpinDashSound () {
 		GeneralSource.clip = SpinDash;
 		GeneralSource.Play();
@@ -139,12 +150,23 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		GeneralSource.clip = SpinDashRelease;
 		GeneralSource.Play();
 	}
+	public void QuickStepSound () {
+		GeneralSource.clip = QuickStep;
+		GeneralSource.Play();
+	}
+	#endregion
+
+	#region DamageSource
 	public void RingLossSound () {
 		DamageSource.clip = RingLoss;
-		if (PainVoiceClips.Length > 0)
-		{
-			PainVoicePlay();
-		}
+		DamageSource.Play();
+	}
+	public void HitSound () {
+		DamageSource.clip = HitByDanger;
+		DamageSource.Play ();
+	}
+	public void BonkSound () {
+		DamageSource.clip = Bonk;
 		DamageSource.Play();
 	}
 	public void DieSound () {
@@ -159,6 +181,16 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		DamageSource.clip = Spiked;
 		DamageSource.Play();
 	}
+	#endregion
+
+	#region extraSource
+	public void RailLandSound () {
+		ExtraSource.clip = RailLand;
+		ExtraSource.Play();
+	}
+	#endregion
+
+	#region specificSources
 
 	public void BoostStartSound () {
 		BoostSource1.clip = BoostStart;
@@ -166,5 +198,15 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		BoostSource2.Play();
 		BoostSource1.Play();
 	}
+
+	public void SpinningSound () {
+		if (!(GeneralSource.clip == SpinDashRelease))
+		{
+			BoostSource2.clip = Spin;
+			BoostSource2.Play();
+		}
+	}
+
+	#endregion
 
 }

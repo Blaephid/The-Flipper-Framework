@@ -153,6 +153,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		MoveTowardsPathMiddle();
 
 		_PlayerPhys.AlignToGround(_PlayerPhys._groundNormal, _PlayerPhys._isGrounded);
+		//_PlayerPhys.RespondToCollisions();
 
 		ApplyVelocity();
 
