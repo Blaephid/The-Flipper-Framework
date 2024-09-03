@@ -535,17 +535,29 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//These events must be set in the PlayerPhysics component, and will happen when the player goes from grounded to airborne, or vice versa.
 	public void EventOnGrounded () {
-		if (!_canBoostBecauseHasntBoostedInAir)
+		if (_PlayerPhys._isBoosting)
 		{
-			_CharacterAnimator.SetInteger("Action", 0);
-			_CharacterAnimator.SetTrigger("ChangedState");
+			//If player has landed while still in default (E.G. didn't jump), then since StartAction won't be called, switch the animation to grounded running.
+			if (_CharacterAnimator.GetInteger("Action") != 0 && _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default)
+			{
+				_CharacterAnimator.SetInteger("Action", 0);
+				_CharacterAnimator.SetTrigger("ChangedState");
+			}
 		}
 
 		_canBoostBecauseHasntBoostedInAir = true; //This allows another boost to be performed in the air (because this started from the ground. }
 	}
 	public void EventOnLoseGround () {
 		if (_PlayerPhys._isBoosting)
+		{
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_));
+			//Should perform air dash animation if losing ground while boosting, but not if willingly entered by jumping.
+			if (_CharacterAnimator.GetInteger("Action") != 11 && _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default)
+			{
+				_CharacterAnimator.SetInteger("Action", 11);
+				_CharacterAnimator.SetTrigger("ChangedState"); //Used immediately to switch.
+			}
+		}
 	}
 
 	//Boost should end when going through springs or dash rings.This will not trigger the speed being lost over time.

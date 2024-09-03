@@ -144,7 +144,7 @@ public class S_PlayerMovement : MonoBehaviour
 		lateralVelocity = Decelerate(lateralVelocity, _moveInput * decelerationModifier, _curvePosDecell);
 
 		//If external core speed has been set to a positive value this frame, overwrite running speed without losing direction.
-		if (_PlayerVel._externalRunningSpeed >= 0 && lateralVelocity.magnitude > -1)
+		if (_PlayerVel._externalRunningSpeed >= 0 && lateralVelocity.sqrMagnitude > -1)
 		{
 			if (lateralVelocity.sqrMagnitude < 0.1f) { lateralVelocity = _MainSkin.forward; } //Ensures speed will always be applied, even if there's currently no velocity.
 			lateralVelocity = lateralVelocity.normalized * _PlayerVel._externalRunningSpeed;

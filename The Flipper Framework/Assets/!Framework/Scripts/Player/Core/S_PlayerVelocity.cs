@@ -43,7 +43,7 @@ public class S_PlayerVelocity : MonoBehaviour
 
 	//SPEEDS
 	[HideInInspector]
-	public float                  _speedMagnitude;              //The speed of the player at the end of the frame.
+	public float                  _speedMagnitudeSquared;              //The speed of the player at the end of the frame.
 	[HideInInspector]
 	public float                  _horizontalSpeedMagnitude;    //The speed of the player relative to the character transform, so only shows running speed.
 	[HideInInspector]
@@ -113,59 +113,55 @@ public class S_PlayerVelocity : MonoBehaviour
 		}
 
 		//The magnitudes of the old and current total velocities
-		float speedThisFrame = velocityThisFrame.sqrMagnitude;
-		float speedLastFrame = velocityLastFrame.sqrMagnitude;
+		float speedThisFrameSquared = velocityThisFrame.sqrMagnitude;
+		float speedLastFrameSquared = velocityLastFrame.sqrMagnitude;
+		//Sqrmagnitude is much faster, but not the actual speed, so when needing to apply the speed later, must use a single pricey square root function.
 
 		//Only apply the changes if physics decreased the speed.
-		if (speedThisFrame < speedLastFrame)
+		if (speedThisFrameSquared < speedLastFrameSquared)
 		{
-			speedThisFrame = velocityThisFrame.magnitude;
-			speedLastFrame = velocityLastFrame.magnitude;
 
 			float angleChange = Vector3.Angle(velocityThisFrame, velocityLastFrame);
-			if (speedThisFrame < 0.01f) { angleChange = 0; } //Because angle would still be calculated even if a one vector is zero.
+			if (speedThisFrameSquared < 0.01f) { angleChange = 0; } //Because angle would still be calculated even if a one vector is zero.
 
-			float speedDifference = Mathf.Max(speedLastFrame - speedThisFrame, 0);
-
-			Debug.DrawRay(transform.position, velocityLastFrame * Time.deltaTime, Color.green, 10f);
+			float speedSquaredDifference = Mathf.Max(speedLastFrameSquared - speedThisFrameSquared, 0);
 
 			//----Undoing Changes----
 
 			//Converting speed from landing onto running downhill
 			if (fromAirToGround)
 			{
-				Vector4 newVelocityAndSpeed = LandOnSlope(velocityThisFrame, velocityLastFrame, speedThisFrame, speedLastFrame);
+				Vector4 newVelocityAndSpeed = LandOnSlope(velocityThisFrame, velocityLastFrame, speedThisFrameSquared);
 				velocityThisFrame = newVelocityAndSpeed;
-				speedThisFrame = newVelocityAndSpeed.w;
+				speedThisFrameSquared = Mathf.Pow(newVelocityAndSpeed.w, 2);
 			}
 
 			// If already moving and the change is just making the player bounce off upwards slightly, then ignore velocity change
 			else if (angleChange > 1 && angleChange < 15  //If a slight angle change
-				&& speedLastFrame > 2	//To help avoid jittering against a wall when moving from zero speed.
+				&& speedLastFrameSquared > 2	//To help avoid jittering against a wall when moving from zero speed.
 				&& Vector3.Angle(velocityThisFrame, transform.up) - 5 < Vector3.Angle(velocityLastFrame, transform.up) //If new velocity is taking the player noticeably more upwards
-				&& speedDifference < Mathf.Min(5f, speedLastFrame * 0.1f)) //If not too much speed was lost
+				&& speedSquaredDifference < Mathf.Min(5*5f, speedLastFrameSquared * 0.1f)) //If not too much speed was lost
 			{
 				//While this undoes changes, if running into a wall and the velocity keeps resetting, then the player would slide up the wall slowly.
 				velocityThisFrame = velocityLastFrame;
-				speedThisFrame = speedLastFrame;
+				speedThisFrameSquared = speedLastFrameSquared;
 			}
 
 			//If the difference in speed is minor(such as lightly colliding with a slope when going up), then ignore the change.
-			else if (speedDifference < Mathf.Max(15, speedLastFrame * 0.3f) && speedDifference > 0.01f)
+			else if (speedSquaredDifference < Mathf.Max(15*15, speedLastFrameSquared * 0.3f) && speedSquaredDifference > 0.5f)
 			{
 				//These sudden changes will almost always be caused by collision, but running into a wall at an angle redirects the player, while running into a floor or ceiling should be ignored.
 				//If only having horizontal velocity changed, don't change direction by increase speed slightly to what it was before for smoothness.
 				if (Mathf.Abs(velocityThisFrame.normalized.y - velocityLastFrame.normalized.y) < 0.12f)
 				{
-					speedThisFrame = Mathf.Lerp(speedThisFrame, speedLastFrame, 0.1f);
-					velocityThisFrame = velocityThisFrame.normalized * speedThisFrame;
+					speedThisFrameSquared = Mathf.Lerp(speedThisFrameSquared, speedLastFrameSquared, 0.1f);
+					velocityThisFrame = velocityThisFrame.normalized * Mathf.Sqrt(speedThisFrameSquared);
 				}
 				//If changing vertically, this will either be an issue with bumping into the ground while running, or landing and converting fall speed to run speed.
 				else if (_PlayerPhys._isGrounded)
 				{
-					velocityThisFrame = velocityThisFrame.normalized * speedLastFrame;
-					//currentVelocity = previousVelocity;
-					speedThisFrame = speedLastFrame;
+					speedThisFrameSquared = speedLastFrameSquared;
+					velocityThisFrame = velocityThisFrame.normalized * Mathf.Sqrt(speedThisFrameSquared);
 				}
 			}
 
@@ -175,17 +171,19 @@ public class S_PlayerVelocity : MonoBehaviour
 			Vector3 vectorDifference =  velocityThisFrame - velocityLastFrame;
 
 			//Since collisions will very rarely put velocity to 0 exactly, add some wiggle room to end player movement if currentVelocity has not been reverted. This will only trigger if player was already moving.
-			if (speedThisFrame < 1f && speedLastFrame > speedThisFrame + 0.05)
+			if (speedThisFrameSquared < 1f && speedLastFrameSquared > speedThisFrameSquared + 0.1f)
 			{
 				_coreVelocity = Vector3.zero;
 			}
-			//Set to zero if the loss was subsantial and not almost entirely just in vertical difference (to avoid losing lateral speed when landing and losing vertical speed)
-			else if (speedThisFrame < speedLastFrame * 0.15f && (speedThisFrame + Mathf.Abs(velocityLastFrame.y)) < speedLastFrame)
+			//Set to zero if the loss was subsantial and not almost entirely just in vertical difference
+			//(to avoid losing lateral speed when landing and losing vertical speed)
+			else if (speedThisFrameSquared < speedLastFrameSquared * 0.15f 
+				&& (speedThisFrameSquared + Mathf.Pow(Mathf.Abs(velocityLastFrame.y),2)) < speedLastFrameSquared)
 			{
 				_coreVelocity = Vector3.zero;
 			}
 			//To ensure core Velocity isn't inverted or even increased if it loses more than itself.
-			else if (Mathf.Pow(speedDifference, 2) > _coreVelocity.sqrMagnitude + 0.1f)
+			else if (speedSquaredDifference > _coreVelocity.sqrMagnitude + 0.1f)
 			{
 				_coreVelocity = Vector3.zero;
 			}
@@ -217,7 +215,7 @@ public class S_PlayerVelocity : MonoBehaviour
 	}
 
 	//If just landed, apply additional speed dependant on slope angle.
-	public Vector4 LandOnSlope ( Vector4 currentVelocity, Vector3 previousVelocity, float physicsCalculatedSpeed, float previousSpeed ) {
+	public Vector4 LandOnSlope ( Vector4 currentVelocity, Vector3 previousVelocity, float physicsCalculatedSpeedSquared ) {
 
 		float newSpeed = Mathf.Max(_previousHorizontalSpeeds[1], _previousRunningSpeeds[1]);
 		Vector3 horizontalDirection = _totalVelocity.normalized;
@@ -229,7 +227,7 @@ public class S_PlayerVelocity : MonoBehaviour
 			//Get magnitude,higher if rolling.
 			float lerpValue = _PlayerPhys._isRolling ?  _landingConversionFactor_ * _rollingLandingBoost_ :  _landingConversionFactor_;
 
-			newSpeed = Mathf.Lerp(newSpeed, physicsCalculatedSpeed, lerpValue);
+			newSpeed = Mathf.Lerp(newSpeed, Mathf.Sqrt(physicsCalculatedSpeedSquared), lerpValue);
 		}
 
 
@@ -277,12 +275,18 @@ public class S_PlayerVelocity : MonoBehaviour
 		_previousVelocities.RemoveAt(4);
 
 		//Assigns the global variables for the current movement, since it's assigned at the end of a frame, changes between frames won't be counted when using this,
-		_speedMagnitude = _totalVelocity.magnitude;
+		_speedMagnitudeSquared = _totalVelocity.sqrMagnitude;
 		Vector3 releVec = _PlayerPhys.GetRelevantVector(_totalVelocity, false);
 		_horizontalSpeedMagnitude = releVec.magnitude;
 
-		releVec = _PlayerPhys.GetRelevantVector(_coreVelocity, false);
-		_currentRunningSpeed = releVec.magnitude;
+		//Running speed is the speed specififically controlled by the player, which if there aren't notable additions from other types of velociity, is the same as horizontal speed.
+		if ((_totalVelocity - _coreVelocity).sqrMagnitude > 25)
+		{
+			releVec = _PlayerPhys.GetRelevantVector(_coreVelocity, false);
+			_currentRunningSpeed = releVec.magnitude;
+		}
+		else
+			_currentRunningSpeed = _horizontalSpeedMagnitude;
 
 		//Adds this new speed to a list of 3
 		_previousHorizontalSpeeds.Insert(0, _horizontalSpeedMagnitude);

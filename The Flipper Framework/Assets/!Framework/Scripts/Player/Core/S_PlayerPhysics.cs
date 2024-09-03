@@ -2,9 +2,8 @@
 using System.Collections;
 using TMPro;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine.Assertions.Must;
-using UnityEngine.ProBuilder;
+
+using UnityEngine.Profiling;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(S_PlayerMovement))]
@@ -248,6 +247,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	//IMPORTANT. Due to the order and the Script Execution Order project settings, this will always be the first Method called every FixedUpdate, before any other script in the game.
 	public void HandleGeneralPhysics () {
 
+		Profiler.BeginSample("PlayerPhysics");
+
 		//Get curve positions, which will be used in calculations for this frame.
 		_curvePosSlopePower = _slopePowerBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
 
@@ -270,6 +271,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//After all other calculations are made across the scripts, the new velocities are applied to the rigidbody in the PlayerVelocity Script.
 		//That is called there because it should only be called at the end of a fixed update, after everything else has been applied.
+		Profiler.EndSample();
 	}
 
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
@@ -512,9 +514,6 @@ public class S_PlayerPhysics : MonoBehaviour
 			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.08f);
 			Vector3 rayCastDirection = AlignWithNormal(_PlayerVelocity._worldVelocity.normalized, _groundNormal, 1);
 
-			Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.cyan, 10f);
-			Debug.DrawRay(raycastStartPosition, rayCastDirection * _PlayerVelocity._speedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, Color.gray, 10f);
-
 			//If the Raycast Hits something, then there is a wall in front, that could be a negative slope (ground is higher and will tilt backwards to go up).
 			//if (Physics.Raycast(raycastStartPosition, rayCastDirection, out RaycastHit hitSticking,
 			//	_PlayerVelocity._speedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, _Groundmask_))
@@ -571,9 +570,6 @@ public class S_PlayerPhysics : MonoBehaviour
 			SetPlayerPosition(newPos);
 		}
 
-		Debug.DrawRay(transform.position, Dir * Time.deltaTime, Color.red, 10f);
-		Debug.DrawRay(hitSticking.point, currentGroundNormal * 0.4f, Color.blue, 10f);
-
 		return velocity;
 	}
 
@@ -582,7 +578,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Shoots a raycast under the ground where the player would be next frame, meaning it will only be true if the ground next frame will be lower than this frame.
 		raycastStartPosition = _HitGround.point - (_groundNormal * 0.02f);
-		raycastStartPosition += (rayCastDirection * (_PlayerVelocity._speedMagnitude * Time.deltaTime));
+		raycastStartPosition += (rayCastDirection * (_PlayerVelocity._horizontalSpeedMagnitude * Time.deltaTime));
 		if (Physics.Raycast(raycastStartPosition, -_groundNormal, out RaycastHit hitSticking, 1f, _Groundmask_))
 		{
 			//Check if this ground isn't too different to warrent lerping to it.
@@ -840,7 +836,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 
 	public void SetPlayerPosition ( Vector3 newPosition, bool shouldPrintLocation = false ) {
-		Debug.DrawLine(newPosition, transform.position, Color.magenta, 10f);
 		transform.position = newPosition;
 
 		if (shouldPrintLocation) Debug.Log("Change Position to  ");

@@ -174,12 +174,13 @@ public class S_Interaction_Pathers : MonoBehaviour
 			offset = Col.GetComponentInParent<S_PlaceOnSpline>().Offset3d;
 		}
 
-		Vector2 rangeAndDisstanceSquared = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
+		Vector2 rangeAndDistanceSquared = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
 
 		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
-		if (rangeAndDisstanceSquared.y < Mathf.Pow(Mathf.Clamp(_PlayerVel._speedMagnitude / 15, 2f, 10f), 2))
+		float speedToCheckAgainst = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude, _PlayerVel._coreVelocity.y);
+		if (rangeAndDistanceSquared.y < Mathf.Pow(Mathf.Clamp(speedToCheckAgainst / 13, 2f, 11f), 2))
 		{
-			SetOnRail(true, Col, rangeAndDisstanceSquared);
+			SetOnRail(true, Col, rangeAndDistanceSquared);
 		}
 	}
 

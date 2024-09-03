@@ -237,8 +237,10 @@ public class S_Interaction_Objects : MonoBehaviour
 	//Called every frame
 	private void UpdateSpeed () {
 		//If a text element of the UI has been set for speed, update it to show current running speed.
-		if (_CoreUIElements.SpeedCounter != null && _PlayerVel._speedMagnitude > 10f) _CoreUIElements.SpeedCounter.text = _PlayerVel._currentRunningSpeed.ToString("F0");
-		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) _CoreUIElements.SpeedCounter.text = "0";
+		if (_CoreUIElements.SpeedCounter != null && _PlayerVel._speedMagnitudeSquared > 100f) 
+			_CoreUIElements.SpeedCounter.text = _PlayerVel._currentRunningSpeed.ToString("F0");
+		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) 
+			_CoreUIElements.SpeedCounter.text = "0";
 	}
 
 	//
@@ -545,17 +547,20 @@ public class S_Interaction_Objects : MonoBehaviour
 			Vector3 combinedVelocityDirection = (_PlayerVel.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
 			Vector3 upDirection = new Vector3(0, direction.y, 0);
 
-			//If the velocity after bounce is greater than velocity going in to bounce, the take the larger of the two that made it, without losing direction. This will prevent speed increasing too much.
+			//If the velocity after bounce is greater than velocity going in to bounce,
+			//then take the larger of the two that made it, without losing direction. This will prevent speed increasing too much.
 			if (combinedVelocityMagnitude.sqrMagnitude > newCoreVelocity.sqrMagnitude)
 			{
-				//Rather than using Max / Min, use IF statements to compare with sqrMagnitude before getting an actual "magnitude".
+				//Rather than using Max / Min, use IF statements to compare with sqrMagnitude before rotating the larger in the right direction.
 				if (launchHorizontalVelocity.sqrMagnitude > newCoreVelocity.sqrMagnitude)
 				{
-					newCoreVelocity = combinedVelocityDirection.normalized * launchHorizontalVelocity.magnitude;
+					//newCoreVelocity = combinedVelocityDirection.normalized * launchHorizontalVelocity.magnitude;
+					newCoreVelocity = Vector3.RotateTowards(launchHorizontalVelocity, combinedVelocityDirection.normalized, 360, 0);
 				}
 				else
 				{
-					newCoreVelocity = combinedVelocityDirection.normalized * newCoreVelocity.magnitude;
+					//newCoreVelocity = combinedVelocityDirection.normalized * newCoreVelocity.magnitude;
+					newCoreVelocity = Vector3.RotateTowards(newCoreVelocity, combinedVelocityDirection.normalized, 360, 0);
 				}
 			}
 			else
@@ -614,13 +619,13 @@ public class S_Interaction_Objects : MonoBehaviour
 		Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
 		float horizontalSpeed = launchHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
 
-		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  _PlayerVel._horizontalSpeedMagnitude, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
-
 		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
 		float coreSpeed = _PlayerVel._horizontalSpeedMagnitude;
+
+		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  coreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+
 		if (coreSpeed > horizontalSpeed)
 		{
-			horizontalEnvSpeed = 1; //Ensures theres still a direction even though this won't factor in much to world velocity.
 			coreSpeed = horizontalSpeed; //In this case, bounce will be entirely through core velocity, not environmental.
 		}
 
@@ -660,10 +665,6 @@ public class S_Interaction_Objects : MonoBehaviour
 			_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
 		}
-
-		Debug.DrawRay(transform.position, coreVelocity, Color.yellow, 10f);
-		Debug.DrawRay(transform.position, environmentalVelocity, Color.cyan, 10f);
-		Debug.DrawRay(transform.position, coreVelocity + environmentalVelocity, Color.red, 10f);
 
 		_Actions._canChangeActions = true;
 

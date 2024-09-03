@@ -239,7 +239,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			}
 
 			//If got onto this rail from anything except a rail hop, set speed to physics.
-			_Actions._listOfSpeedOnPaths.Add(_PlayerVel._speedMagnitude);
+			_Actions._listOfSpeedOnPaths.Add(Mathf.Sqrt(_PlayerVel._speedMagnitudeSquared));
 
 			_grindingSpeed = _PlayerVel._horizontalSpeedMagnitude;
 			//What action before this one.

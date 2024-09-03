@@ -160,9 +160,9 @@ public class S_HedgeCamera : MonoBehaviour
 	private float                 _distanceModifier = 1;
 
 	[HideInInspector]
-	public float                  _invertedX;
+	public float                  _invertedX = 1;
 	[HideInInspector]
-	public float                  _invertedY;
+	public float                  _invertedY = 1;
 	[HideInInspector]
 	public float                  _sensiX;
 	[HideInInspector]
@@ -244,7 +244,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//Changes the x and y values of the camera by input, changing speed based on a number of factors, such as if stationary and external modifiers.
 		if (!_isLocked && _canMove)
 		{
-			float camMoveSpeed = _PlayerVel._speedMagnitude > 10 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
+			float camMoveSpeed = _PlayerVel._speedMagnitudeSquared > 100 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
 			camMoveSpeed *= _moveModifier;
 			float movementX = _Input.moveCamX * _inputXSpeed_ * _invertedX;
 			float movementY = _Input.moveCamY * _inputYSpeed_ * _invertedY;
@@ -867,6 +867,9 @@ public class S_HedgeCamera : MonoBehaviour
 	void SetStats () {
 		_isLocked = false;
 		_canMove = true;
+
+		_invertedX = 1;
+		_invertedY = 1;
 
 		_shouldSetHeightWhenMoving_ =		_Tools.CameraStats.LockHeightStats.LockHeight;
 		_lockHeightSpeed_ =			_Tools.CameraStats.LockHeightStats.LockHeightSpeed;

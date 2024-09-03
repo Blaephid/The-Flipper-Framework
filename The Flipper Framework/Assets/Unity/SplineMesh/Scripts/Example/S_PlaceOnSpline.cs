@@ -66,6 +66,7 @@ namespace SplineMesh
 
 #if UNITY_EDITOR
 		private void OnEnable () {
+			if (Application.isPlaying) { return; }
 			CheckNow();
 		}
 
@@ -94,6 +95,7 @@ namespace SplineMesh
 		}
 
 		private void Update () {
+			if(Application.isPlaying) { return; }
 			if (UpdateThis)
 			{
 				CheckNow();
@@ -207,12 +209,8 @@ namespace SplineMesh
 				obj.position = hit.point;
 				obj.rotation = Quaternion.FromToRotation(obj.up, hit.normal) * obj.rotation;
 				obj.position += Offset3d;
-				//Debug.Log(obj.name + " aligned.", this);
 			}
-			else
-			{
-				//Debug.Log("No surface found for " + obj.name,this);
-			}
+
 		}
 #endif
 	}

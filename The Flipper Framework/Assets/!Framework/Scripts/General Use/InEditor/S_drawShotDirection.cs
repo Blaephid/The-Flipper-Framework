@@ -119,7 +119,7 @@ public class S_drawShotDirection : MonoBehaviour
 		//The two player velocities the spring will set them to.
 		_simEnVel = enVelocity;
 		_simCoreVel = coreVelocity;
-		float coreSpeed = coreVelocity.magnitude;
+		float coreSpeed = coreVelocity.magnitude; //Can afford to use this at this won't be called during gameplay.
 
 		//Ready an array to represent the path
 		Vector3[] path = new Vector3[iterations];
