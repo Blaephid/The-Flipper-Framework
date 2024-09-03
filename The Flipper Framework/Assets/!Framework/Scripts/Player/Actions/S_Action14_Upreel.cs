@@ -15,6 +15,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity      _PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private Animator              _CharacterAnimator;
@@ -76,7 +77,12 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
+		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Upreel);
+		enabled = true;
+
 		//Set same animation as when on a zipline.
 		_CharacterAnimator.SetInteger("Action", 9);
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -84,7 +90,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(true);
 		_Actions._ActionDefault._isAnimatorControlledExternally = true;
 
-		_speedBeforeUpreel = _PlayerPhys._previousHorizontalSpeeds[1];
+		_speedBeforeUpreel = _PlayerVel._previousHorizontalSpeeds[1];
 
 		_PlayerPhys._listOfCanControl.Add(false); //Removes ability to control velocity until empty
 		_PlayerPhys._listOfIsGravityOn.Add(false);
@@ -93,14 +99,12 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 		_currentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Upreel);
-		enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction();  return; } //If first time, then return after setting to disabled.
 
 		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
@@ -168,7 +172,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 				_Actions._ActionDefault.HandleAnimator(9);
 
 				PlaceOnHandle();
-				_PlayerPhys.SetBothVelocities(_currentUpreel._velocity, Vector2.right);
+				_PlayerVel.SetBothVelocities(_currentUpreel._velocity, Vector2.right);
 
 				_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_currentUpreel.transform.forward, Vector2.zero, _currentUpreel.transform.up);
 			}
@@ -196,8 +200,8 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
 		//Launched over the lip the Upreel was on, then starts falling.
-		_PlayerPhys.SetCoreVelocity(Vector3.zero);
-		_PlayerPhys.SetEnvironmentalVelocity(new Vector3(0, Upreel.up.y * _currentUpreel._launchUpwardsForce, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
+		_PlayerVel.SetCoreVelocity(Vector3.zero);
+		_PlayerVel.SetEnvironmentalVelocity(new Vector3(0, Upreel.up.y * _currentUpreel._launchUpwardsForce, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
 
 		StopAction();
 
@@ -209,7 +213,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 		float newSpeed = Mathf.Max(_upreelSpeedKeptAfter_ * _speedBeforeUpreel, _minimumSpeedCarried_);
 
-		_PlayerPhys.SetCoreVelocity(forwardDirection * newSpeed, "Overwrite");
+		_PlayerVel.SetCoreVelocity(forwardDirection * newSpeed, "Overwrite");
 	}
 
 	#endregion
@@ -245,6 +249,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 
 		_MainSkin = _Tools.MainSkin;

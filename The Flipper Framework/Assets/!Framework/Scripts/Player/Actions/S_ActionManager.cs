@@ -33,10 +33,13 @@ public class S_ActionManager : MonoBehaviour
 	// Trackers
 	#region trackers
 	//Tracking states in game
-	public S_Enums.PrimaryPlayerStates	_whatAction;
+	public S_Enums.PrimaryPlayerStates	_whatCurrentAction = S_Enums.PrimaryPlayerStates.None;
 	public S_Enums.SubPlayerStates	_whatSubAction;
 	public S_Enums.PlayerAttackStates       _whatCurrentAttack;
 	public S_Enums.PrimaryPlayerStates	_whatPreviousAction { get; set; }
+
+	[HideInInspector]
+	public bool         _canChangeActions = true;	//All StartActions should check this, and return if its false, unless they are set to overwrite this.
 
 	[HideInInspector]
 	public List<float>                            _listOfSpeedOnPaths = new List<float>();	//Certain actions will move the player along the spline, this will be used to track the speed for any actions that do so. It is used as a list rather than a singular as it will allow speeds to be added and removed with the action, then the most recent is the only one used.
@@ -46,7 +49,9 @@ public class S_ActionManager : MonoBehaviour
 	private S_Structs.StrucMainActionTracker	_currentAction; //Which struct in the above list is currently active.
 
 	//Inspector
+#if UNITY_EDITOR
 	public S_O_CustomInspectorStyle		InspectorTheme; // Will decide the apperance in the inspector.
+#endif
 	public S_Enums.PrimaryPlayerStates                _addState; //Used only by the inspector in order to add states for other states to transition into.
 
 	//Specific action trackers
@@ -84,7 +89,9 @@ public class S_ActionManager : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
+	void Awake () {
+
+		if (_Tools != null) return;
 
 		//Assigning
 		_Tools =		GetComponentInParent<S_CharacterTools>();
@@ -127,13 +134,15 @@ public class S_ActionManager : MonoBehaviour
 		}
 
 		//Set player to start in default action.
-		_currentAction = _MainActions[0];
 		DeactivateAllActions(true);
-		ChangeAction(S_Enums.PrimaryPlayerStates.Default);
-		_ActionDefault.enabled = true;
+		_currentAction = _MainActions[0];
+		//ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+		//_ActionDefault.enabled = true;
+		_ActionDefault.StartAction();
 	}
 
 	private void FixedUpdate () {
+
 
 		//The counter is set and referenced outside of this script, this counts it down and must be zero or lower to allow homing attacks.
 		if (_dashDelayCounter > 0)
@@ -162,7 +171,7 @@ public class S_ActionManager : MonoBehaviour
 		for (int a = 0 ; a < _MainActions.Count ; a++)
 		{
 			S_Structs.StrucMainActionTracker track = _MainActions[a];
-			if (track.State != _whatAction)
+			if (track.State != _whatCurrentAction)
 			{
 				track.Action.StopAction(firstTime); //The stop action methods should all contain the same check if enabled and then disable the script if so.
 			}
@@ -184,13 +193,6 @@ public class S_ActionManager : MonoBehaviour
 
 		_currentAction = _MainActions[currentActionInList]; //This will allow the update method to check situation actions
 
-		//Checks if any subactions attached to this action should be performed ontop. 
-		//When one returns true, it is being switched to, so end the method. This take priority over main actions.
-		for (int a = 0 ; a < _currentAction.SubActions.Count ; a++)
-		{
-			performAction = _currentAction.SubActions[a].AttemptAction();
-			if (performAction) { return; }
-		}
 
 		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
 		for (int a = 0 ; a < _currentAction.ConnectedActions.Count ; a++)
@@ -198,12 +200,22 @@ public class S_ActionManager : MonoBehaviour
 			performAction = _currentAction.ConnectedActions[a].AttemptAction();
 			if (performAction) { return; }
 		}
+
+
+		//Checks if any subactions attached to this action should be performed ontop. 
+		//When one returns true, it is being switched to, so end the method.
+		for (int a = 0 ; a < _currentAction.SubActions.Count ; a++)
+		{
+			performAction = _currentAction.SubActions[a].AttemptAction();
+			if (performAction) { return; }
+		}
+
 	}
 
 	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.
 	public void ChangeAction ( S_Enums.PrimaryPlayerStates ActionToChange) {
-		_whatPreviousAction = _whatAction;
-		_whatAction = ActionToChange;
+		_whatPreviousAction = _whatCurrentAction;
+		_whatCurrentAction = ActionToChange;
 		DeactivateAllActions();
 	}
 

@@ -43,14 +43,6 @@ namespace templates
 
 		}
 
-		// Called when the script is enabled, but will only assign the tools and stats on the first time.
-		private void OnEnable () {
-			ReadyAction();
-		}
-		private void OnDisable () {
-			
-		}
-
 		// Update is called once per frame
 		void Update () {
 
@@ -61,21 +53,17 @@ namespace templates
 		}
 
 		public bool AttemptAction () {
-			bool willChangeAction = false;
-			willChangeAction = true;
-			return willChangeAction;
+			return false;
 		}
 
-		public void StartAction () {
-
+		public void StartAction (bool overwrite = false) {
+			if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 		}
 
 		public void StopAction ( bool isFirstTime = false ) {
 			if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
-			enabled = false;
-
-			if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+			enabled = false; 
+			if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 		}
 
 		#endregion

@@ -132,7 +132,7 @@ public class S_UI_PauseControl : MonoBehaviour
 	public void Quit () {
 		PauseToggle();
 
-		SceneManager.LoadScene(0);
+		S_Manager_LevelProgress.ReturnToTitleScreen();
 	}
 	public void OptionsToggle () {
 		if (OptionsMenu.activeSelf)

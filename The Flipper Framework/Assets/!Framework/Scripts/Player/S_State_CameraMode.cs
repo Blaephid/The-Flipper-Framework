@@ -130,11 +130,11 @@ public class S_State_CameraMode : MonoBehaviour
 			_CamTransform.Translate(direction * _moveSpeed * _timeValuePerFrame, Space.World);
 
 			//If this new position is too far away from the character.
-			float newDistance = Vector3.Distance(_CamTransform.position, _playerPosition);
-			if (newDistance > _maxDistanceFromPlayer)
+			float newDistanceSquared = S_CoreMethods.GetDistanceOfVectors(_CamTransform.position, _playerPosition);
+			if (newDistanceSquared > Mathf.Pow(_maxDistanceFromPlayer, 2))
 			{
 				//If moved further away from character, set back to previous position. This prevents moving too far from character, but if already too far, can still move back at least.
-				if(newDistance > Vector3.Distance(_playerPosition, previousPosition))
+				if(newDistanceSquared > S_CoreMethods.GetDistanceOfVectors(_playerPosition, previousPosition))
 				{
 					_CamTransform.position = previousPosition;
 				}
@@ -176,7 +176,9 @@ public class S_State_CameraMode : MonoBehaviour
 	}
 
 	public void TakeShot () {
+#if UNITY_EDITOR
 		_VirtualCamera.GetComponent<S_TakeScreenShots>();
+#endif
 	}
 	#endregion
 }

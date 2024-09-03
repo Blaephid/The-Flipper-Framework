@@ -28,6 +28,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000010362990254}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -185, y: 0, z: -77.5}
   m_LocalScale: {x: 1.60218, y: 1.60218, z: 1.60218}
@@ -37,7 +38,6 @@ Transform:
   - {fileID: 5290740349256836575}
   - {fileID: 2877206393422667866}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!65 &65000013295742166
 BoxCollider:
@@ -47,9 +47,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000010362990254}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 2.512072, y: 0.382359, z: 3.8447108}
   m_Center: {x: 0, y: 0.10811551, z: -0.10647744}
 --- !u!82 &82000012650772150
@@ -161,24 +169,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onRail: 0
-  railBackwards: 0
-  isDashRing: 0
-  path: {fileID: 0}
-  setSpeed: 1
-  addSpeed: 15
-  Speed: 100
-  LockToDirection: 1
-  Snap: 1
-  AffectCamera: 1
-  ResetRotation: 1
-  setInputForwards: 0
-  positionToLockTo: {fileID: 2877206393422667866}
-  LockControl: 1
-  LockControlTime: 50
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 0
-  lockAirMovesTime: 30
+  _isOnRail_: 0
+  _isDashRing_: 0
+  _Path: {fileID: 0}
+  _willSetBackwards_: 0
+  _willSetSpeed_: 1
+  _addSpeed_: 15
+  _speedToSet_: 100
+  _willCarrySpeed_: 1
+  _willSnap: 0
+  _willAffectCamera_: 1
+  _CameraRotateTime_: {x: 0.15, y: 20}
+  _PositionToLockTo: {fileID: 0}
+  _willLockControl: 0
+  _lockControlFrames_: 30
+  _lockInputTo_: 0
+  _overwriteGravity_: {x: 0, y: 0, z: 0}
+  _lockAirMovesFor_: 30
 --- !u!114 &6464676511089374715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,30 +193,28 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000010362990254}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f92537ab1025b7740af8066810e49070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  endCine: 0
-  Active: 1
-  isEnabled: 1
-  onExit: 0
-  timeDelay: 0
-  startAtCameraPoint: 0
-  startOffset: {x: 0, y: 0, z: 0}
-  virCam: {fileID: 3679072135301013185}
-  attachedCam: {fileID: 9107472879686778304}
-  RegularAction: 1
-  JumpAction: 0
-  RailAction: 0
-  wallRunAction: 0
-  RingRoadAction: 0
+  _willActivateCamera: 0
+  _defaultCameraToFaceTrigger: 1
+  _CinematicCamComponent: {fileID: 3679072135301013185}
+  _CinematicCamObject: {fileID: 9107472879686778304}
+  _EndThisTriggerInstead: {fileID: 0}
+  _ListOfActionsThisWorksOn: 
+  _willDeactivateCameraIfActonChanges: 0
+  _moveCinematicCamToMainCamPoint: 0
+  _startOffset: {x: 0, y: 0, z: 0}
+  _endOnEnterTrigger: 0
+  _endOnExitTrigger: 1
+  _delayEndForFrames: 0
   lookPlayer: 0
   followPlayer: 0
-  disableMove: 0
-  setBehind: 1
-  lockTime: 5
+  _willSetCameraBehind: 1
+  _lockPlayerInputFor: 5
+  _LockInputTo_: 0
 --- !u!205 &205000011634412510
 LODGroup:
   m_ObjectHideFlags: 0
@@ -256,13 +261,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1642057142461760}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -0, y: 0.34, z: 0}
   m_LocalScale: {x: 4.6813984, y: 3, z: 4.6813993}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000011037360016}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &33920425294930010
 MeshFilter:
@@ -317,7 +322,7 @@ MeshRenderer:
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!95 &95561534195884670
 Animator:
-  serializedVersion: 4
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -331,10 +336,12 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &114406221828142838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -373,13 +380,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3174784962313538673}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4000011037360016}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7278913871085821371
 GameObject:
@@ -407,13 +414,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7278913871085821371}
+  serializedVersion: 2
   m_LocalRotation: {x: -0.058242947, y: -0.88577443, z: 0.11570156, w: 0.44567317}
   m_LocalPosition: {x: 391.8902, y: -42.582108, z: -81.91445}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5290740349256836575}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8863315438990040752
 MonoBehaviour:
@@ -500,6 +507,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9107472879686778304}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.38468015, y: -0, z: 0.00000004470348, w: 0.9230499}
   m_LocalPosition: {x: 0.27, y: 18.08, z: -8.94}
   m_LocalScale: {x: 0.6241496, y: 0.6241496, z: 0.6241496}
@@ -507,7 +515,6 @@ Transform:
   m_Children:
   - {fileID: 8248089733240307952}
   m_Father: {fileID: 4000011037360016}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 45.248, y: 0, z: 0}
 --- !u!114 &3679072135301013185
 MonoBehaviour:
@@ -538,7 +545,8 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.7261906, y: 1}
+    FocusDistance: 10
+    m_SensorSize: {x: 1, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0

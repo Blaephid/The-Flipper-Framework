@@ -1,10 +1,13 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class S_CharacterTools : MonoBehaviour
 {
+
 	[Header("Stats")]
 	public S_O_CharacterStats	Stats;
 	public S_O_CameraStats	CameraStats;
@@ -47,9 +50,9 @@ public class S_CharacterTools : MonoBehaviour
 	public GameObject	DamageIcon;
 
 	[Header("Camera Related")]
-	public Transform		MainCamera;
 	public Transform		CameraTarget;
 	public Transform		ConstantTarget;
+	public CinemachineBrain       MainCamera;
 
 
 	[Header("Prefabs")]
@@ -74,4 +77,18 @@ public class S_CharacterTools : MonoBehaviour
 	public GameObject		HomingTrailContainer;
 	public GameObject		HomingTrail;
 	public GameObject             BoostCone;
+
+	//Sets missing or hidden tools when spawned by SpawnCharacter
+	private void Awake () {
+		S_SpawnCharacter Spawner = GetComponentInParent<S_SpawnCharacter>();
+
+		if (Spawner != null)
+		{
+			MainCamera = Spawner._CameraBrain;
+
+			S_SpawnCharacter._SpawnedPlayer = transform;
+			transform.up = Spawner.transform.up;
+			MainSkin.rotation = Quaternion.LookRotation(Spawner.transform.forward, transform.up);
+		}
+	}
 }

@@ -19,6 +19,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	#region Unity Specific Properties
 	private S_CharacterTools		_Tools;
 	private S_PlayerPhysics		_PlayerPhys;
+	private S_PlayerVelocity		_PlayerVel;
 	private S_PlayerInput		_Input;
 	private S_ActionManager		_Actions;
 	private S_Action05_Rail		_RailAction;
@@ -163,18 +164,23 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private void CheckRail ( Collider Col ) {
 		Spline ThisSpline = Col.gameObject.GetComponentInParent<Spline>(); //Create a temporary variable to check this rail before confirming it.
 
+		//Can only get on a rail if players feet are towards the top of it (meaning upwards directions are similar.)
+		float angleBetweenUpwardsDirections = Vector3.Angle(transform.up, Col.transform.up);
+		if(angleBetweenUpwardsDirections > 90) { return;  }
+
 		Vector3 offset = Vector3.zero;
 		if (Col.GetComponentInParent<S_PlaceOnSpline>())
 		{
 			offset = Col.GetComponentInParent<S_PlaceOnSpline>().Offset3d;
 		}
 
-		Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
+		Vector2 rangeAndDistanceSquared = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
 
 		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
-		if (rangeAndDis.y < Mathf.Clamp(_PlayerPhys._speedMagnitude / 25, 2f, 6f))
+		float speedToCheckAgainst = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude, _PlayerVel._coreVelocity.y);
+		if (rangeAndDistanceSquared.y < Mathf.Pow(Mathf.Clamp(speedToCheckAgainst / 13, 2f, 11f), 2))
 		{
-			SetOnRail(true, Col, rangeAndDis);
+			SetOnRail(true, Col, rangeAndDistanceSquared);
 		}
 	}
 
@@ -231,14 +237,14 @@ public class S_Interaction_Pathers : MonoBehaviour
 		_RailAction._ZipBody = zipbody;
 		zipbody.isKinematic = false;
 
-		Vector2 rangeAndDis = GetClosestPointOfSpline(zipbody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.
+		Vector2 rangeAndDistanceSquared = GetClosestPointOfSpline(zipbody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.
 
 		//Disables the homing target so it isn't a presence if homing attack can be performed in the grind action
 		GameObject target = col.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
 		target.SetActive(false);
 
 		//Sets the player to the rail grind action, and sets their position and what spline to follow.
-		_RailAction.AssignForThisGrind(rangeAndDis.x, _PathSpline.transform, PathTypes.zipline, Vector3.zero, null);
+		_RailAction.AssignForThisGrind(rangeAndDistanceSquared.x, _PathSpline.transform, PathTypes.zipline, Vector3.zero, null);
 		_RailAction.StartAction();
 	}
 
@@ -260,7 +266,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 			willPlaceOnSpline = true;
 			_PathSpline = SpeedPadScript._Path;
-			speedGo = Mathf.Max(SpeedPadScript._speedToSet_, _PlayerPhys._horizontalSpeedMagnitude);
+			speedGo = Mathf.Max(SpeedPadScript._speedToSet_, _PlayerVel._horizontalSpeedMagnitude);
 		}
 
 		//If the path is being started by a normal trigger
@@ -270,7 +276,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		//If the player has been given a path to follow. This cuts out speed pads that don't have attached paths.
 		if (!_PathSpline) { return; }
 
-		Vector2 rangeAndDis = GetClosestPointOfSpline(transform.position, _PathSpline, Vector2.zero);
+		Vector2 rangeAndDistanceSquared = GetClosestPointOfSpline(transform.position, _PathSpline, Vector2.zero);
 
 		//If entering an Exit trigger, the player will be set to move backwards and start at the end.
 		if (col.gameObject.name == "Exit")
@@ -278,8 +284,13 @@ public class S_Interaction_Pathers : MonoBehaviour
 			back = true;
 		}
 
+		if (PathTrigger._removeVerticalVelocityOnStart)
+		{
+			_PlayerVel.SetCoreVelocity(new Vector3(_PlayerVel._coreVelocity.x, 0, _PlayerVel._coreVelocity.z));
+		}
+
 		//Starts the player moving along the path using the path follow action
-		_PathAction.AssignForThisAutoPath(rangeAndDis.x, _PathSpline.transform, back, speedGo, PathTrigger, willPlaceOnSpline);
+		_PathAction.AssignForThisAutoPath(rangeAndDistanceSquared.x, _PathSpline.transform, back, speedGo, PathTrigger, willPlaceOnSpline);
 		_PathAction.StartAction();
 	}
 
@@ -316,23 +327,23 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 	//Goes through whole spline and returns the point closests to the given position, along with how far it is.
 	public Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline, Vector3 offset ) {
-		float CurrentDist = 9999999f;
+		float CurrentDistanceSquared = 9999999f;
 		float closestSample = 0;
 		for (float n = 0 ; n < thisSpline.Length ; n += 5)
 		{
 			Vector3 checkPos = thisSpline.transform.position + //Object position
 				(thisSpline.transform.rotation * (thisSpline.GetSampleAtDistance(n).location + (thisSpline.GetSampleAtDistance(n).Rotation * offset))); //Place on spline relative to object rotation and offset.
 																	      //The distance between the point at distance n along the spline, and the current collider position.
-			float dist = Vector3.Distance(checkPos,colliderPosition);
+			float distanceSquared = S_CoreMethods.GetDistanceOfVectors(checkPos,colliderPosition);
 
 			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
-			if (dist <= CurrentDist)
+			if (distanceSquared <= CurrentDistanceSquared)
 			{
-				CurrentDist = dist;
+				CurrentDistanceSquared = distanceSquared;
 				closestSample = n;
 			}
 		}
-		return new Vector2(closestSample, CurrentDist);
+		return new Vector2(closestSample, CurrentDistanceSquared);
 	}
 
 	//Called when leaving a pulley to prevent player attaching to it immediately.
@@ -373,6 +384,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 
 		//Can afford to directly search for these actions as they will only be read if their AttemptAcions are called.

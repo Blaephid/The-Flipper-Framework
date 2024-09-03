@@ -60,6 +60,7 @@ namespace SplineMesh
 		[Tooltip("The mode to use to fill the choosen interval with the bent mesh.")]
 		public S_MeshBender.FillingMode mode = S_MeshBender.FillingMode.Repeat;
 
+#if UNITY_EDITOR
 		private void OnEnable () {
 			// tip : if you name all generated content in the same way, you can easily find all of it
 			// at once in the scene view, with a single search.
@@ -204,8 +205,8 @@ namespace SplineMesh
 			mb.Mode = mode;
 			return res;
 		}
-
 		public S_O_CustomInspectorStyle _InspectorTheme;
+#endif
 	}
 }
 

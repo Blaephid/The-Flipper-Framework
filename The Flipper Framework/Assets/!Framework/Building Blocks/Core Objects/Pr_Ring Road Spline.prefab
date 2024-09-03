@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 853586103888125666}
-  - component: {fileID: 7680299148072347651}
+  - component: {fileID: 5455047339599456840}
   - component: {fileID: 553594820864921953}
   - component: {fileID: 3617762599319094144}
   m_Layer: 0
@@ -66,7 +66,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4998489574652392}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7680299148072347651
+--- !u!114 &5455047339599456840
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -80,72 +80,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodes:
   - position: {x: 5, y: 0, z: 0}
-    direction: {x: 5, y: 0, z: 52.144028}
+    direction: {x: 5, y: 0, z: -3}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
-  - position: {x: 7.5468674, y: 19.395668, z: 63.300434}
-    direction: {x: 7.5468674, y: 19.395668, z: 98.6812}
-    up: {x: 0, y: 1, z: 0}
-    scale: {x: 1, y: 1}
-    roll: 0
-  - position: {x: -28.379631, y: 26.90572, z: 87.66801}
-    direction: {x: -47.45292, y: 29.61678, z: 85.85498}
-    up: {x: 0, y: 1, z: 0}
-    scale: {x: 1, y: 1}
-    roll: 0
-  - position: {x: 5, y: 0, z: 0}
-    direction: {x: 5, y: 0, z: 52.144028}
+  - position: {x: 10, y: 0, z: 0}
+    direction: {x: 10, y: 0, z: 3}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
   curves:
   - n1:
       position: {x: 5, y: 0, z: 0}
-      direction: {x: 5, y: 0, z: 52.144028}
+      direction: {x: 5, y: 0, z: -3}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
     n2:
-      position: {x: 7.5468674, y: 19.395668, z: 63.300434}
-      direction: {x: 7.5468674, y: 19.395668, z: 98.6812}
+      position: {x: 10, y: 0, z: 0}
+      direction: {x: 10, y: 0, z: 3}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
     Changed:
       m_PersistentCalls:
         m_Calls: []
-  - n1:
-      position: {x: 7.5468674, y: 19.395668, z: 63.300434}
-      direction: {x: 7.5468674, y: 19.395668, z: 98.6812}
-      up: {x: 0, y: 1, z: 0}
-      scale: {x: 1, y: 1}
-      roll: 0
-    n2:
-      position: {x: -28.379631, y: 26.90572, z: 87.66801}
-      direction: {x: -47.45292, y: 29.61678, z: 85.85498}
-      up: {x: 0, y: 1, z: 0}
-      scale: {x: 1, y: 1}
-      roll: 0
-    Changed:
-      m_PersistentCalls:
-        m_Calls: []
-  - n1:
-      position: {x: -28.379631, y: 26.90572, z: 87.66801}
-      direction: {x: -47.45292, y: 29.61678, z: 85.85498}
-      up: {x: 0, y: 1, z: 0}
-      scale: {x: 1, y: 1}
-      roll: 0
-    n2:
-      position: {x: 5, y: 0, z: 0}
-      direction: {x: 5, y: 0, z: 52.144028}
-      up: {x: 0, y: 1, z: 0}
-      scale: {x: 1, y: 1}
-      roll: 0
-    Changed:
-      m_PersistentCalls:
-        m_Calls: []
-  Length: 250.78839
+  Length: 7.5348897
   isLoop: 0
   CurveChanged:
     m_PersistentCalls:
@@ -189,7 +149,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1752959267358373740}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
   m_Name: 

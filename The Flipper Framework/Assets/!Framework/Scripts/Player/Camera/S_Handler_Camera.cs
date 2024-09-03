@@ -16,7 +16,7 @@ public class S_Handler_Camera : MonoBehaviour
 
 	[HideInInspector] public float _initialDistance;
 
-	void Start () {
+	void Awake () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
@@ -36,7 +36,7 @@ public class S_Handler_Camera : MonoBehaviour
 				{
 					//Rotates the camera in direction and prevents controlled rotation.
 					case TriggerType.LockToDirection:
-						SetHedgeCamera(cameraData, col.transform.forward);
+						SetHedgeCamera(cameraData, cameraData.forward);
 						LockCamera(true);
 						changeDistance(cameraData);
 						break;
@@ -57,15 +57,16 @@ public class S_Handler_Camera : MonoBehaviour
 
 					//Allow controlled rotation but manually rotate in direction.
 					case TriggerType.SetFreeAndLookTowards:
-						SetHedgeCamera(cameraData, col.transform.forward);
+						SetHedgeCamera(cameraData, cameraData.forward);
 						changeDistance(cameraData);
 						LockCamera(false);
 						break;
 
+
 					//Make camera face behind player.
 					case TriggerType.Reverse:				
 						_HedgeCam._isReversed = true;
-						SetHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
+						SetHedgeCamera(cameraData, -_MainSkin.forward);
 						changeDistance(cameraData);
 						LockCamera(false);
 						break;
@@ -73,7 +74,7 @@ public class S_Handler_Camera : MonoBehaviour
 						//Make camera face behind player and disable rotation.
 					case TriggerType.ReverseAndLockControl:
 						_HedgeCam._isReversed = true;
-						SetHedgeCamera(cameraData, -GetComponent<S_CharacterTools>().CharacterAnimator.transform.forward);
+						SetHedgeCamera(cameraData, -_MainSkin.forward);
 						changeDistance(cameraData);
 						LockCamera(true) ;
 						break;
@@ -98,20 +99,22 @@ public class S_Handler_Camera : MonoBehaviour
 	}
 
 	//Will either make it so the camera can't be moved in the hedge cam script, or that it can.
-	void LockCamera(bool state) {
+	public  void LockCamera(bool state) {
 		_HedgeCam._isMasterLocked = state;
 		_HedgeCam._isLocked = state;
 		_HedgeCam._canMove = !state;
 	}
 
 	//Calls the hedgecam to rotate towards or change height.
-	void SetHedgeCamera(S_Trigger_Camera cameraData, Vector3 dir) {
-		Quaternion targetRotation = Quaternion.LookRotation(cameraData.transform.forward, cameraData.transform.up);
+	void SetHedgeCamera(S_Trigger_Camera cameraData, Vector3 direction) {
+		Vector3 targetUpDirection = cameraData.willRotateCameraUpToThis 
+			? cameraData.transform.up : Vector3.zero;
+
 
 		if (cameraData.willChangeAltitude)
-			_HedgeCam.SetCameraToDirection(dir, cameraData.duration, cameraData.newAltitude, cameraData.faceSpeed, targetRotation, cameraData.willRotateCameraUpToThis);
+			_HedgeCam.SetCameraWithSeperateHeight(direction, cameraData.duration, cameraData.newAltitude, cameraData.faceSpeed, targetUpDirection);
 		else
-			_HedgeCam.SetCameraNoHeight(dir, cameraData.duration, cameraData.faceSpeed, targetRotation, cameraData.willRotateCameraUpToThis, cameraData.willRotateVertically);
+			_HedgeCam.SetCameraNoSeperateHeight(direction, cameraData.duration, cameraData.faceSpeed, targetUpDirection, cameraData.willRotateVertically);
 	}
 
 	public void EventTriggerExit ( Collider col ) {
@@ -124,6 +127,7 @@ public class S_Handler_Camera : MonoBehaviour
 				if (cameraData.ReleaseOnExit)
 				{
 					_HedgeCam._cameraMaxDistance_ = _initialDistance;
+					_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
 
 					switch (cameraData.Type)
 					{
@@ -149,15 +153,20 @@ public class S_Handler_Camera : MonoBehaviour
 		if (_Input._CamResetPressed)
 		{
 			if(!_HedgeCam._isLocked) {
-				if (_Input.moveVec == Vector2.zero && _PlayerPhys._horizontalSpeedMagnitude < 5f)
+				if (_Input.moveVec == Vector2.zero && _PlayerPhys._PlayerVelocity._horizontalSpeedMagnitude < 5f)
 				{
-					_HedgeCam.SetCameraToDirection(_MainSkin.forward, 0.25f, 0, 12, Quaternion.identity, false);
+					_HedgeCam.SetCameraWithSeperateHeight(_MainSkin.forward, 0.25f, 0, 12, Vector3.zero);
 					_Input._CamResetPressed = false;
 				}
 			}
 		}
 	}
 
+	public void ResetOnDeath () {
+		LockCamera(false);
 
+		_HedgeCam._cameraMaxDistance_ = _initialDistance;
+		_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
 
+	}
 }

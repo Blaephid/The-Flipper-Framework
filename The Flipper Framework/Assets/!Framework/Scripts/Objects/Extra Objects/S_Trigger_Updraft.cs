@@ -14,14 +14,14 @@ public class S_Trigger_Updraft : MonoBehaviour
 
 	public float	_setRange;
 	[HideInInspector]
-	public float        _getRange;
+	public float        _getRangeSquared;
 	[Min(10)]
 	public float	_power = 100;
 
 	public Transform	_Trigger;
 
 
-	private void Start () {
+	private void Awake () {
 		PlaceTrigger();
 	}
 
@@ -33,8 +33,9 @@ public class S_Trigger_Updraft : MonoBehaviour
 #endif
 
 	private void PlaceTrigger () {
-		_getRange = _setRange * transform.parent.localScale.y;
-		_Trigger.position = transform.position + _Direction.up * (_getRange / 2); //Because the collider is centred to the object, move this halfway, then change size to match range in total.
+		_getRangeSquared = _setRange * transform.parent.localScale.y;
+		_Trigger.position = transform.position + _Direction.up * (_getRangeSquared / 2); //Because the collider is centred to the object, move this halfway, then change size to match range in total.
 		_Trigger.localScale = new Vector3(_Trigger.localScale.x, _setRange, _Trigger.localScale.z);
+		_getRangeSquared = Mathf.Pow(_getRangeSquared, 2);
 	}
 }

@@ -49,8 +49,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void OnEnable () {
-		ReadyAction();
+	void Awake () {
 		StartCoroutine(DisableCanHoverEveryFixedUpdate ());
 	}
 
@@ -79,8 +78,11 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction (bool overwrite = false) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		//Visuals
+		_CharacterAnimator.SetInteger("Action", 13);
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_Actions._ActionDefault.SwitchSkin(true);
 		_JumpBall.SetActive(false);
@@ -97,7 +99,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.	
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.	
 
 		_SkinOffset.localEulerAngles = Vector3.zero;
 	}

@@ -17,6 +17,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private S_PlayerInput		_Input;
 	private S_ActionManager                 _Actions;
 	private S_PlayerPhysics                 _PlayerPhys;
+	private S_PlayerVelocity		_PlayerVel;
+	private S_PlayerMovement                _PlayerMove;
 	private S_Control_SoundsPlayer           _Sounds;
 	private S_Control_EffectsPlayer         _Effects;
 
@@ -29,6 +31,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private CapsuleCollider			_StandingCapsule;
 
 	private Transform			_PlayerSkinTransform;
+
+	private Transform                       _MainCamera;
 	#endregion
 
 	//General
@@ -82,11 +86,6 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	// Update is called once per frame
 	void Update () {
 		SetAnimatorAndRotation();
@@ -104,7 +103,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		if (_Input._SpinChargePressed && _PlayerPhys._isGrounded)
 		{
 			//At a slow enough speed and not on too sharp of a slope.
-			if (_PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerPhys._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
+			if (_PlayerPhys._groundNormal.y > _MaximumSlopeForSpinDash_ && _PlayerVel._horizontalSpeedMagnitude < _MaximumSpeedForSpinDash_)
 			{
 				StartAction();
 				return true;
@@ -114,7 +113,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 
 	//Called when the action should be enabled.
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		//Setting private
 		_currentCharge = 20;
 		_counter = 0;
@@ -137,7 +138,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	public void StopAction(bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		//Return to normal skin and collider size
 		_Actions._ActionDefault.OverWriteCollider(_StandingCapsule);
@@ -194,15 +195,15 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	//Changes how the player moves when in this state.
 	private void AffectMovement () {
 
-		_PlayerPhys._moveInput *= 0.65f; //Limits input, lessening turning and deceleration
+		_PlayerMove._moveInput *= 0.65f; //Limits input, lessening turning and deceleration
 		
 		if(_shouldSetRolling_) _PlayerPhys._isRolling = true; // set every frame to counterballanced the rolling subaction
 
 		//Apply a force against the player movement to decrease speed.
 		float stillForce = _spinDashStillForce_ * _speedLossByTime_.Evaluate(_counter);
-		if (_PlayerPhys._horizontalSpeedMagnitude > 20)
+		if (_PlayerVel._horizontalSpeedMagnitude > 20)
 		{
-			_PlayerPhys.AddCoreVelocity(- _PlayerPhys._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerPhys._horizontalSpeedMagnitude));
+			_PlayerVel.AddCoreVelocity(- _PlayerVel._coreVelocity.normalized * Mathf.Min(stillForce, _PlayerVel._horizontalSpeedMagnitude));
 		}
 	}
 
@@ -232,7 +233,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		//Only launches forwards if charged long enough.
 		if (_currentCharge < _minimunCharge_)
 		{
-			_Sounds.Source2.Stop();
+			_Sounds.GeneralSource.Stop();
 			_Actions._ActionDefault.StartAction();
 		}
 		else
@@ -246,14 +247,14 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 			//The angle between movement direction and this new force (typically higher with bigger angles)
 			float dif = Vector3.Dot(addForce.normalized, _PlayerPhys._RB.velocity.normalized);
-			if (_PlayerPhys._currentRunningSpeed > 20)
+			if (_PlayerVel._currentRunningSpeed > 20)
 				newSpeed *= _forceGainByAngle_.Evaluate(dif);
 
 			//And the current speed (typically lower when at higher speed)
-			newSpeed *= _gainBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / _PlayerPhys._currentMaxSpeed);
+			newSpeed *= _gainBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _PlayerMove._currentMaxSpeed);
 			addForce *= newSpeed; //Adds speed to direction to get the force
 
-			_PlayerPhys.AddCoreVelocity(addForce);
+			_PlayerVel.AddCoreVelocity(addForce);
 
 			//Adding velocity is more natural/realistic, but for accuracy in aiming, there is also a rotation towards the new direction.
 			Vector3 newDir = _PlayerPhys._RB.velocity;
@@ -262,7 +263,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			dif *= _turnAmountByAngle_.Evaluate(dif);
 
 			newDir = Vector3.RotateTowards(newDir, _MainSkin.forward, Mathf.Deg2Rad * dif, 0);
-			_PlayerPhys.SetCoreVelocity(newDir * _PlayerPhys._currentRunningSpeed);
+			_PlayerVel.SetCoreVelocity(newDir * _PlayerVel._currentRunningSpeed);
 
 			_CharacterAnimator.SetFloat("GroundSpeed", newSpeed);
 
@@ -275,7 +276,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _currentCharge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(shake, (int)_releaseShakeAmmount_.w));
 
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerPhys._horizontalSpeedMagnitude, newSpeed), 0.25f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, newSpeed), 0.25f)); //The camera will fall back before catching up.
 
 	}
 
@@ -307,18 +308,18 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		void FaceByCamera () {
 			if (_Input._move.sqrMagnitude > 0.1f)
 			{
-				_characterRotation = Quaternion.LookRotation(_Tools.MainCamera.transform.forward - _PlayerPhys._groundNormal * Vector3.Dot(_Tools.MainCamera.transform.forward, _PlayerPhys._groundNormal), transform.up);
+				_characterRotation = Quaternion.LookRotation(_MainCamera.forward - _PlayerPhys._groundNormal * Vector3.Dot(_MainCamera.forward, _PlayerPhys._groundNormal), transform.up);
 			}
 		}
 
 		//Follows movement with a slight lerp towards input (since turning is not instant)
 		void FaceByInput () {
-			Vector3 faceDirection = _PlayerPhys._RB.velocity.sqrMagnitude > 1 ? _PlayerPhys._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
+			Vector3 faceDirection = _PlayerPhys._RB.velocity.sqrMagnitude > 1 ? _PlayerVel._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
 
 			//Rotate slightly to player input
-			if (_PlayerPhys._moveInput.sqrMagnitude > 0.2)
+			if (_PlayerMove._moveInput.sqrMagnitude > 0.2)
 			{
-				Vector3 inputDirection = transform.TransformDirection(_PlayerPhys._moveInput.normalized);
+				Vector3 inputDirection = transform.TransformDirection(_PlayerMove._moveInput.normalized);
 				faceDirection = Vector3.RotateTowards(faceDirection, inputDirection, Mathf.Deg2Rad * 100, 0);
 			}
 
@@ -405,6 +406,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
+		_PlayerMove = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
@@ -414,6 +417,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_BallAnimator = _Tools.BallAnimator;
 		_Sounds = _Tools.SoundControl;
 		_Effects = _Tools.EffectsControl;
+		_MainCamera = Camera.main.transform;
 
 		_PlayerSkinTransform = _Tools.CharacterModelOffset;
 		_LowerCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();

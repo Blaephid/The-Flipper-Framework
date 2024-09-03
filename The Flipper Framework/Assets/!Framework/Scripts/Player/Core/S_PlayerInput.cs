@@ -16,6 +16,7 @@ public class S_PlayerInput : MonoBehaviour
 	#region Unity Specific
 
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerMovement	_PlayerMovement;
 	private S_Handler_Camera      _CamHandler;
 	private S_CharacterTools      _Tools;
 
@@ -29,8 +30,10 @@ public class S_PlayerInput : MonoBehaviour
 	#region trackers
 	[HideInInspector]
 	public Vector3     _move; //The final input acquired and passed onto PlayerPhysics. Can be locked.
+	private Vector3     _lockedMoveInput;
 	[HideInInspector]
-	public Vector3      _inputWithoutCamera; //The input acquired just from the controller, not relevant to character or camera.
+	public Vector3      _inputOnController; //The input acquired just from the controller, not relevant to character or camera.
+	private Vector2     _lockedControllerInput; //Because acceleration takes the magnitude of the input on the controller, when input is locked, set the above to this so there is a magnitude to the locked input.
 	[HideInInspector]
 	public Vector3      _prevInputWithoutCamera; //The input without the camera last frame. This is to check when the used input is changed without changing the controller input (meaning the character and camera did it).
 	[HideInInspector]
@@ -87,10 +90,11 @@ public class S_PlayerInput : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
+	void Awake () {
 		// Set up the reference.
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 		_CamHandler = _Tools.CamHandler;
 		_MainSkin = _Tools.MainSkin;
 
@@ -111,9 +115,24 @@ public class S_PlayerInput : MonoBehaviour
 
 	private void FixedUpdate () {
 		AcquireMoveInput();
+
+#if UNITY_EDITOR
+		if (UnityEngine.Input.GetKeyDown(KeyCode.LeftControl))
+		{
+			if (_isInputLocked)
+				UnLockInput();
+			else
+				LockInputForAWhile(1000, false, _move);
+		}
+#endif
+
 		if (!_isInputLocked)
 		{
-			_PlayerPhys._moveInput = _move;
+			_PlayerMovement._moveInput = _move;
+		}
+		else
+		{
+			_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
 		}
 	}
 
@@ -127,21 +146,21 @@ public class S_PlayerInput : MonoBehaviour
 	//Figures out the desired movement direction from input, camera and player transform.
 	private void AcquireMoveInput () {
 
-		//Lock Input Funcion
-		if (_isInputLocked)
-		{
-			HandleLockedInput();
-		}
-
 		//Calculate move direction
 		if (_Camera != null)
 		{
 			//Make movement relative to camera and character
-			_inputWithoutCamera = new Vector3(moveX, 0, moveY);
-			_camMoveInput = GetInputByLocalTransform(_inputWithoutCamera);
+			_inputOnController = new Vector3(moveX, 0, moveY);
+			_camMoveInput = GetInputByLocalTransform(_inputOnController);
 			_move = _camMoveInput;
 			_constantInputRelevantToCharacter = transform.TransformDirection(_camMoveInput);
-			//_constantInputRelevantToCharacter = Vector3.ProjectOnPlane(_camMoveInput, transform.up);
+		}
+
+		//Lock Input Funcion
+		if (_isInputLocked)
+		{
+			_inputOnController = _lockedControllerInput;
+			HandleLockedInput();
 		}
 
 	}
@@ -196,14 +215,17 @@ public class S_PlayerInput : MonoBehaviour
 		{
 			//If enum is not set in the call, move becomes the input given.
 			case S_Enums.LockControlDirection.Change:
-				_move = newInput; break;
+				_lockedControllerInput = Vector2.one;
+				_lockedMoveInput = newInput; break;
 			case S_Enums.LockControlDirection.NoInput:
-				_move = Vector3.zero; break;
+				_lockedControllerInput = Vector2.zero;
+				_lockedMoveInput = Vector3.zero; break;
 			case S_Enums.LockControlDirection.CharacterForwards:
-				_move = transform.InverseTransformDirection(_MainSkin.forward); break;
+				_lockedControllerInput = Vector2.one;
+				_lockedMoveInput = _MainSkin.forward; break;
 		}
 
-		_PlayerPhys._moveInput = _move;
+		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.
 		_lockedTime = Mathf.Max(frames, _lockedTime - _lockedCounter);
@@ -225,17 +247,19 @@ public class S_PlayerInput : MonoBehaviour
 		bool isCamera = false;
 		if (Vector3.Angle(_inputCheckedLastFrame, inputDirection) > threshold)                      //If move input is noticeably different to how it was last frame.
 		{
-			if (_prevInputWithoutCamera == _inputWithoutCamera) //But if controlled input has not changed, this means the input is only changed because of the camera.
+			if (_prevInputWithoutCamera == _inputOnController) //But if controlled input has not changed, this means the input is only changed because of the camera.
 			{
 				isCamera = true;
 			}
 		}
-		_prevInputWithoutCamera = _inputWithoutCamera;
+		_prevInputWithoutCamera = _inputOnController;
 		_inputCheckedLastFrame = inputDirection;
 		return isCamera;
 	}
 
 	#endregion
+
+
 	#region inputSystem
 	public void MoveInput ( InputAction.CallbackContext ctx ) {
 		moveVec = ctx.ReadValue<Vector2>();

@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class S_Spawners : MonoBehaviour
 {
-	private Transform         _Player;
-
 	public StructSpawnerData _SpawnerData;
 
 	[Serializable]
@@ -37,26 +35,33 @@ public class S_Spawners : MonoBehaviour
 	[HideInInspector]
 	public float _counter = 1;
 
+	private bool isSet = false;
 
-	void Start () {
-		_Player = GameObject.FindWithTag("Player").transform;
-		_counter = _SpawnerData._respawnDelay;
+	void Awake () {
+		if (!isSet)
+		{
+			_counter = Mathf.Max(_SpawnerData._respawnDelay, 0.01f);
+			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+			isSet = true;
+		}
 	}
 
-	//These attach the return methods, so they perform when onReset is invoked in the Level Progress script
-	private void OnEnable () {
-		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
-	}
-	private void OnDisable () {
-		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
-	}
+	////These attach the return methods, so they perform when onReset is invoked in the Level Progress script
+	//private void OnEnable () {
+	//	S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+	//}
+	//private void OnDisable () {
+	//	S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+	//}
 	//
 
 	//Checks player distance and if not spawned already, then will do so if player is close enough
 	private void LateUpdate () {
+		if(S_SpawnCharacter._SpawnedPlayer == null ) { return; }
+
 		if (_ObjectClone == null && _SpawnerData._willAutoSpawn)
 		{
-			if (Vector3.Distance(_Player.position, transform.position) < _SpawnerData._distanceFromPlayerToSpawn)
+			if (S_CoreMethods.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.position, transform.position) < Mathf.Pow(_SpawnerData._distanceFromPlayerToSpawn, 2))
 			{
 				//Will only spawn if enough time has passed.
 				if (_SpawnerData._willRespawnWhenDestroyed) { _counter += Time.deltaTime; }
@@ -69,6 +74,7 @@ public class S_Spawners : MonoBehaviour
 				}
 			}
 		}
+	
 	}
 
 	//Is virtual because scripts that inhereit this will override it.
@@ -84,6 +90,6 @@ public class S_Spawners : MonoBehaviour
 			Destroy(_ObjectClone);
 			_ObjectClone = null;
 		}
-		_counter = _SpawnerData._respawnDelay + 1; //Ensures respawn will be immediate, even if already destroyed
+		_counter = Mathf.Max(_SpawnerData._respawnDelay, 0.01f); //Ensures respawn will be immediate, even if already destroyed
 	}
 }

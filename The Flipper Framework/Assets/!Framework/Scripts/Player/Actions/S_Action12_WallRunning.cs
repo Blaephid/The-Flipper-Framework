@@ -17,6 +17,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	[HideInInspector]	public  S_CharacterTools                _Tools;
 	[HideInInspector]	public  S_PlayerPhysics                 _PlayerPhys;
+	[HideInInspector]   public  S_PlayerVelocity                _PlayerVel;
 	[HideInInspector]	public  S_PlayerInput                   _Input;
 	[HideInInspector]	public  S_ActionManager                 _Actions;
 	[HideInInspector]	public  S_Control_SoundsPlayer          _Sounds;
@@ -98,10 +99,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	}
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
 
 	// Update is called once per frame
 	void Update () {
@@ -143,7 +140,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	//Due to requiring additional data for the wall, this is called in the SetUp methods, unlike AttemptAction.
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
 		_isWall = true;
 		_counter = 0;
 
@@ -162,8 +161,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 		
 		//Physics
-		_originalVelocity = _PlayerPhys._totalVelocity;
-		_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
+		_originalVelocity = _PlayerVel._totalVelocity;
+		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 
 		_PlayerPhys.SetIsGrounded(true); //This is to reset actions like JumpDash and Homing as if grounded
 		_PlayerPhys.SetIsGrounded(false); //Will now be treated as not grounded until the action is over.
@@ -179,7 +178,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		//Wall fields
 		_WallHandler._BannedWall = _CurrentWall;
@@ -190,12 +189,20 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_CamHandler._HedgeCam._shouldSetHeightWhenMoving_ = false;
 
 		//Control
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
+		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		if(_PlayerPhys._listOfCanControl.Count > 0)
+			_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
 		//Return camera to normal position
 		_CamHandler._HedgeCam.DisableSecondaryCameraTarget();
+
+		//In case action change was intentional (not from losing grip on a wall) make sure player moves away from wall.
+		if(_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Default)
+		{
+			_Input.LockInputForAWhile(4, false, _wallHit.normal, S_Enums.LockControlDirection.Change);
+		}
 	}
 	#endregion
 
@@ -213,19 +220,16 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	private void RunningInteraction () {
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
+		_raycastOrigin = transform.position + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
+
 		//Get information of wall
 		int wallDirection = _isWallOnRight ? 1: -1;
 		Vector3 raycastOrigin = transform.position + _MainSkin.forward * 0.3f;
 		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.right * wallDirection, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
 		
-		//After time wallCheck enters its proper range, because at first needs to ensure reaches the wall.
-		//if (_counter > 0.3f)
-		//{
-		//	_checkDistance = _wallCheckDistance_.y;
-		//}
 
 		//Animator
-		_PlayerPhys._currentRunningSpeed = _runningSpeed;
+		_PlayerVel._currentRunningSpeed = _runningSpeed;
 		_Actions._ActionDefault.HandleAnimator(12);
 		_CharacterAnimator.SetBool("WallRight", _isWallOnRight);
 
@@ -246,8 +250,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _wallForward, Vector2.zero, GetUpDirectionOfWall(_wallHit.normal));
 
 		//For actions to exit the wall
-		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.7f);
+		_Actions._jumpAngle = Vector3.Lerp(_wallHit.normal, Vector3.up, 0.5f);
 		_Actions._dashAngle = Vector3.Lerp(_wallHit.normal, _wallForward, 0.6f);
+		_Actions._dashAngle = Vector3.Lerp(_Actions._dashAngle, Vector3.up, 0.2f);
 	}
 
 	private void RunningPhysics () {
@@ -257,7 +262,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		{
 			Vector3 wallNormal = _wallHit.normal;
 
-			_currentClimbingSpeed = Mathf.Lerp(_currentClimbingSpeed, -50, 0.02f);
+			float differenceBetweenCurrentAndGoalScrapSpeed = Mathf.Abs(_currentClimbingSpeed - -40);
+			float increaseScrapeSpeedBy = Mathf.Clamp(differenceBetweenCurrentAndGoalScrapSpeed * 0.02f * _scrapeModi_, 0.02f, 0.5f);
+			_currentClimbingSpeed = Mathf.MoveTowards(_currentClimbingSpeed, -40, increaseScrapeSpeedBy);
 
 			newVec.y = 0;
 			newVec += GetUpDirectionOfWall(wallNormal) * _currentClimbingSpeed;
@@ -275,7 +282,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			newVec = new Vector3(newVec.x, _currentClimbingSpeed, newVec.z);
 		}
 
-		_PlayerPhys.SetCoreVelocity(newVec);
+		_PlayerVel.SetCoreVelocity(newVec);
 	}
 	#endregion
 
@@ -288,18 +295,16 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	public void SetupRunning ( RaycastHit wallHit, bool wallRight ) {
 
-		Debug.Log("Start Running");
-
 		Vector3 wallDirection = wallHit.point - transform.position;
 
 		//Wall values
 		_wallHit = wallHit;
 		_isWallOnRight = wallRight;
 
-		_runningSpeed = _PlayerPhys._horizontalSpeedMagnitude;
-		_currentClimbingSpeed = _PlayerPhys._totalVelocity.y * 0.4f;
+		_runningSpeed = _PlayerVel._horizontalSpeedMagnitude;
+		_currentClimbingSpeed = _PlayerVel._worldVelocity.y * 0.4f;
 
-		_checkDistance = Vector3.Distance(wallHit.point, transform.position) + 2; //Ensures first checks for x seconds will find the wall.
+		_checkDistance = wallHit.distance + 2; //Ensures first checks for x seconds will find the wall.
 		_checkDistance = Mathf.Max(_checkDistance, _wallCheckDistance_.y * 1.5f);
 
 		//Visual
@@ -316,7 +321,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	public void CheckCanceling () {
 
-		_isHoldingWall = _WallHandler.IsInputtingToWall(_wallHit.point - _raycastOrigin);
+		Vector3 wallDirection = _wallHit.point - _raycastOrigin;
+		_isHoldingWall = _WallHandler.IsInputtingToWall(wallDirection);
 		bool isOnGround = IsOnGround();
 
 		//Cancel action by letting go of skid after .5 seconds
@@ -342,7 +348,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	//Because canChangeGrounded is set to false on start, use own method when checking for ground, with own values to ensure doesn't count the current wall being climbed as ground.
 	public bool IsOnGround () {
-		if(_PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
+		if(_PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
 			Vector3 rayCastStartPosition = transform.position + _wallHit.normal * 0.5f;
 			float range = (_CoreCollider.height / 2) + (_CoreCollider.radius / 2) + 0.5f;
@@ -389,6 +395,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	//Responsible for assigning objects and components from the tools script.
 	public void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();

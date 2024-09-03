@@ -7,7 +7,7 @@ public interface IAction
 {
 	bool AttemptAction ();
 
-	void StartAction ();
+	void StartAction (bool overwrite = false);
 }
 
 public interface IMainAction : IAction

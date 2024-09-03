@@ -101,7 +101,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_Actions._dashAngle = _wallHit.normal;
 
 		//To control camera distance and FOV
-		_PlayerPhys._currentRunningSpeed = Mathf.Max(Mathf.Abs(_goalClimbingSpeed), 60);
+		_PlayerVel._currentRunningSpeed = Mathf.Max(Mathf.Abs(_goalClimbingSpeed), 60);
 
 		//If the wall stops being very steep
 		if (!_WallHandler.IsWallVerticalEnough(_wallHit.normal, 0.6f) && _goalClimbingSpeed > 5)
@@ -125,7 +125,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 			//Drops and send the player back a bit.
 			Vector3 newVec = new Vector3(0f, _goalClimbingSpeed, 0f);
 			newVec += (-_MainSkin.forward * 10f);
-			_PlayerPhys.SetCoreVelocity(newVec);
+			_PlayerVel.SetCoreVelocity(newVec);
 
 			_Actions._ActionDefault.StartAction();
 		}
@@ -134,7 +134,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		{
 			Vector3 newVec = GetUpDirectionOfWall(_wallHit.normal) * _currentClimbingSpeed;
 			newVec += (_MainSkin.forward * 20f);
-			_PlayerPhys.SetCoreVelocity(newVec);
+			_PlayerVel.SetCoreVelocity(newVec);
 		}
 	}
 
@@ -146,7 +146,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_Actions._ActionDefault.StartAction();
 
 		newVelocity += inwards * _PlayerPhys.GetRelevantVector(_originalVelocity).x;
-		_PlayerPhys.SetCoreVelocity(newVelocity);
+		_PlayerVel.SetCoreVelocity(newVelocity);
 	}
 
 	//Called when wall being climbed is flattening out, to transition to running along the wall as actual floor.
@@ -164,7 +164,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 		StartCoroutine(_CamHandler._HedgeCam.KeepGoingToHeightForFrames(30, 20, 170));
 
-		_PlayerPhys.SetCoreVelocity(newVec);
+		_PlayerVel.SetCoreVelocity(newVec);
 		_Actions._ActionDefault.StartAction();
 	}
 
@@ -193,7 +193,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_wallHit = wallHit;
 
 		//Set speed to start movement on.
-		_currentClimbingSpeed = _PlayerPhys._totalVelocity.y;
+		_currentClimbingSpeed = _PlayerVel._worldVelocity.y;
 		if (_currentClimbingSpeed < 0)
 		{
 			_currentClimbingSpeed = Mathf.Lerp(_currentClimbingSpeed, 0, 0.5f);
@@ -201,14 +201,13 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_currentClimbingSpeed = Mathf.Clamp(_currentClimbingSpeed, -20, 90);
 
 		//Set the climbing speed based on player's speed, but won't reach it until lerped.
-		_goalClimbingSpeed = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * 0.8f, _currentClimbingSpeed);
-		_goalClimbingSpeed *= _climbModi_;
+		_goalClimbingSpeed = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude * _climbModi_, _currentClimbingSpeed);
 
-		//Sets min and max climbing speed
-		_goalClimbingSpeed = 8f * (int)(_goalClimbingSpeed / 8);
-		_goalClimbingSpeed = Mathf.Clamp(_goalClimbingSpeed, 48, 176);
+		//Sets min and max climbing speed while ensuring climbing is in increments of x
+		_goalClimbingSpeed = 10f * (int)(_goalClimbingSpeed / 10);
+		_goalClimbingSpeed = Mathf.Clamp(_goalClimbingSpeed, 50, 160);
 
-		_checkDistance = Vector3.Distance(wallHit.point, transform.position) + 1; //Ensures first checks for x seconds will find the wall.
+		_checkDistance = wallHit.distance + 1; //Ensures first checks for x seconds will find the wall.
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(wallHit.normal));
 

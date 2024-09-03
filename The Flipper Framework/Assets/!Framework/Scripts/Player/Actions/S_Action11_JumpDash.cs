@@ -14,6 +14,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
+	private S_PlayerMovement      _PlayerMovement;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer _HomingTrailScript;
@@ -73,16 +75,10 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	// Update is called once per frame
 	void Update () {
 		//Set Animator Parameters and rotation
-		_Actions._ActionDefault.HandleAnimator(11);
+		_Actions._ActionDefault.HandleAnimator(11);	
 		_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
 	}
 
@@ -96,7 +92,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 		bool willChangeAction = false;
 
-		switch (_Actions._whatAction)
+		switch (_Actions._whatCurrentAction)
 		{
 			//Regular requires a seperate check in addition to other actions.
 			case S_Enums.PrimaryPlayerStates.Default:
@@ -142,7 +138,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		}
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Effects
 		_Sounds.AirDashSound();
@@ -170,7 +167,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_timer = 0;
 
 		//Create vector to move in
-		_dashSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
+		_dashSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
 
 		//Rotate right or left on a large scale based on input
 		MakeFullTurn();
@@ -186,8 +183,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		Vector3 newVec = _dashDirection * _dashSpeed; //Dash forwards
 		newVec += _MainSkin.up * _upwardsSpeed; //If has upwards force, add that as well.
-		_PlayerPhys.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
-		_PlayerPhys.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
+		_PlayerVel.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
+		_PlayerVel.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
 		this.enabled = true;
@@ -196,14 +193,15 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		//Inputs
 		_Input._SpecialPressed = false;
 
 		//Physics
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		if(_PlayerPhys._listOfIsGravityOn.Count > 0 )
+			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 	}
 
 	#endregion
@@ -229,17 +227,17 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		else if (_timer > 0.03f)
 		{
 			//Input based on if stick is pushed more vertically or horizontally
-			float inputMag = Mathf.Max(Mathf.Abs(_PlayerPhys._moveInput.x), Mathf.Abs(_PlayerPhys._moveInput.z));
+			float inputMag = Mathf.Max(Mathf.Abs(_PlayerMovement._moveInput.x), Mathf.Abs(_PlayerMovement._moveInput.z));
 
 			//Get direction to rotate towards. To avoid rotating down and under, then if over ninety then go right or left.
-			Vector3 _input = transform.TransformDirection(_PlayerPhys._moveInput);
+			Vector3 _input = transform.TransformDirection(_PlayerMovement._moveInput);
 			if (Vector3.Angle(_input, _dashDirection) > 80)
 			{
-				_input = Vector3.Angle(_PlayerPhys._moveInput, _MainSkin.right) < 90 ? _MainSkin.right : -_MainSkin.right;
+				_input = Vector3.Angle(_PlayerMovement._moveInput, _MainSkin.right) < 90 ? _MainSkin.right : -_MainSkin.right;
 			}
 
 			//Rotate from current direction to new one, based on input and stats
-			_dashDirection = Vector3.RotateTowards(_dashDirection, _input, inputMag * _turnSpeed_ * Time.deltaTime, 0f);
+			_dashDirection = Vector3.RotateTowards(_dashDirection, _input, inputMag * _turnSpeed_ * Time.deltaTime * Mathf.Deg2Rad, 0f);
 		}
 		//Since gravity is not being applied, use this to slowly aim more downwards.
 		_upwardsSpeed = Mathf.MoveTowards(_upwardsSpeed, _maxDownwardsSpeed_, _faceDownwardsSpeed_);
@@ -247,28 +245,29 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		//Build and set velocity.
 		Vector3 newVec = _dashDirection.normalized * _dashSpeed;
 		newVec += _MainSkin.up * _upwardsSpeed;
-		_PlayerPhys.SetCoreVelocity(newVec);
+		_PlayerVel.SetCoreVelocity(newVec);
 	}
 
 	private void CheckTimer () {
 		//End dash if at max time, min time but let go of button, or grounded.
 		if (_timer > _maxDuration_)
 		{
-			EndDashManually();
+			EndDashManually(_lockMoveInputOnEnd_);
 		}
 		else if (_timer > _minDuration_ && !_Input._SpecialPressed)
 		{
-			EndDashManually();
+			EndDashManually(_lockMoveInputOnEnd_);
 		}
 		else if (_PlayerPhys._isGrounded)
 		{
-			EndDashManually();
+			EndDashManually(2);
 		}
 	}
 
 	//Called when the dash has finished (seperate from stop action because this won't be called on interuptions like hitting a rail)
-	private void EndDashManually () {
-		_Input.LockInputForAWhile(_lockMoveInputOnEnd_, false, _MainSkin.forward);
+	private void EndDashManually (int lockFrames) {
+		_Input.UnLockInput(); //To ensure this overwrites previous locks.
+		_Input.LockInputForAWhile(lockFrames, false, _MainSkin.forward);
 
 		StartCoroutine(ChangeSpeedSmoothly(_speedAfterDash_));
 
@@ -284,10 +283,10 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		{
 			yield return new WaitForFixedUpdate();
 
-			if (_PlayerPhys._horizontalSpeedMagnitude > newSpeed) { break; } //If something has changed (like hitting a wall), then ignore this.
+			if (_PlayerVel._horizontalSpeedMagnitude > newSpeed || _PlayerPhys._isGrounded) { break; } //If something has changed (like hitting a wall), then ignore this.
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(_PlayerPhys._coreVelocity.normalized * increments); //Depending on increments, will either increase speed or decrease it as it goes.
+				_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * increments); //Depending on increments, will either increase speed or decrease it as it goes.
 			}
 		}
 	}
@@ -304,7 +303,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_upwardsSpeed = _verticalAngle_;
 
 		//Aiming Horizontally
-		_input = transform.TransformDirection(_PlayerPhys._moveInput);
+		_input = transform.TransformDirection(_PlayerMovement._moveInput);
 		_dashDirection = Vector3.RotateTowards(_dashDirection, _PlayerPhys.AlignWithNormal(_input, _MainSkin.up, 1), _horizontalAngle_ * Mathf.Deg2Rad, 0); //This will cause the player to dash in input direction (relevant to current character up), with a determined max angle
 
 		_MainSkin.forward = _dashDirection;
@@ -354,6 +353,8 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Sounds = _Tools.SoundControl;

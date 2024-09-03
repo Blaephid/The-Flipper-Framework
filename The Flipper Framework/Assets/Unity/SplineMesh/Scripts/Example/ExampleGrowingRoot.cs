@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
+
 namespace SplineMesh {
     /// <summary>
     /// Example of component to show the deformation of the mesh on a changing
@@ -100,3 +102,5 @@ namespace SplineMesh {
         }
     }
 }
+
+#endif

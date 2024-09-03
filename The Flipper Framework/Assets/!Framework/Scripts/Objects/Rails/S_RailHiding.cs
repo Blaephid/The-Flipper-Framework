@@ -3,50 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using SplineMesh;
 
-public class S_RailHiding : MonoBehaviour {
+public class S_RailHiding : MonoBehaviour
+{
 
-    public float Distance = 2000;
-    S_SplineMeshTiling[] Rail;
-    Transform Player;
-    float Distancetrckr;
-    bool active = true;
+	public float Distance = 2000;
+	S_SplineMeshTiling[] Rail;
+	Transform Player;
+	float _distanceTracker;
+	bool active = true;
 
 
-    // Use this for initialization
-    void Start () {
-        Distance *= Distance;
-        //Player = GameObject.FindWithTag("Player").transform;
-        Rail = GetComponentsInChildren<S_SplineMeshTiling>();
-    }
-	
+	// Use this for initialization
+	void Start () {
+		Distance *= Distance;
+		//Player = GameObject.FindWithTag("Player").transform;
+		Rail = GetComponentsInChildren<S_SplineMeshTiling>();
+
+		Toggle(false);
+	}
+
 	// Update is called once per frame
 	void Update () {
-        Distancetrckr = (S_PlayerPhysics.s_MasterPlayer._playerPos - transform.position).sqrMagnitude;
+		if(S_SpawnCharacter._SpawnedPlayer == null) { return; }
 
-        if (!active && Distancetrckr < Distance)
-        {
-            active = true;
-            Toogle(true);
-        }
-        if (active && (Distancetrckr > Distance + 3))
-        {
-            active = false;
-            Toogle(false);
-        }
+		_distanceTracker = (S_SpawnCharacter._SpawnedPlayer.position - transform.position).sqrMagnitude;
 
-
-    }
-
-    private void Toogle(bool activate)
-    {
-        active = activate;
-        for(int s = 0; s < Rail.Length; s++)
-            {
-                Rail[s].gameObject.SetActive(activate);
-            }
-    }
+		if (!active && _distanceTracker < Distance)
+		{
+			active = true;
+			Toggle(true);
+		}
+		if (active && (_distanceTracker > Distance + 3))
+		{
+			active = false;
+			Toggle(false);
+		}
 
 
- 
+	}
+
+	private void Toggle ( bool activate ) {
+		active = activate;
+		for (int s = 0 ; s < Rail.Length ; s++)
+		{
+			Rail[s].gameObject.SetActive(activate);
+		}
+	}
+
+
+
 
 }

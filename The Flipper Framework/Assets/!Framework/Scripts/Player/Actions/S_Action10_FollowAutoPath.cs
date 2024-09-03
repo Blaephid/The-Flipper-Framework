@@ -16,6 +16,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
+	private S_PlayerMovement	_PlayerMovement;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Control_SoundsPlayer _Sounds;
@@ -59,7 +61,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private bool        _isGoingBackwards;
 	private int         _moveDirection;
 	private bool        _canReverse;
+	private bool        _canSlow;
 
+	private int         _willLockFor;
 
 	#endregion
 	#endregion
@@ -74,11 +78,6 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	// Start is called before the first frame update
 	void Start () {
 
-	}
-
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
 	}
 
 	// Update is called once per frame
@@ -100,9 +99,16 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
+
+		//Physics
 		_PlayerPhys._arePhysicsOn = false;
+		_PlayerPhys._canStickToGround = true;
+		_PlayerPhys._rayToGroundDistance_ *= 2;
+
 		_Pathers._canExitAutoPath = true; //Will no longer cancel action when hitting a trigger.
+		_Actions._listOfSpeedOnPaths.Add(_playerSpeed);
 
 		if (_CharacterAnimator.GetInteger("Action") != 0)
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
@@ -115,15 +121,17 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		_PlayerPhys._arePhysicsOn = true;
-		_Input.LockInputForAWhile(15, true, Vector3.zero, S_Enums.LockControlDirection.CharacterForwards);
+		_PlayerPhys._rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;
 
 		_Pathers._canExitAutoPath = false; //Will no longer cancel action when hitting a trigger.
 
-		_PlayerPhys._currentMinSpeed = 0;
-		_PlayerPhys._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
+		_Actions._listOfSpeedOnPaths.RemoveAt(0);
+
+		_PlayerMovement._currentMinSpeed = 0;
+		_PlayerMovement._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
 	}
 
 	#endregion
@@ -189,16 +197,16 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private void SetRunningInDirectionOfSpline () {
 
 		//Ensure starts going down the same direction every time.
-		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._totalVelocity);
+		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity);
 		Vector3 verticalVelocity = transform.up * relevantVelocity.y; //Seperates this so player can fall to the ground while still following the path.
 
-		_PlayerPhys.SetBothVelocities((_sampleForwards * _playerSpeed) + verticalVelocity, Vector2.right, "Overwrite");
-		_PlayerPhys.SetTotalVelocity(); //Because arePhysicsEnabled was just disabled, enable here to ensure it goes through before overwritten by this script next update.
+		_PlayerVel.SetBothVelocities((_sampleForwards * _playerSpeed) + verticalVelocity, Vector2.right, "Overwrite");
+		//Set total velocity in PlayerVelocity fixedUpdate is still called after every other script.
 	}
 
 	//Takes manual control of PlayerPhysics methods to move believably despite taking control of the input directions to ensure stays on the spline.
 	private void SetVelocityAlongSpline () {
-		_physicsCoreVelocity = _PlayerPhys._coreVelocity;
+		_physicsCoreVelocity = _PlayerVel._coreVelocity;
 
 		//If inputting enough in direction of spline, go forwards
 		Vector3 input = _Input._constantInputRelevantToCharacter;
@@ -206,10 +214,10 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		float direction = 0;
 		float decelerationValue = 1;            //direction must be above 0 so turning still happens, so to apply deceleration, use a seperate modifer.
-		if (input.sqrMagnitude > 0)
+		if (input.sqrMagnitude > 0 || !_canSlow)
 		{
 			//If brought to a stop and inputting away from the spline, then turn around.
-			if (_canReverse && dot < -0.5 && _PlayerPhys._currentRunningSpeed < 7)
+			if (_canReverse && dot < -0.5 && _PlayerVel._currentRunningSpeed < 7)
 			{
 				_sampleForwards = -_sampleForwards;
 				_physicsCoreVelocity = _sampleForwards * 1;
@@ -218,6 +226,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			}
 			else  
 			{
+				_Input._inputOnController = Vector2.one;
 				direction = dot > -0.7 || !_canReverse ? 1 : 0.2f;
 			}
 		}
@@ -228,31 +237,33 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		}
 	
 		//Ensure player is either inputting alon or against the path, translated to current rotation.
-		_PlayerPhys._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction); 
+		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction);
+		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_Enums.LockControlDirection.Change);
 
 		//Call methods after input is changed, acting as if mvoing normally just in the desired direction
 		if (_PlayerPhys._isGrounded)
 		{
 			_PlayerPhys._timeOnGround += Time.deltaTime;
 
-			_physicsCoreVelocity = _PlayerPhys.HandleControlledVelocity(_physicsCoreVelocity,new Vector2 (3, 1), decelerationValue);
+			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity,new Vector2 (3, 1), decelerationValue);
 			_physicsCoreVelocity = _PlayerPhys.HandleSlopePhysics(_physicsCoreVelocity, false);
 			_physicsCoreVelocity = _PlayerPhys.StickToGround(_physicsCoreVelocity);
 		}
 		else
 		{
-			_physicsCoreVelocity = _PlayerPhys.HandleAirMovement(_physicsCoreVelocity);
+			//Doesnt call handle air velocity because it creates its own modifiers to turn speed.
+			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity, new Vector2(3, 0.8f));
+			_physicsCoreVelocity = _PlayerPhys.CheckGravity(_physicsCoreVelocity);
 		}
 	}
 
 	private void ApplyVelocity () {
-		Debug.DrawRay(transform.position, _PlayerPhys._moveInput, Color.green, 100f);
-		Debug.DrawRay(transform.position - transform.up * 0.5f, _physicsCoreVelocity * Time.fixedDeltaTime, Color.yellow, 100f);
 
-		_PlayerPhys.SetBothVelocities(_physicsCoreVelocity, Vector2.right, "Overwrite");
-		_PlayerPhys.SetTotalVelocity();
+		_PlayerVel.SetBothVelocities(_physicsCoreVelocity, Vector2.right);
+		//_PlayerVel.SetTotalVelocity();
+		//Set total velocity in PlayerVelocity fixedUpdate is still called after every other script.
 
-		_playerSpeed = _PlayerPhys._currentRunningSpeed;
+		_playerSpeed = _PlayerVel._currentRunningSpeed;
 	}
 
 	//Apply an additional velocity this frame to slowly move to the path itself, rather than be at an offset.
@@ -266,18 +277,12 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			direction = _PlayerPhys.GetRelevantVector(direction, false);
 			direction = transform.TransformDirection(direction);
 
-			_PlayerPhys.AddGeneralVelocity(direction.normalized * 3, false);
+			_PlayerVel.AddGeneralVelocity(direction.normalized * 4, false, false);
 		}
 	}
 
 	private void ExitPath () {
-
-		//Deactivates any cinemachine that might be attached.
-		if (_Pathers._currentExternalCamera != null)
-		{
-			_Pathers._currentExternalCamera.DeactivateCam(18);
-			_Pathers._currentExternalCamera = null;
-		}
+		_Input.LockInputForAWhile(_willLockFor, false, _sampleForwards, S_Enums.LockControlDirection.Change);
 
 		_Actions._ActionDefault.StartAction();
 	}
@@ -301,15 +306,17 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		//Speed and direction to move this action
 		_pathMinSpeed = Path._speedLimits.x;
-		_PlayerPhys._currentMinSpeed = _pathMinSpeed;
+		_PlayerMovement._currentMinSpeed = _pathMinSpeed;
 		_pathMaxSpeed = Path._speedLimits.y;
-		_PlayerPhys._currentMaxSpeed = _pathMaxSpeed;
-		_playerSpeed = Mathf.Max(_PlayerPhys._currentRunningSpeed, startSpeed);
+		_PlayerMovement._currentMaxSpeed = _pathMaxSpeed;
+		_playerSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed, startSpeed);
 		_playerSpeed = Mathf.Clamp(_playerSpeed, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
 
 		_isGoingBackwards = isGoingBack;
 		_moveDirection = _isGoingBackwards ? -1 : 1;
 		_canReverse = Path._canPlayerReverse;
+		_canSlow = Path._canPlayerSlow;
+		_willLockFor = Path._lockPlayerFor;
 
 		GetSampleOfSpline();
 		if (willLockToStart) { PlaceOnSpline(); }
@@ -349,6 +356,8 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Pathers = _Tools.PathInteraction;
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
+		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;

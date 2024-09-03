@@ -10,6 +10,9 @@ public class S_Trigger_Camera : MonoBehaviour
 {
 	[Header("Functionality")]
 	public TriggerType Type;
+	public Transform    Direction;
+	[HideInInspector]
+	public Vector3     forward;
 
 	[Header("Turning")]
 	[Tooltip("How quickly the camera will rotate to face the trigger direction.")]
@@ -29,7 +32,18 @@ public class S_Trigger_Camera : MonoBehaviour
 	public bool willChangeDistance = false;
 	[Tooltip("The new distance the camera will be from the character, will still be changed based on running speed and collisions.")]
 	public float newDistance;
+	[Tooltip("If true, the distance given will still be affected by distance changes based on player speed, handled already in HedgeCamera")]
+	public bool affectNewDistanceBySpeed;
 	[Tooltip("If true, all of the above effects will be undone when the player leaves the trigger (but the rotation will not).")]
 	public bool ReleaseOnExit = false;
 
+
+	private void Awake () {
+		if (Direction == null)
+		{
+			Direction = transform;
+		}
+
+		forward = Direction.forward;
+	}
 }

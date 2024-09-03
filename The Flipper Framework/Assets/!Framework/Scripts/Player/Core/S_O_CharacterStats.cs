@@ -233,7 +233,7 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(4f, 1.2f),
 				new Keyframe(10f, 1.3f),
 			}),
-			landingConversionFactor = 2,
+			landingConversionFactor = 0.4f,
 		};
 	}
 
@@ -277,6 +277,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucStickToGround SetStrucGreedyStick () {
 		return new StrucStickToGround
 		{
+			forceTowardsGround = 2,
 			stickingLerps = new Vector2(0.98f, 1.02f),
 			stickingNormalLimit = 0.519f,
 			stickCastAhead = 1.7f,
@@ -294,6 +295,7 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucStickToGround
 	{
+		public float        forceTowardsGround;
 		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (loops), and Y is positive Slopes (imagine running on the outside of a loop). ")]
 		public Vector2      stickingLerps;
 		[Range(0, 1)]
@@ -319,10 +321,10 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucFindGround
 		{
 			GroundMask = new LayerMask(),
-			rayToGroundDistance = 1.4f,
+			rayToGroundDistance = new Vector2(1.4f, 0.8f),
 			raytoGroundSpeedRatio = 0.01f,
 			raytoGroundSpeedMax = 2.6f,
-			groundDifferenceLimit = 0.3f,
+			groundAngleDifferenceLimit = new Vector3 (30, 80, 50),
 		};
 	}
 
@@ -331,11 +333,10 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("Core: The layer an object must be set to, to be considered ground the player can run on.")]
 		public LayerMask    GroundMask;
-		[Range(0, 1)]
-		[Tooltip("Core: The maximum difference between the current rotation and floor when checking if grounded. If the floor is too different to this then won't be grounded. 1 = 180 degrees")]
-		public float        groundDifferenceLimit;
-		[Tooltip("Core: The max range downwards of the ground checker.")]
-		public float        rayToGroundDistance;
+		[Tooltip("Core: The maximum difference between the current upwards direction and floor when checking if grounded. Difference above this means not being grounded. x = base, y = when in the air, z = when grounded but enw ground is uphill.")]
+		public Vector3        groundAngleDifferenceLimit;
+		[Tooltip("Core: The max range downwards of the ground checker, x is when grounded, y is when in the air.")]
+		public Vector2        rayToGroundDistance;
 		[Tooltip("Core: Adds current horizontal speed multiplied by this to the ground checker when running along the ground. Combats how it's easier to lose when at higher speed.")]
 		public float        raytoGroundSpeedRatio;
 		[Tooltip("Core: The maximum range the ground checker can reach when increased by the above ratio.")]
@@ -392,7 +393,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucRolling SetStrucRolling () {
 		return new StrucRolling
 		{
-			rollingLandingBoost = 1.4f,
+			rollingLandingBoost = 1.3f,
 			rollingDownhillBoost = 1.9f,
 			minRollingTime = 0.4f,
 			rollingUphillBoost = 1.2f,
@@ -573,11 +574,12 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucQuickstep SetStrucQuickstep () {
 		return new StrucQuickstep
 		{
-			stepSpeed = 55f,
+			stepDuration = 55f,
 			stepDistance = 8f,
-			airStepSpeed = 48f,
+			airStepDuration = 48f,
 			airStepDistance = 7f,
-			StepLayerMask = new LayerMask()
+			StepLayerMask = new LayerMask(),
+			cooldown = new Vector2(5, 20)
 		};
 	}
 
@@ -587,17 +589,19 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Header("Grounded")]
 		[Tooltip("Surface: The speed to move left or right when stepping. This is a force, so the distance traveled will equal this multiplied by time between frames.")]
-		public float        stepSpeed;
+		public float        stepDuration;
 		[Tooltip("Surface: How far to the right or left to move in total when performing a step (will stop if hits an obstruction)")]
 		public float        stepDistance;
 		[Header("In Air")]
 		[Tooltip("Surface: Same as above but when the step is started in the air.")]
-		public float        airStepSpeed;
+		public float        airStepDuration;
 		[Tooltip("Surface: Same as above but when the step is started in the air.")]
 		public float        airStepDistance;
 		[Header("Interaction")]
 		[Tooltip("Core: Objects on this layer will end a step if in the way of the left or right movement.")]
 		public LayerMask    StepLayerMask;
+		[Tooltip("Core: How long in frames after step ends, before it can be performed again. X = ended on ground, Y = ended in air.")]
+		public Vector2      cooldown;
 
 	}
 	#endregion
@@ -1458,23 +1462,34 @@ public class S_O_CharacterStats : ScriptableObject
 			scrapeModifier = 1f,
 			climbModifier = 1f,
 			fallOffAtFallSpeed = 15,
+
+			jumpFromClimbingModifiers = new Vector2(0.8f, 1.3f),
+			jumpFromRunningModifiers = new Vector2(1.4f, 0.8f)
 		};
 	}
 
 	[System.Serializable]
 	public struct StrucWallActions
 	{
+		[Header ("Finding Walls")]
 		public Vector2            wallCheckDistance;
 		public float            minHeight;
 		public LayerMask        WallLayerMask;
+		[Header("On Walls")]
 		public float            scrapeModifier;
+		[Tooltip("Surface - Climbing speed is prior horizontal speed times this")]
 		public float            climbModifier;
 		public float                  fallOffAtFallSpeed;
 
+		[Header("Wall Effects on other actions")]
+		public Vector2      jumpFromClimbingModifiers;
+		public Vector2      jumpFromRunningModifiers;
+
 	}
 
-
+#if UNITY_EDITOR
 	public S_O_CustomInspectorStyle InspectorTheme;
+#endif
 
 }
 #endregion

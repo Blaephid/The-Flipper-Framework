@@ -76,14 +76,14 @@ public class S_Handler_RingRoad : MonoBehaviour
 		{
 			//For efficiency, there must be a gap between scans. This will only be a frame if currently performing the action (as this needs to be smoothly updated).
 			//Ring road is currently not here because it will call ScanForRings seperately.
-			switch (_Actions._whatAction)
+			switch (_Actions._whatCurrentAction)
 			{
 				default:
 					yield return new WaitForSeconds(0.05f);
 					break;
 			}
 			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
-			if (_isScanning && _Actions._whatAction != S_Enums.PrimaryPlayerStates.RingRoad)//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
+			if (_isScanning && _Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.RingRoad)//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
 			{
 				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, transform.position);
 			}
@@ -154,7 +154,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 	void PlaceTargetInOrder ( Transform thisTarget, Vector3 scannerCentre ) {
 
 		//Get the distance and direction of this target from the scanning centre
-		float thisDistanceFromScanner = Vector3.Distance(scannerCentre, thisTarget.position);
+		float thisDistanceFromScannerSquared = S_CoreMethods.GetDistanceOfVectors(scannerCentre, thisTarget.position);
 
 		//Go through the new ordered list so far.
 		for (int i = 0 ; i < _ListOfCloseTargets.Count ; i++)
@@ -167,8 +167,8 @@ public class S_Handler_RingRoad : MonoBehaviour
 			}
 
 			//If our checking target is closer than the target in this array space, then it goes before it. If not, check next array element.
-			float tempDistance = Vector3.Distance(scannerCentre, _ListOfCloseTargets[i].position);
-			if(thisDistanceFromScanner < tempDistance)
+			float tempDistanceSquared = S_CoreMethods.GetDistanceOfVectors(scannerCentre, _ListOfCloseTargets[i].position);
+			if(thisDistanceFromScannerSquared < tempDistanceSquared)
 			{
 				_ListOfCloseTargets.Insert(i, thisTarget);
 				return;

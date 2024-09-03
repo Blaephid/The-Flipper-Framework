@@ -6,15 +6,7 @@ using UnityEngine.InputSystem.DualShock;
 using UnityEngine.InputSystem.XInput;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Switch;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.Windows;
-using UnityEngine.Rendering.Universal;
-using UnityEditor.PackageManager;
-using NUnit.Framework;
-using Unity.VisualScripting;
-using System;
-using System.Xml.Linq;
-
+using UnityEngine.ProBuilder;
 
 public class S_Interaction_Objects : MonoBehaviour
 {
@@ -32,6 +24,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	//Player
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_ActionManager       _Actions;
 	private S_PlayerInput         _Input;
 	private S_PlayerEvents        _Events;
@@ -102,11 +95,13 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void LateUpdate () {
 		UpdateSpeed();
 
-		_CoreUIElements.RingsCounter.text = ": " + (int)_HurtAndHealth._ringAmount;
+		_CoreUIElements.RingsCounter.text = ""+ (int)_HurtAndHealth._ringAmount;
+
+		
 	}
 
 	private void Update () {
-		FollowPlatform();
+		//FollowPlatform();
 	}
 
 	private void FixedUpdate () {
@@ -142,6 +137,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				{
 					if (Col.transform.up.y > 0.7f)
 					{
+						StartCoroutine(RemoveAdditionalVerticalVelocity(_PlayerVel._coreVelocity.y));
 						_PlayerPhys._listOfIsGravityOn.Add(false);
 						_PlayerPhys.SetIsGrounded(false);
 					}
@@ -175,6 +171,12 @@ public class S_Interaction_Objects : MonoBehaviour
 					}
 				}
 				break;
+			case "Enable Objects Physics":
+				SetMovingPlatformAsActive(Col, true);
+				break;
+
+			case "Player Effects":
+				ApplyEffectsOnPlayer(Col); break;
 		}
 	}
 
@@ -183,7 +185,13 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			case "MovingPlatform":
 				Destroy(_PlatformAnchor);
+				_PlatformAnchor = null;
 				break;
+
+			case "Enable Objects Physics":
+				SetMovingPlatformAsActive(Col, false);
+				break;
+
 			case "Wind":
 				_numberOfWindForces -= 1;
 				if (Col.transform.up.y > 0.7f)
@@ -198,6 +206,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		switch (Col.tag)
 		{
 			case "MovingPlatform":
+				FollowPlatform();
 				AttachAnchorToPlatform(Col);
 				break;
 
@@ -205,6 +214,9 @@ public class S_Interaction_Objects : MonoBehaviour
 				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
 				if (UpdraftScript != null)
 				{
+					if(_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Homing
+						|| _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
+
 					Vector3 thisForce = GetForceOfWind(UpdraftScript);
 					_currentWindDirection += thisForce;
 
@@ -225,13 +237,42 @@ public class S_Interaction_Objects : MonoBehaviour
 	//Called every frame
 	private void UpdateSpeed () {
 		//If a text element of the UI has been set for speed, update it to show current running speed.
-		if (_CoreUIElements.SpeedCounter != null && _PlayerPhys._speedMagnitude > 10f) _CoreUIElements.SpeedCounter.text = _PlayerPhys._currentRunningSpeed.ToString("F0");
-		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) _CoreUIElements.SpeedCounter.text = "0";
+		if (_CoreUIElements.SpeedCounter != null && _PlayerVel._speedMagnitudeSquared > 100f) 
+			_CoreUIElements.SpeedCounter.text = _PlayerVel._currentRunningSpeed.ToString("F0");
+		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) 
+			_CoreUIElements.SpeedCounter.text = "0";
 	}
 
 	//
 	//Wind Interactions
 	//
+
+	//If entering wind with force upwards already (like from a jump), this would carry the whole way, so only use gravity to remove this, but not go against the wind.
+	private IEnumerator RemoveAdditionalVerticalVelocity(float coreVelocityUpwards ) {
+		yield return new WaitForFixedUpdate();
+
+		//If the force applied by the wind is substantially more than the core velocity before, then just remove the core velocity immediately
+		if (coreVelocityUpwards * 1.5f < _PlayerVel._worldVelocity.y)
+		{
+			_PlayerVel.AddCoreVelocity(Vector3.down * coreVelocityUpwards);
+		}
+		//Otherwise, remove it with normal gravity calculations.
+		else
+		{
+			while (coreVelocityUpwards > 0 && _PlayerVel._coreVelocity.y > 0)
+			{
+				//Calculate how much gravity would have an affect on this velocity, then apply it seperately, so only this is being counteracted.
+				//(Allowing the player speed up to slow but not counteract the wind).
+				Vector3 forceDownwards = Vector3.up;
+				forceDownwards = _PlayerPhys.CheckGravity(forceDownwards * coreVelocityUpwards, true);
+				float change = forceDownwards.y - coreVelocityUpwards;
+				coreVelocityUpwards = change;
+
+				_PlayerVel.AddCoreVelocity(Vector3.down * change);
+			}
+		}
+	}
+
 	//Takes an origin of wind and gets how much force to apply onto the player from it, based on its power and distance in the wind direction
 	private Vector3 GetForceOfWind ( S_Trigger_Updraft UpdraftScript ) {
 		Vector3 direction = UpdraftScript._Direction.up;
@@ -250,18 +291,20 @@ public class S_Interaction_Objects : MonoBehaviour
 		Destroy(newGameObject);
 
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
-		float distance = Vector3.Distance(relativePlayerPosition, transform.position);
+		float distanceSquared = S_CoreMethods.GetDistanceOfVectors(relativePlayerPosition, transform.position);
 
 		float power = 0;
-		if (distance < 5)
+		if (distanceSquared < 9)
 		{
 			//If under 3 units away and moving towards the wind, apply force against equal to the player's speed in that direction, ensuring they can't fall beyond it.
-			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-direction, S_Enums.VelocityTypes.Core, false);
-			if(dot > 5) { power = dot; }
+			Vector3 WindProjectedAgainstVelocity = Vector3.Project(_PlayerVel._coreVelocity, -direction);
+			if(WindProjectedAgainstVelocity.sqrMagnitude > 1) { power = WindProjectedAgainstVelocity.magnitude; }
 		}
-		//Affect power by distance along in this direction
-		power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distance / UpdraftScript._getRange));
-		
+		else
+			//Affect power by distance along in this direction
+			//power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared));
+			power =  UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared);
+
 		return power * direction;
 	}
 
@@ -277,44 +320,67 @@ public class S_Interaction_Objects : MonoBehaviour
 			lateralWind.y = 0;
 			Vector3 verticalWind = new Vector3(0, _currentWindDirection.y, 0);
 
-			//Apply lateral
-			//Get how fast the coreVelocity is moving against the wind.
-			float dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(-lateralWind, S_Enums.VelocityTypes.Custom, true);
-			//If player is not moving in favour of the wind.
-			if (dot > -0.7f)
-				_PlayerPhys.AddGeneralVelocity(lateralWind, false);
-			//If pushing away from the wind
-			else
-				_PlayerPhys.AddCoreVelocity(lateralWind * Time.fixedDeltaTime);
 
-			float x = 0;
+			//Apply lateral
+			Vector3 relevantCoreVelocity = new Vector3 (_PlayerVel._coreVelocity.x, 0, _PlayerVel._coreVelocity.z);
+			Vector3 nextVelocity = relevantCoreVelocity + lateralWind;
+
+			//If the wind will increase velocity overall, then apply to coreVelocity so it remains, rather than just being temporary like with the constant general.
+			if ( nextVelocity.sqrMagnitude > relevantCoreVelocity.sqrMagnitude)
+			{
+				lateralWind = S_CoreMethods.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
+
+				//If added normally, then running perpendicular to the wind, the full force would be added, but immediately turned away, increasing velocity in the unintended direction.
+				//So only add the amount specifically in the wind direction, using project.
+				Vector3 nextSpeedInFanDirection = Vector3.Project(nextVelocity, lateralWind);
+				Vector3 increase = nextSpeedInFanDirection - relevantCoreVelocity;
+
+				if(relevantCoreVelocity.sqrMagnitude > increase.sqrMagnitude * Time.fixedDeltaTime + 1)
+					_PlayerVel.AddCoreVelocity(increase * Time.fixedDeltaTime * 0.5f);
+			}
+
+			_PlayerVel.AddGeneralVelocity(lateralWind, false, true); //Using general velocity so the player believably is still running at speed, even if going nowhere in the world.
+
 
 			//Apply vertical, decreasing core velocity if going towards wind, to combat gravity.
-			dot = _PlayerPhys.GetPlayersSpeedInGivenDirection(verticalWind, S_Enums.VelocityTypes.CoreNoLateral, false);
-			if (dot >= x)//If already being pushed up by wind.
-				_PlayerPhys.AddGeneralVelocity(verticalWind, false);
+			float x = 0;
+			if (_PlayerVel._coreVelocity.y >= x)//If already being pushed up by wind
+				_PlayerVel.AddGeneralVelocity(verticalWind, false, true);
 			else //Fallspeed wont increase while in wind, so apply velocity until upwards force is x, overcoming gravity
-				_PlayerPhys.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(dot - x)));
+				_PlayerVel.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(_PlayerVel._coreVelocity.y - x)));
 
 			//If being blown upwards, enter the hovering state to change actions and animation.
 			//canHover can only be set to true by the Hovering AttemptAction, so GetComponent is safe, and Hovering being enabled shouldn't enable canhover.
-			if (_canHover && _totalWindDirection.normalized.y > 0.72f)
+			if (_canHover && _totalWindDirection.normalized.y > 0.72f && _totalWindDirection.y > 5)
 			{
 				 _Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction(); //Not placed in enterTrigger incase was already in the trigger, but not in a state that could enter the hover action.
 			}
 		}
 	}
 
+	//If the trigger is on the same object as the movePlatform component, then switch the platform to move with physics rather than transform. This is for more accurate interactions when close but cheaper interactions further away.
+	private void SetMovingPlatformAsActive(Collider Col ,bool activePhysics ) {
+		if (Col.TryGetComponent(out S_Control_MovingPlatform Control))
+		{
+			if(Control._canCarryPlayer)
+				Control._isPhysicsActive = activePhysics; //See the S_ControlMoving Platform script for how it switches to applying velocity every fixedUpdate.
+		}
+	}
+
 	//When on a moving platform, check is an anchor has currently been spawned, and if not, create one.
 	private void AttachAnchorToPlatform ( Collider Col ) {
+
 		if (_PlatformAnchor == null)
 		{
 			//The reason we're using an anchor reference attached as a child to the mover is because it means we can compare the changes in world position every frame, no matter what happens.
 			//For instance, if the object is rotating, this anchor will reflect that as it will move around as a child of the rotating.
-			_PlatformAnchor = GameObject.Instantiate(new GameObject("Anchor"), _PlayerPhys.transform.position, Quaternion.identity);
-			_PlatformAnchor.transform.parent = Col.transform;
-			_previousPlatformPointPosition = _PlatformAnchor.transform.position;
+			_PlatformAnchor = GameObject.Instantiate(new GameObject("Anchor"), _PlayerVel.transform.position, Quaternion.identity);
 		}
+		else
+			_PlatformAnchor.transform.position = transform.position;
+
+		_PlatformAnchor.transform.parent = Col.transform;
+		_previousPlatformPointPosition = transform.position;
 	}
 
 	//If there is currently a platform script saved from being in a trigger with one, adjust the players position every frame to match it.
@@ -326,11 +392,8 @@ public class S_Interaction_Objects : MonoBehaviour
 			Vector3 direction = _PlatformAnchor.transform.position - _previousPlatformPointPosition;
 			_previousPlatformPointPosition = _PlatformAnchor.transform.position;
 
-			//These alternate approaches are because when moving, changing rigidbody is smoother, when not, changing transform is smoother.
-			if (_PlayerPhys._coreVelocity.sqrMagnitude < 5)
-				_PlayerPhys.transform.position += direction;
-			else
-				_PlayerPhys._RB.position += direction;
+			_PlayerVel.AddGeneralVelocity(direction / Time.fixedDeltaTime, true, false);
+			return;
 		}
 	}
 
@@ -345,7 +408,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (SpeedPadScript._isOnRail_)
 		{
 			//Attaches the player to the rail this rail booster is on.
-			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.Rail)
+			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Rail)
 			{
 				_PlayerPhys.SetPlayerPosition(SpeedPadScript._PositionToLockTo.position);
 			}
@@ -370,7 +433,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			float speed = SpeedPadScript._speedToSet_;
 			if (SpeedPadScript._willCarrySpeed_)
 			{
-				speed = Mathf.Max(speed, _PlayerPhys._currentRunningSpeed);
+				speed = Mathf.Max(speed, _PlayerVel._currentRunningSpeed);
 			}
 
 			//Dash ring
@@ -403,20 +466,28 @@ public class S_Interaction_Objects : MonoBehaviour
 				//Effects
 				_CharacterAnimator.SetBool("Grounded", true);
 
-				//Set rotation to immediately be in line with pad.
-				transform.up = Col.transform.up;
+				if (!_PlayerPhys._isGrounded)
+				{
+					_PlayerPhys.SetIsGrounded(true);
+					_PlayerPhys._groundNormal = Col.transform.up;
+					_PlayerPhys.AlignToGround(Col.transform.up, true);
+				}
+
 				_Actions._ActionDefault.SetSkinRotationToVelocity(0, Col.transform.forward);
 
 
 				//Apply location to start moving from.
 				if (SpeedPadScript._willSnap)
 				{
-					snapPosition += _FeetPoint.up * -_FeetPoint.localPosition.y; //Because on ground, feet should be set to pad position.
+					snapPosition -= _PlayerPhys._feetOffsetFromCentre; //Because on ground, feet should be set to pad position.
 					_PlayerPhys.SetPlayerPosition(snapPosition);
 				}
 
 				//Pushes player in direction
-				_PlayerPhys.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
+				_PlayerVel.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
+
+				if (_Actions._listOfSpeedOnPaths.Count > 0) 
+				{  _Actions._listOfSpeedOnPaths[0] = speed; }
 			}
 
 			if (SpeedPadScript._willLockControl)
@@ -427,8 +498,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			//If pad is set to, rotate camera horizontally towards dash direction.
 			if (SpeedPadScript._willAffectCamera_)
 			{
-				Quaternion targetRotation = Quaternion.LookRotation(Col.transform.forward, _PlayerPhys.transform.up);
-				_CamHandler._HedgeCam.SetCameraNoHeight(Col.transform.forward, SpeedPadScript._CameraRotateTime_.x, SpeedPadScript._CameraRotateTime_.y, targetRotation, false, false);
+				_CamHandler._HedgeCam.SetCameraNoSeperateHeight(Col.transform.forward, SpeedPadScript._CameraRotateTime_.x, SpeedPadScript._CameraRotateTime_.y, Vector3.zero, false);
 			}
 
 		}
@@ -438,8 +508,9 @@ public class S_Interaction_Objects : MonoBehaviour
 		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
-
-		_PlayerPhys.SetPlayerRotation(Quaternion.identity, false);
+		
+		//Sets player to immediately face upwards to launch direction is always correct.
+		_PlayerPhys.SetPlayerRotation(Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation, true);
 
 		//Returns air actions
 		_Actions._isAirDashAvailables = true;
@@ -469,24 +540,27 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (SpringScript._keepHorizontal_)
 		{
 			//Since vertical will be taken over by environment, get horizontal core velocity.
-			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity, false);
+			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity, false);
 			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * SpringScript._springForce_, false); //Combined the spring direction with force to get the only the force horizontally.
 
 			Vector3 combinedVelocityMagnitude = (launchHorizontalVelocity + newCoreVelocity); //The two put together normally so the magnitude is accurate.
-			Vector3 combinedVelocityDirection = (_PlayerPhys.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
+			Vector3 combinedVelocityDirection = (_PlayerVel.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
 			Vector3 upDirection = new Vector3(0, direction.y, 0);
 
-			//If the velocity after bounce is greater than velocity going in to bounce, the take the larger of the two that made it, without losing direction. This will prevent speed increasing too much.
+			//If the velocity after bounce is greater than velocity going in to bounce,
+			//then take the larger of the two that made it, without losing direction. This will prevent speed increasing too much.
 			if (combinedVelocityMagnitude.sqrMagnitude > newCoreVelocity.sqrMagnitude)
 			{
-				//Rather than using Max / Min, use IF statements to compare with sqrMagnitude before getting an actual "magnitude".
+				//Rather than using Max / Min, use IF statements to compare with sqrMagnitude before rotating the larger in the right direction.
 				if (launchHorizontalVelocity.sqrMagnitude > newCoreVelocity.sqrMagnitude)
 				{
-					newCoreVelocity = combinedVelocityDirection.normalized * launchHorizontalVelocity.magnitude;
+					//newCoreVelocity = combinedVelocityDirection.normalized * launchHorizontalVelocity.magnitude;
+					newCoreVelocity = Vector3.RotateTowards(launchHorizontalVelocity, combinedVelocityDirection.normalized, 360, 0);
 				}
 				else
 				{
-					newCoreVelocity = combinedVelocityDirection.normalized * newCoreVelocity.magnitude;
+					//newCoreVelocity = combinedVelocityDirection.normalized * newCoreVelocity.magnitude;
+					newCoreVelocity = Vector3.RotateTowards(newCoreVelocity, combinedVelocityDirection.normalized, 360, 0);
 				}
 			}
 			else
@@ -509,6 +583,12 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (SpringScript._willLockControl_)
 		{
 			_Input.LockInputForAWhile(SpringScript._lockForFrames_, false, Vector3.zero, SpringScript._LockInputTo_);
+		}
+
+		//If needed, rotate character in set direction, this will be run after the player rotation is set to velocity in ApplyForceAfterDelay, overwriting it.
+		if(SpringScript._SetPlayerForwardsTo_ != null)
+		{
+			_Actions._ActionDefault.SetSkinRotationToVelocity(0, SpringScript._SetPlayerForwardsTo_.forward, Vector2.zero, transform.up);
 		}
 
 		//Prevents using air moves until after some time
@@ -539,13 +619,13 @@ public class S_Interaction_Objects : MonoBehaviour
 		Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
 		float horizontalSpeed = launchHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
 
-		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  _PlayerPhys._horizontalSpeedMagnitude, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
-
 		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
-		float coreSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+		float coreSpeed = _PlayerVel._horizontalSpeedMagnitude;
+
+		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  coreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+
 		if (coreSpeed > horizontalSpeed)
 		{
-			horizontalEnvSpeed = 1; //Ensure's theres still a direction even though this won't factor in much to world velocity.
 			coreSpeed = horizontalSpeed; //In this case, bounce will be entirely through core velocity, not environmental.
 		}
 
@@ -553,13 +633,16 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		Vector3 totalEnvironment = (launchHorizontalVelocity.normalized * horizontalEnvSpeed) + (new Vector3(0, (direction * launchPower).y,0));
 
-		launchHorizontalVelocity = _PlayerPhys.transform.TransformDirection(launchHorizontalVelocity);
+		launchHorizontalVelocity = _PlayerVel.transform.TransformDirection(launchHorizontalVelocity);
 
 		StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed));
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
 	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 position, Vector3 coreVelocity, int frames = 3 ) {
+
+		_Actions._canChangeActions = false;
+		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.
 
 		_PlayerPhys._listOfCanControl.Add(false); //Prevents any input interactions changing core velocity while locked here.
 
@@ -576,23 +659,42 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Keep the player in position, with zero velocity, until delay is over.
 		for (int i = 0 ; i < frames ; i++)
 		{
+			_Actions._ActionDefault.StartAction(); //Ensures player cant change into another action, like a rail, while hitting a spring.
 			_PlayerPhys.SetPlayerPosition(position);
-			_PlayerPhys.SetCoreVelocity(Vector3.zero, "Overwrite");
-			_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
+			_PlayerVel.SetCoreVelocity(Vector3.zero, "Overwrite");
+			_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
 		}
 
-		_Actions._ActionDefault.StartAction(); //Ensures player is still in correct state after delay.
+		_Actions._canChangeActions = true;
 
 		_PlayerPhys.SetPlayerPosition(position); //Ensures player is set to inside of spring, so bounce is consistant. 
 
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
-		_PlayerPhys.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
-
-		_PlayerPhys.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_Enums.ChangeLockState.Lock); //Apply bounce
+		_PlayerVel.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
+		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_Enums.ChangeLockState.Lock); //Apply bounce
 	}
 
+	private void ApplyEffectsOnPlayer (Collider Col) {
+
+		if (!Col.TryGetComponent(out S_Trigger_PlayerEffect Effects)) { return; }
+
+		switch (Effects._setPlayerGrounded)
+		{
+			case S_Enums.ChangeGroundedState.SetToNo:
+				_PlayerPhys.SetIsGrounded(false); break;
+			case S_Enums.ChangeGroundedState.SetToYes:
+				_PlayerPhys.SetIsGrounded(true); break;
+			case S_Enums.ChangeGroundedState.SetToOppositeThenBack:
+				bool current = _PlayerPhys._isGrounded;
+				_PlayerPhys.SetIsGrounded(!current); _PlayerPhys.SetIsGrounded(current);
+				break;
+		}
+
+		if (Effects._lockPlayerInputFor > 0)
+			_Input.LockInputForAWhile(Effects._lockPlayerInputFor, true, Vector3.zero, Effects._LockInputTo_);
+	}
 
 	private void ActivateHintBox ( Collider Col ) {
 		if (!Col.TryGetComponent(out S_Data_HintRing HintRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
@@ -698,6 +800,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void AssignTools () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_CamHandler = _Tools.CamHandler;
 		_Actions = _Tools._ActionManager;
 		_Events = _Tools.PlayerEvents;

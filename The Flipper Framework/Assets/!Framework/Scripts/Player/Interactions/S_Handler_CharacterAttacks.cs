@@ -7,6 +7,7 @@ using UnityEngine;
 public class S_Handler_CharacterAttacks : MonoBehaviour
 {
 	private S_PlayerPhysics	_PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_Interaction_Objects _ObjectInteraction;
 	private S_ActionManager	_Actions;
 	private S_CharacterTools	_Tools;
@@ -38,7 +39,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		if(!_hasHitThisFrame) //Will only try once per update.
 		{
 			//Certain actions will count as attacks, other require other states.
-			switch (_Actions._whatAction)
+			switch (_Actions._whatCurrentAction)
 			{
 				//If in default, will only attack if rolling.
 				case S_Enums.PrimaryPlayerStates.Default:
@@ -141,14 +142,14 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 	//Bounces player upwards, amount depending on player state.
 	void AttackFromJump () {
-		switch(_Actions._whatAction)
+		switch(_Actions._whatCurrentAction)
 		{
 			default:
-				_PlayerPhys.AddCoreVelocity(transform.up * _bouncingPower_);
+				_PlayerVel.AddCoreVelocity(transform.up * _bouncingPower_);
 				break;
 
 			case S_Enums.PrimaryPlayerStates.Bounce:
-				_PlayerPhys.AddCoreVelocity(transform.up * _bouncingPower_ * 1.5f);
+				_PlayerVel.AddCoreVelocity(transform.up * _bouncingPower_ * 1.5f);
 				break;
 		}
 	}
@@ -183,6 +184,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_ObjectInteraction = GetComponent<S_Interaction_Objects>();
 		_Actions = _Tools._ActionManager;
 	}

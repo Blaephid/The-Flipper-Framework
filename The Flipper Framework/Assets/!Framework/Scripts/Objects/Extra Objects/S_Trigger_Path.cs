@@ -3,8 +3,6 @@ using UnityEngine;
 using SplineMesh;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.PackageManager.UI;
-using UnityEngine.Profiling;
 
 [ExecuteInEditMode]
 [SelectionBase]
@@ -16,6 +14,11 @@ public class S_Trigger_Path : MonoBehaviour
 	public Spline spline;
 	public Vector2 _speedLimits = new Vector2(30, 200);
 	public bool         _canPlayerReverse = false;
+	public bool         _canPlayerSlow = false;
+	public int          _lockPlayerFor = 40;
+
+	[Header("Immediate")]
+	public bool         _removeVerticalVelocityOnStart = true;
 
 	[Header("Triggers")]
 	public bool _willUpdateInRealTime = true;

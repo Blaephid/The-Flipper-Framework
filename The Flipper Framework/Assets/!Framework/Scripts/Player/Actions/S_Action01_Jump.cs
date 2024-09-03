@@ -13,6 +13,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity      _PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
@@ -33,6 +34,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private float		_startJumpSpeed_;
 	private AnimationCurve	_JumpForceByTime_;
 	private float		_jumpSlopeConversion_;
+
+	private Vector2               _wallClimbingJumpModifiers_;
+	private Vector2		_wallRunningJumpModifiers_;
 
 	//Additional jumps
 	private int         _maxJumps_;
@@ -74,10 +78,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region Inherited
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
 
 
 	// Update is called once per frame
@@ -108,7 +108,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 		if (_Input._JumpPressed)
 		{
-			switch (_Actions._whatAction)
+			switch (_Actions._whatCurrentAction)
 			{
 
 				case S_Enums.PrimaryPlayerStates.Jump:
@@ -119,11 +119,11 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 					}
 					return true;
 				case S_Enums.PrimaryPlayerStates.WallRunning:
-					AssignStartValues(_Actions._jumpAngle, true, 1.5f, 1.6f);
+					AssignStartValues(_Actions._jumpAngle, true, _wallRunningJumpModifiers_.x, _wallRunningJumpModifiers_.y);
 					StartAction();
 					return true;
 				case S_Enums.PrimaryPlayerStates.WallClimbing:
-					AssignStartValues(_Actions._jumpAngle, true, 1.8f, 0.8f);
+					AssignStartValues(_Actions._jumpAngle, true, _wallClimbingJumpModifiers_.x, _wallClimbingJumpModifiers_.y);
 					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(10, 5, -20, true));
 					StartAction(); 
 					return true;
@@ -157,7 +157,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction () {
+	public void StartAction ( bool overwrite = false ) {
+		if (!_Actions._canChangeActions && !overwrite) { return; }
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
 
@@ -174,7 +175,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//Physics
 		_PlayerPhys.SetIsGrounded(false, 0.2f);
 		_PlayerPhys._canChangeGrounded = false; //Prevents being set to grounded if jumping because it would lead to weird interactions going up through platforms or triggering on grounded events
-		_PlayerPhys.RemoveEnvironmentalVelocityAirAction();
+		_PlayerVel.RemoveEnvironmentalVelocityAirAction();
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
 
@@ -189,7 +190,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false);
 
 		//Snap off of ground to make sure player jumps
-		_PlayerPhys.SetPlayerPosition(_PlayerPhys.transform.position + (_upwardsDirection * 0.3f));
+		_PlayerPhys.SetPlayerPosition(_PlayerVel.transform.position + (_upwardsDirection * 0.3f));
 
 		//If performing a grounded jump. JumpCount may be changed externally to allow for this.
 		if (_isJumpingFromGround)
@@ -200,13 +201,18 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			_thisMaxDuration = _maxJumpTime_ * _jumpDurationModifier;
 
 			//Jump higher depending based on speed, if jumping upwards off a slope the players running up.
-			if (_PlayerPhys._RB.velocity.y > 5 && _upwardsDirection.y < 1)
+			if (_PlayerVel._worldVelocity.y > 5 && _upwardsDirection.y < 1)
 			{
-				_jumpSlopeSpeed = Mathf.Max( _PlayerPhys._RB.velocity.y * _jumpSlopeConversion_, _thisJumpSpeed);
+				_jumpSlopeSpeed = Mathf.Max( _PlayerVel._totalVelocity.y * _jumpSlopeConversion_, _thisJumpSpeed);
    				_slopedJumpDuration = _startSlopedJumpDuration_ * _jumpDurationModifier;
 			}
 			else
 			{
+				//If being moved upwards but not running upwards, add to jump to ensure can overcome that (like on a platform moving upwards.)
+				//World velocity is the actual direction moving, because Total And RB are set already because all of S_PlayerPhysics happens before this.
+				Vector3 forceAlreadyMovingUpwards = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity, true);
+
+				_PlayerVel.AddCoreVelocity(_upwardsDirection * Mathf.Max(0, forceAlreadyMovingUpwards.y));
 				_jumpSlopeSpeed = 0; //Means slope jump force won't be applied this jump
 			}
 			_Actions._jumpCount = 1; //Number of jumps set to 1, allowing for double jumps.
@@ -230,10 +236,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	public void StopAction (bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-
 		enabled = false;
-
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		_Actions._ActionDefault._animationAction = 0; //Ensures player will land properly in the correct animation when entering default action.
 		_PlayerPhys._canChangeGrounded = true;
@@ -278,8 +282,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	private void JumpInAir () {
 
 		//Take some horizontal speed on jump and remove vertical speed to ensure jump is an upwards force.
-		Vector3 newVel = new Vector3(_PlayerPhys._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerPhys._RB.velocity.y, 2), _PlayerPhys._coreVelocity.z * _speedLossOnDoubleJump_);
-		_PlayerPhys.SetCoreVelocity(newVel, "Overwrite");
+		Vector3 newVel = new Vector3(_PlayerVel._coreVelocity.x * _speedLossOnDoubleJump_, Mathf.Max(_PlayerVel._worldVelocity.y, 2), _PlayerVel._coreVelocity.z * _speedLossOnDoubleJump_);
+		_PlayerVel.SetCoreVelocity(newVel, "Overwrite");
 
 		//Add particle effect during jump
 		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
@@ -289,36 +293,40 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	}
 
 	private void ApplyForce() {
-		//Ending Jump Early
-		if (!_Input._JumpPressed && _counter > _thisMinDuration && _isJumping)
+
+		if (_isJumping)
 		{
-			EndJumpForce();
-		}
-		//Ending jump after max duration
-		else if (_counter > _thisMaxDuration && _isJumping && _Input._JumpPressed)
-		{
-			EndJumpForce();
-		}
-		//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
-		else if(_isJumping && _PlayerPhys.GetRelevantVector(_PlayerPhys._coreVelocity).y <= 0 && _counter > 0.2f)
-		{
-			EndJumpForce();
-		}
-		//If there are no interuptions, apply jump force.
-		else if (_isJumping)
-		{
+			//Ending Jump Early
+			if (!_Input._JumpPressed && _counter > _thisMinDuration && _isJumping)
+			{
+				EndJumpForce();
+			}
+			//Ending jump after max duration
+			else if (_counter > _thisMaxDuration && _isJumping && _Input._JumpPressed)
+			{
+ 				EndJumpForce();
+			}
+			//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
+			else if (_isJumping && _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity).y <= 0 && _counter > 0.2f)
+			{
+				EndJumpForce();
+			}
+
+			//Apply jump force, even if EndJumpForce was called this frame.
 			float modifierThisFrame = _JumpForceByTime_.Evaluate(_counter / _thisMaxDuration ); //Get a modifier to adjust jump force this frame based on how long has been jumping for out of maximum time.
-			//Jump move at angle
+												//Jump move at angle
 			if (_counter < _slopedJumpDuration && _jumpSlopeSpeed > 0)
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_jumpSlopeSpeed * 0.95f * modifierThisFrame));
-				_PlayerPhys.AddCoreVelocity(Vector3.up * (_jumpSlopeSpeed * 0.05f * modifierThisFrame)); //Extra speed to ballance out direction
+				float forceThisFrame = (_jumpSlopeSpeed * modifierThisFrame);
+				_PlayerVel.AddCoreVelocity(_upwardsDirection * (forceThisFrame * 0.9f));
+				_PlayerVel.AddCoreVelocity(Vector3.up * (forceThisFrame * 0.1f)); //Extra speed to ballance out direction
 			}
 			//Move straight up in world.
 			else
 			{
-				_PlayerPhys.AddCoreVelocity(_upwardsDirection * (_thisJumpSpeed) * modifierThisFrame);
-			}
+				float forceThisFrame = (_thisJumpSpeed * modifierThisFrame);
+				_PlayerVel.AddCoreVelocity(_upwardsDirection * forceThisFrame);
+			}		
 		}
 		//If jumping is over, the player can be grounded again, which will set them back to the default action.
 		else
@@ -329,7 +337,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 	//Called when the jump should stop applying force, but before exiting the state.
 	private void EndJumpForce () {
-		_counter = _thisMaxDuration;
+		_counter = _thisMaxDuration; //Set to the jump this frame will be at end speed.
 		_isJumping = false;
 		_Input._JumpPressed = false;
 	}
@@ -383,6 +391,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_Actions = _Tools._ActionManager;
 		_CamHandler = _Tools.CamHandler;
 		_Input = _Tools.GetComponent<S_PlayerInput>();
@@ -408,6 +417,9 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_doubleJumpSpeed_ = _Tools.Stats.MultipleJumpStats.doubleJumpSpeed;
 
 		_speedLossOnDoubleJump_ = _Tools.Stats.MultipleJumpStats.speedLossOnDoubleJump;
+
+		_wallClimbingJumpModifiers_ = _Tools.Stats.WallActionsStats.jumpFromClimbingModifiers;
+		_wallRunningJumpModifiers_ = _Tools.Stats.WallActionsStats.jumpFromRunningModifiers;
 	}
 	#endregion
 }

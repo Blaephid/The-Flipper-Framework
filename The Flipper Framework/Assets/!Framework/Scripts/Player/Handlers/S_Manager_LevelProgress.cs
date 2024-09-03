@@ -22,6 +22,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 	private S_ActionManager		_Actions;
 	private S_PlayerPhysics	_PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_Handler_Camera	_CamHandler;
 	private S_PlayerInput	_Input;
 
@@ -56,11 +57,14 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Start () {
+	void Awake () {
+		
+
 		_Tools =		GetComponentInParent<S_CharacterTools>();
 		_CamHandler =	_Tools.CamHandler;
 		_Actions =	_Tools._ActionManager;
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
 		_HealthAndHurt =	_Tools.GetComponent<S_Handler_HealthAndHurt>();
 
@@ -69,6 +73,8 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_resumePosition =	_MainSkin.position;
 		_resumeRotation =	_MainSkin.rotation;
 		_resumeForwards =	_MainSkin.forward;
+
+		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 	}
 
 	// Update is called once per frame
@@ -127,14 +133,14 @@ public class S_Manager_LevelProgress : MonoBehaviour
 			_readyCount += Time.deltaTime;
 
 			//Fade to black.
-			if (_readyCount > 1.5f)
+			if (_readyCount > 0.1f)
 			{
 				Color alpha = Color.black;
 				_HealthAndHurt._FadeOutImage.color = Color.Lerp(_HealthAndHurt._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
 			}
 
 			//Activates the stage complete screen.
-			if (_readyCount > 2.6f)
+			if (_readyCount > 0.6f)
 			{
 				PlayStageCompleteScene(_GoalRingObject);
 			}
@@ -142,9 +148,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	}
 
 	private void PlayStageCompleteScene ( Collider col ) {
-		//Data to show.
-		LoadingScreenControl.StageName1 = _nextLevelNameLeft;
-		LoadingScreenControl.StageName2 = _nextLevelNameRight;
 
 		SceneManager.LoadScene("Sc_StageCompleteScreen"); //Switch to scene
 
@@ -188,9 +191,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 		//In case was killed by something that bypassed shield.
 		_HealthAndHurt.SetShield(false);
-		
-		//Ensures rotation is correct and can lead into instant movement.
-		_PlayerPhys.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
 
 		//Camera
 		_CamHandler._HedgeCam._isReversed = false;
@@ -200,6 +200,9 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_PlayerPhys.SetPlayerPosition(_resumePosition);
 		_MainSkin.forward = _resumeForwards;
 
+		//Ensures rotation is correct and can lead into instant movement.
+		_PlayerVel.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
+
 	}
 
 	//Checkpoints simply retain transform data, as the level will always reset to its base.
@@ -208,4 +211,16 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_resumeForwards = position.forward;
 	}
 	#endregion
+
+	//Temporary Debug Command to reset. Called by an input set in editor.
+	public void ReturnToTitleScreenImmediately () {
+		ReturnToTitleScreen();
+	}
+
+	public static void ReturnToTitleScreen () {
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		S_CarryAcrossScenes.whatIsCurrentSceneType = S_CarryAcrossScenes.EnumGameSceneTypes.Menus;
+		SceneManager.LoadScene(0);
+	}
 }

@@ -19,6 +19,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	#region Unity Specific Properties
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity      _PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Manager_LevelProgress _LevelHandler;
@@ -158,7 +159,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		//Pits force the camera to look down from above
 		if (col.tag == "Pit")
 		{
-			_CamHandler._HedgeCam.SetCameraHeightOnly(85, 2, 1);
+			_CamHandler._HedgeCam.SetCameraHeightOnly(85, 20, 0);
 		}
 	}
 
@@ -296,6 +297,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			{
 				_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
 				_LevelHandler.RespawnObjects();
+				_CamHandler.ResetOnDeath();
 
 				_counter = _invincibilityTime_; //Ends the counter for flickering so the character will be fully visible on respawn.
 			}
@@ -341,22 +343,22 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_PlayerPhys._canChangeGrounded = true;
 		_PlayerPhys._arePhysicsOn = true;
 
-		_PlayerPhys.SetBothVelocities(Vector3.zero, new Vector2(0, 0));
+		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(0, 0));
 	}
 
 	//Bonking refers to rebounding off solid surfaces when moving into them at high speed.
 	//Depending on the current state, will check if should bonk against walls based on speed
 	private void CheckBonk () {
-		switch (_Actions._whatAction)
+		switch (_Actions._whatCurrentAction)
 		{
 			case S_Enums.PrimaryPlayerStates.Default:
-				if (_PlayerPhys._horizontalSpeedMagnitude > _minSpeedToBonk_.x) TryBonk();
+				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.x) TryBonk();
 				break;
 			case S_Enums.PrimaryPlayerStates.Jump:
-				if (_PlayerPhys._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
+				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
 				break;
 			case S_Enums.PrimaryPlayerStates.JumpDash:
-				if (_PlayerPhys._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
+				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
 				break;
 		}
 	}
@@ -364,8 +366,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Checks walls infront of the character, ready to rebound off if too close.
 	private void TryBonk () {
 
-		Vector3 movingDirection = _PlayerPhys._RB.velocity.normalized; //Project on plane makes direction relevant to transform so it will only check in front of player, not below or above
-		float distance = Mathf.Max(_PlayerPhys._horizontalSpeedMagnitude * Time.fixedDeltaTime + 1, 2); //Uses timme.delta time to check where the character should probably be next frame.
+		Vector3 movingDirection = _PlayerVel._worldVelocity.normalized;
+		float distance = _PlayerVel._horizontalSpeedMagnitude * Time.fixedDeltaTime + 0.2f; //Uses timme.delta time to check where the character should probably be next frame.
 		Vector3 sphereStartOffset = transform.up * (_CharacterCapsule.height / 2); // Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
 
 		//Checks for a wall, and if the direction of it is similar to movement direction, ready bonk.
@@ -375,7 +377,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			float directionAngle = Vector3.Angle(movingDirection, wallHit.point - transform.position); //Difference between moving direction and direction of collision
 			float intoAngle = Vector3.Angle(movingDirection, wallHit.normal); //Difference between the player movement direction and wall they're going into. 180 means running straight into a wall facing directily flat on.
 			float surfaceAngle = Vector3.Angle(transform.up, wallHit.normal); //Difference between character upwards direction and surface upwards direction
-			if (directionAngle < 35 && surfaceAngle > 50 && intoAngle > 158)
+			if (directionAngle < 80 && surfaceAngle > 50 && intoAngle > 158)
 				StartCoroutine(DelayBonk());
 		}
 	}
@@ -383,12 +385,12 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Since wall climbing and running are based on running into walls, this gives those a chance before bonking.
 	IEnumerator DelayBonk () {
 		Vector3 rememberDirection = _MainSkin.forward; //Saves the direction so the player can't rotate from it until bonk is over
-		float rememberSpeed = _PlayerPhys._horizontalSpeedMagnitude;
+		float rememberSpeed = _PlayerVel._horizontalSpeedMagnitude;
 
 		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
-		if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.WallClimbing)
+		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallClimbing)
 		{
-			_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
+			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[1].normalized;
 			_HurtAction._wasHit = false;
 			_Actions._ActionHurt.StartAction();
 		}
@@ -399,17 +401,17 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			{
 				yield return new WaitForFixedUpdate();
 
-				if (_Actions._whatAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
+				if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
 
-					_PlayerPhys.SetBothVelocities(Vector3.zero, Vector2.one);
-				_PlayerPhys._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
+					_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
+				_PlayerVel._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
 				_MainSkin.forward = rememberDirection;
 			}
 
 			//If still not in a wallrunning state or been hurt, then rebound off the wall.
-			if (_Actions._whatAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatAction != S_Enums.PrimaryPlayerStates.Hurt)
+			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Hurt)
 			{
-				_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[3].normalized;
+				_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[3].normalized;
 				_HurtAction._wasHit = false;
 				_Actions._ActionHurt.StartAction();
 			}
@@ -459,7 +461,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 				//Won't be damaged until the EventOnGrounded action in the hurt script. This will then call the CheckHealth script
 				case S_Enums.HurtResponses.Frontiers:
 					_inHurtStateBeforeDamage = true;
-					_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
+					_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[1].normalized;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
@@ -468,7 +470,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 					_HurtAction._wasHit = true;
 					if (_ringAmount > 0 || _hasShield)
 					{
-						_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
+						_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[1].normalized;
 						_inHurtStateBeforeDamage = true;
 						_HurtAction.StartAction();
 					}
@@ -488,7 +490,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		}
 
 		void DieWithoutDelay () {
-			_HurtAction._knockbackDirection = -_PlayerPhys._previousVelocities[1].normalized;
+			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocities[1].normalized;
 			_HurtAction._knockbackDirection.y = -0.5f;
 			Die();
 		}
@@ -582,6 +584,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Responsible for assigning objects and components from the tools script.
 	private void AssignTools () {
 		_PlayerPhys =		_Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel =		_Tools.GetComponent<S_PlayerVelocity>();
 		_Actions =		_Tools._ActionManager;
 		_LevelHandler =		_Actions._ObjectForInteractions.GetComponent<S_Manager_LevelProgress>();
 		_Objects =		_Actions._ObjectForInteractions.GetComponent<S_Interaction_Objects>();

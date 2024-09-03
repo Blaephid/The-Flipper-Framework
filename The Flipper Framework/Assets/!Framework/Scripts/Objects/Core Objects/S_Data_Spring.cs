@@ -17,6 +17,8 @@ public class S_Data_Spring : MonoBehaviour
 	public Animator _Animator { get; set; }
 
 	[Header ("On Player")]
+	[Tooltip("If not null, the player will face in the given direction, even if not being launched that way. Useful on springs straight up.")]
+	public Transform _SetPlayerForwardsTo_;
 	[Tooltip("If set to true, player will not be able to change input after launched.")]
 	public bool _willLockControl_ = false;
 	[Tooltip("How amy frames until the player regains control if the above is true.")]

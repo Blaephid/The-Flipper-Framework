@@ -25,6 +25,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_PlayerVelocity	_PlayerVel;
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Handler_Camera      _CamHandler;
@@ -79,11 +80,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		OverWriteCollider(_StandingCapsule);
 	}
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	// Update is called once per frame
 	void Update () {
 		if (!_isAnimatorControlledExternally)
@@ -98,8 +94,8 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 
 	//Called when the current action should be set to this.
-	public void StartAction () {
-		if(enabled) { return; } //Because this method can be called when this state is already active (object interactions), end early if so.
+	public void StartAction (bool overwrite = false ) {
+		if(enabled || (!_Actions._canChangeActions && !overwrite)) { return; } //Because this method can be called when this state is already active (object interactions), end early if so.
 
 		//Set private
 		_isCoyoteInEffect = _PlayerPhys._isGrounded;
@@ -120,7 +116,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 	}
 
 	#endregion
@@ -156,7 +152,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			//Vertical speed
 			_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
 			//Horizontal speed
-			_CharacterAnimator.SetFloat("GroundSpeed", _PlayerPhys._currentRunningSpeed);
+			_CharacterAnimator.SetFloat("GroundSpeed", _PlayerVel._currentRunningSpeed);
 			//Horizontal Input
 			_CharacterAnimator.SetFloat("HorizontalInput", Mathf.Max(_Input.moveX, _Input.moveY));
 			//Is grounded
@@ -176,7 +172,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		//If no direction was passed, use moving direction.
 		if (direction == default(Vector3))
 		{
-			direction = _PlayerPhys._coreVelocity;
+			direction = _PlayerVel._coreVelocity;
 		}
 
 		if(upDirection == default(Vector3))
@@ -189,7 +185,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		if (newForward.sqrMagnitude > 0.01f)
 		{
 			//Makes a rotation that only changes horizontally, never looking up or down.
-			Quaternion charRot = Quaternion.LookRotation(newForward, upDirection);
+			Quaternion targetRotation = Quaternion.LookRotation(newForward, upDirection);
 
 			//Rotate towards it, slower if in the air. If rotateSpeed input was 0, then turn becomes instant.
 			if (_PlayerPhys._isGrounded)
@@ -200,7 +196,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			{
 				rotateSpeed = rotateSpeed != 0 ? rotateSpeed * Time.deltaTime * 0.75f : 1;
 			}
-			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, charRot, rotateSpeed);
+			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, targetRotation, rotateSpeed);
 
 
 			if (offset == default(Vector2)) { offset = Vector2.zero; } //If no offset is input, should lerp to remove offset.
@@ -208,7 +204,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			//Apply a local rotation to the offset object, based on input offset.
 			float xEuler = Mathf.Lerp(_SkinOffset.localEulerAngles.x + 360, offset.y + 360,  rotateSpeed * 0.5f) - 360;
 			float yEuler = _SkinOffset.localEulerAngles.y > 180 ? _SkinOffset.localEulerAngles.y - 360 : _SkinOffset.localEulerAngles.y; //Because euler angles update automaitcally to different numbers, ensure is within the range of -180 -> 180.
-			yEuler = Mathf.Lerp(yEuler, offset.x , rotateSpeed * 0.5f);
+			yEuler = Mathf.Lerp(yEuler, offset.x , rotateSpeed * 0.75f);
 
 			_SkinOffset.localEulerAngles = new Vector3(xEuler, yEuler, 0); //Lerp angles seperately, then apply, this ensures it will only change on these angles, not rotate through z.
 		}
@@ -265,7 +261,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		_coyoteRememberSpeed = _PlayerPhys._RB.velocity.y;
 
 		//Length of coyote time dependant on speed.
-		float waitFor = _coyoteTimeBySpeed_.Evaluate(_PlayerPhys._currentRunningSpeed / 100);
+		float waitFor = _coyoteTimeBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / 100);
 		yield return new WaitForSeconds(waitFor);
 
 		_isCoyoteInEffect = false;
@@ -330,6 +326,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	private void AssignTools () {
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
 		_Input =		_Tools.GetComponent<S_PlayerInput>();
 		_Actions =	_Tools._ActionManager;
 		_CamHandler =	_Tools.CamHandler;

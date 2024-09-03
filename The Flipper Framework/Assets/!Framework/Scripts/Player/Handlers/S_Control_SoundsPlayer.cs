@@ -2,150 +2,169 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class S_Control_SoundsPlayer : MonoBehaviour {
+public class S_Control_SoundsPlayer : MonoBehaviour
+{
+	[Header("Tools")]
+	public S_PlayerPhysics Player;
 
-    public S_PlayerPhysics Player;
+	[Header("Audio Sources")]
+	public AudioSource	FeetSource;
+	public AudioSource GeneralSource;
+	public AudioSource DamageSource;
+	public AudioSource VoiceSource;
+	public AudioSource BoostSource1, BoostSource2;
 
-    AudioSource Source;
-    public AudioSource Source2;
-    public AudioSource Source3;
-	public AudioSource Source4;
-    public AudioClip[] FootSteps;
-    public AudioClip Jumping;
-    public AudioClip AirDash;
-    public AudioClip HomingAttack;
-    public AudioClip Skidding;
-    public AudioClip Spin;
-    public AudioClip SpinDash;
-    public AudioClip SpinDashRelease;
+
+	[Header("Clips")]
+	public AudioClip[] FootSteps;
+	[Header("Actions")]
+	[Header("Air")]
+	public AudioClip Jumping;
+	public AudioClip AirDash;
+	public AudioClip HomingAttack;
 	public AudioClip BounceStart;
 	public AudioClip BounceImpact;
 	public AudioClip StompImpact;
-    public AudioClip RingLoss;
-    public AudioClip Die;
-    public AudioClip Spiked;
 
+	[Header("Grounded")]
+	public AudioClip SpinDash;
+	public AudioClip SpinDashRelease;
+
+	[Header("Sub Actions")]
+	public AudioClip Skidding;
+	public AudioClip Spin;
+	public AudioClip QuickStep;
+	public AudioClip BoostStart;
+	public AudioClip BoostRepeat;
+
+	[Header("Damage")]
+	public AudioClip RingLoss;
+	public AudioClip Die;
+	public AudioClip Spiked;
+
+	[Header("Voice")]
 	public AudioClip[] CombatVoiceClips;
 	public AudioClip[] JumpingVoiceClips;
 	public AudioClip[] PainVoiceClips;
 
-    public float pitchBendingRate = 1;
+	public float pitchBendingRate = 1;
 
-    public void Test(string i)
-    {
+	public void Test ( string i ) {
 
-    }
+	}
 
-    void Start()
-    {
-        Source = GetComponent<AudioSource>();
-    }
+	void Start () {
+	}
 
-	public void CombatVoicePlay()
-	{
+	public void CombatVoicePlay () {
 		int rand = Random.Range(0, CombatVoiceClips.Length);
-		Source4.clip = CombatVoiceClips[rand];
-		Source4.Play();
+		VoiceSource.clip = CombatVoiceClips[rand];
+		VoiceSource.Play();
 	}
-	public void JumpingVoicePlay()
-	{
+	public void JumpingVoicePlay () {
 		int rand = Random.Range(0, JumpingVoiceClips.Length);
-		Source4.clip = JumpingVoiceClips[rand];
-		Source4.Play();
+		VoiceSource.clip = JumpingVoiceClips[rand];
+		VoiceSource.Play();
 	}
-	public void PainVoicePlay()
-	{
+	public void PainVoicePlay () {
 		int rand = Random.Range(0, PainVoiceClips.Length);
-		Source4.clip = PainVoiceClips[rand];
-		Source4.Play();
+		VoiceSource.clip = PainVoiceClips[rand];
+		VoiceSource.Play();
 	}
-    public void FootStepSoundPlay()
-    {
-		if (FootSteps.Length > 0) {
+
+	//This is called by an Animation event in specific animations. Any walking/running animation will call this.
+	//Make sure the animator component is on the same object as this script. And that this method isn't renamed.
+	public void FootStepSoundPlay () {
+		if (FootSteps.Length > 0 && !FeetSource.isPlaying)
+		{
 			int rand = Random.Range (0, FootSteps.Length);
-			Source.clip = FootSteps [rand];
-			Source.Play ();
+			FeetSource.clip = FootSteps[rand];
+			FeetSource.Play();
 		}
-    }
-    public void JumpSound()
-    {
-		if (JumpingVoiceClips.Length > 0) {
-			JumpingVoicePlay ();
-		}
-        Source2.clip = Jumping;
-        Source2.Play();
-    }
-    public void SkiddingSound()
-    {
-        Source2.clip = Skidding;
-        Source2.Play();
-    }
-    public void HomingAttackSound()
-    {
-        Source2.clip = HomingAttack;
-        Source2.Play();
-		if (CombatVoiceClips.Length > 0) {
-			CombatVoicePlay ();
-		}
-    }
-    public void AirDashSound()
-    {
-        Source2.clip = AirDash;
-        Source2.Play();
-    }
-    public void SpinningSound()
-    {
-        if(!(Source2.clip == SpinDashRelease && Source2.isPlaying))
-        {
-            Source2.clip = Spin;
-            Source2.Play();
-        }
-    }
-    public void SpinDashSound()
-    {
-        Source2.clip = SpinDash;
-        Source2.Play();
-    }
-	public void BounceStartSound()
-	{
-		Source2.clip = BounceStart;
-		Source2.Play();
 	}
-	public void BounceImpactSound()
-	{
-		Source2.clip = BounceImpact;
-		Source2.Play();
+
+	public void QuickStepSound () {
+		FeetSource.clip = QuickStep;
+		FeetSource.Play();
 	}
-	public void StompImpactSound()
-	{
-		Source2.clip = StompImpact;
-		Source2.Play();
+
+	public void JumpSound () {
+		if (JumpingVoiceClips.Length > 0)
+		{
+			JumpingVoicePlay();
+		}
+		GeneralSource.clip = Jumping;
+		GeneralSource.Play();
 	}
-    public void SpinDashReleaseSound()
-    {
-        Source2.clip = SpinDashRelease;
-        Source2.Play();
-    }
-    public void RingLossSound()
-    {
-        Source3.clip = RingLoss;
-		if (PainVoiceClips.Length > 0) {
-			PainVoicePlay ();
+	public void SkiddingSound () {
+		GeneralSource.clip = Skidding;
+		GeneralSource.Play();
+	}
+	public void HomingAttackSound () {
+		GeneralSource.clip = HomingAttack;
+		GeneralSource.Play();
+		if (CombatVoiceClips.Length > 0)
+		{
+			CombatVoicePlay();
 		}
-        Source3.Play();
-    }
-    public void DieSound()
-    {
-        Source3.clip = Die;
-		if (PainVoiceClips.Length > 0) {
-			PainVoicePlay ();
+	}
+	public void AirDashSound () {
+		GeneralSource.clip = AirDash;
+		GeneralSource.Play();
+	}
+	public void SpinningSound () {
+		if (!(GeneralSource.clip == SpinDashRelease && GeneralSource.isPlaying))
+		{
+			GeneralSource.clip = Spin;
+			GeneralSource.Play();
 		}
-        Source3.Play();
-    }
-    public void SpikedSound()
-    {
-        Source3.clip = Spiked;
-        Source3.Play();
-    }
+	}
+	public void SpinDashSound () {
+		GeneralSource.clip = SpinDash;
+		GeneralSource.Play();
+	}
+	public void BounceStartSound () {
+		GeneralSource.clip = BounceStart;
+		GeneralSource.Play();
+	}
+	public void BounceImpactSound () {
+		GeneralSource.clip = BounceImpact;
+		GeneralSource.Play();
+	}
+	public void StompImpactSound () {
+		GeneralSource.clip = StompImpact;
+		GeneralSource.Play();
+	}
+	public void SpinDashReleaseSound () {
+		GeneralSource.clip = SpinDashRelease;
+		GeneralSource.Play();
+	}
+	public void RingLossSound () {
+		DamageSource.clip = RingLoss;
+		if (PainVoiceClips.Length > 0)
+		{
+			PainVoicePlay();
+		}
+		DamageSource.Play();
+	}
+	public void DieSound () {
+		DamageSource.clip = Die;
+		if (PainVoiceClips.Length > 0)
+		{
+			PainVoicePlay();
+		}
+		DamageSource.Play();
+	}
+	public void SpikedSound () {
+		DamageSource.clip = Spiked;
+		DamageSource.Play();
+	}
+
+	public void BoostStartSound () {
+		BoostSource1.clip = BoostStart;
+		BoostSource2.clip = BoostRepeat;
+		BoostSource2.Play();
+		BoostSource1.Play();
+	}
 
 }
