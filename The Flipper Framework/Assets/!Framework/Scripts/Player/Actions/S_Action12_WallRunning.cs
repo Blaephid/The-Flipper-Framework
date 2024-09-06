@@ -351,7 +351,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		if(_PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
 			Vector3 rayCastStartPosition = transform.position + _wallHit.normal * 0.5f;
-			float range = (_CoreCollider.height / 2) + (_CoreCollider.radius / 2) + 0.5f;
+			float range = (_CoreCollider.height / 2) + 0.5f;
 			return Physics.Raycast(rayCastStartPosition, -GetUpDirectionOfWall(_wallHit.normal), out RaycastHit hitGroundTemp, range, _PlayerPhys._Groundmask_);
 		}
 		return false;

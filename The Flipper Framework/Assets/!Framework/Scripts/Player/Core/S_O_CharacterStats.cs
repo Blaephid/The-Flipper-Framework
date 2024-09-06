@@ -246,6 +246,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float              slopeEffectLimit;
 		[Tooltip("Core: Decides if the player will fall off the slope. If their speed is under what this curve has for the current normal's y value, then they fall off.")]
 		public AnimationCurve     SpeedLimitBySlopeAngle;
+		[Tooltip("Core: The x value is the up direction of the slope (1 = straight up, 0 = on a 90 degree wall). The slope power is multiplied by the y value. This is to ensure steeper slopes give more benefit, but that 90 degree isn't too powerful.")]
+		public AnimationCurve         SlopePowerByAngle;
 		[Header("Forces")]
 		[Tooltip("Surface : Sets the overall force power of slopes.")]
 		public float              generalHillMultiplier;

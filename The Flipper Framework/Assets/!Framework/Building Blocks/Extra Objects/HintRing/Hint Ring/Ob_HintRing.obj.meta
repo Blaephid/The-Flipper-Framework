@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: bbdcb4adfccc250448895d9f92dca5b1
 ModelImporter:
-  serializedVersion: 21202
+  serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects:
   - first:
@@ -14,8 +14,68 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: mat2
     second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon0Mat
+    second: {fileID: 2100000, guid: a105e9e293f332945a1af0bf962c2798, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon10Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon11Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon1Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon2Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon3Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon4Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon5Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon6Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon7Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon8Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polygon9Mat
+    second: {fileID: 2100000, guid: 29d1c03ef84a75542ac609b3ee5ad28a, type: 2}
   materials:
-    materialImportMode: 0
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -26,8 +86,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -50,6 +108,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -77,6 +136,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -109,6 +169,8 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

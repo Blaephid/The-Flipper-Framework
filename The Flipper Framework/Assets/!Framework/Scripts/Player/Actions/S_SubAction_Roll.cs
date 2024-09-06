@@ -134,7 +134,8 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	//When the player wants to stop rolling while on the ground, check if there's enough room to stand up.
 	public void UnCurl () {
-		if (_PlayerPhys._isRolling && !Physics.BoxCast(_StandingCapsule.transform.position, new Vector3(_StandingCapsule.radius, _StandingCapsule.height / 2.1f, _StandingCapsule.radius), Vector3.zero, transform.rotation, 0))
+		if (_PlayerPhys._isRolling && !Physics.BoxCast(_StandingCapsule.transform.position, 
+			new Vector3(_StandingCapsule.radius, _StandingCapsule.height / 2.1f, _StandingCapsule.radius), Vector3.zero, transform.rotation, 0))
 		{
 			SetIsRolling(false);
 		}
