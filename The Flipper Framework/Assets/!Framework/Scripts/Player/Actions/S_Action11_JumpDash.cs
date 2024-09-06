@@ -142,7 +142,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Effects
-		_Sounds.AirDashSound();
+		_Sounds.JumpDashSound();
 		_HomingTrailScript.emitTime = _maxDuration_ + 0.5f;
 		_HomingTrailScript.emit = true;
 

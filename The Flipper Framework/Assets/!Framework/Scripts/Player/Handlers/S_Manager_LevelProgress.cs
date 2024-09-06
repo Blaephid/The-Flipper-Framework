@@ -192,10 +192,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		//In case was killed by something that bypassed shield.
 		_HealthAndHurt.SetShield(false);
 
-		//Camera
-		_CamHandler._HedgeCam._isReversed = false;
-		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
-
 		//Transform
 		_PlayerPhys.SetPlayerPosition(_resumePosition);
 		_MainSkin.forward = _resumeForwards;
@@ -203,6 +199,10 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		//Ensures rotation is correct and can lead into instant movement.
 		_PlayerVel.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
 
+		//Camera
+		_CamHandler._HedgeCam._isReversed = false;
+		_CamHandler._HedgeCam._lookTimer = 0;
+		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 	}
 
 	//Checkpoints simply retain transform data, as the level will always reset to its base.

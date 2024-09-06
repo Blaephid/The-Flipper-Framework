@@ -22,6 +22,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 	private S_Handler_RingRoad    _RoadHandler;
+	private S_Control_SoundsPlayer _Sounds;
 
 	private Transform   _MainSkin;
 	private Animator    _CharacterAnimator;
@@ -119,6 +120,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		//Effects
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_JumpBall.SetActive(false);
+		_Sounds.LightSpeedDashSound();
 
 		//Trail that follows behind player.
 		if (_HomingTrailContainer.transform.childCount < 1)
@@ -318,6 +320,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_Actions = _Tools._ActionManager;
 		_RoadHandler = GetComponent<S_Handler_RingRoad>();
 
+		_Sounds = _Tools.SoundControl;
 		_MainSkin = _Tools.MainSkin;
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
 		_JumpBall = _Tools.JumpBall;

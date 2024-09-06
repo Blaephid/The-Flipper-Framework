@@ -27,7 +27,7 @@ public class S_PlayerVelocity : MonoBehaviour
 	[HideInInspector]
 	public Vector3                _worldVelocity;               //This is set at the start of a frame as a temporary total velocity, based on the actual velocity in physics. So Total Velocity is set, then affected by collision after the FixedUpdate, then adjusted by TrackAndChangeVelocity, then set here.
 	[HideInInspector]
-	public List<Vector3>          _previousVelocities = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
+	public List<Vector3>          _previousVelocity = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
 
 
 	//ADDING 
@@ -79,6 +79,7 @@ public class S_PlayerVelocity : MonoBehaviour
 	/// On the other end, PlayerPhysics FixedUpdate happens BEFORE every other fixedUpdate.
 	private void FixedUpdate () {
 		SetTotalVelocity();
+		_PlayerPhys.ClearListsOfCollisions();
 	}
 	#endregion
 
@@ -88,7 +89,7 @@ public class S_PlayerVelocity : MonoBehaviour
 	public void CheckAndApplyVelocityChanges () {
 
 		Vector3 velocityThisFrame = _RB.velocity;
-		Vector3 velocityLastFrame = _previousVelocities[0];
+		Vector3 velocityLastFrame = _previousVelocity[0];
 
 		bool fromAirToGround = _PlayerPhys._isGrounded && _PlayerPhys._wasInAirLastFrame;
 
@@ -105,6 +106,10 @@ public class S_PlayerVelocity : MonoBehaviour
 			_PlayerPhys._wasInAirLastFrame = false;
 		}
 
+
+		Debug.DrawRay(transform.position, velocityThisFrame * Time.deltaTime, Color.red, 10f);
+		Debug.DrawRay(transform.position, velocityLastFrame * Time.deltaTime, Color.green, 10f);
+
 		//General velocities applied just for last frame (like an anti offset set when groundsticking) are removed later on in this script so should not be factored in here.
 		if (_velocityToNotCountWhenCheckingForAChange != Vector3.zero)
 		{
@@ -120,6 +125,7 @@ public class S_PlayerVelocity : MonoBehaviour
 		//Only apply the changes if physics decreased the speed.
 		if (speedThisFrameSquared < speedLastFrameSquared)
 		{
+			Debug.DrawRay(transform.position, Vector3.up * 2, Color.black, 10f);
 
 			float angleChange = Vector3.Angle(velocityThisFrame, velocityLastFrame);
 			if (speedThisFrameSquared < 0.01f) { angleChange = 0; } //Because angle would still be calculated even if a one vector is zero.
@@ -271,8 +277,8 @@ public class S_PlayerVelocity : MonoBehaviour
 		_RB.velocity = _totalVelocity;
 
 		//Adds this new velocity to a list of 2, tracking the last 2 frames.
-		_previousVelocities.Insert(0, _totalVelocity);
-		_previousVelocities.RemoveAt(4);
+		_previousVelocity.Insert(0, _totalVelocity);
+		_previousVelocity.RemoveAt(5);
 
 		//Assigns the global variables for the current movement, since it's assigned at the end of a frame, changes between frames won't be counted when using this,
 		_speedMagnitudeSquared = _totalVelocity.sqrMagnitude;

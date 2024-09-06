@@ -106,7 +106,13 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 		//Effects
 		_JumpBall.SetActive(false);
-		_Sounds.PainVoicePlay();
+		if(!_wasHit) 
+			_Sounds.BonkSound();
+		else
+		{
+			_Sounds.HitSound(); //If not frontier reaction (where ring loss is delayed), this will be overwritten by ring long sound.
+			_Sounds.PainVoicePlay();
+		}
 
 		//Animator
 		_Actions._ActionDefault.SwitchSkin(true);
@@ -120,11 +126,12 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		//For checking for a wall. 
 		Vector3 boxSize = new Vector3(_CharacterCapsule.radius, _CharacterCapsule.height, _CharacterCapsule.radius); //Based on player collider size
 		float checkDistance = _PlayerVel._previousHorizontalSpeeds[3] * Time.deltaTime * 3; //Direction and speed are obtained from previous frames because there has now been a collision that may have affected them this frame.
-		Vector3 checkDirection = _PlayerVel._previousVelocities[3].normalized;
+		Vector3 checkDirection = _PlayerVel._previousVelocity[3].normalized;
 		
 		//If going to keep moving in direction
 		//Knockback direction will have been set to zero in the hurt handler if not resetting speed on hit. If there isn't a solid object infront, then dont bounce back.
-		if (_knockbackDirection == Vector3.zero && !Physics.BoxCast(transform.position, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
+		if (_knockbackDirection == Vector3.zero && 
+			!Physics.BoxCast(transform.position, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
 		{
 			//Apply slight force against and upwards.
 			_PlayerVel.AddCoreVelocity(-_PlayerPhys._RB.velocity.normalized * _knockbackForce_ * 0.2f);
@@ -142,7 +149,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		//If being knocked back and Speed should be reset.
 		else
 		{
-			Vector3 movePlacement = -_PlayerVel._previousVelocities[3] * Time.deltaTime * 0.5f;
+			Vector3 movePlacement = -_PlayerVel._previousVelocity[4] * Time.deltaTime;
 			movePlacement += transform.up;
 			_PlayerPhys.SetPlayerPosition(transform.position + movePlacement); //Places character back the way they were moving to avoid weird collisions.
 
@@ -198,6 +205,9 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
 		this.enabled = true;
+
+		//Ensure player is hit off the ground and won't immediately be grounded to remove force applied. Also ensures this is the action before LoseGroundEventsAreCalled
+		_PlayerPhys.SetIsGrounded(false, 0.4f);
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -282,8 +292,8 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			//The frontiers response element means health isn't checked until hitting the ground after being hit.
 			if (_HurtControl._inHurtStateBeforeDamage)
 			{
-				_HurtControl._inHurtStateBeforeDamage = false;
 				_HurtControl.CheckHealth();
+				_HurtControl._inHurtStateBeforeDamage = false; //Goes after because Check Health will lead to reaction that check this to see if they should play sound.
 			}
 			//The normal response ends the action as soon as landed to get back into the fray
 			if (_HurtControl._wasHurtWithoutKnockback && !_HurtControl._isDead)

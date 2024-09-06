@@ -722,22 +722,22 @@ public class S_Interaction_Objects : MonoBehaviour
 			switch (input)
 			{
 				case (SwitchProControllerHID):
-					_CoreUIElements.HintBox.ShowHint(HintRingScript.hintTextGamePad, HintRingScript.hintDuration);
+					CheckHint(HintRingScript.hintTextGamePad, HintRingScript.hintText, HintRingScript.hintDuration);
 					break;
 				case (DualSenseGamepadHID):
-					_CoreUIElements.HintBox.ShowHint(HintRingScript.hintTextPS4, HintRingScript.hintDuration);
+					CheckHint(HintRingScript.hintTextPS4, HintRingScript.hintText, HintRingScript.hintDuration);
 					break;
 				case (DualShock3GamepadHID):
-					_CoreUIElements.HintBox.ShowHint(HintRingScript.hintTextPS4, HintRingScript.hintDuration);
+					CheckHint(HintRingScript.hintTextPS4, HintRingScript.hintText, HintRingScript.hintDuration);
 					break;
 				case (DualShock4GamepadHID):
-					_CoreUIElements.HintBox.ShowHint(HintRingScript.hintTextPS4, HintRingScript.hintDuration);
+					CheckHint(HintRingScript.hintTextPS4, HintRingScript.hintText, HintRingScript.hintDuration);
 					break;
 				case (DualShockGamepad):
-					_CoreUIElements.HintBox.ShowHint(HintRingScript.hintTextPS4, HintRingScript.hintDuration);
+					CheckHint(HintRingScript.hintTextPS4, HintRingScript.hintText, HintRingScript.hintDuration);
 					break;
 				case (XInputController):
-					_CoreUIElements.HintBox.ShowHint(HintRingScript.hintTextXbox, HintRingScript.hintDuration);
+					CheckHint(HintRingScript.hintTextXbox, HintRingScript.hintText, HintRingScript.hintDuration);
 					break;
 				//If input is none of the above, display the default.
 				default:
@@ -745,6 +745,13 @@ public class S_Interaction_Objects : MonoBehaviour
 					break;
 			}
 		}
+	}
+
+	private void CheckHint ( string[] thisHint, string[] baseHint, float[] duration) {
+		if (thisHint.Length == 0)
+			_CoreUIElements.HintBox.ShowHint(baseHint, duration);
+		else
+			_CoreUIElements.HintBox.ShowHint(thisHint, duration);
 	}
 
 	//Until the players hit the ground, all gravity calculations will use the set gravity value.

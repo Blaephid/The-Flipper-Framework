@@ -246,6 +246,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float              slopeEffectLimit;
 		[Tooltip("Core: Decides if the player will fall off the slope. If their speed is under what this curve has for the current normal's y value, then they fall off.")]
 		public AnimationCurve     SpeedLimitBySlopeAngle;
+		[Tooltip("Core: The x value is the up direction of the slope (1 = straight up, 0 = on a 90 degree wall). The slope power is multiplied by the y value. This is to ensure steeper slopes give more benefit, but that 90 degree isn't too powerful.")]
+		public AnimationCurve         SlopePowerByAngle;
 		[Header("Forces")]
 		[Tooltip("Surface : Sets the overall force power of slopes.")]
 		public float              generalHillMultiplier;
@@ -253,8 +255,10 @@ public class S_O_CharacterStats : ScriptableObject
 		public float              uphillMultiplier;
 		[Tooltip("Surface : Multiplied with the force of a slope when going downhill to determine the force for.")]
 		public float              downhillMultiplier;
-		[Tooltip("Core : Determines the power of the slope by current speed divided by max. ")]
+		[Tooltip("Core : If going uphill, slope power is multipled by the y value of this based on the current running speed (divided by max) ")]
 		public AnimationCurve     SlopePowerByCurrentSpeed;
+		[Tooltip("Core : SSame as above but affects downhill force ")]
+		public AnimationCurve     SlopePowerDownByCurrentSpeed;
 		[Tooltip("Core: Determines the power of the slope when going uphill, based on how long has been spent going uphill since they were last going downhill or on flat ground.")]
 		public AnimationCurve     UpHillEffectByTime;
 		[Header("Triggers")]
@@ -277,7 +281,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucStickToGround SetStrucGreedyStick () {
 		return new StrucStickToGround
 		{
-			forceTowardsGround = 2,
+			forceTowardsGround = new Vector2 (3f,4.5f),
 			stickingLerps = new Vector2(0.98f, 1.02f),
 			stickingNormalLimit = 0.519f,
 			stickCastAhead = 1.7f,
@@ -295,7 +299,8 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucStickToGround
 	{
-		public float        forceTowardsGround;
+		[Tooltip("The magnitude of the force pushing the player into the ground while grounded. X is on flat ground, y is when ground is sloping down. This is not called with upwards slopes.")]
+		public Vector2       forceTowardsGround;
 		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (loops), and Y is positive Slopes (imagine running on the outside of a loop). ")]
 		public Vector2      stickingLerps;
 		[Range(0, 1)]
