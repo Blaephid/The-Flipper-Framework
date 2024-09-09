@@ -155,7 +155,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 			yield return new WaitForSeconds(0.04f);
 			yield return new WaitForFixedUpdate();
-			yield return new WaitForEndOfFrame();
 			_canGrindOnRail = false; //Set true in the grinding action script whenever attempt action is called. This will mean currently in an action that can enter grind rails. 
 			_canEnterAutoPath = false;
 		}
