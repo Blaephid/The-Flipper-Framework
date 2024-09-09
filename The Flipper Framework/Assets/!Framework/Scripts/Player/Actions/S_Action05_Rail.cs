@@ -686,7 +686,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			_distanceToStep -= Mathf.Abs(move);
 
 			//Near the end of a step, renable collision so can collide again with grind on them instead.
-			if (_distanceToStep < 6)
+			if (_distanceToStep < 3)
 			{
 				AttemptAction();
 				Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
