@@ -6,62 +6,58 @@ using UnityEditor;
 namespace templates
 {
 
-	public class MainScript : ScriptableObject
+	public class _MainScript_ : ScriptableObject
 	{
 #if UNITY_EDITOR
-		public S_O_CustomInspectorStyle InspectorTheme;
+		public S_O_CustomInspectorStyle _InspectorTheme;
 #endif
 	}
 
 #if UNITY_EDITOR
-	[CustomEditor(typeof(MainScript))]
+	[CustomEditor(typeof(_MainScript_))]
 	public class MainScriptEditor : Editor
 	{
-		MainScript Owner;
-		GUIStyle headerStyle;
-		GUIStyle ResetToDefaultButton;
-		float spaceSize;
+		_MainScript_ _OwnerScript;
+
+		GUIStyle _HeaderStyle;
+		GUIStyle _BigButtonStyle;
+		GUIStyle _SmallButtonStyle;
+		float _spaceSize;
 
 		public override void OnInspectorGUI () {
 			DrawInspector();
 		}
+
 		private void OnEnable () {
 			//Setting variables
-			Owner = (MainScript)target;
+			_OwnerScript = (_MainScript_)target;
 
-			if (Owner.InspectorTheme == null) { return; }
-			headerStyle = Owner.InspectorTheme._MainHeaders;
-			ResetToDefaultButton = Owner.InspectorTheme._ResetButton;
-			spaceSize = Owner.InspectorTheme._spaceSize;
+			if (_OwnerScript._InspectorTheme == null) { return; }
+			_HeaderStyle = _OwnerScript._InspectorTheme._MainHeaders;
+			_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
+			_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
 		}
 
 		private void DrawInspector () {
 
 			//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
 			EditorGUI.BeginChangeCheck();
-			EditorGUILayout.PropertyField(serializedObject.FindProperty("InspectorTheme"), new GUIContent("Inspector Theme"));
+			EditorGUILayout.PropertyField(serializedObject.FindProperty("_InspectorTheme"), new GUIContent("Inspector Theme"));
 			serializedObject.ApplyModifiedProperties();
 			if (EditorGUI.EndChangeCheck())
 			{
-				headerStyle = Owner.InspectorTheme._MainHeaders;
-				ResetToDefaultButton = Owner.InspectorTheme._ResetButton;
-				spaceSize = Owner.InspectorTheme._spaceSize;
+				_HeaderStyle = _OwnerScript._InspectorTheme._MainHeaders;
+				_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
+				_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
 			}
 
 			//Will only happen if above is attatched and has a theme.
-			if (Owner == null || Owner.InspectorTheme == null) return;
+			if (_OwnerScript == null || _OwnerScript._InspectorTheme == null) return;
 
 			serializedObject.Update();
 
 			//Describe what the script does
 			EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
-
-			//Order of Drawing
-			EditorGUILayout.Space(spaceSize);
-			EditorGUILayout.LabelField("Core Movement", headerStyle);
-			DrawStructWithDefault();
-			DrawGeneralStruct();
-
 
 
 			//Called whenever a property needs to be shown in the editor.
@@ -71,14 +67,38 @@ namespace templates
 			}
 
 
+			//Button for adding new action
+			void DrawButton () {
+
+				//Add new element button.
+				Undo.RecordObject(_OwnerScript, "What Button Does");
+				if (GUILayout.Button("Button Name", _BigButtonStyle))
+				{
+					//Insert Action
+					serializedObject.Update();
+				}
+				serializedObject.ApplyModifiedProperties();
+			}
+
+
+			//ONLY ADD THE FOLLOWING IF THIS EDITOR IS INTENDED TO SHOW A LARGE GROUP OF VARIABLES IN YOUR OWN WAY
+			//USE DRAWDEFAULTINPSECTOR INSTEAD TO GET YOUR VARIABLES NORMALLY
+			//Order of Drawing
+			EditorGUILayout.Space(_spaceSize);
+			EditorGUILayout.LabelField("Core Movement", _HeaderStyle);
+			DrawStructWithDefault();
+			DrawGeneralStruct();
+			DrawButton();
+
+
 			//Struct With Default
 			#region Struct
 			void DrawStructWithDefault () {
-				EditorGUILayout.Space(spaceSize);
+				EditorGUILayout.Space(_spaceSize);
 				DrawProperty("StructWithDefault", "Struct With Default", true);
 
-				Undo.RecordObject(Owner, "set to defaults");
-				if (GUILayout.Button("Default", ResetToDefaultButton))
+				Undo.RecordObject(_OwnerScript, "set to defaults");
+				if (GUILayout.Button("Default", _BigButtonStyle))
 				{
 					//Owner.StructWithDefault = Owner.DefaultStruct;
 				}
@@ -90,7 +110,7 @@ namespace templates
 			//GeneralStruct
 			#region GeneralStruct
 			void DrawGeneralStruct () {
-				EditorGUILayout.Space(spaceSize);
+				EditorGUILayout.Space(_spaceSize);
 				DrawProperty("GeneralStruct", "GeneralStruct", false);
 			
 				serializedObject.ApplyModifiedProperties();
