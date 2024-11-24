@@ -12,18 +12,18 @@ using Unity.VisualScripting;
 #if UNITY_EDITOR
 public class S_TakeScreenShots : MonoBehaviour
 {
-	[SerializeField] string fileName = "Screenshot";
-	[SerializeField] string folderPathFromAssets = "/Assets/ScreenShots/";
-	[SerializeField] int scaleValue = 2;
-	[SerializeField] bool _withUI;
+	[SerializeField] string _fileName = "Screenshot";
+	[SerializeField] string _folderPathFromAssets = "/Assets/ScreenShots/";
+	[SerializeField] int _scaleValue = 2;
 
-	private bool _screenShotLock;
+	[SerializeField] bool _withUI;
+	[SerializeField] bool _fileNameWithTimeStamp = true;
+
 
 	[ContextMenu("Take Shot")]
 	public void TakeShot () {
 		if(!this.enabled) {return;}
 
-		_screenShotLock = true;
 		StartCoroutine(TakeScreenShotCourotine());
 	}
 
@@ -44,19 +44,15 @@ public class S_TakeScreenShots : MonoBehaviour
 	private IEnumerator TakeScreenShotCourotine () {
 		
 		CheckUI(false);
-
 		yield return new WaitForEndOfFrame();
 
-	
 		var directory = new DirectoryInfo(Application.dataPath);
-		//string usename = fileName + ".png";
-		//string usename = string.Format(fileName, DateTime.Now.ToString("yyyyMMdd_Hmmss"));
-		string usename = fileName + "-" + DateTime.Now.ToString("yyMMdd-Hmmss");
-		usename = folderPathFromAssets + usename + ".png";
-		//string path = Path.Combine(directory.Parent.FullName, usename);
+
+		string usename = _fileNameWithTimeStamp ? _fileName + "-" + DateTime.Now.ToString("yyMMdd-Hmmss") : _fileName;
+		usename = _folderPathFromAssets + usename + ".png";
 		string path = directory.Parent.FullName + usename;
 
-		ScreenCapture.CaptureScreenshot(path, scaleValue);
+		ScreenCapture.CaptureScreenshot(path, _scaleValue);
 
 		Debug.LogWarning(path + " Has Been Taken");
 
@@ -69,11 +65,6 @@ public class S_TakeScreenShots : MonoBehaviour
 	private void Reset () {
 		AssetDatabase.Refresh();
 		Debug.Log("Refreshed Assets");
-	}
-
-	IEnumerator waitFor () {
-		yield return new WaitForSeconds(.3f);
-		Reset();
 	}
 
 	public S_O_CustomInspectorStyle _InspectorTheme;
@@ -99,7 +90,11 @@ public class MainScriptEditor : Editor
 		_OwnerScript = (S_TakeScreenShots)target;
 
 		if (_OwnerScript._InspectorTheme == null) { return; }
-		_HeaderStyle = _OwnerScript._InspectorTheme._MainHeaders;
+		ApplyStyle();
+	}
+
+	private void ApplyStyle () {
+		_HeaderStyle = _OwnerScript._InspectorTheme._ReplaceNormalHeaders;
 		_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
 		_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
 	}
@@ -108,16 +103,12 @@ public class MainScriptEditor : Editor
 
 		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
 		EditorGUI.BeginChangeCheck();
-		if (_OwnerScript._InspectorTheme == null)
-		{
-			EditorGUILayout.PropertyField(serializedObject.FindProperty("_InspectorTheme"), new GUIContent("Inspector Theme"));
-		}
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("_InspectorTheme"), new GUIContent("Inspector Theme"));
+		
 		serializedObject.ApplyModifiedProperties();
 		if (EditorGUI.EndChangeCheck())
 		{
-			_HeaderStyle = _OwnerScript._InspectorTheme._MainHeaders;
-			_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
-			_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
+			ApplyStyle();
 		}
 
 		//Will only happen if above is attatched and has a theme.
@@ -126,11 +117,18 @@ public class MainScriptEditor : Editor
 		serializedObject.Update();
 
 		//Describe what the script does
-		EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
+		EditorGUILayout.TextArea("Adding this script to an object allows you to take screenshots of the current game view, both in edit and play mode. \n" +
+			"Make sure you've set the correct path for a file to store the image.", EditorStyles.textArea);
 
 		DrawButton();
-		DrawDefaultInspector();
+		EditorGUILayout.LabelField("File", _HeaderStyle);
+		DrawProperty("_fileName", "File Name");
+		DrawProperty("_folderPathFromAssets", "Folder Path From Assets");
+		DrawProperty("_scaleValue", "Scale Value");
 
+		EditorGUILayout.LabelField("Options", _HeaderStyle);
+		DrawProperty("_withUI", "Include UI");
+		DrawProperty("_fileNameWithTimeStamp", "Include Time Stamp");
 
 		//Button for adding new action
 		void DrawButton () {
@@ -143,10 +141,11 @@ public class MainScriptEditor : Editor
 		}
 
 		//Called whenever a property needs to be shown in the editor.
-		//void DrawProperty ( string property, string outputName, bool isHorizontal ) {
-		//	if (isHorizontal) GUILayout.BeginHorizontal();
-		//	EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
-		//}
+		void DrawProperty ( string property, string outputName, bool isHorizontal = false ) {
+			if (isHorizontal) GUILayout.BeginHorizontal();
+			EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
+			serializedObject.ApplyModifiedProperties();
+		}
 	}
 }
 

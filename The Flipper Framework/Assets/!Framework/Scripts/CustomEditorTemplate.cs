@@ -33,6 +33,10 @@ namespace templates
 			_OwnerScript = (_MainScript_)target;
 
 			if (_OwnerScript._InspectorTheme == null) { return; }
+			ApplyStyle();
+		}
+
+		private void ApplyStyle () {
 			_HeaderStyle = _OwnerScript._InspectorTheme._MainHeaders;
 			_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
 			_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
@@ -46,9 +50,7 @@ namespace templates
 			serializedObject.ApplyModifiedProperties();
 			if (EditorGUI.EndChangeCheck())
 			{
-				_HeaderStyle = _OwnerScript._InspectorTheme._MainHeaders;
-				_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
-				_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
+				ApplyStyle();
 			}
 
 			//Will only happen if above is attatched and has a theme.
@@ -61,9 +63,10 @@ namespace templates
 
 
 			//Called whenever a property needs to be shown in the editor.
-			void DrawProperty ( string property, string outputName, bool isHorizontal ) {
+			void DrawProperty ( string property, string outputName, bool isHorizontal = false) {
 				if (isHorizontal) GUILayout.BeginHorizontal();
 				EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
+				serializedObject.ApplyModifiedProperties();
 			}
 
 
@@ -89,6 +92,7 @@ namespace templates
 			DrawStructWithDefault();
 			DrawGeneralStruct();
 			DrawButton();
+			DrawProperty("", "");
 
 
 			//Struct With Default

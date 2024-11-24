@@ -288,15 +288,14 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	#endregion
 
-	/// <summary>
+	///
 	/// Private ----------------------------------------------------------------------------------
-	/// </summary>
-	/// 
+	/// These functions are only called by this class, or classes this functions calls.
 	#region private
 
 	//Manages the character's physics, calling the relevant functions.
 	//IMPORTANT. Due to the order and the Script Execution Order project settings, this will always be the first Method called every FixedUpdate, before any other script in the game.
-	public void HandleGeneralPhysics () {
+	private void HandleGeneralPhysics () {
 
 		Profiler.BeginSample("PlayerPhysics");
 

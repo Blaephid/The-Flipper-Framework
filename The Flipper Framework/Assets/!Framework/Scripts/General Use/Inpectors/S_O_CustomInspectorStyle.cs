@@ -14,13 +14,14 @@ public class S_O_CustomInspectorStyle : ScriptableObject
 	public GUIStyle _GeneralButton;
 	public GUIStyle _MainHeaders;
 	public GUIStyle _SubHeaders;
+	public GUIStyle _ReplaceNormalHeaders;
 
 }
 
 [CustomEditor(typeof(S_O_CustomInspectorStyle))]
 public class CustomInpsectorEditor : Editor
 {
-
+	//Draw and include resets
 	public override void OnInspectorGUI () {
 
 		
@@ -30,7 +31,7 @@ public class CustomInpsectorEditor : Editor
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("_spaceSize"), new GUIContent("Size of Spaces"));
 		serializedObject.ApplyModifiedProperties();
 
-		//Default Button
+		//Default Main Header
 		DrawLabel("_MainHeaders", "Main Headers", new GUIStyle(Details._MainHeaders));
 		Undo.RecordObject(Details, "Reset");
 		if (GUILayout.Button("Reset", new GUIStyle(Details._ResetButton))) 
@@ -39,11 +40,20 @@ public class CustomInpsectorEditor : Editor
 		GUILayout.EndHorizontal();
 		//
 
-		//Default Button
+		//Default Sub Header
 		DrawLabel("_SubHeaders", "Sub-Headers", new GUIStyle(Details._SubHeaders));
 		Undo.RecordObject(Details, "Reset");
 		if (GUILayout.Button("Reset", new GUIStyle(Details._ResetButton)))
 			{ Details._SubHeaders = new GUIStyle(GUI.skin.label); }
+		serializedObject.ApplyModifiedProperties();
+		GUILayout.EndHorizontal();
+		//
+
+		//Default Normal Header
+		DrawLabel("_ReplaceNormalHeaders", "Normal Headers", new GUIStyle(Details._ReplaceNormalHeaders));
+		Undo.RecordObject(Details, "Reset");
+		if (GUILayout.Button("Reset", new GUIStyle(Details._ResetButton)))
+			{ Details._ReplaceNormalHeaders = new GUIStyle(GUI.skin.label); }
 		serializedObject.ApplyModifiedProperties();
 		GUILayout.EndHorizontal();
 		//
