@@ -290,7 +290,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	///
 	/// Private ----------------------------------------------------------------------------------
-	/// These functions are only called by this class, or classes this functions calls.
+	/// These functions are only called by this class, or during its loop. Coupled with S_PlayerMovement and S_PlayerVelocity.
 	#region private
 
 	//Manages the character's physics, calling the relevant functions.
@@ -406,7 +406,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 		SetIsGrounded(false, 0.01f);
 	}
-
 
 	//Calls all the methods involved in managing coreVelocity on the ground, such as normal control (with normal modifiers), sticking to the ground, and effects from slopes.
 	private void GroundMovement () {
