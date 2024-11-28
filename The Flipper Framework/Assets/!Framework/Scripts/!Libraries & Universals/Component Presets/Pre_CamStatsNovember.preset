@@ -1,0 +1,2049 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Pre_CamStatsNovember
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: f48d55fdb945b2a45a4655f2bcf8617e,
+      type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: Title
+    value: Title
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultLockHeightStats.LockHeight
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultLockHeightStats.LockHeightSpeed
+    value: 0.8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultLockHeightStats.HeightToLock
+    value: 10
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultLockHeightStats.afterMoveYDelay
+    value: 0.4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: LockHeightStats.LockHeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: LockHeightStats.LockHeightSpeed
+    value: 0.8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: LockHeightStats.HeightToLock
+    value: 10
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: LockHeightStats.afterMoveYDelay
+    value: 0.4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAutoLookDownStats.shouldLookDownWhenInAir
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAutoLookDownStats.minHeightToLookDown
+    value: 50
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAutoLookDownStats.FallSpeedThreshold
+    value: -140
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAutoLookDownStats.HeightFollowSpeed
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AutoLookDownStats.shouldLookDownWhenInAir
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AutoLookDownStats.minHeightToLookDown
+    value: 50
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AutoLookDownStats.FallSpeedThreshold
+    value: -140
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AutoLookDownStats.HeightFollowSpeed
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.CameraDistance
+    value: 8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.shouldAffectDistancebySpeed
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.size
+    value: 9
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].time
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].value
+    value: 0.8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].time
+    value: 0.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].value
+    value: 0.85
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].time
+    value: 0.3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].time
+    value: 0.4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].time
+    value: 0.6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].value
+    value: 1.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].time
+    value: 0.7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].value
+    value: 1.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].time
+    value: 0.8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].value
+    value: 1.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[7].time
+    value: 0.85
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[7].value
+    value: 1.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[7].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[7].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[7].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[7].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[7].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[7].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[8].time
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[8].value
+    value: 1.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[8].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[8].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[8].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[8].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[8].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[8].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.cameraDistanceBySpeed.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultDistanceStats.CollidableLayers.m_Bits
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.CameraDistance
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.shouldAffectDistancebySpeed
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.size
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].time
+    value: 0.016149133
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].value
+    value: 1.0013306
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].inSlope
+    value: 0.000987997
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].outSlope
+    value: 0.000987997
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].inWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[0].outWeight
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].time
+    value: 0.16314912
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].value
+    value: 1.0004516
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].inSlope
+    value: -0.053846795
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].outSlope
+    value: -0.053846795
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].inWeight
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[1].outWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].time
+    value: 0.32706457
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].value
+    value: 0.65009236
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[2].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].time
+    value: 0.4549701
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].value
+    value: 0.4680855
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[3].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].time
+    value: 0.73506284
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].value
+    value: 0.38258705
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[4].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].time
+    value: 1.0211059
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].value
+    value: 0.312754
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[5].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].time
+    value: 1.3068415
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].value
+    value: 0.29987463
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_Curve.Array.data[6].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.cameraDistanceBySpeed.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DistanceStats.CollidableLayers.m_Bits
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultFOVStats.baseFOV
+    value: 50
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultFOVStats.shouldAffectFOVbySpeed
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultFOVStats.cameraFOVBySpeed.m_Curve.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultFOVStats.cameraFOVBySpeed.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultFOVStats.cameraFOVBySpeed.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultFOVStats.cameraFOVBySpeed.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.baseFOV
+    value: 80
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.shouldAffectFOVbySpeed
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.size
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[0].time
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[0].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[0].inSlope
+    value: 0.05884768
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[0].outSlope
+    value: 0.05884768
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[0].tangentMode
+    value: 34
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[0].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[0].outWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[1].time
+    value: 0.3882446
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[1].value
+    value: 1.0228473
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[1].inSlope
+    value: 0.043673817
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[1].outSlope
+    value: 0.043673817
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[1].inWeight
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[1].outWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[2].time
+    value: 0.43523532
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[2].value
+    value: 1.0735463
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[2].inSlope
+    value: 1.7580354
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[2].outSlope
+    value: 1.7580354
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[2].tangentMode
+    value: 34
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[2].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[2].inWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[2].outWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[3].time
+    value: 0.52648926
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[3].value
+    value: 1.2959464
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[3].inSlope
+    value: 1.4775796
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[3].outSlope
+    value: 1.4775796
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[3].tangentMode
+    value: 34
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[3].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[3].inWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[3].outWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[4].time
+    value: 0.7685416
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[4].value
+    value: 1.4213302
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[4].inSlope
+    value: 0.42961407
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[4].outSlope
+    value: 0.42961407
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[4].tangentMode
+    value: 34
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[4].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[4].inWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[4].outWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[5].time
+    value: 1.0125079
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[5].value
+    value: 1.5045776
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[5].inSlope
+    value: 0.49130714
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[5].outSlope
+    value: 0.49130714
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[5].tangentMode
+    value: 34
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[5].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[5].inWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[5].outWeight
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[6].time
+    value: 1.3255699
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[6].value
+    value: 1.7053722
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[6].inSlope
+    value: 1.0388916
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[6].outSlope
+    value: 1.0388916
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[6].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[6].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[6].inWeight
+    value: 0.34930727
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_Curve.Array.data[6].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: FOVStats.cameraFOVBySpeed.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.dampingBehind.x
+    value: 0.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.dampingBehind.y
+    value: 0.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.dampingBehind.z
+    value: 0.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.dampingInFront.x
+    value: 0.1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.dampingInFront.y
+    value: 0.1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.dampingInFront.z
+    value: 0.1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.softZone.x
+    value: 0.25
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.softZone.y
+    value: 0.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.deadZone.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultCinemachineStats.deadZone.y
+    value: 0.1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.dampingBehind.x
+    value: 0.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.dampingBehind.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.dampingBehind.z
+    value: 0.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.dampingInFront.x
+    value: 0.1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.dampingInFront.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.dampingInFront.z
+    value: 0.1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.softZone.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.softZone.y
+    value: 0.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.deadZone.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: cinemachineStats.deadZone.y
+    value: 0.1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.angleThresholdUpwards
+    value: 0.4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.angleThresholdDownwards
+    value: 0.8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.CameraVerticalRotationSpeed
+    value: 11
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].time
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].time
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].value
+    value: 1.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultAligningStats.vertFollowSpeedByAngle.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.angleThresholdUpwards
+    value: 0.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.angleThresholdDownwards
+    value: 0.8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.CameraVerticalRotationSpeed
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].time
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[0].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].time
+    value: 0.98750305
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].value
+    value: 1.0187492
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_Curve.Array.data[1].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: AligningStats.vertFollowSpeedByAngle.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultLookAheadStats.shouldMoveInInputDirection
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultLookAheadStats.inputPredictonDistance
+    value: 1.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultLookAheadStats.cameraMoveToInputSpeed
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: LookAheadStats.shouldMoveInInputDirection
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: LookAheadStats.inputPredictonDistance
+    value: 0.9
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: LookAheadStats.cameraMoveToInputSpeed
+    value: 2.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultInputStats.InputXSpeed
+    value: 70
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultInputStats.InputYSpeed
+    value: 55
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultInputStats.InputSensi
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultInputStats.InputMouseSensi
+    value: 0.035
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultInputStats.stationaryCamIncrease
+    value: 1.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: InputStats.InputXSpeed
+    value: 70
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: InputStats.InputYSpeed
+    value: 55
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: InputStats.InputSensi
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: InputStats.InputMouseSensi
+    value: 0.035
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: InputStats.stationaryCamIncrease
+    value: 1.05
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.shouldMoveBasedOnAngle
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.size
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].time
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].time
+    value: -0.7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].time
+    value: -0.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].value
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].time
+    value: 0.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].value
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].time
+    value: 0.75
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].value
+    value: 1.6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].time
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].value
+    value: 1.6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveUpByAngle.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.size
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].time
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].value
+    value: -1.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].time
+    value: -0.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].value
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].time
+    value: 0.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].value
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].time
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].value
+    value: 1.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultTargetByAngleStats.moveSideByAngle.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.shouldMoveBasedOnAngle
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.size
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].time
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[0].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].time
+    value: -0.7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[1].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].time
+    value: -0.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].value
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[2].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].time
+    value: 0.35
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].value
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[3].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].time
+    value: 0.75
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].value
+    value: 1.6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[4].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].time
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].value
+    value: 1.6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_Curve.Array.data[5].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveUpByAngle.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.size
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].time
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].value
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[0].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].time
+    value: -0.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].value
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[1].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].time
+    value: 0.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].value
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[2].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].time
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].value
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].inSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].outSlope
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].tangentMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].weightedMode
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].inWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_Curve.Array.data[3].outWeight
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_PreInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_PostInfinity
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: TargetByAngleStats.moveSideByAngle.m_RotationOrder
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultRotateBehindStats.LockCamAtHighSpeed
+    value: 90
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultRotateBehindStats.afterMoveXDelay
+    value: 0.4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultRotateBehindStats.rotateToBehindSpeed
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultRotateBehindStats.rotateCharacterBeforeCameraFollows
+    value: 0.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultRotateBehindStats.followFacingDirectionSpeed
+    value: 0.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: RotateBehindStats.LockCamAtHighSpeed
+    value: 500
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: RotateBehindStats.afterMoveXDelay
+    value: 0.4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: RotateBehindStats.rotateToBehindSpeed
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: RotateBehindStats.rotateCharacterBeforeCameraFollows
+    value: 0.18
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: RotateBehindStats.followFacingDirectionSpeed
+    value: 20
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultClampingStats.yMinLimit
+    value: -90
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultClampingStats.yMaxLimit
+    value: 90
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: ClampingStats.yMinLimit
+    value: -75
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: ClampingStats.yMaxLimit
+    value: 80
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: DefaultEffectsStats.ShakeDampen
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: EffectsStats.ShakeDampen
+    value: 1.2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: InspectorTheme
+    value: 
+    objectReference: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+  m_ExcludedProperties: []
+  m_CoupledType:
+    m_NativeTypeID: 0
+    m_ManagedTypePPtr: {fileID: 0}
+    m_ManagedTypeFallback: 
+  m_CoupledProperties: []

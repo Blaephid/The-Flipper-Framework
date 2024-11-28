@@ -1,0 +1,689 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Pre_ActManBoost
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: 795317e0a409ba3499067f99a8f5ed0c,
+      type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _ActionDefault
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _ActionHurt
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _ObjectForActions
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _ObjectForSubActions
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _ObjectForInteractions
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _whatCurrentAction
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _whatSubAction
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _whatCurrentAttack
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _canChangeActions
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _listOfSpeedOnPaths.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.size
+    value: 13
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[0].State
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[0].ConnectedStates.Array.size
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].ConnectedStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].ConnectedStates.Array.data[2]'
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].ConnectedStates.Array.data[3]'
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].ConnectedStates.Array.data[4]'
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[0].SituationalStates.Array.size
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[2]'
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[3]'
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[4]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[5]'
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].SituationalStates.Array.data[6]'
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[0].PerformableSubStates.Array.size
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].PerformableSubStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].PerformableSubStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[0].PerformableSubStates.Array.data[2]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[1].State
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[1].ConnectedStates.Array.size
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].ConnectedStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].ConnectedStates.Array.data[2]'
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].ConnectedStates.Array.data[3]'
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[1].SituationalStates.Array.size
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].SituationalStates.Array.data[2]'
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].SituationalStates.Array.data[3]'
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[1].SituationalStates.Array.data[4]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[1].PerformableSubStates.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[2].State
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[2].ConnectedStates.Array.size
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].ConnectedStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].ConnectedStates.Array.data[2]'
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].ConnectedStates.Array.data[3]'
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[2].SituationalStates.Array.size
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[2]'
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[3]'
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[4]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[5]'
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].SituationalStates.Array.data[6]'
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[2].PerformableSubStates.Array.size
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].PerformableSubStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].PerformableSubStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[2].PerformableSubStates.Array.data[2]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[3].State
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[3].ConnectedStates.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[3].SituationalStates.Array.size
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[3].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[3].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[3].SituationalStates.Array.data[2]'
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[3].SituationalStates.Array.data[3]'
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[3].PerformableSubStates.Array.size
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[3].PerformableSubStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[4].State
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[4].ConnectedStates.Array.size
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[4].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[4].SituationalStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[4].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[4].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[4].PerformableSubStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[4].PerformableSubStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[4].PerformableSubStates.Array.data[1]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[5].State
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[5].ConnectedStates.Array.size
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[5].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[5].SituationalStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[5].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[5].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[5].PerformableSubStates.Array.size
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[5].PerformableSubStates.Array.data[0]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[6].State
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[6].ConnectedStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[6].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[6].ConnectedStates.Array.data[1]'
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[6].SituationalStates.Array.size
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[6].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[6].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[6].SituationalStates.Array.data[2]'
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[6].PerformableSubStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[6].PerformableSubStates.Array.data[0]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[6].PerformableSubStates.Array.data[1]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[7].State
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[7].ConnectedStates.Array.size
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[7].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[7].ConnectedStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[7].ConnectedStates.Array.data[2]'
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[7].SituationalStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[7].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[7].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[7].PerformableSubStates.Array.size
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[7].PerformableSubStates.Array.data[0]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[8].State
+    value: 9
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[8].ConnectedStates.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[8].SituationalStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[8].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[8].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[8].PerformableSubStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[8].PerformableSubStates.Array.data[0]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[8].PerformableSubStates.Array.data[1]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[9].State
+    value: 10
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[9].ConnectedStates.Array.size
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[9].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[9].SituationalStates.Array.size
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[2]'
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[9].SituationalStates.Array.data[3]'
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[9].PerformableSubStates.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[10].State
+    value: 11
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[10].ConnectedStates.Array.size
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[10].ConnectedStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[10].ConnectedStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[10].ConnectedStates.Array.data[2]'
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[10].SituationalStates.Array.size
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[10].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[10].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[10].SituationalStates.Array.data[2]'
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[10].SituationalStates.Array.data[3]'
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[10].PerformableSubStates.Array.size
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[10].PerformableSubStates.Array.data[0]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[11].State
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[11].ConnectedStates.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[11].SituationalStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[11].SituationalStates.Array.data[0]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[11].SituationalStates.Array.data[1]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[11].PerformableSubStates.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[12].State
+    value: 13
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[12].ConnectedStates.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[12].SituationalStates.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[12].SituationalStates.Array.data[0]'
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: '_MainActions.Array.data[12].SituationalStates.Array.data[1]'
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _MainActions.Array.data[12].PerformableSubStates.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: InspectorTheme
+    value: 
+    objectReference: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+  - target: {fileID: 0}
+    propertyPath: _addState
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _isAirDashAvailables
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _bounceCount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _actionTimeCounter
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _jumpCount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _dashDelayCounter
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _jumpAngle.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _jumpAngle.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _jumpAngle.z
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _dashAngle.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _dashAngle.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _dashAngle.z
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _areAirActionsAvailable
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _isPaused
+    value: 0
+    objectReference: {fileID: 0}
+  m_ExcludedProperties: []
+  m_CoupledType:
+    m_NativeTypeID: 0
+    m_ManagedTypePPtr: {fileID: 0}
+    m_ManagedTypeFallback: 
+  m_CoupledProperties: []

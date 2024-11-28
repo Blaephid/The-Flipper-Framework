@@ -214,7 +214,7 @@ namespace SplineMesh
 [CustomEditor(typeof(S_SplineMeshTiling))]
 public class SplineMeshEditor : Editor
 {
-	S_SplineMeshTiling Owner;
+	S_SplineMeshTiling _OwnerScript;
 	GUIStyle headerStyle;
 	GUIStyle ButtonStyle;
 	float spaceSize;
@@ -224,49 +224,48 @@ public class SplineMeshEditor : Editor
 	}
 	private void OnEnable () {
 		//Setting variables
-		Owner = (S_SplineMeshTiling)target;
+		_OwnerScript = (S_SplineMeshTiling)target;
 
-		if (Owner._InspectorTheme == null) { return; }
-		UpdateTheme();
+		if (_OwnerScript._InspectorTheme == null) { return; }
+		ApplyStyle();
 	}
 
-	private void UpdateTheme () {
-		headerStyle = Owner._InspectorTheme._MainHeaders;
-		ButtonStyle = Owner._InspectorTheme._GeneralButton;
-		spaceSize = Owner._InspectorTheme._spaceSize;
+	private void ApplyStyle () {
+		headerStyle = _OwnerScript._InspectorTheme._MainHeaders;
+		ButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
+		spaceSize = _OwnerScript._InspectorTheme._spaceSize;
+		serializedObject.Update();
+	}
+
+
+	private bool IsThemeNotSet () {
+		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
+		if (S_S_CustomInspectorMethods.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
+		{
+			ApplyStyle();
+		}
+
+		//Will only happen if above is attatched and has a theme.
+		return (_OwnerScript == null || _OwnerScript._InspectorTheme == null);
 	}
 
 	private void DrawInspector () {
 
-		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
-		EditorGUI.BeginChangeCheck();
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("_InspectorTheme"), new GUIContent("Inspector Theme"));
-		serializedObject.ApplyModifiedProperties();
-		if (EditorGUI.EndChangeCheck())
-		{
-			UpdateTheme();
-		}
-
-		//Will only happen if above is attatched and has a theme.
-		if (Owner == null || Owner._InspectorTheme == null) return;
-
-		serializedObject.Update();
+		if (IsThemeNotSet()) return;
 
 		//Order of Drawing
 		EditorGUILayout.Space(spaceSize);
 		DrawButtons();
 
-
 		void DrawButtons () {
 			EditorGUILayout.Space(spaceSize);
 			EditorGUILayout.BeginHorizontal();
 
-			Undo.RecordObject(Owner, "Update Spline Meshes");
-			if (GUILayout.Button("Update This", ButtonStyle))
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Update This Spline Mesh", ButtonStyle, _OwnerScript, "Update Single Spline Meshes"))
 			{
-				Owner.rebuild();
+				_OwnerScript.rebuild();
 			}
-			if (GUILayout.Button("Update All", ButtonStyle))
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Update All Spline Meshes", ButtonStyle, _OwnerScript, "Update All Spline Meshes"))
 			{
 				S_SplineMeshTiling[] railsMeshes = FindObjectsByType<S_SplineMeshTiling>((FindObjectsSortMode.None));
 				foreach (S_SplineMeshTiling mesh in railsMeshes)

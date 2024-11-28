@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class S_ActionManager : MonoBehaviour
 {
@@ -595,7 +596,7 @@ public class ActionManagerEditor : Editor
 				EditorGUILayout.PropertyField(element, new GUIContent("Action " + i + " - " + _ActionMan._MainActions[i].State));
 
 				//Pressing this button inserts the state labled at the top to be transitined to from the current state.
-				if (GUILayout.Button("Add Set", SmallButtonStyle))
+				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Add Set", SmallButtonStyle, _ActionMan, "Add Connector to State"))
 				{
 					AddActionToThis(_ActionMan._addState, i);
 
@@ -603,7 +604,7 @@ public class ActionManagerEditor : Editor
 
 
 				//Remove this element button.
-				if (GUILayout.Button("Remove", SmallButtonStyle))
+				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Remove", SmallButtonStyle, _ActionMan, "Remove State"))
 				{
 					ActionList.DeleteArrayElementAtIndex(i);
 					serializedObject.ApplyModifiedProperties();
@@ -618,8 +619,7 @@ public class ActionManagerEditor : Editor
 			//Each element of the list is shown in the inspector seperately, rather than under one header. Therefore we need custom add and remove buttons.
 
 			//Add new element button.
-			Undo.RecordObject(_ActionMan, "Add New State");
-			if (GUILayout.Button("Add New State", BigButtonStyle))
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Add New State", BigButtonStyle, _ActionMan, "Add New State"))
 			{
 				AddActionToList(S_Enums.PrimaryPlayerStates.Default, true, true);
 				serializedObject.Update();
@@ -629,8 +629,7 @@ public class ActionManagerEditor : Editor
 
 		//Button for making sure the object has the components necessary to its actions.
 		void DrawMissingScripts () {
-			Undo.RecordObject(_ActionMan, "Import Missing");
-			if (GUILayout.Button("Import Missing", BigButtonStyle))
+			if(S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Import Missing", BigButtonStyle, _ActionMan, "Import Missing"))
 			{
 				for (int i = 0 ; i < _ActionMan._MainActions.Count ; i++)
 				{
@@ -687,8 +686,7 @@ public class ActionManagerEditor : Editor
 
 		//Button for making the list of actions ordered by the playerState enums they're set as.
 		void DrawReorderActions () {
-			Undo.RecordObject(_ActionMan, "Reorder Actions");
-			if (GUILayout.Button("Sort all actions", BigButtonStyle))
+			if(S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Sort all actions", BigButtonStyle, _ActionMan, "Reoder Actions"))
 			{
 				_ActionMan._MainActions = _ActionMan._MainActions.OrderBy(item => item.State).ToList();
 				serializedObject.ApplyModifiedProperties();

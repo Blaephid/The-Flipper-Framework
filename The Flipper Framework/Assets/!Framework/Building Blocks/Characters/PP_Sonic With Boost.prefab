@@ -6032,10 +6032,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5581a25298e347940b3e1c9251f6414b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: Screenshot1
-  folderPathFromAssets: /ScreenShots/
-  scaleValue: 4
+  _fileName: Screenshot
+  _folderPathFromAssets: /Assets/ScreenShots/
+  _scaleValue: 2
   _withUI: 0
+  _fileNameWithTimeStamp: 1
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!114 &1504729745689472983
 MonoBehaviour:

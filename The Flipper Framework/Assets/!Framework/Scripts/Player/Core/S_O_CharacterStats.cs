@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-//[CreateAssetMenu(fileName = "Character X Stats")]
+[CreateAssetMenu(fileName = "SO_Character X Stats")]
 public class S_O_CharacterStats : ScriptableObject
 {
 	[HideInInspector] public string Title = "Title";
@@ -1588,19 +1588,14 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawWhenHurt();
 		DrawKnockback();
 
-		void DrawProperty ( string property, string outputName ) {
-			GUILayout.BeginHorizontal();
-			EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
-		}
-
 		//Speeds
 		#region Speeds
 		void DrawSpeed () {
 			EditorGUILayout.Space();
-			DrawProperty("SpeedStats", "Speeds");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SpeedStats", "Speeds", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.SpeedStats = stats.StartSpeedStats;
 			}
@@ -1613,10 +1608,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Acceleration
 		void DrawAccel () {
 			EditorGUILayout.Space();
-			DrawProperty("AccelerationStats", "Acceleration");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"AccelerationStats", "Acceleration", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.AccelerationStats = stats.StartAccelerationStats;
 			}
@@ -1629,10 +1624,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Deceleration
 		void DrawDecel () {
 			EditorGUILayout.Space();
-			DrawProperty("DecelerationStats", "Deceleration");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"DecelerationStats", "Deceleration", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.DecelerationStats = stats.StartDecelerationStats;
 			}
@@ -1645,10 +1640,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Turning
 		void DrawTurning () {
 			EditorGUILayout.Space();
-			DrawProperty("TurningStats", "Turning");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"TurningStats", "Turning", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.TurningStats = stats.StarTurningStats;
 			}
@@ -1661,10 +1656,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Slopes
 		void DrawSlopes () {
 			EditorGUILayout.Space();
-			DrawProperty("SlopeStats", "On Slopes");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SlopeStats", "On Slopes", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.SlopeStats = stats.StartSlopeStats;
 			}
@@ -1677,10 +1672,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Sticking
 		void DrawSticking () {
 			EditorGUILayout.Space();
-			DrawProperty("GreedysStickToGround", "Sticking to the Ground (Greedy's Version)");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"GreedysStickToGround", "Sticking to the Ground (Greedy's Version)", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.GreedysStickToGround = stats.StartStickToGround;
 			}
@@ -1693,10 +1688,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Ground
 		void DrawFindGround () {
 			EditorGUILayout.Space();
-			DrawProperty("FindingGround", "Finding the ground");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"FindingGround", "Finding the ground", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.FindingGround = stats.StartFindGround;
 			}
@@ -1709,10 +1704,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region InAir
 		void DrawAir () {
 			EditorGUILayout.Space();
-			DrawProperty("WhenInAir", "Air Control");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenInAir", "Air Control", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.WhenInAir = stats.StartWhenInAir;
 			}
@@ -1725,10 +1720,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Rolling
 		void DrawRolling () {
 			EditorGUILayout.Space();
-			DrawProperty("RollingStats", "Rolling");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RollingStats", "Rolling", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.RollingStats = stats.StartRollingStats;
 			}
@@ -1741,10 +1736,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Skidding
 		void DrawSkidding () {
 			EditorGUILayout.Space();
-			DrawProperty("SkiddingStats", "Skidding");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SkiddingStats", "Skidding", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.SkiddingStats = stats.StartSkiddingStats;
 			}
@@ -1757,10 +1752,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Jumping
 		void DrawJumping () {
 			EditorGUILayout.Space();
-			DrawProperty("JumpStats", "Jumps");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"JumpStats", "Jumps", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.JumpStats = stats.StarJumpStats;
 			}
@@ -1773,10 +1768,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region MultiJumping
 		void DrawMultiJumps () {
 			EditorGUILayout.Space();
-			DrawProperty("MultipleJumpStats", "Additional Jumps");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"MultipleJumpStats", "Additional Jumps", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.MultipleJumpStats = stats.StartMultipleJumpStats;
 			}
@@ -1789,10 +1784,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Quickstep
 		void DrawQuickstep () {
 			EditorGUILayout.Space();
-			DrawProperty("QuickstepStats", "Quickstep");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"QuickstepStats", "Quickstep", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.QuickstepStats = stats.StartQuickstepStats;
 			}
@@ -1805,10 +1800,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region SpinCharge
 		void DrawSpinCharge () {
 			EditorGUILayout.Space();
-			DrawProperty("SpinChargeStats", "Spin Charge");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SpinChargeStats", "Spin Charge", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.SpinChargeStats = stats.StartSpinChargeStat;
 			}
@@ -1821,10 +1816,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Homing
 		void DrawHoming () {
 			EditorGUILayout.Space();
-			DrawProperty("HomingStats", "Homing Attack");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"HomingStats", "Homing Attack", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.HomingStats = stats.StartHomingStats;
 			}
@@ -1834,10 +1829,10 @@ public class S_O_CharacterStatsEditor : Editor
 
 		void DrawHomingSearch () {
 			EditorGUILayout.Space();
-			DrawProperty("HomingSearch", "Homing Targetting");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"HomingSearch", "Homing Targetting", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.HomingSearch = stats.StartHomingSearch;
 			}
@@ -1850,10 +1845,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Bounce
 		void DrawBounce () {
 			EditorGUILayout.Space();
-			DrawProperty("BounceStats", "Bounce");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"BounceStats", "Bounce", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.BounceStats = stats.StartBounceStats;
 			}
@@ -1866,10 +1861,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region RingRoad
 		void DrawRingRoad () {
 			EditorGUILayout.Space();
-			DrawProperty("RingRoadStats", "Ring Road");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RingRoadStats", "Ring Road", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.RingRoadStats = stats.StartRingRoadStats;
 			}
@@ -1882,10 +1877,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region DropCharge
 		void DrawDropCharge () {
 			EditorGUILayout.Space();
-			DrawProperty("DropChargeStats", "Drop Charge");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"DropChargeStats", "Drop Charge", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.DropChargeStats = stats.StartDropChargeStats;
 			}
@@ -1893,14 +1888,14 @@ public class S_O_CharacterStatsEditor : Editor
 			GUILayout.EndHorizontal();
 		}
 		#endregion
-
+			
 		//JumpDash
 		#region JumpDash
 		void DrawJumpDash () {
 			EditorGUILayout.Space();
-			DrawProperty("JumpDashStats", "Jump Dash");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"JumpDashStats", "Jump Dash", true);
 
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.JumpDashStats = stats.StartJumpDashStats;
 			}
@@ -1913,9 +1908,9 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Boost
 		void DrawBoost () {
 			EditorGUILayout.Space();
-			DrawProperty("BoostStats", "Boost Stats");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"BoostStats", "Boost Stats", true);
 
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.BoostStats = stats.StartBoostStats;
 			}
@@ -1928,10 +1923,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region EnemyInteraction
 		void DrawEnemyInteraction () {
 			EditorGUILayout.Space();
-			DrawProperty("EnemyInteraction", "Interacting with Enemies");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"EnemyInteraction", "Interacting with Enemies", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.EnemyInteraction = stats.StartEnemyInteraction;
 			}
@@ -1944,10 +1939,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region ItemPulling
 		void DrawItemPulling () {
 			EditorGUILayout.Space();
-			DrawProperty("ItemPulling", "Pulling in Items");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"ItemPulling", "Pulling in Items", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.ItemPulling = stats.StartItemPulling;
 			}
@@ -1960,10 +1955,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region WhenBonked
 		void DrawWhenBonked () {
 			EditorGUILayout.Space();
-			DrawProperty("WhenBonked", "Bonking");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenBonked", "Bonking", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.WhenBonked = stats.StartWhenBonked;
 			}
@@ -1976,10 +1971,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region WhenHurt
 		void DrawWhenHurt () {
 			EditorGUILayout.Space();
-			DrawProperty("WhenHurt", "Health interactions");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenHurt", "Health interactions", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.WhenHurt = stats.StartWhenHurt;
 			}
@@ -1992,10 +1987,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Knockback
 		void DrawKnockback () {
 			EditorGUILayout.Space();
-			DrawProperty("KnockbackStats", "Knockback");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"KnockbackStats", "Knockback", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.KnockbackStats = stats.StartKnockBackStats;
 			}
@@ -2008,10 +2003,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region RailStats
 		void DrawRailStats () {
 			EditorGUILayout.Space();
-			DrawProperty("RailStats", "Rail Grinding");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RailStats", "Rail Grinding", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.RailStats = stats.StartRailStats;
 			}
@@ -2024,10 +2019,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region RailPosition
 		void DrawRailPosition () {
 			EditorGUILayout.Space();
-			DrawProperty("RailPosition", "Position on Rails");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RailPosition", "Position on Rails", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.RailPosition = stats.StartRailPosition;
 			}
@@ -2040,10 +2035,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Object
 		void DrawObjectInteraction () {
 			EditorGUILayout.Space();
-			DrawProperty("ObjectInteractions", "Interactions");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"ObjectInteractions", "Interactions", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.ObjectInteractions = stats.StartObjectInteractions;
 			}
@@ -2056,10 +2051,10 @@ public class S_O_CharacterStatsEditor : Editor
 		#region WallRunningStats
 		void DrawWallActionStats () {
 			EditorGUILayout.Space();
-			DrawProperty("WallActionsStats", "On Wall Actions");
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WallActionsStats", "On Wall Actions", true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", ResetToDefaultButton, stats, "Set to defaults"))
 			{
 				stats.WallActionsStats = stats.StartWallRunningStats;
 			}

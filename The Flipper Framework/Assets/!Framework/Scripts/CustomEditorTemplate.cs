@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 
 namespace templates
 {
@@ -42,19 +43,20 @@ namespace templates
 			_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
 		}
 
-		private void DrawInspector () {
-
+		private bool IsThemeNotSet () {
 			//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
-			EditorGUI.BeginChangeCheck();
-			EditorGUILayout.PropertyField(serializedObject.FindProperty("_InspectorTheme"), new GUIContent("Inspector Theme"));
-			serializedObject.ApplyModifiedProperties();
-			if (EditorGUI.EndChangeCheck())
+			if (S_S_CustomInspectorMethods.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
 			{
 				ApplyStyle();
 			}
 
 			//Will only happen if above is attatched and has a theme.
-			if (_OwnerScript == null || _OwnerScript._InspectorTheme == null) return;
+			return (_OwnerScript == null || _OwnerScript._InspectorTheme == null);
+		}
+
+		private void DrawInspector () {
+
+			if (IsThemeNotSet()) return;
 
 			serializedObject.Update();
 
@@ -62,25 +64,14 @@ namespace templates
 			EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
 
 
-			//Called whenever a property needs to be shown in the editor.
-			void DrawProperty ( string property, string outputName, bool isHorizontal = false) {
-				if (isHorizontal) GUILayout.BeginHorizontal();
-				EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
-				serializedObject.ApplyModifiedProperties();
-			}
-
-
 			//Button for adding new action
-			void DrawButton () {
+			void DrawGeneralButton () {
 
 				//Add new element button.
-				Undo.RecordObject(_OwnerScript, "What Button Does");
-				if (GUILayout.Button("Button Name", _BigButtonStyle))
+				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Button Name", _BigButtonStyle, _OwnerScript, "Undo Description"))
 				{
 					//Insert Action
-					serializedObject.Update();
 				}
-				serializedObject.ApplyModifiedProperties();
 			}
 
 
@@ -91,22 +82,20 @@ namespace templates
 			EditorGUILayout.LabelField("Core Movement", _HeaderStyle);
 			DrawStructWithDefault();
 			DrawGeneralStruct();
-			DrawButton();
-			DrawProperty("", "");
+			DrawGeneralButton();
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"", "", false);
 
 
 			//Struct With Default
 			#region Struct
 			void DrawStructWithDefault () {
 				EditorGUILayout.Space(_spaceSize);
-				DrawProperty("StructWithDefault", "Struct With Default", true);
+				S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"StructWithDefault", "Struct With Default", true);
 
-				Undo.RecordObject(_OwnerScript, "set to defaults");
-				if (GUILayout.Button("Default", _BigButtonStyle))
+				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Default", _BigButtonStyle, _OwnerScript, "set to defaults"))
 				{
 					//Owner.StructWithDefault = Owner.DefaultStruct;
 				}
-				serializedObject.ApplyModifiedProperties();
 				GUILayout.EndHorizontal();
 			}
 			#endregion
@@ -115,9 +104,7 @@ namespace templates
 			#region GeneralStruct
 			void DrawGeneralStruct () {
 				EditorGUILayout.Space(_spaceSize);
-				DrawProperty("GeneralStruct", "GeneralStruct", false);
-			
-				serializedObject.ApplyModifiedProperties();
+				S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"GeneralStruct", "GeneralStruct", false);
 			}
 			#endregion
 		}
