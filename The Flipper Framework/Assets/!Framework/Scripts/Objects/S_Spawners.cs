@@ -61,7 +61,8 @@ public class S_Spawners : MonoBehaviour
 
 		if (_ObjectClone == null && _SpawnerData._willAutoSpawn)
 		{
-			if (S_CoreMethods.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.position, transform.position) < Mathf.Pow(_SpawnerData._distanceFromPlayerToSpawn, 2))
+			if (S_CoreMethods.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.position, transform.position) < 
+				Mathf.Pow(_SpawnerData._distanceFromPlayerToSpawn * S_SpawnCharacter._spawnCheckModifier, 2))
 			{
 				//Will only spawn if enough time has passed.
 				if (_SpawnerData._willRespawnWhenDestroyed) { _counter += Time.deltaTime; }

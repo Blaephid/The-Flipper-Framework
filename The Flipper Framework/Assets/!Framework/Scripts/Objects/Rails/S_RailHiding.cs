@@ -28,7 +28,7 @@ public class S_RailHiding : MonoBehaviour
 
 		_distanceTracker = (S_SpawnCharacter._SpawnedPlayer.position - transform.position).sqrMagnitude;
 
-		if (!active && _distanceTracker < Distance)
+		if (!active && _distanceTracker < Distance * S_SpawnCharacter._spawnCheckModifier)
 		{
 			active = true;
 			Toggle(true);

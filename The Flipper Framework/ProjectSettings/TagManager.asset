@@ -30,6 +30,7 @@ TagManager:
   - CancelHoming
   - Enable Objects Physics
   - Player Effect
+  - Recorder
   layers:
   - Default
   - TransparentFX
