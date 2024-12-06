@@ -106,7 +106,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		if(_CharacterAnimator.GetInteger("Action") != 0)
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Default);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Default);
 		enabled = true;
 	}
 
@@ -310,7 +310,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Default)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Default)
 				{
 					_positionInActionList = i;
 					break;

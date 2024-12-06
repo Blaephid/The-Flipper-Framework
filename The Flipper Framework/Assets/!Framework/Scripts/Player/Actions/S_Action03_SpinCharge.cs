@@ -56,7 +56,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	private AnimationCurve	_gainBySpeed_;
 	private Vector4                 _releaseShakeAmmount_;
 	private Vector2               _cameraPauseEffect_ = new Vector2(3, 40);
-	private S_Enums.SpinChargeAimingTypes _whatControl_;
+	private S_GeneralEnums.SpinChargeAimingTypes _whatControl_;
 	private float                 _tappingBonus_;
 	private int                   _delayBeforeLaunch_;
 	private bool                  _shouldSetRolling_;
@@ -130,7 +130,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false);
 		_Sounds.SpinDashSound();
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.SpinCharge);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.SpinCharge);
 		enabled = true;
 	}
 
@@ -291,7 +291,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		//Configured to either rotate towards where the camera is facing, or to rotate to where the player is moving.
 		switch (_whatControl_)
 		{
-			case S_Enums.SpinChargeAimingTypes.Camera:
+			case S_GeneralEnums.SpinChargeAimingTypes.Camera:
 				//Since it requires camera movement, if the camera can't be moved, instead aims by input.
 				if (_CamHandler._HedgeCam._isLocked)
 					FaceByInput();
@@ -299,7 +299,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 					FaceByCamera();
 				break;
 
-			case S_Enums.SpinChargeAimingTypes.Input:
+			case S_GeneralEnums.SpinChargeAimingTypes.Input:
 				FaceByInput();		
 				break;
 		}
@@ -376,7 +376,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.SpinCharge)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.SpinCharge)
 				{
 					_positionInActionList = i;
 					break;

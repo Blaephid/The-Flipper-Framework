@@ -147,7 +147,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		//_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 		_directionToGo = _PlayerVel._worldVelocity.normalized; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.RingRoad);
 		this.enabled = true;
 	}
 
@@ -302,7 +302,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.RingRoad)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.RingRoad)
 				{
 					_positionInActionList = i;
 					break;

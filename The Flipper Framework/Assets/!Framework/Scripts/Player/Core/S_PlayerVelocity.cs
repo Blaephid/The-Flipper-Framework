@@ -101,7 +101,7 @@ public class S_PlayerVelocity : MonoBehaviour
 				//Must remove from the velocity change calculations otherwise coreVelocity wont be updated accurately.
 				velocityThisFrame -= _environmentalVelocity;
 				velocityLastFrame -= _environmentalVelocity;
-				SetEnvironmentalVelocity(Vector3.zero, false, false, S_Enums.ChangeLockState.Unlock);
+				SetEnvironmentalVelocity(Vector3.zero, false, false, S_GeneralEnums.ChangeLockState.Unlock);
 			}
 			_PlayerPhys._wasInAirLastFrame = false;
 		}
@@ -352,7 +352,7 @@ public class S_PlayerVelocity : MonoBehaviour
 
 	//Environmental. Caused by objects in the world, but can b removed by others.
 	public void SetEnvironmentalVelocity ( Vector3 force, bool willRemoveOnGrounded, bool willRemoveOnAirAction,
-		S_Enums.ChangeLockState whatToDoWithDeceleration = S_Enums.ChangeLockState.Ignore, bool shouldPrintForce = false ) {
+		S_GeneralEnums.ChangeLockState whatToDoWithDeceleration = S_GeneralEnums.ChangeLockState.Ignore, bool shouldPrintForce = false ) {
 
 		_environmentalVelocity = force;
 
@@ -365,7 +365,7 @@ public class S_PlayerVelocity : MonoBehaviour
 		else
 		{
 			//This will apply or remove constraints on deceleration, as certain calls will prevent manual deceleration, while calls that remove this velocity will allow it again. But will usually be ignored.
-			if (willRemoveOnAirAction && willRemoveOnGrounded) { whatToDoWithDeceleration = S_Enums.ChangeLockState.Lock; }
+			if (willRemoveOnAirAction && willRemoveOnGrounded) { whatToDoWithDeceleration = S_GeneralEnums.ChangeLockState.Lock; }
 			HandleDecelerationWhenEnvironmentalForce(whatToDoWithDeceleration);
 		}
 
@@ -375,17 +375,17 @@ public class S_PlayerVelocity : MonoBehaviour
 		if (shouldPrintForce) Debug.Log("Set Environmental FORCE  " + force);
 	}
 
-	private void HandleDecelerationWhenEnvironmentalForce ( S_Enums.ChangeLockState whatCase ) {
+	private void HandleDecelerationWhenEnvironmentalForce ( S_GeneralEnums.ChangeLockState whatCase ) {
 
 		//Due to deceleration working with core velocity at different speeds. Sometimes when environmental velocity is set, it will prevent deceleration because that would make the movement path inconsistent
 		//(as core velocity won't always be the same before environmental is added).
 		switch (whatCase)
 		{
 			//This should always be called before Unlock. As such, whenever an environmental velocity is setting willRemoveOnGrounded to true, it should do this. Because the check will call unlock if true, then stop checking.
-			case S_Enums.ChangeLockState.Lock:
+			case S_GeneralEnums.ChangeLockState.Lock:
 				_PlayerPhys._listOfCanDecelerates.Add(false); break;
 			//This should only be called when environmental velocity is being removed.
-			case S_Enums.ChangeLockState.Unlock:
+			case S_GeneralEnums.ChangeLockState.Unlock:
 				_PlayerPhys._listOfCanDecelerates.RemoveAt(0); break;
 				//Ignore is the default state, which means this call won't change the deceleration ability.
 		}
@@ -396,7 +396,7 @@ public class S_PlayerVelocity : MonoBehaviour
 		//If The last time environmental velocity was set, it was set to reset here, then remove environmental velocity. This will be called in other air actions as well.
 		if (_resetEnvironmentalOnGrounded)
 		{
-			SetEnvironmentalVelocity(Vector3.zero, false, false, S_Enums.ChangeLockState.Unlock);
+			SetEnvironmentalVelocity(Vector3.zero, false, false, S_GeneralEnums.ChangeLockState.Unlock);
 		}
 	}
 	#endregion

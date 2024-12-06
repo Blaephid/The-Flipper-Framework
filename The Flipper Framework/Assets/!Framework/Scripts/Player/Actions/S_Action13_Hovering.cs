@@ -92,7 +92,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 		_counter = 0;
 		_startForwardDirection = _MainSkin.forward;
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hovering);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Hovering);
 		enabled = true;
 	}
 
@@ -141,7 +141,7 @@ public class S_Action13_Hovering : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Hovering)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Hovering)
 				{
 					_positionInActionList = i;
 					break;

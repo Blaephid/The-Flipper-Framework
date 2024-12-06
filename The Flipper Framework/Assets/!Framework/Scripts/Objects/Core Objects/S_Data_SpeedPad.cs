@@ -2,7 +2,7 @@
 using System.Collections;
 using SplineMesh;
 
-public class S_Data_SpeedPad : MonoBehaviour
+public class S_Data_SpeedPad : MonoBehaviour, IObjectData
 {
 	[Header ("Type")]
 	public bool	_isOnRail_;
@@ -27,7 +27,7 @@ public class S_Data_SpeedPad : MonoBehaviour
 	public Transform	_PositionToLockTo;
 	public bool	_willLockControl;
 	public int	_lockControlFrames_ = 30;
-	public S_Enums.LockControlDirection _lockInputTo_;
+	public S_GeneralEnums.LockControlDirection _lockInputTo_;
 
 	public Vector3      _overwriteGravity_;
 	public float	_lockAirMovesFor_ = 30f;

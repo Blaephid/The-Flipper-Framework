@@ -110,7 +110,7 @@ public class S_drawShotDirection : MonoBehaviour
 	}
 
 	//Will take a velocity and important character stats, and create a path the player would follow if they weren't inputting.
-	private Vector3[] PreviewTrajectory ( Vector3 position, Vector3 enVelocity, Vector3 coreVelocity, S_Enums.LockControlDirection whatInput) {
+	private Vector3[] PreviewTrajectory ( Vector3 position, Vector3 enVelocity, Vector3 coreVelocity, S_GeneralEnums.LockControlDirection whatInput) {
 
 		//How many fixed update calculations will be performed in space of line length.
 		float timeStep = Time.fixedDeltaTime;
@@ -137,7 +137,7 @@ public class S_drawShotDirection : MonoBehaviour
 			switch (whatInput)
 			{
 				//If there is input in a direction, then player will be accelerating, so reflect that.
-				case S_Enums.LockControlDirection.CharacterForwards: 
+				case S_GeneralEnums.LockControlDirection.CharacterForwards: 
 					float useMod = _accellModInAir;
 					if(coreSpeed < 20)
 					{

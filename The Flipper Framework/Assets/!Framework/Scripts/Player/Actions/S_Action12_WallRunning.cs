@@ -199,9 +199,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_CamHandler._HedgeCam.DisableSecondaryCameraTarget();
 
 		//In case action change was intentional (not from losing grip on a wall) make sure player moves away from wall.
-		if(_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Default)
+		if(_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Default)
 		{
-			_Input.LockInputForAWhile(4, false, _wallHit.normal, S_Enums.LockControlDirection.Change);
+			_Input.LockInputForAWhile(4, false, _wallHit.normal, S_GeneralEnums.LockControlDirection.Change);
 		}
 	}
 	#endregion
@@ -315,7 +315,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 camOffset = (_isWallOnRight ? -_MainSkin.right : _MainSkin.right) * 2;
 		_CamHandler._HedgeCam.SetSecondaryCameraTarget(_MainSkin, transform.position + camOffset);
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
 		StartAction();
 	}
 
@@ -378,12 +378,12 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 			{
 				if (this is S_Action15_WallClimbing)
 				{
-					if(_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.WallClimbing){
+					if(_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.WallClimbing){
 						_positionInActionList = i;
 						break;
 					}
 				}
-				else if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.WallRunning)
+				else if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.WallRunning)
 				{
 					_positionInActionList = i;
 					break;

@@ -38,7 +38,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	// Trackers
 	#region trackers
-	private S_Enums.PrimaryPlayerStates _whatCurrentAction;
+	private S_GeneralEnums.PrimaryPlayerStates _whatCurrentAction;
 
 	private bool       _isRollingFromThis;
 	[HideInInspector]
@@ -72,7 +72,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		if (_PlayerPhys._isRolling)
 		{
 			//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
-			if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatCurrentAction)))
+			if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_GeneralEnums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatCurrentAction)))
 			{
 				UnCurl();
 			}
@@ -96,7 +96,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 					if (_Input._RollPressed && !_isRollingFromThis && _PlayerVel._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
 						_whatCurrentAction = _Actions._whatCurrentAction; //If the current action stops matching this, then the player has switched actions while rolling
-						_Actions._whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
+						_Actions._whatSubAction = S_GeneralEnums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
 						
 						Curl();
 						return true;

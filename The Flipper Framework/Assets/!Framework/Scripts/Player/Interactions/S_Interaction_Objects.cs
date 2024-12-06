@@ -150,7 +150,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 			case "Monitor":
 				Col.GetComponentInChildren<BoxCollider>().enabled = false;
-				_AttackHandler.AttemptAttackOnContact(Col, S_Enums.AttackTargets.Monitor);
+				_AttackHandler.AttemptAttackOnContact(Col, S_GeneralEnums.AttackTargets.Monitor);
 				break;
 
 			case "Ring":
@@ -214,8 +214,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
 				if (UpdraftScript != null)
 				{
-					if(_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Homing
-						|| _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
+					if(_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Homing
+						|| _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
 
 					Vector3 thisForce = GetForceOfWind(UpdraftScript);
 					_currentWindDirection += thisForce;
@@ -291,7 +291,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		Destroy(newGameObject);
 
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
-		float distanceSquared = S_CoreMethods.GetDistanceOfVectors(relativePlayerPosition, transform.position);
+		float distanceSquared = S_S_CoreMethods.GetDistanceOfVectors(relativePlayerPosition, transform.position);
 
 		float power = 0;
 		if (distanceSquared < 9)
@@ -328,7 +328,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			//If the wind will increase velocity overall, then apply to coreVelocity so it remains, rather than just being temporary like with the constant general.
 			if ( nextVelocity.sqrMagnitude > relevantCoreVelocity.sqrMagnitude)
 			{
-				lateralWind = S_CoreMethods.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
+				lateralWind = S_S_CoreMethods.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
 
 				//If added normally, then running perpendicular to the wind, the full force would be added, but immediately turned away, increasing velocity in the unintended direction.
 				//So only add the amount specifically in the wind direction, using project.
@@ -408,7 +408,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (SpeedPadScript._isOnRail_)
 		{
 			//Attaches the player to the rail this rail booster is on.
-			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Rail)
+			if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Rail)
 			{
 				_PlayerPhys.SetPlayerPosition(SpeedPadScript._PositionToLockTo.position);
 			}
@@ -673,7 +673,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
 		_PlayerVel.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
-		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_Enums.ChangeLockState.Lock); //Apply bounce
+		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_GeneralEnums.ChangeLockState.Lock); //Apply bounce
 	}
 
 	private void ApplyEffectsOnPlayer (Collider Col) {
@@ -682,11 +682,11 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		switch (Effects._setPlayerGrounded)
 		{
-			case S_Enums.ChangeGroundedState.SetToNo:
+			case S_GeneralEnums.ChangeGroundedState.SetToNo:
 				_PlayerPhys.SetIsGrounded(false); break;
-			case S_Enums.ChangeGroundedState.SetToYes:
+			case S_GeneralEnums.ChangeGroundedState.SetToYes:
 				_PlayerPhys.SetIsGrounded(true); break;
-			case S_Enums.ChangeGroundedState.SetToOppositeThenBack:
+			case S_GeneralEnums.ChangeGroundedState.SetToOppositeThenBack:
 				bool current = _PlayerPhys._isGrounded;
 				_PlayerPhys.SetIsGrounded(!current); _PlayerPhys.SetIsGrounded(current);
 				break;

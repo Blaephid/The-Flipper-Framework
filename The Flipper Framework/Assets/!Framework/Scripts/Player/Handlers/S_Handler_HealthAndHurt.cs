@@ -49,7 +49,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private S_Enums.HurtResponses _whatResponse_;
+	private S_GeneralEnums.HurtResponses _whatResponse_;
 	private int		_maxRingLoss_;
 	private float		_ringReleaseSpeed_;
 	private float		_ringArcSpeed_;
@@ -131,7 +131,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			case "Enemy":
 				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(_enemyHitShakeAmmount_, 12));
 
-				if (!_Attacks.AttemptAttackOnContact(other, S_Enums.AttackTargets.Enemy))
+				if (!_Attacks.AttemptAttackOnContact(other, S_GeneralEnums.AttackTargets.Enemy))
 				{
 					DamagePlayer();
 				}
@@ -351,13 +351,13 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private void CheckBonk () {
 		switch (_Actions._whatCurrentAction)
 		{
-			case S_Enums.PrimaryPlayerStates.Default:
+			case S_GeneralEnums.PrimaryPlayerStates.Default:
 				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.x) TryBonk();
 				break;
-			case S_Enums.PrimaryPlayerStates.Jump:
+			case S_GeneralEnums.PrimaryPlayerStates.Jump:
 				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
 				break;
-			case S_Enums.PrimaryPlayerStates.JumpDash:
+			case S_GeneralEnums.PrimaryPlayerStates.JumpDash:
 				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
 				break;
 		}
@@ -388,7 +388,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		float rememberSpeed = _PlayerVel._horizontalSpeedMagnitude;
 
 		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
-		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallClimbing)
+		if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.WallClimbing)
 		{
 			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 			_HurtAction._wasHit = false;
@@ -401,7 +401,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			{
 				yield return new WaitForFixedUpdate();
 
-				if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
+				if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Hurt) { break; }
 
 					_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 				_PlayerVel._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
@@ -409,7 +409,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			}
 
 			//If still not in a wallrunning state or been hurt, then rebound off the wall.
-			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Hurt)
+			if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Hurt)
 			{
 				_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[3].normalized;
 				_HurtAction._wasHit = false;
@@ -437,11 +437,11 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			switch (_whatResponse_)
 			{
 				//Damaged immediately but won't be knocked back or have velocity greatly changed.
-				case S_Enums.HurtResponses.Normal:
+				case S_GeneralEnums.HurtResponses.Normal:
 					NormalResponse();
 					break;
 					//If not killed, respond as above, if killed, die immediately, with knockback.
-				case S_Enums.HurtResponses.NormalSansDeathDelay:
+				case S_GeneralEnums.HurtResponses.NormalSansDeathDelay:
 					if (_ringAmount <= 0 && !_hasShield)
 					{
 						DieWithoutDelay();
@@ -452,21 +452,21 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 					}
 					break;
 				//Damaged immediately and will enter a seperate knockback state.
-				case S_Enums.HurtResponses.ResetSpeed:
+				case S_GeneralEnums.HurtResponses.ResetSpeed:
 					CheckHealth();
 					_HurtAction._knockbackDirection = -_MainSkin.forward;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
 				//Won't be damaged until the EventOnGrounded action in the hurt script. This will then call the CheckHealth script
-				case S_Enums.HurtResponses.Frontiers:
+				case S_GeneralEnums.HurtResponses.Frontiers:
 					_inHurtStateBeforeDamage = true;
 					_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
 				//Same as frontiers response, but if should die, will do so immediately, rather than wait to hit ground.
-				case S_Enums.HurtResponses.FrontiersSansDeathDelay:
+				case S_GeneralEnums.HurtResponses.FrontiersSansDeathDelay:
 					_HurtAction._wasHit = true;
 					if (_ringAmount > 0 || _hasShield)
 					{

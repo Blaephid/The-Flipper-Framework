@@ -208,19 +208,19 @@ public class S_PlayerInput : MonoBehaviour
 	/// 
 	#region public 
 	//Called by other scripts to set the input to a specific thing, unable to change for a period of time.
-	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_Enums.LockControlDirection whatLock = S_Enums.LockControlDirection.Change) {
+	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change) {
 
 		//While the enum won't be used freqeuntly, it is short hand for removing input or setting player to forwards without having to calculate it before being called.
 		switch (whatLock)
 		{
 			//If enum is not set in the call, move becomes the input given.
-			case S_Enums.LockControlDirection.Change:
+			case S_GeneralEnums.LockControlDirection.Change:
 				_lockedControllerInput = Vector2.one;
 				_lockedMoveInput = newInput; break;
-			case S_Enums.LockControlDirection.NoInput:
+			case S_GeneralEnums.LockControlDirection.NoInput:
 				_lockedControllerInput = Vector2.zero;
 				_lockedMoveInput = Vector3.zero; break;
-			case S_Enums.LockControlDirection.CharacterForwards:
+			case S_GeneralEnums.LockControlDirection.CharacterForwards:
 				_lockedControllerInput = Vector2.one;
 				_lockedMoveInput = _MainSkin.forward; break;
 		}

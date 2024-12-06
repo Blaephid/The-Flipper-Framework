@@ -211,7 +211,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		float facingDot = Vector3.Dot(_PlayerVel._worldVelocity.normalized, _sampleForwards);
 
 		//Because this action can start itself by hopping from one rail to another, only do this if hasn't just done so.
-		if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Rail)
+		if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Rail)
 		{
 			_isCrouching = false;
 			_pulleyRotate = 0f;
@@ -249,12 +249,12 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			switch (_Actions._whatCurrentAction)
 			{
 				// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
-				case S_Enums.PrimaryPlayerStates.Homing:
+				case S_GeneralEnums.PrimaryPlayerStates.Homing:
 					facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _sampleForwards);
 					_grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
 					break;
 				//If it was a drop charge, add speed from the charge to the grind speed.
-				case S_Enums.PrimaryPlayerStates.DropCharge:
+				case S_GeneralEnums.PrimaryPlayerStates.DropCharge:
 					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
 					_grindingSpeed = Mathf.Clamp(charge, _grindingSpeed + (charge / 6), 160);
 					break;
@@ -269,7 +269,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Rail);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Rail);
 		enabled = true;
 	}
 
@@ -284,7 +284,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_isGrinding = false;
 
 		//If left this action to perform a jump,
-		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Jump)
+		if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Jump)
 		{
 			switch (_whatKindOfRail)
 			{
@@ -755,7 +755,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					set = false; //If speed higher than what will be set, go through the other option instead.
 			}
 			//Keep checking if on a rail before applying this.
-			if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Rail)
+			if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Rail)
 			{
 				_grindingSpeed += addSpeed;
 				_isBoosted = true;
@@ -791,7 +791,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Rail)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Rail)
 				{
 					_positionInActionList = i;
 					break;

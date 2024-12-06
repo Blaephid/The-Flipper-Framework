@@ -104,7 +104,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		_hasBounced = false; //Tracks when to end the action.
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
 		this.enabled = true;
 
 		_memorisedSpeed = _PlayerVel._currentRunningSpeed; //Stores the running speed the player was before bouncing.
@@ -318,7 +318,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Bounce)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Bounce)
 				{
 					_positionInActionList = i;
 					break;

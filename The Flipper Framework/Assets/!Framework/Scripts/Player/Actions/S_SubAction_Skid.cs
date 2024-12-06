@@ -45,7 +45,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	// Trackers
 	#region trackers
 	public bool         _isSkidding;
-	private S_Enums.PrimaryPlayerStates _whatCurrentAction;
+	private S_GeneralEnums.PrimaryPlayerStates _whatCurrentAction;
 	#endregion
 
 	#endregion
@@ -88,7 +88,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		//Different actions require different skids, even though they all call this function.
 		switch (_Actions._whatCurrentAction)
 		{
-			case S_Enums.PrimaryPlayerStates.Default:
+			case S_GeneralEnums.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._isGrounded)
 				{
 					willStartAction = TryRegularSkid();
@@ -99,14 +99,14 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 				}
 				break;
 
-			case S_Enums.PrimaryPlayerStates.Jump:
+			case S_GeneralEnums.PrimaryPlayerStates.Jump:
 				willStartAction = TryJumpSkid();
 				break;
 
-			case S_Enums.PrimaryPlayerStates.SpinCharge:
+			case S_GeneralEnums.PrimaryPlayerStates.SpinCharge:
 				willStartAction = TrySpinSkid();
 				break;
-			case S_Enums.PrimaryPlayerStates.Homing:
+			case S_GeneralEnums.PrimaryPlayerStates.Homing:
 				willStartAction = _Actions._ObjectForActions.GetComponent<S_Action02_Homing>().TryHomingSkid();
 				break;
 
@@ -118,7 +118,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	public void StartAction(bool overwrite = false) {
 		if (!_isSkidding)
 		{
-			_Actions._whatSubAction = S_Enums.SubPlayerStates.Skidding;
+			_Actions._whatSubAction = S_GeneralEnums.SubPlayerStates.Skidding;
 			if (!enabled) { enabled = true; }
 
 			_Sounds.SkiddingSound();

@@ -55,7 +55,7 @@ public class S_Data_HintRing : MonoBehaviour
 	void DotRotation () {
 		if (OrbitDots.Length == 0) return;
 		float DistanceThreshold = MaxDistance - MinDistance;
-		float Distance = S_CoreMethods.GetDistanceOfVectors(transform.position, LookTarget.position) - Mathf.Pow(MinDistance, 2);
+		float Distance = S_S_CoreMethods.GetDistanceOfVectors(transform.position, LookTarget.position) - Mathf.Pow(MinDistance, 2);
 		float RotSpeed = DotRotationSpeed * RotationSpeedOverDistance.Evaluate(Distance / Mathf.Pow(DistanceThreshold, 2));
 		for (int i = 0 ; i < OrbitDots.Length ; i++)
 		{

@@ -99,7 +99,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.DropCharge);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.DropCharge);
 		this.enabled = true;
 
 		//Effects
@@ -175,7 +175,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		yield return new WaitForSeconds(0.45f);
 
 		//If coroutine is not stopped or interupted, then end the action
-		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.DropCharge)
+		if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.DropCharge)
 		{
 			_Actions._ActionDefault._animationAction = 1;
 			_Actions._ActionDefault.StartAction();
@@ -312,7 +312,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		while (true)
 		{
 			yield return new WaitForFixedUpdate();
-			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.DropCharge)
+			if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.DropCharge)
 			{
 				yield return new WaitForFixedUpdate();
 				_charge = 0;
@@ -339,7 +339,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.DropCharge)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.DropCharge)
 				{
 					_positionInActionList = i;
 					break;

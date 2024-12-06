@@ -35,17 +35,17 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 
 	//Called when making contact with an object, to handle if in a current attack state. Returns false if not, and may take damage.
-	public bool AttemptAttackOnContact ( Collider other, S_Enums.AttackTargets target ) {
+	public bool AttemptAttackOnContact ( Collider other, S_GeneralEnums.AttackTargets target ) {
 		if(!_hasHitThisFrame) //Will only try once per update.
 		{
 			//Certain actions will count as attacks, other require other states.
 			switch (_Actions._whatCurrentAction)
 			{
 				//If in default, will only attack if rolling.
-				case S_Enums.PrimaryPlayerStates.Default:
+				case S_GeneralEnums.PrimaryPlayerStates.Default:
 					if (_PlayerPhys._isRolling)
 					{
-						AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target);
+						AttackThing(other, S_GeneralEnums.PlayerAttackTypes.Rolling, target);
 						_hasHitThisFrame = true;
 						break;
 					}
@@ -56,29 +56,29 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 					//If currently in a jump ball in the air
 					else if (_Actions._ActionDefault._animationAction == 1)
 					{
-						AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
+						AttackThing(other, S_GeneralEnums.PlayerAttackTypes.SpinJump, target);
 						_hasHitThisFrame = true;
 					}
 					else { _hasHitThisFrame = false; }
 					break;
 					//Spin charge counts as a rolling attack.
-				case S_Enums.PrimaryPlayerStates.SpinCharge:
-					AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, target);
+				case S_GeneralEnums.PrimaryPlayerStates.SpinCharge:
+					AttackThing(other, S_GeneralEnums.PlayerAttackTypes.Rolling, target);
 					_hasHitThisFrame = true;
 					break;
 					//Jump states means in a jump ball.
-				case S_Enums.PrimaryPlayerStates.Jump:
-					AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
+				case S_GeneralEnums.PrimaryPlayerStates.Jump:
+					AttackThing(other, S_GeneralEnums.PlayerAttackTypes.SpinJump, target);
 					_hasHitThisFrame = true;
 					break;
 					//Despite not being in a ball, jump dash conts as a spin jump attack.
-				case S_Enums.PrimaryPlayerStates.JumpDash:
-					AttackThing(other, S_Enums.PlayerAttackTypes.SpinJump, target);
+				case S_GeneralEnums.PrimaryPlayerStates.JumpDash:
+					AttackThing(other, S_GeneralEnums.PlayerAttackTypes.SpinJump, target);
 					_hasHitThisFrame = true;
 					break;
 					//The most common attack, and involves being in a ball.
-				case S_Enums.PrimaryPlayerStates.Homing:
-					AttackThing(other, S_Enums.PlayerAttackTypes.HomingAttack, target);
+				case S_GeneralEnums.PrimaryPlayerStates.Homing:
+					AttackThing(other, S_GeneralEnums.PlayerAttackTypes.HomingAttack, target);
 					_hasHitThisFrame = true;
 					break;
 			}
@@ -87,16 +87,16 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 
 	//Called in order to deal damage and affect the player afterwards.
-	public void AttackThing ( Collider col, S_Enums.PlayerAttackTypes attackType, S_Enums.AttackTargets target, int damage = 1 ) {
+	public void AttackThing ( Collider col, S_GeneralEnums.PlayerAttackTypes attackType, S_GeneralEnums.AttackTargets target, int damage = 1 ) {
 		//Different targets require different means of taking damage.
 
 		switch (target)
 		{
-			case S_Enums.AttackTargets.Monitor:
+			case S_GeneralEnums.AttackTargets.Monitor:
 				MonitorAttack(col, attackType);
 				break;
 
-			case S_Enums.AttackTargets.Enemy:
+			case S_GeneralEnums.AttackTargets.Enemy:
 				EnemyAttack(attackType, col, damage);
 				break;
 		}
@@ -104,7 +104,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 
 	//Called when attacking an enemy. Gets their health and applies effects if destroyed or just damaged.
-	private void EnemyAttack ( S_Enums.PlayerAttackTypes attackType, Collider col, int damage = 1 ) {
+	private void EnemyAttack ( S_GeneralEnums.PlayerAttackTypes attackType, Collider col, int damage = 1 ) {
 		bool wasDestroyed = true;
 
 		if (col.transform.parent.TryGetComponent(out S_AI_Health EnemyHealth) && _canHitAgain)
@@ -116,26 +116,26 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 
 	//Calls the method that handles destroying and gaining items from a monitor.
-	private void MonitorAttack ( Collider col, S_Enums.PlayerAttackTypes attackType ) {
+	private void MonitorAttack ( Collider col, S_GeneralEnums.PlayerAttackTypes attackType ) {
 		_ObjectInteraction.TriggerMonitor(col);
 
 		BounceAfterAttack(true, attackType); //Will always be destroyed due to monitors not having health.
 	}
 
 	//Gets attack state to decide how to affect player after an aerial attack.
-	private void BounceAfterAttack ( bool wasDestroyed, S_Enums.PlayerAttackTypes attackType ) {
+	private void BounceAfterAttack ( bool wasDestroyed, S_GeneralEnums.PlayerAttackTypes attackType ) {
 		StartCoroutine(DelayAttacks());
 
 		switch (attackType)
 		{
 			//Player continues unaffected after a roll attack.
-			case S_Enums.PlayerAttackTypes.Rolling:
+			case S_GeneralEnums.PlayerAttackTypes.Rolling:
 				break;
 				//Force player upwards on hit.
-			case S_Enums.PlayerAttackTypes.SpinJump:
+			case S_GeneralEnums.PlayerAttackTypes.SpinJump:
 				AttackFromJump();
 				break;
-			case S_Enums.PlayerAttackTypes.HomingAttack:
+			case S_GeneralEnums.PlayerAttackTypes.HomingAttack:
 				AttackFromHoming(wasDestroyed);
 				break;
 		}
@@ -148,7 +148,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 				_PlayerVel.AddCoreVelocity(transform.up * _bouncingPower_);
 				break;
 
-			case S_Enums.PrimaryPlayerStates.Bounce:
+			case S_GeneralEnums.PrimaryPlayerStates.Bounce:
 				_PlayerVel.AddCoreVelocity(transform.up * _bouncingPower_ * 1.5f);
 				break;
 		}
@@ -159,14 +159,14 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		//If destroyed enemy, will bounce through, if not, will take knockback from it.
 		if(_shouldStopOnHit_)
 		{
-			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingHitResponses.bounceOff);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_GeneralEnums.HomingHitResponses.bounceOff);
 		}
 		if (wasDestroyed)
 		{
-			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingHitResponses.BounceThrough);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_GeneralEnums.HomingHitResponses.BounceThrough);
 		}
 		else
-			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_Enums.HomingHitResponses.Rebound);
+			_Actions._ObjectForActions.GetComponent<S_Action02_Homing>().HittingTarget(S_GeneralEnums.HomingHitResponses.Rebound);
 	}
 
 	//Prevents multiple attacks in quick succession.

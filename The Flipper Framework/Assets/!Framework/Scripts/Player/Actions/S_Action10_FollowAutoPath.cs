@@ -114,7 +114,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Path);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Path);
 		enabled = true;
 	}
 
@@ -239,7 +239,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	
 		//Ensure player is either inputting alon or against the path, translated to current rotation.
 		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction);
-		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_Enums.LockControlDirection.Change);
+		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_GeneralEnums.LockControlDirection.Change);
 
 		//Call methods after input is changed, acting as if mvoing normally just in the desired direction
 		if (_PlayerPhys._isGrounded)
@@ -283,7 +283,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	}
 
 	private void ExitPath () {
-		_Input.LockInputForAWhile(_willLockFor, false, _sampleForwards, S_Enums.LockControlDirection.Change);
+		_Input.LockInputForAWhile(_willLockFor, false, _sampleForwards, S_GeneralEnums.LockControlDirection.Change);
 
 		_Actions._ActionDefault.StartAction();
 	}
@@ -342,7 +342,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Path)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Path)
 				{
 					_positionInActionList = i;
 					break;

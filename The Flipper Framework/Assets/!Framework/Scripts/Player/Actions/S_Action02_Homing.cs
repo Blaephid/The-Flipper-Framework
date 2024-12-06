@@ -135,7 +135,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Homing);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Homing);
 		enabled = true;
 
 		ReadyAction();
@@ -231,7 +231,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		//Get direction to move in.
 		Vector3 newDirection = _Target.position - transform.position;
-		_distanceFromTargetSquared = S_CoreMethods.GetDistanceOfVectors(_Target.position, transform.position);
+		_distanceFromTargetSquared = S_S_CoreMethods.GetDistanceOfVectors(_Target.position, transform.position);
 		float thisTurn =  _homingTurnSpeed_;
 
 		//Set Player location when close enough, for precision. Remember to square anything compared to a distance as the method we made does not square root the answer.
@@ -318,7 +318,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	#region public 
 
 	//What happens to the character after they hit a target, the directions they bounce based on input, stats and target.
-	public void HittingTarget ( S_Enums.HomingHitResponses whatResponse ) {
+	public void HittingTarget ( S_GeneralEnums.HomingHitResponses whatResponse ) {
 		_HomingHandler._TargetObject = null;
 		_HomingHandler._PreviousTarget = null;
 
@@ -334,7 +334,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		switch (whatResponse)
 		{
-			case S_Enums.HomingHitResponses.BounceThrough:
+			case S_GeneralEnums.HomingHitResponses.BounceThrough:
 				if (_Input._HomingPressed) { additiveHit(); }
 				else { bounceUpHit(); }
 
@@ -345,10 +345,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 				_Actions._ActionDefault.StartAction();
 
 				break;
-			case S_Enums.HomingHitResponses.Rebound:
+			case S_GeneralEnums.HomingHitResponses.Rebound:
 				StartCoroutine(HittingObstacle());
 				return;
-			case S_Enums.HomingHitResponses.bounceOff:
+			case S_GeneralEnums.HomingHitResponses.bounceOff:
 				bounceUpHit();
 				//Restore control and switch to default action
 				_PlayerVel.SetCoreVelocity(newSpeed);
@@ -495,7 +495,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Homing)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Homing)
 				{
 					_positionInActionList = i;
 					break;

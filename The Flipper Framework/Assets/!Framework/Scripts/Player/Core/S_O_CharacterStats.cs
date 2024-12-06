@@ -642,7 +642,7 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucAirDash
 	{
 		[Tooltip("Core: The type of dash that will be performed. Controlled means it will be treated as its own temporary state with its own turn values, and gravity calculations. Push means it will immeidately add force in the direction.")]
-		public S_Enums.JumpDashTypes   behaviour;
+		public S_GeneralEnums.JumpDashTypes   behaviour;
 		[Header("Pre Dash")]
 		[Tooltip("Surface: The minimum force to move in when in this state.")]
 		public float        dashSpeed;
@@ -867,7 +867,7 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucSpinCharge
 	{
 		[Tooltip("Core: The means in which the spin charge will be aimed. By input means it will follow player input and velocity. Camera means it will always point in camera direction (unless camera is locked by something)")]
-		public S_Enums.SpinChargeAimingTypes whatAimMethod;
+		public S_GeneralEnums.SpinChargeAimingTypes whatAimMethod;
 		[Header ("Charge")]
 		[Tooltip("Surface: How much charge to gain every frame this is being performed.")]
 		public float                  chargingSpeed;
@@ -1289,7 +1289,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucRebound SetStrucRebound () {
 		return new StrucRebound
 		{
-			whatResponse = S_Enums.HurtResponses.Normal,
+			whatResponse = S_GeneralEnums.HurtResponses.Normal,
 			knockbackUpwardsForce = 30f,
 			recoilFrom = new LayerMask(),
 			knockbackForce = 25f,
@@ -1305,7 +1305,7 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Header("Interactions")]
 		[Tooltip("Core: How the player will respond when damaged. Normal = carrying on without losing much speed and 'phasing' through attack. Reset speed = being knocked back with a new set force, losing all speed. Frontier = being knocked back but not taking damage until hitting the ground in the damaged state.")]
-		public S_Enums.HurtResponses whatResponse;
+		public S_GeneralEnums.HurtResponses whatResponse;
 		[Tooltip("Core: Even if set to normal, solid objects of this layer will still knock the player back when damaged. E.G. if running into a spike wall, don't want to keep player momentum as they'd get stuck on it, so still bounce backwards there.")]
 		public LayerMask        recoilFrom;
 		[Tooltip("Surface: If being knocked back, this is how much to be sent upwards. Less in the air.")]

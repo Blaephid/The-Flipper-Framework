@@ -25,7 +25,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
 
 	[Header("Works with these actions")]
 	[Tooltip("Waits until the player is in one of the following actions before triggering the camera. Allow more control, as large triggers can sometimes be cumbersome.")]
-	public S_Enums.PrimaryPlayerStates[]    _ListOfActionsThisWorksOn;
+	public S_GeneralEnums.PrimaryPlayerStates[]    _ListOfActionsThisWorksOn;
 	[Tooltip("If true, the camera will deactivate if the player enters an action not in the above list.")]
 	public bool                             _willDeactivateCameraIfActonChanges = false;
 
@@ -50,7 +50,7 @@ public class S_Trigger_CineCamera : MonoBehaviour
 	[Tooltip("If true, when the main camera returns to the player, it will be behind them.")]
 	public bool         _willSetCameraBehind = true;
 	public int          _lockPlayerInputFor = 5;
-	public S_Enums.LockControlDirection _LockInputTo_;
+	public S_GeneralEnums.LockControlDirection _LockInputTo_;
 
 	//Private
 	private Vector3 cameraOriginalPosition;

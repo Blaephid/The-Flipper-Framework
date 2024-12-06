@@ -126,14 +126,14 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		{
 			switch (_Actions._whatCurrentAction)
 			{
-				case S_Enums.PrimaryPlayerStates.Default:
+				case S_GeneralEnums.PrimaryPlayerStates.Default:
 					if (_PlayerPhys._isGrounded)
 						_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction); // Means animation will reflect jumping or being grounded.;
 					else
 						_Actions._ActionDefault.HandleAnimator(11);
 					_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 					break;
-				case S_Enums.PrimaryPlayerStates.Jump:
+				case S_GeneralEnums.PrimaryPlayerStates.Jump:
 					_Actions._ActionDefault.HandleAnimator(1);
 					_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 					break;
@@ -538,7 +538,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		if (_PlayerPhys._isBoosting)
 		{
 			//If player has landed while still in default (E.G. didn't jump), then since StartAction won't be called, switch the animation to grounded running.
-			if (_CharacterAnimator.GetInteger("Action") != 0 && _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default)
+			if (_CharacterAnimator.GetInteger("Action") != 0 && _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Default)
 			{
 				_CharacterAnimator.SetInteger("Action", 0);
 				_CharacterAnimator.SetTrigger("ChangedState");
@@ -552,7 +552,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		{
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_));
 			//Should perform air dash animation if losing ground while boosting, but not if willingly entered by jumping.
-			if (_CharacterAnimator.GetInteger("Action") != 11 && _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default)
+			if (_CharacterAnimator.GetInteger("Action") != 11 && _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Default)
 			{
 				_CharacterAnimator.SetInteger("Action", 11);
 				_CharacterAnimator.SetTrigger("ChangedState"); //Used immediately to switch.

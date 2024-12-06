@@ -31,7 +31,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private S_Enums.JumpDashTypes _WhatType_;
+	private S_GeneralEnums.JumpDashTypes _WhatType_;
 
 	private float       _airDashSpeed_;
 	private float       _airDashIncrease_;
@@ -95,7 +95,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		switch (_Actions._whatCurrentAction)
 		{
 			//Regular requires a seperate check in addition to other actions.
-			case S_Enums.PrimaryPlayerStates.Default:
+			case S_GeneralEnums.PrimaryPlayerStates.Default:
 				if (_Actions._ActionDefault._canDashDuringFall_)
 				{
 					if (CheckDash())
@@ -105,7 +105,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 					}
 				}
 				break;
-			case S_Enums.PrimaryPlayerStates.WallClimbing:
+			case S_GeneralEnums.PrimaryPlayerStates.WallClimbing:
 				if (CheckDash())
 				{
 					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(30, 8, 0, true));
@@ -113,7 +113,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 					StartAction();
 				}
 				break;
-			case S_Enums.PrimaryPlayerStates.WallRunning:
+			case S_GeneralEnums.PrimaryPlayerStates.WallRunning:
 				if (CheckDash())
 				{
 					SetStartDirection(_Actions._dashAngle);
@@ -174,7 +174,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 		switch (_WhatType_)
 		{
-			case S_Enums.JumpDashTypes.Push:
+			case S_GeneralEnums.JumpDashTypes.Push:
 				_timer = _maxDuration_;
 				break;
 		}
@@ -186,7 +186,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_PlayerVel.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
 		_PlayerVel.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.JumpDash);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.JumpDash);
 		this.enabled = true;
 	}
 
@@ -340,7 +340,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.JumpDash)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.JumpDash)
 				{
 					_positionInActionList = i;
 					break;

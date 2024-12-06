@@ -111,23 +111,23 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			switch (_Actions._whatCurrentAction)
 			{
 
-				case S_Enums.PrimaryPlayerStates.Jump:
+				case S_GeneralEnums.PrimaryPlayerStates.Jump:
 					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
 					}
 					return true;
-				case S_Enums.PrimaryPlayerStates.WallRunning:
+				case S_GeneralEnums.PrimaryPlayerStates.WallRunning:
 					AssignStartValues(_Actions._jumpAngle, true, _wallRunningJumpModifiers_.x, _wallRunningJumpModifiers_.y);
 					StartAction();
 					return true;
-				case S_Enums.PrimaryPlayerStates.WallClimbing:
+				case S_GeneralEnums.PrimaryPlayerStates.WallClimbing:
 					AssignStartValues(_Actions._jumpAngle, true, _wallClimbingJumpModifiers_.x, _wallClimbingJumpModifiers_.y);
 					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(10, 5, -20, true));
 					StartAction(); 
 					return true;
-				case S_Enums.PrimaryPlayerStates.Rail:
+				case S_GeneralEnums.PrimaryPlayerStates.Rail:
 					//GetComponent<S_Action05_Rail>()._isGrinding = false;
 					AssignStartValues(transform.up, true);
 					StartAction();
@@ -160,7 +160,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	public void StartAction ( bool overwrite = false ) {
 		if (!_Actions._canChangeActions && !overwrite) { return; }
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
 
 		ReadyAction();
 
@@ -379,7 +379,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Jump)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Jump)
 				{
 					_positionInActionList = i;
 					break;

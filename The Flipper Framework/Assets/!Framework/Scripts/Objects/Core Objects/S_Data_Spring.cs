@@ -2,7 +2,7 @@
 using System.Collections;
 
 [ExecuteInEditMode]
-public class S_Data_Spring : MonoBehaviour
+public class S_Data_Spring : MonoBehaviour, IObjectData
 {
 	[Header("Bounce")]
 	[Tooltip("The magnitude of the environmental velocity added to player.")]
@@ -24,7 +24,7 @@ public class S_Data_Spring : MonoBehaviour
 	[Tooltip("How amy frames until the player regains control if the above is true.")]
 	public int _lockForFrames_ = 60;
 	[Tooltip("What the player's input will be during the frames their control is locked.")]
-	public S_Enums.LockControlDirection _LockInputTo_;
+	public S_GeneralEnums.LockControlDirection _LockInputTo_;
 
 	[Tooltip("Since character's can have different gravities. If this is not zero, the player gravity will be this until they hit the ground.")]
 	public Vector3 _overwriteGravity_;

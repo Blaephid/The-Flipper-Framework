@@ -107,7 +107,7 @@ namespace templates
 				//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 				for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 				{
-					if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Homing)
+					if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Homing)
 					{
 						_positionInActionList = i;
 						break;

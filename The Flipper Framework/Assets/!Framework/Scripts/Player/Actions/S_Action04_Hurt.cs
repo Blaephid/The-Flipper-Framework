@@ -203,7 +203,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		}
 		_keepLockingControlUntil = (int)lockControlFor;
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Hurt);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Hurt);
 		this.enabled = true;
 
 		//Ensure player is hit off the ground and won't immediately be grounded to remove force applied. Also ensures this is the action before LoseGroundEventsAreCalled
@@ -338,7 +338,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Hurt)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Hurt)
 				{
 					_positionInActionList = i;
 					break;

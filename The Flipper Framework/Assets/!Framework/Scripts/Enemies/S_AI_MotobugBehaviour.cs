@@ -94,7 +94,7 @@ public class S_AI_MotobugBehaviour : MonoBehaviour {
         }
 
         //Look for player
-        distanceToPlayer = S_CoreMethods.GetDistanceOfVectors(Player.transform.position, transform.position);
+        distanceToPlayer = S_S_CoreMethods.GetDistanceOfVectors(Player.transform.position, transform.position);
         if (distanceToPlayer < Mathf.Pow(PlayerNoticeDistance, 2))
         {
             ChangeAction(1);
@@ -139,7 +139,7 @@ public class S_AI_MotobugBehaviour : MonoBehaviour {
         }
 
         //Check if too far away
-        distanceToPlayer = S_CoreMethods.GetDistanceOfVectors(Player.transform.position, transform.position);
+        distanceToPlayer = S_S_CoreMethods.GetDistanceOfVectors(Player.transform.position, transform.position);
         if (distanceToPlayer > Mathf.Pow( PlayerLoseDistance, 2))
         {
             ChangeAction(0);

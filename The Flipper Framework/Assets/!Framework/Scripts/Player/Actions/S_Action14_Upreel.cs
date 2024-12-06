@@ -80,7 +80,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 	public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Upreel);
+		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Upreel);
 		enabled = true;
 
 		//Set same animation as when on a zipline.
@@ -236,7 +236,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Homing)
+				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Homing)
 				{
 					_positionInActionList = i;
 					break;

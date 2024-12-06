@@ -40,7 +40,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 
 	// Trackers
 	#region trackers
-	private S_Enums.PrimaryPlayerStates _whatActionWasOn;
+	private S_GeneralEnums.PrimaryPlayerStates _whatActionWasOn;
 	private bool	_isSteppingRight;
 	private bool	_canStep;
 	private bool	_inAir;
@@ -129,7 +129,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		
 		//Used for checking if the main action changes during the step.
 		_whatActionWasOn = _Actions._whatCurrentAction;
-		_Actions._whatSubAction = S_Enums.SubPlayerStates.Quickstepping;
+		_Actions._whatSubAction = S_GeneralEnums.SubPlayerStates.Quickstepping;
 
 		//Prevents buttons from being held to spam.
 		_Input._RightStepPressed = false;
