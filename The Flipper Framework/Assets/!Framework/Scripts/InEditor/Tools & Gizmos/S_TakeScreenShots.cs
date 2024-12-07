@@ -72,49 +72,24 @@ public class S_TakeScreenShots : MonoBehaviour
 
 
 [CustomEditor(typeof(S_TakeScreenShots))]
-public class MainScriptEditor : Editor
+public class TakeScreenShotEditor : S_CustomInspector_Base
 {
 	S_TakeScreenShots _OwnerScript;
 
-	GUIStyle	_HeaderStyle;
-	GUIStyle	_BigButtonStyle;
-	GUIStyle	_SmallButtonStyle;
-	float	_spaceSize;
-
-	public override void OnInspectorGUI () {
-		DrawInspector();
-	}
 
 	private void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_TakeScreenShots)target;
+		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		if (_OwnerScript._InspectorTheme == null) { return; }
 		ApplyStyle();
 	}
 
-	private void ApplyStyle () {
-		_HeaderStyle = _OwnerScript._InspectorTheme._ReplaceNormalHeaders;
-		_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
-		_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
+	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
+		return _OwnerScript._InspectorTheme;
 	}
 
-	private bool IsThemeNotSet () {
-		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
-		if (S_S_CustomInspectorMethods.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
-		{
-			ApplyStyle();
-		}
-
-		//Will only happen if above is attatched and has a theme.
-		return (_OwnerScript == null || _OwnerScript._InspectorTheme == null);
-	}
-
-	private void DrawInspector () {
-
-		if(IsThemeNotSet()) return;
-
-		serializedObject.Update();
+	public override void DrawInspectorNotInherited () {
 
 		//Describe what the script does
 		EditorGUILayout.TextArea("Adding this script to an object allows you to take screenshots of the current game view, both in edit and play mode. \n" +

@@ -188,54 +188,24 @@ public class S_Data_DisplayData : MonoBehaviour
 
 
 [CustomEditor(typeof(S_Data_DisplayData))]
-public class DisplayDataEditor : Editor
+public class DisplayDataEditor : S_CustomInspector_Base
 {
 	S_Data_DisplayData _OwnerScript;
-
-	GUIStyle _HeaderStyle;
-	GUIStyle _BigButtonStyle;
-	GUIStyle _SmallButtonStyle;
-	GUIStyle _NormalHeaderStyle;
-	float _spaceSize;
-
-	public override void OnInspectorGUI () {
-		DrawInspector();
-	}
 
 	private void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_Data_DisplayData)target;
+		_InspectorTheme = _OwnerScript._InspectorTheme;
 
 		if (_OwnerScript._InspectorTheme == null) { return; }
 		ApplyStyle();
 	}
 
-	private void ApplyStyle () {
-		_HeaderStyle = _OwnerScript._InspectorTheme._MainHeaders;
-		_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
-		_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
-		_SmallButtonStyle = _OwnerScript._InspectorTheme._ResetButton;
-		_NormalHeaderStyle = _OwnerScript._InspectorTheme._ReplaceNormalHeaders;
+	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
+		return _OwnerScript._InspectorTheme;
 	}
 
-	private bool IsThemeNotSet () {
-		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
-		if (S_S_CustomInspectorMethods.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
-		{
-			ApplyStyle();
-		}
-
-		//Will only happen if above is attatched and has a theme.
-		return (_OwnerScript == null || _OwnerScript._InspectorTheme == null);
-	}
-
-	private void DrawInspector () {
-
-		if (IsThemeNotSet()) return;
-
-		serializedObject.Update();
-
-		//Describe what the script does
+	public override void DrawInspectorNotInherited () {
 		EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
 
 		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Settings", _NormalHeaderStyle);
@@ -269,7 +239,7 @@ public class DisplayDataEditor : Editor
 			DrawListElementName, DrawWithEachListElement);
 	}
 
-	public void DrawListElementName ( int i, SerializedProperty element ) {
+		public void DrawListElementName ( int i, SerializedProperty element ) {
 		EditorGUILayout.PropertyField(element, new GUIContent("Data " + i + " - " + _OwnerScript._DataToDisplay[i].displayName));
 	}
 

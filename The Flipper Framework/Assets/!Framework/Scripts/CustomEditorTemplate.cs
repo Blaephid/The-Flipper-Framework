@@ -7,7 +7,7 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 namespace templates
 {
 
-	public class _MainScript_ : ScriptableObject
+	public class _TestEditorScript_ : ScriptableObject
 	{
 #if UNITY_EDITOR
 		public S_O_CustomInspectorStyle _InspectorTheme;
@@ -15,51 +15,25 @@ namespace templates
 	}
 
 #if UNITY_EDITOR
-	[CustomEditor(typeof(_MainScript_))]
-	public class MainScriptEditor : Editor
+	[CustomEditor(typeof(_TestEditorScript_))]
+	public class MainScriptEditor : S_CustomInspector_Base
 	{
-		_MainScript_ _OwnerScript;
+		_TestEditorScript_ _OwnerScript;
 
-		GUIStyle _HeaderStyle;
-		GUIStyle _BigButtonStyle;
-		GUIStyle _SmallButtonStyle;
-		float _spaceSize;
-
-		public override void OnInspectorGUI () {
-			DrawInspector();
-		}
 
 		private void OnEnable () {
 			//Setting variables
-			_OwnerScript = (_MainScript_)target;
+			_OwnerScript = (_TestEditorScript_)target;
+			_InspectorTheme = _OwnerScript._InspectorTheme;
 
-			if (_OwnerScript._InspectorTheme == null) { return; }
 			ApplyStyle();
 		}
 
-		private void ApplyStyle () {
-			_HeaderStyle = _OwnerScript._InspectorTheme._MainHeaders;
-			_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
-			_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
+		public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
+			return _OwnerScript._InspectorTheme;
 		}
 
-		private bool IsThemeNotSet () {
-			//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
-			if (S_S_CustomInspectorMethods.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
-			{
-				ApplyStyle();
-			}
-
-			//Will only happen if above is attatched and has a theme.
-			return (_OwnerScript == null || _OwnerScript._InspectorTheme == null);
-		}
-
-		private void DrawInspector () {
-
-			if (IsThemeNotSet()) return;
-
-			serializedObject.Update();
-
+		public override void DrawInspectorNotInherited () {
 			//Describe what the script does
 			EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
 

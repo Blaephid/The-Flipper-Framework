@@ -9,7 +9,7 @@ using UnityEditor;
 [CreateAssetMenu(fileName = "Custom Inspector Style")]
 public class S_O_CustomInspectorStyle : ScriptableObject
 {
-	public float _spaceSize = 1;
+	public float __spaceSize = 1;
 	public GUIStyle _ResetButton;
 	public GUIStyle _GeneralButton;
 	public GUIStyle _MainHeaders;
@@ -28,7 +28,7 @@ public class CustomInpsectorEditor : Editor
 
 		S_O_CustomInspectorStyle Details = (S_O_CustomInspectorStyle)target;
 
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("_spaceSize"), new GUIContent("Size of Spaces"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("__spaceSize"), new GUIContent("Size of Spaces"));
 		serializedObject.ApplyModifiedProperties();
 
 		//Default Main Header
@@ -73,7 +73,7 @@ public class CustomInpsectorEditor : Editor
 
 		void DrawButton (string property, string outputName, GUIStyle inputStyle) {
 
-			EditorGUILayout.Space(Details._spaceSize);
+			EditorGUILayout.Space(Details.__spaceSize);
 			EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
 			GUILayout.BeginHorizontal();			
 			S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Example", new GUIStyle(inputStyle), null);		
@@ -81,7 +81,7 @@ public class CustomInpsectorEditor : Editor
 
 		void DrawLabel ( string property, string outputName, GUIStyle inputStyle ) {
 
-			EditorGUILayout.Space(Details._spaceSize);
+			EditorGUILayout.Space(Details.__spaceSize);
 			EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("Example", new GUIStyle(inputStyle));

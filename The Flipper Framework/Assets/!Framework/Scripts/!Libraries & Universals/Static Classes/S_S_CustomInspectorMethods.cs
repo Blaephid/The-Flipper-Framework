@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-public class S_S_CustomInspectorMethods : Editor
+public class S_S_CustomInspectorMethods 
+
 {
 	//Called whenever a property needs to be shown in the editor.
 	public static void DrawEditableProperty ( SerializedObject serializedObject, string property, string outputName, bool isHorizontal = false, bool includeChildren = false ) {

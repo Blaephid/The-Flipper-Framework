@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 780.8
   m_ShowMode: 4
-  m_Title: Hierarchy
+  m_Title: Scene
   m_RootView: {fileID: 5}
   m_MinSize: {x: 875, y: 321}
   m_MaxSize: {x: 10000, y: 10000}
@@ -94,8 +94,8 @@ MonoBehaviour:
     y: 0
     width: 482.40002
     height: 730.8
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 71}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 12}
   m_Panes:
   - {fileID: 13}
@@ -404,7 +404,7 @@ MonoBehaviour:
     m_ContainerData: []
     m_OverlaysVisible: 1
   m_SearchFilter:
-    m_NameFilter: 
+    m_NameFilter: pp_so
     m_ClassNames: []
     m_AssetLabels: []
     m_AssetBundleNames: []
@@ -414,26 +414,26 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/!Framework/Building Blocks/Core Objects
+    - Assets/!Framework/Scripts/InEditor/Inspectors
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
-    m_OriginalText: 
+    m_OriginalText: pp_so
     m_ImportLogFlags: 0
     m_FilterByTypeIntersection: 0
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/!Framework/Building Blocks/Core Objects
+  - Assets/!Framework/Scripts/InEditor/Inspectors
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\GitHub\Bumper-Engine-2\The Flipper Framework
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: 381c0100
-    m_LastClickedID: 72760
-    m_ExpandedIDs: 000000000e1b0100f01b0100321c0100461c0100a0ba010000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 287}
+    m_SelectedIDs: 501d0100
+    m_LastClickedID: 73040
+    m_ExpandedIDs: 00000000361b0100ec1b01002e1c0100421c0100121d01001c1d0100281d010000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -462,7 +462,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000e1b0100
+    m_ExpandedIDs: 00000000361b0100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -494,18 +494,18 @@ MonoBehaviour:
     m_ExpandedInstanceIDs: 
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: Pr_CamTrig
-      m_OriginalName: Pr_CamTrig
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 66336
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_TrimLeadingAndTrailingWhitespace: 0
       m_ClientGUIView: {fileID: 11}
@@ -595,7 +595,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: -18520
+  m_LastSelectedObjectID: -20642
 --- !u!114 &17
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -635,24 +635,24 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_SceneHierarchy:
     m_TreeViewState:
-      scrollPos: {x: 0, y: 1090.8}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: 6026e4ffe4b5ffffecb5ffff34b6ffff60b7ffffa8b7ffff0ec0ffff16c0ffff5ec0ffff78c8ffffc0c8ffff54dcffffccfaffff62c100001ac9000044cd00006ace0000b6d2000044d70000a4e50000e0ec0000c4f2000010f40000
+      scrollPos: {x: 0, y: 0}
+      m_SelectedIDs: 5eafffff
+      m_LastClickedID: -20642
+      m_ExpandedIDs: 5eafffffa6afffffccfaffff88c900007cce000056d2000020d70000eee40000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: Pr_Spring
-        m_OriginalName: Pr_Spring
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 257316
+        m_UserData: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 4
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_TrimLeadingAndTrailingWhitespace: 0
         m_ClientGUIView: {fileID: 2}
@@ -1187,9 +1187,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 1146.0907, y: 239.07309, z: 827.612}
+    m_Target: {x: 1140.0911, y: 226.85786, z: 839.1771}
     speed: 2
-    m_Value: {x: 2.7388642, y: 5.5851254, z: -17.20391}
+    m_Value: {x: 1140.0911, y: 226.85786, z: 839.1771}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1235,13 +1235,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.10942103, y: -0.8280638, z: 0.17330053, w: -0.52200556}
+    m_Target: {x: -0.16155227, y: 0.10486901, z: -0.01742016, w: -0.98121786}
     speed: 2
-    m_Value: {x: -0.06331966, y: -0.8987293, z: 0.1379718, w: -0.41138804}
+    m_Value: {x: -0.16151601, y: 0.1060364, z: -0.01761235, w: -0.9809988}
   m_Size:
     m_Target: 3.2162771
     speed: 2
-    m_Value: 21.492655
+    m_Value: 3.2162771
   m_Ortho:
     m_Target: 0
     speed: 2

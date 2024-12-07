@@ -29705,6 +29705,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
+      propertyPath: _InspectorTheme
+      value: 
+      objectReference: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454,
+        type: 2}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
       propertyPath: _MainActions.Array.size
       value: 12
       objectReference: {fileID: 0}

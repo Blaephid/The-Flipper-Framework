@@ -212,60 +212,37 @@ namespace SplineMesh
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(S_SplineMeshTiling))]
-public class SplineMeshEditor : Editor
+public class SplineMeshEditor : S_CustomInspector_Base
 {
 	S_SplineMeshTiling _OwnerScript;
-	GUIStyle headerStyle;
-	GUIStyle ButtonStyle;
-	float spaceSize;
 
-	public override void OnInspectorGUI () {
-		DrawInspector();
-	}
 	private void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_SplineMeshTiling)target;
+		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		if (_OwnerScript._InspectorTheme == null) { return; }
 		ApplyStyle();
 	}
 
-	private void ApplyStyle () {
-		headerStyle = _OwnerScript._InspectorTheme._MainHeaders;
-		ButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
-		spaceSize = _OwnerScript._InspectorTheme._spaceSize;
-		serializedObject.Update();
+	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
+		return _OwnerScript._InspectorTheme;
 	}
 
-
-	private bool IsThemeNotSet () {
-		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
-		if (S_S_CustomInspectorMethods.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
-		{
-			ApplyStyle();
-		}
-
-		//Will only happen if above is attatched and has a theme.
-		return (_OwnerScript == null || _OwnerScript._InspectorTheme == null);
-	}
-
-	private void DrawInspector () {
-
-		if (IsThemeNotSet()) return;
+	public override void DrawInspectorNotInherited () {
 
 		//Order of Drawing
-		EditorGUILayout.Space(spaceSize);
+		EditorGUILayout.Space(_spaceSize);
 		DrawButtons();
 
 		void DrawButtons () {
-			EditorGUILayout.Space(spaceSize);
+			EditorGUILayout.Space(_spaceSize);
 			EditorGUILayout.BeginHorizontal();
 
-			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Update This Spline Mesh", ButtonStyle, _OwnerScript, "Update Single Spline Meshes"))
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Update This Spline Mesh", _BigButtonStyle, _OwnerScript, "Update Single Spline Meshes"))
 			{
 				_OwnerScript.rebuild();
 			}
-			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Update All Spline Meshes", ButtonStyle, _OwnerScript, "Update All Spline Meshes"))
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Update All Spline Meshes", _BigButtonStyle, _OwnerScript, "Update All Spline Meshes"))
 			{
 				S_SplineMeshTiling[] railsMeshes = FindObjectsByType<S_SplineMeshTiling>((FindObjectsSortMode.None));
 				foreach (S_SplineMeshTiling mesh in railsMeshes)

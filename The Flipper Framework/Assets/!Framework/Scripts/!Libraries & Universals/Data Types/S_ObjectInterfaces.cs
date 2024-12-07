@@ -5,19 +5,19 @@ using UnityEngine;
 
 public interface ITriggerable
 {
-	void TriggerObjectOn (S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOn (S_PlayerPhysics Player = null ) {
 
 	}
 
-	void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
 
 	}
 
-	void TriggerObjectEither ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectEither ( S_PlayerPhysics Player = null ) {
 
 	}
 
-	void ResetObject ( S_PlayerPhysics Player = null) {
+	public void ResetObject ( S_PlayerPhysics Player = null) {
 
 	}
 }

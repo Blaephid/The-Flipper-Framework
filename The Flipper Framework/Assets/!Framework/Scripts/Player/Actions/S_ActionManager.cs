@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using System.Linq;
 using Unity.VisualScripting;
+using templates;
 
 public class S_ActionManager : MonoBehaviour
 {
@@ -51,7 +52,7 @@ public class S_ActionManager : MonoBehaviour
 
 	//Inspector
 #if UNITY_EDITOR
-	public S_O_CustomInspectorStyle		InspectorTheme; // Will decide the apperance in the inspector.
+	public S_O_CustomInspectorStyle		_InspectorTheme; // Will decide the apperance in the inspector.
 #endif
 	public S_GeneralEnums.PrimaryPlayerStates                _addState; //Used only by the inspector in order to add states for other states to transition into.
 
@@ -516,47 +517,23 @@ public class S_ActionManager : MonoBehaviour
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(S_ActionManager))]
-public class ActionManagerEditor : Editor
+public class ActionManagerEditor : S_CustomInspector_Base
 {
 	S_ActionManager _ActionMan;
-	GUIStyle headerStyle;
-	GUIStyle BigButtonStyle;
-	GUIStyle _SmallButtonStyle;
-	float spaceSize = 1;
-
-	public override void OnInspectorGUI () {
-		DrawInspector();
-	}
 
 	private void OnEnable () {
 		//Setting variables
 		_ActionMan = (S_ActionManager)target;
+		_InspectorTheme = _ActionMan._InspectorTheme;
 
-		if (_ActionMan.InspectorTheme == null) { return; }
-		headerStyle = _ActionMan.InspectorTheme._MainHeaders;
-		BigButtonStyle = _ActionMan.InspectorTheme._GeneralButton;
-		_SmallButtonStyle = _ActionMan.InspectorTheme._ResetButton;
-		spaceSize = _ActionMan.InspectorTheme._spaceSize;
+		ApplyStyle();
 	}
 
-	private void DrawInspector () {
+	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
+		return _ActionMan._InspectorTheme;
+	}
 
-		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
-		EditorGUI.BeginChangeCheck();
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("InspectorTheme"), new GUIContent("Inspector Theme"));
-		serializedObject.ApplyModifiedProperties();
-		if (EditorGUI.EndChangeCheck())
-		{
-			headerStyle = _ActionMan.InspectorTheme._MainHeaders;
-			BigButtonStyle = _ActionMan.InspectorTheme._GeneralButton;
-			_SmallButtonStyle = _ActionMan.InspectorTheme._ResetButton;
-			spaceSize = _ActionMan.InspectorTheme._spaceSize;
-		}
-
-		//Will only happen if above is attatched.
-		if (_ActionMan == null || _ActionMan.InspectorTheme == null) return;
-
-		serializedObject.Update();
+	public override void DrawInspectorNotInherited () {
 
 		//Describe what the script does
 		EditorGUILayout.TextArea("This is the action manager, and it defines what actions the character can perform, and their connections to each other \n" +
@@ -570,7 +547,7 @@ public class ActionManagerEditor : Editor
 		SerializedProperty ActionList = serializedObject.FindProperty("_MainActions");
 
 		//Order of Drawing
-		EditorGUILayout.Space(spaceSize);
+		EditorGUILayout.Space(_spaceSize);
 		DrawAddAction();
 		DrawMissingScripts();
 		DrawReorderActions();
@@ -579,7 +556,7 @@ public class ActionManagerEditor : Editor
 		//List of current actions
 		#region Actions
 		void DrawActions () {
-			EditorGUILayout.Space(spaceSize);
+			EditorGUILayout.Space(_spaceSize);
 
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("_addState"), new GUIContent("Add This To Actions"));
 
@@ -598,7 +575,6 @@ public class ActionManagerEditor : Editor
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Add Set", _SmallButtonStyle, _ActionMan, "Add Connector to State"))
 			{
 				AddActionToThis(_ActionMan._addState, i);
-
 			}
 		}
 
@@ -607,7 +583,7 @@ public class ActionManagerEditor : Editor
 			//Each element of the list is shown in the inspector seperately, rather than under one header. Therefore we need custom add and remove buttons.
 
 			//Add new element button.
-			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Add New State", BigButtonStyle, _ActionMan, "Add New State"))
+			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Add New State", _BigButtonStyle, _ActionMan, "Add New State"))
 			{
 				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Default, true, true);
 				serializedObject.Update();
@@ -617,7 +593,7 @@ public class ActionManagerEditor : Editor
 
 		//Button for making sure the object has the components necessary to its actions.
 		void DrawMissingScripts () {
-			if(S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Import Missing", BigButtonStyle, _ActionMan, "Import Missing"))
+			if(S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Import Missing", _BigButtonStyle, _ActionMan, "Import Missing"))
 			{
 				for (int i = 0 ; i < _ActionMan._MainActions.Count ; i++)
 				{
@@ -674,7 +650,7 @@ public class ActionManagerEditor : Editor
 
 		//Button for making the list of actions ordered by the playerState enums they're set as.
 		void DrawReorderActions () {
-			if(S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Sort all actions", BigButtonStyle, _ActionMan, "Reoder Actions"))
+			if(S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Sort all actions", _BigButtonStyle, _ActionMan, "Reoder Actions"))
 			{
 				_ActionMan._MainActions = _ActionMan._MainActions.OrderBy(item => item.State).ToList();
 				serializedObject.ApplyModifiedProperties();
