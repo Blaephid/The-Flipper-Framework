@@ -1,21 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
-using templates;
 using UnityEditor;
 using UnityEngine;
 using System;
 using TMPro;
-using System.Reflection;
-using System.Linq;
-using UnityEngine.UI;
 using System.ComponentModel;
 
 #if UNITY_EDITOR
+[ExecuteAlways]
 public class S_Data_DisplayData : MonoBehaviour
 {
 
 	[SerializeField]
-	private bool _onlyDisplayWhenSelected;
+	private bool	_updateAutomatically;
+	[SerializeField]
+	private bool	_onlyDisplayWhenSelected;
+	private bool	_previousOnlyDisplayWhenSelected;
+	[SerializeField]
+	private Vector3     _placeAboveObject;
+	private Vector3     _previousLocalPosition;
+	[SerializeField]
+	private float	_scale = 1;
 
 	[SerializeField]
 	private string _displayTitle;
@@ -27,7 +31,7 @@ public class S_Data_DisplayData : MonoBehaviour
 
 	[SerializeReference]
 	public GameObject[]		_ObjectsToReference;
-	private List<IObjectData>	_DataSources = new List<IObjectData>();
+	private List<S_Data_Base>	_DataSources = new List<S_Data_Base>();
 
 	[Serializable]
 	public struct StrucDataToDisplay {
@@ -39,13 +43,64 @@ public class S_Data_DisplayData : MonoBehaviour
 	}
 	public List<StrucDataToDisplay> _DataToDisplay;
 
-	//Go through each object set in editor, and search for scripts using the dataInterface, then add them to a list to use as sources later.
-	public void GetDataSources () {
-		_DataSources.Clear();
-		for (int i = 0 ; i < _ObjectsToReference.Length ; i++)
+
+	private bool _isSelected;
+
+	private void Update () {
+		if(_isSelected)
 		{
-			IObjectData[] ObjectsDataComponents = _ObjectsToReference[i].GetComponents<IObjectData>();
-			for (int j = 0 ; j < ObjectsDataComponents.Length ; j++) { _DataSources.Add(ObjectsDataComponents[j]); }
+			if (transform.localPosition != _previousLocalPosition)
+			{
+				_placeAboveObject = transform.position - transform.parent.position;
+			}
+			HandleTransform();
+		}
+	}
+
+	#region SelectionManagement
+	//These methods will handle whether or not text should be hidden if set to only appear when selected.
+	private void OnEnable () {
+		Selection.selectionChanged += OnSelectionChanged;
+		HandleTransform();
+	}
+	private void OnDisable () {
+		Selection.selectionChanged -= OnSelectionChanged;
+	}
+	private void OnSelectionChanged () {
+		//If a reference object or this is selected, reveal the text.
+		if (S_S_EditorMethods.IsThisOrReferenceSelected(transform, _ObjectsToReference))
+		{
+			_isSelected = true;
+			RevealOrHide(true);
+			return;
+		}
+
+		//If none are, hide the text.
+		_isSelected = false;
+		RevealOrHide(false);
+	}
+
+
+	private void RevealOrHide(bool visible ) {
+		if (!_onlyDisplayWhenSelected) { return; }
+
+		_3DTitle.gameObject.SetActive(visible);
+		_3DText.gameObject.SetActive(visible);
+	}
+	#endregion
+
+	//Called whenever a property is updated
+	private void OnValidate () {
+		Validate(null, null);
+	}
+
+	public void Validate ( object sender, EventArgs e ) {
+
+		if (!_updateAutomatically) { return; }
+
+		if (!_onlyDisplayWhenSelected || _isSelected)
+		{
+			UpdateData();
 		}
 	}
 
@@ -60,7 +115,7 @@ public class S_Data_DisplayData : MonoBehaviour
 
 			//Goes through each data source until a field matching the given name is found, and returns that value
 			object value = null;
-			for (int s = 0 ; value == null & s < _DataSources.Count ; s++) 
+			for (int s = 0 ; value == null & s < _DataSources.Count ; s++)
 				value = (S_S_EditorMethods.FindFieldByName(_DataSources[0], translatedVariableName));
 
 			//Updates the data
@@ -71,15 +126,40 @@ public class S_Data_DisplayData : MonoBehaviour
 				variableName = translatedVariableName,
 				value = value.ToString()
 			};
-			_DataToDisplay [i] = Temp;
-		}	
+			_DataToDisplay[i] = Temp;
+		}
 
 		Update3DText();
 	}
 
+	//Go through each object set in editor, and search for scripts using the dataInterface, then add them to a list to use as sources later.
+	public void GetDataSources () {
+		HandleValidateEventsOfSources(false);
+
+		_DataSources.Clear(); //Clear first, because getting from an array into a list
+		//Finds all data sources in the provided objects, then adds them to this
+		for (int i = 0 ; i < _ObjectsToReference.Length ; i++)
+		{
+			S_Data_Base[] ObjectsDataComponents = _ObjectsToReference[i].GetComponents<S_Data_Base>();
+			for (int j = 0 ; j < ObjectsDataComponents.Length ; j++) { _DataSources.Add(ObjectsDataComponents[j]); }
+		}
+
+		HandleValidateEventsOfSources(true);
+	}
+
+	//To ensure data updates onValidate for source objects, not just itself, events are used. This will remove them before they're added back.
+	private void HandleValidateEventsOfSources (bool add) {
+		for (int i = 0 ; i < _DataSources.Count ; i++)
+		{
+			if (add)	_DataSources[i].onObjectValidate += Validate;
+			else	_DataSources[i].onObjectValidate -= Validate;
+		}
+	}
+
 	public void Update3DText () {
 		_3DTitle.text = _displayTitle;
-		transform.localScale = S_S_ObjectMethods.LockScale(transform); //Ensures object is never stretched.
+
+		HandleTransform();
 
 		//Goes through each data element, and makes a new line in the text to include display and value.
 		string DisplayText = "";
@@ -92,6 +172,16 @@ public class S_Data_DisplayData : MonoBehaviour
 		_3DText.text = DisplayText;
 	}
 
+	private void HandleTransform () {
+		transform.localScale = S_S_ObjectMethods.LockScale(transform, _scale); //Ensures object is never stretched.
+		if (_placeAboveObject != Vector3.zero)
+		{
+			transform.position = transform.parent.position + _placeAboveObject;
+			_previousLocalPosition = transform.localPosition;
+		}
+
+		S_S_EditorMethods.FaceSceneViewCamera(transform);
+	}
 
 	public S_O_CustomInspectorStyle _InspectorTheme;
 }
@@ -105,6 +195,7 @@ public class DisplayDataEditor : Editor
 	GUIStyle _HeaderStyle;
 	GUIStyle _BigButtonStyle;
 	GUIStyle _SmallButtonStyle;
+	GUIStyle _NormalHeaderStyle;
 	float _spaceSize;
 
 	public override void OnInspectorGUI () {
@@ -124,6 +215,7 @@ public class DisplayDataEditor : Editor
 		_BigButtonStyle = _OwnerScript._InspectorTheme._GeneralButton;
 		_spaceSize = _OwnerScript._InspectorTheme._spaceSize;
 		_SmallButtonStyle = _OwnerScript._InspectorTheme._ResetButton;
+		_NormalHeaderStyle = _OwnerScript._InspectorTheme._ReplaceNormalHeaders;
 	}
 
 	private bool IsThemeNotSet () {
@@ -146,18 +238,24 @@ public class DisplayDataEditor : Editor
 		//Describe what the script does
 		EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
 
-	
+		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Settings", _NormalHeaderStyle);
+		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_updateAutomatically", "Update Automatically");
 		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_onlyDisplayWhenSelected", "Only Display When Selected");
+		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Transform", _NormalHeaderStyle);
+		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_scale", "Scale");
+		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_placeAboveObject", "Place Above Object");
+		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Object References", _NormalHeaderStyle);
 		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_ObjectsToReference", "Objects To Reference", false, true);
 		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_3DTitle", "Title Object");
 		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_3DText", "Text Object");
 
 		EditorGUILayout.Space(_spaceSize);
 
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_displayTitle", "ObjectTitle");
+		EditorGUILayout.LabelField("Data", _NormalHeaderStyle);
+		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_displayTitle", "Object Title");
 
 		//Add new element button.
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Update Data", _BigButtonStyle, _OwnerScript, "Update 3D Text"))
+		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Manually Update Data", _BigButtonStyle, _OwnerScript, "Update 3D Text"))
 		{
 			_OwnerScript.UpdateData();
 		}

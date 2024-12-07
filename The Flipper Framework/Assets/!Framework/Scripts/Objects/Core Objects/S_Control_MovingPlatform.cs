@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.ProBuilder.MeshOperations;
 
-public class S_Control_MovingPlatform : MonoBehaviour, IObjectData
+public class S_Control_MovingPlatform : S_Data_Base
 {
 	[Header("Projection")]
 	public bool         _projectPath = true;

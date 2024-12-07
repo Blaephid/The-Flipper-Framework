@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections;
 
 [ExecuteInEditMode]
-public class S_Data_Checkpoint : MonoBehaviour, IObjectData
+public class S_Data_Checkpoint :  S_Data_Base
 {
 	public string checkPointName = "X1";
 

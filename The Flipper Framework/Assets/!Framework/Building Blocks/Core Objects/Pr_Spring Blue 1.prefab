@@ -87,6 +87,15 @@ PrefabInstance:
       propertyPath: _lockAirMovesTime_
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 3876617265796837892, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_text
+      value: 'Spring Force = 70
+
+        Lock For Frames = 0
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 5119825325252721446, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: _force
@@ -111,6 +120,36 @@ PrefabInstance:
         type: 3}
       propertyPath: _simCoreVel.y
       value: -234.34601
+      objectReference: {fileID: 0}
+    - target: {fileID: 6634983686320038530, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: _DataToDisplay.Array.data[0].value
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 6634983686320038530, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: _DataToDisplay.Array.data[1].value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7880209724886739063, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.3687602
+      objectReference: {fileID: 0}
+    - target: {fileID: 7880209724886739063, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.03839087
+      objectReference: {fileID: 0}
+    - target: {fileID: 7880209724886739063, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.92373896
+      objectReference: {fileID: 0}
+    - target: {fileID: 7880209724886739063, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.09616858
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

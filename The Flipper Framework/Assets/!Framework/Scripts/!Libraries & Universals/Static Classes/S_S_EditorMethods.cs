@@ -4,9 +4,14 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.ComponentModel;
+using UnityEditor;
 
 public class S_S_EditorMethods : MonoBehaviour
 {
+
+#if UNITY_EDITOR
 	//Takes a string and converts it to align with variable naming conventions, allowing the human's input to not have to be 100%.
 	//
 	public static string TranslateStringToVariableName ( string input, S_EditorEnums.CasingTypes casing ) {
@@ -52,6 +57,7 @@ public class S_S_EditorMethods : MonoBehaviour
 		return noSpaces;
 	}
 
+	//Takes an object and a string, then finds the value of a variable/field with that name, in said object.
 	public static object FindFieldByName ( object obj, string inputName ) {
 		if (obj == null || string.IsNullOrEmpty(inputName))
 			return null;
@@ -59,10 +65,43 @@ public class S_S_EditorMethods : MonoBehaviour
 		Type type = obj.GetType();
 
 		FieldInfo field = type.GetField(inputName);
-		object value = field.GetValue(obj);
-		if (value == null)
-			Debug.LogError("Could not find  " + inputName + "  in  " + obj);
+		if (field == null) return null;
 
+		object value = field.GetValue(obj);
 		return value;
 	}
+
+	// Check if a given GameObject is part of the current selection
+	public static bool IsSelected ( GameObject gameObject ) {
+		return Array.Exists(Selection.gameObjects, obj => obj == gameObject);
+	}
+
+	//Checks if a gameObject is seleted, or one of its children or any from an aditional list
+	public static bool IsThisOrReferenceSelected ( Transform transform ,GameObject[] ObjectList = null) {
+	
+		if (S_S_EditorMethods.IsSelected(transform.gameObject)) { return true; }
+	
+		//Goes through list to see if any are selected.
+		for (int i = 0 ; i < ObjectList.Length ; i++) {if (IsSelected(ObjectList[i])){ return true;}}
+		//Goes through children to see if any are selected
+		for (int i = 0 ; i < transform.childCount ; i++){ if (IsSelected(transform.GetChild(i).gameObject)){return true;}}
+
+		//If nothing found, then false.
+		return false;
+	}
+
+	public static void FaceSceneViewCamera (Transform transform) {
+		if(Application.isPlaying) return;
+
+		SceneView sceneView = SceneView.lastActiveSceneView;
+		if (sceneView != null && sceneView.camera != null)
+		{
+			// Get the position of the Scene View camera
+			Vector3 cameraPosition = sceneView.camera.transform.position;
+
+			// Make the object face the camera
+			transform.LookAt(cameraPosition);
+		}
+	}
+#endif
 }

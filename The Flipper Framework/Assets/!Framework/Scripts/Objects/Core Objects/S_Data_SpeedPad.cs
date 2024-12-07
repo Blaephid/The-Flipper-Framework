@@ -2,7 +2,7 @@
 using System.Collections;
 using SplineMesh;
 
-public class S_Data_SpeedPad : MonoBehaviour, IObjectData
+public class S_Data_SpeedPad : S_Data_Base
 {
 	[Header ("Type")]
 	public bool	_isOnRail_;

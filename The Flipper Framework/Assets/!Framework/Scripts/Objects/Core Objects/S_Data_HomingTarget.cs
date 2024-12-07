@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class S_Data_HomingTarget : MonoBehaviour, IObjectData
+public class S_Data_HomingTarget : S_Data_Base
 {
 
 	public Vector3 _offset = Vector3.up;

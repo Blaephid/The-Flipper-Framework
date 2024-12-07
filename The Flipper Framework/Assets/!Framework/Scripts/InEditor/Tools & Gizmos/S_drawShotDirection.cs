@@ -48,64 +48,82 @@ public class S_drawShotDirection : MonoBehaviour
 	private void OnDrawGizmosSelected () {
 		if (_debugForce && _calculations > 0) //Will only show line if there's a line to create.
 		{
-			//Gets values for simulation from stats object.
-			_constantDeceleration =	_CharacterStatsToFollow.DecelerationStats.airConstantDecel;
-			_fallGravity =		_CharacterStatsToFollow.WhenInAir.fallGravity;
-			_upGravity =		_CharacterStatsToFollow.WhenInAir.upGravity;
-			_maxFall =		_CharacterStatsToFollow.WhenInAir.startMaxFallingSpeed;
-			_acceleration =		_CharacterStatsToFollow.AccelerationStats.runAcceleration;
-			_accellModInAir =		_CharacterStatsToFollow.WhenInAir.controlAmmount.y;
-			_AcellBySpeed =		_CharacterStatsToFollow.AccelerationStats.AccelBySpeed;
-			_maxSpeed =		_CharacterStatsToFollow.SpeedStats.maxSpeed;
+			GetValuesFromScriptableObject();
 
-			Vector3[] DebugTrajectoryPoints; //This array will make points along a line following the path the player should take.
+			Vector3[] debugTrajectoryPoints; //This array will make points along a line following the path the player should take.
 			if (_SpringScript)
 			{
-				//If spring, get gravity, force and duration of lock.
-				_force = _SpringScript._springForce_;
-
-				_overwriteGravity = _SpringScript._overwriteGravity_;
-				if(_overwriteGravity != Vector3.zero)
-				{
-					_fallGravity = _overwriteGravity;
-					_upGravity = _overwriteGravity;
-				}
-				_lockFrames = _SpringScript._lockForFrames_; 
-
-				//Use the launch data to proejct where player will go.
-				DebugTrajectoryPoints = PreviewTrajectory(_ShotCenter.position, _SpringScript._BounceTransform.up * _force, _SpringScript._BounceTransform.up * 2, _SpringScript._LockInputTo_);
+				debugTrajectoryPoints = SetUpSpringSimulation();
 			}
 			else
 			{
-				_force = _DashRingScript._speedToSet_;
-				_overwriteGravity = _DashRingScript._overwriteGravity_;
-				if (_overwriteGravity != Vector3.zero)
-				{
-					_fallGravity = _overwriteGravity;
-					_upGravity = _overwriteGravity;
-				}
-				_lockFrames = _DashRingScript._lockControlFrames_;
-
-				//Use the launch data to proejct where player will go.
-				DebugTrajectoryPoints = PreviewTrajectory(_ShotCenter.position, transform.forward * _force, transform.forward * 2, _DashRingScript._lockInputTo_);
+				debugTrajectoryPoints= SetUpLauncherSimulation();
 			}
 
-			//Create a series of line gizmos representing a path along the points.
-			for (int i = 1 ; i < DebugTrajectoryPoints.Length ; i++)
-			{
-				Gizmos.color = Color.red;
-				Gizmos.DrawLine(DebugTrajectoryPoints[i - 1], DebugTrajectoryPoints[i]);
+			DrawGizmosFromArray(debugTrajectoryPoints);		
+		}
+	}
 
-				if(i == _lockFrames)
-				{
-					Gizmos.color = Color.blue;
-					Gizmos.DrawLine(DebugTrajectoryPoints[i], DebugTrajectoryPoints[i] + Vector3.up * 2);
-				}
-				else
-				{
-					Gizmos.DrawLine(DebugTrajectoryPoints[i], DebugTrajectoryPoints[i] + Vector3.up);
-				}
-			}		
+	private void GetValuesFromScriptableObject () {
+		//Gets values for simulation from stats object.
+		_constantDeceleration = _CharacterStatsToFollow.DecelerationStats.airConstantDecel;
+		_fallGravity = _CharacterStatsToFollow.WhenInAir.fallGravity;
+		_upGravity = _CharacterStatsToFollow.WhenInAir.upGravity;
+		_maxFall = _CharacterStatsToFollow.WhenInAir.startMaxFallingSpeed;
+		_acceleration = _CharacterStatsToFollow.AccelerationStats.runAcceleration;
+		_accellModInAir = _CharacterStatsToFollow.WhenInAir.controlAmmount.y;
+		_AcellBySpeed = _CharacterStatsToFollow.AccelerationStats.AccelBySpeed;
+		_maxSpeed = _CharacterStatsToFollow.SpeedStats.maxSpeed;
+	}
+
+	private Vector3[] SetUpSpringSimulation () {
+		//If spring, get gravity, force and duration of lock.
+		_force = _SpringScript._springForce_;
+
+		_overwriteGravity = _SpringScript._overwriteGravity_;
+		if (_overwriteGravity != Vector3.zero)
+		{
+			_fallGravity = _overwriteGravity;
+			_upGravity = _overwriteGravity;
+		}
+		_lockFrames = _SpringScript._lockForFrames_;
+
+		//Use the launch data to proejct where player will go.
+		return PreviewTrajectory(_ShotCenter.position, _SpringScript._BounceTransform.up * _force, _SpringScript._BounceTransform.up * 2, _SpringScript._LockInputTo_);
+
+	}
+
+	private Vector3[] SetUpLauncherSimulation () {
+		_force = _DashRingScript._speedToSet_;
+		_overwriteGravity = _DashRingScript._overwriteGravity_;
+		if (_overwriteGravity != Vector3.zero)
+		{
+			_fallGravity = _overwriteGravity;
+			_upGravity = _overwriteGravity;
+		}
+		_lockFrames = _DashRingScript._lockControlFrames_;
+
+		//Use the launch data to proejct where player will go.
+		return PreviewTrajectory(_ShotCenter.position, transform.forward * _force, transform.forward * 2, _DashRingScript._lockInputTo_);
+
+	}
+
+	private void DrawGizmosFromArray ( Vector3[] debugTrajectoryPoints ) {
+		//Create a series of line gizmos representing a path along the points.
+		for (int i = 1 ; i < debugTrajectoryPoints.Length ; i++)
+		{
+			Gizmos.color = Color.red;
+			Gizmos.DrawLine(debugTrajectoryPoints[i - 1], debugTrajectoryPoints[i]);
+
+			if (i == _lockFrames)
+			{
+				Gizmos.color = Color.blue;
+				Gizmos.DrawLine(debugTrajectoryPoints[i], debugTrajectoryPoints[i] + Vector3.up * 2);
+			}
+			else
+			{
+				Gizmos.DrawLine(debugTrajectoryPoints[i], debugTrajectoryPoints[i] + Vector3.up);
+			}
 		}
 	}
 

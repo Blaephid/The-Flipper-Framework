@@ -25,17 +25,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 92208886072114591}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7617228972872082053}
+  m_Children: []
   m_Father: {fileID: 48922900129631067}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 7.23}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &1483155676297581743
@@ -129,8 +128,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -167,7 +166,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 0, w: 2.1452675}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   _SortingLayer: 0
@@ -185,8 +184,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 48922900129631067}
-  - component: {fileID: 2100206243171541881}
   - component: {fileID: 3595523292069757358}
+  - component: {fileID: 6045930249403165319}
   m_Layer: 6
   m_Name: Pr_DisplayObjectData
   m_TagString: Untagged
@@ -202,15 +201,47 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3295355349864895002}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.09855386, y: 0.3686585, z: 0.03934292, w: 0.9234881}
   m_LocalPosition: {x: 0, y: 3.23, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1292613313013815353}
+  - {fileID: 7617228972872082053}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2100206243171541881
+  m_LocalEulerAnglesHint: {x: -12.183, y: 43.524, z: 0}
+--- !u!114 &3595523292069757358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3295355349864895002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6056d7ae395210844b633c232e38aa7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _updateAutomatically: 1
+  _onlyDisplayWhenSelected: 1
+  _placeAboveObject: {x: 0, y: 6, z: 0}
+  _scale: 1
+  _displayTitle: Spring
+  _3DTitle: {fileID: 5765654182386527770}
+  _3DText: {fileID: 6358358358702903592}
+  _ObjectsToReference:
+  - {fileID: 0}
+  _DataToDisplay:
+  - variableName: _springForce_
+    displayName: Spring Force
+    casing: 0
+    value: 100
+  - variableName: _lockForFrames_
+    displayName: Lock For Frames
+    casing: 0
+    value: 60
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+--- !u!114 &6045930249403165319
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -224,29 +255,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whatAction: 2
   _delayInSeconds: 0
---- !u!114 &3595523292069757358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3295355349864895002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6056d7ae395210844b633c232e38aa7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _onlyDisplayWhenSelected: 0
-  _displayTitle: Spring
-  _3DTitle: {fileID: 5765654182386527770}
-  _3DText: {fileID: 6358358358702903592}
-  _ObjectsToReference: []
-  _DataToDisplay:
-  - variableName: 
-    displayName: 
-    casing: 0
-    value: 
-  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &3440219142795585223
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,17 +280,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3440219142795585223}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.000010848045}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1292613313013815353}
+  m_Father: {fileID: 48922900129631067}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -4.0000005}
-  m_SizeDelta: {x: 20, y: 5}
+  m_AnchoredPosition: {x: 0, y: -2.41}
+  m_SizeDelta: {x: 14, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4622662306047797600
 MeshRenderer:
@@ -350,7 +358,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Spring Force = 100
 
-    Spring Force 2 = 100
+    Lock For Frames = 60
 
 '
   m_isRightToLeft: 0
@@ -379,8 +387,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

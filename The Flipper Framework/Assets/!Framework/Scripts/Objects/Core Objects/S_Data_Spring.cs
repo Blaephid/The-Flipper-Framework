@@ -2,7 +2,7 @@
 using System.Collections;
 
 [ExecuteInEditMode]
-public class S_Data_Spring : MonoBehaviour, IObjectData
+public class S_Data_Spring : S_Data_Base
 {
 	[Header("Bounce")]
 	[Tooltip("The magnitude of the environmental velocity added to player.")]
