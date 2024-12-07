@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 using System.Net.NetworkInformation;
 
-public class S_Spawn_Ring : S_Spawners
+public class S_Spawn_Ring : S_Spawners_Base
 {
 	public StructRingSpawner _ringSpawnerData;
 

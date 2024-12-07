@@ -222,23 +222,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6056d7ae395210844b633c232e38aa7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _updateAutomatically: 1
+  _updateAutomatically: 0
   _onlyDisplayWhenSelected: 1
-  _placeAboveObject: {x: 0, y: 6, z: 0}
+  _placeAboveObject: {x: 0, y: 8.944649, z: 0}
   _scale: 1
   _displayTitle: Spring
   _3DTitle: {fileID: 5765654182386527770}
   _3DText: {fileID: 6358358358702903592}
-  _ObjectsToReference:
-  - {fileID: 0}
+  _ObjectsToReference: []
   _DataToDisplay:
   - variableName: _springForce_
     displayName: Spring Force
     casing: 0
+    structName: 
     value: 100
   - variableName: _lockForFrames_
     displayName: Lock For Frames
     casing: 0
+    structName: 
     value: 60
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!114 &6045930249403165319
@@ -425,7 +426,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -5.888858, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   _SortingLayer: 0

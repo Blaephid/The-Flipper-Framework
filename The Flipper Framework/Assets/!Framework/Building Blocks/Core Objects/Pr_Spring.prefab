@@ -215,6 +215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _onlyDrawWhenSelected: 1
   _debugForce: 1
   _calculations: 80
   _SpringScript: {fileID: 114000012005501162}
@@ -223,8 +224,8 @@ MonoBehaviour:
   _ShotCenter: {fileID: 1037319718031247092}
   _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
     type: 2}
-  _simCoreVel: {x: 0, y: -213.31755, z: 0}
-  _simEnVel: {x: -99.996086, y: -0.88534355, z: 0}
+  _simCoreVel: {x: 0, y: -209.48456, z: 0}
+  _simEnVel: {x: 38.151794, y: 92.43566, z: -0.29678345}
 --- !u!1 &1603864838323800
 GameObject:
   m_ObjectHideFlags: 0
@@ -767,42 +768,42 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.7
+      value: 0.6999999
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.9997644
+      value: 1.5951296
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.05318165
+      value: 7.8393655
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.0000042915344
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.6964263
+      value: -0.8167794
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.104759015
+      value: 0.31647468
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.19952409
+      value: -0.48229113
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.6813268
+      value: 0.010513276
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -819,15 +820,45 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 92208886072114591, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_Name
       value: DisplayData
       objectReference: {fileID: 0}
+    - target: {fileID: 3440219142795585223, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _scale
       value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
+      propertyPath: _placeAboveObject.x
+      value: 2.9784546
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
+      propertyPath: _placeAboveObject.y
+      value: 7.2463684
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
+      propertyPath: _placeAboveObject.z
+      value: -1.6183472
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
+      propertyPath: _ObjectsToReference.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

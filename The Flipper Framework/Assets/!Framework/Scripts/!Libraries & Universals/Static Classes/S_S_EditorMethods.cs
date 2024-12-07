@@ -57,10 +57,33 @@ public class S_S_EditorMethods : MonoBehaviour
 		return noSpaces;
 	}
 
+
+	//Depending on the the type of value, some values as strings will contain unnecesary information. E.G, gameObjects will add on (UnityEngine.GameObject). This removes brackets and their contents.
+	public static string CleanBracketsInString ( string input ) {
+
+		int bracketStart = 0;
+		int bracketEnd = 0;
+
+		for (int i = 0 ; i < input.Length ; i++)
+		{
+			if (input[i] == '(') { bracketStart = i; }
+			else if (input[i] == ')') { bracketEnd = i; }
+		}
+
+		if(bracketStart > 0 && bracketEnd > 0)
+			input = input.Substring(0, bracketStart) + input.Substring(bracketEnd+1);
+
+		return input;
+	}
+
 	//Takes an object and a string, then finds the value of a variable/field with that name, in said object.
-	public static object FindFieldByName ( object obj, string inputName ) {
+	public static object FindFieldByName ( object obj, string inputName, string structName = "" ) {
 		if (obj == null || string.IsNullOrEmpty(inputName))
 			return null;
+
+		string temp = inputName;
+		//If given  a struct name, find that struct first.
+		if(structName != "") inputName = structName;
 
 		Type type = obj.GetType();
 
@@ -68,6 +91,13 @@ public class S_S_EditorMethods : MonoBehaviour
 		if (field == null) return null;
 
 		object value = field.GetValue(obj);
+
+		//If given a struct name, search the obtained struct for the required field.
+		if (structName != "")
+		{
+			value = FindFieldByName(value, temp, "");
+		}
+
 		return value;
 	}
 

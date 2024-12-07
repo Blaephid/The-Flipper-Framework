@@ -90,10 +90,10 @@ public class S_Manager_LevelProgress : MonoBehaviour
 			case "Checkpoint":
 				if (Col.TryGetComponent(out S_Data_Checkpoint CheckPointScript))
 				{
-					if (!CheckPointScript.IsOn)
+					if (!CheckPointScript._IsOn)
 					{
 						//Effects on object
-						CheckPointScript.IsOn = true;
+						CheckPointScript._IsOn = true;
 						Col.GetComponent<AudioSource>().Play();
 						foreach (Animator anim in CheckPointScript.Animators)
 						{

@@ -38,6 +38,7 @@ public class S_Data_DisplayData : MonoBehaviour
 		public string variableName;
 		public string displayName;
 		public S_EditorEnums.CasingTypes casing;
+		public string structName;
 		[ReadOnly(true)]
 		public string value;
 	}
@@ -109,22 +110,32 @@ public class S_Data_DisplayData : MonoBehaviour
 
 		for (int i = 0 ; i < _DataToDisplay.Count ; i++)
 		{
+			StrucDataToDisplay ThisData = _DataToDisplay[i];
+
 			//Ensures the name taken in from a human matches code style, so it can find a field.
-			string translatedVariableName = S_S_EditorMethods.TranslateStringToVariableName(_DataToDisplay[i].variableName, _DataToDisplay[i].casing);
+			string translatedVariableName = S_S_EditorMethods.TranslateStringToVariableName(ThisData.variableName, ThisData.casing);
 			if (translatedVariableName == "") continue;
+
+			string translatedStructName = ThisData.structName == "" ? "" : S_S_EditorMethods.TranslateStringToVariableName(ThisData.structName, S_EditorEnums.CasingTypes.PascalCase);
 
 			//Goes through each data source until a field matching the given name is found, and returns that value
 			object value = null;
 			for (int s = 0 ; value == null & s < _DataSources.Count ; s++)
-				value = (S_S_EditorMethods.FindFieldByName(_DataSources[0], translatedVariableName));
+				value = (S_S_EditorMethods.FindFieldByName(_DataSources[s], translatedVariableName, translatedStructName));
+
+			if(value == null) { _updateAutomatically = false; break; }
+
+			string displayValue = value.ToString();
+			displayValue = S_S_EditorMethods.CleanBracketsInString(displayValue);
 
 			//Updates the data
 			StrucDataToDisplay Temp = new StrucDataToDisplay
 			{
-				casing = _DataToDisplay[i].casing,
-				displayName = _DataToDisplay[i].displayName,
+				casing = ThisData.casing,
+				displayName = ThisData.displayName,
 				variableName = translatedVariableName,
-				value = value.ToString()
+				structName = translatedStructName,
+				value = displayValue
 			};
 			_DataToDisplay[i] = Temp;
 		}
@@ -140,6 +151,7 @@ public class S_Data_DisplayData : MonoBehaviour
 		//Finds all data sources in the provided objects, then adds them to this
 		for (int i = 0 ; i < _ObjectsToReference.Length ; i++)
 		{
+			if (_ObjectsToReference[i] == null) { continue; }
 			S_Data_Base[] ObjectsDataComponents = _ObjectsToReference[i].GetComponents<S_Data_Base>();
 			for (int j = 0 ; j < ObjectsDataComponents.Length ; j++) { _DataSources.Add(ObjectsDataComponents[j]); }
 		}

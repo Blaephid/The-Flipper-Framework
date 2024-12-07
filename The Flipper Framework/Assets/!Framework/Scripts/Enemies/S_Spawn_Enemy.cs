@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-public class S_Spawn_Enemy : S_Spawners
+public class S_Spawn_Enemy : S_Spawners_Base
 {
 
 	//Instantiates the prefab in the scene, also spawning the effect temporarily.
