@@ -5,7 +5,7 @@ using Cinemachine;
 using System;
 using UnityEditor;
 
-public class S_Trigger_CineCamera : MonoBehaviour
+public class S_Trigger_CineCamera : S_Trigger_Base, ITriggerable
 {
 
 	//Stats
@@ -79,6 +79,16 @@ public class S_Trigger_CineCamera : MonoBehaviour
 	private void OnValidate () {
 		if (!Application.isPlaying)
 			FaceCinematicCameraIn();
+	}
+
+	public override void DrawAdditional (Color colour) {
+		if (_triggerSelf)
+			S_S_EditorMethods.DrawArrowHandle(colour, _CinematicCamObject.transform, 0.4f, true);
+
+		using (new Handles.DrawingScope(colour))
+		{
+			Handles.DrawLine(transform.position, _CinematicCamObject.transform.position, 1.5f);
+		}
 	}
 #endif
 

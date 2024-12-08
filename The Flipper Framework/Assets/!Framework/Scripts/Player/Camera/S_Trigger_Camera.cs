@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.ComponentModel;
 
 public enum CameraControlType
 {
@@ -38,6 +39,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 	public bool _willReleaseOnExit = false;
 
 
+
 	private void Awake () {
 		if (_Direction == null)
 		{
@@ -47,7 +49,8 @@ public class S_Trigger_Camera : S_Trigger_Base
 		_forward = _Direction.forward;
 	}
 
-	public override void DrawAdditional () {
-		S_S_EditorMethods.DrawArrowHandle(Color.clear, transform, 0.4f, true);
+	public override void DrawAdditional (Color colour) {
+		if(_triggerSelf)
+			S_S_EditorMethods.DrawArrowHandle(colour, transform, 0.4f, true);
 	}
 }

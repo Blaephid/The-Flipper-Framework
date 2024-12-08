@@ -46,7 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62770c6b035b03d43b4f00a647b5edba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isLogicInPlayScript: 0
+  _ObjectsToTriggerOff: []
+  _ObjectsToTriggerOn: []
+  _triggerSelf: 1
+  _isLogicInPlayScript: 1
+  _TriggerForPlayerToRead: {fileID: 1000014119029628}
   _whatTriggerShape: 0
   _drawAtAllTimes: 1
   _normalOutlineColour: {r: 1, g: 0.44275087, b: 0, a: 1}
@@ -97,7 +101,7 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.047178507
+      value: 0.02394008
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -107,7 +111,7 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.087334156
+      value: 0.025284894
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -127,22 +131,22 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.5691159
+      value: -0.6988941
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.22307242
+      value: 0.10991949
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7368395
+      value: 0.6981464
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.28881386
+      value: 0.10980188
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
