@@ -9,4 +9,10 @@ public class S_EditorEnums
 		camelCase,
 		PascalCase,
 	}
+
+	public enum ColliderTypes {
+		Box,
+		Sphere,
+		Capsule
+	}
 }

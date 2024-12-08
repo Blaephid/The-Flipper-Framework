@@ -50,7 +50,7 @@ public class S_Data_DisplayData : MonoBehaviour
 	private void Update () {
 		if(_isSelected)
 		{
-			if (transform.localPosition != _previousLocalPosition)
+			if (transform.localPosition != _previousLocalPosition && _placeAboveObject != Vector3.zero)
 			{
 				_placeAboveObject = transform.position - transform.parent.position;
 			}
@@ -151,7 +151,7 @@ public class S_Data_DisplayData : MonoBehaviour
 		//Finds all data sources in the provided objects, then adds them to this
 		for (int i = 0 ; i < _ObjectsToReference.Length ; i++)
 		{
-			if (_ObjectsToReference[i] == null) { continue; }
+			if(_ObjectsToReference[i] == null) { continue;}
 			S_Data_Base[] ObjectsDataComponents = _ObjectsToReference[i].GetComponents<S_Data_Base>();
 			for (int j = 0 ; j < ObjectsDataComponents.Length ; j++) { _DataSources.Add(ObjectsDataComponents[j]); }
 		}

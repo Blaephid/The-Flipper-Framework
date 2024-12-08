@@ -112,7 +112,7 @@ public class S_S_EditorMethods : MonoBehaviour
 		if (S_S_EditorMethods.IsSelected(transform.gameObject)) { return true; }
 	
 		//Goes through list to see if any are selected.
-		for (int i = 0 ; i < ObjectList.Length ; i++) {if (IsSelected(ObjectList[i])){ return true;}}
+		if(ObjectList != null) for (int i = 0 ; i < ObjectList.Length ; i++) {if (IsSelected(ObjectList[i])){ return true;}}
 		//Goes through children to see if any are selected
 		for (int i = 0 ; i < transform.childCount ; i++){ if (IsSelected(transform.GetChild(i).gameObject)){return true;}}
 
@@ -132,6 +132,32 @@ public class S_S_EditorMethods : MonoBehaviour
 			// Make the object face the camera
 			transform.LookAt(cameraPosition);
 		}
+	}
+
+
+	//
+	//Gizmos
+	//
+
+	public static void DrawArrowHandle (Color colour, Transform transform, float scale, bool isLocal) {
+		
+		//An alpha under 0.1 means dont change from colour was already set to
+		if (colour.a > 0.1f) { Handles.color = colour; }
+
+		//Get positions to make up arrow shape. Gizmo matrix may have been let to local or world, so respond accordingly.
+		Vector3 middle = isLocal ? Vector3.zero: transform.position;
+		Vector3 forwardFar = isLocal ? Vector3.forward * scale: transform.position + Vector3.forward * scale;
+		Vector3 forwardSmall = isLocal ? Vector3.forward * scale * 0.3f: transform.position + Vector3.forward * scale * 0.3f;
+		Vector3 right = isLocal ? Vector3.right * scale * 0.8f: transform.position + Vector3.right * scale * 0.8f;
+		Vector3 left = isLocal ? -Vector3.right * scale * 0.8f : transform.position - Vector3.right * scale * 0.8f ;
+
+		//Draw lines making up arrow. Remember that if in local space from a previous line, this should be called as isLocal so points are correct.
+		Handles.DrawLine(middle, forwardFar);
+		Handles.DrawLine(forwardSmall, right);
+		Handles.DrawLine(forwardSmall, left);
+		Handles.DrawLine(forwardFar, right);
+		Handles.DrawLine(forwardFar, left);
+
 	}
 #endif
 }
