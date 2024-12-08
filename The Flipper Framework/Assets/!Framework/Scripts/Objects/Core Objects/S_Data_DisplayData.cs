@@ -16,6 +16,8 @@ public class S_Data_DisplayData : MonoBehaviour
 	private bool	_onlyDisplayWhenSelected;
 	private bool	_previousOnlyDisplayWhenSelected;
 	[SerializeField]
+	private bool        _updateTransform = true;
+	[SerializeField]
 	private Vector3     _placeAboveObject;
 	private Vector3     _previousLocalPosition;
 	[SerializeField]
@@ -54,7 +56,7 @@ public class S_Data_DisplayData : MonoBehaviour
 			{
 				_placeAboveObject = transform.position - transform.parent.position;
 			}
-			HandleTransform();
+			if(_updateTransform) HandleTransform();
 		}
 	}
 
@@ -171,7 +173,7 @@ public class S_Data_DisplayData : MonoBehaviour
 	public void Update3DText () {
 		_3DTitle.text = _displayTitle;
 
-		HandleTransform();
+		if(_updateTransform) HandleTransform();
 
 		//Goes through each data element, and makes a new line in the text to include display and value.
 		string DisplayText = "";
@@ -185,14 +187,19 @@ public class S_Data_DisplayData : MonoBehaviour
 	}
 
 	private void HandleTransform () {
-		transform.localScale = S_S_ObjectMethods.LockScale(transform, _scale); //Ensures object is never stretched.
-		if (_placeAboveObject != Vector3.zero)
+
+		if (_placeAboveObject != Vector3.zero & transform.parent != null)
 		{
 			transform.position = transform.parent.position + _placeAboveObject;
 			_previousLocalPosition = transform.localPosition;
 		}
 
-		S_S_EditorMethods.FaceSceneViewCamera(transform);
+		//Make both text objects face player. Only works if they are children of this script, and this has no rotation.
+		S_S_EditorMethods.FaceSceneViewCamera(_3DText.transform, 180); //180 makes them face the other way, as if the Rect transforms faced the player, they'd actually be looking away.
+		S_S_EditorMethods.FaceSceneViewCamera(_3DTitle.transform, 180);
+		transform.localRotation = Quaternion.identity; //If in line with parent, scaling for children will be as if they have no parents, as this object "resets" it.
+
+		transform.localScale = S_S_ObjectMethods.LockScale(transform, _scale); //Ensures object is never stretched. Cannot rotate this object, else calculations will fail.
 	}
 
 	public S_O_CustomInspectorStyle _InspectorTheme;
@@ -224,6 +231,7 @@ public class DisplayDataEditor : S_CustomInspector_Base
 		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_updateAutomatically", "Update Automatically");
 		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_onlyDisplayWhenSelected", "Only Display When Selected");
 		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Transform", _NormalHeaderStyle);
+		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_updateTransform", "Update Transform");
 		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_scale", "Scale");
 		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_placeAboveObject", "Place Above Object");
 		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Object References", _NormalHeaderStyle);

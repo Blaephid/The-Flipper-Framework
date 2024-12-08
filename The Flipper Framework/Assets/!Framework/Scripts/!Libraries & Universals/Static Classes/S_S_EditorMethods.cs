@@ -120,7 +120,7 @@ public class S_S_EditorMethods : MonoBehaviour
 		return false;
 	}
 
-	public static void FaceSceneViewCamera (Transform transform) {
+	public static void FaceSceneViewCamera (Transform transform, float offset) {
 		if(Application.isPlaying) return;
 
 		SceneView sceneView = SceneView.lastActiveSceneView;
@@ -130,7 +130,10 @@ public class S_S_EditorMethods : MonoBehaviour
 			Vector3 cameraPosition = sceneView.camera.transform.position;
 
 			// Make the object face the camera
-			transform.LookAt(cameraPosition);
+			//transform.LookAt(cameraPosition);
+			Vector3 camDirection = cameraPosition - transform.position;
+			camDirection = Vector3.RotateTowards(camDirection, -camDirection, offset * Mathf.Deg2Rad, 0);
+			transform.rotation = Quaternion.LookRotation(camDirection);
 		}
 	}
 

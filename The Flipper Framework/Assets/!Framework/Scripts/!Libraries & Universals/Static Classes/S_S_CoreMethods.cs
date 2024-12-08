@@ -20,4 +20,18 @@ public class S_S_CoreMethods
 		return Vector1;
 	}
 
+	//Takes an array of numbers are returns false if any are further than the threshold apart.
+	public static bool AreNumberCloseTogether ( float[] numbers, float threshold ) {
+
+		for (int elementA = 0 ; elementA < numbers.Length ; elementA++)
+		{
+			//Go through every element after this element, and check the difference.
+			for (int elementB = elementA + 1 ; elementB < numbers.Length ; elementB++)
+			{
+				if (Mathf.Abs(numbers[elementA] - numbers[elementB]) > threshold) return false;
+			}
+		}
+		//If not a single comparison between every number was more than threshold, return true.
+		return true;
+	}
 }
