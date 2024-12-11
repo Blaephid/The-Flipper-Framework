@@ -8,7 +8,6 @@ public class S_AI_MotobugBehaviour : MonoBehaviour {
     public ParticleSystem DustParticles;
 
     public int Action { get; set; }
-    Transform Player;
     
     public Vector3 Target { get; set; }
     Vector3 InitialPosition;
@@ -32,7 +31,6 @@ public class S_AI_MotobugBehaviour : MonoBehaviour {
 
     void Awake () {
 
-        Player = GameObject.FindGameObjectWithTag("Player").transform;
         Physics = GetComponent<S_AI_EnemyPhysics>();
         InitialPosition = transform.position;
         //Physics.rigidbody.velocity = Vector3.zero;
@@ -94,7 +92,7 @@ public class S_AI_MotobugBehaviour : MonoBehaviour {
         }
 
         //Look for player
-        distanceToPlayer = S_S_CoreMethods.GetDistanceOfVectors(Player.transform.position, transform.position);
+        distanceToPlayer = S_S_CoreMethods.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.transform.position, transform.position);
         if (distanceToPlayer < Mathf.Pow(PlayerNoticeDistance, 2))
         {
             ChangeAction(1);
@@ -106,7 +104,7 @@ public class S_AI_MotobugBehaviour : MonoBehaviour {
     {
         MoveTime += 1;
 
-        Target = Player.position;
+        Target = S_SpawnCharacter._SpawnedPlayer.transform.position;
         var dir = Target - transform.position;
         dir.y = 0;
         Quaternion CharRot = Quaternion.LookRotation(dir, transform.up);
@@ -125,7 +123,7 @@ public class S_AI_MotobugBehaviour : MonoBehaviour {
         Anim.SetFloat("GroundSpeed", Physics.b_normalSpeed);
 
         DustParticles.Emit(1);
-        Target = Player.position;
+        Target = S_SpawnCharacter._SpawnedPlayer.transform.position;
         var dir = (Target - transform.position);
         Physics.HandleGroundControl(1, dir.normalized);
         dir.y = 0;
@@ -139,7 +137,7 @@ public class S_AI_MotobugBehaviour : MonoBehaviour {
         }
 
         //Check if too far away
-        distanceToPlayer = S_S_CoreMethods.GetDistanceOfVectors(Player.transform.position, transform.position);
+        distanceToPlayer = S_S_CoreMethods.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.transform.position, transform.position);
         if (distanceToPlayer > Mathf.Pow( PlayerLoseDistance, 2))
         {
             ChangeAction(0);

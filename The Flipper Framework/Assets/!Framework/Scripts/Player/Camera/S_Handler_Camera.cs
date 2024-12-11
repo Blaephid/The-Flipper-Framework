@@ -37,11 +37,10 @@ public class S_Handler_Camera : MonoBehaviour
 		{
 			//What happens depends on the data set to the camera trigger in its script.
 			if (!col.TryGetComponent(out S_Trigger_Camera cameraData)) { return; }
+			//If no logic is found, ignore.
+			if (cameraData == null || cameraData._TriggerForPlayerToRead == null) return;
 
 			cameraData = cameraData._TriggerForPlayerToRead.GetComponent<S_Trigger_Camera>();
-
-			//If no logic is found, ignore.
-			if (cameraData == null) return;
 
 			//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
 			if (_CurrentActiveCameraTriggers.Count == 0) { _CurrentActiveCameraTriggers = new List<S_Trigger_Camera>() { cameraData }; }
@@ -136,9 +135,9 @@ public class S_Handler_Camera : MonoBehaviour
 		{
 			//What happens depends on the data set to the camera trigger in its script.
 			if (!col.TryGetComponent(out S_Trigger_Camera cameraData)) { return; }
+			if (cameraData == null || cameraData._TriggerForPlayerToRead == null) return;
 
 			cameraData = cameraData._TriggerForPlayerToRead.GetComponent<S_Trigger_Camera>();
-			if (cameraData == null) return;
 
 			//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
 			if (_CurrentActiveCameraTriggers.Count > 0 & cameraData != _CurrentActiveCameraTriggers[0]) { return ; }
