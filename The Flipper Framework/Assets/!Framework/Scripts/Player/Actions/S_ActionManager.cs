@@ -214,6 +214,27 @@ public class S_ActionManager : MonoBehaviour
 
 	}
 
+	//Takes a controlled or situational action, and returns true if the current active action has that set as an action is can transition into.
+	//Used to check if the player can enter this given action, from the current active one.
+	public bool IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates givenConAction, S_GeneralEnums.PlayerSituationalStates givenSitAction) {
+		if (givenConAction != S_GeneralEnums.PlayerControlledStates.None)
+		{
+			for (int i = 0 ; i < _currentAction.ConnectedStates.Count ; i++)
+			{
+				if (_currentAction.ConnectedStates[i] == givenConAction) { return true; }
+			}
+		}
+		if (givenSitAction != S_GeneralEnums.PlayerSituationalStates.None)
+		{
+			for (int i = 0 ; i < _currentAction.SituationalStates.Count ; i++)
+			{
+				if (_currentAction.SituationalStates[i] == givenSitAction) { return true; }
+			}
+		}
+
+		return false;
+	}
+
 	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.
 	public void ChangeAction ( S_GeneralEnums.PrimaryPlayerStates ActionToChange) {
 		_whatPreviousAction = _whatCurrentAction;

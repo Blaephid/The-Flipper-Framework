@@ -1583,7 +1583,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Speeds
 		void DrawSpeed () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SpeedStats", "Speeds", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SpeedStats", "Speeds", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1599,7 +1599,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Acceleration
 		void DrawAccel () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"AccelerationStats", "Acceleration", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"AccelerationStats", "Acceleration", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1615,7 +1615,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Deceleration
 		void DrawDecel () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"DecelerationStats", "Deceleration", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"DecelerationStats", "Deceleration", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1631,7 +1631,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Turning
 		void DrawTurning () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"TurningStats", "Turning", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"TurningStats", "Turning", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1647,7 +1647,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Slopes
 		void DrawSlopes () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SlopeStats", "On Slopes", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SlopeStats", "On Slopes", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1663,7 +1663,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Sticking
 		void DrawSticking () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"GreedysStickToGround", "Sticking to the Ground (Greedy's Version)", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"GreedysStickToGround", "Sticking to the Ground (Greedy's Version)", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1679,7 +1679,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Ground
 		void DrawFindGround () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"FindingGround", "Finding the ground", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"FindingGround", "Finding the ground", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1695,7 +1695,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region InAir
 		void DrawAir () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenInAir", "Air Control", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenInAir", "Air Control", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1711,7 +1711,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Rolling
 		void DrawRolling () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RollingStats", "Rolling", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RollingStats", "Rolling", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1727,7 +1727,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Skidding
 		void DrawSkidding () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SkiddingStats", "Skidding", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SkiddingStats", "Skidding", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1743,7 +1743,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Jumping
 		void DrawJumping () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"JumpStats", "Jumps", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"JumpStats", "Jumps", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1759,7 +1759,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region MultiJumping
 		void DrawMultiJumps () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"MultipleJumpStats", "Additional Jumps", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"MultipleJumpStats", "Additional Jumps", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1775,7 +1775,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Quickstep
 		void DrawQuickstep () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"QuickstepStats", "Quickstep", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"QuickstepStats", "Quickstep", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1791,7 +1791,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region SpinCharge
 		void DrawSpinCharge () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SpinChargeStats", "Spin Charge", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"SpinChargeStats", "Spin Charge", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1807,7 +1807,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Homing
 		void DrawHoming () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"HomingStats", "Homing Attack", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"HomingStats", "Homing Attack", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1820,7 +1820,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 
 		void DrawHomingSearch () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"HomingSearch", "Homing Targetting", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"HomingSearch", "Homing Targetting", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1836,7 +1836,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Bounce
 		void DrawBounce () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"BounceStats", "Bounce", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"BounceStats", "Bounce", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1852,7 +1852,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region RingRoad
 		void DrawRingRoad () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RingRoadStats", "Ring Road", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RingRoadStats", "Ring Road", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1868,7 +1868,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region DropCharge
 		void DrawDropCharge () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"DropChargeStats", "Drop Charge", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"DropChargeStats", "Drop Charge", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1884,7 +1884,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region JumpDash
 		void DrawJumpDash () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"JumpDashStats", "Jump Dash", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"JumpDashStats", "Jump Dash", true, true);
 
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
@@ -1899,7 +1899,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Boost
 		void DrawBoost () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"BoostStats", "Boost Stats", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"BoostStats", "Boost Stats", true, true);
 
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
@@ -1914,7 +1914,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region EnemyInteraction
 		void DrawEnemyInteraction () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"EnemyInteraction", "Interacting with Enemies", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"EnemyInteraction", "Interacting with Enemies", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1930,7 +1930,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region ItemPulling
 		void DrawItemPulling () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"ItemPulling", "Pulling in Items", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"ItemPulling", "Pulling in Items", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1946,7 +1946,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region WhenBonked
 		void DrawWhenBonked () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenBonked", "Bonking", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenBonked", "Bonking", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1962,7 +1962,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region WhenHurt
 		void DrawWhenHurt () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenHurt", "Health interactions", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WhenHurt", "Health interactions", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1978,7 +1978,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Knockback
 		void DrawKnockback () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"KnockbackStats", "Knockback", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"KnockbackStats", "Knockback", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -1994,7 +1994,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region RailStats
 		void DrawRailStats () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RailStats", "Rail Grinding", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RailStats", "Rail Grinding", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -2010,7 +2010,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region RailPosition
 		void DrawRailPosition () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RailPosition", "Position on Rails", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RailPosition", "Position on Rails", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -2026,7 +2026,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region Object
 		void DrawObjectInteraction () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"ObjectInteractions", "Interactions", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"ObjectInteractions", "Interactions", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -2042,7 +2042,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		#region WallRunningStats
 		void DrawWallActionStats () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WallActionsStats", "On Wall Actions", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"WallActionsStats", "On Wall Actions", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))

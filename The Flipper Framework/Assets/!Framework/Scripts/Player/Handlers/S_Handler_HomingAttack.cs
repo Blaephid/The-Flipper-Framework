@@ -64,9 +64,6 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	// Trackers
 	#region trackers
 
-	[HideInInspector]
-	public bool         _isScanning = false;          //Will only go through the target searching and calculations when this is true
-
 	private float       _currentTargetDistanceSquared;
 	[HideInInspector]
 	public bool         _isHomingAvailable;
@@ -105,8 +102,9 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		{
 			yield return new WaitForSeconds(.02f);
 			yield return new WaitForEndOfFrame();
+
 			//Determined in the homing action script, based on if attempt action is called, which means this only updates if the current action can perform homing attacks.
-			if (_isScanning)
+			if (_Actions != null & _Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.Homing, S_GeneralEnums.PlayerSituationalStates.None))
 			{
 				UpdateHomingTargets();
 
@@ -129,8 +127,6 @@ public class S_Handler_HomingAttack : MonoBehaviour
 				_PreviousTarget = null;
 				UpdateHomingReticle();
 			}
-
-			_isScanning = false; //Set to false every frame but will be counteracted in Action homing's AttemptAction()
 		}
 	}
 
@@ -347,7 +343,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private void AssignTools () {
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+		_Actions = _Tools._ActionManager;
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_MainSkin = _Tools.MainSkin;

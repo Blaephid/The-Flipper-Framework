@@ -97,7 +97,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		_RoadHandler._isScanning = true; //This makes it so the scanner will only happen if this method is called by another action (decided in the action manager).
 		if (_Input._InteractPressed && _RoadHandler._TargetRing != null && !enabled)
 		{
 			StartAction();

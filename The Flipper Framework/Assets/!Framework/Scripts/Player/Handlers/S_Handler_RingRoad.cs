@@ -39,8 +39,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 	// Trackers
 	#region trackers
-	[HideInInspector]
-	public bool         _isScanning;
+
 	#endregion
 	#endregion
 
@@ -83,11 +82,10 @@ public class S_Handler_RingRoad : MonoBehaviour
 					break;
 			}
 			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
-			if (_isScanning && _Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.RingRoad)//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
+			if (_Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None,S_GeneralEnums.PlayerSituationalStates.RingRoad))//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
 			{
 				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, transform.position);
 			}
-			_isScanning = false; //Set to false every frame but will be counteracted in Action RingRoad's AttemptAction()
 		}
 
 	}

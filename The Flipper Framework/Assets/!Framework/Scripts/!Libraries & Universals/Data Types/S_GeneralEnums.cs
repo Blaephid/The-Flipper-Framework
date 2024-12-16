@@ -32,7 +32,8 @@ public class S_GeneralEnums
 		SpinCharge,
 		Bounce,
 		DropCharge,
-		JumpDash
+		JumpDash,
+		None
 	}
 
 	public enum PlayerSituationalStates {
@@ -44,7 +45,8 @@ public class S_GeneralEnums
 		WallRunning,
 		WallClimbing,
 		Hovering,
-		Upreel
+		Upreel,
+		None
 	}
 
 	public enum SubPlayerStates {

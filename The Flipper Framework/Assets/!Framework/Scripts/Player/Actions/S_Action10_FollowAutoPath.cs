@@ -95,7 +95,6 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {		
-		_Pathers._canEnterAutoPath = true;
 		return false;
 	}
 

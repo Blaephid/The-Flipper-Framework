@@ -125,14 +125,13 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	public bool AttemptAction () {
 		if (enabled) return false;
 
+		//Because WallCLimbing inherits from WallRunning, it will call this too, so check.
 		if (this is S_Action15_WallClimbing)
 		{
-			_WallHandler._isScanningForClimb = true;
 			if (_WallHandler.TryWallClimb()) { return true; }
 		}
 		else
 		{
-			_WallHandler._isScanningForRun = true;
 			if (_WallHandler.TryWallRun()) { return true; }
 		}
 

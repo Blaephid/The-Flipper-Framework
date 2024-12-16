@@ -109,6 +109,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				break;
 
 			case "PathTrigger":
+				//If currently already on a path, exit it.
 				if (_canExitAutoPath && !_isCurrentlyInAutoTrigger)
 					_Actions._ActionDefault.StartAction();
 				else if (!_isCurrentlyInAutoTrigger && _canEnterAutoPath)
@@ -153,10 +154,10 @@ public class S_Interaction_Pathers : MonoBehaviour
 	private IEnumerator DisablingEnteringPathsAtIntervals () {
 		while (true)
 		{
-			yield return new WaitForSeconds(0.04f);
+			//yield return new WaitForSeconds(0.04f);
 			yield return new WaitForFixedUpdate();
-			_canGrindOnRail = false; //Set true in the grinding action script whenever attempt action is called. This will mean currently in an action that can enter grind rails. 
-			_canEnterAutoPath = false;
+			_canGrindOnRail = _Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None, S_GeneralEnums.PlayerSituationalStates.Rail); ; 
+			_canEnterAutoPath = _Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None, S_GeneralEnums.PlayerSituationalStates.Path);
 		}
 	}
 

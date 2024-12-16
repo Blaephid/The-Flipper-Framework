@@ -29752,7 +29752,7 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[5].ConnectedStates.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29862,12 +29862,12 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[5].SituationalStates.Array.data[0]'
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[5].SituationalStates.Array.data[1]'
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}

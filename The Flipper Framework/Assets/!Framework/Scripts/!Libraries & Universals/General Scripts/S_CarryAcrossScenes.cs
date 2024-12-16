@@ -58,7 +58,7 @@ public class S_CarryAcrossScenes : MonoBehaviour
 					}
 				}
 			}
-			transform.parent = null;
+			transform.SetParent(null);
 			DontDestroyOnLoad(gameObject); //Prevents the object from being destroyed when entering a new scene.		
 		}
 	}

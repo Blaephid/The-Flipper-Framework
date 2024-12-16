@@ -21,8 +21,8 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 3
+        time: -0.00617218
+        value: 2.5002136
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -30,8 +30,26 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.22
-        value: 2.5
+        time: 0.14655346
+        value: 1.5054858
+        inSlope: 0.17781135
+        outSlope: 0.17781135
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 1
+      - serializedVersion: 3
+        time: 0.2644902
+        value: 1.4960827
+        inSlope: -0.13208015
+        outSlope: -0.13208015
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.6005403
+      - serializedVersion: 3
+        time: 0.66790164
+        value: 1.0069519
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -39,14 +57,14 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.6
-        value: 0.1
-        inSlope: 0
-        outSlope: 0
+        time: 0.87535614
+        value: 0.09743878
+        inSlope: -2.0582414
+        outSlope: -2.0582414
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 1
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
         value: 0.02
@@ -2833,4 +2851,4 @@ MonoBehaviour:
     fallOffAtFallSpeed: 15
     jumpFromClimbingModifiers: {x: 0, y: 0}
     jumpFromRunningModifiers: {x: 0, y: 0}
-  InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

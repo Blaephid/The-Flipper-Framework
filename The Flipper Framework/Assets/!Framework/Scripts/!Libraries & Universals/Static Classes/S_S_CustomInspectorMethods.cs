@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
+#if UNITY_EDITOR
+
 public class S_S_CustomInspectorMethods 
 
 {
@@ -85,3 +87,4 @@ public class S_S_CustomInspectorMethods
 		}
 	}
 }
+#endif

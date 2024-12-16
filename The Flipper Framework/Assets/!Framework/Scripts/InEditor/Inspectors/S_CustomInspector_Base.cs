@@ -4,6 +4,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
+
 [CustomEditor(typeof(MonoBehaviour))]
 public class S_CustomInspector_Base : Editor
 {
@@ -58,3 +60,4 @@ public class S_CustomInspector_Base : Editor
 		//This is to be overwritten by whatever inherits this class, so they can do their own inspector after the universal things are already done.
 	}
 }
+#endif

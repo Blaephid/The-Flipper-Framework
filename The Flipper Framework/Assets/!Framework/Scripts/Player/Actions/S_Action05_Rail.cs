@@ -176,7 +176,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	}
 
 	public bool AttemptAction () {
-		_Rail_int._canGrindOnRail = true; //The pathers interaction will check if this is true when hitting a rail. If it is, then enter this action, but it will usually be false.
 		return false;
 	}
 

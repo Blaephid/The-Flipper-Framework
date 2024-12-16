@@ -63,7 +63,7 @@ public class S_TitleScreenControl : MonoBehaviour
 		S_CarryAcrossScenes.whatIsCurrentSceneType = S_CarryAcrossScenes.EnumGameSceneTypes.Menus;
 		StartCoroutine(DelayMovingToNextScene(_sceneToGoToOnStart, _framesBeforeLoading));
 		StartCoroutine(TriggerAnimatorAfterDelay(_Measurers, "MoveOut", _delayBeforeMeasurersEnter));
-		_AudioOnStart.Play();
+		if(_AudioOnStart != null) _AudioOnStart.Play();
 	}
 
 	public static IEnumerator DelayMovingToNextScene (string scene, int frames ) {

@@ -43,10 +43,6 @@ public class S_Handler_WallActions : MonoBehaviour
 	// Trackers
 	#region trackers
 
-	[HideInInspector]
-	public bool         _isScanningForRun;
-	[HideInInspector]
-	public bool         _isScanningForClimb;
 
 	[HideInInspector]
 	public float        _currentSpeed;
@@ -110,8 +106,6 @@ public class S_Handler_WallActions : MonoBehaviour
 					CheckForWall();
 				}
 			}
-			_isScanningForRun = false; //Set to false every frame but will be counteracted in Action WallRunning's AttemptAction()
-			_isScanningForClimb = false;
 
 		}
 	}
@@ -120,7 +114,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	private void CheckForWall () {
 		Vector3 origin = transform.position - _MainSkin.up * 0.4f;
 
-		if (_isScanningForClimb)
+		if (_Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None, S_GeneralEnums.PlayerSituationalStates.WallClimbing))
 		{
 			if (IsInputtingInCharacterAngle(_MainSkin.forward) && IsRunningFastEnough(40))
 			{
@@ -135,7 +129,7 @@ public class S_Handler_WallActions : MonoBehaviour
 		}
 
 		//If running AttemptAction is being called.
-		if (_isScanningForRun)
+		if (_Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None, S_GeneralEnums.PlayerSituationalStates.WallRunning))
 		{
 			//Offset origin
 			origin -= _MainSkin.forward * 0.2f;

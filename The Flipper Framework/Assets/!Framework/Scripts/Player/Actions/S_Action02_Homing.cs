@@ -116,7 +116,6 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		//Depending on stats, this can only be performed when grounded.
 		if (!_PlayerPhys._isGrounded || _CanBePerformedOnGround_)
 		{
-			_HomingHandler._isScanning = true;
 
 			//Must have a valid target when pressed
 			if (_HomingHandler._TargetObject && _Input._HomingPressed)
