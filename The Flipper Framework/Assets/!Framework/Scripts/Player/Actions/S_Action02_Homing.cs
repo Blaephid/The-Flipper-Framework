@@ -230,7 +230,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 		//Get direction to move in.
 		Vector3 newDirection = _Target.position - transform.position;
-		_distanceFromTargetSquared = S_S_CoreMethods.GetDistanceOfVectors(_Target.position, transform.position);
+		_distanceFromTargetSquared = S_S_MoreMathMethods.GetDistanceOfVectors(_Target.position, transform.position);
 		float thisTurn =  _homingTurnSpeed_;
 
 		//Set Player location when close enough, for precision. Remember to square anything compared to a distance as the method we made does not square root the answer.

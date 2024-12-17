@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Mat_ogre_train_eye_glass
+    second: {fileID: 2100000, guid: d93f6f085d4f2fc4885a9f3fa5849707, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Mat_ogre_train_thorn
     second: {fileID: 2100000, guid: e056df3ec178b11439f2bc4b6b5bb85b, type: 2}
   - first:

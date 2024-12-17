@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using templates;
 using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class S_Trigger_Base : S_Data_Base
 {
 
@@ -16,6 +18,7 @@ public class S_Trigger_Base : S_Data_Base
 	[ReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
 	public GameObject _TriggerForPlayerToRead;
 	public S_EditorEnums.ColliderTypes _whatTriggerShape;
+	private S_EditorEnums.ColliderTypes _trackTriggerShape;
 
 	[Header("Dev Visibility")]
 	public bool _drawAtAllTimes = true;
@@ -25,9 +28,9 @@ public class S_Trigger_Base : S_Data_Base
 
 
 	private void OnTriggerEnter ( Collider other ) {
-		if(other.tag != "Player") { return; }
+		if (other.tag != "Player") { return; }
 
-		if(_triggerSelf)
+		if (_triggerSelf)
 			if (TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
 
@@ -50,22 +53,46 @@ public class S_Trigger_Base : S_Data_Base
 		for (int i = 0 ; i < _ObjectsToTriggerOn.Count ; i++)
 		{
 			if (_ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
-				Trigger.TriggerObjectOn();
+				Trigger.TriggerObjectOff();
 		}
 	}
 
-#if UNITY_EDITOR
 
-	[ExecuteAlways]
+
 	public override void OnValidate () {
 
 		base.OnValidate();
+
+#if UNITY_EDITOR
 		SetTriggerForPlayer();
-		switch (_whatTriggerShape) {
+#endif
+	}
+
+
+#if UNITY_EDITOR
+	private void Update () {
+		if (Selection.activeGameObject != gameObject) { return; }
+
+		switch (_whatTriggerShape)
+		{
 			case S_EditorEnums.ColliderTypes.Box:
-				  
+				S_S_EditorMethods.AddComponentIfMissing(gameObject, typeof(BoxCollider));
+				S_S_EditorMethods.FindAndRemoveComponent(gameObject, typeof(SphereCollider));
+
+				BoxCollider Box = GetComponent<BoxCollider>();
+				Box.isTrigger = true;
+				Box.size = Vector3.one;
+				break;
+			case S_EditorEnums.ColliderTypes.Sphere:
+				S_S_EditorMethods.AddComponentIfMissing(gameObject, typeof(SphereCollider));
+				S_S_EditorMethods.FindAndRemoveComponent(gameObject, typeof(BoxCollider));
+
+				SphereCollider Sphere = GetComponent<SphereCollider>();
+				Sphere.isTrigger = true;
+				Sphere.radius = 0.5f;
 				break;
 		}
+
 	}
 
 	private void SetTriggerForPlayer () {
@@ -80,7 +107,7 @@ public class S_Trigger_Base : S_Data_Base
 		for (int i = 0 ; i < _ObjectsToTriggerOn.Count ; i++)
 		{
 			if (_ObjectsToTriggerOn[i].GetComponent(scriptType))
-				{ _TriggerForPlayerToRead = _ObjectsToTriggerOn[i].gameObject; return;}
+			{ _TriggerForPlayerToRead = _ObjectsToTriggerOn[i].gameObject; return; }
 		}
 
 		_TriggerForPlayerToRead = null;
@@ -93,50 +120,123 @@ public class S_Trigger_Base : S_Data_Base
 			DrawTriggerVolume(false);
 	}
 
-	private void DrawTriggerVolume (bool selected) {
+	private void DrawTriggerVolume ( bool selected ) {
 
-		//To match object scale and rotation, set draws to local space.
-		Gizmos.matrix = transform.localToWorldMatrix;
 		Color colour = selected ? _selectedOutlineColour : _normalOutlineColour;
 
-		//Temporarily sets handles to local space until Using is over.
-		using (new Handles.DrawingScope(colour, transform.localToWorldMatrix))
+
+		Vector3 size = Vector3.one;
+
+		Handles.color = selected ? _selectedOutlineColour : _normalOutlineColour;
+		Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
+
+		//Draw representations of trigger areas.
+		switch (_whatTriggerShape)
 		{
-			Vector3 size = Vector3.one;
-
-			Handles.color = selected ? _selectedOutlineColour : _normalOutlineColour;
-			Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
-
-			switch (_whatTriggerShape)
-			{
-				case S_EditorEnums.ColliderTypes.Box:
+			case S_EditorEnums.ColliderTypes.Box:
+				//Temporarily sets handles to local space until Using is over.
+				using (new Handles.DrawingScope(colour, transform.localToWorldMatrix))
+				{
+					//Constant outline
 					BoxCollider Col = GetComponent<BoxCollider>();
 					size = new Vector3(size.x * Col.size.x, size.y * Col.size.y, size.z * Col.size.z);
 					Handles.DrawWireCube(Col.center, size);
+
+					//Extra outline and fill
 					if (selected)
 					{
 						Handles.DrawWireCube(Col.center, size + new Vector3(0.02f, 0.02f, 0.02f));
+						//To match object scale and rotation, set draws to local space.
+						Gizmos.matrix = transform.localToWorldMatrix;
 						Gizmos.color = _selectedFillColour;
 						Gizmos.DrawCube(Col.center, size);
 					}
+				}
+				break;
+
+			case S_EditorEnums.ColliderTypes.Sphere:
+				//Constant outline
+				SphereCollider Sphere = GetComponent<SphereCollider>();
+				//Because sphere triggers are always perfectly spherical and only expand to match the largest scale dimension
+				float radius =  Sphere.radius * Mathf.Max(transform.lossyScale.x, Mathf.Max(transform.lossyScale.z, transform.lossyScale.y));
+				Vector3 centre = Sphere.center + transform.position;
+
+				using (new Handles.DrawingScope(colour))
+				{
+					Handles.DrawWireDisc(centre, transform.up, radius);
+					Handles.DrawWireDisc(centre, transform.right, radius);
+
+					//Extra outline and fill
+					if (selected)
+					{
+						Handles.DrawWireCube(centre, size * radius * 2);
+						Gizmos.color = _selectedFillColour;
+						Gizmos.DrawSphere(centre, radius);
+					}
 					break;
-			}
+				}
+
 		}
 
 		using (new Handles.DrawingScope(colour))
 		{
+
 			for (int i = 0 ; i < _ObjectsToTriggerOn.Count ; i++)
 			{
+				if (_ObjectsToTriggerOn[i] == null) continue;
 				Handles.DrawLine(transform.position, _ObjectsToTriggerOn[i].transform.position, 5f);
 			}
+			for (int i = 0 ; i < _ObjectsToTriggerOff.Count ; i++)
+			{
+				if (_ObjectsToTriggerOff[i] == null) continue;
+				Handles.DrawDottedLine(transform.position, _ObjectsToTriggerOff[i].transform.position, 5f);
+			}
+
 		}
 
 		DrawAdditional(colour);
 	}
 
-	public virtual void DrawAdditional (Color colour) {
+	public virtual void DrawAdditional ( Color colour ) {
 
 	}
 
+
 #endif
 }
+
+#if UNITY_EDITOR
+
+[CustomEditor(typeof(S_Trigger_Base))]
+public class TriggerEditor : S_CustomInspector_Base
+{
+	[SerializeField]
+	public S_Trigger_Base _OwnerScript;
+	[SerializeField]
+	public GameObject _OwnerObject;
+
+
+	public void OnEnable () {
+		//Setting variables
+		_OwnerScript = (S_Trigger_Base)target;
+		_OwnerObject = _OwnerScript.gameObject;
+	}
+
+
+	public void OnSceneGUI () {
+		Debug.Log("Draw Hand");
+		S_S_DrawingMethods.DrawSelectableHandle(_OwnerObject.transform.position, _OwnerObject);
+	}
+
+	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
+		return _OwnerScript._InspectorTheme;
+	}
+
+	public override void DrawInspectorNotInherited () {
+		//Describe what the script does
+		EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
+		DrawDefaultInspector();
+	}
+
+}
+#endif

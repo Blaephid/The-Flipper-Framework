@@ -291,7 +291,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		Destroy(newGameObject);
 
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
-		float distanceSquared = S_S_CoreMethods.GetDistanceOfVectors(relativePlayerPosition, transform.position);
+		float distanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(relativePlayerPosition, transform.position);
 
 		float power = 0;
 		if (distanceSquared < 9)
@@ -328,7 +328,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			//If the wind will increase velocity overall, then apply to coreVelocity so it remains, rather than just being temporary like with the constant general.
 			if ( nextVelocity.sqrMagnitude > relevantCoreVelocity.sqrMagnitude)
 			{
-				lateralWind = S_S_CoreMethods.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
+				lateralWind = S_S_MoreMathMethods.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
 
 				//If added normally, then running perpendicular to the wind, the full force would be added, but immediately turned away, increasing velocity in the unintended direction.
 				//So only add the amount specifically in the wind direction, using project.

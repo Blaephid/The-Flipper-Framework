@@ -334,7 +334,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 			Vector3 checkPos = thisSpline.transform.position + //Object position
 				(thisSpline.transform.rotation * (thisSpline.GetSampleAtDistance(n).location + (thisSpline.GetSampleAtDistance(n).Rotation * offset))); //Place on spline relative to object rotation and offset.
 																	      //The distance between the point at distance n along the spline, and the current collider position.
-			float distanceSquared = S_S_CoreMethods.GetDistanceOfVectors(checkPos,colliderPosition);
+			float distanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(checkPos,colliderPosition);
 
 			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
 			if (distanceSquared <= CurrentDistanceSquared)

@@ -61,7 +61,7 @@ public class S_Spawners_Base : S_Data_Base
 
 		if (_ObjectClone == null && _SpawnerData._willAutoSpawn)
 		{
-			if (S_S_CoreMethods.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.position, transform.position) < 
+			if (S_S_MoreMathMethods.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.position, transform.position) < 
 				Mathf.Pow(_SpawnerData._distanceFromPlayerToSpawn * S_SpawnCharacter._spawnCheckModifier, 2))
 			{
 				//Will only spawn if enough time has passed.

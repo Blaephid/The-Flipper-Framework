@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1292613313013815353
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25,11 +25,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 92208886072114591}
-  m_LocalRotation: {x: -0.428435, y: 0.3816903, z: -0.64384073, w: 0.5061869}
+  m_LocalRotation: {x: 0.112164564, y: 0.75713307, z: -0.13496007, w: 0.62924916}
   m_LocalPosition: {x: 0, y: 0, z: -4.501909}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7617228972872082053}
   m_Father: {fileID: 48922900129631067}
   m_LocalEulerAnglesHint: {x: 21.18, y: 321.586, z: -40.7}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -207,7 +208,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1292613313013815353}
-  - {fileID: 7617228972872082053}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3595523292069757358
@@ -225,7 +225,7 @@ MonoBehaviour:
   _updateAutomatically: 0
   _onlyDisplayWhenSelected: 1
   _updateTransform: 1
-  _placeAboveObject: {x: 1.5672607, y: -1.3038883, z: 7.7358627}
+  _placeAboveObject: {x: 0, y: 2, z: 0}
   _scale: 1
   _displayTitle: Spring
   _3DTitle: {fileID: 5765654182386527770}
@@ -274,7 +274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7617228972872082053
 RectTransform:
   m_ObjectHideFlags: 0
@@ -282,16 +282,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3440219142795585223}
-  m_LocalRotation: {x: -0.30951625, y: 0.33673579, z: -0.75682247, w: 0.46693522}
-  m_LocalPosition: {x: 0, y: 0, z: -0.76}
+  m_LocalRotation: {x: 0.054670494, y: -0.048496757, z: 0.020938361, w: 0.99710625}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 48922900129631067}
+  m_Father: {fileID: 1292613313013815353}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -2.41}
+  m_AnchoredPosition: {x: 0, y: -4}
   m_SizeDelta: {x: 14, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4622662306047797600

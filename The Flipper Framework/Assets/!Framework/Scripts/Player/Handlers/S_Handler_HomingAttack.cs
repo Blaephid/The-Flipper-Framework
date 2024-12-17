@@ -177,7 +177,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 			for (int i = 0 ; i < TargetsInRange.Length ; i++)
 			{
 				Collider hit = TargetsInRange[i];
-				float distanceSquared = S_S_CoreMethods.GetDistanceOfVectors(transform.position, hit.transform.position);
+				float distanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(transform.position, hit.transform.position);
 
 				//If has the homing target component and is far enough away, then compare to current closest.
 				if (hit.gameObject.GetComponent<S_Data_HomingTarget>() && distanceSquared > _minTargetDistanceSquared_)
@@ -195,7 +195,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		//If there is currently already a target, compare it to the new closest, with a modification to distance that makes it seem closer, and therefore higher priority.
 		if (_PreviousTarget != null)
 		{
-			float distanceSquared = S_S_CoreMethods.GetDistanceOfVectors(transform.position, _PreviousTarget.transform.position);
+			float distanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(transform.position, _PreviousTarget.transform.position);
 			closestTarget = CheckTarget(_PreviousTarget.transform, distanceSquared * _currentTargetPriority_, closestTarget, _facingAmount_);
 		}
 
@@ -206,7 +206,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private Transform CheckTarget ( Transform newTarget, float distanceSquared, Transform closest, float facingAmount, bool skipIsOnScreen = false ) {
 
 		//If this new target is out of the maximum range, then ignore it, no matter the check. Gets its own distance because the distance parameter won't always be the exact distance.
-		if (S_S_CoreMethods.GetDistanceOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_ ) { return closest; } 
+		if (S_S_MoreMathMethods.GetDistanceOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_ ) { return closest; } 
 
 
 		//Make sure Sonic is facing the target enough
@@ -289,7 +289,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 			_IconTransform.position = _TargetObject.transform.position; //Places icon on target
 
 			//Effects icon size by camera distance
-			float camDist = S_S_CoreMethods.GetDistanceOfVectors(transform.position, _MainCamera.position);
+			float camDist = S_S_MoreMathMethods.GetDistanceOfVectors(transform.position, _MainCamera.position);
 			_IconTransform.localScale = (Vector3.one * _iconScale_) + (Vector3.one * (camDist * Mathf.Pow(_iconDistanceScaling_, 2)));
 
 			//If this is a new target, then play sound and animation.

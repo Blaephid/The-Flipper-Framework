@@ -62,15 +62,15 @@ public class S_S_EditorMethods : MonoBehaviour
 
 
 	//Depending on the the type of value, some values as strings will contain unnecesary information. E.G, gameObjects will add on (UnityEngine.GameObject). This removes brackets and their contents.
-	public static string CleanBracketsInString ( string input ) {
+	public static string CleanBracketsInString ( string input, char bracket1 = '(', char bracket2 = ')' ) {
 
 		int bracketStart = 0;
 		int bracketEnd = 0;
 
 		for (int i = 0 ; i < input.Length ; i++)
 		{
-			if (input[i] == '(') { bracketStart = i; }
-			else if (input[i] == ')') { bracketEnd = i; }
+			if (input[i] == bracket1) { bracketStart = i; }
+			else if (input[i] == bracket2) { bracketEnd = i; }
 		}
 
 		if(bracketStart > 0 && bracketEnd > 0)
@@ -141,35 +141,6 @@ public class S_S_EditorMethods : MonoBehaviour
 	}
 
 
-	//
-	//Gizmos
-	//
-
-	public static void DrawArrowHandle (Color colour, Transform transform, float scale, bool isLocal) {
-
-		//An alpha under 0.1 means dont change from colour was already set to
-		if (colour.a < 0.1f) { colour = Handles.color; }
-
-		using (new Handles.DrawingScope(colour, isLocal ? transform.localToWorldMatrix : transform.worldToLocalMatrix))
-		{
-
-			//Get positions to make up arrow shape. Gizmo matrix may have been let to local or world, so respond accordingly.
-			Vector3 middle = isLocal ? Vector3.zero: transform.position;
-			Vector3 forwardFar = isLocal ? Vector3.forward * scale: transform.position + Vector3.forward * scale;
-			Vector3 forwardSmall = isLocal ? Vector3.forward * scale * 0.3f: transform.position + Vector3.forward * scale * 0.3f;
-			Vector3 right = isLocal ? Vector3.right * scale * 0.8f: transform.position + Vector3.right * scale * 0.8f;
-			Vector3 left = isLocal ? -Vector3.right * scale * 0.8f : transform.position - Vector3.right * scale * 0.8f ;
-
-			//Draw lines making up arrow. Remember that if in local space from a previous line, this should be called as isLocal so points are correct.
-			Handles.DrawLine(middle, forwardFar);
-			Handles.DrawLine(forwardSmall, right);
-			Handles.DrawLine(forwardSmall, left);
-			Handles.DrawLine(forwardFar, right);
-			Handles.DrawLine(forwardFar, left);
-		}
-
-	}
-
 	public static GameObject FindChild ( GameObject parentObject, string newObjectName ) {
 		//Searches for a child of this name
 		var childTransform = parentObject.transform.Find(newObjectName);
@@ -233,10 +204,23 @@ public class S_S_EditorMethods : MonoBehaviour
 		//Add the wanted components as long as the object doesn't already have them.
 		for (int i = 0 ; i < AddComponents.Length ; i++)
 		{
-			if (!childObject.GetComponent(AddComponents[i])) { childObject.AddComponent(AddComponents[i]); }
+			//if (!childObject.GetComponent(AddComponents[i])) { childObject.AddComponent(AddComponents[i]); }
+			AddComponentIfMissing(childObject, AddComponents[i]);
 		}
 
 		return childObject;
+	}
+
+
+	public static void AddComponentIfMissing (GameObject Target, Type Component) {
+		if (!Target.GetComponent(Component)) { Target.AddComponent(Component); }
+	}
+
+	public static void FindAndRemoveComponent ( GameObject Target, Type Component ) {
+		if (!Target.GetComponent(Component)) { return; }
+
+		DestroyImmediate(Target.GetComponent(Component));
+
 	}
 #endif
 }

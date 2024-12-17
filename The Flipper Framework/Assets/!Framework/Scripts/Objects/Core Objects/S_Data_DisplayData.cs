@@ -4,17 +4,20 @@ using UnityEngine;
 using System;
 using TMPro;
 using System.ComponentModel;
+using NUnit.Framework;
+using UnityEngine.ProBuilder.MeshOperations;
+using System.Collections;
+using static UnityEngine.Rendering.DebugUI;
 
 #if UNITY_EDITOR
 [ExecuteAlways]
-public class S_Data_DisplayData : MonoBehaviour
+public class S_Data_DisplayData : S_Data_Base
 {
 
 	[SerializeField]
 	private bool	_updateAutomatically;
 	[SerializeField]
 	private bool	_onlyDisplayWhenSelected;
-	private bool	_previousOnlyDisplayWhenSelected;
 	[SerializeField]
 	private bool        _updateTransform = true;
 	[SerializeField]
@@ -93,7 +96,7 @@ public class S_Data_DisplayData : MonoBehaviour
 	#endregion
 
 	//Called whenever a property is updated
-	private void OnValidate () {
+	public override void OnValidate () {
 		Validate(null, null);
 	}
 
@@ -127,8 +130,13 @@ public class S_Data_DisplayData : MonoBehaviour
 
 			if(value == null) { _updateAutomatically = false; break; }
 
+
 			string displayValue = value.ToString();
-			displayValue = S_S_EditorMethods.CleanBracketsInString(displayValue);
+
+			displayValue = GetContentsIfListOrArray(displayValue, value);
+
+			displayValue = S_S_EditorMethods.CleanBracketsInString(displayValue, '(', ')');
+			displayValue = S_S_EditorMethods.CleanBracketsInString(displayValue, '[', ']');
 
 			//Updates the data
 			StrucDataToDisplay Temp = new StrucDataToDisplay
@@ -143,6 +151,31 @@ public class S_Data_DisplayData : MonoBehaviour
 		}
 
 		Update3DText();
+		return;
+
+		string GetContentsIfListOrArray(string displayValue, object value ){
+			if (value is Array)
+			{
+				displayValue = "";
+				for (int e = 0 ; e < ((Array)value).Length ; e++)
+					displayValue += (((Array)value).GetValue(e) + ", ");
+			}
+
+			//else if (value.GetType() == typeof(IList<object>))
+			//else if (value is IEnumerable list)	
+			if (value.GetType().IsGenericType & value.GetType().GetGenericTypeDefinition() == typeof(List<>))
+			{
+				displayValue = "";
+				// Cast the value to a generic IEnumerable and iterate
+				foreach (var item in (IEnumerable)value)
+				{
+					string strValue = item.ToString();
+					displayValue += (strValue + ", ");
+				}
+			}
+
+			return displayValue;
+		}
 	}
 
 	//Go through each object set in editor, and search for scripts using the dataInterface, then add them to a list to use as sources later.
@@ -165,8 +198,11 @@ public class S_Data_DisplayData : MonoBehaviour
 	private void HandleValidateEventsOfSources (bool add) {
 		for (int i = 0 ; i < _DataSources.Count ; i++)
 		{
-			if (add)	_DataSources[i].onObjectValidate += Validate;
-			else	_DataSources[i].onObjectValidate -= Validate;
+			S_Data_Base Source = _DataSources[i];
+			if(Source == null) { continue; }
+
+			if (add)	Source.onObjectValidate += Validate;
+			else	Source.onObjectValidate -= Validate;
 		}
 	}
 
@@ -195,14 +231,13 @@ public class S_Data_DisplayData : MonoBehaviour
 		}
 
 		//Make both text objects face player. Only works if they are children of this script, and this has no rotation.
-		S_S_EditorMethods.FaceSceneViewCamera(_3DText.transform, 180); //180 makes them face the other way, as if the Rect transforms faced the player, they'd actually be looking away.
+		 //180 makes them face the other way, as if the Rect transforms faced the player, they'd actually be looking away.
 		S_S_EditorMethods.FaceSceneViewCamera(_3DTitle.transform, 180);
 		transform.localRotation = Quaternion.identity; //If in line with parent, scaling for children will be as if they have no parents, as this object "resets" it.
 
 		transform.localScale = S_S_ObjectMethods.LockScale(transform, _scale); //Ensures object is never stretched. Cannot rotate this object, else calculations will fail.
 	}
 
-	public S_O_CustomInspectorStyle _InspectorTheme;
 }
 
 

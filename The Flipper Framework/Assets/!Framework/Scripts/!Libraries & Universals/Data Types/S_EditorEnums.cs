@@ -13,6 +13,5 @@ public class S_EditorEnums
 	public enum ColliderTypes {
 		Box,
 		Sphere,
-		Capsule
 	}
 }
