@@ -3,7 +3,12 @@ guid: df856bca0b6b3384ea949d6e66da4529
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_duct_RC
+    second: {fileID: 2100000, guid: 1ed18402e8b3b964aaaeeedd2e4ff493, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

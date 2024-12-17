@@ -76,7 +76,9 @@ public class S_Trigger_CineCamera : S_Trigger_Base, ITriggerable
 	}
 
 #if UNITY_EDITOR
-	private void OnValidate () {
+	public override void OnValidate () {
+		base.OnValidate();
+
 		if (!Application.isPlaying)
 			FaceCinematicCameraIn();
 	}

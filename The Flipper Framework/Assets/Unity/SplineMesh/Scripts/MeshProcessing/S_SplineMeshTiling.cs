@@ -165,45 +165,51 @@ namespace SplineMesh
 
 		private GameObject FindOrCreate ( string name ) {
 			var childTransform = generated.transform.Find(name);
-			GameObject res;
-
-			//Creates a GameObject with the following components
-			if (childTransform == null)
-			{
-				res = UOUtility.Create(name,
-				    generated,
-				    typeof(MeshFilter),
+			GameObject newObject = S_S_EditorMethods.FindOrCreateChild(generated, name, 
+				new Type[] { typeof(MeshFilter),
 				    typeof(MeshRenderer),
 				    typeof(S_MeshBender),
 				    typeof(S_DeactivateOnStart),
-				    typeof(MeshCollider));
-				res.isStatic = true;
-			}
-			else
-			{
-				res = childTransform.gameObject;
-			}
-			//Sets variabls of the components
-			res.GetComponent<MeshRenderer>().material = material;
-			res.GetComponent<MeshCollider>().material = physicMaterial;
-			res.GetComponent<MeshCollider>().enabled = enableCollider;
-			res.GetComponent<MeshRenderer>().enabled = enableVisual;
-			if (res.GetComponent<S_DeactivateOnStart>())
-				res.GetComponent<S_DeactivateOnStart>().enabled = DeactivateOnStart;
-			res.tag = ObjTag;
-			res.layer = ObjLayer;
+				    typeof(MeshCollider)}	);
 
-			S_MeshBender mb = res.GetComponent<S_MeshBender>();
-			if (mb == null)
-			{
-				mb = res.AddComponent<S_MeshBender>();
-			}
+			////Creates a GameObject with the following components
+			//if (childTransform == null)
+			//{
+			//	res = UOUtility.Create(name,
+			//	    generated,
+			//	    typeof(MeshFilter),
+			//	    typeof(MeshRenderer),
+			//	    typeof(S_MeshBender),
+			//	    typeof(S_DeactivateOnStart),
+			//	    typeof(MeshCollider));
+			//	res.isStatic = true;
+			//}
+			//else
+			//{
+			//	res = childTransform.gameObject;
+			//}
+
+			//Sets variables of the components
+			newObject.GetComponent<MeshRenderer>().material = material;
+			newObject.GetComponent<MeshCollider>().material = physicMaterial;
+			newObject.GetComponent<MeshCollider>().enabled = enableCollider;
+			newObject.GetComponent<MeshRenderer>().enabled = enableVisual;
+			newObject.GetComponent<S_DeactivateOnStart>().enabled = DeactivateOnStart;
+
+			//Overwrite set tag and layer
+			newObject.tag = ObjTag;
+			newObject.layer = ObjLayer;
+
+			S_MeshBender mb =  newObject.GetComponent<S_MeshBender>();
+			if (mb == null){mb = newObject.AddComponent<S_MeshBender>();}
+
 			mb.Source = SourceMesh.Build(mesh)
 			   .Translate(translation)
 			   .Rotate(Quaternion.Euler(rotation))
 			   .Scale(scale);
 			mb.Mode = mode;
-			return res;
+
+			return newObject;
 		}
 		public S_O_CustomInspectorStyle _InspectorTheme;
 #endif

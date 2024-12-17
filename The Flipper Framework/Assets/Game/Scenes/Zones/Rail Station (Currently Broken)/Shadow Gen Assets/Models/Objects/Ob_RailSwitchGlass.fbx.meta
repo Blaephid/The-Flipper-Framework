@@ -3,7 +3,12 @@ guid: 7af406a3972f50b4faf887c032b06a7b
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Switch_Glass_RC
+    second: {fileID: 2100000, guid: a2ea60d727d03e54994b8f93e5f92b51, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

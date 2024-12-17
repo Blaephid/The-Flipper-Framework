@@ -7,7 +7,7 @@ using System.Linq;
 namespace SplineMesh
 {
 	[RequireComponent(typeof(Spline))]
-	public class S_AI_RailEnemy : MonoBehaviour
+	public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	{
 
 		[Header("Tools")]
@@ -77,31 +77,13 @@ namespace SplineMesh
 		}
 
 
-		public void InitialEvents () {
+		public void TriggerObjectOn () {
 			active = true;
 			if (currentSpeed == 0)
 				currentSpeed = StartSpeed;
 
 			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 
-		}
-
-
-		private void OnDestroy () {
-
-			//LevelProgressControl.onReset -= ReturnOnDeath;
-
-		}
-
-		private void OnEnable () {
-		}
-
-
-		private void FixedUpdate () {
-			//if(active)
-			//{
-			//    railGrind();
-			//}
 		}
 
 		void alignCars () {
@@ -349,7 +331,7 @@ namespace SplineMesh
 				if (other.GetComponentInParent<Spline>())
 				{
 					RailSpline = other.GetComponentInParent<Spline>();
-					InitialEvents();
+					TriggerObjectOn();
 				}
 			}
 		}

@@ -7,6 +7,9 @@ using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.ComponentModel;
 using UnityEditor;
+using SplineMesh;
+using UnityEngine.UIElements;
+using Unity.VisualScripting;
 
 public class S_S_EditorMethods : MonoBehaviour
 {
@@ -165,6 +168,75 @@ public class S_S_EditorMethods : MonoBehaviour
 			Handles.DrawLine(forwardFar, left);
 		}
 
+	}
+
+	public static GameObject FindChild ( GameObject parentObject, string newObjectName ) {
+		//Searches for a child of this name
+		var childTransform = parentObject.transform.Find(newObjectName);
+		
+		if (childTransform == null) return null;
+		return childTransform.gameObject;
+	}
+
+
+	public static GameObject FindOrCreateChild (GameObject ParentObject ,string newObjectName, Type[] AddComponents, bool replace = false, GameObject InstantiateFrom = null ) {
+
+		//Searches for a child of this name
+		var childTransform = ParentObject.transform.Find(newObjectName);
+		GameObject childObject;
+
+		//Creates a GameObject with the given components
+		if (childTransform == null)
+		{
+			childObject = CreateChild();
+		}
+		else
+		{
+			if (!replace) { childObject = childTransform.gameObject; }
+			else
+			{
+				GameObject.DestroyImmediate(childTransform.gameObject);
+
+				childObject = CreateChild();
+			}
+		}
+
+		childObject.tag = ParentObject.tag;
+		childObject.layer = ParentObject.layer;
+
+		return childObject;
+
+		GameObject CreateChild () {
+
+			if (InstantiateFrom != null) { return CreateChildFromBase(ParentObject, InstantiateFrom, newObjectName, AddComponents); }
+
+			else { return CreateChildFromScratch(ParentObject, newObjectName, AddComponents); }
+		}
+	}
+
+	public static GameObject CreateChildFromScratch ( GameObject ParentObject, string newObjectName, Type[] AddComponents ) {
+
+		GameObject childObject = UOUtility.Create(newObjectName, ParentObject, AddComponents);
+		childObject.isStatic = true;
+
+		return childObject;
+	}
+
+	public static GameObject CreateChildFromBase ( GameObject ParentObject, GameObject InstantiateFrom, string newObjectName, Type[] AddComponents ) {
+		
+		//Create a clone of the given base object and set it as a child.
+		GameObject childObject = Instantiate(InstantiateFrom, ParentObject.transform);
+		childObject.name = newObjectName;
+		childObject.transform.parent = ParentObject.transform;
+		childObject.isStatic = true;
+
+		//Add the wanted components as long as the object doesn't already have them.
+		for (int i = 0 ; i < AddComponents.Length ; i++)
+		{
+			if (!childObject.GetComponent(AddComponents[i])) { childObject.AddComponent(AddComponents[i]); }
+		}
+
+		return childObject;
 	}
 #endif
 }

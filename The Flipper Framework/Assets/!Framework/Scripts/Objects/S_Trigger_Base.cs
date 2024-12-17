@@ -57,7 +57,9 @@ public class S_Trigger_Base : S_Data_Base
 #if UNITY_EDITOR
 
 	[ExecuteAlways]
-	private void OnValidate () {
+	public override void OnValidate () {
+
+		base.OnValidate();
 		SetTriggerForPlayer();
 		switch (_whatTriggerShape) {
 			case S_EditorEnums.ColliderTypes.Box:
