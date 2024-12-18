@@ -21,12 +21,11 @@ namespace templates
 		_TestEditorScript_ _OwnerScript;
 
 
-		private void OnEnable () {
+		public override void OnEnable () {
 			//Setting variables
 			_OwnerScript = (_TestEditorScript_)target;
-			_InspectorTheme = _OwnerScript._InspectorTheme;
 
-			ApplyStyle();
+			base.OnEnable();
 		}
 
 		public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {

@@ -11,15 +11,16 @@ using static UnityEngine.Rendering.DebugUI;
 
 #if UNITY_EDITOR
 [ExecuteAlways]
-public class S_Data_DisplayData : S_Data_Base
+public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 {
 
+	//Serialized
 	[SerializeField]
 	private bool	_updateAutomatically;
 	[SerializeField]
 	private bool	_onlyDisplayWhenSelected;
 	[SerializeField]
-	private bool        _updateTransform = true;
+	public bool        _updateTransform = true;
 	[SerializeField]
 	private Vector3     _placeAboveObject;
 	private Vector3     _previousLocalPosition;
@@ -49,9 +50,10 @@ public class S_Data_DisplayData : S_Data_Base
 	}
 	public List<StrucDataToDisplay> _DataToDisplay;
 
-
+	//Trackers
 	private bool _isSelected;
 
+	[ExecuteAlways]
 	private void Update () {
 		if(_isSelected)
 		{
@@ -59,7 +61,6 @@ public class S_Data_DisplayData : S_Data_Base
 			{
 				_placeAboveObject = transform.position - transform.parent.position;
 			}
-			if(_updateTransform) HandleTransform();
 		}
 	}
 
@@ -67,14 +68,15 @@ public class S_Data_DisplayData : S_Data_Base
 	//These methods will handle whether or not text should be hidden if set to only appear when selected.
 	private void OnEnable () {
 		Selection.selectionChanged += OnSelectionChanged;
-		HandleTransform();
 	}
+
 	private void OnDisable () {
 		Selection.selectionChanged -= OnSelectionChanged;
 	}
+
 	private void OnSelectionChanged () {
 		//If a reference object or this is selected, reveal the text.
-		if (S_S_EditorMethods.IsThisOrReferenceSelected(transform, _ObjectsToReference))
+		if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, _ObjectsToReference, 2))
 		{
 			_isSelected = true;
 			RevealOrHide(true);
@@ -163,7 +165,7 @@ public class S_Data_DisplayData : S_Data_Base
 
 			//else if (value.GetType() == typeof(IList<object>))
 			//else if (value is IEnumerable list)	
-			if (value.GetType().IsGenericType & value.GetType().GetGenericTypeDefinition() == typeof(List<>))
+			else if (value.GetType().IsGenericType && value.GetType().GetGenericTypeDefinition() == typeof(List<>))
 			{
 				displayValue = "";
 				// Cast the value to a generic IEnumerable and iterate
@@ -222,7 +224,7 @@ public class S_Data_DisplayData : S_Data_Base
 		_3DText.text = DisplayText;
 	}
 
-	private void HandleTransform () {
+	public void HandleTransform () {
 
 		if (_placeAboveObject != Vector3.zero & transform.parent != null)
 		{
@@ -230,12 +232,20 @@ public class S_Data_DisplayData : S_Data_Base
 			_previousLocalPosition = transform.localPosition;
 		}
 
-		//Make both text objects face player. Only works if they are children of this script, and this has no rotation.
+		transform.localRotation = Quaternion.identity; //If in line with parent, scaling for children will be as if they have no parents, as this object "resets" it.
 		 //180 makes them face the other way, as if the Rect transforms faced the player, they'd actually be looking away.
 		S_S_EditorMethods.FaceSceneViewCamera(_3DTitle.transform, 180);
-		transform.localRotation = Quaternion.identity; //If in line with parent, scaling for children will be as if they have no parents, as this object "resets" it.
 
-		transform.localScale = S_S_ObjectMethods.LockScale(transform, _scale); //Ensures object is never stretched. Cannot rotate this object, else calculations will fail.
+		float affectedScale = transform.parent != null ?
+			Mathf.Clamp(_scale, _scale * S_S_MoreMathMethods.GetLargestOfVector(transform.parent.lossyScale) / 50, 20)
+			: 1;
+
+		transform.localScale = S_S_ObjectMethods.LockScale(transform, affectedScale); //Ensures object is never stretched. Cannot rotate this object, else calculations will fail.
+	}
+
+	//This is called by S_EditorLink, and in the OnSceneGUI in the editor class below.
+	public void CustomOnSceneGUI (SceneView sceneView = null) {
+		if (_updateTransform) HandleTransform();
 	}
 
 }
@@ -246,13 +256,12 @@ public class DisplayDataEditor : S_CustomInspector_Base
 {
 	S_Data_DisplayData _OwnerScript;
 
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_Data_DisplayData)target;
 		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		if (_OwnerScript._InspectorTheme == null) { return; }
-		ApplyStyle();
+		base.OnEnable();
 	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
@@ -300,6 +309,10 @@ public class DisplayDataEditor : S_CustomInspector_Base
 
 	public void DrawWithEachListElement (int i) {
 		return;
+	}
+
+	public void OnSceneGUI () {
+		if (_OwnerScript._updateTransform) _OwnerScript.CustomOnSceneGUI();
 	}
 }
 #endif

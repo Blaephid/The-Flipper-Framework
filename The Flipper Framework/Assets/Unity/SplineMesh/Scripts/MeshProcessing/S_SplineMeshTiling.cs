@@ -222,12 +222,12 @@ public class SplineMeshEditor : S_CustomInspector_Base
 {
 	S_SplineMeshTiling _OwnerScript;
 
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_SplineMeshTiling)target;
 		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		ApplyStyle();
+		base.OnEnable();
 	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {

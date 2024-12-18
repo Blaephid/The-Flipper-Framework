@@ -77,12 +77,12 @@ public class TakeScreenShotEditor : S_CustomInspector_Base
 	S_TakeScreenShots _OwnerScript;
 
 
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_TakeScreenShots)target;
 		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		ApplyStyle();
+		base.OnEnable();
 	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {

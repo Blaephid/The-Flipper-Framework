@@ -10,6 +10,7 @@ using UnityEditor;
 using SplineMesh;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
+using UnityEngine.InputSystem.HID;
 
 public class S_S_EditorMethods : MonoBehaviour
 {
@@ -110,20 +111,54 @@ public class S_S_EditorMethods : MonoBehaviour
 	}
 
 	//Checks if a gameObject is seleted, or one of its children or any from an aditional list
-	public static bool IsThisOrReferenceSelected ( Transform transform ,GameObject[] ObjectList = null) {
+	public static bool IsThisOrListOrChildrenSelected ( Transform transform ,GameObject[] ObjectList = null, int childrenLevels = 1) {
 	
 		if (S_S_EditorMethods.IsSelected(transform.gameObject)) { return true; }
 	
 		//Goes through list to see if any are selected.
 		if(ObjectList != null) for (int i = 0 ; i < ObjectList.Length ; i++) {if (IsSelected(ObjectList[i])){ return true;}}
+
+		//Checks if any immediate children are selected
+		if(childrenLevels > 0)
+			if (IsChildSelected(transform)) return true;
+
+		//Goes through multiple levels to see if any are selected (E.g. Children, Children's children, Children's Children's children.)
+		if (AreChildrenSelected(transform, childrenLevels)) { return true; }
+
+		//If nothing found, then false.
+		return false;
+	}
+
+	public static bool AreChildrenSelected ( Transform parent, int depth ) {
+		// Base case: Stop if depth reaches 0
+		if (depth <= 0 || parent == null)
+			return false;
+
+		// Iterate through each child
+		for (int i = 0 ;  i < parent.childCount ; i++)
+		{
+			Transform child = parent.GetChild(i);
+			if (IsChildSelected(child)) return true;
+			else
+			{
+				// Recursively traverse the child's children, reducing depth
+				if (AreChildrenSelected(child, depth - 1))
+				{ return true; }
+			}
+		}
+		return false;
+	}
+
+	public static bool IsChildSelected (Transform transform) {
 		//Goes through children to see if any are selected
-		for (int i = 0 ; i < transform.childCount ; i++){ if (IsSelected(transform.GetChild(i).gameObject)){return true;}}
+		for (int i = 0 ; i < transform.childCount ; i++) { if (IsSelected(transform.GetChild(i).gameObject)) { return true; } }
 
 		//If nothing found, then false.
 		return false;
 	}
 
 	public static void FaceSceneViewCamera (Transform transform, float offset) {
+
 		if(Application.isPlaying) return;
 
 		SceneView sceneView = SceneView.lastActiveSceneView;

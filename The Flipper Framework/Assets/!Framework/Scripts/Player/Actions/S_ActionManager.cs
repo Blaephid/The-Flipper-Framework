@@ -542,12 +542,12 @@ public class ActionManagerEditor : S_CustomInspector_Base
 {
 	S_ActionManager _ActionMan;
 
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_ActionMan = (S_ActionManager)target;
 		_InspectorTheme = _ActionMan._InspectorTheme;
 
-		ApplyStyle();
+		base.OnEnable();
 	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {

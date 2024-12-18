@@ -161,17 +161,17 @@ public class S_MetricCalculator : MonoBehaviour
 
 
 [CustomEditor(typeof(S_MetricCalculator))]
-public class MainScriptEditor : S_CustomInspector_Base
+public class MetricCalculatorEditor : S_CustomInspector_Base
 {
 	S_MetricCalculator _OwnerScript;
 
 
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_MetricCalculator)target;
 		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		ApplyStyle();
+		base.OnEnable();
 	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {

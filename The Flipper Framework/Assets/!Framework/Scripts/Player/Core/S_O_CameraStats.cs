@@ -397,12 +397,12 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 {
 	S_O_CameraStats _OwnerScript;
 
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_O_CameraStats)target;
 		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		ApplyStyle();
+		base.OnEnable();
 	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {

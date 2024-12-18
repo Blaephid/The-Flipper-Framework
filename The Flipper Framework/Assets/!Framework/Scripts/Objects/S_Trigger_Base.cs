@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using templates;
 using Unity.Collections;
 using UnityEditor;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class S_Trigger_Base : S_Data_Base
+[RequireComponent(typeof(S_ConstantSceneGUI))]
+public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 {
+	//Serialized
 
 	[Header("Trigger")]
 	public List<GameObject> _ObjectsToTriggerOn = new List<GameObject>();
@@ -18,13 +21,26 @@ public class S_Trigger_Base : S_Data_Base
 	[ReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
 	public GameObject _TriggerForPlayerToRead;
 	public S_EditorEnums.ColliderTypes _whatTriggerShape;
-	private S_EditorEnums.ColliderTypes _trackTriggerShape;
 
 	[Header("Dev Visibility")]
 	public bool _drawAtAllTimes = true;
 	public Color _normalOutlineColour = Color.grey;
 	public Color _selectedOutlineColour = Color.white;
 	public Color _selectedFillColour = new Color(1,1,1,0.1f);
+
+	//Trackers
+	S_ConstantSceneGUI ConstantGUI;
+
+	/// <summary>
+	///			Inherited
+	/// </summary>
+	#region inherited
+
+	private void OnEnable () {
+		ConstantGUI = GetComponent<S_ConstantSceneGUI>();
+		if (ConstantGUI == null) return;
+		ConstantGUI._LinkedComponent = this;
+	}
 
 
 	private void OnTriggerEnter ( Collider other ) {
@@ -94,7 +110,11 @@ public class S_Trigger_Base : S_Data_Base
 		}
 
 	}
+#endif
 
+	#endregion
+
+#if UNITY_EDITOR
 	private void SetTriggerForPlayer () {
 		if (!_isLogicInPlayScript) { _TriggerForPlayerToRead = null; return; }
 
@@ -113,8 +133,13 @@ public class S_Trigger_Base : S_Data_Base
 		_TriggerForPlayerToRead = null;
 	}
 
+	/// <summary>
+	///			Gizmo Drawing
+	/// </summary>
+	#region Gizmo Drawing
+
 	private void OnDrawGizmos () {
-		if (S_S_EditorMethods.IsThisOrReferenceSelected(transform))
+		if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform))
 			DrawTriggerVolume(true);
 		else if (_drawAtAllTimes)
 			DrawTriggerVolume(false);
@@ -158,7 +183,7 @@ public class S_Trigger_Base : S_Data_Base
 				//Constant outline
 				SphereCollider Sphere = GetComponent<SphereCollider>();
 				//Because sphere triggers are always perfectly spherical and only expand to match the largest scale dimension
-				float radius =  Sphere.radius * Mathf.Max(transform.lossyScale.x, Mathf.Max(transform.lossyScale.z, transform.lossyScale.y));
+				float radius =  Sphere.radius * S_S_MoreMathMethods.GetLargestOfVector(transform.lossyScale);
 				Vector3 centre = Sphere.center + transform.position;
 
 				using (new Handles.DrawingScope(colour))
@@ -200,8 +225,24 @@ public class S_Trigger_Base : S_Data_Base
 	public virtual void DrawAdditional ( Color colour ) {
 
 	}
+#endregion
 
+	public void CustomOnSceneGUI ( SceneView sceneView ) {
 
+		//Only draw select handle if not already selected.
+		if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null, 0)) { return; }
+
+		if (gameObject == null || transform == null) { return; }
+
+		Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
+		Color color = _selectedFillColour;
+		color.a = Mathf.Max(color.a, 0.5f);
+		using (new Handles.DrawingScope(color))
+		{
+			float handleRadius = 2 * Mathf.Clamp(S_S_MoreMathMethods.GetLargestOfVector(transform.lossyScale) / 40, 1, 20);
+			S_S_DrawingMethods.DrawSelectableHandle(transform.position, gameObject, handleRadius);
+		}
+	}
 #endif
 }
 
@@ -216,17 +257,14 @@ public class TriggerEditor : S_CustomInspector_Base
 	public GameObject _OwnerObject;
 
 
-	public void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_Trigger_Base)target;
 		_OwnerObject = _OwnerScript.gameObject;
+
+		base.OnEnable();
 	}
 
-
-	public void OnSceneGUI () {
-		Debug.Log("Draw Hand");
-		S_S_DrawingMethods.DrawSelectableHandle(_OwnerObject.transform.position, _OwnerObject);
-	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
 		return _OwnerScript._InspectorTheme;

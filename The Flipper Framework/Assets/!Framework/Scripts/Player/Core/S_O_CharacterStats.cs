@@ -1505,14 +1505,12 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 {
 	S_O_CharacterStats _OwnerScript;
 
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_O_CharacterStats)target;
 		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		if (_InspectorTheme == null) { return; }
-
-		ApplyStyle();
+		base.OnEnable();
 	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {

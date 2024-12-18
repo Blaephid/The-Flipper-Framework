@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -9,6 +10,7 @@ using UnityEngine;
 [CustomEditor(typeof(MonoBehaviour))]
 public class S_CustomInspector_Base : Editor
 {
+	[SerializeField]
 	public S_O_CustomInspectorStyle _InspectorTheme;
 
 	public GUIStyle	_HeaderStyle;
@@ -19,6 +21,11 @@ public class S_CustomInspector_Base : Editor
 
 	public override void OnInspectorGUI () {
 		DrawInspector();
+	}
+
+	public virtual void OnEnable () {
+		_InspectorTheme = GetInspectorStyleFromSerializedObject();
+		ApplyStyle();
 	}
 
 	public void ApplyStyle () {

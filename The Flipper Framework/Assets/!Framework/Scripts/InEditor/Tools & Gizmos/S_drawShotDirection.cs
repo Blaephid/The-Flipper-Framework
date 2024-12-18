@@ -53,7 +53,7 @@ public class S_drawShotDirection : MonoBehaviour
 	private void OnDrawGizmos () {
 		//Is should draw at all times, or parent or children are selected.
 		if(!_onlyDrawWhenSelected 
-			|| S_S_EditorMethods.IsThisOrReferenceSelected(transform, new GameObject[] { transform.parent.gameObject })) 
+			|| S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject })) 
 		{DrawShot(); }
 	}
 

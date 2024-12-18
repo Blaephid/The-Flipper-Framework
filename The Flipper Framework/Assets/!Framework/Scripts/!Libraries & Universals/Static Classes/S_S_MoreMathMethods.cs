@@ -34,4 +34,8 @@ public class S_S_MoreMathMethods
 		//If not a single comparison between every number was more than threshold, return true.
 		return true;
 	}
+
+	public static float GetLargestOfVector (Vector3 vector) {
+		return Mathf.Max(vector.x, Mathf.Max(vector.y, vector.z));
+	}
 }

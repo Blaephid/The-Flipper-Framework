@@ -93,12 +93,12 @@ public class ArmouredTrainEditor : S_CustomInspector_Base
 	S_Data_ArmouredTrain _OwnerScript;
 
 
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
 		_OwnerScript = (S_Data_ArmouredTrain)target;
 		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		ApplyStyle();
+		base.OnEnable();
 	}
 
 	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {

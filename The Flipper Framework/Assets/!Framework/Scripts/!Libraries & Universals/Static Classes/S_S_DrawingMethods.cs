@@ -36,17 +36,19 @@ public class S_S_DrawingMethods
 	}
 
 
-	public static void DrawSelectableHandle (Vector3 handlePosition, GameObject targetObject) {
+	public static void DrawSelectableHandle (Vector3 handlePosition, GameObject targetObject, float size = 1) {
 		// Draw the sphere handle at the specified position
 		EditorGUI.BeginChangeCheck();
-		Handles.SphereHandleCap(0, handlePosition, Quaternion.identity, 0.8f, EventType.Repaint);
+		Handles.SphereHandleCap(0, handlePosition, Quaternion.identity, size, EventType.Repaint);
 
 		// Detect if the mouse is clicked on the handle
 		if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
 		{
 			// Check if the mouse is over the handle (using HandleUtility.DistanceToCircle for a more precise check)
-			if (HandleUtility.DistanceToCircle(handlePosition, 1f) < 1f)
+			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.7f) < 0.5f)
 			{
+				if(IsHandleBlocked(handlePosition, targetObject)) { return; }
+
 				// Select the object when the handle is clicked
 				Selection.activeObject = targetObject;
 
@@ -54,6 +56,26 @@ public class S_S_DrawingMethods
 				Event.current.Use();
 			}
 		}
+		EditorGUI.EndChangeCheck();
+	}
+
+
+	public static bool IsHandleBlocked ( Vector3 handlePosition, GameObject targetObject ) {
+		// Convert mouse position to a ray
+		Ray mouseRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+
+		RaycastHit[] hits = Physics.RaycastAll(mouseRay, Vector3.Distance(mouseRay.origin, handlePosition) + 2);
+
+		for (int hit = 0 ; hit < hits.Length ; hit++)
+		{
+			// If the ray hit something else. This allows hitting the collider of itself to be ignored.
+			if (hits[hit].collider.gameObject != targetObject)
+			{
+				return true;
+			}
+		}
+		//If nothing was in the way
+		return false;
 	}
 
 }
