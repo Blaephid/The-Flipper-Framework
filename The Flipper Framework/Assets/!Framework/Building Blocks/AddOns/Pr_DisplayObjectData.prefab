@@ -26,7 +26,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 92208886072114591}
-  m_LocalRotation: {x: 0.09295115, y: -0.8209427, z: 0.1398164, w: 0.54576975}
+  m_LocalRotation: {x: -0.060329836, y: 0.9368404, z: -0.27827945, w: -0.20310314}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Spring
+  m_text: Name
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -217,7 +217,7 @@ Transform:
   m_GameObject: {fileID: 3295355349864895002}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.23, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -237,26 +237,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
-  _updateAutomatically: 0
+  _updateAutomatically: 1
   _onlyDisplayWhenSelected: 1
   _updateTransform: 1
-  _placeAboveObject: {x: 0, y: 2, z: 0}
+  _placeAboveObject: {x: 0, y: 0, z: 0}
   _scale: 1
-  _displayTitle: Spring
+  _displayTitle: Name
   _3DTitle: {fileID: 5765654182386527770}
   _3DText: {fileID: 6358358358702903592}
   _ObjectsToReference: []
-  _DataToDisplay:
-  - variableName: _springForce_
-    displayName: Spring Force
-    casing: 0
-    structName: 
-    value: 100
-  - variableName: _lockForFrames_
-    displayName: Lock For Frames
-    casing: 0
-    structName: 
-    value: 60
+  _DataToDisplay: []
 --- !u!114 &6045930249403165319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,7 +286,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3440219142795585223}
-  m_LocalRotation: {x: 0.054670494, y: -0.048496757, z: 0.020938361, w: 0.99710625}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -305,7 +295,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -4}
+  m_AnchoredPosition: {x: 0, y: -3}
   m_SizeDelta: {x: 14, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4622662306047797600
@@ -372,11 +362,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Spring Force = 100
-
-    Lock For Frames = 60
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

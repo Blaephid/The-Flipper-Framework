@@ -68,15 +68,23 @@ public class S_S_EditorMethods : MonoBehaviour
 		int bracketStart = 0;
 		int bracketEnd = 0;
 
+		string newInput = input;
+
 		for (int i = 0 ; i < input.Length ; i++)
 		{
 			if (input[i] == bracket1) { bracketStart = i; }
 			else if (input[i] == bracket2) { bracketEnd = i; }
+
+
+			//If there are brackets containing more than 6 characters
+			if (bracketStart > 0 && bracketEnd > 0 & Mathf.Abs(bracketEnd - bracketStart) > 6)
+			{
+				//Remove brackets
+				newInput = input.Substring(0, bracketStart) + input.Substring(bracketEnd + 1);
+				newInput = CleanBracketsInString(newInput); //Call function again with the changes in place to look for more brackets.
+				return newInput;
+			}
 		}
-
-		if(bracketStart > 0 && bracketEnd > 0)
-			input = input.Substring(0, bracketStart) + input.Substring(bracketEnd+1);
-
 		return input;
 	}
 

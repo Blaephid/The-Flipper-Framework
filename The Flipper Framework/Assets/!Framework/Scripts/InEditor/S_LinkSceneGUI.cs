@@ -36,7 +36,7 @@ public class EditorLinkEditor : Editor
 	}
 
 	private void OnSceneGUI () {
-		if (_OwnerScript != null) { _OwnerScript._LinkedEditorLogic.CustomOnSceneGUI(); }
+		if (_OwnerScript != null && _OwnerScript._LinkedEditorLogic != null) { _OwnerScript._LinkedEditorLogic.CustomOnSceneGUI(); }
 	}
 }
 #endif

@@ -47,14 +47,27 @@ public class S_drawShotDirection : MonoBehaviour
 
 	//Called whenever object is selected when gizmos are enabled.
 	private void OnDrawGizmosSelected () {
+		//If set not only draw when selected, will be drawn in different method.
+		if (!_onlyDrawWhenSelected) { return; }
 		DrawShot();
 	}
 
 	private void OnDrawGizmos () {
+		//If always drawn, don't need to check if selected.
+		if (!_onlyDrawWhenSelected) { DrawShot(); return; }
+
 		//Is should draw at all times, or parent or children are selected.
-		if(!_onlyDrawWhenSelected 
-			|| S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject })) 
-		{DrawShot(); }
+
+		if (transform.parent != null)
+		{
+			if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject }))
+				{ DrawShot(); }
+		}
+		else
+		{
+			if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null))
+			{ DrawShot(); }
+		}
 	}
 
 	private void DrawShot () {

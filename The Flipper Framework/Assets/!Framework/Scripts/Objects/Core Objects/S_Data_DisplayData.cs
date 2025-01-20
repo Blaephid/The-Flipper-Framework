@@ -121,15 +121,26 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 			//Ensures the name taken in from a human matches code style, so it can find a field.
 			string translatedVariableName = S_S_EditorMethods.TranslateStringToVariableName(ThisData.variableName, ThisData.casing);
-			if (translatedVariableName == "") continue;
+			if (translatedVariableName == "")
+			{
+				UpdateData(ThisData.structName, "");
+				continue;
+			}
 
 			string translatedStructName = ThisData.structName == "" ? "" : S_S_EditorMethods.TranslateStringToVariableName(ThisData.structName, S_EditorEnums.CasingTypes.PascalCase);
+
+			if(_DataSources.Count == 0)
+			{
+				Debug.LogError("No data sources assigned");
+				return;
+			}
 
 			//Goes through each data source until a field matching the given name is found, and returns that value
 			object value = null;
 			for (int s = 0 ; value == null & s < _DataSources.Count ; s++)
 				value = (S_S_EditorMethods.FindFieldByName(_DataSources[s], translatedVariableName, translatedStructName));
 
+			//If nothing was found
 			if(value == null) { _updateAutomatically = false; break; }
 
 
@@ -140,16 +151,21 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 			displayValue = S_S_EditorMethods.CleanBracketsInString(displayValue, '(', ')');
 			displayValue = S_S_EditorMethods.CleanBracketsInString(displayValue, '[', ']');
 
-			//Updates the data
-			StrucDataToDisplay Temp = new StrucDataToDisplay
-			{
-				casing = ThisData.casing,
-				displayName = ThisData.displayName,
-				variableName = translatedVariableName,
-				structName = translatedStructName,
-				value = displayValue
-			};
-			_DataToDisplay[i] = Temp;
+			UpdateData(translatedStructName, displayValue);
+			continue;
+
+			void UpdateData (string translatedStructName, string displayValue ) {
+				//Updates the data
+				StrucDataToDisplay Temp = new StrucDataToDisplay
+				{
+					casing = ThisData.casing,
+					displayName = ThisData.displayName,
+					variableName = translatedVariableName,
+					structName = translatedStructName,
+					value = displayValue
+				};
+				_DataToDisplay[i] = Temp;
+			}
 		}
 
 		Update3DText();
