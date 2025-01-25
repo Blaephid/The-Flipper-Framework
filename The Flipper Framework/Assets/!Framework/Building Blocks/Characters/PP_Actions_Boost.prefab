@@ -574,6 +574,7 @@ GameObject:
   - component: {fileID: 820711763459204594}
   - component: {fileID: 8974006341597823348}
   - component: {fileID: 4584081993875375216}
+  - component: {fileID: 3267591947753520472}
   m_Layer: 0
   m_Name: Interactions
   m_TagString: Untagged
@@ -694,6 +695,23 @@ MonoBehaviour:
   _HedgeCam: {fileID: 0}
   _VirtCam: {fileID: 0}
   _initialDistance: 0
+--- !u!114 &3267591947753520472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3925212191463152497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b97790d1646ef9443bf81c289de9505f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RingCollectParticle: {fileID: 0}
+  SpeedPadTrack: {fileID: 0}
+  DashRingMaterial: {fileID: 0}
+  NormalShieldMaterial: {fileID: 0}
+  DashRingLightsColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &6765472363586466154
 GameObject:
   m_ObjectHideFlags: 0

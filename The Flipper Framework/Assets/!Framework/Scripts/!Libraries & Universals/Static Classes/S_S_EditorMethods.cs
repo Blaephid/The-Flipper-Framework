@@ -265,5 +265,6 @@ public class S_S_EditorMethods : MonoBehaviour
 		DestroyImmediate(Target.GetComponent(Component));
 
 	}
+
 #endif
 }

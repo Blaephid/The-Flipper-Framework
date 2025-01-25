@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using templates;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEditor.TerrainTools;
 using UnityEngine;
 
@@ -12,32 +13,56 @@ public class S_ConstantSceneGUI : MonoBehaviour
 	public MonoBehaviour	_LinkedComponent;
 	public ICustomEditorLogic	_LinkedEditorLogic;
 
-	private bool firstValidated = false;
+	private bool currentlyEnabled = false;
 
 	void OnValidate () {
-
+		
 		if (_LinkedComponent == null) return;
+		ConvertComponentToEditorLogicInterface();
+		EnableEvents(null);
+	}
 
+	private void ConvertComponentToEditorLogicInterface () {
+		//Used two different methods to get the editor logic as a usable type, from the given component.
 		_LinkedEditorLogic = _LinkedEditorLogic as ICustomEditorLogic;
-		if (_LinkedEditorLogic == null) 
+		if (_LinkedEditorLogic == null)
 			_LinkedEditorLogic = _LinkedComponent.GetComponent<ICustomEditorLogic>();
-		if (_LinkedEditorLogic == null) return;
 	}
 
 
 	//Attaches the given script to the builtin SceneView GUI update, so its called constaltly by that dispatcher.
 	//There is a custom inspector button below to trigger this as it won't happen when object is placed in scene.
 	public void OnEnable () {
-		if (firstValidated) { return; }
-		
-		if (_LinkedEditorLogic == null) { return; }
-		SceneView.duringSceneGui += _LinkedEditorLogic.CustomOnSceneGUI;
-		firstValidated = true;
-		
+		EnableEvents(null);
+
+		//These seperate events track when entering the prefab editor. If these weren't here, then these would continue to call custom logic even when in a seperate mode.
+		PrefabStage.prefabStageOpened += DisableEvents;
+		PrefabStage.prefabStageClosing += EnableEvents;
 	}
 
 	private void OnDisable () {
-		firstValidated = false;
+		DisableEvents(null);
+
+		//These seperate events track when entering the prefab editor. If these weren't here, then these would continue to call custom logic even when in a seperate mode.
+		PrefabStage.prefabStageOpened -= DisableEvents;
+		PrefabStage.prefabStageClosing -= EnableEvents;
+	}
+
+	public void EnableEvents ( PrefabStage prefabStage ) {
+		if (currentlyEnabled) { return; }
+		if (_LinkedEditorLogic == null) { return; }
+
+		//Prevents the prefab assets from enabling this if not viewing them in prefab mode. If this wasn't here, all prefabs with this would call in every scene.
+		if (PrefabUtility.IsPartOfPrefabAsset(gameObject) && PrefabStageUtility.GetCurrentPrefabStage() == null) { return; }
+
+		currentlyEnabled = true;
+		SceneView.duringSceneGui += _LinkedEditorLogic.CustomOnSceneGUI;
+	}
+	public void DisableEvents ( PrefabStage prefabStage ) {
+		if (!currentlyEnabled) { return; }
+		if (_LinkedComponent == null) return;
+		currentlyEnabled = false;
+
 		SceneView.duringSceneGui -= _LinkedEditorLogic.CustomOnSceneGUI;
 	}
 
@@ -61,7 +86,7 @@ public class SceneGuiConstantEditor : S_CustomInspector_Base
 	}
 
 	public override void DrawInspectorNotInherited () {
-		EditorGUILayout.TextArea("Link a component using ICustomEditorLogic CustomOnSceneGUI() to call that constantly no matter what is selected. ", EditorStyles.textArea);
+		EditorGUILayout.TextArea("Link a component using ICustomEditorLogic CustomOnSceneGUI() to call that constantly no matter what is selected. It will use the built in SceneView.duringSceneGui event ", EditorStyles.textArea);
 		DrawDefaultInspector();
 
 		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Enable", _BigButtonStyle))

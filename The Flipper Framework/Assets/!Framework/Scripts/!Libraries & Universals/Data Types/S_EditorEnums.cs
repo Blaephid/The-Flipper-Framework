@@ -8,6 +8,7 @@ public class S_EditorEnums
 	{
 		camelCase,
 		PascalCase,
+		Either,
 	}
 
 	public enum ColliderTypes {

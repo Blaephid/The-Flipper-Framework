@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class S_Data_Base : MonoBehaviour
 {
 	public event        EventHandler onObjectValidate;

@@ -1,0 +1,48 @@
+newmtl son_mat_body
+Ka 0.282353 0.282353 0.282353
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka son_mat_body.png
+map_Kd son_mat_body.png
+map_d son_mat_body.png
+newmtl son_mat_eye
+Ka 0.282353 0.282353 0.282353
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka son_mat_eye.png
+map_Kd son_mat_eye.png
+map_d son_mat_eye.png
+newmtl son_mat_foot
+Ka 0.282353 0.282353 0.282353
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka son_mat_foot.png
+map_Kd son_mat_foot.png
+map_d son_mat_foot.png
+newmtl son_mat_hair
+Ka 0.282353 0.282353 0.282353
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka son_mat_hair.png
+map_Kd son_mat_hair.png
+map_d son_mat_hair.png
+newmtl son_mat_hand
+Ka 0.282353 0.282353 0.282353
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka son_mat_hand.png
+map_Kd son_mat_hand.png
+map_d son_mat_hand.png
+newmtl son_mat_stomach
+Ka 0.282353 0.282353 0.282353
+Kd 0.972549 0.972549 0.972549
+d 1
+Tr 1
+map_Ka son_mat_stomach.png
+map_Kd son_mat_stomach.png
+map_d son_mat_stomach.png

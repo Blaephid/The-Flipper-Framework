@@ -9,6 +9,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	private S_PlayerPhysics	_PlayerPhys;
 	private S_PlayerVelocity	_PlayerVel;
 	private S_Interaction_Objects _ObjectInteraction;
+	private S_Interaction_Triggers _TriggerInteraction;
 	private S_ActionManager	_Actions;
 	private S_CharacterTools	_Tools;
 
@@ -186,6 +187,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_ObjectInteraction = GetComponent<S_Interaction_Objects>();
+		_TriggerInteraction = GetComponent<S_Interaction_Triggers>();
 		_Actions = _Tools._ActionManager;
 	}
 }

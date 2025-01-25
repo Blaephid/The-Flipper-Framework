@@ -47,8 +47,8 @@ public class S_ActionManager : MonoBehaviour
 	public List<float>                            _listOfSpeedOnPaths = new List<float>();	//Certain actions will move the player along the spline, this will be used to track the speed for any actions that do so. It is used as a list rather than a singular as it will allow speeds to be added and removed with the action, then the most recent is the only one used.
 
 	//Actions
-	public List<S_Structs.StrucMainActionTracker>	_MainActions; //This list of structs will cover each action currently available to the player (set in inspector), along with what actions it can enter through input or situation.	
-	private S_Structs.StrucMainActionTracker	_currentAction; //Which struct in the above list is currently active.
+	public List<S_Structs.MainActionTracker>	_MainActions; //This list of structs will cover each action currently available to the player (set in inspector), along with what actions it can enter through input or situation.	
+	private S_Structs.MainActionTracker	_currentAction; //Which struct in the above list is currently active.
 
 	//Inspector
 #if UNITY_EDITOR
@@ -105,7 +105,7 @@ public class S_ActionManager : MonoBehaviour
 		//Go through each struct and assign/add the scripts linked to that enum.
 		for (int i = 0 ; i < _MainActions.Count ; i++)
 		{
-			S_Structs.StrucMainActionTracker action = _MainActions[i];
+			S_Structs.MainActionTracker action = _MainActions[i];
 
 			//Makes lists of scripts matching what states are assigned for this state to transition to or activate.
 
@@ -172,7 +172,7 @@ public class S_ActionManager : MonoBehaviour
 
 		for (int a = 0 ; a < _MainActions.Count ; a++)
 		{
-			S_Structs.StrucMainActionTracker track = _MainActions[a];
+			S_Structs.MainActionTracker track = _MainActions[a];
 			if (track.State != _whatCurrentAction)
 			{
 				track.Action.StopAction(firstTime); //The stop action methods should all contain the same check if enabled and then disable the script if so.
@@ -619,7 +619,7 @@ public class ActionManagerEditor : S_CustomInspector_Base
 				for (int i = 0 ; i < _ActionMan._MainActions.Count ; i++)
 				{
 					//Go through each struct and use the AssignScript to add missing components.
-					S_Structs.StrucMainActionTracker action = _ActionMan._MainActions[i];
+					S_Structs.MainActionTracker action = _ActionMan._MainActions[i];
 
 
 					//Go through all of the connected states for each state, and make sure those states are also in the list.
@@ -679,7 +679,7 @@ public class ActionManagerEditor : S_CustomInspector_Base
 				//Also order each of the subLists for each actions by how they're ordered in the Enums class.
 				for (int i = 0 ; i < _ActionMan._MainActions.Count ; i++)
 				{
-					S_Structs.StrucMainActionTracker s = _ActionMan._MainActions[i];
+					S_Structs.MainActionTracker s = _ActionMan._MainActions[i];
 					s.ConnectedStates = s.ConnectedStates.OrderBy(d => (int)d).ToList();
 					s.SituationalStates = s.SituationalStates.OrderBy(d => (int)d).ToList();
 					s.PerformableSubStates = s.PerformableSubStates.OrderBy(d => (int)d).ToList();
@@ -700,7 +700,7 @@ public class ActionManagerEditor : S_CustomInspector_Base
 	private void AddActionToList ( S_GeneralEnums.PrimaryPlayerStates state, bool withDefault = false, bool skip = false ) {
 		if (!_ActionMan._MainActions.Any(item => item.State == state) || skip)
 		{
-			S_Structs.StrucMainActionTracker temp = new S_Structs.StrucMainActionTracker();
+			S_Structs.MainActionTracker temp = new S_Structs.MainActionTracker();
 			temp.State = state;
 
 			if (withDefault)

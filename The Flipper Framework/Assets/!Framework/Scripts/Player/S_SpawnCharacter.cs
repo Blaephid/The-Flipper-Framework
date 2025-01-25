@@ -16,9 +16,12 @@ public class S_SpawnCharacter : MonoBehaviour {
 	public CinemachineBrain _CameraBrain;
 	public int	_spawnDelay = 5;
 
+
+	//Spawning
 	private GameObject            _CharacterToSpawn;
 	public static Transform	_SpawnedPlayer;
 	public static float           _spawnCheckModifier = 1;
+	public Vector3                _velocityOnSpawn;
 
 	public S_DeactivateOnStart[] _ListOfDeactivationsToDelay;
 

@@ -127,7 +127,7 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 				continue;
 			}
 
-			string translatedStructName = ThisData.structName == "" ? "" : S_S_EditorMethods.TranslateStringToVariableName(ThisData.structName, S_EditorEnums.CasingTypes.PascalCase);
+			string translatedStructName = ThisData.structName == "" ? "" : S_S_EditorMethods.TranslateStringToVariableName(ThisData.structName, S_EditorEnums.CasingTypes.Either);
 
 			if(_DataSources.Count == 0)
 			{

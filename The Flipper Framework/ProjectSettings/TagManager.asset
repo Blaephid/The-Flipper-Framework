@@ -31,6 +31,7 @@ TagManager:
   - Enable Objects Physics
   - Player Effect
   - Recorder
+  - DashRing
   layers:
   - Default
   - TransparentFX

@@ -24,7 +24,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	//Player
 	private S_CharacterTools      _Tools;
 	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
+	private S_PlayerVelocity      _PlayerVel;
 	private S_ActionManager       _Actions;
 	private S_PlayerInput         _Input;
 	private S_PlayerEvents        _Events;
@@ -95,9 +95,9 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void LateUpdate () {
 		UpdateSpeed();
 
-		_CoreUIElements.RingsCounter.text = ""+ (int)_HurtAndHealth._ringAmount;
+		_CoreUIElements.RingsCounter.text = "" + (int)_HurtAndHealth._ringAmount;
 
-		
+
 	}
 
 	private void Update () {
@@ -115,9 +115,14 @@ public class S_Interaction_Objects : MonoBehaviour
 		switch (Col.tag)
 		{
 			case "SpeedPad":
-				LaunchFromPadOrDashRing(Col);
+				DashOffPad(Col);
 				break;
-
+			case "DashRing":
+				LaunchFromDashRing(Col);
+				break;
+			case "RailBooster":
+				BoostOnRail(Col);
+				break;
 			case "Switch":
 				if (Col.GetComponent<S_Data_Switch>() != null)
 				{
@@ -144,9 +149,6 @@ public class S_Interaction_Objects : MonoBehaviour
 				}
 				break;
 
-			case "HintRing":
-				ActivateHintBox(Col);
-				break;
 
 			case "Monitor":
 				Col.GetComponentInChildren<BoxCollider>().enabled = false;
@@ -174,9 +176,6 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "Enable Objects Physics":
 				SetMovingPlatformAsActive(Col, true);
 				break;
-
-			case "Player Effects":
-				ApplyEffectsOnPlayer(Col); break;
 		}
 	}
 
@@ -198,7 +197,7 @@ public class S_Interaction_Objects : MonoBehaviour
 					_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 				if (_numberOfWindForces == 0)
 					_totalWindDirection = Vector3.zero;
-					break;
+				break;
 		}
 	}
 
@@ -214,7 +213,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
 				if (UpdraftScript != null)
 				{
-					if(_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Homing
+					if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Homing
 						|| _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
 
 					Vector3 thisForce = GetForceOfWind(UpdraftScript);
@@ -237,9 +236,9 @@ public class S_Interaction_Objects : MonoBehaviour
 	//Called every frame
 	private void UpdateSpeed () {
 		//If a text element of the UI has been set for speed, update it to show current running speed.
-		if (_CoreUIElements.SpeedCounter != null && _PlayerVel._speedMagnitudeSquared > 100f) 
+		if (_CoreUIElements.SpeedCounter != null && _PlayerVel._speedMagnitudeSquared > 100f)
 			_CoreUIElements.SpeedCounter.text = _PlayerVel._currentRunningSpeed.ToString("F0");
-		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f) 
+		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f)
 			_CoreUIElements.SpeedCounter.text = "0";
 	}
 
@@ -248,7 +247,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	//
 
 	//If entering wind with force upwards already (like from a jump), this would carry the whole way, so only use gravity to remove this, but not go against the wind.
-	private IEnumerator RemoveAdditionalVerticalVelocity(float coreVelocityUpwards ) {
+	private IEnumerator RemoveAdditionalVerticalVelocity ( float coreVelocityUpwards ) {
 		yield return new WaitForFixedUpdate();
 
 		//If the force applied by the wind is substantially more than the core velocity before, then just remove the core velocity immediately
@@ -284,7 +283,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		newTransform.parent = UpdraftScript._Direction;
 
 		//Remove the vertical component, ensuring this temp object is only along the base, at any rotation. InverseTrasformDirection does not work because it does not account for rotation.
-		newTransform.localPosition = new Vector3 (newTransform.localPosition.x, 0, newTransform.localPosition.z);
+		newTransform.localPosition = new Vector3(newTransform.localPosition.x, 0, newTransform.localPosition.z);
 
 		//Get the player positions in regards to the wind origin, and remove the height so it is only along the base of the origin, not along the wind direction.
 		Vector3 relativePlayerPosition = newTransform.position;
@@ -298,12 +297,12 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			//If under 3 units away and moving towards the wind, apply force against equal to the player's speed in that direction, ensuring they can't fall beyond it.
 			Vector3 WindProjectedAgainstVelocity = Vector3.Project(_PlayerVel._coreVelocity, -direction);
-			if(WindProjectedAgainstVelocity.sqrMagnitude > 1) { power = WindProjectedAgainstVelocity.magnitude; }
+			if (WindProjectedAgainstVelocity.sqrMagnitude > 1) { power = WindProjectedAgainstVelocity.magnitude; }
 		}
 		else
 			//Affect power by distance along in this direction
 			//power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared));
-			power =  UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared);
+			power = UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared);
 
 		return power * direction;
 	}
@@ -326,7 +325,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			Vector3 nextVelocity = relevantCoreVelocity + lateralWind;
 
 			//If the wind will increase velocity overall, then apply to coreVelocity so it remains, rather than just being temporary like with the constant general.
-			if ( nextVelocity.sqrMagnitude > relevantCoreVelocity.sqrMagnitude)
+			if (nextVelocity.sqrMagnitude > relevantCoreVelocity.sqrMagnitude)
 			{
 				lateralWind = S_S_MoreMathMethods.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
 
@@ -335,7 +334,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				Vector3 nextSpeedInFanDirection = Vector3.Project(nextVelocity, lateralWind);
 				Vector3 increase = nextSpeedInFanDirection - relevantCoreVelocity;
 
-				if(relevantCoreVelocity.sqrMagnitude > increase.sqrMagnitude * Time.fixedDeltaTime + 1)
+				if (relevantCoreVelocity.sqrMagnitude > increase.sqrMagnitude * Time.fixedDeltaTime + 1)
 					_PlayerVel.AddCoreVelocity(increase * Time.fixedDeltaTime * 0.5f);
 			}
 
@@ -347,22 +346,22 @@ public class S_Interaction_Objects : MonoBehaviour
 			if (_PlayerVel._coreVelocity.y >= x)//If already being pushed up by wind
 				_PlayerVel.AddGeneralVelocity(verticalWind, false, true);
 			else //Fallspeed wont increase while in wind, so apply velocity until upwards force is x, overcoming gravity
-				_PlayerVel.AddCoreVelocity(verticalWind * Mathf.Min( verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(_PlayerVel._coreVelocity.y - x)));
+				_PlayerVel.AddCoreVelocity(verticalWind * Mathf.Min(verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(_PlayerVel._coreVelocity.y - x)));
 
 			//If being blown upwards, enter the hovering state to change actions and animation.
 			//canHover can only be set to true by the Hovering AttemptAction, so GetComponent is safe, and Hovering being enabled shouldn't enable canhover.
 			if (_canHover && _totalWindDirection.normalized.y > 0.72f && _totalWindDirection.y > 5)
 			{
-				 _Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction(); //Not placed in enterTrigger incase was already in the trigger, but not in a state that could enter the hover action.
+				_Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction(); //Not placed in enterTrigger incase was already in the trigger, but not in a state that could enter the hover action.
 			}
 		}
 	}
 
 	//If the trigger is on the same object as the movePlatform component, then switch the platform to move with physics rather than transform. This is for more accurate interactions when close but cheaper interactions further away.
-	private void SetMovingPlatformAsActive(Collider Col ,bool activePhysics ) {
+	private void SetMovingPlatformAsActive ( Collider Col, bool activePhysics ) {
 		if (Col.TryGetComponent(out S_Control_MovingPlatform Control))
 		{
-			if(Control._canCarryPlayer)
+			if (Control._canCarryPlayer)
 				Control._isPhysicsActive = activePhysics; //See the S_ControlMoving Platform script for how it switches to applying velocity every fixedUpdate.
 		}
 	}
@@ -399,116 +398,111 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	//Called on triggers
 
-	private void LaunchFromPadOrDashRing ( Collider Col ) {
+	private void DashOffPad ( Collider Col ) {
 		if (!Col.TryGetComponent(out S_Data_SpeedPad SpeedPadScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
-
 		Col.GetComponent<AudioSource>().Play();
 
-		//If a rail booster
-		if (SpeedPadScript._isOnRail_)
+		if (SpeedPadScript._Path) { return; }
+
+		//Magnitude of force
+		float speed = SpeedPadScript._speedToSet_;
+		if (SpeedPadScript._willCarrySpeed_)
 		{
-			//Attaches the player to the rail this rail booster is on.
-			if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Rail)
-			{
-				_PlayerPhys.SetPlayerPosition(SpeedPadScript._PositionToLockTo.position);
-			}
-			else
-			{
-				StartCoroutine(_Actions._ObjectForActions.GetComponent<S_Action05_Rail>().ApplyBoosters(SpeedPadScript._speedToSet_, SpeedPadScript._willSetSpeed_, SpeedPadScript._addSpeed_, SpeedPadScript._willSetBackwards_));
-			}
-			return;
+			speed = Mathf.Max(speed, _PlayerVel._currentRunningSpeed);
 		}
 
-		//Normal Dash pad
-		else if (!SpeedPadScript._Path)
+		SnapToObject(Col, SpeedPadScript._PositionToLockTo);
+
+		//Effects
+		ObjectRotatesCamera(Col, SpeedPadScript._cameraEffect);
+
+		//Player visual
+		_CharacterAnimator.SetBool("Grounded", true);
+		_Actions._ActionDefault.SetSkinRotationToVelocity(0, Col.transform.forward);
+
+		//Ground interactions
+		_PlayerPhys.SetIsGrounded(true);
+		_PlayerPhys._groundNormal = Col.transform.up;
+		_PlayerPhys.AlignToGround(Col.transform.up, true);
+
+		//Pushes player in direction
+		_PlayerVel.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
+
+		if (_Actions._listOfSpeedOnPaths.Count > 0)
+		{ _Actions._listOfSpeedOnPaths[0] = speed; }
+
+		if (SpeedPadScript._lockControlFrames_ > 0)
 		{
-			//For consistency, ensure player always launches out of ring of off booster from the same point.
-			Vector3 snapPosition;
-			if (SpeedPadScript._PositionToLockTo != null)
-				snapPosition = SpeedPadScript._PositionToLockTo.position;
-			else
-				snapPosition = Col.transform.position;
-
-			//Magnitude of force
-			float speed = SpeedPadScript._speedToSet_;
-			if (SpeedPadScript._willCarrySpeed_)
-			{
-				speed = Mathf.Max(speed, _PlayerVel._currentRunningSpeed);
-			}
-
-			//Dash ring
-			if (SpeedPadScript._isDashRing_)
-			{
-				HitAirLauncher();
-
-				//Effects
-				_CharacterAnimator.SetBool("Grounded", false);
-
-				//Prevents immediately using air actions like bounce or jumps.
-				if (SpeedPadScript._lockAirMovesFor_ > 0)
-				{
-					StopCoroutine(_Actions.LockAirMovesForFrames(SpeedPadScript._lockAirMovesFor_));
-					StartCoroutine(_Actions.LockAirMovesForFrames(SpeedPadScript._lockAirMovesFor_));
-				}
-
-				//Because this is to launch the player through the sky, certain stats can have different gravities. This ensures characters will always fall the same way by overwriting their stats until landing.
-				if (SpeedPadScript._overwriteGravity_ != Vector3.zero)
-				{
-					StartCoroutine(LockPlayerGraivtyUntilGrounded(SpeedPadScript._overwriteGravity_));
-				}
-
-				Vector3 direction = SpeedPadScript._PositionToLockTo.forward;
-				LaunchInDirection(direction, speed, snapPosition);
-			}
-			//Speed pad
-			else
-			{
-				//Effects
-				_CharacterAnimator.SetBool("Grounded", true);
-
-				if (!_PlayerPhys._isGrounded)
-				{
-					_PlayerPhys.SetIsGrounded(true);
-					_PlayerPhys._groundNormal = Col.transform.up;
-					_PlayerPhys.AlignToGround(Col.transform.up, true);
-				}
-
-				_Actions._ActionDefault.SetSkinRotationToVelocity(0, Col.transform.forward);
-
-
-				//Apply location to start moving from.
-				if (SpeedPadScript._willSnap)
-				{
-					snapPosition -= _PlayerPhys._feetOffsetFromCentre; //Because on ground, feet should be set to pad position.
-					_PlayerPhys.SetPlayerPosition(snapPosition);
-				}
-
-				//Pushes player in direction
-				_PlayerVel.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
-
-				if (_Actions._listOfSpeedOnPaths.Count > 0) 
-				{  _Actions._listOfSpeedOnPaths[0] = speed; }
-			}
-
-			if (SpeedPadScript._willLockControl)
-			{
-				_Input.LockInputForAWhile(SpeedPadScript._lockControlFrames_, false, Col.transform.forward, SpeedPadScript._lockInputTo_);
-			}
-
-			//If pad is set to, rotate camera horizontally towards dash direction.
-			if (SpeedPadScript._willAffectCamera_)
-			{
-				_CamHandler._HedgeCam.SetCameraNoSeperateHeight(Col.transform.forward, SpeedPadScript._CameraRotateTime_.x, SpeedPadScript._CameraRotateTime_.y, Vector3.zero, false);
-			}
-
+			_Input.LockInputForAWhile(SpeedPadScript._lockControlFrames_, false, Col.transform.forward, SpeedPadScript._lockInputTo_);
 		}
 	}
 
-	private void HitAirLauncher () {
+	private void LaunchFromDashRing ( Collider Col ) {
+		if (!Col.TryGetComponent(out S_Data_DashRing DashRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
+		Col.GetComponent<AudioSource>().Play();
+
+		HitAirLauncher(DashRingScript._launchData_);
+
+		//Player Visual
+		_CharacterAnimator.SetBool("Grounded", false);
+
+		//Calculate launch
+		float force = DashRingScript._willCarrySpeed_ ? Mathf.Max(DashRingScript._launchData_._force_, _PlayerVel._currentRunningSpeed) : 
+			DashRingScript._launchData_._force_ ;
+		Vector3 direction = DashRingScript._launchData_._direction_;
+
+
+		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo.position);
+		ObjectRotatesCamera(Col, DashRingScript._cameraEffect);
+	}
+
+	private void BoostOnRail ( Collider Col ) {
+		if (!Col.TryGetComponent(out S_Data_RailBooster RailBoosterScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
+		Col.GetComponent<AudioSource>().Play();
+
+		//Attaches the player to the rail this rail booster is on.
+		if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Rail)
+		{
+			SnapToObject(Col, RailBoosterScript._PositionToLockTo);
+		}
+		else
+		{
+			StartCoroutine(_Actions._ObjectForActions.GetComponent<S_Action05_Rail>().ApplyBoosters(RailBoosterScript._speedToSet_, RailBoosterScript._willSetSpeed_, RailBoosterScript._addSpeed_, RailBoosterScript._willSetBackwards_));
+		}
+
+		ObjectRotatesCamera(Col, RailBoosterScript._cameraEffect);
+
+	}
+
+	private Vector3 SnapToObject (Collider Col ,Transform snapTo) {
+		//For consistency, ensure player always launches out of ring of off booster from the same point.
+		Vector3 snapPosition;
+		if (snapTo != null)
+			snapPosition = snapTo.position;
+		else
+			snapPosition = Col.transform.position;
+
+		snapPosition -= _PlayerPhys._feetOffsetFromCentre; //Because on ground, feet should be set to pad position.
+		_PlayerPhys.SetPlayerPosition(snapPosition);
+
+		return snapPosition;
+	}
+
+	private void ObjectRotatesCamera ( Collider Col, S_Structs.ObjectCameraEffect strucCamEffect ) {
+
+		//If pad is set to, rotate camera horizontally towards dash direction.
+		if (strucCamEffect._willAffectCamera_)
+		{
+			_CamHandler._HedgeCam.SetCameraNoSeperateHeight(Col.transform.forward, strucCamEffect._CameraRotateTime_.x, strucCamEffect._CameraRotateTime_.y, Vector3.zero, false);
+		}
+	}
+
+
+	private void HitAirLauncher (S_Structs.LaunchPlayerData launchData) {
 		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
-		
+
 		//Sets player to immediately face upwards to launch direction is always correct.
 		_PlayerPhys.SetPlayerRotation(Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation, true);
 
@@ -516,13 +510,29 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._isAirDashAvailables = true;
 		_Actions._jumpCount = 1;
 
+		//Delays air actions
+		if (launchData._lockAirMovesFrames_ > 0)
+		{
+			StopCoroutine(_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_)); //Overwrites coroutine if already in use, resetting the timer.
+			StartCoroutine(_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_));
+		}
+
+		//Effect on movement
+		if (launchData._lockInputFrames_ > 0)
+		{
+			_Input.LockInputForAWhile(launchData._lockInputFrames_, false, Vector3.zero, launchData._lockInputTo_);
+		}
+
+		//Because this is to launch the player through the sky, certain stats can have different gravities. This ensures characters will always fall the same way by overwriting their stats until landing.
+		StartCoroutine(LockPlayerGraivtyUntilGrounded(launchData._overwriteGravity_));
+
 		_Events._OnTriggerAirLauncher.Invoke();
 	}
 
 	private void LaunchFromSpring ( Collider Col ) {
 		if (!Col.TryGetComponent(out S_Data_Spring SpringScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 
-		HitAirLauncher();
+		HitAirLauncher(SpringScript._launchData_);
 
 		_Actions._ActionDefault.StartAction();
 		_CharacterAnimator.SetBool("Grounded", false);
@@ -532,7 +542,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Input._SpecialPressed = false;
 		_Input._BouncePressed = false;
 
-		Vector3 direction = SpringScript._BounceTransform.up;
+		Vector3 direction = SpringScript._launchData_._direction_;
 		//Calculate force
 
 		//If spring should not take complete control of player velocity, calculate direction based on movement into spring, including spring direction.
@@ -541,7 +551,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			//Since vertical will be taken over by environment, get horizontal core velocity.
 			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity, false);
-			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * SpringScript._springForce_, false); //Combined the spring direction with force to get the only the force horizontally.
+			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * SpringScript._launchData_._force_, false); //Combined the spring direction with force to get the only the force horizontally.
 
 			Vector3 combinedVelocityMagnitude = (launchHorizontalVelocity + newCoreVelocity); //The two put together normally so the magnitude is accurate.
 			Vector3 combinedVelocityDirection = (_PlayerVel.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
@@ -568,43 +578,24 @@ public class S_Interaction_Objects : MonoBehaviour
 				newCoreVelocity = combinedVelocityMagnitude;
 			}
 
-			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._springForce_, SpringScript._BounceTransform.position, newCoreVelocity));
+			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity));
 		}
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else
 		{
-			LaunchInDirection(direction, SpringScript._springForce_, SpringScript._BounceTransform.position);
+			LaunchInDirection(direction, SpringScript._launchData_._force_, SpringScript.transform.position);
 		}
 
 
 		//Additional effects based on sprint instance properties.
 
-		//Locks input to nothing, preventing turning and enforcing deceleration.
-		if (SpringScript._willLockControl_)
-		{
-			_Input.LockInputForAWhile(SpringScript._lockForFrames_, false, Vector3.zero, SpringScript._LockInputTo_);
-		}
-
 		//If needed, rotate character in set direction, this will be run after the player rotation is set to velocity in ApplyForceAfterDelay, overwriting it.
-		if(SpringScript._SetPlayerForwardsTo_ != null)
+		if (SpringScript._changePlayerForwards)
 		{
-			_Actions._ActionDefault.SetSkinRotationToVelocity(0, SpringScript._SetPlayerForwardsTo_.forward, Vector2.zero, transform.up);
+			_Actions._ActionDefault.SetSkinRotationToVelocity(0, SpringScript.transform.forward, Vector2.zero, transform.up);
 		}
-
-		//Prevents using air moves until after some time
-		if (SpringScript._lockAirMovesTime_ > 0)
-		{
-			StopCoroutine(_Actions.LockAirMovesForFrames(SpringScript._lockAirMovesTime_)); //Overwrites coroutine if already in use, resetting the timer.
-			StartCoroutine(_Actions.LockAirMovesForFrames(SpringScript._lockAirMovesTime_));
-		}
-
-		//Since a new character may be created with different gravity to the normal, this temporarily changes gravity to ensure all launch angle will not be affected by chracter's gravity stats.
-		if (SpringScript._overwriteGravity_ != Vector3.zero)
-		{
-			StartCoroutine(LockPlayerGraivtyUntilGrounded(SpringScript._overwriteGravity_));
-		}
-
-		//Spring effects
+		
+		//Effects on spring
 		if (Col.GetComponent<AudioSource>()) { Col.GetComponent<AudioSource>().Play(); }
 		if (SpringScript._Animator != null)
 			SpringScript._Animator.SetTrigger("Hit");
@@ -676,86 +667,10 @@ public class S_Interaction_Objects : MonoBehaviour
 		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_GeneralEnums.ChangeLockState.Lock); //Apply bounce
 	}
 
-	private void ApplyEffectsOnPlayer (Collider Col) {
-
-		if (!Col.TryGetComponent(out S_Trigger_PlayerEffect Effects)) { return; }
-
-		switch (Effects._setPlayerGrounded)
-		{
-			case S_GeneralEnums.ChangeGroundedState.SetToNo:
-				_PlayerPhys.SetIsGrounded(false); break;
-			case S_GeneralEnums.ChangeGroundedState.SetToYes:
-				_PlayerPhys.SetIsGrounded(true); break;
-			case S_GeneralEnums.ChangeGroundedState.SetToOppositeThenBack:
-				bool current = _PlayerPhys._isGrounded;
-				_PlayerPhys.SetIsGrounded(!current); _PlayerPhys.SetIsGrounded(current);
-				break;
-		}
-
-		if (Effects._lockPlayerInputFor > 0)
-			_Input.LockInputForAWhile(Effects._lockPlayerInputFor, true, Vector3.zero, Effects._LockInputTo_);
-	}
-
-	private void ActivateHintBox ( Collider Col ) {
-		if (!Col.TryGetComponent(out S_Data_HintRing HintRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
-
-		if (Col.gameObject == _CoreUIElements.HintBox._CurrentHintRing) { return; } //Do not perform function if this hint is already being displayed in the hintBox. Prevents restarting a hint when hitting it multiple times until its complete.
-		_CoreUIElements.HintBox._CurrentHintRing = Col.gameObject; //Relevant to the above check.
-
-		//Effects
-		HintRingScript.hintSound.Play();
-
-		//Using mouse is set when _PlayerInput detects a camera or move input coming from a keyboard or mouse, and this ensures the correct text will be displayed to match the controller device.
-		if (_Input._isUsingMouse)
-		{
-			_CoreUIElements.HintBox.ShowHint(HintRingScript.hintText, HintRingScript.hintDuration);
-		}
-
-		//If not using a mouse, must be using a gamepad.
-		else
-		{
-			Gamepad input = Gamepad.current;
-
-			//Depending on the type of input, will set the display string array to the one matching that input.
-			//Note, this could be done much better. This version requires copying out the same data for every array for each input on the hint ring object, but a system could be built to have only one array using 
-			//KEYWORDS that are replaced with different strings matching the input. E.G. "Press the JUMPBUTTON to", replaces JUMPBUTTON with a string matching the binding for the current input in the PlayerInput file.
-			switch (input)
-			{
-				case (SwitchProControllerHID):
-					CheckHint(HintRingScript.hintTextGamePad, HintRingScript.hintText, HintRingScript.hintDuration);
-					break;
-				case (DualSenseGamepadHID):
-					CheckHint(HintRingScript.hintTextPS4, HintRingScript.hintText, HintRingScript.hintDuration);
-					break;
-				case (DualShock3GamepadHID):
-					CheckHint(HintRingScript.hintTextPS4, HintRingScript.hintText, HintRingScript.hintDuration);
-					break;
-				case (DualShock4GamepadHID):
-					CheckHint(HintRingScript.hintTextPS4, HintRingScript.hintText, HintRingScript.hintDuration);
-					break;
-				case (DualShockGamepad):
-					CheckHint(HintRingScript.hintTextPS4, HintRingScript.hintText, HintRingScript.hintDuration);
-					break;
-				case (XInputController):
-					CheckHint(HintRingScript.hintTextXbox, HintRingScript.hintText, HintRingScript.hintDuration);
-					break;
-				//If input is none of the above, display the default.
-				default:
-					_CoreUIElements.HintBox.ShowHint(HintRingScript.hintText, HintRingScript.hintDuration);
-					break;
-			}
-		}
-	}
-
-	private void CheckHint ( string[] thisHint, string[] baseHint, float[] duration) {
-		if (thisHint.Length == 0)
-			_CoreUIElements.HintBox.ShowHint(baseHint, duration);
-		else
-			_CoreUIElements.HintBox.ShowHint(thisHint, duration);
-	}
-
 	//Until the players hit the ground, all gravity calculations will use the set gravity value.
 	private IEnumerator LockPlayerGraivtyUntilGrounded ( Vector3 newGrav ) {
+
+		if (newGrav == Vector3.zero) yield return null;
 
 		//Set to new value
 		_PlayerPhys._currentFallGravity = newGrav;
