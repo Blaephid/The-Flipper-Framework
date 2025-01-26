@@ -203,7 +203,7 @@ namespace SplineMesh
 					range = range - RailSpline.Length;
 					S_AddOnRail temp = ConnectedRails;
 					ConnectedRails = ConnectedRails.nextRail;
-					useOffset = new Vector3(-ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
+					useOffset = new Vector3(-ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 
 					RailSpline = ConnectedRails.GetComponentInParent<Spline>();
 					RailTransform = RailSpline.transform.parent;
@@ -212,7 +212,7 @@ namespace SplineMesh
 				{
 					S_AddOnRail temp = ConnectedRails;
 					ConnectedRails = ConnectedRails.PrevRail;
-					useOffset = new Vector3(-ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
+					useOffset = new Vector3(-ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 
 					RailSpline = ConnectedRails.GetComponentInParent<Spline>();
 					RailTransform = RailSpline.transform.parent;

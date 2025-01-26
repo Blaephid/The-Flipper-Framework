@@ -39,33 +39,36 @@ namespace SplineMesh
 		private Spline _Spline = null;
 		[HideInInspector] public bool toUpdate = true;
 
-		[Header("Placement")]
-		public bool justStart = true;
-		public bool onlyOne = false;
-		public bool none = false;
-		public bool onEnd;
+		[Header("Main Placement")]
+		[Tooltip("If not negative, will not place more than this number. Use zero to prevent anything placed normally."), Min(-1)]
+		public int	_maxNumber_ = -1;
+		[Tooltip("How far along the spline until objects start being placed."), Min(-1)]
+		public float _spaceFromStart_ = 0f;
+		[Tooltip("How far from the end of the spline when objects can no longer be placed.")]
+		public float _spaceFromEnd_ = 0f;
+
+		[Header("Additional Placement")]
+		[Tooltip("If true, place an additional object at distance 0. Set maxNumber to 0 to make this the only placed object"),]
+		public bool	_addOnStart_ = false;
+		[Tooltip("If true, place an additional object at the furthest distance."),]
+		public bool         _addOnEnd_;
 
 		[Header("Object")]
-		public GameObject prefab = null;
-		public bool asPrefab = true;
+		[Tooltip("Select the prefab to place along this spline. EG, rings.")]
+		public GameObject _PrefabToPlace_ = null;
+		public bool _placeAsPrefab_ = true;
 
-		private GameObject CurrentPrefabToSpawn;
-		[ReadOnly(true)]
-		public S_Data_Base DataForPrefabs;
+		private GameObject _CurrentPrefabToSpawn;
+		[ReadOnly(true), Tooltip("Read only. If placing objects with S_Data classes, that component will be added to this object, to control all of the placed ones' values.")]
+		public S_Data_Base _DataForPrefabs;
 
 		[Header("Transform")]
-		public float scale = 1, scaleRange = 0;
-		public float spacing = 20, spacingRange = 0;
-		public float offset = 0, offsetRange = 0;
-		public Vector3 Offset3d, offsetRotation;
+		public Vector2 _scaleRange_ = new Vector2(1,1);
+		public Vector2 _spacingRange_ = new Vector2 (20,20);
+		public Vector3 _offset3d_, _offsetRotation_;
 
-		[Header("on Spline")]
-		public float initialSpacing = 0f;
-		public float EndingSpacing = 0f;
-		public bool isRandomYaw = false;
-		public int randomSeed = 0;
 		[Space]
-		public bool alingwithterrain = false;
+		public bool _alignWithTerrain_ = false;
 
 #if UNITY_EDITOR
 		private void OnEnable () {
@@ -96,6 +99,12 @@ namespace SplineMesh
 		private void OnValidate () {
 			toUpdate = true;
 
+			if (!_Spline) { return; }
+
+			//Ensure spacing can't go behind length of spline.
+			_spaceFromEnd_ = MathF.Min(_spaceFromEnd_, _Spline.Length);
+			_spaceFromStart_ = MathF.Min(_spaceFromStart_, _Spline.Length);
+
 			HandleDataComponentForSpawnedObjects();
 		}
 
@@ -105,96 +114,80 @@ namespace SplineMesh
 
 			if (toUpdate)
 			{
-				Sow();
+				PlaceAllElements();
 				toUpdate = false;
 			}
 		}
 
-		public void Sow () {
+		public void PlaceAllElements () {
 			UOUtility.DestroyChildren(generated);
 
+			//Only place if there is space and a valid object.
+			if (Math.Max(_spacingRange_.x, _spacingRange_.y) <= 0 || _PrefabToPlace_ == null) { return; }
 
-			UnityEngine.Random.InitState(randomSeed);
-			if (spacing + spacingRange <= 0 ||
-			    prefab == null)
-				return;
-
-			float distance = initialSpacing;
-
-			if (onEnd)
+			//These placements are easier, so happen seperate from the main calculation along spline.
+			if (_addOnEnd_)
 			{
-				PlaceElement(_Spline.Length);
+				PlaceSingleElement(_Spline.Length);
+			}
+			if (_addOnStart_)
+			{
+				PlaceSingleElement(1);
 			}
 
-			if (none)
-				return;
+			//Place along spline from start to end.
+			float distance = _spaceFromStart_;
 
-			else if (justStart)
+			//Loop until the new distance to place would exceed the boundry.
+			for (int i = 1 ; distance <= (_Spline.Length - _spaceFromEnd_) ; i++)
 			{
-				PlaceElement(1);
-			}
-			else if (onlyOne)
-			{
-				PlaceElement(initialSpacing);
-			}
-			else
-			{
-				while (distance <= (_Spline.Length - EndingSpacing))
-				{
-					PlaceElement(distance);
-					distance += spacing + UnityEngine.Random.Range(0, spacingRange);
-				}
-			}
+				//Ensure number of objects placed doesn't exceed the limit.
+				if (_maxNumber_ >= 0 && i > _maxNumber_) { break; }
 
+				PlaceSingleElement(distance);
+				distance += UnityEngine.Random.Range(_spacingRange_.x, _spacingRange_.y); //Find next position to place on.
+			}
 		}
 
-		void PlaceElement ( float distance ) {
-			CurveSample sample = _Spline.GetSampleAtDistance(distance);
+		void PlaceSingleElement ( float atDistance ) {
+			CurveSample sample = _Spline.GetSampleAtDistance(atDistance);
 
-			GameObject go;
-			if (!asPrefab)
+			GameObject GO;
+			if (!_placeAsPrefab_)
 			{
-				go = Instantiate(prefab, generated.transform);
+				GO = Instantiate(_PrefabToPlace_, generated.transform);
 			}
 			else
 			{
-#if UNITY_EDITOR
-				go = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-#else
-                    go = Instantiate(prefab, generated.transform);
-#endif
-				go.transform.parent = generated.transform;
+				GO = PrefabUtility.InstantiatePrefab(_PrefabToPlace_) as GameObject;
+				GO.transform.parent = generated.transform;
 			}
-			go.transform.localRotation = Quaternion.identity;
-			go.transform.localPosition = Vector3.zero;
-			go.transform.localScale = Vector3.one;
+			GO.transform.localRotation = Quaternion.identity;
+			GO.transform.localPosition = Vector3.zero;
+			GO.transform.localScale = Vector3.one;
 
-			// move along spline, according to spacing + random
-			go.transform.position = transform.position + (transform.rotation * sample.location);
-			// apply scale + random
-			float rangedScale = scale + UnityEngine.Random.Range(0, scaleRange);
-			go.transform.localScale = new Vector3(rangedScale, rangedScale, rangedScale);
-			// rotate with random yaw
-			if (isRandomYaw)
-			{
-				go.transform.Rotate(0, 0, UnityEngine.Random.Range(-180, 180));
-			}
-			else
-			{
-				go.transform.rotation = transform.rotation * sample.Rotation * Quaternion.Euler(offsetRotation);
-			}
+			// Apply position from spline point and offset
+			GO.transform.position = transform.position + (transform.rotation * sample.location);
+
 			// move orthogonaly to the spline, according to offset + random
 			Vector3 binormal = sample.tangent;
-			binormal = Quaternion.LookRotation(Vector3.right, Vector3.up) * binormal;
-			var localOffset = offset + UnityEngine.Random.Range(0, offsetRange * Math.Sign(offset));
-			localOffset *= sample.scale.x;
-			binormal *= localOffset;
-			binormal += transform.rotation * sample.Rotation * Offset3d;
-			go.transform.position += binormal;
+			//binormal = Quaternion.LookRotation(Vector3.right, Vector3.up) * binormal;
 
-			if (alingwithterrain) GroundAlign(go.transform);
+			//var localOffset = _offset3d_ * sample.scale.x;
+			//binormal *= localOffset;
+			binormal += transform.rotation * sample.Rotation * _offset3d_;
+			GO.transform.position += binormal;
 
-			ApplyDataToSpawnedObject(go);
+			// apply scale
+			float rangedScale = UnityEngine.Random.Range(_scaleRange_.x, _scaleRange_.y);
+			GO.transform.localScale = new Vector3(rangedScale, rangedScale, rangedScale);
+			// rotate with random yaw
+			GO.transform.rotation = transform.rotation * sample.Rotation * Quaternion.Euler(_offsetRotation_);
+			
+
+			if (_alignWithTerrain_) GroundAlign(GO.transform);
+
+			ApplyDataToSpawnedObject(GO);
 		}
 
 		void GroundAlign ( Transform obj ) {
@@ -205,43 +198,43 @@ namespace SplineMesh
 			{
 				obj.position = hit.point;
 				obj.rotation = Quaternion.FromToRotation(obj.up, hit.normal) * obj.rotation;
-				obj.position += Offset3d;
+				obj.position += _offset3d_;
 			}
 
 		}
 		private void HandleDataComponentForSpawnedObjects () {
 
 			//If prefab to spawn was changed
-			if (prefab != CurrentPrefabToSpawn)
+			if (_PrefabToPlace_ != _CurrentPrefabToSpawn)
 			{
-				CurrentPrefabToSpawn = prefab;
-				if (DataForPrefabs != null) DestroyImmediate(DataForPrefabs, true);
-				DataForPrefabs = null;
+				_CurrentPrefabToSpawn = _PrefabToPlace_;
+				if (_DataForPrefabs != null) Destroy(_DataForPrefabs);
+				_DataForPrefabs = null;
 
 				//If the prefab to spawn inherits from the data class, add that class as a component to this, to allow full control of the spawned objects' values.
-				if (prefab.TryGetComponent(out S_Data_Base DataBase))
+				if (_PrefabToPlace_.TryGetComponent(out S_Data_Base DataBase))
 				{
 					Type derivedType = DataBase.GetType();
 					// Add a component of the actual derived class
 					S_S_EditorMethods.AddComponentIfMissing(gameObject, derivedType);
-					DataForPrefabs = GetComponent<S_Data_Base>();
+					_DataForPrefabs = GetComponent<S_Data_Base>();
 
-					EditorUtility.CopySerialized(DataBase, DataForPrefabs);
+					EditorUtility.CopySerialized(DataBase, _DataForPrefabs);
 
-					DataForPrefabs.enabled = false;
+					_DataForPrefabs.enabled = false;
 				}
 			}
 
 		}
 
 		private void ApplyDataToSpawnedObject (GameObject go) {
-			if(!DataForPrefabs) { return; }
+			if(!_DataForPrefabs) { return; }
 			//If the prefab to spawn inherits from the data class, add that class as a component to this, to allow full control of the spawned objects' values.
 			if (go.TryGetComponent(out S_Data_Base DataBase))
 			{
-				EditorUtility.CopySerialized(DataForPrefabs, DataBase);
+				EditorUtility.CopySerialized(_DataForPrefabs, DataBase);
 
-				DataForPrefabs.enabled = false;
+				_DataForPrefabs.enabled = false;
 				DataBase.enabled = true;
 			}
 		}
@@ -282,7 +275,7 @@ namespace SplineMesh
 				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Update", _BigButtonStyle, _OwnerScript, "Update Single Spline Meshes"))
 				{
 					_OwnerScript.CheckNow();
-					_OwnerScript.Sow();
+					_OwnerScript.PlaceAllElements();
 				}
 				serializedObject.ApplyModifiedProperties();
 			}

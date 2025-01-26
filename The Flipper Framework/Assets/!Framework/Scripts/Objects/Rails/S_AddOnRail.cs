@@ -102,7 +102,7 @@ public class S_AddOnRail : MonoBehaviour
 	}
 
 	void Place () {
-		offset = new Vector3(GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
+		offset = new Vector3(GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 		//offset = Vector3.zero;
 
 		if (AddThis.Length > 0)

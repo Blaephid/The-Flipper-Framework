@@ -428,7 +428,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				_ConnectedRails = _ConnectedRails.nextRail;
 
 				//Change the offset to match this rail (since may go from a rail offset from a spline, straight onto rail directily on a different spline)
-				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
+				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 
 				//Set path and positions to follow.
 				_Rail_int._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
@@ -442,7 +442,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 				_ConnectedRails = _ConnectedRails.PrevRail;
 
 				// Change offset to match the new rail.
-				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>().Offset3d.x, 0, 0);
+				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 
 				//Set path and positions to follow.
 				_Rail_int._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
