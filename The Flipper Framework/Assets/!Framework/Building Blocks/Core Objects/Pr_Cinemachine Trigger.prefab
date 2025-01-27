@@ -183,6 +183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _LinkedComponent: {fileID: 6276180953601210682}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!65 &4180244983473809469
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Windows;
 using SplineMesh;
 
-public class S_Action05_Rail : MonoBehaviour, IMainAction
+public class S_Action05_Rail : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -15,16 +15,10 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	//Unity
 	#region Unity Specific Properties
 	//Scripts
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Control_SoundsPlayer _Sounds;
+
 	[HideInInspector]
 	public S_Interaction_Pathers  _Rail_int;
 	private S_AddOnRail            _ConnectedRails;
-	private S_HedgeCamera         _CamHandler;
 
 	//Current rail
 	private Transform             _RailTransform;
@@ -35,11 +29,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	public Transform              _ZipHandle;
 	[HideInInspector]
 	public Rigidbody              _ZipBody;
-
-	//Effects
-	private GameObject            _JumpBall;
-	private Animator              _CharacterAnimator;
-	private Transform             _MainSkin;
 	#endregion
 
 
@@ -80,7 +69,6 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
 	private bool         _canEnterRail = true;            //Prevents the start action method being called multiple times when on a rail. Must be set to false when leaving or starting a hop.
 
@@ -175,11 +163,11 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _grindingSpeed; }//Apples all changes to grind speed.
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		return false;
 	}
 
-	public void StartAction (bool overwrite = false) {
+	new public void StartAction (bool overwrite = false) {
 		if (!_canEnterRail) { return; }
 		if (!_Actions._canChangeActions && !overwrite) { return; }
 
@@ -210,7 +198,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		float facingDot = Vector3.Dot(_PlayerVel._worldVelocity.normalized, _sampleForwards);
 
 		//Because this action can start itself by hopping from one rail to another, only do this if hasn't just done so.
-		if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Rail)
+		if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Rail)
 		{
 			_isCrouching = false;
 			_pulleyRotate = 0f;
@@ -248,12 +236,12 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 			switch (_Actions._whatCurrentAction)
 			{
 				// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
-				case S_GeneralEnums.PrimaryPlayerStates.Homing:
+				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
 					facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _sampleForwards);
 					_grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
 					break;
 				//If it was a drop charge, add speed from the charge to the grind speed.
-				case S_GeneralEnums.PrimaryPlayerStates.DropCharge:
+				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
 					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
 					_grindingSpeed = Mathf.Clamp(charge, _grindingSpeed + (charge / 6), 160);
 					break;
@@ -268,7 +256,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 
 		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Rail);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Rail);
 		enabled = true;
 	}
 
@@ -283,7 +271,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		_isGrinding = false;
 
 		//If left this action to perform a jump,
-		if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Jump)
+		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Jump)
 		{
 			switch (_whatKindOfRail)
 			{
@@ -620,7 +608,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 		if (_canInput && _canHop)
 		{
 			//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
-			Vector3 Direction = _MainSkin.position - _CamHandler.transform.position;
+			Vector3 Direction = _MainSkin.position - _CamHandler._HedgeCam.transform.position;
 			bool isFacing = Vector3.Dot(_MainSkin.forward, Direction.normalized) < -0.5f;
 			if (_Input._RightStepPressed && isFacing)
 			{
@@ -754,7 +742,7 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 					set = false; //If speed higher than what will be set, go through the other option instead.
 			}
 			//Keep checking if on a rail before applying this.
-			if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Rail)
+			if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail)
 			{
 				_grindingSpeed += addSpeed;
 				_isBoosted = true;
@@ -778,45 +766,15 @@ public class S_Action05_Rail : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Rail)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Actions = _Tools._ActionManager;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
+	public override void AssignTools () {
+		base.AssignTools();
+
 		_Rail_int = _Tools.PathInteraction;
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_CamHandler = _Tools.CamHandler._HedgeCam;
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
-		_Sounds = _Tools.SoundControl;
-
-		_JumpBall = _Tools.JumpBall;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_railTopSpeed_ = _Tools.Stats.RailStats.railTopSpeed;
 		_railmaxSpeed_ = _Tools.Stats.RailStats.railMaxSpeed;
 		_decaySpeed_ = _Tools.Stats.RailStats.railDecaySpeed;

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.ProBuilder.Shapes;
 using UnityEngine.UIElements;
 
-public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
+public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 {
 
 
@@ -15,32 +15,17 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	#region properties
 
 	//Unity
-	#region Unity Specific Properties
-	private S_PlayerPhysics	_PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_CharacterTools	_Tools;
-	private S_ActionManager	_Actions;
-	private S_Handler_Camera	_CamHandler;
-	private S_PlayerInput	_Input;
-	private Transform             _MainSkin;
-	private CapsuleCollider       _CharacterCapsule;
-	private S_Control_SoundsPlayer _Sounds;
-	#endregion
-
-	//General
-	#region General Properties
 
 	//Stats
 	#region Stats
 	private float	_distanceToStep_;
 	private float	_stepDuration_;
 	private Vector2     _quickStepCooldown_;
-	private LayerMask	_StepPlayermask_;
 	#endregion
 
 	// Trackers
 	#region trackers
-	private S_GeneralEnums.PrimaryPlayerStates _whatActionWasOn;
+	private S_S_ActionHandling.PrimaryPlayerStates _whatActionWasOn;
 	private bool	_isSteppingRight;
 	private bool	_canStep;
 	private bool	_inAir;
@@ -49,7 +34,6 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	#endregion
 
 	#endregion
-	#endregion
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -57,15 +41,8 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Awake () {
-		if(_Tools == null)
-		{
-			AssignTools();
-			_StepPlayermask_ = _Tools.Stats.QuickstepStats.StepLayerMask;
-			_quickStepCooldown_ = _Tools.Stats.QuickstepStats.cooldown;
-			enabled = false;
-		}
+	private void OnEnable () {
+		ReadyAction();
 	}
 
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
@@ -93,7 +70,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 
 
 	//Called when attempting to perform an action, checking and preparing inputs.
-	public bool AttemptAction() {
+	new public bool AttemptAction() {
 
 		//Enable Quickstep if in a position to do so, otherwise end the function.
 		if (_PlayerVel._horizontalSpeedMagnitude > 10f && !enabled)
@@ -116,7 +93,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	}
 
 	//Called when the action is enabled and readies all variables for it to be performed.
-	public void StartAction(bool overwrite = false) {	
+	new public void StartAction(bool overwrite = false) {	
 		if (_Input._RightStepPressed)
 		{
 			_isSteppingRight = true;
@@ -129,7 +106,7 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 		
 		//Used for checking if the main action changes during the step.
 		_whatActionWasOn = _Actions._whatCurrentAction;
-		_Actions._whatSubAction = S_GeneralEnums.SubPlayerStates.Quickstepping;
+		_Actions._whatSubAction = S_S_ActionHandling.SubPlayerStates.Quickstepping;
 
 		//Prevents buttons from being held to spam.
 		_Input._RightStepPressed = false;
@@ -223,16 +200,13 @@ public class S_SubAction_Quickstep : MonoBehaviour, ISubAction
 	#endregion
 
 
-	private void AssignTools () {
-		_Tools =		GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
-		_Actions =	_Tools._ActionManager;
-		_Input =		_Tools.GetComponent<S_PlayerInput>();
+	public override void AssignTools () {
+		base.AssignTools();
+	}
 
-		_Sounds =		_Tools.SoundControl;
-		_MainSkin =	_Tools.MainSkin;
-		_CamHandler =	_Tools.CamHandler;
-		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+	public override void AssignStats () {
+		base.AssignStats();
+		_quickStepCooldown_ = _Tools.Stats.QuickstepStats.cooldown;
+		enabled = false;
 	}
 }

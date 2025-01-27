@@ -5,7 +5,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 
-public class S_Action00_Default : MonoBehaviour, IMainAction
+public class S_Action00_Default :  S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -18,25 +18,13 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	#region Unity Specific Properties
 
 	private Animator              _CurrentAnimator;
-	private Animator              _CharacterAnimator;
-	private Animator              _BallAnimator;
-	private Transform             _MainSkin;
 	private Transform             _SkinOffset;
-
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Handler_Camera      _CamHandler;
 
 	private CapsuleCollider		_CharacterCapsule;
 	private CapsuleCollider                 _StandingCapsule;
 	private List<SkinnedMeshRenderer>       _PlayerSkin = new List<SkinnedMeshRenderer>();
 	private SkinnedMeshRenderer             _SpinDashBall;
 	private List<SkinnedMeshRenderer>       _CurrentSkins = new List<SkinnedMeshRenderer>();
-
-
 	#endregion
 
 
@@ -51,7 +39,6 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is.  This is used for transitioning to other actions, by input or interaction.
 
 	//Coyote
 	[HideInInspector]
@@ -94,7 +81,7 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	}
 
 	//Called when the current action should be set to this.
-	public void StartAction (bool overwrite = false ) {
+	new public void StartAction (bool overwrite = false ) {
 		if(enabled || (!_Actions._canChangeActions && !overwrite)) { return; } //Because this method can be called when this state is already active (object interactions), end early if so.
 
 		//Set private
@@ -106,13 +93,14 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 		if(_CharacterAnimator.GetInteger("Action") != 0)
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Default);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Default);
 		enabled = true;
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		return true;
 	}
+
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
@@ -298,43 +286,16 @@ public class S_Action00_Default : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Default)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
-	private void AssignStats () {
+	
+	public override void AssignStats () {
 		_coyoteTimeBySpeed_ = _Tools.Stats.JumpStats.CoyoteTimeBySpeed;
 		_canDashDuringFall_ = _Tools.Stats.HomingStats.canDashWhenFalling;
 	}
 
-	private void AssignTools () {
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
-		_Input =		_Tools.GetComponent<S_PlayerInput>();
-		_Actions =	_Tools._ActionManager;
-		_CamHandler =	_Tools.CamHandler;
+	public override void AssignTools () {
+		base.AssignTools();
 
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_BallAnimator =	_Tools.BallAnimator;
 		_CurrentAnimator =	_CharacterAnimator;
-		_MainSkin =	_Tools.MainSkin;
 		_PlayerSkin.Add(_Tools.SkinRenderer);
 		_SkinOffset =	_Tools.CharacterModelOffset;
 		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();

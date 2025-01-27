@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using Unity.VisualScripting;
 
-public class S_Action06_Bounce : MonoBehaviour, IMainAction
+public class S_Action06_Bounce : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -14,17 +14,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Control_SoundsPlayer _Sounds;
 	private S_VolumeTrailRenderer _HomingTrailScript;
-	private S_Handler_Camera      _CamHandler;
-
-	private Animator    _BallAnimator;
-	private Transform   _MainSkin;
 	private CapsuleCollider _CharacterCapsule;
 	#endregion
 
@@ -50,7 +40,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
+	
 
 	private float       _counter;
 
@@ -88,7 +78,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		HandleInputs();
 	}
 	
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 
 		//Can only bounce if it isn't locked in the actionManager, and not moving too fast up.
 		if (_Input._BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)
@@ -99,12 +89,12 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		_hasBounced = false; //Tracks when to end the action.
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
 		this.enabled = true;
 
 		_memorisedSpeed = _PlayerVel._currentRunningSpeed; //Stores the running speed the player was before bouncing.
@@ -306,44 +296,16 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Bounce)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input =	_Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
-		_Actions =	_Tools._ActionManager;
+	public override void AssignTools () {
+		base.AssignTools();
 
-		_MainSkin =		_Tools.MainSkin;
-		_Sounds =			_Tools.SoundControl;
 		_HomingTrailScript =	_Tools.HomingTrailScript;
-		_BallAnimator =		_Tools.BallAnimator;
 		_CharacterCapsule =		_Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
-		_CamHandler =		_Tools.CamHandler;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_startDropSpeed_ = _Tools.Stats.BounceStats.startDropSpeed;
 		_maxDropSpeed_ = _Tools.Stats.BounceStats.maxDropSpeed;
 

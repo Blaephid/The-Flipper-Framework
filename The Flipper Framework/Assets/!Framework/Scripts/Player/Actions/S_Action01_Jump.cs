@@ -1,28 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using JetBrains.Annotations;
 
-public class S_Action01_Jump : MonoBehaviour, IMainAction
+public class S_Action01_Jump : S_Action_Base, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
 	#region properties
-
-	//Unity
-	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Handler_Camera      _CamHandler;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Animator              _CharacterAnimator;
-	private GameObject            _JumpBall;
-	#endregion
-
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
@@ -48,7 +34,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	// Trackers
 	#region trackers
 
-	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
 	public float        _skinRotationSpeed = 8;
 
@@ -105,29 +90,29 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	}
 
 	//Called when checking if this action is to be performed, including inputs.
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		if (_Input._JumpPressed)
 		{
 			switch (_Actions._whatCurrentAction)
 			{
 
-				case S_GeneralEnums.PrimaryPlayerStates.Jump:
+				case S_S_ActionHandling.PrimaryPlayerStates.Jump:
 					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
 					}
 					return true;
-				case S_GeneralEnums.PrimaryPlayerStates.WallRunning:
+				case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
 					AssignStartValues(_Actions._jumpAngle, true, _wallRunningJumpModifiers_.x, _wallRunningJumpModifiers_.y);
 					StartAction();
 					return true;
-				case S_GeneralEnums.PrimaryPlayerStates.WallClimbing:
+				case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
 					AssignStartValues(_Actions._jumpAngle, true, _wallClimbingJumpModifiers_.x, _wallClimbingJumpModifiers_.y);
 					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(10, 5, -20, true));
 					StartAction(); 
 					return true;
-				case S_GeneralEnums.PrimaryPlayerStates.Rail:
+				case S_S_ActionHandling.PrimaryPlayerStates.Rail:
 					//GetComponent<S_Action05_Rail>()._isGrinding = false;
 					AssignStartValues(transform.up, true);
 					StartAction();
@@ -157,10 +142,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (!_Actions._canChangeActions && !overwrite) { return; }
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
 
 		ReadyAction();
 
@@ -368,42 +353,13 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Jump)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_Sounds = _Tools.SoundControl;
-		_JumpBall = _Tools.JumpBall;
-
+	public override void AssignTools () {
+		base.AssignTools();
 	}
 
 	//Responsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_maxJumpTime_ = _Tools.Stats.JumpStats.jumpDuration.y;
 		_minJumpTime_ = _Tools.Stats.JumpStats.jumpDuration.x;
 		_startJumpSpeed_ = _Tools.Stats.JumpStats.jumpSpeed;

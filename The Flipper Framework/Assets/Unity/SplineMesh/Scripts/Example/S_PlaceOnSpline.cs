@@ -171,10 +171,7 @@ namespace SplineMesh
 
 			// move orthogonaly to the spline, according to offset + random
 			Vector3 binormal = sample.tangent;
-			//binormal = Quaternion.LookRotation(Vector3.right, Vector3.up) * binormal;
 
-			//var localOffset = _offset3d_ * sample.scale.x;
-			//binormal *= localOffset;
 			binormal += transform.rotation * sample.Rotation * _offset3d_;
 			GO.transform.position += binormal;
 

@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEditor;
 
-public class S_Action08_DropCharge : MonoBehaviour, IMainAction
+public class S_Action08_DropCharge : S_Action_Base, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -12,20 +12,9 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVelocity;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Handler_Camera      _CamHandler;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Animator              _CharacterAnimator;
-	private Transform             _MainSkin;
 	private Transform             _FeetPoint;
 	[HideInInspector]
 	public ParticleSystem         _DropEffect;
-	private GameObject            _JumpBall;
 	#endregion
 
 
@@ -42,7 +31,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
+	
 
 	private bool        _isCharging = false;          //If true, increase charge, if false (set if not inputting), prepare to exit action after a delay.
 	private bool        _hasLanded;		//Used to prevent release being called mutliple times in the time between being grounded and changing action.
@@ -84,7 +73,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		CheckGround();
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		if (!_PlayerPhys._isGrounded && _Input._RollPressed && _PlayerPhys._RB.velocity.y < 40f)
 		{
 			if (!Physics.Raycast(_FeetPoint.position, -transform.up, _minimumHeightToDropCharge_, _PlayerPhys._Groundmask_))
@@ -96,10 +85,10 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.DropCharge);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.DropCharge);
 		this.enabled = true;
 
 		//Effects
@@ -175,7 +164,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		yield return new WaitForSeconds(0.45f);
 
 		//If coroutine is not stopped or interupted, then end the action
-		if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.DropCharge)
+		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.DropCharge)
 		{
 			_Actions._ActionDefault._animationAction = 1;
 			_Actions._ActionDefault.StartAction();
@@ -194,7 +183,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		else
 		{
 			//Check if on the ground, either by using the ground check or physics, or a different one based on fall speed with a capsule (to ensure not hitting a corner and not bouncing).
-			bool isRaycasthit = Physics.SphereCast(_FeetPoint.position, 3 , -transform.up, out _FloorHit, (_PlayerVelocity._coreVelocity.y * Time.deltaTime * 0.6f), _PlayerPhys._Groundmask_);
+			bool isRaycasthit = Physics.SphereCast(_FeetPoint.position, 3 , -transform.up, out _FloorHit, (_PlayerVel._coreVelocity.y * Time.deltaTime * 0.6f), _PlayerPhys._Groundmask_);
 			bool isGroundHit = _PlayerPhys._isGrounded || isRaycasthit;
 			RaycastHit UseHit = isRaycasthit ? _FloorHit : _PlayerPhys._HitGround; //Get which one to use
 
@@ -230,7 +219,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		StartCoroutine(DelayForce(force, 2)); //Will apply this force after a few frames, this is to give a chance to properly align to the ground.
 
 		//Effects
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVelocity._horizontalSpeedMagnitude, _charge), 0.25f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _charge), 0.25f)); //The camera will fall back before catching up.
 
 		//Control
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
@@ -270,15 +259,15 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		Vector3 releVec = _PlayerPhys.GetRelevantVector(force, false);
 
 		//If the new total force is higher than current speed, then apply it. Uses sqrs because it's faster with comparing magnitudes
-		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerVelocity._horizontalSpeedMagnitude + _charge * 0.1f, 2))
+		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerVel._horizontalSpeedMagnitude + _charge * 0.1f, 2))
 		{
-			_PlayerVelocity.SetCoreVelocity(force, "Overwrite");
+			_PlayerVel.SetCoreVelocity(force, "Overwrite");
 			_CamHandler._HedgeCam.ChangeHeight(18, 25f); //Ensures camera will go behind the player as they launch forwards from falling.
 		}
 		//Else, just add force to increase total speed. This will also happen if the new speed it only slightly more than the movement speed.
 		else
 		{
-			_PlayerVelocity.AddCoreVelocity(force * 0.2f);
+			_PlayerVel.AddCoreVelocity(force * 0.2f);
 			_CamHandler._HedgeCam.ChangeHeight(20, 15f); //Ensures camera will go behind the player as they launch forwards from falling.
 		}
 
@@ -312,7 +301,7 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 		while (true)
 		{
 			yield return new WaitForFixedUpdate();
-			if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.DropCharge)
+			if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.DropCharge)
 			{
 				yield return new WaitForFixedUpdate();
 				_charge = 0;
@@ -327,46 +316,15 @@ public class S_Action08_DropCharge : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.DropCharge)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVelocity = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_Sounds = _Tools.SoundControl;
+	public override void AssignTools () {
+		base.AssignTools();
 		_DropEffect = _Tools.DropEffect;
-
-		_MainSkin = _Tools.MainSkin;
 		_FeetPoint = _Tools.FeetPoint;
-		_JumpBall = _Tools.JumpBall;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_chargingSpeed_ =	_Tools.Stats.DropChargeStats.chargingSpeed;
 		_minimunCharge_ =		_Tools.Stats.DropChargeStats.minimunCharge;
 		_maximunCharge_ =		_Tools.Stats.DropChargeStats.maximunCharge;

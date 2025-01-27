@@ -446,7 +446,7 @@ public class S_HedgeCamera : MonoBehaviour
 		switch (_Actions._whatCurrentAction) {
 			default:
 				return new Vector3(0, 1, 1);
-			case S_GeneralEnums.PrimaryPlayerStates.WallClimbing:
+			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
 				return new Vector3(0.6f, 1.3f, 1);
 		}
 	}
@@ -480,7 +480,7 @@ public class S_HedgeCamera : MonoBehaviour
 		float verticalSpeed = _PlayerTransformReal.InverseTransformDirection(_PlayerPhys._RB.velocity).y;
 
 		//Making the camera face down when in the air for long enough.
-		bool isRightAction = _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Jump || _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Default || _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.DropCharge;
+		bool isRightAction = _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Jump || _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Default || _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.DropCharge;
 
 		if (_shouldFaceDownWhenInAir_ && !_PlayerPhys._isGrounded && verticalSpeed < _fallSpeedThreshold_ && isRightAction)
 		{
@@ -527,11 +527,11 @@ public class S_HedgeCamera : MonoBehaviour
 			default:
 				minSpeed = _lockCamAtSpeed_;
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.WallRunning:
+			case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
 				minSpeed = 60;
 				skipDelay = true;
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Homing:
+			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
 				minSpeed = 0;
 				break;
 		}
@@ -693,7 +693,7 @@ public class S_HedgeCamera : MonoBehaviour
 			//A switch is used so it's less clutured than an if statement.
 			switch (_Actions._whatCurrentAction)
 			{
-				case S_GeneralEnums.PrimaryPlayerStates.Rail:
+				case S_S_ActionHandling.PrimaryPlayerStates.Rail:
 					break;
 				default:
 				{

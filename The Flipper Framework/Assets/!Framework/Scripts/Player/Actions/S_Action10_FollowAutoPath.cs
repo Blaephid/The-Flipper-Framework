@@ -3,7 +3,7 @@ using System.Collections;
 using SplineMesh;
 using UnityEngine.Windows;
 
-public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
+public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -14,23 +14,13 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerMovement	_PlayerMovement;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Control_SoundsPlayer _Sounds;
 	private S_Interaction_Pathers _Pathers;
-	private S_HedgeCamera	_CamHandler;
 
 	private Transform   _PathTransform;
 	private CurveSample _Sample;
 
-	private Animator	_CharacterAnimator;
 	[HideInInspector]
 	public Collider	_PatherStarter;
-	private Transform	_MainSkin;
 	#endregion
 
 
@@ -41,7 +31,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;
+	
 
 
 	// Values of spline
@@ -94,11 +84,11 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _playerSpeed; }//Apples all changes to grind speed.
 	}
 
-	public bool AttemptAction () {		
+	new public bool AttemptAction () {		
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Physics
@@ -113,7 +103,7 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Path);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Path);
 		enabled = true;
 	}
 
@@ -329,44 +319,14 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Path)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Actions = _Tools._ActionManager;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
+	public override void AssignTools () {
+		base.AssignTools();
 		_Pathers = _Tools.PathInteraction;
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
-		_Sounds = _Tools.SoundControl;
-		_CamHandler = _Tools.CamHandler._HedgeCam;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 
 	}
 	#endregion

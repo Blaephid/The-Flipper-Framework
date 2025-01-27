@@ -156,8 +156,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 			//yield return new WaitForSeconds(0.04f);
 			yield return new WaitForFixedUpdate();
-			_canGrindOnRail = _Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None, S_GeneralEnums.PlayerSituationalStates.Rail); ; 
-			_canEnterAutoPath = _Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None, S_GeneralEnums.PlayerSituationalStates.Path);
+			_canGrindOnRail = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Rail); ; 
+			_canEnterAutoPath = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Path);
 		}
 	}
 

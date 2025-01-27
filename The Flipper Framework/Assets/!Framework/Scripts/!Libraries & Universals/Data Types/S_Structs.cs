@@ -11,13 +11,13 @@ public class S_Structs
 	///
 	[Serializable]
 	public struct MainActionTracker {
-		public S_GeneralEnums.PrimaryPlayerStates State;
+		public S_S_ActionHandling.PrimaryPlayerStates State;
 		public IMainAction Action;
-		public List<S_GeneralEnums.PlayerControlledStates> ConnectedStates;
+		public List<S_S_ActionHandling.PlayerControlledStates> ConnectedStates;
 		public List<IMainAction> ConnectedActions;
-		public List<S_GeneralEnums.PlayerSituationalStates> SituationalStates;
+		public List<S_S_ActionHandling.PlayerSituationalStates> SituationalStates;
 		public List<IMainAction> SituationalActions;
-		public List<S_GeneralEnums.SubPlayerStates> PerformableSubStates;
+		public List<S_S_ActionHandling.SubPlayerStates> PerformableSubStates;
 		public List<ISubAction> SubActions;
 	}
 

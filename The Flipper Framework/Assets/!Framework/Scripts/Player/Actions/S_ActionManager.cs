@@ -35,10 +35,10 @@ public class S_ActionManager : MonoBehaviour
 	// Trackers
 	#region trackers
 	//Tracking states in game
-	public S_GeneralEnums.PrimaryPlayerStates	_whatCurrentAction = S_GeneralEnums.PrimaryPlayerStates.None;
-	public S_GeneralEnums.SubPlayerStates	_whatSubAction;
+	public S_S_ActionHandling.PrimaryPlayerStates	_whatCurrentAction = S_S_ActionHandling.PrimaryPlayerStates.None;
+	public S_S_ActionHandling.SubPlayerStates	_whatSubAction;
 	public S_GeneralEnums.PlayerAttackStates       _whatCurrentAttack;
-	public S_GeneralEnums.PrimaryPlayerStates	_whatPreviousAction { get; set; }
+	public S_S_ActionHandling.PrimaryPlayerStates	_whatPreviousAction { get; set; }
 
 	[HideInInspector]
 	public bool         _canChangeActions = true;	//All StartActions should check this, and return if its false, unless they are set to overwrite this.
@@ -54,7 +54,7 @@ public class S_ActionManager : MonoBehaviour
 #if UNITY_EDITOR
 	public S_O_CustomInspectorStyle		_InspectorTheme; // Will decide the apperance in the inspector.
 #endif
-	public S_GeneralEnums.PrimaryPlayerStates                _addState; //Used only by the inspector in order to add states for other states to transition into.
+	public S_S_ActionHandling.PrimaryPlayerStates                _addState; //Used only by the inspector in order to add states for other states to transition into.
 
 	//Specific action trackers
 	[HideInInspector]
@@ -112,24 +112,24 @@ public class S_ActionManager : MonoBehaviour
 			action.ConnectedActions = new List<IMainAction>();
 			for (int a = 0 ; a < action.ConnectedStates.Count ; a++)
 			{
-				action.ConnectedActions.Add(AssignControlledScriptByEnum(action.ConnectedStates[a]));
+				action.ConnectedActions.Add(S_S_ActionHandling.GetControlledActionFromEnum(action.ConnectedStates[a], _ObjectForActions));
 			}
 
 			action.SituationalActions = new List<IMainAction>();
 			for (int a = 0 ; a < action.SituationalStates.Count ; a++)
 			{
-				action.SituationalActions.Add(AssignSituationalScriptByEnum(action.SituationalStates[a]));
+				action.SituationalActions.Add(S_S_ActionHandling.GetSituationalActionFromEnum(action.SituationalStates[a], _ObjectForActions));
 			}
 
 
 			action.SubActions = new List<ISubAction>();
 			for (int a = 0 ; a < action.PerformableSubStates.Count ; a++)
 			{
-				action.SubActions.Add(AssignSubScript(action.PerformableSubStates[a]));
+				action.SubActions.Add(S_S_ActionHandling.AddOrFindSubActionComponent(action.PerformableSubStates[a], _ObjectForSubActions));
 			}
 
 			//Assigns the script related to this state
-			action.Action = AssignMainActionScriptByEnum(action.State);
+			action.Action = S_S_ActionHandling.AddOrFindMainActionComponent(action.State, _ObjectForActions);
 
 			//Applies the changes directly to the struct element.
 			_MainActions[i] = action;
@@ -216,15 +216,15 @@ public class S_ActionManager : MonoBehaviour
 
 	//Takes a controlled or situational action, and returns true if the current active action has that set as an action is can transition into.
 	//Used to check if the player can enter this given action, from the current active one.
-	public bool IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates givenConAction, S_GeneralEnums.PlayerSituationalStates givenSitAction) {
-		if (givenConAction != S_GeneralEnums.PlayerControlledStates.None)
+	public bool IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates givenConAction, S_S_ActionHandling.PlayerSituationalStates givenSitAction) {
+		if (givenConAction != S_S_ActionHandling.PlayerControlledStates.None)
 		{
 			for (int i = 0 ; i < _currentAction.ConnectedStates.Count ; i++)
 			{
 				if (_currentAction.ConnectedStates[i] == givenConAction) { return true; }
 			}
 		}
-		if (givenSitAction != S_GeneralEnums.PlayerSituationalStates.None)
+		if (givenSitAction != S_S_ActionHandling.PlayerSituationalStates.None)
 		{
 			for (int i = 0 ; i < _currentAction.SituationalStates.Count ; i++)
 			{
@@ -236,7 +236,7 @@ public class S_ActionManager : MonoBehaviour
 	}
 
 	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.
-	public void ChangeAction ( S_GeneralEnums.PrimaryPlayerStates ActionToChange) {
+	public void ChangeAction ( S_S_ActionHandling.PrimaryPlayerStates ActionToChange) {
 		_whatPreviousAction = _whatCurrentAction;
 		_whatCurrentAction = ActionToChange;
 		DeactivateAllActions();
@@ -268,270 +268,6 @@ public class S_ActionManager : MonoBehaviour
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Assigning
-	//Each enum of playerstate corresponds to a different script that handles its behaviour. This assigns the matching script.
-	public IMainAction AssignControlledScriptByEnum ( S_GeneralEnums.PlayerControlledStates state ) {
-		switch (state)
-		{
-			//If the enum of the struct is set to Jump, then assign the jump script to it.
-			case S_GeneralEnums.PlayerControlledStates.Jump:
-				_ObjectForActions.TryGetComponent(out S_Action01_Jump jump);
-				return jump;
-			case S_GeneralEnums.PlayerControlledStates.Homing:
-				_ObjectForActions.TryGetComponent(out S_Action02_Homing home);
-				return home;
-			case S_GeneralEnums.PlayerControlledStates.SpinCharge:
-				_ObjectForActions.TryGetComponent(out S_Action03_SpinCharge spin);
-				return spin;
-			case S_GeneralEnums.PlayerControlledStates.Bounce:
-				_ObjectForActions.TryGetComponent(out S_Action06_Bounce bounce);
-				return bounce;
-			case S_GeneralEnums.PlayerControlledStates.DropCharge:
-				_ObjectForActions.TryGetComponent(out S_Action08_DropCharge drop);
-				return drop;
-			case S_GeneralEnums.PlayerControlledStates.JumpDash:
-				_ObjectForActions.TryGetComponent(out S_Action11_JumpDash dash);
-				return dash;
-		}
-		return null;
-	}
-	public IMainAction AssignSituationalScriptByEnum ( S_GeneralEnums.PlayerSituationalStates state ) {
-		switch (state)
-		{
-			//If the enum of the struct is set to Regular, then assign the jump script to it.
-			case S_GeneralEnums.PlayerSituationalStates.Default:
-				_ObjectForActions.TryGetComponent(out S_Action00_Default def);
-				return def;
-			case S_GeneralEnums.PlayerSituationalStates.Hurt:
-				_ObjectForActions.TryGetComponent(out S_Action04_Hurt hurt);
-				return hurt;
-			case S_GeneralEnums.PlayerSituationalStates.Rail:
-				_ObjectForActions.TryGetComponent(out S_Action05_Rail rail);
-				return rail;
-			case S_GeneralEnums.PlayerSituationalStates.RingRoad:
-				_ObjectForActions.TryGetComponent(out S_Action07_RingRoad road);
-				return road;
-			case S_GeneralEnums.PlayerSituationalStates.Path:
-				_ObjectForActions.TryGetComponent(out S_Action10_FollowAutoPath path);
-				return path;
-			case S_GeneralEnums.PlayerSituationalStates.WallRunning:
-				_ObjectForActions.TryGetComponent(out S_Action12_WallRunning wall);
-				return wall;
-			case S_GeneralEnums.PlayerSituationalStates.WallClimbing:
-				_ObjectForActions.TryGetComponent(out S_Action15_WallClimbing wallClimb);
-				return wallClimb;
-			case S_GeneralEnums.PlayerSituationalStates.Hovering:
-				_ObjectForActions.TryGetComponent(out S_Action13_Hovering hov);
-				return hov;
-			case S_GeneralEnums.PlayerSituationalStates.Upreel:
-				_ObjectForActions.TryGetComponent(out S_Action14_Upreel up);
-				return up;
-		}
-		return null;
-	}
-
-	public IMainAction AssignMainActionScriptByEnum ( S_GeneralEnums.PrimaryPlayerStates state ) {
-		switch (state)
-		{
-			// If the enum of the struct is set to Jump, then assign the jump script to it.
-			case S_GeneralEnums.PrimaryPlayerStates.Jump:
-				if (_ObjectForActions.TryGetComponent(out S_Action01_Jump jumpAction))
-				{
-					return jumpAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action01_Jump>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.Homing:
-				if (_ObjectForActions.TryGetComponent(out S_Action02_Homing homingAction))
-				{
-					return homingAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action02_Homing>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.SpinCharge:
-				if (_ObjectForActions.TryGetComponent(out S_Action03_SpinCharge spinChargeAction))
-				{
-					return spinChargeAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action03_SpinCharge>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.Bounce:
-				if (_ObjectForActions.TryGetComponent(out S_Action06_Bounce bounceAction))
-				{
-					return bounceAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action06_Bounce>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.DropCharge:
-				if (_ObjectForActions.TryGetComponent(out S_Action08_DropCharge dropChargeAction))
-				{
-					return dropChargeAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action08_DropCharge>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.JumpDash:
-				if (_ObjectForActions.TryGetComponent(out S_Action11_JumpDash jumpDashAction))
-				{
-					return jumpDashAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action11_JumpDash>();
-				}
-
-			// If the enum of the struct is set to Default, then assign the jump script to it.
-			case S_GeneralEnums.PrimaryPlayerStates.Default:
-				if (_ObjectForActions.TryGetComponent(out S_Action00_Default defaultAction))
-				{
-					return defaultAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action00_Default>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.Hurt:
-				if (_ObjectForActions.TryGetComponent(out S_Action04_Hurt hurtAction))
-				{
-					return hurtAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action04_Hurt>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.Rail:
-				if (_ObjectForActions.TryGetComponent(out S_Action05_Rail railAction))
-				{
-					return railAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action05_Rail>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.RingRoad:
-				if (_ObjectForActions.TryGetComponent(out S_Action07_RingRoad ringRoadAction))
-				{
-					return ringRoadAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action07_RingRoad>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.Path:
-				if (_ObjectForActions.TryGetComponent(out S_Action10_FollowAutoPath pathAction))
-				{
-					return pathAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action10_FollowAutoPath>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.WallRunning:
-				if (_ObjectForActions.TryGetComponent(out S_Action12_WallRunning wallRunningAction))
-				{
-					return wallRunningAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action12_WallRunning>();
-				}
-			case S_GeneralEnums.PrimaryPlayerStates.WallClimbing:
-				if (_ObjectForActions.TryGetComponent(out S_Action15_WallClimbing wallClimbingAction))
-				{
-					return wallClimbingAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action15_WallClimbing>();
-				}
-
-			case S_GeneralEnums.PrimaryPlayerStates.Hovering:
-				if (_ObjectForActions.TryGetComponent(out S_Action13_Hovering hoveringAction))
-				{
-					return hoveringAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action13_Hovering>();
-				}
-			case S_GeneralEnums.PrimaryPlayerStates.Upreel:
-				if (_ObjectForActions.TryGetComponent(out S_Action14_Upreel upreelAction))
-				{
-					return upreelAction;
-				}
-				else
-				{
-					return _ObjectForActions.AddComponent<S_Action14_Upreel>();
-				}
-		}
-		return null;
-	}
-
-	public ISubAction AssignSubScript ( S_GeneralEnums.SubPlayerStates state ) {
-		switch (state)
-		{
-			// Case for S_SubAction_Skid
-			case S_GeneralEnums.SubPlayerStates.Skidding:
-				if (_ObjectForSubActions.TryGetComponent(out S_SubAction_Skid skidAction))
-				{
-					return skidAction;
-				}
-				else
-				{
-					return _ObjectForSubActions.AddComponent<S_SubAction_Skid>();
-				}
-
-			// Case for S_SubAction_Quickstep
-			case S_GeneralEnums.SubPlayerStates.Quickstepping:
-				if (_ObjectForSubActions.TryGetComponent(out S_SubAction_Quickstep quickstepAction))
-				{
-					return quickstepAction;
-				}
-				else
-				{
-					return _ObjectForSubActions.AddComponent<S_SubAction_Quickstep>();
-				}
-
-			// Case for S_SubAction_Roll
-			case S_GeneralEnums.SubPlayerStates.Rolling:
-				if (_ObjectForSubActions.TryGetComponent(out S_SubAction_Roll rollAction))
-				{
-					return rollAction;
-				}
-				else
-				{
-					return _ObjectForSubActions.AddComponent<S_SubAction_Roll>();
-				}
-			case S_GeneralEnums.SubPlayerStates.Boost:
-				if (_ObjectForSubActions.TryGetComponent(out S_SubAction_Boost boostAction))
-				{
-					return boostAction;
-				}
-				else
-				{
-					return _ObjectForSubActions.AddComponent<S_SubAction_Boost>();
-				}
-		}
-		return null;
-	}
 	#endregion
 
 }
@@ -606,7 +342,7 @@ public class ActionManagerEditor : S_CustomInspector_Base
 			//Add new element button.
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Add New State", _BigButtonStyle, _ActionMan, "Add New State"))
 			{
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Default, true, true);
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Default, true, true);
 				serializedObject.Update();
 			}
 			serializedObject.ApplyModifiedProperties();
@@ -639,23 +375,23 @@ public class ActionManagerEditor : S_CustomInspector_Base
 					}
 
 					//Makes sure every action still has default as as connected situation interaction.
-					if (!action.SituationalStates.Any(item => item == S_GeneralEnums.PlayerSituationalStates.Default))
+					if (!action.SituationalStates.Any(item => item == S_S_ActionHandling.PlayerSituationalStates.Default))
 					{
-						action.SituationalStates.Insert(0, S_GeneralEnums.PlayerSituationalStates.Default);
+						action.SituationalStates.Insert(0, S_S_ActionHandling.PlayerSituationalStates.Default);
 					}
 
 					//Makes sure every action still has Hurt as as connected situation interaction.
-					if (!action.SituationalStates.Any(item => item == S_GeneralEnums.PlayerSituationalStates.Hurt))
+					if (!action.SituationalStates.Any(item => item == S_S_ActionHandling.PlayerSituationalStates.Hurt))
 					{
-						action.SituationalStates.Insert(0, S_GeneralEnums.PlayerSituationalStates.Hurt);
+						action.SituationalStates.Insert(0, S_S_ActionHandling.PlayerSituationalStates.Hurt);
 					}
 
 					//Ensures the component is attached to the game objects.
-					_ActionMan.AssignMainActionScriptByEnum(action.State);
+					S_S_ActionHandling.AddOrFindMainActionComponent(action.State, _ActionMan._ObjectForActions);
 					//Ensures the same with the subactions
 					for (int a = 0 ; a < action.PerformableSubStates.Count ; a++)
 					{
-						_ActionMan.AssignSubScript(action.PerformableSubStates[a]);
+						S_S_ActionHandling.AddOrFindSubActionComponent(action.PerformableSubStates[a], _ActionMan._ObjectForSubActions);
 					}
 
 					//To apply this, the action has to be removed from the list, and this added in its place.
@@ -697,7 +433,7 @@ public class ActionManagerEditor : S_CustomInspector_Base
 	}
 
 	//Take in a primary state and add it to the list if it can be found.
-	private void AddActionToList ( S_GeneralEnums.PrimaryPlayerStates state, bool withDefault = false, bool skip = false ) {
+	private void AddActionToList ( S_S_ActionHandling.PrimaryPlayerStates state, bool withDefault = false, bool skip = false ) {
 		if (!_ActionMan._MainActions.Any(item => item.State == state) || skip)
 		{
 			S_Structs.MainActionTracker temp = new S_Structs.MainActionTracker();
@@ -705,8 +441,8 @@ public class ActionManagerEditor : S_CustomInspector_Base
 
 			if (withDefault)
 			{
-				temp.SituationalStates = new List<S_GeneralEnums.PlayerSituationalStates>();
-				temp.SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.Default);
+				temp.SituationalStates = new List<S_S_ActionHandling.PlayerSituationalStates>();
+				temp.SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.Default);
 			}
 
 			_ActionMan._MainActions.Add(temp);
@@ -714,115 +450,115 @@ public class ActionManagerEditor : S_CustomInspector_Base
 	}
 
 	//Go through all situation actions and add the equivilant main action.
-	private void AddSituationalActionToList ( S_GeneralEnums.PlayerSituationalStates state ) {
+	private void AddSituationalActionToList ( S_S_ActionHandling.PlayerSituationalStates state ) {
 
 		switch (state)
 		{
-			case S_GeneralEnums.PlayerSituationalStates.Rail:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Rail);
+			case S_S_ActionHandling.PlayerSituationalStates.Rail:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Rail);
 				break;
-			case S_GeneralEnums.PlayerSituationalStates.Path:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Path);
+			case S_S_ActionHandling.PlayerSituationalStates.Path:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Path);
 				break;
-			case S_GeneralEnums.PlayerSituationalStates.RingRoad:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.RingRoad);
+			case S_S_ActionHandling.PlayerSituationalStates.RingRoad:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.RingRoad);
 				break;
-			case S_GeneralEnums.PlayerSituationalStates.WallRunning:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.WallRunning);
+			case S_S_ActionHandling.PlayerSituationalStates.WallRunning:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.WallRunning);
 				break;
-			case S_GeneralEnums.PlayerSituationalStates.WallClimbing:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.WallClimbing);
+			case S_S_ActionHandling.PlayerSituationalStates.WallClimbing:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.WallClimbing);
 				break;
-			case S_GeneralEnums.PlayerSituationalStates.Default:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Default);
+			case S_S_ActionHandling.PlayerSituationalStates.Default:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Default);
 				break;
-			case S_GeneralEnums.PlayerSituationalStates.Hovering:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Hovering);
+			case S_S_ActionHandling.PlayerSituationalStates.Hovering:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Hovering);
 				break;
-			case S_GeneralEnums.PlayerSituationalStates.Hurt:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Hurt);
+			case S_S_ActionHandling.PlayerSituationalStates.Hurt:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Hurt);
 				break;
-			case S_GeneralEnums.PlayerSituationalStates.Upreel:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Upreel);
+			case S_S_ActionHandling.PlayerSituationalStates.Upreel:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Upreel);
 				break;
 		}
 	}
 
 	//Go through all controlled actions and add the equivilant main action.
-	private void AddControledActionToList ( S_GeneralEnums.PlayerControlledStates state ) {
+	private void AddControledActionToList ( S_S_ActionHandling.PlayerControlledStates state ) {
 		switch (state)
 		{
-			case S_GeneralEnums.PlayerControlledStates.Jump:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Jump);
+			case S_S_ActionHandling.PlayerControlledStates.Jump:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Jump);
 				break;
-			case S_GeneralEnums.PlayerControlledStates.Homing:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Homing);
+			case S_S_ActionHandling.PlayerControlledStates.Homing:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Homing);
 				break;
-			case S_GeneralEnums.PlayerControlledStates.SpinCharge:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.SpinCharge);
+			case S_S_ActionHandling.PlayerControlledStates.SpinCharge:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.SpinCharge);
 				break;
-			case S_GeneralEnums.PlayerControlledStates.Bounce:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.Bounce);
+			case S_S_ActionHandling.PlayerControlledStates.Bounce:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.Bounce);
 				break;
-			case S_GeneralEnums.PlayerControlledStates.DropCharge:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.DropCharge);
+			case S_S_ActionHandling.PlayerControlledStates.DropCharge:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.DropCharge);
 				break;
-			case S_GeneralEnums.PlayerControlledStates.JumpDash:
-				AddActionToList(S_GeneralEnums.PrimaryPlayerStates.JumpDash);
+			case S_S_ActionHandling.PlayerControlledStates.JumpDash:
+				AddActionToList(S_S_ActionHandling.PrimaryPlayerStates.JumpDash);
 				break;
 		}
 	}
 
 	//Takes in a main action and connects it to the current state as one that can be transitioned to.
-	void AddActionToThis ( S_GeneralEnums.PrimaryPlayerStates state, int target ) {
+	void AddActionToThis ( S_S_ActionHandling.PrimaryPlayerStates state, int target ) {
 		if (_ActionMan._MainActions[target].State == state) { return; }
 
 		switch (state)
 		{
-			case S_GeneralEnums.PrimaryPlayerStates.Default:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.Default);
+			case S_S_ActionHandling.PrimaryPlayerStates.Default:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.Default);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Jump:
-				_ActionMan._MainActions[target].ConnectedStates.Add(S_GeneralEnums.PlayerControlledStates.Jump);
+			case S_S_ActionHandling.PrimaryPlayerStates.Jump:
+				_ActionMan._MainActions[target].ConnectedStates.Add(S_S_ActionHandling.PlayerControlledStates.Jump);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Homing:
-				_ActionMan._MainActions[target].ConnectedStates.Add(S_GeneralEnums.PlayerControlledStates.Homing);
+			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
+				_ActionMan._MainActions[target].ConnectedStates.Add(S_S_ActionHandling.PlayerControlledStates.Homing);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.SpinCharge:
-				_ActionMan._MainActions[target].ConnectedStates.Add(S_GeneralEnums.PlayerControlledStates.SpinCharge);
+			case S_S_ActionHandling.PrimaryPlayerStates.SpinCharge:
+				_ActionMan._MainActions[target].ConnectedStates.Add(S_S_ActionHandling.PlayerControlledStates.SpinCharge);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Hurt:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.Hurt);
+			case S_S_ActionHandling.PrimaryPlayerStates.Hurt:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.Hurt);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Rail:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.Rail);
+			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.Rail);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Bounce:
-				_ActionMan._MainActions[target].ConnectedStates.Add(S_GeneralEnums.PlayerControlledStates.Bounce);
+			case S_S_ActionHandling.PrimaryPlayerStates.Bounce:
+				_ActionMan._MainActions[target].ConnectedStates.Add(S_S_ActionHandling.PlayerControlledStates.Bounce);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.RingRoad:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.RingRoad);
+			case S_S_ActionHandling.PrimaryPlayerStates.RingRoad:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.RingRoad);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.DropCharge:
-				_ActionMan._MainActions[target].ConnectedStates.Add(S_GeneralEnums.PlayerControlledStates.DropCharge);
+			case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
+				_ActionMan._MainActions[target].ConnectedStates.Add(S_S_ActionHandling.PlayerControlledStates.DropCharge);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Path:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.Path);
+			case S_S_ActionHandling.PrimaryPlayerStates.Path:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.Path);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.JumpDash:
-				_ActionMan._MainActions[target].ConnectedStates.Add(S_GeneralEnums.PlayerControlledStates.JumpDash);
+			case S_S_ActionHandling.PrimaryPlayerStates.JumpDash:
+				_ActionMan._MainActions[target].ConnectedStates.Add(S_S_ActionHandling.PlayerControlledStates.JumpDash);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.WallRunning:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.WallRunning);
+			case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.WallRunning);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.WallClimbing:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.WallClimbing);
+			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.WallClimbing);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Hovering:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.Hovering);
+			case S_S_ActionHandling.PrimaryPlayerStates.Hovering:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.Hovering);
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Upreel:
-				_ActionMan._MainActions[target].SituationalStates.Add(S_GeneralEnums.PlayerSituationalStates.Upreel);
+			case S_S_ActionHandling.PrimaryPlayerStates.Upreel:
+				_ActionMan._MainActions[target].SituationalStates.Add(S_S_ActionHandling.PlayerSituationalStates.Upreel);
 				break;
 
 		}

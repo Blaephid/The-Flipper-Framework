@@ -104,7 +104,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 			yield return new WaitForEndOfFrame();
 
 			//Determined in the homing action script, based on if attempt action is called, which means this only updates if the current action can perform homing attacks.
-			if (_Actions != null & _Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.Homing, S_GeneralEnums.PlayerSituationalStates.None))
+			if (_Actions != null & _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.Homing, S_S_ActionHandling.PlayerSituationalStates.None))
 			{
 				UpdateHomingTargets();
 

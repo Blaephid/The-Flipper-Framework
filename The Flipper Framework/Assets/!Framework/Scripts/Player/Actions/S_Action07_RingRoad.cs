@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 
 [RequireComponent(typeof(S_Handler_RingRoad))]
-public class S_Action07_RingRoad : MonoBehaviour, IMainAction
+public class S_Action07_RingRoad : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -16,25 +16,13 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
 	private S_Handler_RingRoad    _RoadHandler;
-	private S_Control_SoundsPlayer _Sounds;
 
-	private Transform   _MainSkin;
-	private Animator    _CharacterAnimator;
 	private GameObject  _HomingTrailContainer;
 	private GameObject  _HomingTrail;
-	private GameObject  _JumpBall;
 
 	private Spline      _CreatedSpline;
 	#endregion
-
-	//General
-	#region General Properties
 
 	//Stats
 	#region Stats
@@ -46,7 +34,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is.  This is used for transitioning to other actions, by input or interaction.
 
 	public Vector3      _trailOffSet = new Vector3(0,-3,0);	//The trail effect will be away from the player by this.
 
@@ -60,7 +47,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private List<Transform> _ListOfRingsInRoad = new List<Transform>();
 	#endregion
 
-	#endregion
 	#endregion
 
 	/// <summary>
@@ -96,7 +82,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		HandleInputs();
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		if (_Input._InteractPressed && _RoadHandler._TargetRing != null && !enabled)
 		{
 			StartAction();
@@ -106,7 +92,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Physics
@@ -146,7 +132,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		//_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 		_directionToGo = _PlayerVel._worldVelocity.normalized; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.RingRoad);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.RingRoad);
 		this.enabled = true;
 	}
 
@@ -290,45 +276,16 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.RingRoad)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
-		_Actions = _Tools._ActionManager;
+	public override void AssignTools () {
+		base.AssignTools();
 		_RoadHandler = GetComponent<S_Handler_RingRoad>();
-
-		_Sounds = _Tools.SoundControl;
-		_MainSkin = _Tools.MainSkin;
 		_HomingTrailContainer = _Tools.HomingTrailContainer;
-		_JumpBall = _Tools.JumpBall;
 		_HomingTrail = _Tools.HomingTrail;
-		_CharacterAnimator = _Tools.CharacterAnimator;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_willCarrySpeed_ = _Tools.Stats.RingRoadStats.willCarrySpeed;
 		_dashSpeed_= _Tools.Stats.RingRoadStats.dashSpeed;
 		_minimumEndingSpeed_ = _Tools.Stats.RingRoadStats.minimumEndingSpeed;

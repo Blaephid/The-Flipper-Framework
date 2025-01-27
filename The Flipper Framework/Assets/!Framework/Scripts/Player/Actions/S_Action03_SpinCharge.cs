@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Runtime.InteropServices;
 
-public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
+public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -13,25 +13,12 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools		_Tools;
-	private S_PlayerInput		_Input;
-	private S_ActionManager                 _Actions;
-	private S_PlayerPhysics                 _PlayerPhys;
-	private S_PlayerVelocity		_PlayerVel;
-	private S_PlayerMovement                _PlayerMove;
-	private S_Control_SoundsPlayer           _Sounds;
 	private S_Control_EffectsPlayer         _Effects;
 
-	private Animator			_CharacterAnimator;
-	private Animator			_BallAnimator;
-	private S_Handler_Camera		_CamHandler;
-	private Transform                       _MainSkin;
-
-	private CapsuleCollider			_LowerCapsule;
-	private CapsuleCollider			_StandingCapsule;
+	private CapsuleCollider		_LowerCapsule;
+	private CapsuleCollider		_StandingCapsule;
 
 	private Transform			_PlayerSkinTransform;
-
 	private Transform                       _MainCamera;
 	#endregion
 
@@ -64,7 +51,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;
+	
 
 	private bool                  _isPressedCurrently = true;		//Involed in mashing. Reflects whether the button is pressed, if false, start exiting, if false when button is true, reset exiting.	
 
@@ -98,7 +85,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 
 	//Checks if this action can currently be performed, based on the input and environmental factors.
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		//Pressed on the ground
 		if (_Input._SpinChargePressed && _PlayerPhys._isGrounded)
 		{
@@ -113,7 +100,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	}
 
 	//Called when the action should be enabled.
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Setting private
@@ -130,7 +117,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false);
 		_Sounds.SpinDashSound();
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.SpinCharge);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.SpinCharge);
 		enabled = true;
 	}
 
@@ -195,7 +182,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	//Changes how the player moves when in this state.
 	private void AffectMovement () {
 
-		_PlayerMove._moveInput *= 0.65f; //Limits input, lessening turning and deceleration
+		_PlayerMovement._moveInput *= 0.65f; //Limits input, lessening turning and deceleration
 		
 		if(_shouldSetRolling_) _PlayerPhys._isRolling = true; // set every frame to counterballanced the rolling subaction
 
@@ -251,7 +238,7 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 				newSpeed *= _forceGainByAngle_.Evaluate(dif);
 
 			//And the current speed (typically lower when at higher speed)
-			newSpeed *= _gainBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _PlayerMove._currentMaxSpeed);
+			newSpeed *= _gainBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
 			addForce *= newSpeed; //Adds speed to direction to get the force
 
 			_PlayerVel.AddCoreVelocity(addForce);
@@ -317,9 +304,9 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 			Vector3 faceDirection = _PlayerPhys._RB.velocity.sqrMagnitude > 1 ? _PlayerVel._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
 
 			//Rotate slightly to player input
-			if (_PlayerMove._moveInput.sqrMagnitude > 0.2)
+			if (_PlayerMovement._moveInput.sqrMagnitude > 0.2)
 			{
-				Vector3 inputDirection = transform.TransformDirection(_PlayerMove._moveInput.normalized);
+				Vector3 inputDirection = transform.TransformDirection(_PlayerMovement._moveInput.normalized);
 				faceDirection = Vector3.RotateTowards(faceDirection, inputDirection, Mathf.Deg2Rad * 100, 0);
 			}
 
@@ -363,29 +350,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Assigning
-	//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
 
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.SpinCharge)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
-	private void AssignStats () {
+	public override void AssignStats () {
 		_spinDashChargingSpeed_ =	_Tools.Stats.SpinChargeStats.chargingSpeed;
 		_minimunCharge_ =		_Tools.Stats.SpinChargeStats.minimunCharge;
 		_maximunCharge_ =		_Tools.Stats.SpinChargeStats.maximunCharge;
@@ -404,18 +370,8 @@ public class S_Action03_SpinCharge : MonoBehaviour, IMainAction
 
 		_cameraPauseEffect_ =	_Tools.Stats.SpinChargeStats.cameraPauseEffect;
 	}
-	private void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_PlayerMove = _Tools.GetComponent<S_PlayerMovement>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
-		_BallAnimator = _Tools.BallAnimator;
-		_Sounds = _Tools.SoundControl;
+	public override void AssignTools () {
+		base.AssignTools();
 		_Effects = _Tools.EffectsControl;
 		_MainCamera = Camera.main.transform;
 

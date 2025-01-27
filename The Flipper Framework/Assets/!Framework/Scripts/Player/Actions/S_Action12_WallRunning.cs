@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Runtime.InteropServices.WindowsRuntime;
 
 [RequireComponent(typeof(S_Handler_WallActions))]
-public class S_Action12_WallRunning : MonoBehaviour, IMainAction
+public class S_Action12_WallRunning : S_Action_Base, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -15,24 +15,14 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	[HideInInspector]	public  S_CharacterTools                _Tools;
-	[HideInInspector]	public  S_PlayerPhysics                 _PlayerPhys;
-	[HideInInspector]   public  S_PlayerVelocity                _PlayerVel;
-	[HideInInspector]	public  S_PlayerInput                   _Input;
-	[HideInInspector]	public  S_ActionManager                 _Actions;
-	[HideInInspector]	public  S_Control_SoundsPlayer          _Sounds;
 	[HideInInspector]	public  S_Handler_HomingAttack          _HomingControl;
-	[HideInInspector]	public  S_Handler_Camera                _CamHandler;
 	[HideInInspector]	public  S_Handler_WallActions           _WallHandler;
 
-	[HideInInspector]	public  GameObject            _JumpBall;
 	[HideInInspector]	public  GameObject            _DropShadow;
 	[HideInInspector]	public  Transform             _CamTarget;
 	[HideInInspector]	public  Transform             _ConstantTarget;
 	[HideInInspector]	public  CapsuleCollider       _CoreCollider;
 	[HideInInspector]	public  GameObject            _CurrentWall;
-	[HideInInspector]	public  Animator              _CharacterAnimator;
-	[HideInInspector]	public  Transform             _MainSkin;
 	[HideInInspector]	public  Transform             _CharacterTransform;
 	#endregion
 
@@ -48,8 +38,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	[HideInInspector]
-	public  int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
 	[HideInInspector]
 	public Vector3      _originalVelocity;
@@ -122,7 +110,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		}
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		if (enabled) return false;
 
 		//Because WallCLimbing inherits from WallRunning, it will call this too, so check.
@@ -139,7 +127,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	//Due to requiring additional data for the wall, this is called in the SetUp methods, unlike AttemptAction.
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		_isWall = true;
@@ -198,7 +186,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_CamHandler._HedgeCam.DisableSecondaryCameraTarget();
 
 		//In case action change was intentional (not from losing grip on a wall) make sure player moves away from wall.
-		if(_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Default)
+		if(_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Default)
 		{
 			_Input.LockInputForAWhile(4, false, _wallHit.normal, S_GeneralEnums.LockControlDirection.Change);
 		}
@@ -314,7 +302,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		Vector3 camOffset = (_isWallOnRight ? -_MainSkin.right : _MainSkin.right) * 2;
 		_CamHandler._HedgeCam.SetSecondaryCameraTarget(_MainSkin, transform.position + camOffset);
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
 		StartAction();
 	}
 
@@ -363,48 +351,11 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (this is S_Action15_WallClimbing)
-				{
-					if(_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.WallClimbing){
-						_positionInActionList = i;
-						break;
-					}
-				}
-				else if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.WallRunning)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	public void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_WallHandler = GetComponent<S_Handler_WallActions>();
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
+	public override void AssignTools () {
+		base.AssignTools();
+		_WallHandler = GetComponent<S_Handler_WallActions>();	
 		_CharacterTransform = _Tools.CharacterModelOffset;
-		_Sounds = _Tools.SoundControl;
-		_JumpBall = _Tools.JumpBall;
 		_DropShadow = _Tools.DropShadow;
 		_CamTarget = _Tools.CameraTarget;
 		_ConstantTarget = _Tools.ConstantTarget;
@@ -412,7 +363,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	public void AssignStats () {
+	public override void AssignStats () {
 
 		_wallCheckDistance_ = _Tools.Stats.WallActionsStats.wallCheckDistance;
 		_wallLayerMask_ = _Tools.Stats.WallActionsStats.WallLayerMask;

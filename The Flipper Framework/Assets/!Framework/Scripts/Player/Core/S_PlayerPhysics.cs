@@ -438,14 +438,14 @@ public class S_PlayerPhysics : MonoBehaviour
 			float airTurnMod = _airControlAmmount_.x;
 			switch (_Actions._whatCurrentAction)
 			{
-				case S_GeneralEnums.PrimaryPlayerStates.Jump:
+				case S_S_ActionHandling.PrimaryPlayerStates.Jump:
 					if (_Actions._actionTimeCounter < _jumpExtraControlThreshold_)
 					{
 						airAccelMod = _jumpAirControl_.y;
 						airTurnMod = _jumpAirControl_.x;
 					}
 					break;
-				case S_GeneralEnums.PrimaryPlayerStates.Bounce:
+				case S_S_ActionHandling.PrimaryPlayerStates.Bounce:
 					airAccelMod = _bounceAirControl_.y;
 					airTurnMod = _bounceAirControl_.x;
 					break;

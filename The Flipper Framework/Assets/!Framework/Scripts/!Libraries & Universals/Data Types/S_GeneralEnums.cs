@@ -4,57 +4,6 @@ using UnityEngine;
 
 public class S_GeneralEnums
 {
-	//Actions.
-	//How they're ordered here is also how they're ordered in priority, so the action manager will list then in this order, the higher, the sooner it will be checked (so if boost is above quickstep, it will be called before).
-	public enum PrimaryPlayerStates
-	{
-		None = -1,
-		Default = 0,
-		Jump = 2,
-		Homing = 3,
-		SpinCharge = 4,
-		Hurt = 1,
-		Rail = 5,
-		Bounce = 6,
-		RingRoad = 7,
-		DropCharge = 8,
-		Path = 9,
-		JumpDash = 10,
-		WallRunning = 11,
-		WallClimbing = 14,
-		Hovering = 12,
-		Upreel = 13,
-	}
-
-	public enum PlayerControlledStates {
-		Jump,
-		Homing,
-		SpinCharge,
-		Bounce,
-		DropCharge,
-		JumpDash,
-		None
-	}
-
-	public enum PlayerSituationalStates {
-		Default,
-		Hurt,
-		Rail,
-		RingRoad,
-		Path,
-		WallRunning,
-		WallClimbing,
-		Hovering,
-		Upreel,
-		None
-	}
-
-	public enum SubPlayerStates {
-		Skidding = 0,
-		Quickstepping = 4,
-		Rolling = 3,
-		Boost = 1
-	}
 
 	//General
 	//

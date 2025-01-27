@@ -211,7 +211,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(wallHit.normal));
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.WallClimbing); //Not part of startAction because that is inherited from action12, and other stopActions should be triggered before this (E.G. so CanChangeGrounded is accurate).
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.WallClimbing); //Not part of startAction because that is inherited from action12, and other stopActions should be triggered before this (E.G. so CanChangeGrounded is accurate).
 		StartAction();
 	}
 }

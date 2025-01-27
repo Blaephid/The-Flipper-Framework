@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEditor;
 
-public class S_Action04_Hurt : MonoBehaviour, IMainAction
+public class S_Action04_Hurt : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -13,18 +13,9 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Control_SoundsPlayer	_Sounds;
 	private S_Handler_HealthAndHurt	_HurtControl;
 
-	private Transform             _MainSkin;
 	private CapsuleCollider       _CharacterCapsule;
-	private GameObject            _JumpBall;
-	private Animator		_CharacterAnimator;
 	#endregion
 
 
@@ -53,7 +44,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
+	
 
 	private float       _lockInStateFor;		//When the action starts, set how long should be in it for.
 	private int	_counter;			//Tracks how long the state has been active for.
@@ -97,11 +88,11 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		HandleInputs();
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Effects
@@ -203,7 +194,7 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 		}
 		_keepLockingControlUntil = (int)lockControlFor;
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Hurt);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Hurt);
 		this.enabled = true;
 
 		//Ensure player is hit off the ground and won't immediately be grounded to remove force applied. Also ensures this is the action before LoseGroundEventsAreCalled
@@ -325,45 +316,14 @@ public class S_Action04_Hurt : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Hurt)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
+	public override void AssignTools () {
+		base.AssignTools();
 		_HurtControl = GetComponentInParent<S_Handler_HealthAndHurt>();
-
-		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
-		_JumpBall = _Tools.JumpBall;
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_Sounds = _Tools.SoundControl;
-		_MainSkin = _Tools.MainSkin;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_knockbackForce_ = _Tools.Stats.KnockbackStats.knockbackForce;
 		_knockbackUpwardsForce_ = _Tools.Stats.KnockbackStats.knockbackUpwardsForce;
 		_RecoilFrom_ = _Tools.Stats.KnockbackStats.recoilFrom;

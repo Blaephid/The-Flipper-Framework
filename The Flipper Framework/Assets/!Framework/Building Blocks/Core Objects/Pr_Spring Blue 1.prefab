@@ -87,6 +87,71 @@ PrefabInstance:
       propertyPath: _lockAirMovesTime_
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 378647681433766260, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 378647681433766260, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 378647681433766260, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 378647681433766260, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.85392
+      objectReference: {fileID: 0}
+    - target: {fileID: 378647681433766260, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3.8381805
+      objectReference: {fileID: 0}
+    - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7896384
+      objectReference: {fileID: 0}
+    - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.2019631
+      objectReference: {fileID: 0}
+    - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.56131214
+      objectReference: {fileID: 0}
+    - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.14356486
+      objectReference: {fileID: 0}
+    - target: {fileID: 3749572640961938305, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: _placeAboveObject.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3749572640961938305, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: _placeAboveObject.y
+      value: 5.85392
+      objectReference: {fileID: 0}
+    - target: {fileID: 3749572640961938305, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: _placeAboveObject.z
+      value: 3.8381805
+      objectReference: {fileID: 0}
+    - target: {fileID: 3749572640961938305, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: _updateAutomatically
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3876617265796837892, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_text
@@ -120,6 +185,16 @@ PrefabInstance:
         type: 3}
       propertyPath: _simCoreVel.y
       value: -234.34601
+      objectReference: {fileID: 0}
+    - target: {fileID: 5119825325252721446, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: _environmentalVelAtStart.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5119825325252721446, guid: 8246331b774a4c04eb8b5ef338a220db,
+        type: 3}
+      propertyPath: _environmentalVelAtStart.y
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6634983686320038530, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}

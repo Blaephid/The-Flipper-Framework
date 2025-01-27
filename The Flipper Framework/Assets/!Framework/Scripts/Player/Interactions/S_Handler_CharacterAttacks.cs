@@ -9,7 +9,6 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	private S_PlayerPhysics	_PlayerPhys;
 	private S_PlayerVelocity	_PlayerVel;
 	private S_Interaction_Objects _ObjectInteraction;
-	private S_Interaction_Triggers _TriggerInteraction;
 	private S_ActionManager	_Actions;
 	private S_CharacterTools	_Tools;
 
@@ -43,7 +42,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 			switch (_Actions._whatCurrentAction)
 			{
 				//If in default, will only attack if rolling.
-				case S_GeneralEnums.PrimaryPlayerStates.Default:
+				case S_S_ActionHandling.PrimaryPlayerStates.Default:
 					if (_PlayerPhys._isRolling)
 					{
 						AttackThing(other, S_GeneralEnums.PlayerAttackTypes.Rolling, target);
@@ -63,22 +62,22 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 					else { _hasHitThisFrame = false; }
 					break;
 					//Spin charge counts as a rolling attack.
-				case S_GeneralEnums.PrimaryPlayerStates.SpinCharge:
+				case S_S_ActionHandling.PrimaryPlayerStates.SpinCharge:
 					AttackThing(other, S_GeneralEnums.PlayerAttackTypes.Rolling, target);
 					_hasHitThisFrame = true;
 					break;
 					//Jump states means in a jump ball.
-				case S_GeneralEnums.PrimaryPlayerStates.Jump:
+				case S_S_ActionHandling.PrimaryPlayerStates.Jump:
 					AttackThing(other, S_GeneralEnums.PlayerAttackTypes.SpinJump, target);
 					_hasHitThisFrame = true;
 					break;
 					//Despite not being in a ball, jump dash conts as a spin jump attack.
-				case S_GeneralEnums.PrimaryPlayerStates.JumpDash:
+				case S_S_ActionHandling.PrimaryPlayerStates.JumpDash:
 					AttackThing(other, S_GeneralEnums.PlayerAttackTypes.SpinJump, target);
 					_hasHitThisFrame = true;
 					break;
 					//The most common attack, and involves being in a ball.
-				case S_GeneralEnums.PrimaryPlayerStates.Homing:
+				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
 					AttackThing(other, S_GeneralEnums.PlayerAttackTypes.HomingAttack, target);
 					_hasHitThisFrame = true;
 					break;
@@ -149,7 +148,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 				_PlayerVel.AddCoreVelocity(transform.up * _bouncingPower_);
 				break;
 
-			case S_GeneralEnums.PrimaryPlayerStates.Bounce:
+			case S_S_ActionHandling.PrimaryPlayerStates.Bounce:
 				_PlayerVel.AddCoreVelocity(transform.up * _bouncingPower_ * 1.5f);
 				break;
 		}
@@ -187,7 +186,6 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
 		_ObjectInteraction = GetComponent<S_Interaction_Objects>();
-		_TriggerInteraction = GetComponent<S_Interaction_Triggers>();
 		_Actions = _Tools._ActionManager;
 	}
 }

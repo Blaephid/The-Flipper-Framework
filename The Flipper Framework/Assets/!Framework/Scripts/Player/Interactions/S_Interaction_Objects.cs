@@ -31,6 +31,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	private S_Handler_CharacterAttacks      _AttackHandler;
 	private S_Handler_HealthAndHurt         _HurtAndHealth;
+	private S_Interaction_Triggers	_TriggerInteraction;
 
 	private S_Handler_Camera      _CamHandler;
 	private S_Control_SoundsPlayer _Sounds;
@@ -123,12 +124,6 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "RailBooster":
 				BoostOnRail(Col);
 				break;
-			case "Switch":
-				if (Col.GetComponent<S_Data_Switch>() != null)
-				{
-					Col.GetComponent<S_Data_Switch>().Activate();
-				}
-				break;
 			case "Spring":
 				LaunchFromSpring(Col);
 				break;
@@ -176,6 +171,21 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "Enable Objects Physics":
 				SetMovingPlatformAsActive(Col, true);
 				break;
+
+			case "Switch":
+				if (Col.GetComponent<S_Data_Switch>() != null)
+				{
+					Col.GetComponent<S_Data_Switch>().Activate();
+				}
+				break;
+
+			case "HintRing":
+				_TriggerInteraction.ActivateHintBox(Col);
+				break;
+
+
+			case "Player Effects":
+				_TriggerInteraction.ApplyEffectsOnPlayer(Col); break;
 		}
 	}
 
@@ -213,8 +223,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
 				if (UpdraftScript != null)
 				{
-					if (_Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Homing
-						|| _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
+					if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing
+						|| _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
 
 					Vector3 thisForce = GetForceOfWind(UpdraftScript);
 					_currentWindDirection += thisForce;
@@ -461,7 +471,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		Col.GetComponent<AudioSource>().Play();
 
 		//Attaches the player to the rail this rail booster is on.
-		if (_Actions._whatCurrentAction != S_GeneralEnums.PrimaryPlayerStates.Rail)
+		if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Rail)
 		{
 			SnapToObject(Col, RailBoosterScript._PositionToLockTo);
 		}
@@ -729,6 +739,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_AttackHandler = GetComponent<S_Handler_CharacterAttacks>();
 		_HurtAndHealth = _Tools.GetComponent<S_Handler_HealthAndHurt>();
+		_TriggerInteraction = GetComponent<S_Interaction_Triggers>();
 
 		_CharacterAnimator = _Tools.CharacterAnimator;
 		_Sounds = _Tools.SoundControl;

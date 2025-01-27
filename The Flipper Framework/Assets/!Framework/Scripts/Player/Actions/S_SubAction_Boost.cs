@@ -9,34 +9,18 @@ using UnityEngine.UIElements;
 using UnityEngine.Windows;
 using static Unity.VisualScripting.Member;
 
-public class S_SubAction_Boost : MonoBehaviour, ISubAction
+public class S_SubAction_Boost : S_Action_Base, ISubAction
 {
-
-
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
-	/// 
 	#region properties
 
 	//Unity
-	#region Unity Specific Properties
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerMovement	_PlayerMovement;
-	private S_CharacterTools      _Tools;
-	private S_ActionManager       _Actions;
-	private S_Handler_Camera      _CamHandler;
-	private S_PlayerInput         _Input;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Transform             _MainSkin;
 
 	//Represent the effect
 	private GameObject                      _BoostCone;
 	private MeshRenderer[]                  _ListOfSubCones;
-
-	private Animator    _CharacterAnimator;
 
 	//Used to display boost energy to player.
 	private S_UI_Boost            _BoostUI;
@@ -99,7 +83,6 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	private bool                  _isStrafing;
 	#endregion
-	#endregion
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -126,14 +109,14 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		{
 			switch (_Actions._whatCurrentAction)
 			{
-				case S_GeneralEnums.PrimaryPlayerStates.Default:
+				case S_S_ActionHandling.PrimaryPlayerStates.Default:
 					if (_PlayerPhys._isGrounded)
 						_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction); // Means animation will reflect jumping or being grounded.;
 					else
 						_Actions._ActionDefault.HandleAnimator(11);
 					_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 					break;
-				case S_GeneralEnums.PrimaryPlayerStates.Jump:
+				case S_S_ActionHandling.PrimaryPlayerStates.Jump:
 					_Actions._ActionDefault.HandleAnimator(1);
 					_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 					break;
@@ -151,7 +134,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 
 	//Called when attempting to perform an action, checking and preparing inputs.
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		_inAStateThatCanBoost = true; //This will lead to a back and forth with it being set to false every frame. This means as soon as this method stops being called, this will be false.
 
 		if (_Input._BoostPressed)
@@ -172,7 +155,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	}
 
 	//Called when the action is enabled and readies all variables for it to be performed.
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (!_Actions._canChangeActions && !overwrite) { return; }
 
 		//Flow Control
@@ -538,7 +521,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		if (_PlayerPhys._isBoosting)
 		{
 			//If player has landed while still in default (E.G. didn't jump), then since StartAction won't be called, switch the animation to grounded running.
-			if (_CharacterAnimator.GetInteger("Action") != 0 && _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Default)
+			if (_CharacterAnimator.GetInteger("Action") != 0 && _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Default)
 			{
 				_CharacterAnimator.SetInteger("Action", 0);
 				_CharacterAnimator.SetTrigger("ChangedState");
@@ -552,7 +535,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		{
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_));
 			//Should perform air dash animation if losing ground while boosting, but not if willingly entered by jumping.
-			if (_CharacterAnimator.GetInteger("Action") != 11 && _Actions._whatCurrentAction == S_GeneralEnums.PrimaryPlayerStates.Default)
+			if (_CharacterAnimator.GetInteger("Action") != 11 && _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Default)
 			{
 				_CharacterAnimator.SetInteger("Action", 11);
 				_CharacterAnimator.SetTrigger("ChangedState"); //Used immediately to switch.
@@ -571,17 +554,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	/// </summary>
 	#region Assigning
 	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-		}
-	}
 
-	private void AssignStats () {
+	public override void AssignStats () {
 		if (_gainEnergyFromRings_)
 			_Tools.GetComponent<S_Handler_HealthAndHurt>().onRingGet += EventGainEnergyFromRings;
 
@@ -618,18 +592,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	}
 
-	private void AssignTools () {
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-
-		_Sounds = _Tools.SoundControl;
-		_MainSkin = _Tools.MainSkin;
-		_CharacterAnimator = _Tools.CharacterAnimator;	
+	public override void AssignTools () {
+		base.AssignTools();
 
 		_BoostCone = _Tools.BoostCone;
 		_BoostCone.SetActive(false);

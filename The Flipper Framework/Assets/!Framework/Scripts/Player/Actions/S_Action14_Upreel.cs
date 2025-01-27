@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class S_Action14_Upreel : MonoBehaviour, IMainAction
+public class S_Action14_Upreel : S_Action_Base, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -13,17 +13,8 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private Animator              _CharacterAnimator;
-	private Transform             _MainSkin;
-
-
 	[HideInInspector]
-	public S_Upreel               _currentUpreel;
+	public S_Upreel               _CurrentUpreel;
 	private Transform             _HandGripTransform;
 	#endregion
 
@@ -37,7 +28,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;
+	
 
 	private float       _speedBeforeUpreel;
 
@@ -70,17 +61,17 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 		MoveOnUpreel();
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		bool willChangeAction = false;
 		willChangeAction = true;
 		return willChangeAction;
 
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Upreel);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Upreel);
 		enabled = true;
 
 		//Set same animation as when on a zipline.
@@ -97,7 +88,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 		_PlayerPhys.SetIsGrounded(false);
 		_PlayerPhys._canChangeGrounded = false;
 
-		_currentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
+		_CurrentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
 
 	}
 
@@ -116,7 +107,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 		_Actions._ActionDefault._isAnimatorControlledExternally = false;
 
 		//Ends updates on this until a new upreel is set.
-		_currentUpreel = null;
+		_CurrentUpreel = null;
 
 		_Actions._ActionDefault.StartAction();
 	}
@@ -146,15 +137,15 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 	//Readies all the stats needed to move up an upreel over the next few updates.
 	public void StartUpreel ( Collider col ) {
 		//If not already on an upreel
-		if (_currentUpreel != null) { return; }
+		if (_CurrentUpreel != null) { return; }
 
 
 		//Activates the upreel to start retracting. See PulleyActor class for more.
 		//Sets currentUpreel. See FixedUpdate() above for more.
-		_currentUpreel = col.gameObject.GetComponentInParent<S_Upreel>();
+		_CurrentUpreel = col.gameObject.GetComponentInParent<S_Upreel>();
 
 		//If the object has the necessary scripts
-		if (_currentUpreel != null)
+		if (_CurrentUpreel != null)
 		{
 			StartAction();
 		}
@@ -163,24 +154,24 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 	//Handles player movement up an upreel when on it.
 	public void MoveOnUpreel () {
 		//Updates if the player is currently on an Upreel
-		if (_currentUpreel != null)
+		if (_CurrentUpreel != null)
 		{
 			//If the upreel is moving
-			if (_currentUpreel._isMoving)
+			if (_CurrentUpreel._isMoving)
 			{
 				_Input.LockInputForAWhile(0f, false, Vector3.zero);
 				_Actions._ActionDefault.HandleAnimator(9);
 
 				PlaceOnHandle();
-				_PlayerVel.SetBothVelocities(_currentUpreel._velocity, Vector2.right);
+				_PlayerVel.SetBothVelocities(_CurrentUpreel._velocity, Vector2.right);
 
-				_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_currentUpreel.transform.forward, Vector2.zero, _currentUpreel.transform.up);
+				_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_CurrentUpreel.transform.forward, Vector2.zero, _CurrentUpreel.transform.up);
 			}
 			//On finished
 			else
 			{
 				PlaceOnHandle ();
-				StartCoroutine(EndUpreel(_currentUpreel.transform));
+				StartCoroutine(EndUpreel(_CurrentUpreel.transform));
 			}
 		}
 	}
@@ -188,7 +179,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 	//Sets the player to the position of the Upreel including offset
 	private void PlaceOnHandle () {
 
-		Vector3 handlePosition = _currentUpreel.MoveHandleToLength();
+		Vector3 handlePosition = _CurrentUpreel.MoveHandleToLength();
 		Vector3 HandPos = transform.position - _HandGripTransform.position;
 		_PlayerPhys.SetPlayerPosition(handlePosition + HandPos);
 	}
@@ -201,7 +192,7 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 
 		//Launched over the lip the Upreel was on, then starts falling.
 		_PlayerVel.SetCoreVelocity(Vector3.zero);
-		_PlayerVel.SetEnvironmentalVelocity(new Vector3(0, Upreel.up.y * _currentUpreel._launchUpwardsForce, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
+		_PlayerVel.SetEnvironmentalVelocity(new Vector3(0, Upreel.up.y * _CurrentUpreel._launchUpwardsForce, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
 
 		StopAction();
 
@@ -223,42 +214,15 @@ public class S_Action14_Upreel : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Homing)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
 
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
-
-		_MainSkin = _Tools.MainSkin;
-		_CharacterAnimator = _Tools.CharacterAnimator;
+	public override void AssignTools () {
+		base.AssignTools();
 		_HandGripTransform = _Tools.HandGripPoint;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_upreelSpeedKeptAfter_ = _Tools.Stats.ObjectInteractions.upreelSpeedKeptAfter;
 		_minimumSpeedCarried_ = _Tools.Stats.ObjectInteractions.minimumSpeedCarried;
 	}

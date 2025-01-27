@@ -3,31 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Cinemachine.DocumentationSortingAttribute;
 
-public class S_SubAction_Skid : MonoBehaviour, ISubAction
+public class S_SubAction_Skid : S_Action_Base, ISubAction
 {
-
-
-
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
 	#region properties
 
-	//Unity
-	#region Unity Specific Properties
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerMovement	_PlayerMovement;
-	private S_CharacterTools      _Tools;
-	private S_PlayerInput         _Input;
-	private S_Control_SoundsPlayer _Sounds;
-	private S_ActionManager       _Actions;
 
-	#endregion
-
-	//General
-	#region General Properties
 
 	//Stats
 	#region Stats
@@ -45,10 +29,9 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	// Trackers
 	#region trackers
 	public bool         _isSkidding;
-	private S_GeneralEnums.PrimaryPlayerStates _whatCurrentAction;
+	private S_S_ActionHandling.PrimaryPlayerStates _whatCurrentAction;
 	#endregion
 
-	#endregion
 	#endregion
 
 	/// <summary>
@@ -57,21 +40,12 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Awake () {
-		if(_Tools == null)
-		{
-			AssignTools();
-			AssignStats();
-		}
-	}
-
-	// Update is called once per frame
-	void Update () {
-
+	private void OnEnable () {
+		ReadyAction();
 	}
 
 	private void FixedUpdate () {
+		if(!_Actions) { return; }
 		if(_whatCurrentAction != _Actions._whatCurrentAction) 
 		{ 
 			StopAction();
@@ -81,14 +55,14 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	}
 
 	//Called when attempting to perform an action, checking and preparing inputs.
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		bool willStartAction = false;
 		_whatCurrentAction = _Actions._whatCurrentAction;
 
 		//Different actions require different skids, even though they all call this function.
 		switch (_Actions._whatCurrentAction)
 		{
-			case S_GeneralEnums.PrimaryPlayerStates.Default:
+			case S_S_ActionHandling.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._isGrounded)
 				{
 					willStartAction = TryRegularSkid();
@@ -99,14 +73,14 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 				}
 				break;
 
-			case S_GeneralEnums.PrimaryPlayerStates.Jump:
+			case S_S_ActionHandling.PrimaryPlayerStates.Jump:
 				willStartAction = TryJumpSkid();
 				break;
 
-			case S_GeneralEnums.PrimaryPlayerStates.SpinCharge:
+			case S_S_ActionHandling.PrimaryPlayerStates.SpinCharge:
 				willStartAction = TrySpinSkid();
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.Homing:
+			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
 				willStartAction = _Actions._ObjectForActions.GetComponent<S_Action02_Homing>().TryHomingSkid();
 				break;
 
@@ -115,10 +89,10 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	}
 
 	//Called when skidding is started and _isSkiddin is used to prevent the sound being played multiple times.
-	public void StartAction(bool overwrite = false) {
+	new public void StartAction(bool overwrite = false) {
 		if (!_isSkidding)
 		{
-			_Actions._whatSubAction = S_GeneralEnums.SubPlayerStates.Skidding;
+			_Actions._whatSubAction = S_S_ActionHandling.SubPlayerStates.Skidding;
 			if (!enabled) { enabled = true; }
 
 			_Sounds.SkiddingSound();
@@ -221,17 +195,12 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	/// </summary>
 	#region Assigning
 
-	private void AssignTools() {
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_Sounds = _Tools.SoundControl;
-		_Actions = _Tools._ActionManager;
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
+	public override void AssignTools() {
+
+		base.AssignTools();
 	}
 
-	private void AssignStats() {
+	public override void AssignStats() {
 		_regularSkiddingIntensity_ = _Tools.Stats.SkiddingStats.skiddingIntensity;
 		_airSkiddingIntensity_ = _Tools.Stats.SkiddingStats.skiddingIntensity;
 		_canSkidInAir_ = _Tools.Stats.SkiddingStats.canSkidInAir;

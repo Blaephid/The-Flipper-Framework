@@ -114,7 +114,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	private void CheckForWall () {
 		Vector3 origin = transform.position - _MainSkin.up * 0.4f;
 
-		if (_Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None, S_GeneralEnums.PlayerSituationalStates.WallClimbing))
+		if (_Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.WallClimbing))
 		{
 			if (IsInputtingInCharacterAngle(_MainSkin.forward) && IsRunningFastEnough(40))
 			{
@@ -129,7 +129,7 @@ public class S_Handler_WallActions : MonoBehaviour
 		}
 
 		//If running AttemptAction is being called.
-		if (_Actions.IsActionConnectedToCurrentAction(S_GeneralEnums.PlayerControlledStates.None, S_GeneralEnums.PlayerSituationalStates.WallRunning))
+		if (_Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.WallRunning))
 		{
 			//Offset origin
 			origin -= _MainSkin.forward * 0.2f;

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 
-public class S_Action11_JumpDash : MonoBehaviour, IMainAction
+public class S_Action11_JumpDash : S_Action_Base, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -12,20 +12,9 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerMovement      _PlayerMovement;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer _HomingTrailScript;
-	private S_Handler_Camera      _CamHandler;
-	private S_Control_SoundsPlayer          _Sounds;
 	private S_Control_EffectsPlayer         _Effects;
 
-	private Animator    _CharacterAnimator;
-	private Transform   _MainSkin;
-	private GameObject  _JumpBall;
 	#endregion
 
 
@@ -55,7 +44,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
+	
 
 	public float        _skinRotationSpeed;
 
@@ -89,13 +78,13 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		CheckTimer();
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		bool willChangeAction = false;
 
 		switch (_Actions._whatCurrentAction)
 		{
 			//Regular requires a seperate check in addition to other actions.
-			case S_GeneralEnums.PrimaryPlayerStates.Default:
+			case S_S_ActionHandling.PrimaryPlayerStates.Default:
 				if (_Actions._ActionDefault._canDashDuringFall_)
 				{
 					if (CheckDash())
@@ -105,7 +94,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 					}
 				}
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.WallClimbing:
+			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
 				if (CheckDash())
 				{
 					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(30, 8, 0, true));
@@ -113,7 +102,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 					StartAction();
 				}
 				break;
-			case S_GeneralEnums.PrimaryPlayerStates.WallRunning:
+			case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
 				if (CheckDash())
 				{
 					SetStartDirection(_Actions._dashAngle);
@@ -138,7 +127,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		}
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Effects
@@ -186,7 +175,7 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 		_PlayerVel.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
 		_PlayerVel.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.JumpDash);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.JumpDash);
 		this.enabled = true;
 	}
 
@@ -328,46 +317,15 @@ public class S_Action11_JumpDash : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.JumpDash)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_Sounds = _Tools.SoundControl;
+	public override void AssignTools () {
+		base.AssignTools();
 		_Effects = _Tools.EffectsControl;
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
 		_HomingTrailScript = _Tools.HomingTrailScript;
-		_JumpBall = _Tools.JumpBall;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_airDashSpeed_ = _Tools.Stats.JumpDashStats.dashSpeed;
 		_airDashIncrease_ = _Tools.Stats.JumpDashStats.dashIncrease;
 		_turnSpeed_ = _Tools.Stats.JumpDashStats.turnSpeed;

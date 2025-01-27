@@ -228,9 +228,8 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 #endregion
 
 	public void CustomOnSceneGUI ( SceneView sceneView ) {
-
 		//Only draw select handle if not already selected.
-		if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null, 0)) { return; }
+		if (transform == null || S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null, 0)) { return; }
 
 		if (gameObject == null || transform == null) { return; }
 

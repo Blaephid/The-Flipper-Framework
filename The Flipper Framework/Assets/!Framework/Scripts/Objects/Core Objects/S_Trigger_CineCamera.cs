@@ -25,7 +25,7 @@ public class S_Trigger_CineCamera : S_Trigger_Base, ITriggerable
 
 	[Header("Works with these actions")]
 	[Tooltip("Waits until the player is in one of the following actions before triggering the camera. Allow more control, as large triggers can sometimes be cumbersome.")]
-	public S_GeneralEnums.PrimaryPlayerStates[]    _ListOfActionsThisWorksOn;
+	public S_S_ActionHandling.PrimaryPlayerStates[]    _ListOfActionsThisWorksOn;
 	[Tooltip("If true, the camera will deactivate if the player enters an action not in the above list.")]
 	public bool                             _willDeactivateCameraIfActonChanges = false;
 

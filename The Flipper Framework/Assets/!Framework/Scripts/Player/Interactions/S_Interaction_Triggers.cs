@@ -50,27 +50,6 @@ public class S_Interaction_Triggers : MonoBehaviour
 		}
 	}
 
-
-	public void EventTriggerEnter ( Collider Col ) {
-		switch (Col.tag)
-		{
-			case "Switch":
-				if (Col.GetComponent<S_Data_Switch>() != null)
-				{
-					Col.GetComponent<S_Data_Switch>().Activate();
-				}
-				break;
-
-			case "HintRing":
-				ActivateHintBox(Col);
-				break;
-
-
-			case "Player Effects":
-				ApplyEffectsOnPlayer(Col); break;
-		}
-	}
-
 	#endregion
 
 	/// <summary>
@@ -79,7 +58,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 	/// 
 	#region private
 	
-	private void ApplyEffectsOnPlayer ( Collider Col ) {
+	public void ApplyEffectsOnPlayer ( Collider Col ) {
 
 		if (!Col.TryGetComponent(out S_Trigger_PlayerEffect Effects)) { return; }
 
@@ -99,7 +78,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 			_Input.LockInputForAWhile(Effects._lockPlayerInputFor, true, Vector3.zero, Effects._LockInputTo_);
 	}
 
-	private void ActivateHintBox ( Collider Col ) {
+	public void ActivateHintBox ( Collider Col ) {
 		if (!Col.TryGetComponent(out S_Data_HintRing HintRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 
 		if (Col.gameObject == _CoreUIElements.HintBox._CurrentHintRing) { return; } //Do not perform function if this hint is already being displayed in the hintBox. Prevents restarting a hint when hitting it multiple times until its complete.

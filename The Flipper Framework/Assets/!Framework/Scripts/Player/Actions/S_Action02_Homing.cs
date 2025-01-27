@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEditor;
 
 [RequireComponent(typeof(S_Handler_HomingAttack))]
-public class S_Action02_Homing : MonoBehaviour, IMainAction
+public class S_Action02_Homing : S_Action_Base, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -13,18 +13,9 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerMovement	_PlayerMovement;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
 	private S_VolumeTrailRenderer  _HomingTrailScript;
 	private S_Handler_HomingAttack _HomingHandler;
-	private S_Control_SoundsPlayer  _Sounds;
 
-	private GameObject            _JumpBall;
-	private Animator              _CharacterAnimator;
 	private Transform             _Skin;
 	[HideInInspector]
 	public Transform              _Target;
@@ -57,7 +48,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
+	
 
 	public float        _skinRotationSpeed = 7;
 
@@ -112,7 +103,7 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	}
 
 	//Called when checking if this action is to be performed, including inputs.
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
 		//Depending on stats, this can only be performed when grounded.
 		if (!_PlayerPhys._isGrounded || _CanBePerformedOnGround_)
 		{
@@ -131,10 +122,10 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
-		_Actions.ChangeAction(S_GeneralEnums.PrimaryPlayerStates.Homing);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Homing);
 		enabled = true;
 
 		ReadyAction();
@@ -482,45 +473,15 @@ public class S_Action02_Homing : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_GeneralEnums.PrimaryPlayerStates.Homing)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
-		_Actions = _Tools._ActionManager;
+	public override void AssignTools () {
+		base.AssignTools();
 		_HomingHandler = GetComponent<S_Handler_HomingAttack>();
-		_Sounds = _Tools.SoundControl;
-		_Skin = _Tools.MainSkin;
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
 		_HomingTrailScript = _Tools.HomingTrailScript;
-		_JumpBall = _Tools.JumpBall;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_homingAttackSpeed_ = _Tools.Stats.HomingStats.attackSpeed;
 		_homingTimerLimit_ = _Tools.Stats.HomingStats.timerLimit;
 		_CanBePerformedOnGround_ = _Tools.Stats.HomingStats.canBePerformedOnGround;
