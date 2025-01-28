@@ -462,7 +462,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		Vector3 direction = DashRingScript._launchData_._direction_;
 
 
-		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo.position);
+		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col);
 		ObjectRotatesCamera(Col, DashRingScript._cameraEffect);
 	}
 
@@ -484,13 +484,9 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	}
 
-	private Vector3 SnapToObject (Collider Col ,Transform snapTo) {
+	private Vector3 SnapToObject (Collider Col ,Vector3 snapTo) {
 		//For consistency, ensure player always launches out of ring of off booster from the same point.
-		Vector3 snapPosition;
-		if (snapTo != null)
-			snapPosition = snapTo.position;
-		else
-			snapPosition = Col.transform.position;
+		Vector3 snapPosition = Col.transform.position + (Col.transform.rotation * snapTo);
 
 		snapPosition -= _PlayerPhys._feetOffsetFromCentre; //Because on ground, feet should be set to pad position.
 		_PlayerPhys.SetPlayerPosition(snapPosition);
@@ -513,7 +509,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
 
-		//Sets player to immediately face upwards to launch direction is always correct.
+		//Sets player to immediately face upwards so launch direction is always correct.
 		_PlayerPhys.SetPlayerRotation(Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation, true);
 
 		//Returns air actions
@@ -530,7 +526,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Effect on movement
 		if (launchData._lockInputFrames_ > 0)
 		{
-			_Input.LockInputForAWhile(launchData._lockInputFrames_, false, Vector3.zero, launchData._lockInputTo_);
+			_Input.LockInputForAWhile(launchData._lockInputFrames_, false, launchData._direction_, launchData._lockInputTo_);
 		}
 
 		//Because this is to launch the player through the sky, certain stats can have different gravities. This ensures characters will always fall the same way by overwriting their stats until landing.
@@ -588,12 +584,12 @@ public class S_Interaction_Objects : MonoBehaviour
 				newCoreVelocity = combinedVelocityMagnitude;
 			}
 
-			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity));
+			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, Col));
 		}
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else
 		{
-			LaunchInDirection(direction, SpringScript._launchData_._force_, SpringScript.transform.position);
+			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col);
 		}
 
 
@@ -612,7 +608,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
-	private void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition ) {
+	private void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Collider Col ) {
 		//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
 		//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
 		//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
@@ -636,11 +632,11 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		launchHorizontalVelocity = _PlayerVel.transform.TransformDirection(launchHorizontalVelocity);
 
-		StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed));
+		StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed, Col));
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
-	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 position, Vector3 coreVelocity, int frames = 3 ) {
+	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 position, Vector3 coreVelocity, Collider Col, int frames = 3) {
 
 		_Actions._canChangeActions = false;
 		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.
@@ -661,7 +657,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		for (int i = 0 ; i < frames ; i++)
 		{
 			_Actions._ActionDefault.StartAction(); //Ensures player cant change into another action, like a rail, while hitting a spring.
-			_PlayerPhys.SetPlayerPosition(position);
+			SnapToObject(Col, position);
 			_PlayerVel.SetCoreVelocity(Vector3.zero, "Overwrite");
 			_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
@@ -669,7 +665,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		_Actions._canChangeActions = true;
 
-		_PlayerPhys.SetPlayerPosition(position); //Ensures player is set to inside of spring, so bounce is consistant. 
+		SnapToObject(Col, position); ; //Ensures player is set to inside of spring, so bounce is consistant. 
 
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 
@@ -680,7 +676,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	//Until the players hit the ground, all gravity calculations will use the set gravity value.
 	private IEnumerator LockPlayerGraivtyUntilGrounded ( Vector3 newGrav ) {
 
-		if (newGrav == Vector3.zero) yield return null;
+		if (newGrav == Vector3.zero) yield break;
 
 		//Set to new value
 		_PlayerPhys._currentFallGravity = newGrav;

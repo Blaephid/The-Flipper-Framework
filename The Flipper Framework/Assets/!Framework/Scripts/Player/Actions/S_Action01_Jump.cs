@@ -334,6 +334,7 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 			//Prevents holding jump to keep doing so forever.
 			_Input._JumpPressed = false;
 
+			_Actions._ActionDefault.SwitchSkin(true);
 			_Actions._ActionDefault.StartAction();
 		}
 	}

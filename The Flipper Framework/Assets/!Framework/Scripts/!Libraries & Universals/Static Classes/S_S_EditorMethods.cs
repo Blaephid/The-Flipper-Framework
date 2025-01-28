@@ -127,7 +127,7 @@ public class S_S_EditorMethods : MonoBehaviour
 		if(ObjectList != null) for (int i = 0 ; i < ObjectList.Length ; i++) {if (IsSelected(ObjectList[i])){ return true;}}
 
 		//Checks if any immediate children are selected
-		if(childrenLevels > 0)
+		if(childrenLevels > 0 && transform.childCount > 0)
 			if (IsChildSelected(transform)) return true;
 
 		//Goes through multiple levels to see if any are selected (E.g. Children, Children's children, Children's Children's children.)

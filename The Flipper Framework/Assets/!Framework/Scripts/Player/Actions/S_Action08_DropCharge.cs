@@ -62,11 +62,12 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	// Update is called once per frame
 	void Update () {
 		//Set Animator Parameters
-		_Actions._ActionDefault.HandleAnimator(1);
 		_Actions._ActionDefault.SetSkinRotationToVelocity(_Actions._ActionDefault._skinRotationSpeed);
 	}
 
 	private void FixedUpdate () {
+		_Actions._ActionDefault.HandleAnimator(1);
+
 		HandleInputs();
 
 		ChargeDash();
@@ -166,6 +167,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 		//If coroutine is not stopped or interupted, then end the action
 		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.DropCharge)
 		{
+			_Actions._ActionDefault.SwitchSkin(true);
 			_Actions._ActionDefault._animationAction = 1;
 			_Actions._ActionDefault.StartAction();
 		}
@@ -271,6 +273,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 			_CamHandler._HedgeCam.ChangeHeight(20, 15f); //Ensures camera will go behind the player as they launch forwards from falling.
 		}
 
+		_Actions._ActionDefault.SwitchSkin(true);
 		_Actions._ActionDefault.StartAction();
 	}
 

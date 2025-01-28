@@ -601,7 +601,6 @@ GameObject:
   - component: {fileID: 1691384221}
   - component: {fileID: 1691384220}
   - component: {fileID: 1691384224}
-  - component: {fileID: 1691384225}
   - component: {fileID: 1691384226}
   m_Layer: 5
   m_Name: Title Canvas
@@ -715,20 +714,6 @@ MonoBehaviour:
   _BlackFade: {fileID: 1417137427}
   _framesToFadeInOnLoad: 30
   _framesToFadeOutOnStart: 30
---- !u!114 &1691384225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1691384219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9389ad2037aa43a4b993a85780b13f7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Music: {fileID: 24100000, guid: 5b2adb18cd095f64abcec84adf245fa1, type: 2}
-  Sfx: {fileID: 24100000, guid: 52ecf63b219f6844eadf60e95393e9ae, type: 2}
 --- !u!82 &1691384226
 AudioSource:
   m_ObjectHideFlags: 0

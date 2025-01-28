@@ -24,6 +24,8 @@ public class S_PlayerVelocity : MonoBehaviour
 	public Vector3                _environmentalVelocity;       //Environmental velocity is the velocity applied by external forces, such as springs, fans and more.
 	[HideInInspector]
 	public Vector3                _totalVelocity;               //The combination of core and environmetal velocity determening actual movement direction and speed in game.
+							[HideInInspector]
+	public Vector3                _totalVelocityLocal;          //The speed above but relative to the players rotation.
 	[HideInInspector]
 	public Vector3                _worldVelocity;               //This is set at the start of a frame as a temporary total velocity, based on the actual velocity in physics. So Total Velocity is set, then affected by collision after the FixedUpdate, then adjusted by TrackAndChangeVelocity, then set here.
 	[HideInInspector]
@@ -267,6 +269,8 @@ public class S_PlayerVelocity : MonoBehaviour
 		{
 			_totalVelocity += _listOfVelocityToAddThisUpdate[i];
 		}
+
+		_totalVelocityLocal = transform.InverseTransformDirection(_totalVelocity);
 
 		//Clear the lists to prevent forces carrying over multiple frames.
 		_listOfCoreVelocityToAdd.Clear();

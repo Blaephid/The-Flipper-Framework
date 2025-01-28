@@ -23,6 +23,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3438945507790368113}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,7 +33,6 @@ Transform:
   - {fileID: 3451855950167031811}
   - {fileID: 3451855950728764934}
   m_Father: {fileID: 3451855950444054797}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3451855950167031810
 GameObject:
@@ -44,7 +44,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3451855950167031811}
   - component: {fileID: 3451855950167031836}
-  - component: {fileID: 8869328478442654825}
   m_Layer: 23
   m_Name: HomingTargets
   m_TagString: Untagged
@@ -59,13 +58,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3451855950167031810}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2435388164236791690}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3451855950167031836
 MonoBehaviour:
@@ -79,54 +78,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateThis: 0
-  justStart: 1
-  onlyOne: 0
-  none: 0
-  onEnd: 1
-  prefab: {fileID: 1334624118752866, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213, type: 3}
-  asPrefab: 0
-  scale: 1
-  scaleRange: 0
-  spacing: 153.02
-  spacingRange: 0
-  offset: 0
-  offsetRange: 0
-  Offset3d: {x: 0, y: 0, z: 0}
-  offsetRotation: {x: 0, y: 0, z: 0}
-  initialSpacing: 0
-  EndingSpacing: 0
-  isRandomYaw: 0
-  randomSeed: 0
-  alingwithterrain: 0
---- !u!114 &8869328478442654825
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3451855950167031810}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
-  isBooster: 0
-  speed: 0
-  setRailSpeed: 0
-  addRailSpeed: 0
-  isSpring: 0
-  force: 100
-  LockControl: 1
-  LockTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  toUpdate: 1
+  _maxNumber_: 0
+  _spaceFromStart_: 0
+  _spaceFromEnd_: 0
+  _addOnStart_: 1
+  _addOnEnd_: 1
+  _PrefabToPlace_: {fileID: 1334624118752866, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
+    type: 3}
+  _placeAsPrefab_: 1
+  _DataForPrefabs: {fileID: 0}
+  _scaleRange_: {x: 1, y: 1}
+  _spacingRange_: {x: 20, y: 20}
+  _offset3d_: {x: 0, y: 0, z: 0}
+  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 0
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &3451855950444054796
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,6 +119,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3451855950444054796}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -161,7 +129,6 @@ Transform:
   - {fileID: 6149141968731903501}
   - {fileID: 6149141967069890982}
   m_Father: {fileID: 3451855951069640689}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3451855950444054799
 MonoBehaviour:
@@ -230,7 +197,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3451855950728764934}
   - component: {fileID: 3451855950728764935}
-  - component: {fileID: 232761687261984650}
   m_Layer: 23
   m_Name: RailCollision
   m_TagString: Untagged
@@ -245,13 +211,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3451855950728764933}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2435388164236791690}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3451855950728764935
 MonoBehaviour:
@@ -265,54 +231,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateThis: 0
-  justStart: 0
-  onlyOne: 0
-  none: 0
-  onEnd: 0
-  prefab: {fileID: 839480660917174404, guid: beddb481e3513af4097bb599f4c39f4b, type: 3}
-  asPrefab: 0
-  scale: 1
-  scaleRange: 0
-  spacing: 9
-  spacingRange: 0
-  offset: 0
-  offsetRange: 0
-  Offset3d: {x: 0, y: 0, z: 2.67}
-  offsetRotation: {x: 90, y: 0, z: 0}
-  initialSpacing: 0
-  EndingSpacing: 0
-  isRandomYaw: 0
-  randomSeed: 0
-  alingwithterrain: 0
---- !u!114 &232761687261984650
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3451855950728764933}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
-  isBooster: 0
-  speed: 0
-  setRailSpeed: 0
-  addRailSpeed: 0
-  isSpring: 0
-  force: 100
-  LockControl: 1
-  LockTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  toUpdate: 1
+  _maxNumber_: -1
+  _spaceFromStart_: 0
+  _spaceFromEnd_: 0
+  _addOnStart_: 0
+  _addOnEnd_: 0
+  _PrefabToPlace_: {fileID: 839480660917174404, guid: beddb481e3513af4097bb599f4c39f4b,
+    type: 3}
+  _placeAsPrefab_: 1
+  _DataForPrefabs: {fileID: 0}
+  _scaleRange_: {x: 1, y: 1}
+  _spacingRange_: {x: 8, y: 8}
+  _offset3d_: {x: 0, y: 0, z: 0}
+  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 0
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &3451855951069640688
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,6 +270,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3451855951069640688}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -49, y: 9.1, z: -23.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -343,7 +278,6 @@ Transform:
   m_Children:
   - {fileID: 3451855950444054797}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3451855951095869128
 GameObject:
@@ -369,13 +303,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3451855951095869128}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2435388164236791690}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3451855951095869130
 MonoBehaviour:
@@ -389,8 +323,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 174367e175762fb48ba55d6171e99990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateAll: 0
-  UpdateThis: 0
   mesh: {fileID: 2534964839176971238, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
   material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
   physicMaterial: {fileID: 0}
@@ -408,6 +340,7 @@ MonoBehaviour:
   showEndDir: 0
   showStartDir: 0
   mode: 1
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &6149141966842531106
 GameObject:
   m_ObjectHideFlags: 0
@@ -418,7 +351,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6149141966842531107}
   - component: {fileID: 6149141966842531104}
-  - component: {fileID: 264017876224788565}
   m_Layer: 23
   m_Name: RailCollision
   m_TagString: Untagged
@@ -433,13 +365,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6149141966842531106}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6149141968731903501}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6149141966842531104
 MonoBehaviour:
@@ -453,54 +385,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateThis: 0
-  justStart: 0
-  onlyOne: 0
-  none: 0
-  onEnd: 0
-  prefab: {fileID: 839480660917174404, guid: beddb481e3513af4097bb599f4c39f4b, type: 3}
-  asPrefab: 0
-  scale: 1
-  scaleRange: 0
-  spacing: 9
-  spacingRange: 0
-  offset: 0
-  offsetRange: 0
-  Offset3d: {x: 10, y: 0, z: 2.67}
-  offsetRotation: {x: 90, y: 0, z: 0}
-  initialSpacing: 0
-  EndingSpacing: 0
-  isRandomYaw: 0
-  randomSeed: 0
-  alingwithterrain: 0
---- !u!114 &264017876224788565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6149141966842531106}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
-  isBooster: 0
-  speed: 0
-  setRailSpeed: 0
-  addRailSpeed: 0
-  isSpring: 0
-  force: 100
-  LockControl: 1
-  LockTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  toUpdate: 1
+  _maxNumber_: -1
+  _spaceFromStart_: 0
+  _spaceFromEnd_: 0
+  _addOnStart_: 0
+  _addOnEnd_: 0
+  _PrefabToPlace_: {fileID: 839480660917174404, guid: beddb481e3513af4097bb599f4c39f4b,
+    type: 3}
+  _placeAsPrefab_: 1
+  _DataForPrefabs: {fileID: 0}
+  _scaleRange_: {x: 1, y: 1}
+  _spacingRange_: {x: 8, y: 8}
+  _offset3d_: {x: 10, y: 0, z: 0}
+  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 0
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &6149141967069890977
 GameObject:
   m_ObjectHideFlags: 0
@@ -524,6 +424,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6149141967069890977}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -533,7 +434,6 @@ Transform:
   - {fileID: 6149141967462350158}
   - {fileID: 6149141967202086787}
   m_Father: {fileID: 3451855950444054797}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6149141967149543594
 GameObject:
@@ -545,7 +445,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6149141967149543595}
   - component: {fileID: 6149141967149543592}
-  - component: {fileID: 7721873007183414753}
   m_Layer: 23
   m_Name: HomingTargets
   m_TagString: Untagged
@@ -560,13 +459,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6149141967149543594}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6149141968731903501}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6149141967149543592
 MonoBehaviour:
@@ -580,54 +479,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateThis: 0
-  justStart: 1
-  onlyOne: 0
-  none: 0
-  onEnd: 1
-  prefab: {fileID: 1334624118752866, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213, type: 3}
-  asPrefab: 0
-  scale: 1
-  scaleRange: 0
-  spacing: 153.02
-  spacingRange: 0
-  offset: 0
-  offsetRange: 0
-  Offset3d: {x: 0, y: 0, z: 0}
-  offsetRotation: {x: 0, y: 0, z: 0}
-  initialSpacing: 0
-  EndingSpacing: 0
-  isRandomYaw: 0
-  randomSeed: 0
-  alingwithterrain: 0
---- !u!114 &7721873007183414753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6149141967149543594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
-  isBooster: 0
-  speed: 0
-  setRailSpeed: 0
-  addRailSpeed: 0
-  isSpring: 0
-  force: 100
-  LockControl: 1
-  LockTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  toUpdate: 1
+  _maxNumber_: 0
+  _spaceFromStart_: 0
+  _spaceFromEnd_: 0
+  _addOnStart_: 1
+  _addOnEnd_: 1
+  _PrefabToPlace_: {fileID: 1334624118752866, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
+    type: 3}
+  _placeAsPrefab_: 1
+  _DataForPrefabs: {fileID: 0}
+  _scaleRange_: {x: 1, y: 1}
+  _spacingRange_: {x: 20, y: 20}
+  _offset3d_: {x: 0, y: 0, z: 10}
+  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 0
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &6149141967202086786
 GameObject:
   m_ObjectHideFlags: 0
@@ -652,13 +519,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6149141967202086786}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6149141967069890982}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6149141967202086784
 MonoBehaviour:
@@ -672,8 +539,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 174367e175762fb48ba55d6171e99990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateAll: 0
-  UpdateThis: 0
   mesh: {fileID: 2534964839176971238, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
   material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
   physicMaterial: {fileID: 0}
@@ -691,6 +556,7 @@ MonoBehaviour:
   showEndDir: 0
   showStartDir: 0
   mode: 1
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &6149141967369352692
 GameObject:
   m_ObjectHideFlags: 0
@@ -715,13 +581,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6149141967369352692}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6149141968731903501}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6149141967369352698
 MonoBehaviour:
@@ -735,8 +601,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 174367e175762fb48ba55d6171e99990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateAll: 0
-  UpdateThis: 0
   mesh: {fileID: 2534964839176971238, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
   material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
   physicMaterial: {fileID: 0}
@@ -754,6 +618,7 @@ MonoBehaviour:
   showEndDir: 0
   showStartDir: 0
   mode: 1
+  _InspectorTheme: {fileID: 0}
 --- !u!1 &6149141967420740062
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,7 +629,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6149141967420740063}
   - component: {fileID: 6149141967420740060}
-  - component: {fileID: 8854021428319613210}
   m_Layer: 23
   m_Name: HomingTargets
   m_TagString: Untagged
@@ -779,13 +643,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6149141967420740062}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6149141967069890982}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6149141967420740060
 MonoBehaviour:
@@ -799,54 +663,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateThis: 0
-  justStart: 1
-  onlyOne: 0
-  none: 0
-  onEnd: 1
-  prefab: {fileID: 1334624118752866, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213, type: 3}
-  asPrefab: 0
-  scale: 1
-  scaleRange: 0
-  spacing: 153.02
-  spacingRange: 0
-  offset: 0
-  offsetRange: 0
-  Offset3d: {x: 0, y: 0, z: 0}
-  offsetRotation: {x: 0, y: 0, z: 0}
-  initialSpacing: 0
-  EndingSpacing: 0
-  isRandomYaw: 0
-  randomSeed: 0
-  alingwithterrain: 0
---- !u!114 &8854021428319613210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6149141967420740062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
-  isBooster: 0
-  speed: 0
-  setRailSpeed: 0
-  addRailSpeed: 0
-  isSpring: 0
-  force: 100
-  LockControl: 1
-  LockTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  toUpdate: 1
+  _maxNumber_: 0
+  _spaceFromStart_: 0
+  _spaceFromEnd_: 0
+  _addOnStart_: 1
+  _addOnEnd_: 1
+  _PrefabToPlace_: {fileID: 1334624118752866, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
+    type: 3}
+  _placeAsPrefab_: 1
+  _DataForPrefabs: {fileID: 0}
+  _scaleRange_: {x: 1, y: 1}
+  _spacingRange_: {x: 20, y: 20}
+  _offset3d_: {x: 0, y: 0, z: -10}
+  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 0
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &6149141967462350153
 GameObject:
   m_ObjectHideFlags: 0
@@ -857,7 +689,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6149141967462350158}
   - component: {fileID: 6149141967462350159}
-  - component: {fileID: 90881896859298313}
   m_Layer: 23
   m_Name: RailCollision
   m_TagString: Untagged
@@ -872,13 +703,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6149141967462350153}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6149141967069890982}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6149141967462350159
 MonoBehaviour:
@@ -892,54 +723,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateThis: 0
-  justStart: 0
-  onlyOne: 0
-  none: 0
-  onEnd: 0
-  prefab: {fileID: 839480660917174404, guid: beddb481e3513af4097bb599f4c39f4b, type: 3}
-  asPrefab: 0
-  scale: 1
-  scaleRange: 0
-  spacing: 9
-  spacingRange: 0
-  offset: 0
-  offsetRange: 0
-  Offset3d: {x: -10, y: 0, z: 2.67}
-  offsetRotation: {x: 90, y: 0, z: 0}
-  initialSpacing: 0
-  EndingSpacing: 0
-  isRandomYaw: 0
-  randomSeed: 0
-  alingwithterrain: 0
---- !u!114 &90881896859298313
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6149141967462350153}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRings: 0
-  spawnDistance: 400
-  respawnAuto: 0
-  respawnTime: 15
-  respawnOnDeath: 0
-  isBooster: 0
-  speed: 0
-  setRailSpeed: 0
-  addRailSpeed: 0
-  isSpring: 0
-  force: 100
-  LockControl: 1
-  LockTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  toUpdate: 1
+  _maxNumber_: -1
+  _spaceFromStart_: 0
+  _spaceFromEnd_: 0
+  _addOnStart_: 0
+  _addOnEnd_: 0
+  _PrefabToPlace_: {fileID: 839480660917174404, guid: beddb481e3513af4097bb599f4c39f4b,
+    type: 3}
+  _placeAsPrefab_: 1
+  _DataForPrefabs: {fileID: 0}
+  _scaleRange_: {x: 1, y: 1}
+  _spacingRange_: {x: 8, y: 8}
+  _offset3d_: {x: -10, y: 0, z: 0}
+  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 0
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &6149141968731903500
 GameObject:
   m_ObjectHideFlags: 0
@@ -963,6 +762,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6149141968731903500}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -972,5 +772,4 @@ Transform:
   - {fileID: 6149141966842531107}
   - {fileID: 6149141967369352693}
   m_Father: {fileID: 3451855950444054797}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

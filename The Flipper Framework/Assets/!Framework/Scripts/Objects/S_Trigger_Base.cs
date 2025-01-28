@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using templates;
@@ -13,14 +14,25 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	//Serialized
 
 	[Header("Trigger")]
-	public List<GameObject> _ObjectsToTriggerOn = new List<GameObject>();
-	public List<GameObject> _ObjectsToTriggerOff = new List<GameObject>();
-	public bool         _triggerSelf;
-	[Tooltip("if true, the code performing the trigger effect will be in a player script, and the object below will be used as a marker for current active trigger..")]
-	public bool         _isLogicInPlayScript;
+	public StrucGeneralTriggerObjects TriggerObjects = new StrucGeneralTriggerObjects()
+	{
+		_ObjectsToTriggerOn = new List<GameObject>(),
+		_ObjectsToTriggerOff = new List<GameObject>(),
+	};
+
+	[Serializable]
+	[Tooltip("This data related to general triggering of other objects, which certain triggers won't need. Will interact with the ITriggerable Interface")]
+	public struct StrucGeneralTriggerObjects {
+		public List<GameObject> _ObjectsToTriggerOn;
+		public List<GameObject> _ObjectsToTriggerOff;
+		public bool         _triggerSelf;
+		[Tooltip("if true, the code performing the trigger effect will be in a player script, and the object below will be used as a marker for current active trigger..")]
+		public bool         _isLogicInPlayScript;
+	}
+
 	[ReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
 	public GameObject _TriggerForPlayerToRead;
-	public S_EditorEnums.ColliderTypes _whatTriggerShape;
+	public S_EditorEnums.ColliderTypes _whatTriggerShape = S_EditorEnums.ColliderTypes.External;
 
 	[Header("Dev Visibility")]
 	public bool _drawAtAllTimes = true;
@@ -46,14 +58,14 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	private void OnTriggerEnter ( Collider other ) {
 		if (other.tag != "Player") { return; }
 
-		if (_triggerSelf)
+		if (TriggerObjects._triggerSelf)
 			if (TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
 
 		//Go through each given gameObject and trigger if possible.
-		for (int i = 0 ; i < _ObjectsToTriggerOn.Count ; i++)
+		for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
-			if (_ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
+			if (TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
 		}
 	}
@@ -61,14 +73,14 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	private void OnTriggerExit ( Collider other ) {
 		if (other.tag != "Player") { return; }
 
-		if (_triggerSelf)
+		if (TriggerObjects._triggerSelf)
 			if (TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
 
 		//Go through each given gameObject and trigger if possible.
-		for (int i = 0 ; i < _ObjectsToTriggerOn.Count ; i++)
+		for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
-			if (_ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
+			if (TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOff();
 		}
 	}
@@ -107,6 +119,10 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 				Sphere.isTrigger = true;
 				Sphere.radius = 0.5f;
 				break;
+			case S_EditorEnums.ColliderTypes.External:
+				S_S_EditorMethods.FindAndRemoveComponent(gameObject, typeof(BoxCollider));
+				S_S_EditorMethods.FindAndRemoveComponent(gameObject, typeof(SphereCollider));
+				break;
 		}
 
 	}
@@ -116,18 +132,18 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 #if UNITY_EDITOR
 	private void SetTriggerForPlayer () {
-		if (!_isLogicInPlayScript) { _TriggerForPlayerToRead = null; return; }
+		if (!TriggerObjects._isLogicInPlayScript) { _TriggerForPlayerToRead = null; return; }
 
 		//If set to trigger self, then this is what will be returned.
-		if (_triggerSelf) { _TriggerForPlayerToRead = gameObject; return; }
+		if (TriggerObjects._triggerSelf) { _TriggerForPlayerToRead = gameObject; return; }
 
 		//Get the class derived class using this as a type, then look for other object triggers using it too. E.G. S_Trigger_Camera will look for other S_Trigger_Cameras. And the first will be what to read.
 		System.Type scriptType = GetType();
 
-		for (int i = 0 ; i < _ObjectsToTriggerOn.Count ; i++)
+		for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
-			if (_ObjectsToTriggerOn[i].GetComponent(scriptType))
-			{ _TriggerForPlayerToRead = _ObjectsToTriggerOn[i].gameObject; return; }
+			if (TriggerObjects._ObjectsToTriggerOn[i].GetComponent(scriptType))
+			{ _TriggerForPlayerToRead = TriggerObjects._ObjectsToTriggerOn[i].gameObject; return; }
 		}
 
 		_TriggerForPlayerToRead = null;
@@ -139,16 +155,16 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	#region Gizmo Drawing
 
 	private void OnDrawGizmos () {
+		if(!enabled) { return; }
 		if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform))
 			DrawTriggerVolume(true);
 		else if (_drawAtAllTimes)
 			DrawTriggerVolume(false);
 	}
 
-	private void DrawTriggerVolume ( bool selected ) {
+	public virtual void DrawTriggerVolume ( bool selected ) {
 
 		Color colour = selected ? _selectedOutlineColour : _normalOutlineColour;
-
 
 		Vector3 size = Vector3.one;
 
@@ -201,20 +217,23 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 					break;
 				}
 
+			case S_EditorEnums.ColliderTypes.External:
+				break;
+
 		}
 
 		using (new Handles.DrawingScope(colour))
 		{
 
-			for (int i = 0 ; i < _ObjectsToTriggerOn.Count ; i++)
+			for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 			{
-				if (_ObjectsToTriggerOn[i] == null) continue;
-				Handles.DrawLine(transform.position, _ObjectsToTriggerOn[i].transform.position, 5f);
+				if (TriggerObjects._ObjectsToTriggerOn[i] == null) continue;
+				Handles.DrawLine(transform.position, TriggerObjects._ObjectsToTriggerOn[i].transform.position, 5f);
 			}
-			for (int i = 0 ; i < _ObjectsToTriggerOff.Count ; i++)
+			for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOff.Count ; i++)
 			{
-				if (_ObjectsToTriggerOff[i] == null) continue;
-				Handles.DrawDottedLine(transform.position, _ObjectsToTriggerOff[i].transform.position, 5f);
+				if (TriggerObjects._ObjectsToTriggerOff[i] == null) continue;
+				Handles.DrawDottedLine(transform.position, TriggerObjects._ObjectsToTriggerOff[i].transform.position, 5f);
 			}
 
 		}
@@ -228,8 +247,11 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 #endregion
 
 	public void CustomOnSceneGUI ( SceneView sceneView ) {
+		if(this == null) { return; }
+
 		//Only draw select handle if not already selected.
-		if (transform == null || S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null, 0)) { return; }
+		if (transform == null || S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null, 0)) 
+			{ return; }
 
 		if (gameObject == null || transform == null) { return; }
 

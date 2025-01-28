@@ -238,6 +238,8 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity,new Vector2 (3, 1), decelerationValue);
 			_physicsCoreVelocity = _PlayerPhys.HandleSlopePhysics(_physicsCoreVelocity, false);
 			_physicsCoreVelocity = _PlayerPhys.StickToGround(_physicsCoreVelocity);
+
+			_Actions._ActionDefault.SwitchSkin(true);
 		}
 		else
 		{
@@ -288,25 +290,25 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region public 
-	public void AssignForThisAutoPath ( float range, Transform PathTransform, bool isGoingBack, float startSpeed, S_Trigger_Path Path, bool willLockToStart ) {
+	public void AssignForThisAutoPath ( float range, Transform PathTransform, bool isGoingBack, float startSpeed, S_Trigger_Path.StrucAutoPathData PathData, bool willLockToStart ) {
 
 		//Setting up the path to follow
 		_pointOnSpline = range;
 		_PathTransform = PathTransform;
 
 		//Speed and direction to move this action
-		_pathMinSpeed = Path._speedLimits.x;
+		_pathMinSpeed = PathData._speedLimits_.x;
 		_PlayerMovement._currentMinSpeed = _pathMinSpeed;
-		_pathMaxSpeed = Path._speedLimits.y;
+		_pathMaxSpeed = PathData._speedLimits_.y;
 		_PlayerMovement._currentMaxSpeed = _pathMaxSpeed;
 		_playerSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed, startSpeed);
 		_playerSpeed = Mathf.Clamp(_playerSpeed, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
 
 		_isGoingBackwards = isGoingBack;
 		_moveDirection = _isGoingBackwards ? -1 : 1;
-		_canReverse = Path._canPlayerReverse;
-		_canSlow = Path._canPlayerSlow;
-		_willLockFor = Path._lockPlayerFor;
+		_canReverse = PathData._canPlayerReverse_;
+		_canSlow = PathData._canPlayerSlow_;
+		_willLockFor = PathData._lockPlayerFor_;
 
 		GetSampleOfSpline();
 		if (willLockToStart) { PlaceOnSpline(); }

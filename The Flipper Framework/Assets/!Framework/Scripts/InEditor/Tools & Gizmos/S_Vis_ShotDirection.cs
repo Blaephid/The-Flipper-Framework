@@ -172,7 +172,7 @@ public class S_Vis_ShotDirection : MonoBehaviour
 			switch (whatInput)
 			{
 				//If there is input in a direction, then player will be accelerating, so reflect that.
-				case S_GeneralEnums.LockControlDirection.CharacterForwards: 
+				case S_GeneralEnums.LockControlDirection.CharacterForwards: case S_GeneralEnums.LockControlDirection.Change: 
 					float useMod = _accellModInAir;
 					if(coreSpeed < 20)
 					{

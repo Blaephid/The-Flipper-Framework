@@ -141,12 +141,19 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 			_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
 			//Horizontal speed
 			_CharacterAnimator.SetFloat("GroundSpeed", _PlayerVel._currentRunningSpeed);
+			//How much greater running speed is then air speed. This affects what animation to perform in the air. Verti velocity is to the power of x, to make it less exponentially take more priority.
+			_CharacterAnimator.SetFloat("HorizSpeedOverVertiSpeed", _PlayerVel._currentRunningSpeed - Mathf.Pow(Mathf.Abs(_PlayerVel._totalVelocityLocal.y), 1.1f));
 			//Horizontal Input
 			_CharacterAnimator.SetFloat("HorizontalInput", Mathf.Max(_Input.moveX, _Input.moveY));
 			//Is grounded
 			_CharacterAnimator.SetBool("Grounded", _PlayerPhys._isGrounded);
 			//Is rolling
 			_CharacterAnimator.SetBool("isRolling", _PlayerPhys._isRolling);
+			if (_PlayerPhys._isRolling)
+			{
+				if(_PlayerVel._currentRunningSpeed < 1) { _CharacterAnimator.speed = 0; }
+				else { _CharacterAnimator.speed = 1; }
+			}
 		}
 		else if (_CurrentAnimator == _BallAnimator)
 		{
@@ -200,6 +207,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 
 	//Switches from one character model to another, typically used to switch between the spinball and the proper character. Every action should call this when started, and not when stopped.
 	public void SwitchSkin(bool setMainSkin) {
+		if(setMainSkin && !_SpinDashBall.enabled) { return; }
 
 		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
 
@@ -272,8 +280,17 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 				_CharacterAnimator.SetTrigger("ChangedState");
 			}
 			CancelCoyote();
+			SwitchSkin(true);
 		}
-		_Actions._ActionDefault.SwitchSkin(true);
+		else
+		{
+			//May be in a ball even in this state (like after a homing attack), so change that on land
+			if (_animationAction == 1)
+			{
+				_animationAction = 0;
+				_CharacterAnimator.SetTrigger("ChangedState");
+			}
+		}
 	}
 
 	public void EventOnGroundLost () {

@@ -17,12 +17,13 @@ public class S_ConstantSceneGUI : MonoBehaviour
 
 	void OnValidate () {
 		
-		if (_LinkedComponent == null) return;
 		ConvertComponentToEditorLogicInterface();
-		EnableEvents(null);
+		AddToDuringSceneGUI(null);
 	}
 
 	private void ConvertComponentToEditorLogicInterface () {
+		if (_LinkedComponent == null) return;
+
 		//Used two different methods to get the editor logic as a usable type, from the given component.
 		_LinkedEditorLogic = _LinkedEditorLogic as ICustomEditorLogic;
 		if (_LinkedEditorLogic == null)
@@ -33,34 +34,51 @@ public class S_ConstantSceneGUI : MonoBehaviour
 	//Attaches the given script to the builtin SceneView GUI update, so its called constaltly by that dispatcher.
 	//There is a custom inspector button below to trigger this as it won't happen when object is placed in scene.
 	public void OnEnable () {
-		EnableEvents(null);
+		if (currentlyEnabled) { return; }
+		AddToDuringSceneGUI(null);
 
 		//These seperate events track when entering the prefab editor. If these weren't here, then these would continue to call custom logic even when in a seperate mode.
-		PrefabStage.prefabStageOpened += DisableEvents;
-		PrefabStage.prefabStageClosing += EnableEvents;
+		PrefabStage.prefabStageOpened += RemoveFromDuringSceneGUI;
+		PrefabStage.prefabStageClosing += AddToDuringSceneGUI;
 	}
 
 	private void OnDisable () {
-		DisableEvents(null);
+		RemoveFromDuringSceneGUI(null);
 
 		//These seperate events track when entering the prefab editor. If these weren't here, then these would continue to call custom logic even when in a seperate mode.
-		PrefabStage.prefabStageOpened -= DisableEvents;
-		PrefabStage.prefabStageClosing -= EnableEvents;
+		PrefabStage.prefabStageOpened -= RemoveFromDuringSceneGUI;
+		PrefabStage.prefabStageClosing -= AddToDuringSceneGUI;
 	}
 
-	public void EnableEvents ( PrefabStage prefabStage ) {
+	public void AddToDuringSceneGUI ( PrefabStage prefabStage ) {
 		if (currentlyEnabled) { return; }
-		if (_LinkedEditorLogic == null) { return; }
+		else if (_LinkedEditorLogic == null)
+		{
+			ConvertComponentToEditorLogicInterface();
+			if (_LinkedEditorLogic == null)
+			{
+				return;
+			}
+		}
 
-		//Prevents the prefab assets from enabling this if not viewing them in prefab mode. If this wasn't here, all prefabs with this would call in every scene.
+		//Prevents the PREFAB ASSETS from enabling this. If this wasn't here, all prefabs with this would call in every scene, as well as their instances.
 		if (PrefabUtility.IsPartOfPrefabAsset(gameObject) && PrefabStageUtility.GetCurrentPrefabStage() == null) { return; }
 
 		currentlyEnabled = true;
 		SceneView.duringSceneGui += _LinkedEditorLogic.CustomOnSceneGUI;
 	}
-	public void DisableEvents ( PrefabStage prefabStage ) {
+	public void RemoveFromDuringSceneGUI ( PrefabStage prefabStage ) {
 		if (!currentlyEnabled) { return; }
-		if (_LinkedComponent == null) return;
+		else if (_LinkedEditorLogic == null)
+		{
+			ConvertComponentToEditorLogicInterface();
+			if (_LinkedEditorLogic == null)
+			{
+				return;
+			}
+		}
+
+
 		currentlyEnabled = false;
 
 		SceneView.duringSceneGui -= _LinkedEditorLogic.CustomOnSceneGUI;

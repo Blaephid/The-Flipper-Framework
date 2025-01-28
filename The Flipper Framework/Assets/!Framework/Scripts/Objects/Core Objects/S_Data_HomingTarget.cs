@@ -17,6 +17,7 @@ public class S_Data_HomingTarget : S_Data_Base
 
 
 	private void OnDrawGizmosSelected () {
+		if(!enabled) { return; }
 		Gizmos.color = drawColour;
 		Gizmos.DrawWireSphere(transform.position + (transform.rotation * _offset), 2);
 	}

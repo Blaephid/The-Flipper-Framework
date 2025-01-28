@@ -10,7 +10,7 @@ public class S_Data_RailBooster : S_Data_Base
 	public float	_addSpeed_ = 15;
 	public float	_speedToSet_ = 100;
 
-	public Transform    _PositionToLockTo;
+	public Vector3    _PositionToLockTo;
 
 	[Header("Effects")]
 	public S_Structs.ObjectCameraEffect _cameraEffect = new S_Structs.ObjectCameraEffect

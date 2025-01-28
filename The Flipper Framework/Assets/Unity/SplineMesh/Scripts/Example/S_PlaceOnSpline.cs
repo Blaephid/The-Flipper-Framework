@@ -40,6 +40,7 @@ namespace SplineMesh
 		[HideInInspector] public bool toUpdate = true;
 
 		[Header("Main Placement")]
+		public Vector2 _spacingRange_ = new Vector2 (20,20);
 		[Tooltip("If not negative, will not place more than this number. Use zero to prevent anything placed normally."), Min(-1)]
 		public int	_maxNumber_ = -1;
 		[Tooltip("How far along the spline until objects start being placed."), Min(-1)]
@@ -63,8 +64,7 @@ namespace SplineMesh
 		public S_Data_Base _DataForPrefabs;
 
 		[Header("Transform")]
-		public Vector2 _scaleRange_ = new Vector2(1,1);
-		public Vector2 _spacingRange_ = new Vector2 (20,20);
+		public Vector3 _scale_ = new Vector3(1,1,1);
 		public Vector3 _offset3d_, _offsetRotation_;
 
 		[Space]
@@ -97,15 +97,13 @@ namespace SplineMesh
 		}
 
 		private void OnValidate () {
-			toUpdate = true;
+			toUpdate = true; //OnValidate cant destroy anything, so tell Update to do so.
 
 			if (!_Spline) { return; }
 
 			//Ensure spacing can't go behind length of spline.
 			_spaceFromEnd_ = MathF.Min(_spaceFromEnd_, _Spline.Length);
 			_spaceFromStart_ = MathF.Min(_spaceFromStart_, _Spline.Length);
-
-			HandleDataComponentForSpawnedObjects();
 		}
 
 
@@ -116,6 +114,8 @@ namespace SplineMesh
 			{
 				PlaceAllElements();
 				toUpdate = false;
+
+				HandleDataComponentForSpawnedObjects();
 			}
 		}
 
@@ -176,8 +176,7 @@ namespace SplineMesh
 			GO.transform.position += binormal;
 
 			// apply scale
-			float rangedScale = UnityEngine.Random.Range(_scaleRange_.x, _scaleRange_.y);
-			GO.transform.localScale = new Vector3(rangedScale, rangedScale, rangedScale);
+			GO.transform.localScale = new Vector3(_scale_.x, _scale_.y, _scale_.z);
 			// rotate with random yaw
 			GO.transform.rotation = transform.rotation * sample.Rotation * Quaternion.Euler(_offsetRotation_);
 			
@@ -199,13 +198,13 @@ namespace SplineMesh
 			}
 
 		}
-		private void HandleDataComponentForSpawnedObjects () {
+		public void HandleDataComponentForSpawnedObjects (bool overwrite = false) {
 
 			//If prefab to spawn was changed
-			if (_PrefabToPlace_ != _CurrentPrefabToSpawn)
+			if (_PrefabToPlace_ != _CurrentPrefabToSpawn || overwrite)
 			{
 				_CurrentPrefabToSpawn = _PrefabToPlace_;
-				if (_DataForPrefabs != null) Destroy(_DataForPrefabs);
+				if (_DataForPrefabs != null) DestroyImmediate(_DataForPrefabs);
 				_DataForPrefabs = null;
 
 				//If the prefab to spawn inherits from the data class, add that class as a component to this, to allow full control of the spawned objects' values.
@@ -269,10 +268,14 @@ namespace SplineMesh
 			void DrawButtons () {
 				EditorGUILayout.Space(_spaceSize);
 
-				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Update", _BigButtonStyle, _OwnerScript, "Update Single Spline Meshes"))
+				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Update", _BigButtonStyle, _OwnerScript, "Update Placed Object"))
 				{
 					_OwnerScript.CheckNow();
 					_OwnerScript.PlaceAllElements();
+				}
+				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Reset Data To Default", _BigButtonStyle, _OwnerScript, "Default Data on Placed Object"))
+				{
+					_OwnerScript.HandleDataComponentForSpawnedObjects(true);
 				}
 				serializedObject.ApplyModifiedProperties();
 			}

@@ -16,7 +16,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	private S_VolumeTrailRenderer  _HomingTrailScript;
 	private S_Handler_HomingAttack _HomingHandler;
 
-	private Transform             _Skin;
 	[HideInInspector]
 	public Transform              _Target;
 	#endregion
@@ -142,7 +141,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		//Gets the direction to move in, rotate a lot faster than normal for the first frame.
 		_Target = _HomingHandler._TargetObject.transform;
 		_targetDirection = _Target.position - transform.position;
-		_currentDirection = Vector3.RotateTowards(_Skin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
+		_currentDirection = Vector3.RotateTowards(_MainSkin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
 
 		//Setting public
 		_PlayerPhys._listOfIsGravityOn.Add(false);
@@ -425,7 +424,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		for (int i = 0 ; i < duration * 0.2f && !_PlayerPhys._isGrounded ; i++)
 		{
 			//Rotation
-			_Skin.rotation = Quaternion.LookRotation(faceDirection, transform.up);
+			_MainSkin.rotation = Quaternion.LookRotation(faceDirection, transform.up);
 			yield return new WaitForFixedUpdate();
 		}
 
@@ -435,7 +434,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		for (int i = 0 ; i < duration * 0.8f && !_PlayerPhys._isGrounded ; i++)
 		{
 			//Rotation
-			_Skin.rotation = Quaternion.LookRotation(faceDirection, transform.up);
+			_MainSkin.rotation = Quaternion.LookRotation(faceDirection, transform.up);
 
 			yield return new WaitForFixedUpdate();
 		}

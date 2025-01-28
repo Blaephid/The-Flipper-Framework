@@ -21,7 +21,7 @@ public class S_Data_DashRing : S_Data_Base
 	};
 
 	[Header("Lock?")]
-	public Transform	_PositionToLockTo;
+	public Vector3	_PositionToLockTo;
 	public int	_lockControlFrames_ = 30;
 	public S_GeneralEnums.LockControlDirection _lockInputTo_;
 
