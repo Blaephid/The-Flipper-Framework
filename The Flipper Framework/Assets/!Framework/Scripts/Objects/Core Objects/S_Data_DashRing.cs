@@ -3,6 +3,7 @@ using System.Collections;
 using SplineMesh;
 
 [ExecuteInEditMode]
+[AddComponentMenu("Data Components/Dash Ring")]
 public class S_Data_DashRing : S_Data_Base
 {
 
@@ -12,8 +13,6 @@ public class S_Data_DashRing : S_Data_Base
 	public bool         _willCarrySpeed_ = true;
 
 	[Header("Effects")]
-	public float	_speedToSet_ = 100;
-
 	public S_Structs.ObjectCameraEffect _cameraEffect = new S_Structs.ObjectCameraEffect
 	{
 		_willAffectCamera_ = true,

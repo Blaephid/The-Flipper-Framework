@@ -5,9 +5,11 @@ using UnityEditor;
 using UnityEditor.TerrainTools;
 using UnityEngine;
 
+
 #if UNITY_EDITOR
 
 [CustomEditor(typeof(MonoBehaviour))]
+[CanEditMultipleObjects]
 public class S_CustomInspector_Base : Editor
 {
 	[SerializeField]

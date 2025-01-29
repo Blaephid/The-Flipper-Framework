@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class S_S_DrawingMethods 
+public class S_S_DrawingMethods
 {
 
 	//
@@ -19,11 +19,11 @@ public class S_S_DrawingMethods
 		{
 
 			//Get positions to make up arrow shape. Gizmo matrix may have been let to local or world, so respond accordingly.
-			Vector3 middle = isLocal ? Vector3.zero: transform.position;
-			Vector3 forwardFar = isLocal ? Vector3.forward * scale: transform.position + Vector3.forward * scale;
-			Vector3 forwardSmall = isLocal ? Vector3.forward * scale * 0.3f: transform.position + Vector3.forward * scale * 0.3f;
-			Vector3 right = isLocal ? Vector3.right * scale * 0.8f: transform.position + Vector3.right * scale * 0.8f;
-			Vector3 left = isLocal ? -Vector3.right * scale * 0.8f : transform.position - Vector3.right * scale * 0.8f ;
+			Vector3 middle = isLocal ? Vector3.zero : transform.position;
+			Vector3 forwardFar = isLocal ? Vector3.forward * scale : transform.position + Vector3.forward * scale;
+			Vector3 forwardSmall = isLocal ? Vector3.forward * scale * 0.3f : transform.position + Vector3.forward * scale * 0.3f;
+			Vector3 right = isLocal ? Vector3.right * scale * 0.8f : transform.position + Vector3.right * scale * 0.8f;
+			Vector3 left = isLocal ? -Vector3.right * scale * 0.8f : transform.position - Vector3.right * scale * 0.8f;
 
 			//Draw lines making up arrow. Remember that if in local space from a previous line, this should be called as isLocal so points are correct.
 			Handles.DrawLine(middle, forwardFar);
@@ -36,7 +36,9 @@ public class S_S_DrawingMethods
 	}
 
 
-	public static void DrawSelectableHandle (Vector3 handlePosition, GameObject targetObject, float size = 1) {
+	public static void DrawSelectableHandle ( Vector3 handlePosition, GameObject targetObject, float size = 1 ) {
+		Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
+
 		// Draw the sphere handle at the specified position
 		EditorGUI.BeginChangeCheck();
 		Handles.SphereHandleCap(0, handlePosition, Quaternion.identity, size, EventType.Repaint);
@@ -47,7 +49,7 @@ public class S_S_DrawingMethods
 			// Check if the mouse is over the handle (using HandleUtility.DistanceToCircle for a more precise check)
 			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.7f) < 0.5f)
 			{
-				if(IsHandleBlocked(handlePosition, targetObject)) { return; }
+				if (IsHandleBlocked(handlePosition, targetObject)) { return; }
 
 				// Select the object when the handle is clicked
 				Selection.activeObject = targetObject;

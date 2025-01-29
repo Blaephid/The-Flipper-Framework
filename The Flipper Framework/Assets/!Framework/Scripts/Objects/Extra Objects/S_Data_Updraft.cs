@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class S_Trigger_Updraft : S_Data_Base
+[AddComponentMenu("Data Components/Updraft")]
+public class S_Data_Updraft : S_Data_Base
 {
 	public Transform _Direction;
 	public AnimationCurve _FallOfByPercentageDistance =  new AnimationCurve(new Keyframe[]

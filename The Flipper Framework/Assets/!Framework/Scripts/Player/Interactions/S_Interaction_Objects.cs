@@ -132,7 +132,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				break;
 			case "Wind":
 				_numberOfWindForces += 1;
-				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
+				S_Data_Updraft UpdraftScript = Col.GetComponentInParent<S_Data_Updraft>();
 				if (UpdraftScript != null)
 				{
 					if (Col.transform.up.y > 0.7f)
@@ -220,7 +220,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				break;
 
 			case "Wind":
-				S_Trigger_Updraft UpdraftScript = Col.GetComponentInParent<S_Trigger_Updraft>();
+				S_Data_Updraft UpdraftScript = Col.GetComponentInParent<S_Data_Updraft>();
 				if (UpdraftScript != null)
 				{
 					if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing
@@ -283,7 +283,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	//Takes an origin of wind and gets how much force to apply onto the player from it, based on its power and distance in the wind direction
-	private Vector3 GetForceOfWind ( S_Trigger_Updraft UpdraftScript ) {
+	private Vector3 GetForceOfWind ( S_Data_Updraft UpdraftScript ) {
 		Vector3 direction = UpdraftScript._Direction.up;
 
 		// Create a temporary game object and place it at player position in the local space of the wind

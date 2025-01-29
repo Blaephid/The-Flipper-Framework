@@ -11,6 +11,7 @@ using static UnityEngine.Rendering.DebugUI;
 
 #if UNITY_EDITOR
 [ExecuteAlways]
+[AddComponentMenu("Data Components/Display Data")]
 public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 {
 
@@ -41,11 +42,14 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 	[Serializable]
 	public struct StrucDataToDisplay {
+		[Delayed]
 		public string variableName;
+		[Delayed]
 		public string displayName;
 		public S_EditorEnums.CasingTypes casing;
+		[Delayed]
 		public string structName;
-		[ReadOnly(true)]
+		[CustomReadOnly]
 		public string value;
 	}
 	public List<StrucDataToDisplay> _DataToDisplay;

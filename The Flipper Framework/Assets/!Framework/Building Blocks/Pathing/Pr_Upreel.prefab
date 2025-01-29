@@ -258,6 +258,8 @@ LineRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -356,6 +358,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: 1dc8c1dff8bfb4b458ca2cc2c4d43029, type: 3}
+  m_Resource: {fileID: 8300000, guid: 1dc8c1dff8bfb4b458ca2cc2c4d43029, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1

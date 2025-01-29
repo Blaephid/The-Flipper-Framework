@@ -38,4 +38,9 @@ public class S_S_MoreMathMethods
 	public static float GetLargestOfVector (Vector3 vector) {
 		return Mathf.Max(vector.x, Mathf.Max(vector.y, vector.z));
 	}
+
+	public static float GetNumberAsIncrement (float number, float increments) {
+		number = increments * (int)(number / increments);
+		return number;
+	}
 }

@@ -60,7 +60,7 @@ namespace SplineMesh
 		public bool _placeAsPrefab_ = true;
 
 		private GameObject _CurrentPrefabToSpawn;
-		[ReadOnly(true), Tooltip("Read only. If placing objects with S_Data classes, that component will be added to this object, to control all of the placed ones' values.")]
+		[CustomReadOnly, Tooltip("Read only. If placing objects with S_Data classes, that component will be added to this object, to control all of the placed ones' values.")]
 		public S_Data_Base _DataForPrefabs;
 
 		[Header("Transform")]

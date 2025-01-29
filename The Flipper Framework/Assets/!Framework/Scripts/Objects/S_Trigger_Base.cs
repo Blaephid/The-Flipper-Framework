@@ -30,15 +30,9 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		public bool         _isLogicInPlayScript;
 	}
 
-	[ReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
+	[CustomReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
 	public GameObject _TriggerForPlayerToRead;
 	public S_EditorEnums.ColliderTypes _whatTriggerShape = S_EditorEnums.ColliderTypes.External;
-
-	[Header("Dev Visibility")]
-	public bool _drawAtAllTimes = true;
-	public Color _normalOutlineColour = Color.grey;
-	public Color _selectedOutlineColour = Color.white;
-	public Color _selectedFillColour = new Color(1,1,1,0.1f);
 
 	//Trackers
 	S_ConstantSceneGUI ConstantGUI;
@@ -93,6 +87,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 #if UNITY_EDITOR
 		SetTriggerForPlayer();
+		_hasVisualisationScripted = true;
 #endif
 	}
 
@@ -154,15 +149,8 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	/// </summary>
 	#region Gizmo Drawing
 
-	private void OnDrawGizmos () {
-		if(!enabled) { return; }
-		if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform))
-			DrawTriggerVolume(true);
-		else if (_drawAtAllTimes)
-			DrawTriggerVolume(false);
-	}
 
-	public virtual void DrawTriggerVolume ( bool selected ) {
+	public override void DrawGizmosAndHandles ( bool selected ) {
 
 		Color colour = selected ? _selectedOutlineColour : _normalOutlineColour;
 
@@ -238,31 +226,19 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 		}
 
-		DrawAdditional(colour);
+		DrawTriggerAdditional(colour);
 	}
 
-	public virtual void DrawAdditional ( Color colour ) {
+	public virtual void DrawTriggerAdditional ( Color colour ) {
 
 	}
-#endregion
+	#endregion
 
+	//Inherited from ICustomEditorLogic Interface. This will be attached to the DuringSceneGUI event, or called seperately when certain objects are selected.
 	public void CustomOnSceneGUI ( SceneView sceneView ) {
 		if(this == null) { return; }
-
-		//Only draw select handle if not already selected.
-		if (transform == null || S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null, 0)) 
-			{ return; }
-
-		if (gameObject == null || transform == null) { return; }
-
-		Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
-		Color color = _selectedFillColour;
-		color.a = Mathf.Max(color.a, 0.5f);
-		using (new Handles.DrawingScope(color))
-		{
-			float handleRadius = 2 * Mathf.Clamp(S_S_MoreMathMethods.GetLargestOfVector(transform.lossyScale) / 40, 1, 20);
-			S_S_DrawingMethods.DrawSelectableHandle(transform.position, gameObject, handleRadius);
-		}
+		float handleRadius = 2 * Mathf.Clamp(S_S_MoreMathMethods.GetLargestOfVector(transform.lossyScale) / 40, 1, 20);
+		base.VisualiseWithSelectableHandle(transform.position,handleRadius);
 	}
 #endif
 }

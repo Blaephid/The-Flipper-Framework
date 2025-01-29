@@ -2,6 +2,7 @@
 using System.Collections;
 using SplineMesh;
 
+[AddComponentMenu("Data Components/Rail Booster")]
 public class S_Data_RailBooster : S_Data_Base
 {
 	[Header ("On Rail")]

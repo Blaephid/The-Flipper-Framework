@@ -3,6 +3,7 @@ using System.Collections;
 using SplineMesh;
 using System;
 
+[AddComponentMenu("Data Components/Speed Pad")]
 public class S_Data_SpeedPad : S_Data_Base
 {
 

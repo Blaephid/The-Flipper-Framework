@@ -2,6 +2,7 @@
 using System.Collections;
 
 [ExecuteInEditMode]
+[AddComponentMenu("Data Components/Spring")]
 public class S_Data_Spring : S_Data_Base
 {
 	[Header("Bounce")]

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[AddComponentMenu("Data Components/Homing Target")]
+[ExecuteInEditMode]
 public class S_Data_HomingTarget : S_Data_Base
 {
 
@@ -13,6 +15,10 @@ public class S_Data_HomingTarget : S_Data_Base
 
 	private void Start () {
 		_offset = transform.rotation * _offset;
+	}
+
+	private void OnEnable () {
+		gameObject.layer = 17;
 	}
 
 

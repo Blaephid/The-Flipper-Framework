@@ -59,6 +59,8 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -96,16 +98,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _onlyDrawWhenSelected: 1
   _debugForce: 1
   _calculations: 33
-  _SpringScript: {fileID: 3180474081878667623}
-  _DashRingScript: {fileID: 0}
-  _force: 60
-  _ShotCenter: {fileID: 3294779520160681149}
+  _LauncherScript: {fileID: 0}
+  _launcherStructName: 
   _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
     type: 2}
-  _simCoreVel: {x: 0, y: -82.438515, z: 0}
-  _simEnVel: {x: 0, y: 60, z: 0}
+  _ShotCenter: {fileID: 3294779520160681149}
+  _coreVelAtEnd: {x: 0, y: 0, z: 0}
+  _environmentalVelAtStart: {x: 0, y: 0, z: 0}
 --- !u!1 &632222330389134452
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,15 +265,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5626e6442bcc31848b513053d594ce12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _springForce_: 60
+  _InspectorTheme: {fileID: 0}
+  _launchData_:
+    _force_: 0
+    _direction_: {x: 0, y: 1, z: 0}
+    _lockInputFrames_: 0
+    _lockAirMovesFrames_: 0
+    _overwriteGravity_: {x: 0, y: 0, z: 0}
+    _lockInputTo_: 0
   _keepHorizontal_: 0
-  _BounceTransform: {fileID: 3294779520160681149}
-  _SetPlayerForwardsTo_: {fileID: 0}
-  _willLockControl_: 1
-  _lockForFrames_: 5
-  _LockInputTo_: 1
-  _overwriteGravity_: {x: 0, y: 0, z: 0}
-  _lockAirMovesTime_: 30
+  _directionOffset: {x: 0, y: 0, z: 0}
+  _changePlayerForwards: 0
 --- !u!82 &3211197611018253583
 AudioSource:
   m_ObjectHideFlags: 0
@@ -284,6 +288,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: 27af634c0d5663a42887a47fb5ed8534, type: 3}
+  m_Resource: {fileID: 8300000, guid: 27af634c0d5663a42887a47fb5ed8534, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -396,6 +401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9d02b444549974b946d5f306e77118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _InspectorTheme: {fileID: 0}
   _projectPath: 0
   _calculations: 0
   _isActive: 1

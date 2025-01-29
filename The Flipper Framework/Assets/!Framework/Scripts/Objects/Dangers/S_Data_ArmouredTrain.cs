@@ -8,6 +8,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 [ExecuteInEditMode]
+[AddComponentMenu("Data Components/Armoured Train")]
 public class S_Data_ArmouredTrain : S_Data_Base
 {
 	public bool _updateAutomatically = true;

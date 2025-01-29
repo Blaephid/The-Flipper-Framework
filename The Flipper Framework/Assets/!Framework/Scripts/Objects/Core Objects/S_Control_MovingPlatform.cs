@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.ProBuilder.MeshOperations;
 
+[AddComponentMenu("Data Components/Moving Platform")]
 public class S_Control_MovingPlatform : S_Data_Base
 {
 	[Header("Projection")]

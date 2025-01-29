@@ -1,79 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3248594116623089425
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3832994837326845982}
-  - component: {fileID: 2291800520397815345}
-  - component: {fileID: 3055586276769939596}
-  m_Layer: 6
-  m_Name: Visual
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3832994837326845982
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3248594116623089425}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1353837168800931207}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2291800520397815345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3248594116623089425}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb55659b04d9b8d489c132ea17a8988c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _whatAction: 1
-  _delayInSeconds: 0
---- !u!114 &3055586276769939596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3248594116623089425}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  toUpdate: 1
-  _maxNumber_: -1
-  _spaceFromStart_: 0
-  _spaceFromEnd_: 0
-  _addOnStart_: 0
-  _addOnEnd_: 0
-  _PrefabToPlace_: {fileID: 0}
-  _placeAsPrefab_: 1
-  _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 20, y: 20}
-  _offset3d_: {x: 0, y: 0, z: 0}
-  _offsetRotation_: {x: 0, y: 0, z: 0}
-  _alignWithTerrain_: 0
-  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &3470884239608641162
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,7 +105,7 @@ GameObject:
   - component: {fileID: 2123714891715480678}
   - component: {fileID: 4103537232935979967}
   - component: {fileID: 7603366733535493928}
-  - component: {fileID: 3184781688648079576}
+  - component: {fileID: 3965358676715686944}
   m_Layer: 0
   m_Name: ExitPlacer
   m_TagString: Untagged
@@ -210,12 +136,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7331339105601114519}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 20, y: 20}
   _maxNumber_: 0
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -224,10 +151,9 @@ MonoBehaviour:
   _PrefabToPlace_: {fileID: 8021044753016620058, guid: 400063d5599e43a4dafb4e6542f458ff,
     type: 3}
   _placeAsPrefab_: 0
-  _DataForPrefabs: {fileID: 3184781688648079576}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 20, y: 20}
-  _offset3d_: {x: 0, y: 0, z: 0}
+  _DataForPrefabs: {fileID: 3965358676715686944}
+  _scale_: {x: 10, y: 15, z: 5}
+  _offset3d_: {x: 0, y: 7, z: -6}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
@@ -238,14 +164,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7331339105601114519}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _LinkedComponent: {fileID: 0}
   _InspectorTheme: {fileID: 0}
---- !u!114 &3184781688648079576
+--- !u!114 &3965358676715686944
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -257,6 +183,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0706bea608eeab4993ab55fdbea79a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.9811321, g: 0.6004328, b: 0.254539, a: 1}
+  _selectedOutlineColour: {r: 0.8301887, g: 0.34545657, b: 0, a: 1}
+  _selectedFillColour: {r: 0.764151, g: 0.54314846, b: 0.032440357, a: 0.1}
   _InspectorTheme: {fileID: 0}
   TriggerObjects:
     _ObjectsToTriggerOn: []
@@ -264,13 +196,9 @@ MonoBehaviour:
     _triggerSelf: 0
     _isLogicInPlayScript: 0
   _TriggerForPlayerToRead: {fileID: 0}
-  _whatTriggerShape: 2
-  _drawAtAllTimes: 1
-  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
-  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isExit_: 0
-  _ExternalPathData_: {fileID: 1526100423488516725}
+  _whatTriggerShape: 0
+  _isExit_: 1
+  _ExternalPathData_: {fileID: 0}
   _PathData_:
     spline: {fileID: 0}
     _speedLimits_: {x: 30, y: 200}
@@ -278,13 +206,6 @@ MonoBehaviour:
     _canPlayerSlow_: 0
     _lockPlayerFor_: 40
     _removeVerticalVelocityOnStart_: 1
-  _willUpdateInRealTime: 1
-  _hasEnterTrigger: 1
-  _hasExitTrigger: 1
-  _enterSize: {x: 0, y: 0, z: 0}
-  _exitSize: {x: 0, y: 0, z: 0}
-  _enterOffset: {x: 0, y: 0, z: 0}
-  _exitOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &8158830363526021110
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,6 +216,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1353837168800931207}
   - component: {fileID: 6086995524063859547}
+  - component: {fileID: 2494463956189597151}
+  - component: {fileID: 1041650851684312760}
   m_Layer: 0
   m_Name: Spline
   m_TagString: Untagged
@@ -315,7 +238,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3832994837326845982}
   - {fileID: 2441854939106866388}
   - {fileID: 2123714891715480678}
   m_Father: {fileID: 5141602609996248217}
@@ -364,6 +286,40 @@ MonoBehaviour:
   CurveChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2494463956189597151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8158830363526021110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9c8b87cf845f3c4cb854007700733aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.16202681, g: 0.990566, b: 0, a: 1}
+  _selectedOutlineColour: {r: 0.19052239, g: 0.5566038, b: 0, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _distancePerCalculation: 20
+  _SplineToDisplay: {fileID: 6086995524063859547}
+--- !u!114 &1041650851684312760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8158830363526021110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _LinkedComponent: {fileID: 2494463956189597151}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &8851601047348747692
 GameObject:
   m_ObjectHideFlags: 0
@@ -375,7 +331,7 @@ GameObject:
   - component: {fileID: 2441854939106866388}
   - component: {fileID: 1214609396805707900}
   - component: {fileID: 8278718869703629696}
-  - component: {fileID: 1526100423488516725}
+  - component: {fileID: 1054549884736883239}
   m_Layer: 0
   m_Name: EnterPlacer
   m_TagString: Untagged
@@ -406,12 +362,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8851601047348747692}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 20, y: 20}
   _maxNumber_: 0
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -420,10 +377,9 @@ MonoBehaviour:
   _PrefabToPlace_: {fileID: 1959056939398486574, guid: 968c6d6f0960d8e479a48a605fda54e4,
     type: 3}
   _placeAsPrefab_: 0
-  _DataForPrefabs: {fileID: 1526100423488516725}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 20, y: 20}
-  _offset3d_: {x: 0, y: 0, z: 0}
+  _DataForPrefabs: {fileID: 1054549884736883239}
+  _scale_: {x: 10, y: 15, z: 5}
+  _offset3d_: {x: 0, y: 7, z: 6}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
@@ -434,14 +390,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8851601047348747692}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _LinkedComponent: {fileID: 0}
   _InspectorTheme: {fileID: 0}
---- !u!114 &1526100423488516725
+--- !u!114 &1054549884736883239
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -453,6 +409,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0706bea608eeab4993ab55fdbea79a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.9811321, g: 0.6004328, b: 0.254539, a: 1}
+  _selectedOutlineColour: {r: 0.8301887, g: 0.34545657, b: 0, a: 1}
+  _selectedFillColour: {r: 0.764151, g: 0.54314846, b: 0.032440357, a: 0.1}
   _InspectorTheme: {fileID: 0}
   TriggerObjects:
     _ObjectsToTriggerOn: []
@@ -460,11 +422,7 @@ MonoBehaviour:
     _triggerSelf: 0
     _isLogicInPlayScript: 0
   _TriggerForPlayerToRead: {fileID: 0}
-  _whatTriggerShape: 2
-  _drawAtAllTimes: 1
-  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
-  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _whatTriggerShape: 0
   _isExit_: 0
   _ExternalPathData_: {fileID: 0}
   _PathData_:
@@ -474,10 +432,3 @@ MonoBehaviour:
     _canPlayerSlow_: 0
     _lockPlayerFor_: 40
     _removeVerticalVelocityOnStart_: 1
-  _willUpdateInRealTime: 1
-  _hasEnterTrigger: 1
-  _hasExitTrigger: 1
-  _enterSize: {x: 0, y: 0, z: 0}
-  _exitSize: {x: 0, y: 0, z: 0}
-  _enterOffset: {x: 0, y: 0, z: 0}
-  _exitOffset: {x: 0, y: 0, z: 0}

@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections;
 
 [ExecuteInEditMode]
+[AddComponentMenu("Data Components/Checkpoint")]
 public class S_Data_Checkpoint :  S_Data_Base
 {
 	public string _checkPointName = "X1";

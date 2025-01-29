@@ -83,7 +83,7 @@ public class S_Trigger_CineCamera : S_Trigger_Base, ITriggerable
 			FaceCinematicCameraIn();
 	}
 
-	public override void DrawAdditional (Color colour) {
+	public override void DrawTriggerAdditional (Color colour) {
 		if (TriggerObjects._triggerSelf)
 		{
 			using (new Handles.DrawingScope(colour))
