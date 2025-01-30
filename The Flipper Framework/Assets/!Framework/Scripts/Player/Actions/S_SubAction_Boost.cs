@@ -135,6 +135,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		_inAStateThatCanBoost = true; //This will lead to a back and forth with it being set to false every frame. This means as soon as this method stops being called, this will be false.
 
 		if (_Input._BoostPressed)

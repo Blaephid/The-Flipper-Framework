@@ -55,7 +55,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	private bool                  _isPressedCurrently = true;		//Involed in mashing. Reflects whether the button is pressed, if false, start exiting, if false when button is true, reset exiting.	
 
-	private float		_currentCharge;			//Tracks how much power gained this use of the action,  starting from minimum.
 	private float		_spinDashChargedEffectAmm = 1;		//How active the spin dash particle effect should be
 	private float		_ballAnimationSpeedMultiplier = 1;
 
@@ -86,6 +85,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	//Checks if this action can currently be performed, based on the input and environmental factors.
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		//Pressed on the ground
 		if (_Input._SpinChargePressed && _PlayerPhys._isGrounded)
 		{
@@ -104,7 +104,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Setting private
-		_currentCharge = 20;
+		_Actions._charge = 20;
 		_counter = 0;
 		_isPressedCurrently = true;
 
@@ -149,11 +149,11 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	//Increases power in the spin for release
 	private void ChargeSpin () {
-		_currentCharge += _spinDashChargingSpeed_;
+		_Actions._charge += _spinDashChargingSpeed_;
 		_counter += Time.deltaTime;
 
 		//Effects
-		_Effects.DoSpindash(1, _spinDashChargedEffectAmm * _currentCharge, _currentCharge,
+		_Effects.DoSpindash(1, _spinDashChargedEffectAmm * _Actions._charge, _Actions._charge,
 		_Effects.GetSpinDashDust(), _maximunCharge_);
 
 		//If not pressed, sets the player as exiting
@@ -169,14 +169,14 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		{
 			if (!_isPressedCurrently)
 			{
-				_currentCharge += (_spinDashChargingSpeed_ * _tappingBonus_);
+				_Actions._charge += (_spinDashChargingSpeed_ * _tappingBonus_);
 			}
 
 			_isPressedCurrently = true;
 		}
 
 		//Prevents going over the maximum
-		_currentCharge = Mathf.Min(_currentCharge, _maximunCharge_);
+		_Actions._charge = Mathf.Min(_Actions._charge, _maximunCharge_);
 	}
 
 	//Changes how the player moves when in this state.
@@ -218,7 +218,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		float newSpeed = 0;
 
 		//Only launches forwards if charged long enough.
-		if (_currentCharge < _minimunCharge_)
+		if (_Actions._charge < _minimunCharge_)
 		{
 			_Sounds.GeneralSource.Stop();
 			_Actions._ActionDefault.StartAction();
@@ -230,7 +230,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 			//New speed to gain is determined by charge but affected by -
 			Vector3 addForce = _PlayerSkinTransform.forward;
-			newSpeed = _currentCharge;
+			newSpeed = _Actions._charge;
 
 			//The angle between movement direction and this new force (typically higher with bigger angles)
 			float dif = Vector3.Dot(addForce.normalized, _PlayerPhys._RB.velocity.normalized);
@@ -260,7 +260,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		//Effects
 		_Effects.EndSpinDash();
 
-		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _currentCharge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
+		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _Actions._charge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(shake, (int)_releaseShakeAmmount_.w));
 
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, newSpeed), 0.25f)); //The camera will fall back before catching up.
@@ -273,7 +273,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		//Handle animator, both regular and ball ones.
 		_Actions._ActionDefault.HandleAnimator(3);
 		_BallAnimator.SetInteger("Action", 3);
-		_BallAnimator.SetFloat("SpinCharge", _currentCharge * _ballAnimationSpeedMultiplier);
+		_BallAnimator.SetFloat("SpinCharge", _Actions._charge * _ballAnimationSpeedMultiplier);
 
 		//Configured to either rotate towards where the camera is facing, or to rotate to where the player is moving.
 		switch (_whatControl_)

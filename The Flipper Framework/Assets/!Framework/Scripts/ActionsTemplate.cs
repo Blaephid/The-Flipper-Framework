@@ -42,6 +42,7 @@ namespace templates
 		}
 
 		new public  bool AttemptAction () {
+			if (!base.AttemptAction()) return false;
 			return false;
 		}
 

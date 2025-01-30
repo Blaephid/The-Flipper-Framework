@@ -626,6 +626,7 @@ public class S_O_CharacterStats : ScriptableObject
 			dashSpeed = 80f,
 			maxDuration = 0.3f,
 			minDuration = 0.15f,
+			timeBeforeCanChangeAction = 0.1f,
 			turnSpeed = 8,
 			dashIncrease = 15,
 			forceUpwards = 0,
@@ -657,6 +658,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public int          lockMoveInputOnStart;
 
 		[Header("In Dash")]
+		[Tooltip("How long in seconds before inputs can change Action")]
+		public float            timeBeforeCanChangeAction;
 		[Tooltip("Surface: How quickly will change direction after the first turn when in a controlled dash.")]
 		public float        turnSpeed;
 		[Tooltip("Surface: How long the controlled dash can last in seconds before ending.")]
@@ -1023,7 +1026,7 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("Surface: How much charge to gain per second")]
 		public float      chargingSpeed;
-		[Tooltip("Surface: The minimum speed to launch at. Does not start charging from here, but will always launch with this or more force.")]
+		[Tooltip("Surface: The minimum speed to launch at. Does not start charging from here, but will always launch with this or more force. Action inputs are not registered until this is reached.")]
 		public float      minimunCharge;
 		[Tooltip("Surface: The maximum speed to launch at, charge cannot exceed this.")]
 		public float      maximunCharge;

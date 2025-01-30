@@ -25,6 +25,9 @@ public class S_Vis_Base : MonoBehaviour
 	[DrawIf("_hasVisualisationScripted", true)]
 	public Color _selectedFillColour = new Color(1,1,1,0.1f);
 
+
+	[HideInInspector] public bool _isSelected;
+
 	private void OnDrawGizmos () {
 		if (!enabled || !_hasVisualisationScripted) { return; }
 
@@ -38,7 +41,9 @@ public class S_Vis_Base : MonoBehaviour
 			if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null)){ DrawGizmosAndHandles(true); return; }
 
 		if (_drawAtAllTimes)
+		{
 			DrawGizmosAndHandles(false);
+		}
 	}
 
 	//Called whenever object is selected when gizmos are enabled.

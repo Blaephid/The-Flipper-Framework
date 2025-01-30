@@ -56,7 +56,8 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	new public bool AttemptAction () {
-		bool willStartAction = false;
+		if (!base.AttemptAction()) return false;
+
 		_whatCurrentAction = _Actions._whatCurrentAction;
 
 		//Different actions require different skids, even though they all call this function.
@@ -65,27 +66,21 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 			case S_S_ActionHandling.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._isGrounded)
 				{
-					willStartAction = TryRegularSkid();
+					return TryRegularSkid();
 				}
 				else
 				{
-					willStartAction = TryJumpSkid();
+					return TryJumpSkid();
 				}
-				break;
-
 			case S_S_ActionHandling.PrimaryPlayerStates.Jump:
-				willStartAction = TryJumpSkid();
-				break;
+				return TryJumpSkid();
 
 			case S_S_ActionHandling.PrimaryPlayerStates.SpinCharge:
-				willStartAction = TrySpinSkid();
-				break;
+				return TrySpinSkid();
 			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
-				willStartAction = _Actions._ObjectForActions.GetComponent<S_Action02_Homing>().TryHomingSkid();
-				break;
-
+				return _Actions._ObjectForActions.GetComponent<S_Action02_Homing>().TryHomingSkid();
 		}
-		return willStartAction;
+		return false;
 	}
 
 	//Called when skidding is started and _isSkiddin is used to prevent the sound being played multiple times.

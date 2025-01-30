@@ -54,9 +54,6 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 	}
 	public List<StrucDataToDisplay> _DataToDisplay;
 
-	//Trackers
-	private bool _isSelected;
-
 	[ExecuteAlways]
 	private void Update () {
 		if(_isSelected)

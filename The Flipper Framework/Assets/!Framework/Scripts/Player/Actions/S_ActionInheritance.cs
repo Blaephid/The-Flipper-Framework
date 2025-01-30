@@ -21,10 +21,13 @@ public class S_Action_Base : MonoBehaviour, IAction
 	[HideInInspector] public Transform             _MainSkin;
 
 	[HideInInspector] public int            _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
+	[HideInInspector] public bool           _isActionCurrentlyValid = true;       //Controlled by Activate And Deactivate action. Can't perform actions if false.
 
 
 	public bool AttemptAction () {
-		return false;
+		if(!_isActionCurrentlyValid) { return false; }
+
+		return true;
 	}
 
 	public void StartAction ( bool overwrite = false ) {
@@ -39,13 +42,14 @@ public class S_Action_Base : MonoBehaviour, IAction
 			AssignTools();
 			AssignStats();
 
-			if(this is ISubAction) { return; } //_positionInActionList is only used for MainActions, so only continue if not a sub action.
+			if (this is ISubAction) { return; } //_positionInActionList is only used for MainActions, so only continue if not a sub action.
 
 			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
 			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
 			{
 				if (_Actions._MainActions[i].Action == this as IMainAction)
 				{
+					_isActionCurrentlyValid = true;
 					_positionInActionList = i;
 					break;
 				}
@@ -54,7 +58,7 @@ public class S_Action_Base : MonoBehaviour, IAction
 	}
 
 	public virtual void AssignStats () {
-		
+
 	}
 
 	public virtual void AssignTools () {
@@ -71,6 +75,20 @@ public class S_Action_Base : MonoBehaviour, IAction
 		_Sounds = _Tools.SoundControl;
 		_JumpBall = _Tools.JumpBall;
 	}
+
+	public void ReactivateAction () {
+		_isActionCurrentlyValid = true;
+	}
+
+	public void DeactivateAction () {
+		if(this is S_Action00_Default) { return; } //Default action cannot be deactivated.
+
+		_isActionCurrentlyValid = false;
+
+		//If this is a main action and currently in use when deactivated, immediately return to Default Action.
+		if(enabled && this is IMainAction) { _Actions._ActionDefault.StartAction(); }
+	}
+
 }
 
 /// <summary>
@@ -83,9 +101,9 @@ public interface IAction
 
 	void StartAction ( bool overwrite = false );
 
-	//void ReactivateAction ();
+	void ReactivateAction ();
 
-	//void DeactivateAction ();
+	void DeactivateAction ();
 }
 
 public interface IMainAction : IAction

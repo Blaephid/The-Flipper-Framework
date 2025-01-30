@@ -68,6 +68,8 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
+
 		switch(_Actions._whatCurrentAction)
 		{
 			//Any action with this on

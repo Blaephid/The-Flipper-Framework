@@ -84,11 +84,13 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _playerSpeed; }//Apples all changes to grind speed.
 	}
 
-	new public bool AttemptAction () {		
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		return false;
 	}
 
 	new public void StartAction ( bool overwrite = false ) {
+		if (!base.AttemptAction()) return;
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Physics

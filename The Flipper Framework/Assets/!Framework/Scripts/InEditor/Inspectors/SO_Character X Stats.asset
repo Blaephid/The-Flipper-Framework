@@ -1496,9 +1496,10 @@ MonoBehaviour:
     forceUpwards: 0
     horizontalAngle: 45
     lockMoveInputOnStart: 0
+    timeBeforeCanChangeAction: 0.2
     turnSpeed: 8
     maxDuration: 0.3
-    minDuration: 0.15
+    minDuration: 0.22
     faceDownwardsSpeed: 0.02
     maxDownwardsSpeed: -5
     lockMoveInputOnEnd: 0
@@ -1511,6 +1512,7 @@ MonoBehaviour:
     forceUpwards: 0
     horizontalAngle: 45
     lockMoveInputOnStart: 0
+    timeBeforeCanChangeAction: 0.1
     turnSpeed: 8
     maxDuration: 0.3
     minDuration: 0.15

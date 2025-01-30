@@ -111,6 +111,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	}
 
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		if (enabled) return false;
 
 		//Because WallCLimbing inherits from WallRunning, it will call this too, so check.

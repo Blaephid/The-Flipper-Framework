@@ -7,6 +7,8 @@ using UnityEngine.InputSystem.XInput;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Switch;
 using UnityEngine.ProBuilder;
+using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
 
 public class S_Interaction_Triggers : MonoBehaviour
 {
@@ -31,6 +33,10 @@ public class S_Interaction_Triggers : MonoBehaviour
 
 	private S_Handler_CharacterAttacks      _AttackHandler;
 	private S_Handler_HealthAndHurt         _HurtAndHealth;
+	private S_Handler_Camera            _CamHandler;
+
+	//This is used to check what the current dominant trigger is, as multiple triggers might be working together under one effect. These will have their read values set to the same.
+	private List<S_Trigger_Base> _CurrentActiveEffectTriggers = new List<S_Trigger_Base>();
 
 	private S_Spawn_UI.StrucCoreUIElements _CoreUIElements;
 	#endregion
@@ -56,13 +62,17 @@ public class S_Interaction_Triggers : MonoBehaviour
 	/// Private ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
-	#region private
+	#region private (can be called externally as long as only working on scripts purpose)
+
+	public void CheckEffectsTriggerEnter(Collider Col ) {
+		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
+		S_Trigger_PlayerEffect EffectsData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
+		if (EffectsData) { ApplyEffectsOnPlayer(EffectsData); }
+	}
 	
-	public void ApplyEffectsOnPlayer ( Collider Col ) {
+	private void ApplyEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
 
-		if (!Col.TryGetComponent(out S_Trigger_PlayerEffect Effects)) { return; }
-
-		switch (Effects._setPlayerGrounded)
+		switch (EffectsData._setPlayerGrounded)
 		{
 			case S_GeneralEnums.ChangeGroundedState.SetToNo:
 				_PlayerPhys.SetIsGrounded(false); break;
@@ -70,12 +80,51 @@ public class S_Interaction_Triggers : MonoBehaviour
 				_PlayerPhys.SetIsGrounded(true); break;
 			case S_GeneralEnums.ChangeGroundedState.SetToOppositeThenBack:
 				bool current = _PlayerPhys._isGrounded;
-				_PlayerPhys.SetIsGrounded(!current); _PlayerPhys.SetIsGrounded(current);
+				_PlayerPhys.SetIsGrounded(!current); 
+				_PlayerPhys.SetIsGrounded(current);
 				break;
 		}
 
-		if (Effects._lockPlayerInputFor > 0)
-			_Input.LockInputForAWhile(Effects._lockPlayerInputFor, true, Vector3.zero, Effects._LockInputTo_);
+		if (EffectsData._lockPlayerInputFor > 0)
+			_Input.LockInputForAWhile(EffectsData._lockPlayerInputFor, true, Vector3.zero, EffectsData._LockInputTo_);
+		else if (EffectsData._lockPlayerInputFor == -1)
+			_Input.LockInputIndefinately(true, Vector3.zero, EffectsData._LockInputTo_);
+
+		DisableOrEnableActions(EffectsData, false);
+	}
+
+	public void CheckEffectsTriggerExit ( Collider Col ) {
+		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
+		S_Trigger_PlayerEffect EffectsData = S_Interaction_Triggers.CheckTriggerExit(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
+		if (EffectsData) { StartCoroutine(DelayBeforeRemovingEffectsOnPlayer(EffectsData)); }
+	}
+
+	private IEnumerator DelayBeforeRemovingEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
+		for (int i = 0 ; i < EffectsData._framesBeforeDeactivate ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+		RemoveEffectsOnPlayer(EffectsData);
+	}
+
+	private void RemoveEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
+		if(EffectsData._deactivateOnExit)
+		{
+			_Input.UnLockInput();
+
+			DisableOrEnableActions(EffectsData, true);
+		}
+	}
+
+	private void DisableOrEnableActions( S_Trigger_PlayerEffect EffectsData, bool set ) {
+		for (int i = 0 ; i < EffectsData._ActionsToDisable.Length ; i++)
+		{
+			_Actions.DisableOrEnableActionOfType(EffectsData._ActionsToDisable[i], set);
+		}
+		for (int i = 0 ; i < EffectsData._SubActionsToDisable.Length ; i++)
+		{
+			_Actions.DisableOrEnableSubActionOfType(EffectsData._SubActionsToDisable[i], set);
+		}
 	}
 
 	public void ActivateHintBox ( Collider Col ) {
@@ -138,7 +187,51 @@ public class S_Interaction_Triggers : MonoBehaviour
 
 	#endregion
 
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	#region Public And Static
+	public static S_Trigger_Base CheckTriggerEnter ( Collider Col, ref List<S_Trigger_Base> list ) {
 
+		//What happens depends on the data set to the camera trigger in its script.
+		if (!Col.TryGetComponent(out S_Trigger_Base TriggerData)) { return null; };
+
+		//If no logic is found, ignore.
+		if (TriggerData == null || TriggerData._TriggerForPlayerToRead == null) return null;
+
+		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_Base>();
+
+		//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
+		if (list.Count == 0) { list = new List<S_Trigger_Base>() { TriggerData }; }
+
+		//If the new trigger is set to trigger the logic already in effect, add it to list for tracking how long until out of every trigger, and don't restart the logic.
+		else if (TriggerData == list[0]) { list.Add(TriggerData); return null; }
+
+		TriggerData._isSelected = true;
+		return TriggerData;
+	}
+
+	public static S_Trigger_Base CheckTriggerExit ( Collider Col, ref List<S_Trigger_Base> list ) {
+		//What happens depends on the data set to the camera trigger in its script.
+		if (!Col.TryGetComponent(out S_Trigger_Base TriggerData)) { return null; }
+
+		//If no logic is found, ignore.
+		if (TriggerData == null || TriggerData._TriggerForPlayerToRead == null) return null;
+
+		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_Base>();
+
+		//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
+		if (list.Count > 0 && TriggerData != list[0]) { return null; }
+		//If it is, then remove one from the list to track how many triggers under the same logic have been left. This allows the effect to not end until not in any triggers under the same logic.
+		list.RemoveAt(list.Count - 1);
+
+		if (list.Count > 0) { return null; } //Only perform exit logic when out of all triggers using that logic.
+
+		TriggerData._isSelected = false;
+		return TriggerData;
+	}
+
+	#endregion
 	/// <summary>
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
@@ -153,6 +246,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_AttackHandler = GetComponent<S_Handler_CharacterAttacks>();
 		_HurtAndHealth = _Tools.GetComponent<S_Handler_HealthAndHurt>();
+		_CamHandler = _Tools.CamHandler;
 
 		_CoreUIElements = _Tools.UISpawner._BaseUIElements;
 	}

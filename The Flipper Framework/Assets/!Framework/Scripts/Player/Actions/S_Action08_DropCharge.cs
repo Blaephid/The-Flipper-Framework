@@ -37,7 +37,6 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	private bool        _hasLanded;		//Used to prevent release being called mutliple times in the time between being grounded and changing action.
 
 	[HideInInspector]
-	public float        _charge;			//The current speed charged up and ready.
 	private RaycastHit  _FloorHit;		//A hit on the ground
 
 	public float        _releaseShakeAmmount;	//Camera shake when performed
@@ -68,13 +67,15 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	private void FixedUpdate () {
 		_Actions._ActionDefault.HandleAnimator(1);
 
-		HandleInputs();
-
 		ChargeDash();
 		CheckGround();
+
+		HandleInputs();
 	}
 
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
+
 		if (!_PlayerPhys._isGrounded && _Input._RollPressed && _PlayerPhys._RB.velocity.y < 40f)
 		{
 			if (!Physics.Raycast(_FeetPoint.position, -transform.up, _minimumHeightToDropCharge_, _PlayerPhys._Groundmask_))
@@ -130,6 +131,8 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	/// 
 	#region private
 	public void HandleInputs () {
+		if(_Actions._charge <= _minimunCharge_) { return; }
+
 		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 		_Actions.HandleInputs(_positionInActionList);
 	}
@@ -138,7 +141,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	private void ChargeDash () {
 		if (_isCharging)
 		{
-			_charge = Mathf.Clamp(_charge + (_chargingSpeed_ * Time.deltaTime), 0, _maximunCharge_); //Increase charge
+			_Actions._charge = Mathf.Clamp(_Actions._charge + (_chargingSpeed_ * Time.deltaTime), 0, _maximunCharge_); //Increase charge
 
 			//If input is released, then end sound and prepare to end action after a delay.
 			if (!_Input._RollPressed)
@@ -156,6 +159,8 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 				StopCoroutine(DelayEndingAction());
 			}
 		}
+
+		_Actions._dashAngle = _MainSkin.forward;
 	}
 
 	//When releasing button, add a delay before exiting the action. This is to make launching when grounded easier as players will naturally release the button right before the ground.
@@ -176,14 +181,14 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	//Checks whether or not to launch the player, either by landing on the ground or performing a dash.
 	private void CheckGround () {
 
-		//Pressing the special button will cause a dash while still in the air, affected by charge.
-		if (_Input._SpecialPressed && _charge > _minimunCharge_)
-		{
-			AirRelease();
-		}
+		////Pressing the special button will cause a dash while still in the air, affected by charge.
+		//if (_Input._SpecialPressed && _Actions._charge > _minimunCharge_)
+		//{
+		//	AirRelease();
+		//}
 
-		else
-		{
+		//else
+		//{
 			//Check if on the ground, either by using the ground check or physics, or a different one based on fall speed with a capsule (to ensure not hitting a corner and not bouncing).
 			bool isRaycasthit = Physics.SphereCast(_FeetPoint.position, 3 , -transform.up, out _FloorHit, (_PlayerVel._coreVelocity.y * Time.deltaTime * 0.6f), _PlayerPhys._Groundmask_);
 			bool isGroundHit = _PlayerPhys._isGrounded || isRaycasthit;
@@ -195,48 +200,50 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 				_hasLanded = true;
 				Release(UseHit.normal);
 			}
-		}
+		//}
 	}
 
-	//Called when dashing before hitting the ground, disabled buttons, and decreases charge before normal release
-	private void AirRelease () {
+	////Called when dashing before hitting the ground, disabled buttons, and decreases charge before normal release
+	//private void AirRelease () {
 
-		//Since activated by pressing a button, ensure none others are pressed so there aren't immediate transitions.
-		_Input._JumpPressed = false;
-		_Input._SpecialPressed = false;
-		_Input._HomingPressed = false;
+	//	//Since activated by pressing a button, ensure none others are pressed so there aren't immediate transitions.
+	//	_Input._JumpPressed = false;
+	//	_Input._SpecialPressed = false;
+	//	_Input._HomingPressed = false;
 
-		_charge *= 0.6f; //Launcing in the air has less power than grounded.
+	//	_hasLanded = true;
 
-		StartCoroutine(DashThroughAir());
+	//	_Actions._charge *= 0.8f; //Launcing in the air has less power than grounded.
 
-		Release(transform.up);
-	}
+	//	StartCoroutine(DashThroughAir());
+
+	//	Release(transform.up);
+	//}
 
 	//Takes in a normal, aligns direction relative to it, then gets a force to apply/
 	private void Release ( Vector3 upNormal ) {
-		_charge = Mathf.Clamp(_charge, _minimunCharge_, _maximunCharge_);
-		Vector3 force = _PlayerPhys.AlignWithNormal(_MainSkin.forward, upNormal, _charge);
+		_Actions._charge = Mathf.Clamp(_Actions._charge, _minimunCharge_, _maximunCharge_);
+		Vector3 force = _PlayerPhys.AlignWithNormal(_MainSkin.forward, upNormal, _Actions._charge);
 
 		StartCoroutine(DelayForce(force, 2)); //Will apply this force after a few frames, this is to give a chance to properly align to the ground.
 
 		//Effects
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _charge), 0.25f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _Actions._charge), 0.25f)); //The camera will fall back before catching up.
 
 		//Control
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
 	}
 
-	//When releasing in the air, requires different effects to ensure not falling.
-	private IEnumerator DashThroughAir () {
-		float time = 1 + Mathf.Round(_charge / 30); //Seperate in increments (0 - 30 charge = 1 second)
-		time = Mathf.Clamp(time / 10, 0.1f, 10); //Change seconds into 0.1 seconds.
+	////When releasing in the air, requires different effects to ensure not falling.
+	//private IEnumerator DashThroughAir () {
+	//	float time = 1 + Mathf.Round(_Actions._charge / 20); //Seperate in increments (0 - 30 charge = 1 second)
+	//	time = Mathf.Clamp(time / 10, 0.1f, 10); //Change seconds into 0.1 seconds.
 
-		//Prevent downward velocity from gravity until completed
-		_PlayerPhys._listOfIsGravityOn.Add(false);
-		yield return new WaitForSeconds(time);
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-	}
+	//	//Prevent downward velocity from gravity until completed
+	//	_PlayerPhys._listOfIsGravityOn.Add(false);
+	//	yield return new WaitForSeconds(time);
+	//	_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+	//}
 
 	//Prevents force being applied until enough fixed frames have passed. This is to give some time to properly rotate to match ground.
 	private IEnumerator DelayForce ( Vector3 force, int delay ) {
@@ -251,7 +258,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	private void Launch ( Vector3 force ) {
 
 		//Effects
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount * _charge) / 100, 10));
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount * _Actions._charge) / 100, 10));
 		_Sounds.SpinDashReleaseSound();
 
 		//Ensure player is aligned to the ground below them.
@@ -261,7 +268,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 		Vector3 releVec = _PlayerPhys.GetRelevantVector(force, false);
 
 		//If the new total force is higher than current speed, then apply it. Uses sqrs because it's faster with comparing magnitudes
-		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerVel._horizontalSpeedMagnitude + _charge * 0.1f, 2))
+		if (releVec.sqrMagnitude > Mathf.Pow(_PlayerVel._horizontalSpeedMagnitude + _Actions._charge * 0.1f, 2))
 		{
 			_PlayerVel.SetCoreVelocity(force, "Overwrite");
 			_CamHandler._HedgeCam.ChangeHeight(18, 25f); //Ensures camera will go behind the player as they launch forwards from falling.
@@ -287,10 +294,10 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	//Returns the current charge. This is for carry over charge gained when this can't add velocity itself (like when landing on a rail)
 	public float GetCharge () {
 		//Effects
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount * _charge) / 150, 1));
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake((_releaseShakeAmmount * _Actions._charge) / 150, 1));
 		_Sounds.SpinDashReleaseSound();
 
-		return _charge;
+		return _Actions._charge;
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
@@ -307,7 +314,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 			if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.DropCharge)
 			{
 				yield return new WaitForFixedUpdate();
-				_charge = 0;
+				_Actions._charge = 0;
 			}
 		}
 	}

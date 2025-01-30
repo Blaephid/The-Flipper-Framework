@@ -58,7 +58,9 @@ public class S_ActionManager : MonoBehaviour
 
 	//Specific action trackers
 	[HideInInspector]
-	public bool         _isAirDashAvailables = true; //Govers whether homing attacks and jump dashes can be performed.
+	public float        _charge;                                //Used by SpinCharge and DropCharge.
+	[HideInInspector]
+	public bool         _isAirDashAvailable = true; //Govers whether homing attacks and jump dashes can be performed.
 	[HideInInspector]
 	public int          _bounceCount;		//Tracks the number of bounces before landing are performed.
 	[HideInInspector]
@@ -150,7 +152,7 @@ public class S_ActionManager : MonoBehaviour
 		if (_dashDelayCounter > 0)
 		{
 			_dashDelayCounter -= Time.deltaTime;
-			if (_dashDelayCounter <= 0) { _isAirDashAvailables = true; }
+			if (_dashDelayCounter <= 0) { _isAirDashAvailable = true; }
 		}
 
 		//Current action is set when  handle inputs is called, this goes through each situation action and calls methods that should allow them to be checked. Meaning it can only be enetered if it's called this frame
@@ -259,9 +261,36 @@ public class S_ActionManager : MonoBehaviour
 
 	//Called upon successful attacks to set the counter (which will tick down when above 0)
 	public void AddDashDelay (float delay) {
-		_isAirDashAvailables = false;
+		_isAirDashAvailable = false;
 		_dashDelayCounter = delay;
 	}
+
+	//Takes an action enum, searches if the corresponding action is available, then either deactivates or reactivats.
+	public void DisableOrEnableActionOfType(S_S_ActionHandling.PrimaryPlayerStates actionEnum, bool enable ) {
+		for (int i = 0 ; i < _MainActions.Count ; i++)
+		{
+			IMainAction Action = S_S_ActionHandling.GetActionFromEnum(actionEnum, _ObjectForActions);
+			if(Action != null)
+			{
+				if (enable) Action.ReactivateAction();
+				else Action.DeactivateAction();
+			}
+		}
+	}
+
+	//Takes an action enum, searches if the corresponding action is available, then either deactivates or reactivats.
+	public void DisableOrEnableSubActionOfType ( S_S_ActionHandling.SubPlayerStates subActionEnum, bool enable ) {
+		for (int i = 0 ; i < _MainActions.Count ; i++)
+		{
+			ISubAction Action = S_S_ActionHandling.GetSubActionFromEnum(subActionEnum, _ObjectForSubActions);
+			if (Action != null)
+			{
+				if (enable) Action.ReactivateAction();
+				else Action.DeactivateAction();
+			}
+		}
+	}
+
 	#endregion
 
 	/// <summary>

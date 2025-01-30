@@ -83,6 +83,7 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 	}
 
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		if (_Input._InteractPressed && _RoadHandler._TargetRing != null && !enabled)
 		{
 			StartAction();

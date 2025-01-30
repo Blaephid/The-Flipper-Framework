@@ -103,6 +103,8 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 	//Called when checking if this action is to be performed, including inputs.
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
+
 		//Depending on stats, this can only be performed when grounded.
 		if (!_PlayerPhys._isGrounded || _CanBePerformedOnGround_)
 		{
@@ -111,7 +113,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 			if (_HomingHandler._TargetObject && _Input._HomingPressed)
 			{
 				//Homing attack must be currently allowed
-				if (_Actions._isAirDashAvailables && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount))
+				if (_Actions._isAirDashAvailable && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount))
 				{
 					StartAction();
 					return true;
@@ -462,7 +464,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
 	public void EventOnGrounded () {		
-			_Actions._isAirDashAvailables = true;
+			_Actions._isAirDashAvailable = true;
 			_homingCount = 0;		
 	}
 	#endregion

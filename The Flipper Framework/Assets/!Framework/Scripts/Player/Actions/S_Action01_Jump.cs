@@ -91,6 +91,7 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 
 	//Called when checking if this action is to be performed, including inputs.
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		if (_Input._JumpPressed)
 		{
 			switch (_Actions._whatCurrentAction)

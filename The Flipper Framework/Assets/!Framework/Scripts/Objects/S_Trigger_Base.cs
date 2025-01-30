@@ -14,7 +14,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	//Serialized
 
 	[Header("Trigger")]
-	public StrucGeneralTriggerObjects TriggerObjects = new StrucGeneralTriggerObjects()
+	public StrucGeneralTriggerObjects _TriggerObjects = new StrucGeneralTriggerObjects()
 	{
 		_ObjectsToTriggerOn = new List<GameObject>(),
 		_ObjectsToTriggerOff = new List<GameObject>(),
@@ -23,9 +23,9 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	[Serializable]
 	[Tooltip("This data related to general triggering of other objects, which certain triggers won't need. Will interact with the ITriggerable Interface")]
 	public struct StrucGeneralTriggerObjects {
+		public bool         _triggerSelf;
 		public List<GameObject> _ObjectsToTriggerOn;
 		public List<GameObject> _ObjectsToTriggerOff;
-		public bool         _triggerSelf;
 		[Tooltip("if true, the code performing the trigger effect will be in a player script, and the object below will be used as a marker for current active trigger..")]
 		public bool         _isLogicInPlayScript;
 	}
@@ -52,14 +52,14 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	private void OnTriggerEnter ( Collider other ) {
 		if (other.tag != "Player") { return; }
 
-		if (TriggerObjects._triggerSelf)
+		if (_TriggerObjects._triggerSelf)
 			if (TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
 
 		//Go through each given gameObject and trigger if possible.
-		for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
+		for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
-			if (TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
+			if (_TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
 		}
 	}
@@ -67,14 +67,14 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	private void OnTriggerExit ( Collider other ) {
 		if (other.tag != "Player") { return; }
 
-		if (TriggerObjects._triggerSelf)
+		if (_TriggerObjects._triggerSelf)
 			if (TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
 
 		//Go through each given gameObject and trigger if possible.
-		for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
+		for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
-			if (TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
+			if (_TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOff();
 		}
 	}
@@ -86,7 +86,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		base.OnValidate();
 
 #if UNITY_EDITOR
-		SetTriggerForPlayer();
+		SetTriggerForPlayerToRead();
 		_hasVisualisationScripted = true;
 #endif
 	}
@@ -126,21 +126,24 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	#endregion
 
 #if UNITY_EDITOR
-	private void SetTriggerForPlayer () {
-		if (!TriggerObjects._isLogicInPlayScript) { _TriggerForPlayerToRead = null; return; }
+	private void SetTriggerForPlayerToRead () {
+		//If this trigger doesn't perform its logic in a player script, then this isn't needed, so return null.
+		if (!_TriggerObjects._isLogicInPlayScript) { _TriggerForPlayerToRead = null; return; }
 
-		//If set to trigger self, then this is what will be returned.
-		if (TriggerObjects._triggerSelf) { _TriggerForPlayerToRead = gameObject; return; }
+		//If set to trigger self, then this is the logic the player will need to reference.
+		if (_TriggerObjects._triggerSelf) { _TriggerForPlayerToRead = gameObject; return; }
 
-		//Get the class derived class using this as a type, then look for other object triggers using it too. E.G. S_Trigger_Camera will look for other S_Trigger_Cameras. And the first will be what to read.
+		//Otherwise Get the class derived class using this as a type, then look through objects that will be triggered and see if they match.
+		//E.G. S_Trigger_Camera will look for other S_Trigger_Cameras. And the first will be what to read.
 		System.Type scriptType = GetType();
 
-		for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
+		for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
-			if (TriggerObjects._ObjectsToTriggerOn[i].GetComponent(scriptType))
-			{ _TriggerForPlayerToRead = TriggerObjects._ObjectsToTriggerOn[i].gameObject; return; }
+			if (_TriggerObjects._ObjectsToTriggerOn[i].GetComponent(scriptType))
+			{ _TriggerForPlayerToRead = _TriggerObjects._ObjectsToTriggerOn[i].gameObject; return; }
 		}
 
+		//If none, then this trigger has no trigger data for the player.
 		_TriggerForPlayerToRead = null;
 	}
 
@@ -151,6 +154,10 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 
 	public override void DrawGizmosAndHandles ( bool selected ) {
+
+		//_isSelected will also be enabled externally in play mode, so if not playing, ensure _isSelected is based on actual selecting the gameObject.
+		if (!Application.isPlaying) { _isSelected = selected; }
+		selected = _isSelected;
 
 		Color colour = selected ? _selectedOutlineColour : _normalOutlineColour;
 
@@ -213,15 +220,15 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		using (new Handles.DrawingScope(colour))
 		{
 
-			for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
+			for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 			{
-				if (TriggerObjects._ObjectsToTriggerOn[i] == null) continue;
-				Handles.DrawLine(transform.position, TriggerObjects._ObjectsToTriggerOn[i].transform.position, 5f);
+				if (_TriggerObjects._ObjectsToTriggerOn[i] == null) continue;
+				Handles.DrawLine(transform.position, _TriggerObjects._ObjectsToTriggerOn[i].transform.position, 5f);
 			}
-			for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOff.Count ; i++)
+			for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOff.Count ; i++)
 			{
-				if (TriggerObjects._ObjectsToTriggerOff[i] == null) continue;
-				Handles.DrawDottedLine(transform.position, TriggerObjects._ObjectsToTriggerOff[i].transform.position, 5f);
+				if (_TriggerObjects._ObjectsToTriggerOff[i] == null) continue;
+				Handles.DrawDottedLine(transform.position, _TriggerObjects._ObjectsToTriggerOff[i].transform.position, 5f);
 			}
 
 		}

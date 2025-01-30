@@ -98,6 +98,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	}
 
 	new public bool AttemptAction () {
+		 if (_isActionCurrentlyValid) { return false; }
 		return true;
 	}
 

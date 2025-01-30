@@ -27,6 +27,21 @@ public class DrawIfAttribute : PropertyAttribute
 	}
 }
 
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+public class SetBoolIfOtherAttribute : PropertyAttribute
+{
+	public bool             setThisBoolTo { get; private set; }
+	public string	valueToCompare { get; private set; }
+	public object	checkOtherBoolFor { get; private set; }
+
+	//Constructor
+	public SetBoolIfOtherAttribute ( bool setThis, string valueToCheck, object comparedValue ) {
+		setThisBoolTo = setThis;
+		valueToCompare = valueToCheck;
+		checkOtherBoolFor = comparedValue;
+	}
+}
+
 //This exists only to be used with the CustomReadOnlyDrawer
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class CustomReadOnlyAttribute : PropertyAttribute

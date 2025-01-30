@@ -195,7 +195,7 @@ public class S_PlayerInput : MonoBehaviour
 			_CamHandler._HedgeCam.GoBehindCharacter(3, 0, true);
 		}
 
-		if (_lockedCounter > _lockedTime)
+		if (_lockedCounter > _lockedTime && _lockedTime != -1)
 		{
 			UnLockInput();
 		}
@@ -235,6 +235,12 @@ public class S_PlayerInput : MonoBehaviour
 		_lockedCounter = 0;
 		_isInputLocked = true;
 		_isCamLocked = lockCam; //Also prevents camera control
+	}
+
+	public void LockInputIndefinately ( bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change ) {
+		LockInputForAWhile(1, lockCam, newInput, whatLock);
+
+		_lockedTime = -1;
 	}
 
 	public void UnLockInput () {

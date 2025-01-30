@@ -28,6 +28,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 
 	private float       _speedAfterDash_;
 	private float       _framesToSpendChangingSpeed_;
+	private float           _timeBeforeCanChangeAction_;
 
 	private float       _maxDuration_;
 	private float       _minDuration_;
@@ -40,16 +41,19 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 
 	private int         _lockMoveInputOnStart_ = 0;
 	private int         _lockMoveInputOnEnd_ = 10;
+
+	private Vector2         _cameraPauseEffectFromDropCharge_ = new Vector2(3, 40);
 	#endregion
 
 	// Trackers
 	#region trackers
-	
+
 
 	public float        _skinRotationSpeed;
 
 	private float       _timer;             //Tracks how long has been in this action
 	private float       _dashSpeed;         //Generated at start of action, based on player speed and stats.
+	private float       _dashSpeedBonus;	//Set on Attempt action, as it will be different based on certain actions.
 	private Vector3     _dashDirection;     //Generated at start of action, based on input, stats and movement.
 	private float       _upwardsSpeed;          //Generated at start of action, based on input, stats and movement.
 
@@ -79,7 +83,10 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 	}
 
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		bool willChangeAction = false;
+
+		_dashSpeedBonus = 0;
 
 		switch (_Actions._whatCurrentAction)
 		{
@@ -94,17 +101,23 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 					}
 				}
 				break;
-			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
+			case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
 				if (CheckDash())
 				{
-					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(30, 8, 0, true));
+					//If performing a jump Dash from a drop charge, carry over some of the charge to increase dash speed.
+					_dashSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_);
+					_dashSpeedBonus = Mathf.Max(10, (_Actions._charge * 0.7f) - _dashSpeed);
+					//Effects
+					StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffectFromDropCharge_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _Actions._charge), 0.25f)); //The camera will fall back before catching up.
+					
 					SetStartDirection(_Actions._dashAngle);
 					StartAction();
 				}
 				break;
-			case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
+			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing: case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
 				if (CheckDash())
 				{
+					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(30, 8, 0, true));
 					SetStartDirection(_Actions._dashAngle);
 					StartAction();
 				}
@@ -122,7 +135,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 		//This is called no matter the action, so it used as function to check the always relevant data.
 		bool CheckDash () {
 			//Can't be grounded or have the action locked by external means.
-			willChangeAction = !_PlayerPhys._isGrounded && _Actions._areAirActionsAvailable && _Actions._isAirDashAvailables && _Input._SpecialPressed;
+			willChangeAction = _Input._SpecialPressed && !_PlayerPhys._isGrounded && _Actions._areAirActionsAvailable && _Actions._isAirDashAvailable;
 			return willChangeAction;
 		}
 	}
@@ -144,7 +157,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 
 		//Control
 		_Input._HomingPressed = false;
-		_Actions._isAirDashAvailables = false; //Can't be used again until this is true
+		_Actions._isAirDashAvailable = false; //Can't be used again until this is true
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
 
@@ -156,7 +169,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 		_timer = 0;
 
 		//Create vector to move in
-		_dashSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_); //Speed increased with a minimum.
+		_dashSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_) + _dashSpeedBonus; //Speed increased with a minimum.
 
 		//Rotate right or left on a large scale based on input
 		MakeFullTurn();
@@ -202,6 +215,8 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 	#region private
 
 	public void HandleInputs () {
+		if(_timer < _timeBeforeCanChangeAction_) { return; }
+
 		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
 		_Actions.HandleInputs(_positionInActionList);
 	}
@@ -307,7 +322,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 	#region public 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
 	public void EventOnGrounded () {
-		_Actions._isAirDashAvailables = true;
+		_Actions._isAirDashAvailable = true;
 	}
 
 	#endregion
@@ -345,7 +360,10 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 		_lockMoveInputOnEnd_ = _Tools.Stats.JumpDashStats.lockMoveInputOnEnd;
 		_speedAfterDash_ = _Tools.Stats.JumpDashStats.speedAfterDash;
 		_framesToSpendChangingSpeed_ = _Tools.Stats.JumpDashStats.framesToChangeSpeed;
-	}
+
+		_timeBeforeCanChangeAction_ = _Tools.Stats.JumpDashStats.timeBeforeCanChangeAction;
+		_cameraPauseEffectFromDropCharge_ = _Tools.Stats.DropChargeStats.cameraPauseEffect;
+}
 	#endregion
 
 }

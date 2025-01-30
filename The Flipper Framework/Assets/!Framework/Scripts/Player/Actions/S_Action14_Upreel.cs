@@ -62,13 +62,12 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	}
 
 	new public bool AttemptAction () {
-		bool willChangeAction = false;
-		willChangeAction = true;
-		return willChangeAction;
-
+		return false;
 	}
 
 	new public void StartAction ( bool overwrite = false ) {
+		if (!base.AttemptAction()) return;
+
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Upreel);
@@ -100,7 +99,7 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
-		_Actions._isAirDashAvailables = true;
+		_Actions._isAirDashAvailable = true;
 
 		//Enter standard animation
 		_CharacterAnimator.SetInteger("Action", 0);

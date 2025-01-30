@@ -122,6 +122,29 @@ public class S_S_ActionHandling : MonoBehaviour
 
 	#region Translating Components and Enums
 
+	public static IMainAction GetActionFromEnum ( PrimaryPlayerStates state, GameObject ObjectForActions ) {
+
+		Type ActionClassAsType;
+
+		//Test if that enum and/or class are currently defined in the Dictionaries at the top of this script.
+		if (!ActionsDictionaryAll.TryGetValue(state, out ActionClassAsType)) { Debug.LogError("That class is not currently assigned to the ActionsDictionary"); return null; }
+
+		//Search for an action class that matches the given enum according to the dictionary
+		if (ObjectForActions.GetComponent(ActionClassAsType)) { return (IMainAction)ObjectForActions.GetComponent(ActionClassAsType); }
+		return null;
+	}
+
+	public static ISubAction GetSubActionFromEnum ( SubPlayerStates state, GameObject ObjectForSubActions ) {
+
+		Type ActionClassAsType;
+
+		//Test if that enum and/or class are currently defined in the Dictionaries at the top of this script.
+		if (!ActionsDictionarySub.TryGetValue(state, out ActionClassAsType)) { Debug.LogError("That class is not currently assigned to the ActionsDictionary"); return null; }
+
+		//Search for an action class that matches the given enum according to the dictionary
+		if (ObjectForSubActions.GetComponent(ActionClassAsType)) { return (ISubAction)ObjectForSubActions.GetComponent(ActionClassAsType); }
+		return null;
+	}
 
 	//Each enum of playerstate corresponds to a different script that handles its behaviour. This assigns the matching script.
 	public static IMainAction GetControlledActionFromEnum ( PlayerControlledStates state, GameObject ObjectForActions ) {

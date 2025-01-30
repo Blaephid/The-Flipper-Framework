@@ -71,6 +71,7 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	new public bool AttemptAction() {
+		if (!base.AttemptAction()) return false;
 
 		//Enable Quickstep if in a position to do so, otherwise end the function.
 		if (_PlayerVel._horizontalSpeedMagnitude > 10f && !enabled)

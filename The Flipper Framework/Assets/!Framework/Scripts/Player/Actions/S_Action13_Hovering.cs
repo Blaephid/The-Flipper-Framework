@@ -62,6 +62,7 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 	}
 
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		_Objects._canHover = true;
 		return false;
 	}

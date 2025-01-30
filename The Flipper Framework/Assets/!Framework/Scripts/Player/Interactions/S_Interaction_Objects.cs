@@ -184,8 +184,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				break;
 
 
-			case "Player Effects":
-				_TriggerInteraction.ApplyEffectsOnPlayer(Col); break;
+			case "Player Effect":
+				_TriggerInteraction.CheckEffectsTriggerEnter(Col); break;
 		}
 	}
 
@@ -208,6 +208,8 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (_numberOfWindForces == 0)
 					_totalWindDirection = Vector3.zero;
 				break;
+			case "Player Effect":
+				_TriggerInteraction.CheckEffectsTriggerExit(Col); break;
 		}
 	}
 
@@ -513,7 +515,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		_PlayerPhys.SetPlayerRotation(Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation, true);
 
 		//Returns air actions
-		_Actions._isAirDashAvailables = true;
+		_Actions._isAirDashAvailable = true;
 		_Actions._jumpCount = 1;
 
 		//Delays air actions

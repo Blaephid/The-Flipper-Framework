@@ -15,6 +15,7 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 	[Tooltip ("This is how long each line that makes up the visualisation will be. The lower number, the more calculations but the more accurate the visual.")]
 	[SerializeField] private int _distancePerCalculation = 10;
 
+	[SerializeField] private Vector3 _selectPointOffset;
 	private Vector3 _middleOfSpline;
 
 	public Spline _SplineToDisplay;
@@ -50,7 +51,7 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 
 
 	public void CustomOnSceneGUI ( SceneView sceneView ) {
-		VisualiseWithSelectableHandle(_middleOfSpline, 6);
+		VisualiseWithSelectableHandle(_middleOfSpline + (transform.rotation * _selectPointOffset), 6);
 	}
 }
 

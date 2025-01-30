@@ -84,7 +84,7 @@ public class S_Trigger_CineCamera : S_Trigger_Base, ITriggerable
 	}
 
 	public override void DrawTriggerAdditional (Color colour) {
-		if (TriggerObjects._triggerSelf)
+		if (_TriggerObjects._triggerSelf)
 		{
 			using (new Handles.DrawingScope(colour))
 			{

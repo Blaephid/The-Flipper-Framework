@@ -79,6 +79,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 	}
 	
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 
 		//Can only bounce if it isn't locked in the actionManager, and not moving too fast up.
 		if (_Input._BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)

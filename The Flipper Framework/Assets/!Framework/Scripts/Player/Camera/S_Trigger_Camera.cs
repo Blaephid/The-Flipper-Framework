@@ -9,6 +9,10 @@ public enum CameraControlType
 
 public class S_Trigger_Camera : S_Trigger_Base
 {
+	public S_Trigger_Camera () {
+		_TriggerObjects._isLogicInPlayScript = true;
+	}
+
 	[Header("Functionality")]
 	public CameraControlType	_whatType;
 	public Transform		_Direction;
@@ -51,7 +55,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 
 #if UNITY_EDITOR
 	public override void DrawTriggerAdditional (Color colour) {
-		if(TriggerObjects._triggerSelf)
+		if(_TriggerObjects._triggerSelf)
 			S_S_DrawingMethods.DrawArrowHandle(colour, transform, 0.4f, true);
 	}
 #endif

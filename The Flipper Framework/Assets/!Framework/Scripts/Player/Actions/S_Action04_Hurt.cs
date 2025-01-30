@@ -89,10 +89,12 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 	}
 
 	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		return false;
 	}
 
 	new public void StartAction ( bool overwrite = false ) {
+		if (!base.AttemptAction()) return;
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Effects
