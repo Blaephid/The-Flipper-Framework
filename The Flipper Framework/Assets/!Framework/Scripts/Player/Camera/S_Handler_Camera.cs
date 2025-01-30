@@ -18,6 +18,7 @@ public class S_Handler_Camera : MonoBehaviour
 	private Transform             _MainSkin;
 
 	[HideInInspector] public float _initialDistance;
+	[HideInInspector] public float _initialFOV;
 
 	//This is used to check what the current dominant trigger is, as multiple triggers might be working together under one effect. These will have their read values set to the same.
 	private List<S_Trigger_Base> _CurrentActiveCameraTriggers = new List<S_Trigger_Base>();
@@ -29,6 +30,7 @@ public class S_Handler_Camera : MonoBehaviour
 		_MainSkin = _Tools.MainSkin;
 
 		_initialDistance = _Tools.CameraStats.DistanceStats.CameraDistance;
+		_initialFOV = _Tools.CameraStats.FOVStats.baseFOV;
 	}
 
 	#region Trigger Interaction
@@ -68,7 +70,6 @@ public class S_Handler_Camera : MonoBehaviour
 			case CameraControlType.LockToDirection:
 				SetHedgeCamera(cameraData, cameraData._forward);
 				LockCamera(true);
-				ChangeCameraDistance(cameraData);
 				break;
 
 			//Reneables camera control but still affects distance and other.
@@ -76,11 +77,11 @@ public class S_Handler_Camera : MonoBehaviour
 				_HedgeCam._cameraMaxDistance_ = _initialDistance;
 				LockCamera(false);
 				_HedgeCam._isReversed = false;
-				break;
+				RemoveAdditonalCameraEffects(cameraData);
+				return;
 
 			//Nothing changes in control, but distance and height may change.
 			case CameraControlType.justEffect:
-				ChangeCameraDistance(cameraData);
 				if (cameraData._willChangeAltitude)
 					_HedgeCam.SetCameraHeightOnly(cameraData._newAltitude, cameraData._faceSpeed, cameraData._duration);
 				break;
@@ -88,7 +89,6 @@ public class S_Handler_Camera : MonoBehaviour
 			//Allow controlled rotation but manually rotate in direction.
 			case CameraControlType.SetFreeAndLookTowards:
 				SetHedgeCamera(cameraData, cameraData._forward);
-				ChangeCameraDistance(cameraData);
 				LockCamera(false);
 				break;
 
@@ -97,7 +97,6 @@ public class S_Handler_Camera : MonoBehaviour
 			case CameraControlType.Reverse:
 				_HedgeCam._isReversed = true;
 				SetHedgeCamera(cameraData, -_MainSkin.forward);
-				ChangeCameraDistance(cameraData);
 				LockCamera(false);
 				break;
 
@@ -105,10 +104,11 @@ public class S_Handler_Camera : MonoBehaviour
 			case CameraControlType.ReverseAndLockControl:
 				_HedgeCam._isReversed = true;
 				SetHedgeCamera(cameraData, -_MainSkin.forward);
-				ChangeCameraDistance(cameraData);
 				LockCamera(true);
 				break;
 		}
+
+		ApplyAdditionalCameraEffects(cameraData);
 	}
 
 
@@ -116,8 +116,6 @@ public class S_Handler_Camera : MonoBehaviour
 		//If trigger was set to undo effects on exit, then reset all data to how they should be again.
 		if (cameraData._willReleaseOnExit)
 		{
-			_HedgeCam._cameraMaxDistance_ = _initialDistance;
-			_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
 
 			switch (cameraData._whatType)
 			{
@@ -132,6 +130,8 @@ public class S_Handler_Camera : MonoBehaviour
 					_HedgeCam._canMove = true;
 					break;
 			}
+
+			RemoveAdditonalCameraEffects(cameraData);
 		}
 	}
 
@@ -139,27 +139,44 @@ public class S_Handler_Camera : MonoBehaviour
 
 	#region Camera Effects
 
-	//Makes it so the camera will be further out from the player.
-	void ChangeCameraDistance ( S_Trigger_Camera cameraData ) {
+	private void ApplyAdditionalCameraEffects(S_Trigger_Camera cameraData ) {
+		_HedgeCam._canAffectDistanceBySpeed = cameraData._affectNewDistanceBySpeed;
+		_HedgeCam._canAffectFOVBySpeed = cameraData._affectNewFOVBySpeed;
 
 		if (cameraData._willChangeDistance)
-			StartCoroutine(LerpToNewDistance(10, cameraData._newDistance));
-		//if (!cameraData._willChangeDistance)
-		//{
-		//	_HedgeCam._cameraMaxDistance_ = _initialDistance;
-		//}
-		//else
-		//{
-		//	_HedgeCam._cameraMaxDistance_ = cameraData._newDistance;
-		//}
+			StartCoroutine(LerpToNewDistance(cameraData._newDistance.y, cameraData._newDistance.x));
+
+		if (cameraData._willChangeFOV)
+			StartCoroutine(LerpToNewFOV(cameraData._newFOV.y, cameraData._newFOV.x));
 	}
 
-	private IEnumerator LerpToNewDistance(int frames, float distance) {
+	private void RemoveAdditonalCameraEffects(S_Trigger_Camera cameraData ) {
+		_HedgeCam._canAffectDistanceBySpeed = true;
+		_HedgeCam._canAffectFOVBySpeed = true;
+
+		if (cameraData._willChangeDistance)
+			StartCoroutine(LerpToNewDistance(cameraData._newDistance.y, _initialDistance));
+		if (cameraData._willChangeFOV)
+			StartCoroutine(LerpToNewFOV(cameraData._newFOV.y, _initialFOV));
+
+		_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
+	}
+
+	private IEnumerator LerpToNewDistance(float frames, float distance) {
 		float startDistance = _HedgeCam._cameraMaxDistance_;
-		for (float f = 1f / frames ; f <= 1 ; f =+ 1f/frames)
+		for (float f = 1f / frames ; f <= 1 ; f += 1f/frames)
 		{
 			yield return new WaitForFixedUpdate();
 			_HedgeCam._cameraMaxDistance_ = Mathf.Lerp(startDistance, distance, f);
+		}
+	}
+
+	private IEnumerator LerpToNewFOV ( float frames, float newFOV ) {
+		float startFOV = _HedgeCam._baseFOV_;
+		for (float f = 1f / frames ; f <= 1 ; f += 1f / frames)
+		{
+			yield return new WaitForFixedUpdate();
+			_HedgeCam._baseFOV_ = Mathf.Lerp(startFOV, newFOV, f);
 		}
 	}
 
@@ -172,7 +189,7 @@ public class S_Handler_Camera : MonoBehaviour
 
 	//Calls the hedgecam to rotate towards or change height.
 	void SetHedgeCamera ( S_Trigger_Camera cameraData, Vector3 direction ) {
-		Vector3 targetUpDirection = cameraData._willRotateCameraUpToThis
+		Vector3 targetUpDirection = cameraData._setCameraReferenceWorldRotation
 			? cameraData.transform.up : Vector3.zero;
 
 

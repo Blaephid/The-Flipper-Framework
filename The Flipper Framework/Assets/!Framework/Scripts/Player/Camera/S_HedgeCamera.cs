@@ -46,8 +46,6 @@ public class S_HedgeCamera : MonoBehaviour
 	private CinemachineFramingTransposer              _Transposer;
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See camera stats scriptable objects for details
 	#region Stats
@@ -67,7 +65,8 @@ public class S_HedgeCamera : MonoBehaviour
 	private Vector3               _angleThreshold_;
 
 	private bool                  _shouldAffectFOVBySpeed_;
-	private float                 _baseFOV_;
+	[HideInInspector]
+	public float                 _baseFOV_;
 	private AnimationCurve        _cameraFOVBySpeed_;
 
 	private Vector3               _dampingBehind_;
@@ -147,6 +146,10 @@ public class S_HedgeCamera : MonoBehaviour
 	private bool                  _isRotatingBehind;
 
 
+	[HideInInspector]
+	public bool                         _canAffectDistanceBySpeed = true;
+	public bool                         _canAffectFOVBySpeed = true;
+
 	private float                 _lockTimer;
 	[HideInInspector]
 	public bool                   _isReversed;
@@ -158,6 +161,7 @@ public class S_HedgeCamera : MonoBehaviour
 	private Quaternion            _externalAlignment;
 
 	private float                 _distanceModifier = 1;
+	private float                 _FOVModifier = 1;
 
 	[HideInInspector]
 	public float                  _invertedX = 1;
@@ -175,7 +179,7 @@ public class S_HedgeCamera : MonoBehaviour
 	#endregion
 
 	#endregion
-	#endregion
+
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -390,7 +394,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Sets the camera a distance away from the player, either by adjusting the cinemachine or placing manually.
 	void HandleCameraDistance () {
-		_distanceModifier = 1;
+		//_distanceModifier = 1;
 
 		//Set up variables to limit the view changes.
 		Vector3 actionModifier = GetDistanceModifiedByAction();
@@ -399,21 +403,24 @@ public class S_HedgeCamera : MonoBehaviour
 		float speedPercentage = Mathf.Clamp((_PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed) * actionModifier.y, minValue, maxValue);
 
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
-		if (_shouldAffectDistanceBySpeed_)
+		if (_shouldAffectDistanceBySpeed_ && _canAffectDistanceBySpeed)
 		{
-			float targetDistance = _cameraDistanceBySpeed_.Evaluate(speedPercentage);
-			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.1f);
+			float targetDistanceModi = _cameraDistanceBySpeed_.Evaluate(speedPercentage);
+			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistanceModi, 0.1f);
 		}
 
 		//To make the player feel faster than they are, changes camera Field Of View based on speed.
-		if(_shouldAffectFOVBySpeed_)
+		if(_shouldAffectFOVBySpeed_ & _canAffectFOVBySpeed)
 		{
-			float targetFOV = _cameraFOVBySpeed_.Evaluate(speedPercentage) * _baseFOV_;
-			_VirtualCamera.m_Lens.FieldOfView = Mathf.Lerp(_VirtualCamera.m_Lens.FieldOfView, targetFOV, 0.2f);
-			_SecondaryCamera.m_Lens.FieldOfView = _VirtualCamera.m_Lens.FieldOfView;
+			float targetFOVModi = _cameraFOVBySpeed_.Evaluate(speedPercentage);
+			_FOVModifier = Mathf.Lerp(_FOVModifier, targetFOVModi, 0.2f);
+			//_VirtualCamera.m_Lens.FieldOfView = Mathf.Lerp(_VirtualCamera.m_Lens.FieldOfView, targetFOVModi, 0.2f);
+			//_SecondaryCamera.m_Lens.FieldOfView = _VirtualCamera.m_Lens.FieldOfView;
 		}
 
 		float dist = _cameraMaxDistance_ * _distanceModifier;
+		_VirtualCamera.m_Lens.FieldOfView = _baseFOV_ * _FOVModifier;
+		_SecondaryCamera.m_Lens.FieldOfView = _baseFOV_ * _FOVModifier;
 
 		//If the object has a virtual camera set to framing transposer, then that will handle placement on its own.
 		if (_Transposer && _VirtualCamera.enabled)

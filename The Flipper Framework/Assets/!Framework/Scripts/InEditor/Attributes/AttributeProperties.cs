@@ -11,8 +11,8 @@ using UnityEngine;
 public class DrawIfAttribute : PropertyAttribute
 {
 
-	public string propertyToCheck { get; private set; }
-	public object valueToCheckFor { get; private set; }
+	public string _propertyToCheck { get; private set; }
+	public object _valueToCheckFor { get; private set; }
 
 	/// <summary>
 	/// Only draws the field only if a condition is met. Supports enum and bools.
@@ -22,23 +22,23 @@ public class DrawIfAttribute : PropertyAttribute
 	
 	//Constructor
 	public DrawIfAttribute ( string comparedPropertyName, object comparedValue ) {
-		propertyToCheck = comparedPropertyName;
-		valueToCheckFor = comparedValue;
+		_propertyToCheck = comparedPropertyName;
+		_valueToCheckFor = comparedValue;
 	}
 }
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class SetBoolIfOtherAttribute : PropertyAttribute
 {
-	public bool             setThisBoolTo { get; private set; }
-	public string	valueToCompare { get; private set; }
-	public object	checkOtherBoolFor { get; private set; }
+	public bool             _setThisBoolTo { get; private set; }
+	public string	_valueToCompare { get; private set; }
+	public object	_checkOtherBoolFor { get; private set; }
 
 	//Constructor
 	public SetBoolIfOtherAttribute ( bool setThis, string valueToCheck, object comparedValue ) {
-		setThisBoolTo = setThis;
-		valueToCompare = valueToCheck;
-		checkOtherBoolFor = comparedValue;
+		_setThisBoolTo = setThis;
+		_valueToCompare = valueToCheck;
+		_checkOtherBoolFor = comparedValue;
 	}
 }
 
@@ -47,4 +47,35 @@ public class SetBoolIfOtherAttribute : PropertyAttribute
 public class CustomReadOnlyAttribute : PropertyAttribute
 {
 
+}
+
+//This exists only to be used with the CustomReadOnlyDrawer
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+public class DontShowFieldNameAttribute : PropertyAttribute
+{
+
+}
+
+//This exists only to be used with the CustomReadOnlyDrawer
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+public class DrawTickBoxBeforeAttribute : PropertyAttribute
+{
+	public string _booleanForTickBox { get; private set; }
+
+	//Constructor
+	public DrawTickBoxBeforeAttribute ( string booleanField ) {
+		_booleanForTickBox = booleanField;
+	}
+}
+
+//This exists only to be used with the CustomReadOnlyDrawer
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+public class DrawHorizontalWithOthersAttribute : PropertyAttribute
+{
+	public string[] _listOfOtherFields { get; private set; }
+
+	//Constructor
+	public DrawHorizontalWithOthersAttribute ( string[] listOfOtherFields ) {
+		_listOfOtherFields = listOfOtherFields;
+	}
 }

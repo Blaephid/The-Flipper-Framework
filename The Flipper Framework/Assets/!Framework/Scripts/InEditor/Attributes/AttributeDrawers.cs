@@ -38,7 +38,7 @@ public class DrawIfPropertyDrawer : PropertyDrawer
 		drawIf = attribute as DrawIfAttribute;
 		
 		//Find the field that determines if this property should be drawn.
-		string propertyToCheck = propertyToDraw.propertyPath.Contains(".") ? System.IO.Path.ChangeExtension(propertyToDraw.propertyPath, drawIf.propertyToCheck) : drawIf.propertyToCheck;
+		string propertyToCheck = propertyToDraw.propertyPath.Contains(".") ? System.IO.Path.ChangeExtension(propertyToDraw.propertyPath, drawIf._propertyToCheck) : drawIf._propertyToCheck;
 		fieldToCheck = propertyToDraw.serializedObject.FindProperty(propertyToCheck);
 
 		if (fieldToCheck == null)
@@ -51,9 +51,9 @@ public class DrawIfPropertyDrawer : PropertyDrawer
 		switch (fieldToCheck.type)
 		{
 			case "bool":
-				return fieldToCheck.boolValue.Equals(drawIf.valueToCheckFor);
+				return fieldToCheck.boolValue.Equals(drawIf._valueToCheckFor);
 			case "Enum":
-				return fieldToCheck.enumValueIndex.Equals((int)drawIf.valueToCheckFor);
+				return fieldToCheck.enumValueIndex.Equals((int)drawIf._valueToCheckFor);
 			default:
 				Debug.LogError("Error: " + fieldToCheck.type + " is not supported of " + propertyToCheck);
 				return true;
@@ -85,7 +85,7 @@ public class SetBoolIfOtherPropertyDrawer : PropertyDrawer
 
 	private bool ShouldSetBoolean ( SerializedProperty propertyToSet ) {
 		//Find the field that determines if this property should be drawn.
-		string propertyToCheck = propertyToSet.propertyPath.Contains(".") ? System.IO.Path.ChangeExtension(propertyToSet.propertyPath, setBoolIf.valueToCompare) : setBoolIf.valueToCompare;
+		string propertyToCheck = propertyToSet.propertyPath.Contains(".") ? System.IO.Path.ChangeExtension(propertyToSet.propertyPath, setBoolIf._valueToCompare) : setBoolIf._valueToCompare;
 		fieldToCheck = propertyToSet.serializedObject.FindProperty(propertyToCheck);
 
 		if (fieldToCheck == null)
@@ -96,16 +96,16 @@ public class SetBoolIfOtherPropertyDrawer : PropertyDrawer
 
 		if (fieldToCheck.isArray)
 		{
-			return !fieldToCheck.arraySize.Equals(setBoolIf.checkOtherBoolFor);
+			return !fieldToCheck.arraySize.Equals(setBoolIf._checkOtherBoolFor);
 		}
 
 		// get the value & compare based on types
 		switch (fieldToCheck.type)
 		{
 			case "bool":
-				return fieldToCheck.boolValue.Equals(setBoolIf.checkOtherBoolFor);
+				return fieldToCheck.boolValue.Equals(setBoolIf._checkOtherBoolFor);
 			case "float":
-				return fieldToCheck.floatValue.Equals(setBoolIf.checkOtherBoolFor);
+				return fieldToCheck.floatValue.Equals(setBoolIf._checkOtherBoolFor);	
 			default:
 				Debug.LogError("Error: " + fieldToCheck.type + " is not supported of " + propertyToCheck);
 				return false;
@@ -119,7 +119,7 @@ public class SetBoolIfOtherPropertyDrawer : PropertyDrawer
 		SerializedProperty propertyToSet = property;
 		setBoolIf = attribute as SetBoolIfOtherAttribute;
 
-		bool goalBoolean = setBoolIf.setThisBoolTo;
+		bool goalBoolean = setBoolIf._setThisBoolTo;
 
 		EditorGUI.PropertyField(position, propertyToSet);
 
@@ -130,7 +130,7 @@ public class SetBoolIfOtherPropertyDrawer : PropertyDrawer
 				//If user tried to change this property, but it would be immediately be set back, give an error message to inform them why they can't change it.
 				if (!propertyToSet.boolValue.Equals(goalBoolean))
 				{
-					Debug.LogError(propertyToSet.name + " cannot be changed as it uses the SetIfOtherProperty Attribute, based on " + setBoolIf.valueToCompare);
+					Debug.LogError(propertyToSet.name + " cannot be changed as it uses the SetIfOtherProperty Attribute, based on " + setBoolIf._valueToCompare);
 				}
 				propertyToSet.boolValue = goalBoolean; //Set property
 			}
@@ -153,5 +153,81 @@ public class CustomReadOnlyPropertyDrawer : PropertyDrawer
 		GUI.enabled = false;
 		EditorGUI.PropertyField(position, property);
 		GUI.enabled = true;	
+	}
+}
+
+
+[CustomPropertyDrawer(typeof(DontShowFieldNameAttribute))]
+public class DontShowFieldNamePropertyDrawer : PropertyDrawer
+{
+	public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+		EditorGUI.PropertyField(position, property, GUIContent.none);
+	}
+}
+
+[CustomPropertyDrawer(typeof(DrawTickBoxBeforeAttribute))]
+public class DrawTickBoxBeforePropertyDrawer : PropertyDrawer
+{
+
+	DrawTickBoxBeforeAttribute drawTick;
+
+	public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+		drawTick = attribute as DrawTickBoxBeforeAttribute;
+
+		//Get approrpriate sizes of elements, based on inspector panel.
+		float fullWidth = EditorGUIUtility.currentViewWidth;
+		float labelWidth = EditorGUIUtility.labelWidth;
+		float fieldWidth = fullWidth - labelWidth;
+		Rect labelRect = new Rect(position.x, position.y, labelWidth, position.height);
+		Rect tickBoxRect = new Rect(position.x + labelWidth, position.y, fieldWidth * 0.2f, position.height);
+		Rect fieldRect = new Rect((position.x + labelWidth + fieldWidth * 0.2f) -4, position.y, fieldWidth * 0.8f, position.height);
+
+		//Draw all in line.
+		EditorGUILayout.BeginHorizontal();
+		EditorGUI.PrefixLabel(labelRect, label);
+
+		//Find the field that will be used as the checkbox between the field and name of field.
+		SerializedProperty fieldToCheck = property.serializedObject.FindProperty(drawTick._booleanForTickBox);
+		EditorGUI.PropertyField(tickBoxRect, fieldToCheck, GUIContent.none);
+
+		EditorGUI.PropertyField(fieldRect, property, GUIContent.none);
+
+		EditorGUILayout.EndHorizontal();
+	}
+}
+
+[CustomPropertyDrawer(typeof(DrawHorizontalWithOthersAttribute))]
+public class DrawHorizontalWithOthersPropertyDrawer : PropertyDrawer
+{
+	DrawHorizontalWithOthersAttribute DrawHoriz;
+
+	public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+		DrawHoriz = attribute as DrawHorizontalWithOthersAttribute;
+
+		//Draw all in line.
+		EditorGUILayout.BeginHorizontal();
+
+		//Get approrpriate sizes of elements, based on inspector panel.
+		float fullWidth = EditorGUIUtility.currentViewWidth;
+		float partWidth = fullWidth / (DrawHoriz._listOfOtherFields.Length + 1);
+
+		Rect fieldRect = new Rect(position.x - 2, position.y, partWidth - 5, position.height);
+
+		EditorGUI.PropertyField(fieldRect, property);
+
+		//Go through each string name that was added when applying this attributre, and draw properties that match it. They must be set to HideInInspector to ensure they aren't drawn twice.
+		for (int i = 0 ; i < DrawHoriz._listOfOtherFields.Length ; i++)
+		{
+			string newPropertyName = DrawHoriz._listOfOtherFields[i];
+			if(i != DrawHoriz._listOfOtherFields.Length)
+				fieldRect = new Rect(position.x + (partWidth * (i+1)) -2, position.y, partWidth - 5, position.height);
+			else
+				fieldRect = new Rect(position.x + (partWidth * (i + 1)) - 2, position.y, partWidth, position.height);
+
+			SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
+			EditorGUI.PropertyField(fieldRect, newProperty);
+		}
+
+		EditorGUILayout.EndHorizontal();
 	}
 }
