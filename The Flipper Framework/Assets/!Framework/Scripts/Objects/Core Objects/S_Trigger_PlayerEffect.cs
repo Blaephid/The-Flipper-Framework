@@ -31,7 +31,7 @@ public class S_Trigger_PlayerEffect : S_Trigger_Base
 
 #if UNITY_EDITOR
 	public override void DrawTriggerAdditional ( Color colour ) {
-		if (_TriggerObjects._triggerSelf)
+		if (_hasTrigger)
 			S_S_DrawingMethods.DrawArrowHandle(colour, transform, 0.2f, true);
 	}
 #endif

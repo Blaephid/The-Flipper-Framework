@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using templates;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEditor;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
@@ -13,7 +14,6 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 {
 	//Serialized
 
-	[Header("Trigger")]
 	public StrucGeneralTriggerObjects _TriggerObjects = new StrucGeneralTriggerObjects()
 	{
 		_ObjectsToTriggerOn = new List<GameObject>(),
@@ -33,6 +33,10 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	[CustomReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
 	public GameObject _TriggerForPlayerToRead;
 	public S_EditorEnums.ColliderTypes _whatTriggerShape = S_EditorEnums.ColliderTypes.External;
+
+	[CustomReadOnly, Tooltip("This will be true if any trigger will activate this one. That includes itself or another.")] 
+	public bool _hasTrigger;
+	[CustomReadOnly] public List<GameObject> _ObjectsThatTriggerThis;
 
 	//Trackers
 	S_ConstantSceneGUI ConstantGUI;
@@ -86,7 +90,12 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		base.OnValidate();
 
 #if UNITY_EDITOR
-		SetTriggerForPlayerToRead();
+		if ( _TriggerObjects._triggerSelf ) 
+		{ CheckExternalTriggerDataHasTrigger(false, this) ; }
+		else 
+		{ CheckExternalTriggerDataHasTrigger(true, this); }
+
+		CheckTriggerForPlayerToRead();
 		_hasVisualisationScripted = true;
 #endif
 	}
@@ -126,12 +135,12 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	#endregion
 
 #if UNITY_EDITOR
-	private void SetTriggerForPlayerToRead () {
+	private void CheckTriggerForPlayerToRead () {
 		//If this trigger doesn't perform its logic in a player script, then this isn't needed, so return null.
-		if (!_TriggerObjects._isLogicInPlayScript) { _TriggerForPlayerToRead = null; return; }
+		if (!_TriggerObjects._isLogicInPlayScript) { SetTriggerForPlayerToRead( null); return; }
 
 		//If set to trigger self, then this is the logic the player will need to reference.
-		if (_TriggerObjects._triggerSelf) { _TriggerForPlayerToRead = gameObject; return; }
+		if (_TriggerObjects._triggerSelf) { SetTriggerForPlayerToRead(gameObject); return; }
 
 		//Otherwise Get the class derived class using this as a type, then look through objects that will be triggered and see if they match.
 		//E.G. S_Trigger_Camera will look for other S_Trigger_Cameras. And the first will be what to read.
@@ -140,11 +149,50 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
 			if (_TriggerObjects._ObjectsToTriggerOn[i].GetComponent(scriptType))
-			{ _TriggerForPlayerToRead = _TriggerObjects._ObjectsToTriggerOn[i].gameObject; return; }
+			{ SetTriggerForPlayerToRead(_TriggerObjects._ObjectsToTriggerOn[i].gameObject); return; }
 		}
 
 		//If none, then this trigger has no trigger data for the player.
-		_TriggerForPlayerToRead = null;
+		SetTriggerForPlayerToRead(null);
+	}
+
+	//Ensures the GameObject that acts as the source of data knows this, and will display in its own inspector.
+	private void SetTriggerForPlayerToRead ( GameObject SetTo) {
+
+		//If not changing, none of this is needed.
+		if((!_TriggerForPlayerToRead && SetTo) || (SetTo && _TriggerForPlayerToRead == SetTo)) { return; }
+
+		if (!(_TriggerForPlayerToRead && _TriggerForPlayerToRead.TryGetComponent(out S_Trigger_Base TriggerData))) { return; }
+		CheckExternalTriggerDataHasTrigger(true, TriggerData);
+		
+		_TriggerForPlayerToRead = SetTo;
+
+		if (!(_TriggerForPlayerToRead && _TriggerForPlayerToRead.TryGetComponent(out S_Trigger_Base TriggerData2))) { return; }
+		CheckExternalTriggerDataHasTrigger(false, TriggerData2);
+	}
+
+	private void CheckExternalTriggerDataHasTrigger ( bool thisIsTrigger, S_Trigger_Base TargetTriggerData ) {
+
+		if (thisIsTrigger)
+		{
+			//If the old TriggerToRead was triggered by this, remove it from that list, and if that's the last one, it has no current trigger.
+			if (TargetTriggerData._ObjectsThatTriggerThis.Contains(gameObject))
+			{
+				TargetTriggerData._ObjectsThatTriggerThis.Remove(gameObject);
+			}
+			if (TargetTriggerData._ObjectsThatTriggerThis.Count == 0) { TargetTriggerData._hasTrigger = false; }
+		}
+		else
+		{
+			//If the new Trigger To read doesn't have this as an object activating it, add it.
+			if (!TargetTriggerData._ObjectsThatTriggerThis.Contains(gameObject))
+			{
+				TargetTriggerData._ObjectsThatTriggerThis.Add(gameObject);
+				TargetTriggerData._hasTrigger = true;
+			}
+		}
+
+		
 	}
 
 	/// <summary>

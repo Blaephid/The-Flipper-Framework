@@ -67,8 +67,10 @@ public class S_Trigger_Camera : S_Trigger_Base
 
 #if UNITY_EDITOR
 	public override void DrawTriggerAdditional (Color colour) {
-		if(_TriggerObjects._triggerSelf)
+		if(_hasTrigger)
+		{
 			S_S_DrawingMethods.DrawArrowHandle(colour, transform, 0.4f, true);
+		}
 	}
 #endif
 }

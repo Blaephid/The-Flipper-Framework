@@ -394,7 +394,6 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Sets the camera a distance away from the player, either by adjusting the cinemachine or placing manually.
 	void HandleCameraDistance () {
-		//_distanceModifier = 1;
 
 		//Set up variables to limit the view changes.
 		Vector3 actionModifier = GetDistanceModifiedByAction();
@@ -403,24 +402,26 @@ public class S_HedgeCamera : MonoBehaviour
 		float speedPercentage = Mathf.Clamp((_PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed) * actionModifier.y, minValue, maxValue);
 
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
-		if (_shouldAffectDistanceBySpeed_ && _canAffectDistanceBySpeed)
+		if (_shouldAffectDistanceBySpeed_)
 		{
 			float targetDistanceModi = _cameraDistanceBySpeed_.Evaluate(speedPercentage);
 			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistanceModi, 0.1f);
 		}
 
 		//To make the player feel faster than they are, changes camera Field Of View based on speed.
-		if(_shouldAffectFOVBySpeed_ & _canAffectFOVBySpeed)
+		if(_shouldAffectFOVBySpeed_)
 		{
 			float targetFOVModi = _cameraFOVBySpeed_.Evaluate(speedPercentage);
 			_FOVModifier = Mathf.Lerp(_FOVModifier, targetFOVModi, 0.2f);
-			//_VirtualCamera.m_Lens.FieldOfView = Mathf.Lerp(_VirtualCamera.m_Lens.FieldOfView, targetFOVModi, 0.2f);
-			//_SecondaryCamera.m_Lens.FieldOfView = _VirtualCamera.m_Lens.FieldOfView;
 		}
 
-		float dist = _cameraMaxDistance_ * _distanceModifier;
-		_VirtualCamera.m_Lens.FieldOfView = _baseFOV_ * _FOVModifier;
-		_SecondaryCamera.m_Lens.FieldOfView = _baseFOV_ * _FOVModifier;
+		//If the _can values are false, modifiers will still be calculated, just not applied. This ensures smooth transitions when toggling these.
+		float useDistanceModifier = _canAffectDistanceBySpeed ? _distanceModifier : 1;
+		float useFOVModifier = _canAffectFOVBySpeed ? _FOVModifier : 1;
+
+		float dist = _cameraMaxDistance_ * useDistanceModifier;
+		_VirtualCamera.m_Lens.FieldOfView = _baseFOV_ * useFOVModifier;
+		_SecondaryCamera.m_Lens.FieldOfView = _baseFOV_ * useFOVModifier;
 
 		//If the object has a virtual camera set to framing transposer, then that will handle placement on its own.
 		if (_Transposer && _VirtualCamera.enabled)
