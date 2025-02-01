@@ -24,7 +24,9 @@ public class S_Vis_Base : MonoBehaviour
 	//The above property cannot be drawn horizontally if it uses SetBoolIfOthers, so instead, bind a different boolean to it (this one), that will draw the other data, but not itself.
 	//[AllowMultipleAttributesAttribute(new Type[] {typeof(SetBoolIfOtherPropertyDrawer)})]
 	//[SetBoolIfOther(false, "_hasVisualisationScripted", false)] [SetBoolIfOther(true, "_hasVisualisationScripted", true)]
-	[DrawOthersIf(false, new string[] {"_drawAtAllTimes", "_drawIfParentSelected", "_normalOutlineColour", "_selectedOutlineColour", "_selectedFillColour" }, true)]
+	//[DrawOthersIf(false, new string[] {"_drawAtAllTimes", "_drawIfParentSelected", "_normalOutlineColour", "_selectedOutlineColour", "_selectedFillColour" }, true)]
+	[OnlyDrawIf("_viewVisualisationData", true)]
+	[CustomReadOnly]
 	[SerializeField]
 	private bool _viewVisualisationDataHidden;
 

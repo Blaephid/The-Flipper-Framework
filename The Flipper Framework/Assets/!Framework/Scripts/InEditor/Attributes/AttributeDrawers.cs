@@ -6,80 +6,142 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using System.Reflection;
+using System.Linq;
 
 
-
-	/// <summary>
-	/// Based on: https://discussions.unity.com/t/650579
-	/// </summary>
-	[CustomPropertyDrawer(typeof(OnlyDrawIfAttribute))]
-public class DrawIfPropertyDrawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(MultiPropertyAttribute), true)]
+public class MultiPropertyDrawer : PropertyDrawer
 {
-	#region Fields
-
-	// Reference to the attribute on the property.
-	OnlyDrawIfAttribute drawIf;
-
-	// Field that is being compared.
-	SerializedProperty fieldToCheck;
-
-	#endregion
-
-	//Custom GetProperty Height to ensure no space is taken if not drawing.
 	public override float GetPropertyHeight ( SerializedProperty property, GUIContent label ) {
+		MultiPropertyAttribute MultiAttribute = attribute as MultiPropertyAttribute;
+		float baseHeight = base.GetPropertyHeight(property, label);
 
-		if (!WillDraw(property))
-			 return -EditorGUIUtility.standardVerticalSpacing;
+		MultiAttribute.stored = fieldInfo.GetCustomAttributes(typeof(MultiPropertyAttribute), false).ToList();
 
-		// If not being stopped, use default height
-		return base.GetPropertyHeight(property, label);
-	}
-
-
-	/// <summary>
-	/// Errors default to showing the property.
-	/// </summary>
-	private bool WillDraw ( SerializedProperty propertyToDraw ) {
-		drawIf = attribute as OnlyDrawIfAttribute;
-		
-		//Find the field that determines if this property should be drawn.
-		string propertyToCheck = propertyToDraw.propertyPath.Contains(".") ? System.IO.Path.ChangeExtension(propertyToDraw.propertyPath, drawIf._propertyToCheck) : drawIf._propertyToCheck;
-		fieldToCheck = propertyToDraw.serializedObject.FindProperty(propertyToCheck);
-
-		if (fieldToCheck == null)
+		//Go through the attributes, and try to get an altered height, if no altered height return default height.
+		for (int i = 0 ; i <  MultiAttribute.stored.Count ; i++)
 		{
-			Debug.LogError("Cannot find property with name: " + propertyToCheck);
-			return true;
+			object AttributeI = MultiAttribute.stored[i];
+			if (AttributeI as MultiPropertyAttribute != null)
+			{
+				//build label here too?
+				var tempheight = ((MultiPropertyAttribute)AttributeI).GetPropertyHeight(property, label);
+				if (tempheight.HasValue)
+				{
+					baseHeight = tempheight.Value;
+					break;
+				}
+			}
 		}
-
-		// get the value & compare based on types
-		switch (fieldToCheck.type)
-		{
-			case "bool":
-				return fieldToCheck.boolValue.Equals(drawIf._valueToCheckFor);
-			case "Enum":
-				return fieldToCheck.enumValueIndex.Equals((int)drawIf._valueToCheckFor);
-			default:
-				Debug.LogError("Error: " + fieldToCheck.type + " is not supported of " + propertyToCheck);
-				return true;
-		}
+		return baseHeight;
 	}
-
+	// Draw the property inside the given rect
 	public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
-		SerializedProperty propertyToDraw = property;
+		MultiPropertyAttribute MultiAttribute = attribute as MultiPropertyAttribute;
 
-		// If the condition is met, simply draw the field.
-		if (!WillDraw(propertyToDraw))
+		//As there is no way to acquire a PropertyDrawer from a PropertyAttribute, functionality must instead be kept in the PropertyAttribute classes.
+		MultiAttribute.stored = fieldInfo.GetCustomAttributes(typeof(MultiPropertyAttribute), false).ToList();
+
+		// First get the attribute since it contains the range for the slider
+		//if (MultiAttribute.stored == null || MultiAttribute.stored.Count == 0)
+		//{
+		//	MultiAttribute.stored = fieldInfo.GetCustomAttributes(typeof(MultiPropertyAttribute), false).OrderBy(s => ((PropertyAttribute)s).order).ToList();
+		//}
+		var OrigColor = GUI.color;
+		var Label = label;
+
+		bool willDraw = true;
+
+		//Go through each attribute and call its OnGUI directly. Usually, OnGUI is called once, and in propertyDrawers, like here, but storing methods of the same name in the Attribute allows them to be called here.
+		for (int i = 0 ; i < MultiAttribute.stored.Count ; i++)
 		{
-			position = new Rect(0, -10, 0, 0);
-			return;
+			object AttributeI = MultiAttribute.stored[i];
+
+			if (AttributeI as MultiPropertyAttribute != null)
+			{
+				Label = ((MultiPropertyAttribute)AttributeI).BuildLabel(Label);
+				willDraw = ((MultiPropertyAttribute)AttributeI).DrawOnGUI(position, property, Label);
+				if(!willDraw) { return; }
+			}
 		}
-		else
-		{
-			EditorGUI.PropertyField(position, propertyToDraw);
-		}
+		GUI.color = OrigColor;
+
+		if (willDraw) { EditorGUI.PropertyField(position, property); }
 	}
 }
+
+
+/// <summary>
+/// Based on: https://discussions.unity.com/t/650579
+/// </summary>
+//[CustomPropertyDrawer(typeof(OnlyDrawIfAttribute))]
+//public class DrawIfPropertyDrawer : PropertyDrawer
+//{
+//	#region Fields
+
+//	// Reference to the attribute on the property.
+//	OnlyDrawIfAttribute drawIf;
+
+//	// Field that is being compared.
+//	SerializedProperty fieldToCheck;
+
+//	#endregion
+
+//	//Custom GetProperty Height to ensure no space is taken if not drawing.
+//	public override float GetPropertyHeight ( SerializedProperty property, GUIContent label ) {
+
+//		if (!WillDraw(property))
+//			 return -EditorGUIUtility.standardVerticalSpacing;
+
+//		// If not being stopped, use default height
+//		return base.GetPropertyHeight(property, label);
+//	}
+
+
+//	/// <summary>
+//	/// Errors default to showing the property.
+//	/// </summary>
+//	private bool WillDraw ( SerializedProperty propertyToDraw ) {
+//		drawIf = attribute as OnlyDrawIfAttribute;
+		
+//		//Find the field that determines if this property should be drawn.
+//		string propertyToCheck = propertyToDraw.propertyPath.Contains(".") ? System.IO.Path.ChangeExtension(propertyToDraw.propertyPath, drawIf._propertyToCheck) : drawIf._propertyToCheck;
+//		fieldToCheck = propertyToDraw.serializedObject.FindProperty(propertyToCheck);
+
+//		if (fieldToCheck == null)
+//		{
+//			Debug.LogError("Cannot find property with name: " + propertyToCheck);
+//			return true;
+//		}
+
+//		// get the value & compare based on types
+//		switch (fieldToCheck.type)
+//		{
+//			case "bool":
+//				return fieldToCheck.boolValue.Equals(drawIf._valueToCheckFor);
+//			case "Enum":
+//				return fieldToCheck.enumValueIndex.Equals((int)drawIf._valueToCheckFor);
+//			default:
+//				Debug.LogError("Error: " + fieldToCheck.type + " is not supported of " + propertyToCheck);
+//				return true;
+//		}
+//	}
+
+//	public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+//		SerializedProperty propertyToDraw = property;
+
+//		// If the condition is met, simply draw the field.
+//		if (!WillDraw(propertyToDraw))
+//		{
+//			position = new Rect(0, -10, 0, 0);
+//			return;
+//		}
+//		else
+//		{
+//			EditorGUI.PropertyField(position, propertyToDraw);
+//		}
+//	}
+//}
 
 [CustomPropertyDrawer(typeof(DrawOthersIfAttribute))]
 public class DrawOthersIfPropertyDrawer : PropertyDrawer
@@ -228,15 +290,15 @@ public class SetBoolIfOtherPropertyDrawer : PropertyDrawer
 }
 
 
-[CustomPropertyDrawer(typeof(CustomReadOnlyAttribute))]
-public class CustomReadOnlyPropertyDrawer : PropertyDrawer
-{
-	public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
-		GUI.enabled = false;
-		EditorGUI.PropertyField(position, property);
-		GUI.enabled = true;
-	}
-}
+//[CustomPropertyDrawer(typeof(CustomReadOnlyAttribute))]
+//public class CustomReadOnlyPropertyDrawer : PropertyDrawer
+//{
+//	public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+//		GUI.enabled = false;
+//		EditorGUI.PropertyField(position, property);
+//		GUI.enabled = true;
+//	}
+//}
 
 
 [CustomPropertyDrawer(typeof(DontShowFieldNameAttribute))]

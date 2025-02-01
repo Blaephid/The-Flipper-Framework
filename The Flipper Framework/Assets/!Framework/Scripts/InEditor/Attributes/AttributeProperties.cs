@@ -10,28 +10,95 @@ public class CustomBaseAttribute : PropertyAttribute
 
 }
 
+[AttributeUsage(AttributeTargets.Field)]
+public abstract class MultiPropertyAttribute : PropertyAttribute
+{
+	public List<object> stored = new List<object>();
+	public virtual GUIContent BuildLabel ( GUIContent label ) {
+		return label;
+	}
+	public virtual bool DrawOnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+		return true;
+	}
 
-	/// <summary>
-	/// Draws the field/property ONLY if the Property To Check has the Value To Check for. Do not use mutliple times with the same property to check, use DrawOthersIf then.
-	/// Based on: https://discussions.unity.com/t/650579
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
-public class OnlyDrawIfAttribute : PropertyAttribute
+	internal virtual float? GetPropertyHeight ( SerializedProperty property, GUIContent label ) {
+		return null;
+	}
+}
+
+
+/// <summary>
+/// Draws the field/property ONLY if the Property To Check has the Value To Check for. Do not use mutliple times with the same property to check, use DrawOthersIf then.
+/// Based on: https://discussions.unity.com/t/650579
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+public class OnlyDrawIfAttribute : MultiPropertyAttribute
 {
 
 	public string _propertyToCheck { get; private set; }
 	public object _valueToCheckFor { get; private set; }
-
-	/// <summary>
-	/// Only draws the field only if a condition is met. Supports enum and bools.
-	/// </summary>
-	/// <param name="comparedPropertyName">The name of the property that is being compared (case sensitive).</param>
-	/// <param name="comparedValue">The value the property is being compared to.</param>
-	
 	//Constructor
 	public OnlyDrawIfAttribute ( string comparedPropertyName, object comparedValue ) {
 		_propertyToCheck = comparedPropertyName;
 		_valueToCheckFor = comparedValue;
+	}
+
+
+	// Field that is being compared.
+	SerializedProperty fieldToCheck;
+
+	//Custom GetProperty Height to ensure no space is taken if not drawing.
+	internal override float? GetPropertyHeight ( SerializedProperty property, GUIContent label ) {
+
+		if (!WillDraw(property))
+			return -EditorGUIUtility.standardVerticalSpacing;
+
+		// If not being stopped, use default height
+		return null;
+	}
+
+	public override bool DrawOnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+		SerializedProperty propertyToDraw = property;
+
+		// If the condition is met, simply draw the field.
+		if (!WillDraw(propertyToDraw))
+		{
+			position = new Rect(0, -10, 0, 0);
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+
+	/// <summary>
+	/// Errors default to showing the property.
+	/// </summary>
+	private bool WillDraw ( SerializedProperty propertyToDraw ) {
+
+		//Find the field that determines if this property should be drawn.
+		string propertyToCheck = propertyToDraw.propertyPath.Contains(".") ? System.IO.Path.ChangeExtension(propertyToDraw.propertyPath, _propertyToCheck) : _propertyToCheck;
+		fieldToCheck = propertyToDraw.serializedObject.FindProperty(propertyToCheck);
+
+		if (fieldToCheck == null)
+		{
+			Debug.LogError("Cannot find property with name: " + propertyToCheck);
+			return true;
+		}
+
+		// get the value & compare based on types
+		switch (fieldToCheck.type)
+		{
+			case "bool":
+				return fieldToCheck.boolValue.Equals(_valueToCheckFor);
+			case "Enum":
+				return fieldToCheck.enumValueIndex.Equals((int)_valueToCheckFor);
+			default:
+				Debug.LogError("Error: " + fieldToCheck.type + " is not supported of " + propertyToCheck);
+				return true;
+		}
 	}
 }
 
@@ -83,9 +150,14 @@ public class SetBoolIfOtherAttribute : PropertyAttribute
 /// Properties with this will be greyed out and uninteractable in the inspector.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
-public class CustomReadOnlyAttribute : PropertyAttribute
+public class CustomReadOnlyAttribute : MultiPropertyAttribute
 {
-
+	public override bool DrawOnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+		GUI.enabled = false;
+		EditorGUI.PropertyField(position, property);
+		GUI.enabled = true;
+		return false;
+	}
 }
 
 /// <summary>
