@@ -131,6 +131,10 @@ public class DrawOthersIfAttribute : MultiPropertyAttribute
 	}
 
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
+		return _drawSelf;
+	}
+
+	public override void DrawAfterProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		SerializedProperty propertyToCheck = property;
 
 		// If the condition is met, simply draw the field.
@@ -142,25 +146,15 @@ public class DrawOthersIfAttribute : MultiPropertyAttribute
 
 			position = new Rect(position.y, position.y / elementsBeingDrawn, position.width, _heightParts);
 
-			if (_drawSelf)
-				EditorGUI.PropertyField(position, propertyToCheck);
+			//Go through each string name that was added when applying this attributre, and draw properties that match it. They must be set to HideInInspector to ensure they aren't drawn twice.
+			for (int i = 0 ; i < _otherPropertiesToDraw.Length ; i++)
+			{
+				string newPropertyName = _otherPropertiesToDraw[i];
+				SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
+				EditorGUI.PropertyField(position, newProperty);
 
-			if (_drawSelf) { return false; } //If _drawSelf, property will already have been drawn now, so return false so it isn't drawn again.
-		}
-		else if (_drawSelf)
-			return true;
-		return false;
-	}
-
-	public override void DrawAfterProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
-		//Go through each string name that was added when applying this attributre, and draw properties that match it. They must be set to HideInInspector to ensure they aren't drawn twice.
-		for (int i = 0 ; i < _otherPropertiesToDraw.Length ; i++)
-		{
-			position.y += _heightParts;
-
-			string newPropertyName = _otherPropertiesToDraw[i];
-			SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
-			EditorGUI.PropertyField(position, newProperty);
+				position.y += _heightParts;
+			}
 		}
 	}
 }

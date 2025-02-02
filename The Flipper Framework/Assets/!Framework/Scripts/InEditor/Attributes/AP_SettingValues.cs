@@ -41,10 +41,18 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 
 		_propertyToSet = property;
+
+		//If this property should be set to something else based on another, then change it now, before drawing.
+		if (ShouldSetBoolean(_propertyToSet))
+		{
+			_propertyToSet.boolValue = _setThisBoolTo; //Set property
+		}
+
 		return true;
 	}
 
-	public override void OnChangeCheck ( bool wasChanged, MultiPropertyAttribute BaseAttribute ) {
+	public override void OnChangeCheck ( bool wasChanged, MultiPropertyAttribute BaseAttribute, SerializedProperty property ) {
+		_propertyToSet = property;
 		bool goalBoolean = _setThisBoolTo;
 
 		if (wasChanged)
@@ -59,11 +67,6 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 				_propertyToSet.boolValue = goalBoolean; //Set property
 			}
 		}
-		//If this property should be set to something else based on another, then change it now, before drawing.
-		else if (ShouldSetBoolean(_propertyToSet))
-		{
-			_propertyToSet.boolValue = goalBoolean; //Set property
-		}
 
 		_propertyToSet.serializedObject.ApplyModifiedProperties();
 	}
@@ -77,11 +80,8 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 public class CustomReadOnlyAttribute : MultiPropertyAttribute
 {
 
-	public override void DrawBeforeProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
-		GUI.enabled = false;
-	}
-
-	public override void DrawAfterProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
-		GUI.enabled = true;
+	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
+		BaseAttribute._isReadOnly = true;
+		return true;
 	}
 }

@@ -14,6 +14,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 {
 	//Serialized
 
+	[Space]
 	public StrucGeneralTriggerObjects _TriggerObjects = new StrucGeneralTriggerObjects()
 	{
 		_ObjectsToTriggerOn = new List<GameObject>(),
@@ -36,7 +37,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 	[CustomReadOnly, Tooltip("This will be true if any trigger will activate this one. That includes itself or another.")] 
 	public bool _hasTrigger;
-	[CustomReadOnly] public List<GameObject> _ObjectsThatTriggerThis;
+	[CustomReadOnly] public List<GameObject> _ObjectsThatTriggerThis = new List<GameObject>();
 
 	//Trackers
 	S_ConstantSceneGUI ConstantGUI;

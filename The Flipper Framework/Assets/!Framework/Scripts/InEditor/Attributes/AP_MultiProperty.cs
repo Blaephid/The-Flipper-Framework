@@ -12,6 +12,9 @@ public abstract class MultiPropertyAttribute : PropertyAttribute
 	//List of all the Attributes to be applied onto the property. Set in the Property Drawer.
 	public List<object> _AttributesToApply = new List<object>();
 
+	public SerializedProperty _Property;
+	public string	_debugProperty;
+
 	//Data for drawing the Property Field. Because an instance of this will act as the base property drawer, others need to adjust the data of it, not themselves. This is why methods pass "BaseAttribute"/
 	//Using _ as a suffix so its easier to tell what needs to be adjusted at base.
 
@@ -24,6 +27,8 @@ public abstract class MultiPropertyAttribute : PropertyAttribute
 	public Rect _labelRect;
 	public Rect _tickBoxRect;
 
+	public bool _isReadOnly;
+
 	public virtual GUIContent BuildLabel ( GUIContent label ) {
 		return label;
 	}
@@ -35,7 +40,7 @@ public abstract class MultiPropertyAttribute : PropertyAttribute
 		return null;
 	}
 
-	public virtual void OnChangeCheck(bool wasChanged, MultiPropertyAttribute BaseAttribute ) {
+	public virtual void OnChangeCheck(bool wasChanged, MultiPropertyAttribute BaseAttribute, SerializedProperty property ) {
 
 	}
 

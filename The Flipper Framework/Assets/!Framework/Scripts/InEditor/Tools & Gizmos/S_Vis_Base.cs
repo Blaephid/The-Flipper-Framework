@@ -10,23 +10,19 @@ using static UnityEngine.Rendering.DebugUI;
 #if UNITY_EDITOR
 public class S_Vis_Base : MonoBehaviour
 {
-	[Header("Visualisation")]
-
-	//[DrawHorizontalWithOthers(new string[] { "_viewVisualisationData"})]
-	[CustomReadOnly, SerializeField, Tooltip("Must be defined in code. If true, will serialize fields releveant to Visualisation, as not all classes will have the necessary implementation for this.")]
+	[Tooltip("Must be defined in code. If true, will serialize fields releveant to Visualisation, as not all classes will have the necessary implementation for this.")]
+	[DrawHorizontalWithOthers(new string[] { "_viewVisualisationData"})]
+	[CustomReadOnly]
 	public bool _hasVisualisationScripted = false;
 
 	//[OnlyDrawIf("_hasVisualisationScripted", true)]
-	//[DrawOthersIf(true, new string[] {"_drawAtAllTimes", "_drawIfParentSelected", "_normalOutlineColour", "_selectedOutlineColour", "_selectedFillColour" }, true)]
-	[SetBoolIfOther(false, "_hasVisualisationScripted", false)]
+	//[SetBoolIfOther(false, "_hasVisualisationScripted", false)]
+	[HideInInspector]
 	public bool _viewVisualisationData;
 
 	//The above property cannot be drawn horizontally if it uses SetBoolIfOthers, so instead, bind a different boolean to it (this one), that will draw the other data, but not itself.
-	//[AllowMultipleAttributesAttribute(new Type[] {typeof(SetBoolIfOtherPropertyDrawer)})]
-	//[SetBoolIfOther(false, "_hasVisualisationScripted", false)] [SetBoolIfOther(true, "_hasVisualisationScripted", true)]
-	//[DrawOthersIf(false, new string[] {"_drawAtAllTimes", "_drawIfParentSelected", "_normalOutlineColour", "_selectedOutlineColour", "_selectedFillColour" }, true)]
-	[OnlyDrawIf("_viewVisualisationData", true)]
-	[CustomReadOnly]
+	[SetBoolIfOther(false, "_viewVisualisationData", false)] [SetBoolIfOther(true, "_viewVisualisationData", true)]
+	[DrawOthersIf(false, new string[] {"_drawAtAllTimes", "_drawIfParentSelected", "_normalOutlineColour", "_selectedOutlineColour", "_selectedFillColour" }, true)]
 	[SerializeField]
 	private bool _viewVisualisationDataHidden;
 

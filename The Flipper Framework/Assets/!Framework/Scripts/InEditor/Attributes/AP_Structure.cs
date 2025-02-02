@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using Unity.Android.Gradle.Manifest;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -55,8 +54,7 @@ public class DrawTickBoxBeforeAttribute : MultiPropertyAttribute
 
 		//Find the field that will be used as the checkbox between the field and name of field.
 		SerializedProperty fieldToCheck = property.serializedObject.FindProperty(_booleanForTickBox);
-		//EditorGUI.PropertyField(_tickBoxRect, fieldToCheck, GUIContent.none);
-		EditorGUI.PropertyField(_tickBoxRect, fieldToCheck);
+		EditorGUI.PropertyField(_tickBoxRect, fieldToCheck, GUIContent.none);
 	}
 
 	private void SettingRects (Rect position, MultiPropertyAttribute BaseAttribute ) {
@@ -92,35 +90,41 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 	float _partWidth;
 
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
-
-		//Draw all in line.
-		EditorGUILayout.BeginHorizontal();
-
-		//Get approrpriate sizes of elements, based on inspector panel.
-		float fullWidth = EditorGUIUtility.currentViewWidth;
-		_partWidth = fullWidth / (_listOfOtherFields.Length + 1);
-
-		BaseAttribute._fieldRect_ = new Rect(position.x - 2, position.y, _partWidth - 5, position.height);
-
+		Debug.Log("Draw Horizontal thanks to " + property.name);
 		return true;
 	}
 
+	public override void DrawBeforeProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
+		//Draw all in line.
+		EditorGUILayout.BeginHorizontal();
+		SetPartWidth();
+
+		BaseAttribute._fieldRect_ = new Rect(position.x, position.y, _partWidth - 5, position.height);
+	}
+
 	public override void DrawAfterProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
-		Rect fieldRect = new Rect(position.x - 2, position.y, _partWidth - 5, position.height);
+		Rect fieldRect = BaseAttribute._fieldRect_;
+		SetPartWidth();
 
 		//Go through each string name that was added when applying this attributre, and draw properties that match it. They must be set to HideInInspector to ensure they aren't drawn twice.
 		for (int i = 0 ; i < _listOfOtherFields.Length ; i++)
 		{
 			string newPropertyName = _listOfOtherFields[i];
 			if (i != _listOfOtherFields.Length)
-				fieldRect = new Rect(position.x + (_partWidth * (i + 1)) - 2, position.y, _partWidth - 5, position.height);
+				fieldRect = new Rect(position.x + (_partWidth * (i + 1)), position.y, _partWidth - 5, position.height);
 			else
-				fieldRect = new Rect(position.x + (_partWidth * (i + 1)) - 2, position.y, _partWidth, position.height);
+				fieldRect = new Rect(position.x + (_partWidth * (i + 1)), position.y, _partWidth, position.height);
 
 			SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
 			EditorGUI.PropertyField(fieldRect, newProperty);
 		}
 
 		EditorGUILayout.EndHorizontal();
+	}
+
+	private void SetPartWidth() {
+		//Get approrpriate sizes of elements, based on inspector panel.
+		float fullWidth = EditorGUIUtility.currentViewWidth;
+		_partWidth = fullWidth / (_listOfOtherFields.Length + 1);
 	}
 }
