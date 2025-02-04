@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using templates;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
@@ -21,12 +23,17 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		_ObjectsToTriggerOff = new List<GameObject>(),
 	};
 
+	private List<GameObject> _RememberObjectsToTriggerOn = new List<GameObject>(); //Only used to check when the above list is edited.
+	private List<GameObject> _RememberObjectsToTriggerOff = new List<GameObject>(); //Only used to check when the above list is edited.
+
 	[Serializable]
 	[Tooltip("This data related to general triggering of other objects, which certain triggers won't need. Will interact with the ITriggerable Interface")]
 	public struct StrucGeneralTriggerObjects {
 		public bool         _triggerSelf;
+
 		public List<GameObject> _ObjectsToTriggerOn;
 		public List<GameObject> _ObjectsToTriggerOff;
+
 		[Tooltip("if true, the code performing the trigger effect will be in a player script, and the object below will be used as a marker for current active trigger..")]
 		public bool         _isLogicInPlayScript;
 	}
@@ -35,7 +42,8 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	public GameObject _TriggerForPlayerToRead;
 	public S_EditorEnums.ColliderTypes _whatTriggerShape = S_EditorEnums.ColliderTypes.External;
 
-	[CustomReadOnly, Tooltip("This will be true if any trigger will activate this one. That includes itself or another.")] 
+	[CustomReadOnly, Tooltip("This will be true if any trigger will activate this one. That includes itself or another.")]
+	[ColourIfEqualTo(false, 0.9f,0.5f,0.5f,1f)]
 	public bool _hasTrigger;
 	[CustomReadOnly] public List<GameObject> _ObjectsThatTriggerThis = new List<GameObject>();
 
@@ -91,6 +99,8 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		base.OnValidate();
 
 #if UNITY_EDITOR
+		UpdateExternalTriggers();
+
 		if ( _TriggerObjects._triggerSelf ) 
 		{ CheckExternalTriggerDataHasTrigger(false, this) ; }
 		else 
@@ -136,6 +146,44 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	#endregion
 
 #if UNITY_EDITOR
+
+	private void UpdateExternalTriggers () {
+
+		//Goes through what is set to trigger on, and ensure it knows this is set to trigger it.
+		if (_TriggerObjects._ObjectsToTriggerOn.Count > 0)
+		{
+			for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
+			{
+				if (!_TriggerObjects._ObjectsToTriggerOn[i]) { continue; }
+				if (_TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out S_Trigger_Base ExternalTriggerData))
+				{
+					CheckExternalTriggerDataHasTrigger(false, ExternalTriggerData); //Add to
+				}
+			}
+		}
+		
+		//Finds what is not in the list that was before, and ensures that object knows it is no longer referenced by this.
+		for (int i = 0 ; i < _RememberObjectsToTriggerOn.Count ; i++)
+		{
+			if (!_RememberObjectsToTriggerOn[i]) { continue; }
+			if (_TriggerObjects._ObjectsToTriggerOn.Count > 0)
+			{
+				if (!_TriggerObjects._ObjectsToTriggerOn[i]) { continue; }
+				if (_TriggerObjects._ObjectsToTriggerOn.Contains(_RememberObjectsToTriggerOn[i])) { continue; }
+			}
+
+			if (_RememberObjectsToTriggerOn[i].TryGetComponent(out S_Trigger_Base ExternalTriggerData))
+			{
+				CheckExternalTriggerDataHasTrigger(true, ExternalTriggerData); //Remove from
+			}
+		}
+
+		_RememberObjectsToTriggerOn = _TriggerObjects._ObjectsToTriggerOn;
+		_RememberObjectsToTriggerOff = _TriggerObjects._ObjectsToTriggerOff;
+		
+		
+	}
+
 	private void CheckTriggerForPlayerToRead () {
 		//If this trigger doesn't perform its logic in a player script, then this isn't needed, so return null.
 		if (!_TriggerObjects._isLogicInPlayScript) { SetTriggerForPlayerToRead( null); return; }
@@ -164,17 +212,19 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		if((!_TriggerForPlayerToRead && SetTo) || (SetTo && _TriggerForPlayerToRead == SetTo)) { return; }
 
 		if (!(_TriggerForPlayerToRead && _TriggerForPlayerToRead.TryGetComponent(out S_Trigger_Base TriggerData))) { return; }
+		//Remove this triggers reference to what needs to be read now, as it may no longer have that reference soon.
 		CheckExternalTriggerDataHasTrigger(true, TriggerData);
 		
 		_TriggerForPlayerToRead = SetTo;
 
 		if (!(_TriggerForPlayerToRead && _TriggerForPlayerToRead.TryGetComponent(out S_Trigger_Base TriggerData2))) { return; }
+		//If valid TriggerToRead, update it as being triggered by this, even if its itself.
 		CheckExternalTriggerDataHasTrigger(false, TriggerData2);
 	}
 
-	private void CheckExternalTriggerDataHasTrigger ( bool thisIsTrigger, S_Trigger_Base TargetTriggerData ) {
+	private void CheckExternalTriggerDataHasTrigger ( bool removeThisTrigger, S_Trigger_Base TargetTriggerData ) {
 
-		if (thisIsTrigger)
+		if (removeThisTrigger)
 		{
 			//If the old TriggerToRead was triggered by this, remove it from that list, and if that's the last one, it has no current trigger.
 			if (TargetTriggerData._ObjectsThatTriggerThis.Contains(gameObject))
@@ -234,7 +284,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 						//To match object scale and rotation, set draws to local space.
 						Gizmos.matrix = transform.localToWorldMatrix;
 						Gizmos.color = _selectedFillColour;
-						Gizmos.DrawCube(Col.center, size);
+						Gizmos.DrawCube(Col.center + transform.position, size);
 					}
 				}
 				break;
@@ -282,10 +332,11 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 		}
 
-		DrawTriggerAdditional(colour);
+		Gizmos.matrix = Matrix4x4.identity; //Reset gizmos to world space.
+		DrawAdditionalGizmos(selected,colour);
 	}
 
-	public virtual void DrawTriggerAdditional ( Color colour ) {
+	public virtual void DrawAdditionalGizmos (bool selected ,Color colour ) {
 
 	}
 	#endregion
@@ -295,6 +346,11 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		if(this == null) { return; }
 		float handleRadius = 2 * Mathf.Clamp(S_S_MoreMathMethods.GetLargestOfVector(transform.lossyScale) / 40, 1, 20);
 		base.VisualiseWithSelectableHandle(transform.position,handleRadius);
+		AdditionalTriggerSceneGUI();
+	}
+
+	public virtual void AdditionalTriggerSceneGUI () {
+
 	}
 #endif
 }

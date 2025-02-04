@@ -21,7 +21,6 @@ public abstract class MultiPropertyAttribute : PropertyAttribute
 	//By default, is set to label, but if overwritten, that ill be used to draw instead.
 	public GUIContent _GUIContentOnDraw_;
 
-	public Color	_colour_;
 	public Rect		_fieldRect_;
 
 	public Rect _labelRect;

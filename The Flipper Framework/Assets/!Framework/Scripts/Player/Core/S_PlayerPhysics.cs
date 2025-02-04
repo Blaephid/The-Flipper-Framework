@@ -346,7 +346,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_groundCheckDirection = -transform.up;
 
 		//Uses the ray to check for ground, if found, sets grounded to true and takes the normal.
-		Vector3 castStartPosition = transform.position - (_groundCheckDirection * 0.0f);
+		Vector3 castStartPosition = transform.position - (_groundCheckDirection * 0.1f);
 		Vector3 castEndPosition = transform.position + (_groundCheckDirection * groundCheckerDistance);
 
 		if (Physics.Linecast(castStartPosition, castEndPosition, out RaycastHit hitGroundTemp, _Groundmask_))

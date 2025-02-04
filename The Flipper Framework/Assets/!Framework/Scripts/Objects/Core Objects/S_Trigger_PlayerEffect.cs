@@ -30,7 +30,7 @@ public class S_Trigger_PlayerEffect : S_Trigger_Base
 
 
 #if UNITY_EDITOR
-	public override void DrawTriggerAdditional ( Color colour ) {
+	public override void DrawAdditionalGizmos (bool selected, Color colour ) {
 		if (_hasTrigger)
 			S_S_DrawingMethods.DrawArrowHandle(colour, transform, 0.2f, true);
 	}

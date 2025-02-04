@@ -55,6 +55,7 @@ namespace SplineMesh
 		public bool         _addOnEnd_;
 
 		[Header("Object")]
+		[ColourIfNull(1,0.2f,0.2f,1)]
 		[Tooltip("Select the prefab to place along this spline. EG, rings.")]
 		public GameObject _PrefabToPlace_ = null;
 		public bool _placeAsPrefab_ = true;

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4000014063325986}
   - component: {fileID: 65669958600555536}
   - component: {fileID: 7078480131913091809}
+  - component: {fileID: 2025760485226347324}
   m_Layer: 0
   m_Name: Pr_PlayerEffectTrig
   m_TagString: Player Effect
@@ -66,16 +67,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 882a4d35b46376144885b3c63dfbe3c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ObjectsToTriggerOn: []
-  _ObjectsToTriggerOff: []
-  _triggerSelf: 0
-  _isLogicInPlayScript: 0
-  _TriggerForPlayerToRead: {fileID: 0}
-  _whatTriggerShape: 0
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 1
+  _viewVisualisationDataHidden: 1
   _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
   _normalOutlineColour: {r: 0.08726152, g: 0.3886792, b: 0, a: 1}
   _selectedOutlineColour: {r: 0.17987192, g: 1, b: 0, a: 1}
   _selectedFillColour: {r: 0.669946, g: 1, b: 0.390566, a: 0.1}
+  _isSelected: 1
+  _InspectorTheme: {fileID: 0}
+  _TriggerObjects:
+    _triggerSelf: 0
+    _ObjectsToTriggerOn: []
+    _ObjectsToTriggerOff: []
+    _isLogicInPlayScript: 1
+  _TriggerForPlayerToRead: {fileID: 0}
+  _whatTriggerShape: 0
+  _hasTrigger: 0
+  _ObjectsThatTriggerThis: []
+  _deactivateOnExit: 0
+  _framesBeforeDeactivate: 0
   _lockPlayerInputFor: 5
   _LockInputTo_: 1
+  _lockToDirectionIfChange: {x: 0, y: 0, z: 0}
+  _ActionsToDisable: 
+  _SubActionsToDisable: 
   _setPlayerGrounded: 0
+--- !u!114 &2025760485226347324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000014119029628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _LinkedComponent: {fileID: 7078480131913091809}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

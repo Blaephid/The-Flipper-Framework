@@ -79,7 +79,6 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class CustomReadOnlyAttribute : MultiPropertyAttribute
 {
-
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		BaseAttribute._isReadOnly = true;
 		return true;

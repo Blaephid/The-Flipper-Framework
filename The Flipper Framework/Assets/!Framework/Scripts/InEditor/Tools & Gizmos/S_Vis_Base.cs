@@ -15,8 +15,8 @@ public class S_Vis_Base : MonoBehaviour
 	[CustomReadOnly]
 	public bool _hasVisualisationScripted = false;
 
-	//[OnlyDrawIf("_hasVisualisationScripted", true)]
-	//[SetBoolIfOther(false, "_hasVisualisationScripted", false)]
+	[OnlyDrawIf("_hasVisualisationScripted", true)]
+	[SetBoolIfOther(false, "_hasVisualisationScripted", false)]
 	[HideInInspector]
 	public bool _viewVisualisationData;
 

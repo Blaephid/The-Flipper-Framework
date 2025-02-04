@@ -90,7 +90,6 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 	float _partWidth;
 
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
-		Debug.Log("Draw Horizontal thanks to " + property.name);
 		return true;
 	}
 

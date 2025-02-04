@@ -1164,6 +1164,7 @@ MonoBehaviour:
   _coreVelocity: {x: 0, y: 0, z: 0}
   _environmentalVelocity: {x: 0, y: 0, z: 0}
   _totalVelocity: {x: 0, y: 0, z: 0}
+  _totalVelocityLocal: {x: 0, y: 0, z: 0}
   _worldVelocity: {x: 0, y: 0, z: 0}
   _previousVelocity:
   - {x: 0, y: 0, z: 0}
@@ -1212,7 +1213,7 @@ Transform:
   m_GameObject: {fileID: 38880623587908062}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.974, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11303,7 +11304,7 @@ Transform:
   m_GameObject: {fileID: 665095093832146073}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.06, z: 0.2}
+  m_LocalPosition: {x: 0, y: 0, z: 0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11339,7 +11340,7 @@ Transform:
   m_GameObject: {fileID: 668953569134828898}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7066968, y: -0, z: -0, w: 0.7075166}
-  m_LocalPosition: {x: 0, y: 1.14, z: -1.63}
+  m_LocalPosition: {x: 0, y: 2.094, z: -1.631}
   m_LocalScale: {x: 4, y: 3.35708, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -12684,7 +12685,7 @@ Transform:
   m_GameObject: {fileID: 3563295224368580408}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.295}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13023,7 +13024,7 @@ Transform:
   m_GameObject: {fileID: 4422975758816975122}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0, y: 4.045, z: -0.275}
+  m_LocalPosition: {x: 0, y: 3.81, z: 0.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13055,7 +13056,7 @@ Transform:
   m_GameObject: {fileID: 5101502192977342483}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.8, z: -0.03}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13219,7 +13220,7 @@ Transform:
   m_GameObject: {fileID: 5300954947105530035}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.621, z: 0}
+  m_LocalPosition: {x: 0, y: 3.76, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23618,7 +23619,7 @@ Transform:
   m_GameObject: {fileID: 7874859071667184223}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.9546, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.058556397, y: 0.058556397, z: 0.058556397}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23652,7 +23653,7 @@ Transform:
   m_GameObject: {fileID: 8264187962834017253}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.621, z: -10}
+  m_LocalPosition: {x: 0, y: 3.76, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23685,6 +23686,7 @@ MonoBehaviour:
   _SecondaryCamera: {fileID: 3053389768707675931}
   _shouldSetHeightWhenMoving_: 0
   _cameraMaxDistance_: -11
+  _baseFOV_: 0
   _lockCamAtSpeed_: 130
   _startLockCam: 0
   _posY: 20
@@ -23694,6 +23696,8 @@ MonoBehaviour:
   _isMasterLocked: 0
   _lookTimer: 0
   _lockedRotationSpeed: 0
+  _canAffectDistanceBySpeed: 1
+  _canAffectFOVBySpeed: 1
   _isReversed: 0
   _invertedX: 0
   _invertedY: 0
@@ -29548,12 +29552,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: ab3e5aa25a5fe6743b7003908eb863b1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.904
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ab3e5aa25a5fe6743b7003908eb863b1,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.384
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ab3e5aa25a5fe6743b7003908eb863b1,
         type: 3}
