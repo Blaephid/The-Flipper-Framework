@@ -68,6 +68,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 	public Mesh _MeshToDraw;
 	private Vector3 _offsetReferenceInWorld;
 
+
 	private void Awake () {
 		if (_Direction == null)
 		{
@@ -78,6 +79,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 	}
 
 #if UNITY_EDITOR
+
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
 		if (_hasTrigger)
 		{
