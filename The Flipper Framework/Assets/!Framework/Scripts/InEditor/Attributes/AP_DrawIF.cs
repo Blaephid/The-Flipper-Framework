@@ -14,8 +14,9 @@ using UnityEngine;
 public class OnlyDrawIfAttribute : MultiPropertyAttribute
 {
 
-	public string _propertyToCheck { get; private set; }
-	public object _valueToCheckFor { get; private set; }
+	public string _propertyToCheck { get; set; }
+	public object _valueToCheckFor { get; set; }
+
 	//Constructor
 	public OnlyDrawIfAttribute ( string comparedPropertyName, object comparedValue ) {
 		_propertyToCheck = comparedPropertyName;
@@ -24,7 +25,7 @@ public class OnlyDrawIfAttribute : MultiPropertyAttribute
 
 
 	// Field that is being compared.
-	SerializedProperty _fieldToCheck;
+	public SerializedProperty _fieldToCheck;
 
 	//Custom GetProperty Height to ensure no space is taken if not drawing.
 	public override float? GetPropertyHeight (float baseHeight, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
@@ -55,7 +56,7 @@ public class OnlyDrawIfAttribute : MultiPropertyAttribute
 	/// <summary>
 	/// Errors default to showing the property.
 	/// </summary>
-	private bool WillDraw ( SerializedProperty propertyToDraw ) {
+	public virtual bool WillDraw ( SerializedProperty propertyToDraw ) {
 		_fieldToCheck = GetFieldToCheck(propertyToDraw, _propertyToCheck);
 		if(_fieldToCheck == null) { return true; }
 
@@ -77,9 +78,27 @@ public class OnlyDrawIfAttribute : MultiPropertyAttribute
 }
 
 /// <summary>
-/// Draw a string of other serialized properties if THIS property matches the given value. Use this instead of OnlyDrawIf when hiding or showing large amounts, as OnlyDrawIf leaves noticeable gaps.
+/// Varient on only draw if, but instead only draws the property if the value is false. Use when checking enums and only one would not draw this.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
+public class OnlyDrawIfNotAttribute : OnlyDrawIfAttribute
+{
+	//Constructor
+	public OnlyDrawIfNotAttribute ( string comparedPropertyName, object comparedValue ) : base(comparedPropertyName, comparedValue) {
+		_propertyToCheck = comparedPropertyName;
+		_valueToCheckFor = comparedValue;
+	}
+
+
+	public override bool WillDraw ( SerializedProperty propertyToDraw ) {
+		return !base.WillDraw(propertyToDraw);
+	}
+}
+
+	/// <summary>
+	/// Draw a string of other serialized properties if THIS property matches the given value. Use this instead of OnlyDrawIf when hiding or showing large amounts, as OnlyDrawIf leaves noticeable gaps.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class DrawOthersIfAttribute : MultiPropertyAttribute
 {
 	public bool             _drawSelf;

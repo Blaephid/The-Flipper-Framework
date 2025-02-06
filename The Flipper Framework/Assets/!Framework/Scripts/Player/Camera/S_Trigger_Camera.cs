@@ -3,9 +3,9 @@ using System.Collections;
 using System.ComponentModel;
 using UnityEditor;
 
-public enum CameraControlType
+public enum enumCameraControlType
 {
-	LockToDirection, SetFree, SetFreeAndLookTowards, Reverse, ReverseAndLockControl, justEffect
+	SetToDirection, RemoveEffects, SetToInfrontOfCharacter, SetToBehindCharacter, JustEffects, SetToViewTarget
 }
 
 public class S_Trigger_Camera : S_Trigger_Base
@@ -15,10 +15,20 @@ public class S_Trigger_Camera : S_Trigger_Base
 	}
 
 	[Header("Functionality")]
-	public CameraControlType            _whatType;
+	public enumCameraControlType            _whatType;
+
 	[ColourIfNull(1,0,0,1)]
+	[OnlyDrawIfNot("_whatType", enumCameraControlType.SetToViewTarget)]
 	public Transform                    _Direction;
+
+	[ColourIfNull(1,0,0,1)]
+	[OnlyDrawIf("_whatType", enumCameraControlType.SetToViewTarget)]
+	public Transform                    _ViewTarget;
+
 	[HideInInspector] public Vector3                _forward;
+
+	[OnlyDrawIfNot("_whatType", enumCameraControlType.RemoveEffects)]
+	public bool _lockCamera;
 
 	[Tooltip("If true, all of the above effects will be undone when the player leaves the trigger (but the rotation will not).")]
 	public bool _willReleaseOnExit = false;
@@ -66,6 +76,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 	public bool _overWriteAllOffsets;
 	[BaseColour(0.6f,0.6f,0.6f,1)]
 	public Mesh _MeshToDraw;
+	[HideInInspector, SerializeField]
 	private Vector3 _offsetReferenceInWorld;
 
 

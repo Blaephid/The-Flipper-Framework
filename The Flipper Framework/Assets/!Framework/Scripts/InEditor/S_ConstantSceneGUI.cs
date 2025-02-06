@@ -13,12 +13,21 @@ public class S_ConstantSceneGUI : MonoBehaviour
 	public MonoBehaviour	_LinkedComponent;
 	public ICustomEditorLogic	_LinkedEditorLogic;
 
-	private bool currentlyEnabled = false;
+	[HideInInspector]
+	[SerializeField] bool _currentlyAddedToDuringSceneGUI = false;
+	[HideInInspector]
+	[SerializeField] bool _currentlyAddedToDuringPrefabChange = false;
 
-	void OnValidate () {
-		
-		ConvertComponentToEditorLogicInterface();
-		AddToDuringSceneGUI(null);
+	private void Awake () {
+		if (!Application.isPlaying)
+			OnEnable();
+		else
+			OnDisable();
+	}
+
+
+	void OnValidate () {	
+		OnEnable();
 	}
 
 	private void ConvertComponentToEditorLogicInterface () {
@@ -34,24 +43,39 @@ public class S_ConstantSceneGUI : MonoBehaviour
 	//Attaches the given script to the builtin SceneView GUI update, so its called constaltly by that dispatcher.
 	//There is a custom inspector button below to trigger this as it won't happen when object is placed in scene.
 	public void OnEnable () {
-		if (currentlyEnabled) { return; }
 		AddToDuringSceneGUI(null);
+		AddToPrefabStageChange();
+	}
+
+	private void OnDisable () {
+		RemoveFromDuringSceneGUI(null);
+		RemoveFromPrefabStageChange();
+	}
+
+	private void AddToPrefabStageChange () {
+		if(_currentlyAddedToDuringPrefabChange) { return; }
+
+		_currentlyAddedToDuringPrefabChange = true;
 
 		//These seperate events track when entering the prefab editor. If these weren't here, then these would continue to call custom logic even when in a seperate mode.
 		PrefabStage.prefabStageOpened += RemoveFromDuringSceneGUI;
 		PrefabStage.prefabStageClosing += AddToDuringSceneGUI;
 	}
 
-	private void OnDisable () {
-		RemoveFromDuringSceneGUI(null);
+	private void RemoveFromPrefabStageChange () {
+		if (!_currentlyAddedToDuringPrefabChange) { return; }
+
+		_currentlyAddedToDuringPrefabChange = false;
 
 		//These seperate events track when entering the prefab editor. If these weren't here, then these would continue to call custom logic even when in a seperate mode.
 		PrefabStage.prefabStageOpened -= RemoveFromDuringSceneGUI;
 		PrefabStage.prefabStageClosing -= AddToDuringSceneGUI;
 	}
 
+	//DuringSceneGUI Event. This event is called every frame in editor, so add and remove from this.
+
 	public void AddToDuringSceneGUI ( PrefabStage prefabStage ) {
-		if (currentlyEnabled) { return; }
+		if (_currentlyAddedToDuringSceneGUI) { return; }
 		else if (_LinkedEditorLogic == null)
 		{
 			ConvertComponentToEditorLogicInterface();
@@ -64,11 +88,11 @@ public class S_ConstantSceneGUI : MonoBehaviour
 		//Prevents the PREFAB ASSETS from enabling this. If this wasn't here, all prefabs with this would call in every scene, as well as their instances.
 		if (PrefabUtility.IsPartOfPrefabAsset(gameObject) && PrefabStageUtility.GetCurrentPrefabStage() == null) { return; }
 
-		currentlyEnabled = true;
+		_currentlyAddedToDuringSceneGUI = true;
 		SceneView.duringSceneGui += _LinkedEditorLogic.CustomOnSceneGUI;
 	}
 	public void RemoveFromDuringSceneGUI ( PrefabStage prefabStage ) {
-		if (!currentlyEnabled) { return; }
+		if (!_currentlyAddedToDuringSceneGUI) { return; }
 		else if (_LinkedEditorLogic == null)
 		{
 			ConvertComponentToEditorLogicInterface();
@@ -78,9 +102,7 @@ public class S_ConstantSceneGUI : MonoBehaviour
 			}
 		}
 
-
-		currentlyEnabled = false;
-
+		_currentlyAddedToDuringSceneGUI = false;
 		SceneView.duringSceneGui -= _LinkedEditorLogic.CustomOnSceneGUI;
 	}
 

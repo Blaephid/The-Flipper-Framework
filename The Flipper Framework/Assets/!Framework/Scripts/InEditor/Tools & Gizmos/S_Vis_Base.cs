@@ -40,6 +40,10 @@ public class S_Vis_Base : MonoBehaviour
 
 	[HideInInspector] public bool _isSelected;
 
+	private void OnEnable () {
+		_isSelected = false;
+	}
+
 	private void OnDrawGizmos () {
 		if (!enabled || !_hasVisualisationScripted) { return; }
 

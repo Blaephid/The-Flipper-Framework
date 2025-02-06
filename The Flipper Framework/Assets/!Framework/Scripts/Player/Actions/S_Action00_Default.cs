@@ -243,7 +243,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	public void OverWriteCollider ( CapsuleCollider newCollider ) {
 		_CharacterCapsule.radius = newCollider.radius;
 		_CharacterCapsule.center = newCollider.center;
-		_CharacterCapsule.transform.localPosition = newCollider.transform.position - _CharacterCapsule.transform.parent.position;
+		//_CharacterCapsule.transform.localPosition = newCollider.transform.position - _CharacterCapsule.transform.parent.position;
 		_CharacterCapsule.material = newCollider.material;
 		_CharacterCapsule.height = newCollider.height;
 	}
