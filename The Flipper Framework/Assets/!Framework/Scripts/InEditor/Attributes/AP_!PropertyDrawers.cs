@@ -14,12 +14,18 @@ using UnityEditor.Rendering.Universal;
 [CustomPropertyDrawer(typeof(MultiPropertyAttribute), true)]
 public class MultiPropertyDrawer : PropertyDrawer
 {
+	private static Attribute _MainAttributeOnThisProperty;
+	private static int _currentPropertyID;
+	private static float _previousHeight;
+
 	MultiPropertyAttribute _MultiAttribute;
 
 	public override float GetPropertyHeight ( SerializedProperty property, GUIContent label ) {
 
 		_MultiAttribute = attribute as MultiPropertyAttribute;
 		_MultiAttribute._Property = property;
+		if (PropertyAlreadyCalledThisDraw(property)) 
+		{ return _previousHeight; }
 
 		float baseHeight = base.GetPropertyHeight(property, label);
 		float useHeight = baseHeight;
@@ -40,14 +46,34 @@ public class MultiPropertyDrawer : PropertyDrawer
 				}
 			}
 		}
+		_previousHeight = useHeight;
 		return useHeight;
 	}
+
+	private bool PropertyAlreadyCalledThisDraw ( SerializedProperty property ) {
+
+		int propertyId = property.serializedObject.targetObject.GetInstanceID() ^ property.propertyPath.GetHashCode();
+		if (!propertyId.Equals(_currentPropertyID))
+		{
+			_MainAttributeOnThisProperty = attribute;
+			_currentPropertyID = propertyId;
+			return false;
+		}
+		else if(_MainAttributeOnThisProperty != attribute && propertyId.Equals(_currentPropertyID))
+		{
+			return true;
+		}
+		return false;
+
+	}
+
 	// Draw the property inside the given rect
 	public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
 		_MultiAttribute = attribute as MultiPropertyAttribute;
 		_MultiAttribute._Property = property;
-
 		_MultiAttribute._debugProperty = property.name;
+
+		if (PropertyAlreadyCalledThisDraw(property)) { return; }
 
 		//As there is no way to acquire a PropertyDrawer from a PropertyAttribute, functionality must instead be kept in the PropertyAttribute classes.
 		_MultiAttribute._AttributesToApply = fieldInfo.GetCustomAttributes(typeof(MultiPropertyAttribute), false).ToList();

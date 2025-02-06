@@ -20,7 +20,7 @@ public class S_ConstantSceneGUI : MonoBehaviour
 
 	private void Awake () {
 		if (!Application.isPlaying)
-			OnEnable();
+			AddToPrefabStageChange();
 		else
 			OnDisable();
 	}
@@ -44,7 +44,7 @@ public class S_ConstantSceneGUI : MonoBehaviour
 	//There is a custom inspector button below to trigger this as it won't happen when object is placed in scene.
 	public void OnEnable () {
 		AddToDuringSceneGUI(null);
-		AddToPrefabStageChange();
+		//AddToPrefabStageChange();
 	}
 
 	private void OnDisable () {
@@ -85,8 +85,14 @@ public class S_ConstantSceneGUI : MonoBehaviour
 			}
 		}
 
+		prefabStage = prefabStage == null ? PrefabStageUtility.GetCurrentPrefabStage() : prefabStage;
+
+
 		//Prevents the PREFAB ASSETS from enabling this. If this wasn't here, all prefabs with this would call in every scene, as well as their instances.
-		if (PrefabUtility.IsPartOfPrefabAsset(gameObject) && PrefabStageUtility.GetCurrentPrefabStage() == null) { return; }
+		if (prefabStage == null && PrefabUtility.IsPartOfPrefabAsset(gameObject)) { return; }
+
+		//Prevents the scene objects from enabling if currently in prefab view. This prevents a bunch of things being drawn when this object is not relevant.
+		if (prefabStage != null && prefabStage.prefabContentsRoot != gameObject.transform.root.gameObject) { return; }
 
 		_currentlyAddedToDuringSceneGUI = true;
 		SceneView.duringSceneGui += _LinkedEditorLogic.CustomOnSceneGUI;

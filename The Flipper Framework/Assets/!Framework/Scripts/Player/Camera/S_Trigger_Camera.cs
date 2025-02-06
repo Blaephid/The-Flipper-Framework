@@ -67,14 +67,27 @@ public class S_Trigger_Camera : S_Trigger_Base
 	[Tooltip("X is the new FOV for the view camera, Y is how many frames to reach it. It will still be changed based on running speed and collisions.")]
 	public Vector2 _newFOV = new Vector2 (100, 5);
 
+	[HideInInspector]
 	public bool _willOffsetTarget;
-	public bool _asLocalOffset;
+	[DrawTickBoxBefore("_willOffsetTarget")]
 	public Vector3 _newOffset;
+
+	[SerializeField]
+	[SetBoolIfOther(true, "_willOffsetTarget", true)] [SetBoolIfOther(false, "_willOffsetTarget", false)]
+	[DrawOthersIf (false,new string[] { "_asLocalOffset", "_MeshToDraw" } , true)]
+	bool _willOffsetTargetHidden;
+
+	[HideInInspector]
+	[DrawHorizontalWithOthers(new string[] { "_framesToOffset", "_overWriteAllOffsets" })]
+	public bool _asLocalOffset;
+	[HideInInspector]
 	[Tooltip("How many frames it takes to reach this offset")]
 	public float _framesToOffset;
+	[HideInInspector]
 	[Tooltip("If true, the offset will be unaffected by any HedgeCamera calculations that move the offset. If false, the offset will be affected by other offsets like input direction")]
 	public bool _overWriteAllOffsets;
-	[BaseColour(0.6f,0.6f,0.6f,1)]
+	[HideInInspector]
+	[BaseColour(0.8f,0.8f,0.8f,1)]
 	public Mesh _MeshToDraw;
 	[HideInInspector, SerializeField]
 	private Vector3 _offsetReferenceInWorld;
@@ -99,7 +112,8 @@ public class S_Trigger_Camera : S_Trigger_Base
 
 		if (_willOffsetTarget)
 		{
-			if (_MeshToDraw) {
+			if (_MeshToDraw)
+			{
 				Gizmos.color = selected ? new Color(0, 0, 0, 0.1f) : new Color(0, 0, 0, 0.02f);
 				if (_asLocalOffset)
 					Gizmos.DrawWireMesh(_MeshToDraw, transform.position, Quaternion.LookRotation(transform.forward, Vector3.up), Vector3.one * 10);
@@ -107,7 +121,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 					Gizmos.DrawWireMesh(_MeshToDraw, transform.position, Quaternion.identity, Vector3.one * 10);
 			}
 
-			Gizmos.color =  colour;
+			Gizmos.color = colour;
 			Gizmos.DrawWireSphere(_offsetReferenceInWorld, 0.5f);
 		}
 	}

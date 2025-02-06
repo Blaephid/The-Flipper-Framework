@@ -95,10 +95,11 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 
 	public override void DrawBeforeProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		//Draw all in line.
-		EditorGUILayout.BeginHorizontal();
+		if (Event.current.type == EventType.Layout)
+			EditorGUILayout.BeginHorizontal();
 		SetPartWidth();
 
-		BaseAttribute._fieldRect_ = new Rect(position.x, position.y, _partWidth - 5, position.height);
+		//BaseAttribute._fieldRect_ = new Rect(position.x-2, position.y, _partWidth - 5, position.height);
 	}
 
 	public override void DrawAfterProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
@@ -118,7 +119,8 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 			EditorGUI.PropertyField(fieldRect, newProperty);
 		}
 
-		EditorGUILayout.EndHorizontal();
+		if (Event.current.type == EventType.Layout)
+			EditorGUILayout.EndHorizontal();
 	}
 
 	private void SetPartWidth() {
