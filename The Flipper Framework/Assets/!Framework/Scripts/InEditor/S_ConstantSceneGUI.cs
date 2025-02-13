@@ -14,9 +14,9 @@ public class S_ConstantSceneGUI : MonoBehaviour
 	public ICustomEditorLogic	_LinkedEditorLogic;
 
 	[HideInInspector]
-	[SerializeField] bool _currentlyAddedToDuringSceneGUI = false;
+	bool _currentlyAddedToDuringSceneGUI = false;
 	[HideInInspector]
-	[SerializeField] bool _currentlyAddedToDuringPrefabChange = false;
+	bool _currentlyAddedToDuringPrefabChange = false;
 
 	private void Awake () {
 		if (!Application.isPlaying)

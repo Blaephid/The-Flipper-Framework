@@ -39,7 +39,7 @@ public class MultiPropertyDrawer : PropertyDrawer
 			object AttributeI = _MultiAttribute._AttributesToApply[i];
 			if (AttributeI as MultiPropertyAttribute != null)
 			{
-				var tempheight = ((MultiPropertyAttribute)AttributeI).GetPropertyHeight(baseHeight, property, label, _MultiAttribute);
+				var tempheight = ((MultiPropertyAttribute)AttributeI).GetPropertyHeight(useHeight, property, label, _MultiAttribute);
 				if (tempheight.HasValue)
 				{
 					useHeight = tempheight.Value;
@@ -94,7 +94,7 @@ public class MultiPropertyDrawer : PropertyDrawer
 
 		Color previousColor = GUI.color;
 		var Label = label;
-		bool willDraw = true;
+		_MultiAttribute._willDraw = true;
 
 		EditorGUI.BeginChangeCheck();
 		//Go through each attribute and call its OnGUI directly. Usually, OnGUI is called once, and in propertyDrawers, like here, but storing methods of the same name in the Attribute allows them to be called here.
@@ -105,20 +105,20 @@ public class MultiPropertyDrawer : PropertyDrawer
 			if (AttributeI as MultiPropertyAttribute != null)
 			{
 				Label = ((MultiPropertyAttribute)AttributeI).BuildLabel(_MultiAttribute._GUIContentOnDraw_);
-				willDraw = ((MultiPropertyAttribute)AttributeI).WillDrawOnGUI(position, property, _MultiAttribute._GUIContentOnDraw_, _MultiAttribute);
-				if(!willDraw) { break; }
+				_MultiAttribute._willDraw = ((MultiPropertyAttribute)AttributeI).WillDrawOnGUI(position, property, _MultiAttribute._GUIContentOnDraw_, _MultiAttribute);
+				if(!_MultiAttribute._willDraw) { break; }
 			}
 		}
 
-		HandlePropertyField(position, property, label, willDraw, previousColor);
+		HandlePropertyField(position, property, label, previousColor);
 	}
 
-	private void HandlePropertyField ( Rect position, SerializedProperty property, GUIContent label, bool willDraw, Color previousColor ) {
+	private void HandlePropertyField ( Rect position, SerializedProperty property, GUIContent label, Color previousColor ) {
 
 		CallDrawBeforeProperty(position, property, label, _MultiAttribute);
 
 		SaveValuesUsedToDrawInCaseONGUIIsCalledForOtherAttributes();
-		DrawPropertyField(willDraw, GUI.color, previousColor, property, _MultiAttribute._isReadOnly, _MultiAttribute._fieldRect_, _MultiAttribute._GUIContentOnDraw_);
+		DrawPropertyField(_MultiAttribute._willDraw, GUI.color, previousColor, property, _MultiAttribute._isReadOnly, _MultiAttribute._fieldRect_, _MultiAttribute._GUIContentOnDraw_);
 
 		CallDrawAfterProperty(position, property, label, _MultiAttribute);
 
@@ -132,7 +132,7 @@ public class MultiPropertyDrawer : PropertyDrawer
 			MultiPropertyAttribute._staticGUIContentOnDraw_ = _MultiAttribute._GUIContentOnDraw_;
 			MultiPropertyAttribute._staticIsReadOnly = _MultiAttribute._isReadOnly;
 			MultiPropertyAttribute._staticColor = GUI.color;
-			MultiPropertyAttribute._staticWillDraw = willDraw;
+			MultiPropertyAttribute._staticWillDraw = _MultiAttribute._willDraw;
 		}
 	}
 
@@ -160,6 +160,8 @@ public class MultiPropertyDrawer : PropertyDrawer
 	}
 
 	private void CallDrawAfterProperty( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
+		Debug.Log("Call Draw After Property " +BaseAttribute);
+
 		for (int i = 0 ; i < _MultiAttribute._AttributesToApply.Count ; i++)
 		{
 			object AttributeI = _MultiAttribute._AttributesToApply[i];

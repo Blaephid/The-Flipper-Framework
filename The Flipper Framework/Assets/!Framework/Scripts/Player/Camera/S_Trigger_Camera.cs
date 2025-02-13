@@ -5,7 +5,7 @@ using UnityEditor;
 
 public enum enumCameraControlType
 {
-	SetToDirection, RemoveEffects, SetToInfrontOfCharacter, SetToBehindCharacter, JustEffects, SetToViewTarget
+	SetToDirection, SetToInfrontOfCharacter, SetToBehindCharacter, OnlyApplyEffects, RemoveEffects, SetToViewTarget
 }
 
 public class S_Trigger_Camera : S_Trigger_Base
@@ -73,12 +73,8 @@ public class S_Trigger_Camera : S_Trigger_Base
 	[DrawTickBoxBefore("_willOffsetTarget")]
 	public Vector3 _newOffset;
 
-	[SerializeField]
-	[SetBoolIfOther(true, "_willOffsetTarget", true)] [SetBoolIfOther(false, "_willOffsetTarget", false)]
-	[DrawOthersIf (false,new string[] { "_asLocalOffset", "_MeshToDraw" } , true)]
-	bool _willOffsetTargetHidden;
-
-	[HideInInspector]
+	//[HideInInspector]
+	[OnlyDrawIf("_willOffsetTarget", true)]
 	[DrawHorizontalWithOthers(new string[] { "_framesToOffset", "_overWriteAllOffsets" })]
 	public bool _asLocalOffset;
 	[HideInInspector]
@@ -87,7 +83,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 	[HideInInspector]
 	[Tooltip("If true, the offset will be unaffected by any HedgeCamera calculations that move the offset. If false, the offset will be affected by other offsets like input direction")]
 	public bool _overWriteAllOffsets;
-	[HideInInspector]
+	[OnlyDrawIf("_willOffsetTarget", true)]
 	[BaseColour(0.8f,0.8f,0.8f,1)]
 	public Mesh _MeshToDraw;
 	[HideInInspector, SerializeField]

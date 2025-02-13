@@ -32,6 +32,7 @@ public abstract class MultiPropertyAttribute : PropertyAttribute
 	public bool _isReadOnly;
 	public static bool _staticIsReadOnly;
 
+	public bool		_willDraw;
 	public static bool _staticWillDraw;
 
 	public static Color _staticColor;

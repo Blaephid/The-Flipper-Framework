@@ -43,4 +43,10 @@ public class S_S_MoreMathMethods
 		number = increments * (int)(number / increments);
 		return number;
 	}
+
+	public static int DivideWhileRoundingUp ( float numerator, float denominator ) {
+		float result = (numerator + denominator - 1) / denominator;
+
+		return (int)result;
+	}
 }

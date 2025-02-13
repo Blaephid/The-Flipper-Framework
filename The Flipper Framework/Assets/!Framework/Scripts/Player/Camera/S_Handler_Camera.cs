@@ -77,7 +77,7 @@ public class S_Handler_Camera : MonoBehaviour
 				return;
 
 			//Nothing changes in control, but distance and height may change.
-			case enumCameraControlType.JustEffects:
+			case enumCameraControlType.OnlyApplyEffects:
 				if (cameraData._willChangeAltitude)
 					_HedgeCam.SetCameraHeightOnly(cameraData._newAltitude, cameraData._faceSpeed, cameraData._duration);
 				break;
