@@ -53,6 +53,9 @@ public class MultiPropertyDrawer : PropertyDrawer
 
 	private bool PropertyAlreadyCalledThisDraw ( SerializedProperty property, bool calledFromOnGUI ) {
 
+		string calledFrom = calledFromOnGUI ? " ONGUI" : "PROTERTY HEIGHT";
+		Debug.Log(calledFrom +  "- Drawing " + property.displayName + " from " + attribute + "  during " + Event.current);
+
 		int propertyId = property.serializedObject.targetObject.GetInstanceID() ^ property.propertyPath.GetHashCode();
 		if (!propertyId.Equals(_currentPropertyID))
 		{
@@ -160,7 +163,6 @@ public class MultiPropertyDrawer : PropertyDrawer
 	}
 
 	private void CallDrawAfterProperty( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
-		Debug.Log("Call Draw After Property " +BaseAttribute);
 
 		for (int i = 0 ; i < _MultiAttribute._AttributesToApply.Count ; i++)
 		{
