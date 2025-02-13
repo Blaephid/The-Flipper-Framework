@@ -69,6 +69,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 
 	[HideInInspector]
 	public bool _willOffsetTarget;
+	[Space(2f)]
 	[DrawTickBoxBefore("_willOffsetTarget")]
 	public Vector3 _newOffset;
 

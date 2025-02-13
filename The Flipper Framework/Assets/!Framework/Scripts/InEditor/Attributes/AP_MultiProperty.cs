@@ -20,13 +20,21 @@ public abstract class MultiPropertyAttribute : PropertyAttribute
 
 	//By default, is set to label, but if overwritten, that ill be used to draw instead.
 	public GUIContent _GUIContentOnDraw_;
+	//These static fields are created to store the last used drawing data, so for properties with multiple attributes, this will carry over and be used to draw the same thing without calculating multiple times
+	public static GUIContent _staticGUIContentOnDraw_; 
 
 	public Rect		_fieldRect_;
+	public static Rect		_staticfieldRect_;
 
 	public Rect _labelRect;
 	public Rect _tickBoxRect;
 
 	public bool _isReadOnly;
+	public static bool _staticIsReadOnly;
+
+	public static bool _staticWillDraw;
+
+	public static Color _staticColor;
 
 	public virtual GUIContent BuildLabel ( GUIContent label ) {
 		return label;

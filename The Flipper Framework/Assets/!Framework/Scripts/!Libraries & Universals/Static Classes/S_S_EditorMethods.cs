@@ -11,6 +11,7 @@ using SplineMesh;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
 using UnityEngine.InputSystem.HID;
+using System.Diagnostics;
 
 public class S_S_EditorMethods : MonoBehaviour
 {
@@ -56,7 +57,7 @@ public class S_S_EditorMethods : MonoBehaviour
 		}
 
 		if (input != noSpaces)
-			Debug.LogWarning("Converted  " +input+  "  to  " +noSpaces);
+			UnityEngine.Debug.LogWarning("Converted  " +input+  "  to  " +noSpaces);
 
 		return noSpaces;
 	}
@@ -266,5 +267,18 @@ public class S_S_EditorMethods : MonoBehaviour
 
 	}
 
+	public static bool CheckCallerMethodsFor ( string callerMethodName ) {
+
+		StackTrace stackTrace = new StackTrace();
+		for (int i = 0 ; i < stackTrace.FrameCount ; i++)
+		{
+			var method = stackTrace.GetFrame(i).GetMethod();
+			if (method.Name == callerMethodName)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 #endif
 }

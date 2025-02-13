@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Linq;
 using UnityEngine.UIElements;
 using UnityEditor.Rendering.Universal;
+using System.Reflection.Emit;
 
 
 [CustomPropertyDrawer(typeof(MultiPropertyAttribute), true)]
@@ -24,7 +25,7 @@ public class MultiPropertyDrawer : PropertyDrawer
 
 		_MultiAttribute = attribute as MultiPropertyAttribute;
 		_MultiAttribute._Property = property;
-		if (PropertyAlreadyCalledThisDraw(property)) 
+		if (PropertyAlreadyCalledThisDraw(property, false)) 
 		{ return _previousHeight; }
 
 		float baseHeight = base.GetPropertyHeight(property, label);
@@ -50,17 +51,27 @@ public class MultiPropertyDrawer : PropertyDrawer
 		return useHeight;
 	}
 
-	private bool PropertyAlreadyCalledThisDraw ( SerializedProperty property ) {
+	private bool PropertyAlreadyCalledThisDraw ( SerializedProperty property, bool calledFromOnGUI ) {
 
 		int propertyId = property.serializedObject.targetObject.GetInstanceID() ^ property.propertyPath.GetHashCode();
 		if (!propertyId.Equals(_currentPropertyID))
 		{
-			_MainAttributeOnThisProperty = attribute;
-			_currentPropertyID = propertyId;
+			if (calledFromOnGUI)
+			{
+				_MainAttributeOnThisProperty = attribute;
+				_currentPropertyID = propertyId;
+			}
 			return false;
 		}
 		else if(_MainAttributeOnThisProperty != attribute && propertyId.Equals(_currentPropertyID))
 		{
+			if (calledFromOnGUI)
+			{
+				//The static fields are used to keep track of each important value used to draw the property field, so they don't need to be recalculated if this was already drawn.
+				//Not drawing would just erase what was already drawn, so instead draw the same thing (position and style).
+				DrawPropertyField(MultiPropertyAttribute._staticWillDraw, MultiPropertyAttribute._staticColor, 
+					GUI.color, property, MultiPropertyAttribute._staticIsReadOnly, MultiPropertyAttribute._staticfieldRect_, MultiPropertyAttribute._staticGUIContentOnDraw_);
+			}
 			return true;
 		}
 		return false;
@@ -73,7 +84,7 @@ public class MultiPropertyDrawer : PropertyDrawer
 		_MultiAttribute._Property = property;
 		_MultiAttribute._debugProperty = property.name;
 
-		if (PropertyAlreadyCalledThisDraw(property)) { return; }
+		if (PropertyAlreadyCalledThisDraw(property, true)) { return; }
 
 		//As there is no way to acquire a PropertyDrawer from a PropertyAttribute, functionality must instead be kept in the PropertyAttribute classes.
 		_MultiAttribute._AttributesToApply = fieldInfo.GetCustomAttributes(typeof(MultiPropertyAttribute), false).ToList();
@@ -99,18 +110,40 @@ public class MultiPropertyDrawer : PropertyDrawer
 			}
 		}
 
+		HandlePropertyField(position, property, label, willDraw, previousColor);
+	}
+
+	private void HandlePropertyField ( Rect position, SerializedProperty property, GUIContent label, bool willDraw, Color previousColor ) {
+
 		CallDrawBeforeProperty(position, property, label, _MultiAttribute);
-		if (willDraw) {
-			if (_MultiAttribute._isReadOnly) { GUI.enabled = false; }
-			EditorGUI.PropertyField(_MultiAttribute._fieldRect_, property, _MultiAttribute._GUIContentOnDraw_);
-			if (_MultiAttribute._isReadOnly) { GUI.enabled = true; }
-		}
+
+		SaveValuesUsedToDrawInCaseONGUIIsCalledForOtherAttributes();
+		DrawPropertyField(willDraw, GUI.color, previousColor, property, _MultiAttribute._isReadOnly, _MultiAttribute._fieldRect_, _MultiAttribute._GUIContentOnDraw_);
+
 		CallDrawAfterProperty(position, property, label, _MultiAttribute);
 
-		if (EditorGUI.EndChangeCheck()){CallChangeChecks(true);}
+		if (EditorGUI.EndChangeCheck()) { CallChangeChecks(true); }
 		else { CallChangeChecks(false); }
 
-		GUI.color = previousColor;
+		return;
+		void SaveValuesUsedToDrawInCaseONGUIIsCalledForOtherAttributes () {
+			//Save the data that was used to draw this property
+			MultiPropertyAttribute._staticfieldRect_ = _MultiAttribute._fieldRect_;
+			MultiPropertyAttribute._staticGUIContentOnDraw_ = _MultiAttribute._GUIContentOnDraw_;
+			MultiPropertyAttribute._staticIsReadOnly = _MultiAttribute._isReadOnly;
+			MultiPropertyAttribute._staticColor = GUI.color;
+			MultiPropertyAttribute._staticWillDraw = willDraw;
+		}
+	}
+
+	private void DrawPropertyField (bool willDraw, Color drawColor, Color previousColor, SerializedProperty property, bool isReadOnly, Rect fieldRect, GUIContent content ) {
+		if (willDraw)
+		{
+			if (isReadOnly) { GUI.enabled = false; }
+			EditorGUI.PropertyField(fieldRect, property, content);
+			if (isReadOnly) { GUI.enabled = true; }
+			GUI.color = previousColor;
+		}
 	}
 
 	private void CallChangeChecks(bool change ) {

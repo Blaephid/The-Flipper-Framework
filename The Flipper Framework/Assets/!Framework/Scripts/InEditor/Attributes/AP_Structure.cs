@@ -100,6 +100,13 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		SetPartWidth();
 
 		//BaseAttribute._fieldRect_ = new Rect(position.x-2, position.y, _partWidth - 5, position.height);
+		//Draw Label of Property
+		BaseAttribute._fieldRect_ = new Rect(position.x-2, position.y, _partWidth *1.4f, position.height);
+		EditorGUI.PrefixLabel(BaseAttribute._fieldRect_, label);
+
+		//Draw editable field of Property
+		BaseAttribute._fieldRect_ = new Rect(position.x - 2 + _partWidth *1.4f , position.y, _partWidth *0.6f, position.height);
+		BaseAttribute._GUIContentOnDraw_ = GUIContent.none;
 	}
 
 	public override void DrawAfterProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
@@ -110,13 +117,21 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		for (int i = 0 ; i < _listOfOtherFields.Length ; i++)
 		{
 			string newPropertyName = _listOfOtherFields[i];
-			if (i != _listOfOtherFields.Length)
-				fieldRect = new Rect(position.x + (_partWidth * (i + 1)), position.y, _partWidth - 5, position.height);
-			else
-				fieldRect = new Rect(position.x + (_partWidth * (i + 1)), position.y, _partWidth, position.height);
 
+			//Draw Label of Property
+			MoveAlong(0.6f, 1.4f);
 			SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
-			EditorGUI.PropertyField(fieldRect, newProperty);
+			label = EditorGUIUtility.TrTextContent(newProperty.displayName);
+			EditorGUI.PrefixLabel(fieldRect, label);
+
+			//Draw editable field of Property
+			MoveAlong(1.4f, 0.6f);
+			EditorGUI.PropertyField(fieldRect, newProperty, GUIContent.none);
+
+			continue;
+			void MoveAlong (float moveModi, float widthModi) {
+				fieldRect = new Rect(fieldRect.x + _partWidth *moveModi, position.y, _partWidth * widthModi, position.height);
+			}
 		}
 
 		if (Event.current.type == EventType.Layout)
@@ -127,5 +142,6 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		//Get approrpriate sizes of elements, based on inspector panel.
 		float fullWidth = EditorGUIUtility.currentViewWidth;
 		_partWidth = fullWidth / (_listOfOtherFields.Length + 1);
+		_partWidth /= 2;
 	}
 }

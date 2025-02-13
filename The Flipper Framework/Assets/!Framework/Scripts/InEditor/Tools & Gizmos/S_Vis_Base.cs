@@ -12,7 +12,8 @@ public class S_Vis_Base : MonoBehaviour
 {
 	[Tooltip("Must be defined in code. If true, will serialize fields releveant to Visualisation, as not all classes will have the necessary implementation for this.")]
 	[DrawHorizontalWithOthers(new string[] { "_viewVisualisationData"})]
-	[CustomReadOnly]
+	[ReadOnly]
+	[BaseColour(0.6f,0.6f,0.6f,1f)]
 	public bool _hasVisualisationScripted = false;
 
 	[OnlyDrawIf("_hasVisualisationScripted", true)]
