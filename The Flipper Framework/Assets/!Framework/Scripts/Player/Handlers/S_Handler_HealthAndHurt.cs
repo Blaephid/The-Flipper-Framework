@@ -222,7 +222,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		if (_ringsToLose > 0)
 		{
 			//Get spawn location
-			Vector3 pos = transform.position;
+			Vector3 pos = _PlayerPhys._CharacterCenterPosition;
 			pos.y += 1;
 
 			//Spawn a ring based on the moving ring prefab and shoot it out away from the player
@@ -369,12 +369,13 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		Vector3 movingDirection = _PlayerVel._worldVelocity.normalized;
 		float distance = _PlayerVel._horizontalSpeedMagnitude * Time.fixedDeltaTime + 0.2f; //Uses timme.delta time to check where the character should probably be next frame.
 		Vector3 sphereStartOffset = transform.up * (_CharacterCapsule.height / 2); // Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
+		Vector3 startPosition = _PlayerPhys._CharacterCenterPosition;
 
 		//Checks for a wall, and if the direction of it is similar to movement direction, ready bonk.
-		if (Physics.CapsuleCast(transform.position + sphereStartOffset, transform.position,
+		if (Physics.CapsuleCast(startPosition + sphereStartOffset, startPosition,
 			_CharacterCapsule.radius / 1.5f, movingDirection, out RaycastHit wallHit, distance, _BonkWall_))
 		{
-			float directionAngle = Vector3.Angle(movingDirection, wallHit.point - transform.position); //Difference between moving direction and direction of collision
+			float directionAngle = Vector3.Angle(movingDirection, wallHit.point - startPosition); //Difference between moving direction and direction of collision
 			float intoAngle = Vector3.Angle(movingDirection, wallHit.normal); //Difference between the player movement direction and wall they're going into. 180 means running straight into a wall facing directily flat on.
 			float surfaceAngle = Vector3.Angle(transform.up, wallHit.normal); //Difference between character upwards direction and surface upwards direction
 			if (directionAngle < 80 && surfaceAngle > 50 && intoAngle > 158)
@@ -543,7 +544,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//Called when a ring is picked up. Doesn't apply it until the end of the frame to ensure that only one ring is gained per frame, ignoring potential multiple collisions.
 	public IEnumerator GainRing (float amount, Collider col, GameObject Particle) {
-		Instantiate(Particle, col.transform.position, Quaternion.identity);
+		Instantiate(Particle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity);
 		Destroy(col.gameObject);
 
 		_gainedRingThisFrame = false;

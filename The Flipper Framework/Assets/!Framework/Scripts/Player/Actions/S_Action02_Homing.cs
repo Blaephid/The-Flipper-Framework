@@ -142,7 +142,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		//Gets the direction to move in, rotate a lot faster than normal for the first frame.
 		_Target = _HomingHandler._TargetObject.transform;
-		_targetDirection = _Target.position - transform.position;
+		_targetDirection = _Target.position - _PlayerPhys._CharacterCenterPosition;
 		_currentDirection = Vector3.RotateTowards(_MainSkin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
 
 		//Setting public
@@ -221,8 +221,8 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		}
 
 		//Get direction to move in.
-		Vector3 newDirection = _Target.position - transform.position;
-		_distanceFromTargetSquared = S_S_MoreMathMethods.GetDistanceOfVectors(_Target.position, transform.position);
+		Vector3 newDirection = _Target.position - _PlayerPhys._CharacterCenterPosition;
+		_distanceFromTargetSquared = S_S_MoreMathMethods.GetDistanceOfVectors(_Target.position, _PlayerPhys._CharacterCenterPosition);
 		float thisTurn =  _homingTurnSpeed_;
 
 		//Set Player location when close enough, for precision. Remember to square anything compared to a distance as the method we made does not square root the answer.

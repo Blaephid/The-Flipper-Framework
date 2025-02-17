@@ -112,7 +112,7 @@ public class S_Handler_WallActions : MonoBehaviour
 
 
 	private void CheckForWall () {
-		Vector3 origin = transform.position - _MainSkin.up * 0.4f;
+		Vector3 origin = _PlayerPhys._CharacterCenterPosition - _MainSkin.up * 0.4f;
 
 		if (_Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.WallClimbing))
 		{
@@ -189,7 +189,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	private bool IsInputtingTowardsWall ( Vector3 hitPoint, float angleLimit = 20 ) {
 		if(_Input._constantInputRelevantToCharacter.sqrMagnitude < 0.5) { return false; }
 
-		Vector3 directionToWall = hitPoint - transform.position;
+		Vector3 directionToWall = hitPoint - _PlayerPhys._CharacterCenterPosition;
 		float angle =Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter);
  		return angle < angleLimit;
 	}

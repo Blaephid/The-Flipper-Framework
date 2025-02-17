@@ -280,7 +280,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		{
 			case S_GeneralEnums.SpinChargeAimingTypes.Camera:
 				//Since it requires camera movement, if the camera can't be moved, instead aims by input.
-				if (_CamHandler._HedgeCam._isLocked)
+				if (_CamHandler._HedgeCam._isLocked || _CamHandler._HedgeCam._isXLocked)
 					FaceByInput();
 				else
 					FaceByCamera();

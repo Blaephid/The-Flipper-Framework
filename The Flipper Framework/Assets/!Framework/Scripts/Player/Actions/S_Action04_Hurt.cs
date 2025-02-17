@@ -124,7 +124,7 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 		//If going to keep moving in direction
 		//Knockback direction will have been set to zero in the hurt handler if not resetting speed on hit. If there isn't a solid object infront, then dont bounce back.
 		if (_knockbackDirection == Vector3.zero && 
-			!Physics.BoxCast(transform.position, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
+			!Physics.BoxCast(_PlayerPhys._CharacterCenterPosition, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
 		{
 			//Apply slight force against and upwards.
 			_PlayerVel.AddCoreVelocity(-_PlayerPhys._RB.velocity.normalized * _knockbackForce_ * 0.2f);
@@ -144,7 +144,7 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 		{
 			Vector3 movePlacement = -_PlayerVel._previousVelocity[4] * Time.deltaTime;
 			movePlacement += transform.up;
-			_PlayerPhys.SetPlayerPosition(transform.position + movePlacement); //Places character back the way they were moving to avoid weird collisions.
+			_PlayerPhys.SetPlayerPosition(_PlayerPhys._CharacterPivotPosition + movePlacement); //Places character back the way they were moving to avoid weird collisions.
 
 			//Get a new direction if this was triggered because something was blocking the previous option
 			_knockbackDirection = _knockbackDirection == Vector3.zero ? -checkDirection : _knockbackDirection;

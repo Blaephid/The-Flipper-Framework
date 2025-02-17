@@ -180,7 +180,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 
 	private void PlaceOnSpline () {
 		//Place at position so feet are on the spline.
-		Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
+		Vector3 FootPos = _PlayerPhys._CharacterPivotPosition - _Pathers._FeetTransform.position;
 		_PlayerPhys.SetPlayerPosition(_sampleLocation + FootPos);
 		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(transform.forward, _sampleUpwards));
 	}
@@ -264,7 +264,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 	private void MoveTowardsPathMiddle () {
 		if (_PlayerPhys._isGrounded && _playerSpeed > 20)
 		{
-			Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
+			Vector3 FootPos = _PlayerPhys._CharacterPivotPosition - _Pathers._FeetTransform.position;
 			Vector3 direction = _sampleLocation - _Pathers._FeetTransform.position;
 
 			//Don't apply any velocity upwards, so take relevant to player, remove veritcal, then return.

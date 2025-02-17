@@ -17,6 +17,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	//Serialized
 
 	[Space]
+	public S_EditorEnums.ColliderTypes _whatTriggerShape = S_EditorEnums.ColliderTypes.External;
 	public StrucGeneralTriggerObjects _TriggerObjects = new StrucGeneralTriggerObjects()
 	{
 		_ObjectsToTriggerOn = new List<GameObject>(),
@@ -33,14 +34,15 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 		public List<GameObject> _ObjectsToTriggerOn;
 		public List<GameObject> _ObjectsToTriggerOff;
-
-		[Tooltip("if true, the code performing the trigger effect will be in a player script, and the object below will be used as a marker for current active trigger..")]
-		public bool         _isLogicInPlayScript;
 	}
 
+
+	[CustomReadOnly]
+	[Tooltip("Set true in code for triggers where their effects are scripted in a player script. _TriggerForPlayerToRead provides the data for said script.")]
+	public bool         _isLogicInPlayerScript;
+	[OnlyDrawIf("_isLogicInPlayerScript", true)]
 	[CustomReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
 	public GameObject _TriggerForPlayerToRead;
-	public S_EditorEnums.ColliderTypes _whatTriggerShape = S_EditorEnums.ColliderTypes.External;
 
 	[CustomReadOnly, Tooltip("This will be true if any trigger will activate this one. That includes itself or another.")]
 	[ColourIfEqualTo(false, 0.9f,0.5f,0.5f,1f)]
@@ -105,6 +107,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		{ CheckExternalTriggerDataHasTrigger(false, this) ; }
 		else 
 		{ CheckExternalTriggerDataHasTrigger(true, this); }
+
 
 		CheckTriggerForPlayerToRead();
 		_hasVisualisationScripted = true;
@@ -186,10 +189,13 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 	private void CheckTriggerForPlayerToRead () {
 		//If this trigger doesn't perform its logic in a player script, then this isn't needed, so return null.
-		if (!_TriggerObjects._isLogicInPlayScript) { SetTriggerForPlayerToRead( null); return; }
+		if (!_isLogicInPlayerScript) 
+		{ SetTriggerForPlayerToRead( null); return; }
 
 		//If set to trigger self, then this is the logic the player will need to reference.
-		if (_TriggerObjects._triggerSelf) { SetTriggerForPlayerToRead(gameObject); return; }
+		if (_TriggerObjects._triggerSelf) 
+
+		{ SetTriggerForPlayerToRead(gameObject); return; }
 
 		//Otherwise Get the class derived class using this as a type, then look through objects that will be triggered and see if they match.
 		//E.G. S_Trigger_Camera will look for other S_Trigger_Cameras. And the first will be what to read.
@@ -209,11 +215,11 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	private void SetTriggerForPlayerToRead ( GameObject SetTo) {
 
 		//If not changing, none of this is needed.
-		if((!_TriggerForPlayerToRead && SetTo) || (SetTo && _TriggerForPlayerToRead == SetTo)) { return; }
+		if((!_TriggerForPlayerToRead && !SetTo) || (SetTo && _TriggerForPlayerToRead == SetTo)) { return; }
 
-		if (!(_TriggerForPlayerToRead && _TriggerForPlayerToRead.TryGetComponent(out S_Trigger_Base TriggerData))) { return; }
-		//Remove this triggers reference to what needs to be read now, as it may no longer have that reference soon.
-		CheckExternalTriggerDataHasTrigger(true, TriggerData);
+		//Remove this trigger's reference to what needs to be read now, as it may no longer have that reference soon.
+		if (_TriggerForPlayerToRead && _TriggerForPlayerToRead.TryGetComponent(out S_Trigger_Base TriggerData)) 
+		{ CheckExternalTriggerDataHasTrigger(true, TriggerData); }
 		
 		_TriggerForPlayerToRead = SetTo;
 
@@ -284,7 +290,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 						//To match object scale and rotation, set draws to local space.
 						Gizmos.matrix = transform.localToWorldMatrix;
 						Gizmos.color = _selectedFillColour;
-						Gizmos.DrawCube(Col.center + transform.position, size);
+						Gizmos.DrawCube(Col.center, size);
 					}
 				}
 				break;

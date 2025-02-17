@@ -6,7 +6,7 @@ public class S_Trigger_PlayerEffect : S_Trigger_Base
 {
 
 	public S_Trigger_PlayerEffect () {
-		_TriggerObjects._isLogicInPlayScript = true;
+		_isLogicInPlayerScript = true;
 	}
 
 	[Header("Interaction")]

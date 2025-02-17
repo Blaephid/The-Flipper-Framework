@@ -116,9 +116,12 @@ public class S_PlayerPhysics : MonoBehaviour
 
 
 	[HideInInspector]
-	public Vector3                _playerPos;         //A quick reference to the players current location
+	public Vector3          _CharacterCenterPosition;
 	[HideInInspector]
-	public Vector3                _feetOffsetFromCentre;
+	public Vector3          _CharacterPivotPosition;
+	[HideInInspector]
+	public Vector3                _feetOffsetFromPivotPoint;
+	[HideInInspector]
 	public Vector3                _colliderOffsetFromCentre;
 
 	private float                 _timeUpHill;        //Tracks how long a player has been running up hill. Decreases when going down hill or on flat ground.
@@ -222,8 +225,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Sets public variables relevant to other calculations 
 	void LateUpdate () {
-		_playerPos = transform.position;
-
 		_frameCount++;
 
 	}
@@ -298,6 +299,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private void HandleGeneralPhysics () {
 
 		Profiler.BeginSample("PlayerPhysics");
+		UpdatePositionTrackers();
 
 		//Get curve positions, which will be used in calculations for this frame.
 		_curvePosSlopePowerUphill = _slopePowerUpBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
@@ -324,6 +326,16 @@ public class S_PlayerPhysics : MonoBehaviour
 		Profiler.EndSample();
 	}
 
+	private void UpdatePositionTrackers () {
+		_CharacterPivotPosition = transform.position;
+
+		_feetOffsetFromPivotPoint = _FeetTransform.position - _CharacterPivotPosition;
+		_colliderOffsetFromCentre = (_CharacterCapsule.transform.position + (_CharacterCapsule.transform.rotation * _CharacterCapsule.center));
+		_colliderOffsetFromCentre -= _CharacterPivotPosition;
+
+		_CharacterCenterPosition = _CharacterPivotPosition + _colliderOffsetFromCentre;
+	}
+
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
 	public void CheckForGround () {
 
@@ -346,8 +358,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		_groundCheckDirection = -transform.up;
 
 		//Uses the ray to check for ground, if found, sets grounded to true and takes the normal.
-		Vector3 castStartPosition = transform.position - (_groundCheckDirection * 0.1f);
-		Vector3 castEndPosition = transform.position + (_groundCheckDirection * groundCheckerDistance);
+		Vector3 castStartPosition = _CharacterPivotPosition - (_groundCheckDirection * 0.1f);
+		Vector3 castEndPosition = _CharacterPivotPosition + (_groundCheckDirection * groundCheckerDistance);
 
 		if (Physics.Linecast(castStartPosition, castEndPosition, out RaycastHit hitGroundTemp, _Groundmask_))
 		{
@@ -356,7 +368,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			if (_isGrounded)
 			{
 				//Because terrain can be bumpy, find an average normal between multiple around the same area.
-				float[] checksAtRotations = new float[]{0,60,120,120 }; //Each element is a check, and the value is how much to rotate (relative to player up), before checking.
+				float[] checksAtRotations = new float[]{0,20,40,40,80,80,40,40 }; //Each element is a check, and the value is how much to rotate (relative to player up), before checking.
 				Vector3 offSetForCheck = _PlayerVelocity._horizontalSpeedMagnitude > 30 ? _PlayerVelocity._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.5f; //The offset from the main check that will rotate
 
 				for (int i = 0 ; i < checksAtRotations.Length ; i++)
@@ -413,7 +425,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_timeOnGround += Time.deltaTime;
 
 		//To avoid jittering against a wall if going to and from 0 to even some speed, only call this if there isn't a wall SUPER close in the input direction.
-		if (!(_PlayerVelocity._horizontalSpeedMagnitude < 10 && Physics.SphereCast(transform.position, _CharacterCapsule.radius * 0.99f,
+		if (!(_PlayerVelocity._horizontalSpeedMagnitude < 10 && Physics.SphereCast(_CharacterCenterPosition, _CharacterCapsule.radius * 0.99f,
 			_Input._constantInputRelevantToCharacter, out RaycastHit hit, 0.02f + (_CharacterCapsule.radius * 0.01f), _Groundmask_)))
 		{
 			_PlayerVelocity._coreVelocity = _PlayerMovement.HandleControlledVelocity(_PlayerVelocity._coreVelocity, new Vector2(1, 1));
@@ -560,20 +572,19 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (_timeOnGround > 0.12f && _PlayerVelocity._horizontalSpeedMagnitude > 3)
 		{
 
-			Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.white, 10f);
+			Debug.DrawRay(_CharacterCenterPosition, velocity * Time.deltaTime, Color.white, 10f);
 
 			Vector3 currentGroundNormal = _groundNormal;
-			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.06f);
+			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.07f);
 			Vector3 rayCastDirection = AlignWithNormal(_PlayerVelocity._worldVelocity.normalized, _groundNormal, 1);
 
 			//If the Raycast Hits something, then there is a wall in front, that could be a negative slope (ground is higher and will tilt backwards to go up).
-			//if (Physics.BoxCast(raycastStartPosition, new Vector3(0.12f, 0.03f, 0.01f), rayCastDirection, out RaycastHit hitSticking,
 			if (Physics.SphereCast(raycastStartPosition, 0.05f, rayCastDirection, out RaycastHit hitSticking,
 					_PlayerVelocity._horizontalSpeedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, _Groundmask_))
 			{
 				float upwardsDirectionDifference =  Vector3.Angle(currentGroundNormal, hitSticking.normal);
 
-				Debug.DrawRay(hitSticking.point, hitSticking.normal, Color.cyan, 10f);
+				//Debug.DrawRay(hitSticking.point, hitSticking.normal, Color.cyan, 10f);
 
 				//If the angle difference between current slope and encountered one is under the limit	
 				if (upwardsDirectionDifference < 70f)
@@ -603,7 +614,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			_PlayerVelocity.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false);
 		}
 
-		Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.yellow, 10f);
+		//Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.yellow, 10f);
 		return velocity;
 	}
 
@@ -615,11 +626,10 @@ public class S_PlayerPhysics : MonoBehaviour
 		velocity = Vector3.LerpUnclamped(velocity, Dir, _stickingLerps_.x);
 
 		//If player is too far from ground, set back to buffer position.
-		//if (_placeAboveGroundBuffer_ > 0 && (_FeetTransform.position - _HitGround.point).sqrMagnitude > _placeAboveGroundBuffer_ * _placeAboveGroundBuffer_)
 		if (_placeAboveGroundBuffer_ > 0)
 		{
-			Vector3 directionFromGroundToPlayer = transform.position - _HitGround.point;
-			Vector3 newPos = _HitGround.point  -(_groundCheckDirection * _placeAboveGroundBuffer_) - _feetOffsetFromCentre;
+			Vector3 directionFromGroundToPlayer = _CharacterPivotPosition - _HitGround.point;
+			Vector3 newPos = _HitGround.point  -(_groundCheckDirection * _placeAboveGroundBuffer_) - _feetOffsetFromPivotPoint;
 			SetPlayerPosition(newPos);
 		}
 
@@ -661,8 +671,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Find a point above and slightly continuing on from the impact point.
 		Vector3 rayStartPosition = hitSticking.point + (rayCastDirection * 0.15f) + (currentGroundNormal * 1.25f) + (currentGroundNormal * _CharacterCapsule.radius);
 		//If enough space to be placed there or slightly below.
-		//if (!Physics.CheckSphere(rayStartPosition, _CharacterCapsule.radius))
-		//{
 		// then shoot a sphere down for a lip to see the walls height
 		if (Physics.SphereCast(rayStartPosition, _CharacterCapsule.radius, -currentGroundNormal, out RaycastHit hitLip, 1.2f, _Groundmask_))
 		{
@@ -677,7 +685,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				//Then move them to that position.
 				Vector3 castPositionAtHit = rayStartPosition - (currentGroundNormal * (hitLip.distance + 0.05f));
 				Vector3 newPosition = hitLip.point + (currentGroundNormal * 0.2f);
-				newPosition -= _feetOffsetFromCentre;
+				newPosition -= _feetOffsetFromPivotPoint;
 
 				//Ensure there is space for the player to be moved here by mimicking the players collider size.
 				float capsuleHalfHeightMinusRadius = ((_CharacterCapsule.height * 0.5f) - _CharacterCapsule.radius) * _CharacterCapsule.transform.lossyScale.y;
@@ -844,9 +852,9 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 		}
 
-		_feetOffsetFromCentre = _FeetTransform.position - transform.position;
-		_colliderOffsetFromCentre = _CharacterCapsule.transform.position - transform.position;
-		Debug.DrawRay(_FeetTransform.position, Vector3.down, Color.magenta, 10f);
+		UpdatePositionTrackers();
+
+		//Debug.DrawRay(_FeetTransform.position, Vector3.down, Color.magenta, 10f);
 
 		_listOfPreviousGroundNormals.Insert(0, normal);
 		_listOfPreviousGroundNormals.RemoveAt(3);
@@ -902,6 +910,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		Debug.DrawLine(transform.position, newPosition, Color.magenta, 10f);
 
 		transform.position = newPosition;
+		UpdatePositionTrackers();
 		if (shouldPrintLocation) Debug.Log("Change Position to  ");
 	}
 	public void AddToPlayerPosition ( Vector3 Add ) {
@@ -914,6 +923,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		//Using rigidBody is smoother but wont take effect this frame, so if you need to rotate for specific calculations, change the transform.
 		else
 			_RB.MoveRotation(newRotation);
+
+		UpdatePositionTrackers();
 
 		if (shouldPrintRotation) Debug.Log("Change Position to  " + newRotation);
 	}

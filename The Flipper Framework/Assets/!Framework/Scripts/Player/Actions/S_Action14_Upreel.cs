@@ -179,7 +179,7 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	private void PlaceOnHandle () {
 
 		Vector3 handlePosition = _CurrentUpreel.MoveHandleToLength();
-		Vector3 HandPos = transform.position - _HandGripTransform.position;
+		Vector3 HandPos = _PlayerPhys._CharacterPivotPosition - _HandGripTransform.position;
 		_PlayerPhys.SetPlayerPosition(handlePosition + HandPos);
 	}
 

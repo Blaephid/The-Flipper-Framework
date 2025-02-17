@@ -113,13 +113,13 @@ public class S_HedgeCamera : MonoBehaviour
 	public float                  _startLockCam;
 	private bool                  _isFacingDown = false;
 
-	private float                 _posX = 0.0f;
-	private float                 _preX = 0.0f;
+	private float                 _xPositionOfCamera = 0.0f;
+	private float                 _xPrevious = 0.0f;
 
 	[HideInInspector]
-	public float                  _posY = 20.0f;
+	public float                  _yPositionOfCamera = 20.0f;
 	[HideInInspector]
-	public float                  _preY = 20.0f;
+	public float                  _yPrevious = 20.0f;
 
 	private float                 _changeY;
 	private float                 _changeX;
@@ -132,7 +132,9 @@ public class S_HedgeCamera : MonoBehaviour
 	[HideInInspector]
 	public bool                   _isLocked;
 	[HideInInspector]
-	public bool                   _canMove;
+	public bool             _isYLocked;
+	[HideInInspector]
+	public bool             _isXLocked;
 	[HideInInspector]
 	public bool                   _isMasterLocked;
 	private float                 _heightToLook;
@@ -140,6 +142,7 @@ public class S_HedgeCamera : MonoBehaviour
 	public float                  _lookTimer;
 	private float                 _backBehindTimer;
 	private float                 _equalHeightTimer;
+
 	[HideInInspector]
 	public float                  _lockedRotationSpeed;
 	private Vector3                _currentFaceDirection;
@@ -155,10 +158,14 @@ public class S_HedgeCamera : MonoBehaviour
 	public bool                   _isReversed;
 
 	//Effects
-	private Vector3               _lookAtDir;
+	private Vector3               _lookAtDirection;
 	private bool                  _willChangeHeight;
 	private bool                  _isPlayerTransformCopyControlledExternally;
-	private Quaternion            _externalAlignment;
+
+	private bool                        _rotateToLocalDirection;
+	private Vector3                     _localLookAtDirection;
+	private Vector3                      _previousTranslatedLocalLookAtDirection;
+	private bool                     _isCurrentlyRotationTowardsLocalDirection = true;
 
 	private float                 _distanceModifier = 1;
 	private float                 _FOVModifier = 1;
@@ -226,13 +233,13 @@ public class S_HedgeCamera : MonoBehaviour
 	private void HandleCameraMovement () {
 
 		//Set to the change this frame can be tracked.
-		_preY = _posY;
-		_preX = _posX;
+		_yPrevious = _yPositionOfCamera;
+		_xPrevious = _xPositionOfCamera;
 
 		//If LookTimer is currently below zero, then direct the camera towards the point of interest
 		if (_lookTimer < 0 || _lookTimer == 1)
 		{
-			RotateDirection(_lookAtDir, _lockedRotationSpeed, _heightToLook, _willChangeHeight);
+			RotateDirection(_lookAtDirection, _lockedRotationSpeed, _heightToLook, _willChangeHeight);
 
 			//Count down timer to zero
 			if (_lookTimer < 0)
@@ -246,21 +253,22 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 
 		//Changes the x and y values of the camera by input, changing speed based on a number of factors, such as if stationary and external modifiers.
-		if (!_isLocked && _canMove)
-		{
-			float camMoveSpeed = _PlayerVel._speedMagnitudeSquared > 100 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
-			camMoveSpeed *= _moveModifier;
-			float movementX = _Input.moveCamX * _inputXSpeed_ * _invertedX;
-			float movementY = _Input.moveCamY * _inputYSpeed_ * _invertedY;
-			_moveModifier = Mathf.MoveTowards(_moveModifier, 1, Time.deltaTime);
 
-			_posX += movementX * camMoveSpeed;
-			_posY -= movementY * camMoveSpeed;
-		}
+		float camMoveSpeed = _PlayerVel._speedMagnitudeSquared > 100 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
+		camMoveSpeed *= _moveModifier;
+		float movementX = _Input.moveCamX * _inputXSpeed_ * _invertedX;
+		float movementY = _Input.moveCamY * _inputYSpeed_ * _invertedY;
+		_moveModifier = Mathf.MoveTowards(_moveModifier, 1, Time.deltaTime);
+
+		if(!_isXLocked)
+			_xPositionOfCamera += movementX * camMoveSpeed;
+		if(!_isYLocked)
+			_yPositionOfCamera -= movementY * camMoveSpeed;
+		
 
 		//Pres were assigned in the movement script and this is used to see how much was changed this frame. 
-		_changeY = Mathf.Abs(_preY - _posY);
-		_changeX = Mathf.Abs(_preX - _posX);
+		_changeY = Mathf.Abs(_yPrevious - _yPositionOfCamera);
+		_changeX = Mathf.Abs(_xPrevious - _xPositionOfCamera);
 
 		//If the camera was changed, then ready the delay before automoving.
 		if (_changeY > 0.5f || _changeX > 0.5f)
@@ -481,6 +489,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Handles the height or direction of the camera based on certain situations such as when falling for too long.
 	void HandleCameraSituations () {
+		AutoRotateCamera();
 
 		if (_isLocked) { return; }
 
@@ -518,43 +527,76 @@ public class S_HedgeCamera : MonoBehaviour
 				ChangeHeight(_heightToLock_, _lockHeightSpeed_);
 		}
 
-		AutoRotateCamera();
 	}
 
 	//Handles when the camera will rotate to direction automatically, mainly rotating behind the character when running.
 	private void AutoRotateCamera () {
-		//Changing camera direction
-		if (_backBehindTimer < 0)
-			_backBehindTimer += Time.deltaTime;
 
-		//Certain actions will have different requirements for the camera to move behind. The switch sets the requirements before the if statement checks against them.
-		float minSpeed;
-		bool skipDelay = false;
-		switch (_Actions._whatCurrentAction)
-		{
-			default:
-				minSpeed = _lockCamAtSpeed_;
-				break;
-			case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
-				minSpeed = 60;
-				skipDelay = true;
-				break;
-			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
-				minSpeed = 0;
-				break;
+		HandleRotatingBehindCharacter();
+		HandleSetLocalRotation();
+
+		return;
+		void HandleRotatingBehindCharacter () {
+			//Changing camera direction
+			if (_backBehindTimer < 0)
+				_backBehindTimer += Time.deltaTime;
+
+			//Certain actions will have different requirements for the camera to move behind. The switch sets the requirements before the if statement checks against them.
+			float minSpeed;
+			bool skipDelay = false;
+			switch (_Actions._whatCurrentAction)
+			{
+				default:
+					minSpeed = _lockCamAtSpeed_;
+					break;
+				case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
+					minSpeed = 60;
+					skipDelay = true;
+					break;
+				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
+					minSpeed = 0;
+					break;
+			}
+
+			float dif = Vector3.Angle(GetFaceDirection(transform.forward), _currentFaceDirection) / 180;
+
+			//If moving fast enough, the delay from moving the camera has expired, and the player is facing a different enough angle to the camera, then it will move behind. MinSpeed at 0 means it won't happen.
+			if (_PlayerVel._horizontalSpeedMagnitude > minSpeed && minSpeed > 0 && ((_backBehindTimer >= 0 && (dif >= _rotateCharacterBeforeCameraFollows_ || _isRotatingBehind)) || skipDelay))
+			{
+				GoBehindCharacter(_rotateToBehindSpeed_, 0, false);
+			}
+			//_CurrentFaceDirection is used to add a delay to rotating before the camera starts following. It moves towards the player rotation, and GoBehindCharacter sets isRotatingBehind to true until rotation is completed, resetting the delay.
+			if (!_isRotatingBehind)
+			{
+				_currentFaceDirection = Vector3.RotateTowards(_currentFaceDirection, GetFaceDirection(_Skin.forward), Mathf.Deg2Rad * _followFacingDirectionSpeed_, 0);
+			}
 		}
 
-		float dif = Vector3.Angle(GetFaceDirection(transform.forward), _currentFaceDirection) / 180;
+		//This is set externally, and every frame will rotate towards the intended local rotation. This means rather than looking at a world space direction, the camera stays at the same point relative to the 
+		//characters rotation. Similar to rotating behind the character, but for any angle, not just directly behind.
+		void HandleSetLocalRotation () {
+			if(_isRotatingBehind || !_rotateToLocalDirection) { return; }
 
-		//If moving fast enough, the delay from moving the camera has expired, and the player is facing a different enough angle to the camera, then it will move behind. MinSpeed at 0 means it won't happen.
-		if (_PlayerVel._horizontalSpeedMagnitude > minSpeed && minSpeed > 0 && ((_backBehindTimer >= 0 && (dif >= _rotateCharacterBeforeCameraFollows_ || _isRotatingBehind)) || skipDelay))
-		{
-			GoBehindCharacter(_rotateToBehindSpeed_, 0, false);
-		}
-		//_CurrentFaceDirection is used to add a delay to rotating before the camera starts following. It moves towards the player rotation, and GoBehindCharacter sets isRotatingBehind to true until rotation is completed, resetting the delay.
-		if (!_isRotatingBehind)
-		{
-			_currentFaceDirection = Vector3.RotateTowards(_currentFaceDirection, GetFaceDirection(_Skin.forward), Mathf.Deg2Rad * _followFacingDirectionSpeed_, 0);
+			Vector3 directionInWorldSpace = _Skin.transform.rotation * _localLookAtDirection;
+			float turnThisFrame = Vector3.Angle(directionInWorldSpace, _previousTranslatedLocalLookAtDirection);
+
+			//To prevent the camera doing a huge turn if the character justs turns around. If they start facing the other way, change the location to look at to match on the other side
+			if(_previousTranslatedLocalLookAtDirection != Vector3.zero && turnThisFrame > 26 && _isCurrentlyRotationTowardsLocalDirection)
+			{
+				_localLookAtDirection *= -1;
+				directionInWorldSpace *= -1;
+				_isCurrentlyRotationTowardsLocalDirection = false;
+			}
+			//After the player slows their turn, return to rotating to the new direction.
+			else if (!_isCurrentlyRotationTowardsLocalDirection && turnThisFrame < 0.03f)
+			{
+				_isCurrentlyRotationTowardsLocalDirection = true;
+			}
+
+			_previousTranslatedLocalLookAtDirection = directionInWorldSpace;
+
+			if(turnThisFrame < 25 && _isCurrentlyRotationTowardsLocalDirection)
+				RotateDirection(directionInWorldSpace, 6, 0, false);
 		}
 	}
 
@@ -565,11 +607,11 @@ public class S_HedgeCamera : MonoBehaviour
 		transform.rotation = _lerpedRot;
 
 		//Keeps horizontal and vertical positons always represented within 360 degrees
-		_posX = ClampAngleX(_posX, -1, 361);
-		_posY = ClampAngleY(_posY, _yMinLimit_, _yMaxLimit_);
+		_xPositionOfCamera = ClampAngleX(_xPositionOfCamera, -1, 361);
+		_yPositionOfCamera = ClampAngleY(_yPositionOfCamera, _yMinLimit_, _yMaxLimit_);
 
 		//Takes the x and y positions as euler angles around the player.
-		_lerpedRot = Quaternion.Euler(_posY, _posX, 0);
+		_lerpedRot = Quaternion.Euler(_yPositionOfCamera, _xPositionOfCamera, 0);
 		_lerpedRot = _PlayerTransformCopy.rotation * _lerpedRot;
 	}
 
@@ -597,22 +639,17 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 		_lockHeightSpeed_ = initialFollow;
 	}
-	#endregion
-
-	/// <summary>
-	/// Public ----------------------------------------------------------------------------------
-	/// </summary>
-	/// 
-	#region public 
 
 	//Causes the camera to turn around to face a designated vector direction in world space.
-	public void RotateDirection ( Vector3 dir, float speed, float height, bool changeHeight ) {
+	private void RotateDirection ( Vector3 dir, float speed, float height, bool changeHeight ) {
 
 		dir = dir == Vector3.zero ? transform.forward : dir;
 
 		//Get a rotation based off the look direction without compensating player's current up.	
 		Vector3 newDirection = _PlayerTransformCopy.InverseTransformDirection(dir);
 		Quaternion localDirection = Quaternion.LookRotation(newDirection, _PlayerTransformCopy.up);
+
+		Debug.DrawRay(_FinalTarget.position, newDirection * 2, Color.black);
 
 		//Get local versions of the euler angles which are used for x and y cam positons.
 		Vector3 eulers = localDirection.eulerAngles;
@@ -622,10 +659,10 @@ public class S_HedgeCamera : MonoBehaviour
 		float xSpeed = speed;
 		//if (_posX < 90 && eulerY > 270) { eulerY -= 360; }
 		//else if (_posX > 270 && eulerY < 90) { eulerY += 360; }
-		if (_posX - eulerY < -180) { eulerY -= 360; }
-		else if (eulerY - _posX < -180) { eulerY += 360; }
+		if (_xPositionOfCamera - eulerY < -180) { eulerY -= 360; }
+		else if (eulerY - _xPositionOfCamera < -180) { eulerY += 360; }
 
-		_posX = Mathf.Lerp(_posX, eulerY, Time.deltaTime * xSpeed);
+		_xPositionOfCamera = Mathf.Lerp(_xPositionOfCamera, eulerY, Time.deltaTime * xSpeed);
 		//True either if hieght is set manually, or told to include vertical in look direction.
 		if (changeHeight)
 		{
@@ -637,9 +674,16 @@ public class S_HedgeCamera : MonoBehaviour
 			//If height was not preset, then use this.
 			height = height != 0 ? height : yTarget;
 
-			_posY = Mathf.MoveTowards(_posY, height, speed);
+			_yPositionOfCamera = Mathf.MoveTowards(_yPositionOfCamera, height, speed);
 		}
 	}
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
 
 	public IEnumerator KeepGoingBehindCharacterForFrames(int frames, float speed, float height, bool overwrite ) {
 		for (int i = 0 ; i < frames ; i++)
@@ -647,6 +691,17 @@ public class S_HedgeCamera : MonoBehaviour
 			GoBehindCharacter(speed, height, overwrite);
 			yield return new WaitForFixedUpdate();
 		}
+	}
+
+	public void SetToStickToLocalRotation (bool set, Vector3 rotationInWorld) {
+		_rotateToLocalDirection = set;
+		_isCurrentlyRotationTowardsLocalDirection = set;
+		if (!set) { return; }
+
+		_localLookAtDirection = _Skin.transform.InverseTransformDirection(rotationInWorld);
+		_previousTranslatedLocalLookAtDirection = _Skin.rotation * _localLookAtDirection;
+		_lookTimer = 0;
+
 	}
 
 	//Called by other scripts to make the camera face the direction the character is facing.
@@ -705,7 +760,7 @@ public class S_HedgeCamera : MonoBehaviour
 					break;
 				default:
 				{
-					_posY = Mathf.MoveTowards(_posY, height, Time.deltaTime * speed);
+					_yPositionOfCamera = Mathf.MoveTowards(_yPositionOfCamera, height, Time.deltaTime * speed);
 					break;
 				}
 			}
@@ -733,7 +788,7 @@ public class S_HedgeCamera : MonoBehaviour
 	//Tells the camera to look in the direction, changing eulers over the next few frames to do so. See camera movement and rotate direction for more.
 	public void SetCameraWithSeperateHeight ( Vector3 dir, float duration, float heightSet, float speed, Vector3 externalAlignment ) {
 
-		_lookAtDir = dir;
+		_lookAtDirection = dir;
 		_lookTimer = duration > 0 ? -duration : 1;
 		_heightToLook = heightSet;
 		_lockedRotationSpeed = speed;
@@ -744,7 +799,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Tell camera to look in direction but not change height seperately from the target.
 	public void SetCameraNoSeperateHeight ( Vector3 dir, float duration, float speed, Vector3 externalAlignment, bool directionIncludesHeight ) {
-		_lookAtDir = dir;
+		_lookAtDirection = dir;
 		_lookTimer = duration > 0 ? -duration : 1;
 		_heightToLook = 0;
 		_lockedRotationSpeed = speed;
@@ -874,7 +929,6 @@ public class S_HedgeCamera : MonoBehaviour
 
 	void SetStats () {
 		_isLocked = false;
-		_canMove = true;
 
 		_invertedX = 1;
 		_invertedY = 1;

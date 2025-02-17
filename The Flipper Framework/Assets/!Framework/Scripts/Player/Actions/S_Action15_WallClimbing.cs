@@ -66,7 +66,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
-		_raycastOrigin = transform.position + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
+		_raycastOrigin = _PlayerPhys._CharacterCenterPosition + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
 		_isWall = Physics.Raycast(_raycastOrigin, _MainSkin.forward, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
 
 		//First x seconds are too attach to the wall from starting point, so decrease check range after.

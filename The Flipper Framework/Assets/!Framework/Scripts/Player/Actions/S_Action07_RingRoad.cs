@@ -130,7 +130,6 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 		_speedBeforeAction = _PlayerVel._horizontalSpeedMagnitude;
 		_Actions._listOfSpeedOnPaths.Add(Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f)); //Speed to move at, always faster than was moving before.
 
-		//_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 		_directionToGo = _PlayerVel._worldVelocity.normalized; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.RingRoad);
@@ -182,7 +181,7 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 		if (_CreatedSpline.nodes.Count > 2) 
 			_RoadHandler.ScanForRings(new Vector2(1f, 3f), (_CreatedSpline.nodes[lastNode].Position - _CreatedSpline.nodes[lastNode - 1].Position), _CreatedSpline.nodes[lastNode].Position); //Called now because when being performed there needs to be constant updates to targets.
 		else
-			_RoadHandler.ScanForRings(new Vector2(1.2f, 1.5f), _directionToGo, _CreatedSpline.nodes.Count > 0 ? _CreatedSpline.nodes[lastNode].Position : transform.position);
+			_RoadHandler.ScanForRings(new Vector2(1.2f, 1.5f), _directionToGo, _CreatedSpline.nodes.Count > 0 ? _CreatedSpline.nodes[lastNode].Position : _PlayerPhys._CharacterCenterPosition);
 
 		//Goes through the list of targets from closest to furthers (see Handler_RingRoad).
 		for (int i = 0 ; i < _RoadHandler._ListOfCloseTargets.Count ; i++)

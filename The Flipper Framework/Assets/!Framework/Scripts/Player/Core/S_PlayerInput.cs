@@ -222,7 +222,7 @@ public class S_PlayerInput : MonoBehaviour
 				_lockedMoveInput = Vector3.zero; break;
 			case S_GeneralEnums.LockControlDirection.CharacterForwards:
 				_lockedControllerInput = Vector2.one;
-				Debug.DrawRay(transform.position, _MainSkin.forward * 5, Color.red, 20f);
+				Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _MainSkin.forward * 5, Color.red, 20f);
 				_lockedMoveInput = _MainSkin.forward; break;
 		}
 

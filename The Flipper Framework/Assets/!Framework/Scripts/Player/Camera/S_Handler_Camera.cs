@@ -68,7 +68,7 @@ public class S_Handler_Camera : MonoBehaviour
 		{
 			//Rotates the camera in direction and prevents controlled rotation.
 			case enumCameraControlType.SetToDirection:
-				SetHedgeCamera(cameraData, cameraData._forward);
+				SetHedgeCamera(cameraData, cameraData._directionToSet);
 				break;
 
 			//Reneables camera control but still affects distance and other.
@@ -84,14 +84,16 @@ public class S_Handler_Camera : MonoBehaviour
 
 			//Make camera face behind player.
 			case enumCameraControlType.SetToInfrontOfCharacter:
-				_HedgeCam._isReversed = false;
-				SetHedgeCamera(cameraData, -_MainSkin.forward);
+				_HedgeCam._isReversed = true;
+				cameraData._directionToSet = -_MainSkin.forward;
+				SetHedgeCamera(cameraData, cameraData._directionToSet);
 				break;
 
 			//Make camera face behind player and disable rotation.
 			case enumCameraControlType.SetToBehindCharacter:
-				_HedgeCam._isReversed = true;
-				SetHedgeCamera(cameraData, _MainSkin.forward);
+				_HedgeCam._isReversed = false;
+				cameraData._directionToSet = _MainSkin.forward;
+				SetHedgeCamera(cameraData, cameraData._directionToSet);
 				break;
 		}
 
@@ -127,23 +129,26 @@ public class S_Handler_Camera : MonoBehaviour
 
 		if (cameraData._willChangeFOV)
 			StartCoroutine(LerpToNewFOV(cameraData._newFOV.y, cameraData._newFOV.x));
+		SetLockCameras(cameraData, true);
 
-		if(cameraData._lockCamera)
-			LockCamera(true);
+		if (cameraData._lockToCharacterRotation)
+			_HedgeCam.SetToStickToLocalRotation(true, cameraData._directionToSet);
 	}
 
-	private void RemoveAdditonalCameraEffects(S_Trigger_Camera cameraData, bool RemoveAll = false ) {
+	private void RemoveAdditonalCameraEffects(S_Trigger_Camera cameraData, bool removeAll = false ) {
 		_HedgeCam._canAffectDistanceBySpeed = true;
 		_HedgeCam._canAffectFOVBySpeed = true;
 
 		_HedgeCam._isReversed = false;
 
-		if (RemoveAll || cameraData._willChangeDistance)
+		if (removeAll || cameraData._willChangeDistance)
 			StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance));
-		if (RemoveAll || cameraData._willChangeFOV)
+		if (removeAll || cameraData._willChangeFOV)
 			StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV));
-		if(RemoveAll || cameraData._lockCamera)
-			LockCamera(false);
+		SetLockCameras(cameraData, false, !removeAll);
+
+		if (cameraData._lockToCharacterRotation || removeAll)
+			_HedgeCam.SetToStickToLocalRotation(false, Vector3.zero);
 
 		_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
 	}
@@ -167,10 +172,18 @@ public class S_Handler_Camera : MonoBehaviour
 	}
 
 	//Will either make it so the camera can't be moved in the hedge cam script, or that it can.
-	public void LockCamera ( bool state ) {
-		_HedgeCam._isMasterLocked = state;
-		_HedgeCam._isLocked = state;
-		_HedgeCam._canMove = !state;
+	public void SetLockCameras ( S_Trigger_Camera cameraData, bool setTo,  bool overWriteIfFalse = true ) {
+		//For each boolean, only set if camera data is set true (meaning camera data effects this, ignore if not.
+		//If overwritting everything, then just set to false.
+
+		_HedgeCam._isMasterLocked = !overWriteIfFalse? false : 
+			(cameraData._lockCamera ? setTo : _HedgeCam._isMasterLocked);
+		_HedgeCam._isLocked = !overWriteIfFalse ? false :
+			(cameraData._lockCamera ? setTo : _HedgeCam._isLocked);
+		_HedgeCam._isYLocked = !overWriteIfFalse ? false :
+			(cameraData._lockCameraY ? setTo : _HedgeCam._isYLocked);
+		_HedgeCam._isXLocked = !overWriteIfFalse ? false :
+			(cameraData._lockCameraX ? setTo : _HedgeCam._isXLocked);
 	}
 
 	//Calls the hedgecam to rotate towards or change height.

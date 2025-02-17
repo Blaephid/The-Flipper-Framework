@@ -208,11 +208,11 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	private void RunningInteraction () {
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
-		_raycastOrigin = transform.position + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
+		_raycastOrigin = _PlayerPhys._CharacterCenterPosition + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
 
 		//Get information of wall
 		int wallDirection = _isWallOnRight ? 1: -1;
-		Vector3 raycastOrigin = transform.position + _MainSkin.forward * 0.3f;
+		Vector3 raycastOrigin = _PlayerPhys._CharacterCenterPosition + _MainSkin.forward * 0.3f;
 		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.right * wallDirection, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
 		
 
@@ -283,7 +283,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 
 	public void SetupRunning ( RaycastHit wallHit, bool wallRight ) {
 
-		Vector3 wallDirection = wallHit.point - transform.position;
+		Vector3 wallDirection = wallHit.point - _PlayerPhys._CharacterCenterPosition;
 
 		//Wall values
 		_wallHit = wallHit;
@@ -301,7 +301,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 
 		//Offset camera and seperate from realtime movers (like move target to input)
 		Vector3 camOffset = (_isWallOnRight ? -_MainSkin.right : _MainSkin.right) * 2;
-		_CamHandler._HedgeCam.SetSecondaryCameraTarget(_MainSkin, transform.position + camOffset);
+		_CamHandler._HedgeCam.SetSecondaryCameraTarget(_MainSkin, _PlayerPhys._CharacterCenterPosition + camOffset);
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
 		StartAction();
@@ -338,7 +338,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	public bool IsOnGround () {
 		if(_PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
-			Vector3 rayCastStartPosition = transform.position + _wallHit.normal * 0.5f;
+			Vector3 rayCastStartPosition = _PlayerPhys._CharacterCenterPosition + _wallHit.normal * 0.5f;
 			float range = (_CoreCollider.height / 2) + 0.5f;
 			return Physics.Raycast(rayCastStartPosition, -GetUpDirectionOfWall(_wallHit.normal), out RaycastHit hitGroundTemp, range, _PlayerPhys._Groundmask_);
 		}

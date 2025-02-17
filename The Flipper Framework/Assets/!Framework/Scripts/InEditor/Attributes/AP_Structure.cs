@@ -114,6 +114,7 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		switch (_propertiesPerLine)
 		{
 			case 1:
+			case 2:
 				DrawNormally();
 				break;
 			default:
@@ -122,7 +123,7 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		}
 
 		void DrawNormally () {
-			BaseAttribute._fieldRect_ = new Rect(position.x, position.y, position.width, position.height / _linesToDraw);
+			BaseAttribute._fieldRect_ = new Rect(position.x, position.y, position.width / _propertiesPerLine, position.height / _linesToDraw);
 		}
 
 		void DrawLabelAndFieldSeperately () {
@@ -149,6 +150,7 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		SetPartWidth();
 
 		float elementHeight = position.height / _linesToDraw;
+		int line = 0;
 
 		//Go through each string name that was added when applying this attributre, and draw properties that match it. They must be set to HideInInspector to ensure they aren't drawn twice.
 		for (int i = 0 ; i < _listOfOtherFields.Length ; i++)
@@ -156,9 +158,18 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 			string newPropertyName = _listOfOtherFields[i];
 			SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
 
+			bool newLine = false;
+			if (((i + 1) % _propertiesPerLine == 0 && i > 0) || (i == 0 && _propertiesPerLine == 1))
+			{
+				line = (i / (int)_propertiesPerLine) + 1;
+				fieldRect = new Rect(0, elementHeight * line, _elementWidth * 1.4f, elementHeight);
+				newLine = true;
+			}
+
 			switch (_propertiesPerLine)
 			{
 				case 1:
+				case 2:
 					DrawNormally();
 					break;
 				default:
@@ -169,19 +180,16 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 			continue;
 
 			void DrawNormally () {
-				fieldRect = new Rect(0, elementHeight * (i + 1), position.width, elementHeight);
+				float evenOrOdd = (i + 1) % _propertiesPerLine;
+				fieldRect = new Rect(evenOrOdd * (position.width / 2), elementHeight * line, position.width / _propertiesPerLine, elementHeight);
 				EditorGUI.PropertyField(fieldRect, newProperty);
-				Debug.Log(fieldRect + " draw full for " + newProperty.displayName);
 			}
 
 			void DrawLabelAndFieldSeperately () {
 				//If this property is the first after a multiple of how many can be on one line, then move where it should be drawn to the next line.
-				if (((i + 1) % _propertiesPerLine == 0 && i > 0) || (i == 0 && _propertiesPerLine == 1))
+				if (newLine)
 				{
-					//EditorGUILayout.EndHorizontal();
-					int line = (i / (int)_propertiesPerLine) + 1;
 					fieldRect = new Rect(0, elementHeight * line, _elementWidth * 1.4f, elementHeight);
-					//EditorGUILayout.BeginHorizontal();
 				}
 				else
 					//Draw Label of Property
@@ -190,13 +198,9 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 				label = EditorGUIUtility.TrTextContent(newProperty.displayName);
 				EditorGUI.PrefixLabel(fieldRect, label);
 
-				Debug.Log(fieldRect +" label of " + newProperty.displayName);
-
 				//Draw editable field of Property
 				MoveAlong(1.4f, 0.6f);
 				EditorGUI.PropertyField(fieldRect, newProperty, GUIContent.none);
-
-				Debug.Log(fieldRect + " field of " + newProperty.displayName);
 
 			}
 

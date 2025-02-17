@@ -66,7 +66,7 @@ public class S_PullItems : MonoBehaviour
 
 				else
 				{
-					r.position = Vector3.MoveTowards(r.position, transform.position, Time.deltaTime * _basePullSpeed_ * _PlayerVel._horizontalSpeedMagnitude);
+					r.position = Vector3.MoveTowards(r.position, _PlayerPhys._CharacterCenterPosition, Time.deltaTime * _basePullSpeed_ * _PlayerVel._horizontalSpeedMagnitude);
 				}
 			}
 		}

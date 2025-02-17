@@ -11,7 +11,7 @@ public enum enumCameraControlType
 public class S_Trigger_Camera : S_Trigger_Base
 {
 	public S_Trigger_Camera () {
-		_TriggerObjects._isLogicInPlayScript = true;
+		_isLogicInPlayerScript = true;
 	}
 
 	[Header("Functionality")]
@@ -25,10 +25,17 @@ public class S_Trigger_Camera : S_Trigger_Base
 	[OnlyDrawIf("_whatType", enumCameraControlType.SetToViewTarget)]
 	public Transform                    _ViewTarget;
 
-	[HideInInspector] public Vector3                _forward;
+	[HideInInspector] public Vector3                _directionToSet;
 
 	[OnlyDrawIfNot("_whatType", enumCameraControlType.RemoveEffects)]
+	[DrawHorizontalWithOthers(new string[] { "_lockCameraX", "_lockCameraY", "_lockToCharacterRotation" })]
 	public bool _lockCamera;
+	[HideInInspector]
+	public bool _lockCameraX;
+	[HideInInspector]
+	public bool _lockCameraY;
+	[HideInInspector]
+	public bool _lockToCharacterRotation;
 
 	[Tooltip("If true, all of the above effects will be undone when the player leaves the trigger (but the rotation will not).")]
 	public bool _willReleaseOnExit = false;
@@ -73,7 +80,6 @@ public class S_Trigger_Camera : S_Trigger_Base
 	[DrawTickBoxBefore("_willOffsetTarget")]
 	public Vector3 _newOffset;
 
-	//[HideInInspector]
 	[OnlyDrawIf("_willOffsetTarget", true)]
 	[DrawHorizontalWithOthers(new string[] { "_framesToOffset", "_overWriteAllOffsets" })]
 	public bool _asLocalOffset;
@@ -96,7 +102,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 			_Direction = transform;
 		}
 
-		_forward = _Direction.forward;
+		_directionToSet = _Direction.forward;
 	}
 
 #if UNITY_EDITOR

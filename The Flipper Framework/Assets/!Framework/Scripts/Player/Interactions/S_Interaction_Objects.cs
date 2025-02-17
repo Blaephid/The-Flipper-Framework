@@ -291,7 +291,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		// Create a temporary game object and place it at player position in the local space of the wind
 		GameObject newGameObject = new GameObject("TEMP");
 		Transform newTransform = newGameObject.transform;
-		newTransform.position = transform.position;
+		newTransform.position = _PlayerPhys._CharacterPivotPosition;
 		newTransform.parent = UpdraftScript._Direction;
 
 		//Remove the vertical component, ensuring this temp object is only along the base, at any rotation. InverseTrasformDirection does not work because it does not account for rotation.
@@ -302,7 +302,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		Destroy(newGameObject);
 
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
-		float distanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(relativePlayerPosition, transform.position);
+		float distanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(relativePlayerPosition, _PlayerPhys._CharacterPivotPosition);
 
 		float power = 0;
 		if (distanceSquared < 9)
@@ -388,10 +388,10 @@ public class S_Interaction_Objects : MonoBehaviour
 			_PlatformAnchor = GameObject.Instantiate(new GameObject("Anchor"), _PlayerVel.transform.position, Quaternion.identity);
 		}
 		else
-			_PlatformAnchor.transform.position = transform.position;
+			_PlatformAnchor.transform.position = _PlayerPhys._CharacterPivotPosition;
 
 		_PlatformAnchor.transform.parent = Col.transform;
-		_previousPlatformPointPosition = transform.position;
+		_previousPlatformPointPosition = _PlayerPhys._CharacterPivotPosition;
 	}
 
 	//If there is currently a platform script saved from being in a trigger with one, adjust the players position every frame to match it.
@@ -490,7 +490,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//For consistency, ensure player always launches out of ring of off booster from the same point.
 		Vector3 snapPosition = Col.transform.position + (Col.transform.rotation * snapTo);
 
-		snapPosition -= _PlayerPhys._feetOffsetFromCentre; //Because on ground, feet should be set to pad position.
+		snapPosition -= _PlayerPhys._feetOffsetFromPivotPoint; //Because on ground, feet should be set to pad position.
 		_PlayerPhys.SetPlayerPosition(snapPosition);
 
 		return snapPosition;

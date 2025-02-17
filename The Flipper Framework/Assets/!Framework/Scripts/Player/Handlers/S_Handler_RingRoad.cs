@@ -84,7 +84,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
 			if (_Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None,S_S_ActionHandling.PlayerSituationalStates.RingRoad))//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
 			{
-				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, transform.position);
+				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, _PlayerPhys._CharacterCenterPosition);
 			}
 		}
 
