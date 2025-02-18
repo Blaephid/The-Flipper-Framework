@@ -79,11 +79,14 @@ public class DrawTickBoxBeforeAttribute : MultiPropertyAttribute
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 {
-	public string[] _listOfOtherFields { get; private set; }
+	public string[] _listOfOtherFields_ { get; private set; }
+	public float[] _fieldPrioritySizes_ { get; private set; }
 
 	//Constructor
-	public DrawHorizontalWithOthersAttribute ( string[] listOfOtherFields ) {
-		_listOfOtherFields = listOfOtherFields;
+	public DrawHorizontalWithOthersAttribute ( string[] listOfOtherFields, float[] fieldBalances = null ) {
+		_listOfOtherFields_ = listOfOtherFields;
+		if( fieldBalances == null ) fieldBalances = new float[_listOfOtherFields_.Length + 1];
+		_fieldPrioritySizes_ = fieldBalances;
 	}
 
 
@@ -111,6 +114,8 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 			EditorGUILayout.BeginHorizontal();
 		SetPartWidth();
 
+		float localWidth = GetPrioritySize(-1);
+
 		switch (_propertiesPerLine)
 		{
 			case 1:
@@ -134,9 +139,9 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 			BaseAttribute._GUIContentOnDraw_ = GUIContent.none;
 
 			//Draw editable field of Property
-			if (_linesToDraw == 1)
-				BaseAttribute._fieldRect_ = new Rect( _elementWidth * 1.4f, position.y, _elementWidth * 0.6f, position.height);
-			else
+			//if (_linesToDraw == 1)
+			//	BaseAttribute._fieldRect_ = new Rect( _elementWidth * 1.4f, position.y, _elementWidth * 0.6f, position.height);
+			//else
 				BaseAttribute._fieldRect_ = new Rect( _elementWidth * 1.4f, 0, _elementWidth * 0.6f, position.height / _linesToDraw);
 		}
 	}
@@ -153,9 +158,9 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		int line = 0;
 
 		//Go through each string name that was added when applying this attributre, and draw properties that match it. They must be set to HideInInspector to ensure they aren't drawn twice.
-		for (int i = 0 ; i < _listOfOtherFields.Length ; i++)
+		for (int i = 0 ; i < _listOfOtherFields_.Length ; i++)
 		{
-			string newPropertyName = _listOfOtherFields[i];
+			string newPropertyName = _listOfOtherFields_[i];
 			SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
 
 			bool newLine = false;
@@ -212,8 +217,23 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		EditorGUILayout.EndHorizontal();
 	}
 
+	private float GetPrioritySize(int n ) {
+		if(_propertiesPerLine == 1) { return 1f; }
+		float percentage = 1f;
+		float totalPriority = 0;
+		for (int i = 0 ; i < _propertiesPerLine ; i++)
+		{
+			float thisPriority = _fieldPrioritySizes_[n + 1 + i];
+			totalPriority += thisPriority == 0 ? 1 : thisPriority;
+		}
+		float currentPriority = _fieldPrioritySizes_[n + 1];
+		currentPriority = currentPriority == 0 ? 1 : currentPriority;
+		percentage = currentPriority / totalPriority;
+		return percentage;
+	}
+
 	private void SetPartWidth() {
-		_propertiesInTotal = _listOfOtherFields.Length + 1;
+		_propertiesInTotal = _listOfOtherFields_.Length + 1;
 		_propertiesPerLine = _propertiesInTotal;
 
 		//Get approrpriate sizes of elements, based on inspector panel.
@@ -224,7 +244,7 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		//If there isn't enough space for a property field, decrease how many properties can be on one line to create more space until possible.
 		while(_elementWidth * 2 < 220 && _propertiesInTotal > 1 && _propertiesPerLine > 1)
 		{
-			int newPropertiesPerLine = Mathf.Max(1, S_S_MoreMathMethods.DivideWhileRoundingUp(_propertiesPerLine, 2));
+			float newPropertiesPerLine = Mathf.Max(1, _propertiesPerLine - 1);
 			_elementWidth *= _propertiesPerLine / newPropertiesPerLine;
 			_propertiesPerLine = newPropertiesPerLine;
 		}

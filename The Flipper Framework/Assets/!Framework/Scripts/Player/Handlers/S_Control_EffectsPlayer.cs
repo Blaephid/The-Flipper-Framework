@@ -63,10 +63,18 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 
 		if (_PlayerVelocity._horizontalSpeedMagnitude > 60)
 		{
-			_SpeedLinesScreen.SetFloat("Intensity", (_PlayerVelocity._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed) * 3);
+			float intensity = (_PlayerVelocity._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed) * 4;
+			float radius = Mathf.LerpUnclamped(0.2f ,1.7f , _CamHandler._HedgeCam._currentFOV / 110);
+
+			_SpeedLinesScreen.SetFloat("Intensity", intensity);
+			_SpeedLinesScreen.SetFloat("Spawn Rate", intensity * 12);
+			_SpeedLinesScreen.SetFloat("Radius", radius);
 		}
 		else
+		{
 			_SpeedLinesScreen.SetFloat("Intensity", 0);
+		}
+
 
 	}
 

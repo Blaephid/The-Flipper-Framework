@@ -1141,6 +1141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveDeceleration_: 1.3
+  _lockAccelerationAndTurningToDefault: 0
   _moveInput: {x: 0, y: 0, z: 0}
   _trackMoveInput: {x: 0, y: 0, z: 0}
   _currentTopSpeed: 0
@@ -13255,8 +13256,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5304471826691579093}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.041879464, y: 0.10989423, z: -0.35363552, w: 0.9279608}
-  m_LocalPosition: {x: -805.95154, y: 77.970665, z: 110.663086}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.76, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13275,6 +13276,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4abd055fc015dfe4cb83c9072a305806, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _localOffset: {x: 0, y: 0, z: 0}
+  ActAsCameraObject: {fileID: 8264187962834017253}
+  GoToObject: 0
 --- !u!1 &5415952359430805237
 GameObject:
   m_ObjectHideFlags: 0
@@ -23675,8 +23679,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Tools: {fileID: 2061662532465713779}
   _PlayerPhys: {fileID: 114945863342939534}
-  _Skin: {fileID: 2990453842665127441}
   _Input: {fileID: 114421511878716788}
+  _Skin: {fileID: 2990453842665127441}
+  _PlayerMainBody: {fileID: 4242608932995106}
   _BaseTarget: {fileID: 5864465826205128439}
   _FinalTarget: {fileID: 6355604061925188031}
   _TemporaryCameraTarget: {fileID: 2622686653591668238}
@@ -23700,7 +23705,6 @@ MonoBehaviour:
   _lockedRotationSpeed: 0
   _canAffectDistanceBySpeed: 1
   _canAffectFOVBySpeed: 1
-  _isReversed: 0
   _invertedX: 0
   _invertedY: 0
   _sensiX: 0
@@ -28882,8 +28886,8 @@ Transform:
   m_GameObject: {fileID: 8902988512783151979}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.08100009, z: 0.64}
-  m_LocalScale: {x: 1.2092011, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7787564028757733224}
@@ -28906,27 +28910,27 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 1.5
+      - m_Value: 1.84
         m_Name: Radius
         m_Overridden: 1
-      - m_Value: 40
+      - m_Value: 80
         m_Name: Spawn Rate
         m_Overridden: 1
-      - m_Value: 1
+      - m_Value: 1.79
         m_Name: Intensity
         m_Overridden: 1
     m_Vector2f:
       m_Array:
-      - m_Value: {x: 8, y: 12}
+      - m_Value: {x: 5, y: 6}
         m_Name: XScaleRange
         m_Overridden: 1
-      - m_Value: {x: 0.2, y: 0.7}
+      - m_Value: {x: 0.5, y: 0.6}
         m_Name: Lifetime
         m_Overridden: 1
-      - m_Value: {x: 3, y: 4}
+      - m_Value: {x: 2, y: 3}
         m_Name: Speed Range
         m_Overridden: 1
-      - m_Value: {x: 0.25, y: 0.45}
+      - m_Value: {x: 0.25, y: 0.3}
         m_Name: YScaleRange
         m_Overridden: 1
     m_Vector3f:
@@ -28945,8 +28949,8 @@ VisualEffect:
       m_Array:
       - m_Value:
           serializedVersion: 2
-          key0: {r: 0, g: 1, b: 0.9672346, a: 0}
-          key1: {r: 0.33604485, g: 0.46388042, b: 0.8207547, a: 1}
+          key0: {r: 1.8895864, g: 2.1890292, b: 2.1796348, a: 0}
+          key1: {r: 0.621796, g: 0.6784664, b: 0.8396226, a: 1}
           key2: {r: 0, g: 0, b: 0, a: 0.8}
           key3: {r: 0, g: 0, b: 0, a: 0}
           key4: {r: 0, g: 0, b: 0, a: 0}
@@ -28954,7 +28958,7 @@ VisualEffect:
           key6: {r: 0, g: 0, b: 0, a: 0}
           key7: {r: 0, g: 0, b: 0, a: 0}
           ctime0: 0
-          ctime1: 28334
+          ctime1: 36430
           ctime2: 0
           ctime3: 0
           ctime4: 0
@@ -28963,14 +28967,14 @@ VisualEffect:
           ctime7: 0
           atime0: 0
           atime1: 6554
-          atime2: 28142
-          atime3: 46646
+          atime2: 31611
+          atime3: 51272
           atime4: 0
           atime5: 0
           atime6: 0
           atime7: 0
           m_Mode: 0
-          m_ColorSpace: -1
+          m_ColorSpace: 1
           m_NumColorKeys: 2
           m_NumAlphaKeys: 4
         m_Name: Colour Gradient

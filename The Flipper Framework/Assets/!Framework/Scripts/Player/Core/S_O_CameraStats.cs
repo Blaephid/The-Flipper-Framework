@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SplineMesh;
+using System;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -28,7 +29,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StruclockHeight
 	{
 		[Tooltip("If true, when moving, camera will move up/down to a set height")]
@@ -59,7 +60,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucAutoLookDown
 	{
 		[Tooltip("If true, the camera will look directly downwards from above the character if in the air for long enough, making landings easier.")]
@@ -101,7 +102,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucDistance
 	{
 		[Tooltip("How far the camera should be from the character, will be less if there is a solid object.")]
@@ -130,7 +131,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucFOV
 	{
 		[Tooltip("How far the camera should be from the character, will be less if there is a solid object.")]
@@ -159,7 +160,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucCinemachine
 	{
 		[Tooltip("How the camera will move towards target location on X, Y, Z values. This is how it will be when the character is facing away from the camera.")]
@@ -193,7 +194,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucAligning
 	{
 		[Tooltip("The upwards direction the character needs to be at before the camera starts rotating to match the character rotation. 1 = flat ground so always, less than -1 means it won't happen.")]
@@ -222,7 +223,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StructargetLookAhead
 	{
 		[Tooltip("If true, the target the camera follows will be offset away from the character in the direction the player in inputting.")]
@@ -251,7 +252,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucInput
 	{
 		[Tooltip("How quickly the camera will rotate around the character horizontally at max input.")]
@@ -296,7 +297,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StructargetByAngle
 	{
 		[Tooltip("If true, the target the camera follows will be offset from the character based on the angle difference between character facing direction and camera facing direction.")]
@@ -325,7 +326,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucRotateBehind
 	{
 		[Tooltip("When running faster than this speed, the camera will keep rotating back to face the same direction as the character.")]
@@ -355,7 +356,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucClamping
 	{
 		[Tooltip("The camera can not rotate downwards beyond this angle. -90 = looking straight above from below.")]
@@ -378,7 +379,7 @@ public class S_O_CameraStats : ScriptableObject
 		};
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct StrucEffects
 	{
 		[Tooltip("All shake effects will be multiplied by this. 0.5 = all shake will be diminished by half.")]
@@ -416,6 +417,8 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 
 		EditorGUILayout.TextArea("This objects contains a bunch of stats you can change to adjust how the camera controls. \n", EditorStyles.textArea);
 
+		//DrawDefaultInspector();
+
 		DrawInput();
 
 		DrawDistance();
@@ -435,7 +438,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region Distance
 		void DrawDistance () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"DistanceStats", "Camera Distance", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"DistanceStats", "Camera Distance", true, true);
 
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
@@ -450,7 +453,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region FOV
 		void DrawFOV () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"FOVStats", "Camera FOV", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"FOVStats", "Camera FOV", true, true);
 
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
@@ -465,7 +468,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region cinemachine
 		void DrawCinemachine () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"cinemachineStats", "Cinemachine framing transposer", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"cinemachineStats", "Cinemachine framing transposer", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -481,7 +484,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region aligning
 		void DrawAligning () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"AligningStats", "Aligning Camera to Character", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"AligningStats", "Aligning Camera to Character", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -497,7 +500,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region RotateBehind
 		void DrawRotateBehind () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RotateBehindStats", "Rotate Behind When Moving", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"RotateBehindStats", "Rotate Behind When Moving", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -513,7 +516,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region LockHeight
 		void DrawLockHeight () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"LockHeightStats", "Reset Height When Moving", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"LockHeightStats", "Reset Height When Moving", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -529,7 +532,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region AutoLookDown
 		void DrawAutoLookDown () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"AutoLookDownStats", "Look Down In Air", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"AutoLookDownStats", "Look Down In Air", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -545,7 +548,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region LookAhead
 		void DrawLookAhead () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"LookAheadStats", "Look Ahead", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"LookAheadStats", "Look Ahead", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -561,7 +564,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region TargetByAngle
 		void DrawTargetByAngle () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"TargetByAngleStats", "Moving Target By Angle", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"TargetByAngleStats", "Moving Target By Angle", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -577,7 +580,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region Input
 		void DrawInput () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"InputStats", "Input", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"InputStats", "Input", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -593,7 +596,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region Clamping
 		void DrawClamping () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"ClampingStats", "Clamping", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"ClampingStats", "Clamping", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
@@ -609,7 +612,7 @@ public class S_O_CameraStatsEditor : S_CustomInspector_Base
 		#region Effects
 		void DrawEffects () {
 			EditorGUILayout.Space();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"EffectsStats", "Effects", true);
+			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"EffectsStats", "Effects", true, true);
 
 			
 			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))

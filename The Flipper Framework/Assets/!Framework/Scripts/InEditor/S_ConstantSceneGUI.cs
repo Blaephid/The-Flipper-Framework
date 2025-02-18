@@ -85,7 +85,7 @@ public class S_ConstantSceneGUI : MonoBehaviour
 
 	//DuringSceneGUI Event. This event is called every frame in editor, so add and remove from this.
 	public void AddToDuringSceneGUI ( PrefabStage prefabStage) {
-		if (_currentlyAddedToDuringSceneGUI || !gameObject || !this) { return; }
+		if (!this || _currentlyAddedToDuringSceneGUI || !gameObject) { return; }
 		else if (_LinkedEditorLogic == null)
 		{
 			ConvertComponentToEditorLogicInterface();
@@ -112,7 +112,7 @@ public class S_ConstantSceneGUI : MonoBehaviour
 		SceneView.duringSceneGui += _LinkedEditorLogic.CustomOnSceneGUI;
 	}
 	public void RemoveFromDuringSceneGUI ( PrefabStage prefabStage ) {
-		if (!_currentlyAddedToDuringSceneGUI) { return; }
+		if (!this || !_currentlyAddedToDuringSceneGUI) { return; }
 		else if (_LinkedEditorLogic == null)
 		{
 			ConvertComponentToEditorLogicInterface();

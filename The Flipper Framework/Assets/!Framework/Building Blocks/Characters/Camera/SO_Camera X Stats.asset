@@ -288,9 +288,9 @@ MonoBehaviour:
     softZone: {x: 0.25, y: 0.5}
     deadZone: {x: 0, y: 0.1}
   cinemachineStats:
-    dampingBehind: {x: 0.2, y: 0, z: 0.35}
+    dampingBehind: {x: 0.18, y: 0, z: 0.15}
     dampingInFront: {x: 0.1, y: 0, z: 0.1}
-    softZone: {x: 0, y: 0.5}
+    softZone: {x: 0, y: 0.3}
     deadZone: {x: 0, y: 0.1}
   DefaultAligningStats:
     angleThresholdUpwards: 0.4
@@ -354,8 +354,8 @@ MonoBehaviour:
     cameraMoveToInputSpeed: 3
   LookAheadStats:
     shouldMoveInInputDirection: 1
-    inputPredictonDistance: 0.9
-    cameraMoveToInputSpeed: 2.2
+    inputPredictonDistance: 1.2
+    cameraMoveToInputSpeed: 1.5
   DefaultInputStats:
     InputXSpeed: 70
     InputYSpeed: 55
@@ -598,4 +598,4 @@ MonoBehaviour:
     ShakeDampen: 4
   EffectsStats:
     ShakeDampen: 1.2
-  InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

@@ -14,8 +14,10 @@ public class S_Trigger_Camera : S_Trigger_Base
 		_isLogicInPlayerScript = true;
 	}
 
-	[Header("Functionality")]
+	[Header("Functionality"), DrawHorizontalWithOthers(new string[] {"_willReleaseOnExit"})]
 	public enumCameraControlType            _whatType;
+	[Tooltip("If true, all of the above effects will be undone when the player leaves the trigger (but the rotation will not)."), HideInInspector]
+	public bool _willReleaseOnExit = false;
 
 	[ColourIfNull(1,0,0,1)]
 	[OnlyDrawIfNot("_whatType", enumCameraControlType.SetToViewTarget)]
@@ -27,18 +29,18 @@ public class S_Trigger_Camera : S_Trigger_Base
 
 	[HideInInspector] public Vector3                _directionToSet;
 
-	[OnlyDrawIfNot("_whatType", enumCameraControlType.RemoveEffects)]
+	[OnlyDrawIfNot("_whatType", enumCameraControlType.RemoveEffects), Tooltip("Disables most camera interactions and automatic rotating ")]
 	[DrawHorizontalWithOthers(new string[] { "_lockCameraX", "_lockCameraY", "_lockToCharacterRotation" })]
 	public bool _lockCamera;
-	[HideInInspector]
+	[HideInInspector, Tooltip("Prevents manually moving camera left and right")]
 	public bool _lockCameraX;
-	[HideInInspector]
+	[HideInInspector, Tooltip("Prevents manually moving camera up and down")]
 	public bool _lockCameraY;
-	[HideInInspector]
+	[HideInInspector, Tooltip("If true, camera will be locked to characters movement, constantly trying to stay at the angle relative to the character. E.G. If set behind player, will lock behind player.")]
 	public bool _lockToCharacterRotation;
+	[HideInInspector, Tooltip("Prevents certain actions like boost or spin dash leaving the camera behind as they burst forwards")]
+	public bool _lockCameraPause;
 
-	[Tooltip("If true, all of the above effects will be undone when the player leaves the trigger (but the rotation will not).")]
-	public bool _willReleaseOnExit = false;
 
 
 	[Header("Turning")]
@@ -85,13 +87,18 @@ public class S_Trigger_Camera : S_Trigger_Base
 	public bool _asLocalOffset;
 	[HideInInspector]
 	[Tooltip("How many frames it takes to reach this offset")]
-	public float _framesToOffset;
+	public int _framesToOffset;
 	[HideInInspector]
 	[Tooltip("If true, the offset will be unaffected by any HedgeCamera calculations that move the offset. If false, the offset will be affected by other offsets like input direction")]
 	public bool _overWriteAllOffsets;
+
+	[DrawHorizontalWithOthers(new string[] {"_meshScale" })]
 	[OnlyDrawIf("_willOffsetTarget", true)]
 	[BaseColour(0.8f,0.8f,0.8f,1)]
-	public Mesh _MeshToDraw;
+	public Mesh _VisualiseWithMesh;
+	[OnlyDrawIf("_willOffsetTarget", true), HideInInspector, Min(1)]
+	[SerializeField] private float _meshScale = 1;
+
 	[HideInInspector, SerializeField]
 	private Vector3 _offsetReferenceInWorld;
 
@@ -115,17 +122,17 @@ public class S_Trigger_Camera : S_Trigger_Base
 
 		if (_willOffsetTarget)
 		{
-			if (_MeshToDraw)
+			if (_VisualiseWithMesh)
 			{
 				Gizmos.color = selected ? new Color(0, 0, 0, 0.1f) : new Color(0, 0, 0, 0.02f);
 				if (_asLocalOffset)
-					Gizmos.DrawWireMesh(_MeshToDraw, transform.position, Quaternion.LookRotation(transform.forward, Vector3.up), Vector3.one * 10);
+					Gizmos.DrawWireMesh(_VisualiseWithMesh, transform.position, Quaternion.LookRotation(transform.forward, Vector3.up), Vector3.one * _meshScale * 10);
 				else
-					Gizmos.DrawWireMesh(_MeshToDraw, transform.position, Quaternion.identity, Vector3.one * 10);
+					Gizmos.DrawWireMesh(_VisualiseWithMesh, transform.position, Quaternion.identity, Vector3.one * _meshScale * 10);
 			}
 
 			Gizmos.color = colour;
-			Gizmos.DrawWireSphere(_offsetReferenceInWorld, 0.5f);
+			Gizmos.DrawWireSphere(_offsetReferenceInWorld, 0.3f * _meshScale);
 		}
 	}
 
@@ -133,11 +140,13 @@ public class S_Trigger_Camera : S_Trigger_Base
 		if (_isSelected && _willOffsetTarget)
 		{
 			Vector3 currentPos = transform.position;
-			currentPos += _asLocalOffset ? transform.rotation * _newOffset : _newOffset;
+			Vector3 useOffset = _newOffset * _meshScale;
+			Vector3 currentPos2 = currentPos + ( _asLocalOffset ? transform.rotation * useOffset : useOffset);
 
-			_offsetReferenceInWorld = Handles.FreeMoveHandle(currentPos, 3f, Vector3.zero, Handles.RectangleHandleCap);
+			_offsetReferenceInWorld = Handles.FreeMoveHandle(currentPos2, _meshScale, Vector3.zero, Handles.RectangleHandleCap);
+			Vector3 difference = (_offsetReferenceInWorld - currentPos2) / _meshScale;
 
-			_newOffset = (_asLocalOffset ? transform.rotation * _offsetReferenceInWorld : _offsetReferenceInWorld) - transform.position;
+			_newOffset += _asLocalOffset ? transform.rotation * difference : difference;
 		}
 	}
 #endif

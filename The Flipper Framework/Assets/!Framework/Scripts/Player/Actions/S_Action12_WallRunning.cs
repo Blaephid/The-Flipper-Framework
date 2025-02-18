@@ -185,7 +185,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		_PlayerPhys._canChangeGrounded = true;
 
 		//Return camera to normal position
-		_CamHandler._HedgeCam.DisableSecondaryCameraTarget();
+		_CamHandler._HedgeCam.ReturnCameraTargetsToNormal(_CamHandler._HedgeCam._BaseTarget, 30);
 
 		//In case action change was intentional (not from losing grip on a wall) make sure player moves away from wall.
 		if(_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Default)
@@ -296,7 +296,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 
 		//Offset camera and seperate from realtime movers (like move target to input)
 		Vector3 camOffset = (_isWallOnRight ? -_MainSkin.right : _MainSkin.right) * 2;
-		_CamHandler._HedgeCam.SetSecondaryCameraTarget(_MainSkin, _PlayerPhys._CharacterCenterPosition + camOffset);
+		_CamHandler._HedgeCam.SetCameraTargetToNewParent(_CamHandler._HedgeCam._BaseTarget,_MainSkin, _PlayerPhys._CharacterCenterPosition + camOffset, 10);
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
 		StartAction();

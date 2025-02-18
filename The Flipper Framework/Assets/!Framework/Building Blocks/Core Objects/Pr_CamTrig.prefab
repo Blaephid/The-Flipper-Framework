@@ -70,8 +70,11 @@ MonoBehaviour:
   _whatType: 2
   _Direction: {fileID: 4000014063325986}
   _ViewTarget: {fileID: 0}
-  _forward: {x: -0.9999985, y: 0, z: 0.0017535686}
+  _directionToSet: {x: -0.9999985, y: 0, z: 0.0017535686}
   _lockCamera: 0
+  _lockCameraX: 0
+  _lockCameraY: 0
+  _lockToCharacterRotation: 0
   _willReleaseOnExit: 0
   _faceSpeed: 2
   _duration: 1
@@ -90,8 +93,9 @@ MonoBehaviour:
   _asLocalOffset: 0
   _framesToOffset: 0
   _overWriteAllOffsets: 0
-  _MeshToDraw: {fileID: 7709263546091118420, guid: 45ab1ef62915dac4184d8c28fcf243cb,
+  _VisualiseWithMesh: {fileID: 7709263546091118420, guid: 45ab1ef62915dac4184d8c28fcf243cb,
     type: 3}
+  _meshScale: 0
   _offsetReferenceInWorld: {x: 0, y: 0, z: 0}
 --- !u!65 &6650394445719301789
 BoxCollider:
@@ -222,22 +226,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.99992293
+      value: 0.99963546
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.012367674
+      value: -0.01592837
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0011210443
+      value: -0.021796195
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000013865066
+      value: -0.00034730506
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

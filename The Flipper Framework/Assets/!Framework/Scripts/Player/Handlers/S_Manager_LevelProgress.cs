@@ -200,7 +200,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_PlayerVel.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
 
 		//Camera
-		_CamHandler._HedgeCam._isReversed = false;
 		_CamHandler._HedgeCam._lookTimer = 0;
 		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 	}
