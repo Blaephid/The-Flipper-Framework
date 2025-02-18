@@ -79,7 +79,8 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 		}
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		_counter += 1;
 
 		LockControl();
@@ -217,11 +218,6 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
-	public void HandleInputs () {
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);
-	}
 
 	private void LockControl() {
 		//Since the lock input here may be interupted, keep setting to lock for one frame until this is up.

@@ -50,7 +50,8 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 		ReadyAction();
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 
 		if (_PlayerPhys._isRolling)
 		{

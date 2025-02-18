@@ -575,7 +575,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//This is set externally, and every frame will rotate towards the intended local rotation. This means rather than looking at a world space direction, the camera stays at the same point relative to the 
 		//characters rotation. Similar to rotating behind the character, but for any angle, not just directly behind.
 		void HandleSetLocalRotation () {
-			if(_isRotatingBehind || !_rotateToLocalDirection) { return; }
+			if (_isRotatingBehind || !_rotateToLocalDirection) { return; }
 
 			Vector3 directionInWorldSpace = _Skin.transform.rotation * _localLookAtDirection;
 			float turnThisFrame = Vector3.Angle(directionInWorldSpace, _previousTranslatedLocalLookAtDirection);

@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 20, y: 20}
   _maxNumber_: 0
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -88,8 +89,7 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 1
   _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 20, y: 20}
+  _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: 0, y: 0, z: 0}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
@@ -105,6 +105,8 @@ GameObject:
   - component: {fileID: 3451855950444054797}
   - component: {fileID: 3451855950444054799}
   - component: {fileID: 3451855950444054798}
+  - component: {fileID: 6064692439840920647}
+  - component: {fileID: 7860220423637194568}
   m_Layer: 23
   m_Name: Base_Rail
   m_TagString: Untagged
@@ -187,6 +189,44 @@ MonoBehaviour:
   CurveChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6064692439840920647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3451855950444054796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9c8b87cf845f3c4cb854007700733aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
+  _distancePerCalculation: 10
+  _selectPointOffset: {x: 0, y: 0, z: 0}
+  _SplineToDisplay: {fileID: 3451855950444054798}
+--- !u!114 &7860220423637194568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3451855950444054796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _LinkedComponent: {fileID: 6064692439840920647}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &3451855950728764933
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,6 +272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 8, y: 8}
   _maxNumber_: -1
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -241,8 +282,7 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 1
   _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 8, y: 8}
+  _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: 0, y: 0, z: 0}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
@@ -326,7 +366,7 @@ MonoBehaviour:
   mesh: {fileID: 2534964839176971238, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
   material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
   physicMaterial: {fileID: 0}
-  translation: {x: 0, y: 0, z: 0}
+  translation: {x: 0, y: 1, z: 0}
   rotation: {x: -90, y: 0, z: 0}
   scale: {x: 1, y: 1, z: 1}
   DeactivateOnStart: 0
@@ -386,6 +426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 8, y: 8}
   _maxNumber_: -1
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -395,8 +436,7 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 1
   _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 8, y: 8}
+  _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: 10, y: 0, z: 0}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
@@ -480,6 +520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 20, y: 20}
   _maxNumber_: 0
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -489,8 +530,7 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 1
   _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 20, y: 20}
+  _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: 0, y: 0, z: 10}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
@@ -542,7 +582,7 @@ MonoBehaviour:
   mesh: {fileID: 2534964839176971238, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
   material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
   physicMaterial: {fileID: 0}
-  translation: {x: 0, y: 0, z: 10}
+  translation: {x: 0, y: 1, z: 10}
   rotation: {x: -90, y: 0, z: 0}
   scale: {x: 1, y: 1, z: 1}
   DeactivateOnStart: 0
@@ -604,7 +644,7 @@ MonoBehaviour:
   mesh: {fileID: 2534964839176971238, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
   material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
   physicMaterial: {fileID: 0}
-  translation: {x: 0, y: 0, z: -10}
+  translation: {x: 0, y: 1, z: -10}
   rotation: {x: -90, y: 0, z: 0}
   scale: {x: 1, y: 1, z: 1}
   DeactivateOnStart: 0
@@ -618,7 +658,7 @@ MonoBehaviour:
   showEndDir: 0
   showStartDir: 0
   mode: 1
-  _InspectorTheme: {fileID: 0}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &6149141967420740062
 GameObject:
   m_ObjectHideFlags: 0
@@ -664,6 +704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 20, y: 20}
   _maxNumber_: 0
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -673,8 +714,7 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 1
   _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 20, y: 20}
+  _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: 0, y: 0, z: -10}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
@@ -724,6 +764,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 8, y: 8}
   _maxNumber_: -1
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -733,8 +774,7 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 1
   _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 8, y: 8}
+  _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: -10, y: 0, z: 0}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0

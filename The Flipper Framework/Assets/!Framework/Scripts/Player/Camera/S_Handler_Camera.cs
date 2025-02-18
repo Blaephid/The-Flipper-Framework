@@ -147,10 +147,10 @@ public class S_Handler_Camera : MonoBehaviour
 			StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV));
 		SetLockCameras(cameraData, false, !removeAll);
 
-		if (cameraData._lockToCharacterRotation || removeAll)
+		if (removeAll || cameraData._lockToCharacterRotation)
 			_HedgeCam.SetToStickToLocalRotation(false, Vector3.zero);
 
-		_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
+		_HedgeCam._lookTimer = 0; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
 	}
 
 	private IEnumerator LerpToNewDistance(float frames, float distance) {
@@ -219,8 +219,6 @@ public class S_Handler_Camera : MonoBehaviour
 		RemoveAdditonalCameraEffects(null, true);
 
 		_HedgeCam._cameraMaxDistance_ = _initialDistance;
-		_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
-
 	}
 	#endregion
 }

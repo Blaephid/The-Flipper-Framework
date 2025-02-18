@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 1746248922773075794}
   - component: {fileID: 1746248922773075792}
   - component: {fileID: 1746248922773075793}
+  - component: {fileID: 3286689827941165295}
+  - component: {fileID: 1064505078299868995}
   m_Layer: 23
   m_Name: Base_Rail
   m_TagString: Untagged
@@ -91,6 +93,44 @@ MonoBehaviour:
   CurveChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3286689827941165295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248922773075795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9c8b87cf845f3c4cb854007700733aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
+  _distancePerCalculation: 15
+  _selectPointOffset: {x: 0, y: 0, z: 0}
+  _SplineToDisplay: {fileID: 1746248922773075793}
+--- !u!114 &1064505078299868995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248922773075795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _LinkedComponent: {fileID: 3286689827941165295}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &1746248922998980189
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,6 +176,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 20, y: 20}
   _maxNumber_: 0
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -145,8 +186,7 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 0
   _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 20, y: 20}
+  _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: 0, y: 0, z: 0}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
@@ -196,6 +236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
+  _spacingRange_: {x: 8, y: 8}
   _maxNumber_: -1
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -205,8 +246,7 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 1
   _DataForPrefabs: {fileID: 0}
-  _scaleRange_: {x: 1, y: 1}
-  _spacingRange_: {x: 8, y: 8}
+  _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: 0, y: 0, z: 0}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
@@ -258,7 +298,7 @@ MonoBehaviour:
   mesh: {fileID: 2534964839176971238, guid: fc8b368302f43d04fafc9b39bb61a642, type: 3}
   material: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
   physicMaterial: {fileID: 0}
-  translation: {x: 0, y: 0, z: 0}
+  translation: {x: 0, y: 1, z: 0}
   rotation: {x: -90, y: 0, z: 0}
   scale: {x: 1, y: 1, z: 1}
   DeactivateOnStart: 0

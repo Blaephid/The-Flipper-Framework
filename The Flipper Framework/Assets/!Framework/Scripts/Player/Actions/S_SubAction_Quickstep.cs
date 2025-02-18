@@ -46,7 +46,8 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 	}
 
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 
 		if (_distanceToStep_ > 0)
 		{

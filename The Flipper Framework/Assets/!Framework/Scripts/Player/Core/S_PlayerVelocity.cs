@@ -89,6 +89,7 @@ public class S_PlayerVelocity : MonoBehaviour
 	//If the rigidbody velocity is smaller than it was last frame (such as from hitting a wall),
 	//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 	public void CheckAndApplyVelocityChanges () {
+		if(!_PlayerPhys._arePhysicsOn) { return; }
 
 		Vector3 velocityThisFrame = _RB.velocity;
 		Vector3 velocityLastFrame = _previousVelocity[0];

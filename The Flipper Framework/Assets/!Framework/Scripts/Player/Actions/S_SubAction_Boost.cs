@@ -70,7 +70,6 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	private float                 _currentSpeedLerpingTowardsGoal;        //Saved how much _currentSpeed increased towards goal speed, but ignores changes made to _currentSpeed externally, allowing _currentSpeed to lerp towards this when decreased after reaching _goalSpeed.
 
 	//Boost checkers/
-	private bool                  _inAStateThatCanBoost;        //Will be set false every frame, but true whenever AttemptAction is called. This means when false only, boost should end as not in a boostable state.
 	private bool                  _canStartBoost = true;        //Set false when using boost, and only true after a cooldown. Must be true to start a boost.
 	private bool                  _canBoostBecauseHasntBoostedInAir = true; //Turns false when starting a boost in the air, and true when grounded. Prevents starting multiple boosts in the air.
 
@@ -127,16 +126,15 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	}
 
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		ApplyBoost();
-		_inAStateThatCanBoost = false; //Set to false at the end of every fixed frame, and if this is not set to true in the AttemptAction method, the boost will end.
 	}
 
 
 	//Called when attempting to perform an action, checking and preparing inputs.
 	new public bool AttemptAction () {
 		if (!base.AttemptAction()) return false;
-		_inAStateThatCanBoost = true; //This will lead to a back and forth with it being set to false every frame. This means as soon as this method stops being called, this will be false.
 
 		if (_Input._BoostPressed)
 		{
@@ -230,7 +228,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 			Vector3 currentRunningPhysics = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity, false); //Get the running velocity in physics (seperate from script calculations) as this will factor in collision.
 
 			// Will end boost if released button , entered a state where without boost attached,  ran out of energy , or movement speed was decreased externally (like from a collision)
-			if (!_Input._BoostPressed || !_inAStateThatCanBoost || _currentBoostEnergy <= 0 
+			if (!_Input._BoostPressed || !_inAStateConnectedToThis || _currentBoostEnergy <= 0 
 				|| (currentRunningPhysics.sqrMagnitude < Mathf.Pow(40,2) && _currentSpeedLerpingTowardsGoal == _goalSpeed)) //Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
 			{
 				EndBoost();
@@ -271,7 +269,8 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 	//Called when a boost should come to an end. Applies trackers to tell the script the boost is over, and applie ending effects.
 	private void EndBoost ( bool skipSlowing = false ) {
-		//Flow cotntrol
+
+		//Flow control
 		_PlayerPhys._isBoosting = false;
 
 		//Controls

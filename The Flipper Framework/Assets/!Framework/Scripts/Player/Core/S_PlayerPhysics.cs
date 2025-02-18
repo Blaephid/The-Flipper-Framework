@@ -305,7 +305,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_curvePosSlopePowerUphill = _slopePowerUpBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
 		_curvePosSlopePowerDownhill = _slopePowerDownBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
 
-		if (!_arePhysicsOn) { RespondToCollisions(); return; }
+		RespondToCollisions();
 
 		//Set if the player is grounded based on current situation.
 		CheckForGround();
@@ -313,7 +313,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		AlignToGround(_groundNormal, _isGrounded);
 
 		//Handle any changes to the velocity between updates. This is why this must be the first method called.
-		RespondToCollisions();
+		//RespondToCollisions();
 
 		//Calls the appropriate movement handler.
 		if (_isGrounded)

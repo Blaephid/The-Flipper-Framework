@@ -2604,7 +2604,7 @@ MonoBehaviour:
     hopSpeed: 70
     hopDistance: 12
   RailPosition:
-    offsetRail: 2
+    offsetRail: 1
     offsetZip: -6
   StartRailPosition:
     offsetRail: 2

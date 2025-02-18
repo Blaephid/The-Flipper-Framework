@@ -77,7 +77,8 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		SetAnimatorAndRotation();
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		ChargeSpin();
 		AffectMovement();
 		HandleInputs();
@@ -141,11 +142,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
-	public void HandleInputs () {
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);
-	}
 
 	//Increases power in the spin for release
 	private void ChargeSpin () {

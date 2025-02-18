@@ -10,9 +10,9 @@ using static UnityEngine.Rendering.DebugUI;
 #if UNITY_EDITOR
 public class S_Vis_Base : MonoBehaviour
 {
+	[CustomReadOnly]
 	[Tooltip("Must be defined in code. If true, will serialize fields releveant to Visualisation, as not all classes will have the necessary implementation for this.")]
 	[DrawHorizontalWithOthers(new string[] { "_viewVisualisationData"})]
-	[ReadOnly]
 	[BaseColour(0.6f,0.6f,0.6f,1f)]
 	public bool _hasVisualisationScripted = false;
 

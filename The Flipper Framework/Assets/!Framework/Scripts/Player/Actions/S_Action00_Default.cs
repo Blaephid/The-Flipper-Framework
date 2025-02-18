@@ -76,7 +76,8 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 		}
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		HandleInputs();
 	}
 
@@ -115,14 +116,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-	//Responsible for taking in inputs the player performs to switch or activate other actions, or other effects.
-	public void HandleInputs () {
-		//Moving camera behind
-		if (!_Actions._isPaused) _CamHandler.AttemptCameraReset();
-
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);	
-	}
+	
 	#endregion
 
 	/// <summary>

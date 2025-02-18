@@ -64,7 +64,8 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 		_Actions._ActionDefault.SetSkinRotationToVelocity(_Actions._ActionDefault._skinRotationSpeed);
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		_Actions._ActionDefault.HandleAnimator(1);
 
 		ChargeDash();
@@ -130,11 +131,10 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-	public void HandleInputs () {
+	public override void HandleInputs () {
 		if(_Actions._charge <= _minimunCharge_) { return; }
 
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
+		base.HandleInputs();
 	}
 
 	//Increases power to launch with based on input still being pressed.

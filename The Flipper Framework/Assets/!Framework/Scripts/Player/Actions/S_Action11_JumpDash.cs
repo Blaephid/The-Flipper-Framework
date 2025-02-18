@@ -75,7 +75,8 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 		_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed);
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		_timer += Time.deltaTime;
 
 		HandleMovement();
@@ -214,11 +215,10 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 	/// 
 	#region private
 
-	public void HandleInputs () {
+	public override void HandleInputs () {
 		if(_timer < _timeBeforeCanChangeAction_) { return; }
 
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
+		base.HandleInputs();
 	}
 
 	private void HandleMovement () {

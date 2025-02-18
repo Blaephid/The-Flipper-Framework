@@ -35,7 +35,8 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		ReadyAction();
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		if (_isWall)
 		{
 			ClimbingInteraction();

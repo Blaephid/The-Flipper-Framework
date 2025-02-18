@@ -149,7 +149,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 
 		if (!enabled || !_isGrinding) { return; }
 
@@ -554,12 +555,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_grindingSpeed += force;
 	}
 
-	//Inputs
-	public void HandleInputs () {
-
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
-
+	public override void HandleInputs () {
+		base.HandleInputs();
 		if (!_Actions._isPaused) HandleUniqueInputs();
 	}
 

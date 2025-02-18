@@ -85,6 +85,12 @@ public class S_Interaction_Pathers : MonoBehaviour
 		ReadyScript();
 	}
 
+	private void FixedUpdate () {
+		_canGrindOnRail = _RailAction ? _RailAction._inAStateConnectedToThis : false;
+		//_canEnterAutoPath = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Path);
+		_canEnterAutoPath = _PathAction ? _PathAction._inAStateConnectedToThis : false;
+	}
+
 	private void Update () {
 
 	}
@@ -156,8 +162,10 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 			//yield return new WaitForSeconds(0.04f);
 			yield return new WaitForFixedUpdate();
-			_canGrindOnRail = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Rail); ; 
-			_canEnterAutoPath = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Path);
+			//_canGrindOnRail = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Rail); ;
+			_canGrindOnRail = _RailAction ? _RailAction._inAStateConnectedToThis : false;
+			//_canEnterAutoPath = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Path);
+			_canEnterAutoPath = _PathAction ? _PathAction._inAStateConnectedToThis : false;
 		}
 	}
 

@@ -94,7 +94,8 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		_counter += Time.deltaTime;
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		if (_isWall)
 		{
 			RunningInteraction();
@@ -199,12 +200,6 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
-	public void HandleInputs () {
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
-	}
-
 	private void RunningInteraction () {
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 

@@ -77,7 +77,8 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 		}
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		HandleInputs();
 
 		//Tracking length of jump
@@ -102,8 +103,9 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
+						return true;
 					}
-					return true;
+					return false;
 				case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
 					AssignStartValues(_Actions._jumpAngle, true, _wallRunningJumpModifiers_.x, _wallRunningJumpModifiers_.y);
 					StartAction();
@@ -254,14 +256,6 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 
 		_jumpSpeedModifier = speedModifier;
 		_jumpDurationModifier = durationModifier;
-	}
-
-	public void HandleInputs () {
-		//Moving camera behind
-		if (!_Actions._isPaused) _CamHandler.AttemptCameraReset();
-
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
 	}
 
 	//Additional effects if a jump is being made from in the air.

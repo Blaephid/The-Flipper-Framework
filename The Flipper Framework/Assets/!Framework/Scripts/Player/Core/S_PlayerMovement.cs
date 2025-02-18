@@ -69,6 +69,8 @@ public class S_PlayerMovement : MonoBehaviour
 	//Methods
 	public delegate Vector3 DelegateAccelerationAndTurning ( Vector3 vector, Vector3 input, Vector2 modifier );        //A delegate for deciding methods to calculate acceleration and turning 
 	public DelegateAccelerationAndTurning   CallAccelerationAndTurning; //This delegate will be called in controlled velocity to return changes to acceleration and turning. This will usually be the base one in this script, but may be changed externally depending on the action.
+	[HideInInspector] public bool _lockAccelerationAndTurningToDefault; //If true, the delegate above will not be called, and instead the default one will be, preventing any overwriting while locked.	
+	
 
 	[HideInInspector]
 	public Vector3                _moveInput;         //Assigned by the input script, the direction the player is trying to go.
@@ -139,7 +141,15 @@ public class S_PlayerMovement : MonoBehaviour
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		//Apply changes to the lateral velocity based on input.
-		lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier); //Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
+		if(!_lockAccelerationAndTurningToDefault)
+		{
+			//Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
+			lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier);
+		}
+		else
+		{
+			lateralVelocity = DefaultAccelerateAndTurn(lateralVelocity, _moveInput, modifier);
+		}
 
 		lateralVelocity = Decelerate(lateralVelocity, _moveInput * decelerationModifier, _curvePosDecell);
 

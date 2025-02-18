@@ -665,8 +665,9 @@ MonoBehaviour:
     m_Bits: 0
   _frameCount: 0
   _arePhysicsOn: 1
-  _playerPos: {x: 0, y: 0, z: 0}
-  _feetOffsetFromCentre: {x: 0, y: 0, z: 0}
+  _CharacterCenterPosition: {x: 0, y: 0, z: 0}
+  _CharacterPivotPosition: {x: 0, y: 0, z: 0}
+  _feetOffsetFromPivotPoint: {x: 0, y: 0, z: 0}
   _colliderOffsetFromCentre: {x: 0, y: 0, z: 0}
   _isGrounded: 0
   _isCurrentlyOnSlope: 0
@@ -23689,10 +23690,11 @@ MonoBehaviour:
   _baseFOV_: 0
   _lockCamAtSpeed_: 130
   _startLockCam: 0
-  _posY: 20
-  _preY: 20
+  _yPositionOfCamera: 20
+  _yPrevious: 20
   _isLocked: 0
-  _canMove: 0
+  _isYLocked: 0
+  _isXLocked: 0
   _isMasterLocked: 0
   _lookTimer: 0
   _lockedRotationSpeed: 0
@@ -29046,7 +29048,7 @@ Transform:
   m_GameObject: {fileID: 8950381718385962081}
   serializedVersion: 2
   m_LocalRotation: {x: 0.33180267, y: -0, z: -0, w: 0.9433488}
-  m_LocalPosition: {x: 0, y: 1.135, z: -0.049999997}
+  m_LocalPosition: {x: 0, y: 1.135, z: -0.216}
   m_LocalScale: {x: 2.690199, y: 2.852854, z: 2.852854}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -29896,7 +29898,7 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _MainActions.Array.data[5].PerformableSubStates.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -29971,6 +29973,11 @@ PrefabInstance:
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: '_MainActions.Array.data[11].SituationalStates.Array.data[1]'
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[5].PerformableSubStates.Array.data[0]'
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,

@@ -47,7 +47,8 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 		_SkinOffset.forward = _startForwardDirection; //Because the hover animation spins around, this ensures the player skin doesn't rotate against the animation, even though the main skin goes towards velocity.
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		//This action mainly only exists to have unique connections with inputs and disable other actions. It currently has no unique properties as Interaction_Objects applies the wind force
 		HandleInputs ();
 		_Actions._ActionDefault.HandleAnimator(13);
@@ -106,11 +107,6 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 			yield return new WaitForFixedUpdate();
 			_Objects._canHover = false;
 		}
-	}
-
-	public void HandleInputs () {
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
 	}
 	#endregion
 

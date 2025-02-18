@@ -49,6 +49,8 @@ public class S_ActionManager : MonoBehaviour
 	//Actions
 	public List<S_Structs.MainActionTracker>	_MainActions; //This list of structs will cover each action currently available to the player (set in inspector), along with what actions it can enter through input or situation.	
 	private S_Structs.MainActionTracker	_currentAction; //Which struct in the above list is currently active.
+	private List<IAction> _AllActions = new List<IAction>();
+
 
 	//Inspector
 #if UNITY_EDITOR
@@ -104,14 +106,16 @@ public class S_ActionManager : MonoBehaviour
 		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
 		_HealthAndHurt =	_Tools.GetComponent<S_Handler_HealthAndHurt>();
 
+		_AllActions.Clear();
+
 		//Go through each struct and assign/add the scripts linked to that enum.
 		for (int i = 0 ; i < _MainActions.Count ; i++)
 		{
 			S_Structs.MainActionTracker action = _MainActions[i];
 
-			//Makes lists of scripts matching what states are assigned for this state to transition to or activate.
+				//Makes lists of scripts matching what states are assigned for this state to transition to or activate.
 
-			action.ConnectedActions = new List<IMainAction>();
+				action.ConnectedActions = new List<IMainAction>();
 			for (int a = 0 ; a < action.ConnectedStates.Count ; a++)
 			{
 				action.ConnectedActions.Add(S_S_ActionHandling.GetControlledActionFromEnum(action.ConnectedStates[a], _ObjectForActions));
@@ -133,8 +137,15 @@ public class S_ActionManager : MonoBehaviour
 			//Assigns the script related to this state
 			action.Action = S_S_ActionHandling.AddOrFindMainActionComponent(action.State, _ObjectForActions);
 
-			//Applies the changes directly to the struct element.
-			_MainActions[i] = action;
+			//Add this action to a list of all actions this character has, so they can all be called during FixedUpdate().
+			if (!_AllActions.Contains(action.Action)) { _AllActions.Add(action.Action); }
+			for(int subA = 0 ; subA < action.SubActions.Count ; subA++)
+			{
+				if (!_AllActions.Contains(action.SubActions[subA])) { _AllActions.Add(action.SubActions[subA]); }
+			}
+
+				//Applies the changes directly to the struct element.
+				_MainActions[i] = action;
 		}
 
 		//Set player to start in default action.
@@ -155,10 +166,10 @@ public class S_ActionManager : MonoBehaviour
 			if (_dashDelayCounter <= 0) { _isAirDashAvailable = true; }
 		}
 
-		//Current action is set when  handle inputs is called, this goes through each situation action and calls methods that should allow them to be checked. Meaning it can only be enetered if it's called this frame
-		for (int a = 0 ; a < _currentAction.SituationalActions.Count ; a++)
+		//For actions that continue calculations even when no active, use ActionEveryFrame
+		for (int a = 0 ; a < _AllActions.Count ; a++)
 		{
-			_currentAction.SituationalActions[a].AttemptAction();
+			_AllActions[a].ActionEveryFrame();
 		}
 	}
 
@@ -195,13 +206,14 @@ public class S_ActionManager : MonoBehaviour
 
 		bool performAction; //This will be set to true if an action attempt succeeds, stopping the checks after one does so.
 
-		_currentAction = _MainActions[currentActionInList]; //This will allow the update method to check situation actions
-
+		//_currentAction = _MainActions[currentActionInList]; //This will allow the update method to check situation actions
+		IMainAction thisAction = _currentAction.Action;
 
 		//Calls the attempt methods of actions saved to the current action's struct, which handle input and situations.
 		for (int a = 0 ; a < _currentAction.ConnectedActions.Count ; a++)
 		{
-			performAction = _currentAction.ConnectedActions[a].AttemptAction();
+			IMainAction Action = _currentAction.ConnectedActions[a];
+			performAction = Action.AttemptAction();
 			if (performAction) { return; }
 		}
 
@@ -210,32 +222,63 @@ public class S_ActionManager : MonoBehaviour
 		//When one returns true, it is being switched to, so end the method.
 		for (int a = 0 ; a < _currentAction.SubActions.Count ; a++)
 		{
-			performAction = _currentAction.SubActions[a].AttemptAction();
+			ISubAction SubAction = _currentAction.SubActions[a];
+			performAction = SubAction.AttemptAction();
 			if (performAction) { return; }
 		}
 
 	}
 
+	//Similar to HandleInputs, but performed every frame no matter what, and goes through every action to notify them that they can possiblly be performed.
+	//This is so they are aware they are possible without holding direct references to them.
+	//E.G. Boost will end itself if !_inAStateConnectedToThis, which is set in S_Action_Base based on CheckAction().
+	public void CheckConnectedActions(int currentActionInList ) {
+		if (_isPaused || _HealthAndHurt._isDead) { return; }
+
+		_currentAction = _MainActions[currentActionInList]; //This will allow the update method to check situation actions
+		IMainAction thisAction = _currentAction.Action;
+
+		//Main Actions
+		for (int a = 0 ; a < _currentAction.ConnectedActions.Count ; a++)
+		{
+			IMainAction Action = _currentAction.ConnectedActions[a];
+			Action.CheckAction(); //Check action is found only in S_Action_Base. Inherited but not overwritten.
+		}
+		//Current action is set when  handle inputs is called, this goes through each situation action and calls methods that should allow them to be checked. Meaning it can only be enetered if it's called this frame
+		for (int a = 0 ; a < _currentAction.SituationalActions.Count ; a++)
+		{
+			IMainAction Action = _currentAction.SituationalActions[a];
+			Action.AttemptAction();
+			Action.CheckAction();
+		}
+		//Sub Actions
+		for (int a = 0 ; a < _currentAction.SubActions.Count ; a++)
+		{
+			ISubAction SubAction = _currentAction.SubActions[a];
+			SubAction.CheckAction();
+		}
+	}
+
 	//Takes a controlled or situational action, and returns true if the current active action has that set as an action is can transition into.
 	//Used to check if the player can enter this given action, from the current active one.
-	public bool IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates givenConAction, S_S_ActionHandling.PlayerSituationalStates givenSitAction) {
-		if (givenConAction != S_S_ActionHandling.PlayerControlledStates.None)
-		{
-			for (int i = 0 ; i < _currentAction.ConnectedStates.Count ; i++)
-			{
-				if (_currentAction.ConnectedStates[i] == givenConAction) { return true; }
-			}
-		}
-		if (givenSitAction != S_S_ActionHandling.PlayerSituationalStates.None)
-		{
-			for (int i = 0 ; i < _currentAction.SituationalStates.Count ; i++)
-			{
-				if (_currentAction.SituationalStates[i] == givenSitAction) { return true; }
-			}
-		}
+	//public bool IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates givenConAction, S_S_ActionHandling.PlayerSituationalStates givenSitAction) {
+	//	if (givenConAction != S_S_ActionHandling.PlayerControlledStates.None)
+	//	{
+	//		for (int i = 0 ; i < _currentAction.ConnectedStates.Count ; i++)
+	//		{
+	//			if (_currentAction.ConnectedStates[i] == givenConAction) { return true; }
+	//		}
+	//	}
+	//	if (givenSitAction != S_S_ActionHandling.PlayerSituationalStates.None)
+	//	{
+	//		for (int i = 0 ; i < _currentAction.SituationalStates.Count ; i++)
+	//		{
+	//			if (_currentAction.SituationalStates[i] == givenSitAction) { return true; }
+	//		}
+	//	}
 
-		return false;
-	}
+	//	return false;
+	//}
 
 	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.
 	public void ChangeAction ( S_S_ActionHandling.PrimaryPlayerStates ActionToChange) {

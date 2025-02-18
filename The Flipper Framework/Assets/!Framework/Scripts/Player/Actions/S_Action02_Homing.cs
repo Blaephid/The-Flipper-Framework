@@ -92,7 +92,8 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		}
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		if (_isHoming)
 		{
 			HomeInOnTarget();
@@ -293,11 +294,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 			_PlayerPhys._listOfCanControl.RemoveAt(0);
 		if(_Actions._listOfSpeedOnPaths.Count > 0)
 			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
-	}
-
-	public void HandleInputs () {
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);	
 	}
 
 	#endregion

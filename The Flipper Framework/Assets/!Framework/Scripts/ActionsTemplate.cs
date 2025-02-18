@@ -37,7 +37,8 @@ namespace templates
 
 		}
 
-		private void FixedUpdate () {
+		new private void FixedUpdate () {
+			base.FixedUpdate();
 
 		}
 
@@ -63,11 +64,6 @@ namespace templates
 		/// </summary>
 		/// 
 		#region private
-
-		public void HandleInputs () {
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);
-		}
 
 		#endregion
 

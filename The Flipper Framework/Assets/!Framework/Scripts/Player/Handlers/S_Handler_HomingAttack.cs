@@ -20,6 +20,8 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 
+	private S_Action02_Homing     _HomingAction;
+
 	private AudioSource           _IconSound;
 	private Animator              _IconAnim;
 	private Animator              _CharacterAnimator;
@@ -104,7 +106,8 @@ public class S_Handler_HomingAttack : MonoBehaviour
 			yield return new WaitForEndOfFrame();
 
 			//Determined in the homing action script, based on if attempt action is called, which means this only updates if the current action can perform homing attacks.
-			if (_Actions != null & _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.Homing, S_S_ActionHandling.PlayerSituationalStates.None))
+			//if (_Actions != null & _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.Homing, S_S_ActionHandling.PlayerSituationalStates.None))
+				if(_HomingAction._inAStateConnectedToThis)
 			{
 				UpdateHomingTargets();
 
@@ -354,6 +357,9 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 		_IconSound = _IconTransform.gameObject.GetComponent<AudioSource>();
 		_IconAnim = _IconTransform.gameObject.GetComponent<Animator>();
+
+		_HomingAction = GetComponent<S_Action02_Homing>();
+		if(!_HomingAction) { enabled = false; }
 	}
 
 	//Reponsible for assigning stats from the stats script.

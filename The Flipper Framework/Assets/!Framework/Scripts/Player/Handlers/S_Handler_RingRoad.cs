@@ -20,6 +20,8 @@ public class S_Handler_RingRoad : MonoBehaviour
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 
+	private S_Action07_RingRoad  _RingRoadAction;
+
 	[HideInInspector]
 	public Transform              _TargetRing;
 	[HideInInspector]
@@ -82,7 +84,8 @@ public class S_Handler_RingRoad : MonoBehaviour
 					break;
 			}
 			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
-			if (_Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None,S_S_ActionHandling.PlayerSituationalStates.RingRoad))//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
+			//if (_Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None,S_S_ActionHandling.PlayerSituationalStates.RingRoad))//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
+			if(_RingRoadAction._inAStateConnectedToThis)
 			{
 				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, _PlayerPhys._CharacterCenterPosition);
 			}
@@ -200,6 +203,9 @@ public class S_Handler_RingRoad : MonoBehaviour
 		_Actions = _Tools._ActionManager;
 
 		_MainSkin = _Tools.MainSkin;
+
+		_RingRoadAction = GetComponent<S_Action07_RingRoad>();
+		if (!_RingRoadAction) { enabled = false; }
 	}
 
 	//Reponsible for assigning stats from the stats script.

@@ -61,9 +61,9 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 			SpeedLinesCharacter.Stop();
 		}
 
-		if (_PlayerVelocity._horizontalSpeedMagnitude > 70)
+		if (_PlayerVelocity._horizontalSpeedMagnitude > 60)
 		{
-			_SpeedLinesScreen.SetFloat("Intensity", (_PlayerVelocity._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed) * 2);
+			_SpeedLinesScreen.SetFloat("Intensity", (_PlayerVelocity._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed) * 3);
 		}
 		else
 			_SpeedLinesScreen.SetFloat("Intensity", 0);

@@ -31,8 +31,6 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 
 	// Trackers
 	#region trackers
-	
-
 
 	// Values of spline
 	private float	_pointOnSpline = 0f;
@@ -67,7 +65,6 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 
 	// Start is called before the first frame update
 	void Start () {
-
 	}
 
 	// Update is called once per frame
@@ -76,12 +73,15 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		_Actions._ActionDefault.HandleAnimator(0);
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _playerSpeed = _Actions._listOfSpeedOnPaths[0]; } 
 		MoveAlongPath();
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _playerSpeed; }//Apples all changes to grind speed.
+
+		HandleInputs();
 	}
 
 	new public bool AttemptAction () {
@@ -101,6 +101,9 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		_Pathers._canExitAutoPath = true; //Will no longer cancel action when hitting a trigger.
 		_Actions._listOfSpeedOnPaths.Add(_playerSpeed);
 
+		//This ensures that no matter what, turning will act as normal (The boost subaction changes turning, this ensures that won't happen
+		_PlayerPhys._PlayerMovement._lockAccelerationAndTurningToDefault = true;
+
 		if (_CharacterAnimator.GetInteger("Action") != 0)
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
@@ -116,6 +119,8 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 
 		_PlayerPhys._arePhysicsOn = true;
 		_PlayerPhys._rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;
+
+		_PlayerPhys._PlayerMovement._lockAccelerationAndTurningToDefault = false;
 
 		_Pathers._canExitAutoPath = false; //Will no longer cancel action when hitting a trigger.
 
@@ -228,7 +233,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 			decelerationValue = 0;
 		}
 	
-		//Ensure player is either inputting alon or against the path, translated to current rotation.
+		//Ensure player is either inputting along or against the path, translated to current rotation.
 		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction);
 		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_GeneralEnums.LockControlDirection.Change);
 
@@ -254,7 +259,6 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 	private void ApplyVelocity () {
 
 		_PlayerVel.SetBothVelocities(_physicsCoreVelocity, Vector2.right);
-		//_PlayerVel.SetTotalVelocity();
 		//Set total velocity in PlayerVelocity fixedUpdate is still called after every other script.
 
 		_playerSpeed = _PlayerVel._currentRunningSpeed;
@@ -279,10 +283,6 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		_Input.LockInputForAWhile(_willLockFor, false, _sampleForwards, S_GeneralEnums.LockControlDirection.Change);
 
 		_Actions._ActionDefault.StartAction();
-	}
-
-	public void HandleInputs () {
-
 	}
 
 	#endregion

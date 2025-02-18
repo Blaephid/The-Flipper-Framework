@@ -57,7 +57,8 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	void Update () {
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		MoveOnUpreel();
 	}
 
@@ -118,11 +119,6 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
-	public void HandleInputs () {
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
-	}
 
 
 	#endregion

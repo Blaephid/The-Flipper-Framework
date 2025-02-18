@@ -71,7 +71,8 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 	void Update () {
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		CheckSpeed(); //Called first to make sure state will be changed after any physics changes.
 		CheckForGround();
 
@@ -148,11 +149,6 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
-	public void HandleInputs () {
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);	
-	}
 
 	//Searched for ground below the player as they move down, calling any bounces or calculations post bounce.
 	private void CheckForGround () {

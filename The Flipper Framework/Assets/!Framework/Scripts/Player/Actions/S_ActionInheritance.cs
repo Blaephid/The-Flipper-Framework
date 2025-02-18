@@ -21,7 +21,10 @@ public class S_Action_Base : MonoBehaviour, IAction
 	[HideInInspector] public Transform             _MainSkin;
 
 	[HideInInspector] public int            _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
-	[HideInInspector] public bool           _isActionCurrentlyValid = true;       //Controlled by Activate And Deactivate action. Can't perform actions if false.
+	[HideInInspector] public bool           _isActionCurrentlyValid = true;       //Controlled by Activate And Deactivate action. Can't perform actions if false.[Hide
+
+	[HideInInspector] public int        _framesWithoutLocalCheckActionCalled; //Increases every frame, but set to zero when AttemptAction is called, if it reaches 3, then sets the below to false.
+	[HideInInspector] public bool       _inAStateConnectedToThis;        //Used by children to check when should end a state, of if possible to enter.
 
 
 	public bool AttemptAction () {
@@ -32,6 +35,12 @@ public class S_Action_Base : MonoBehaviour, IAction
 
 	public void StartAction ( bool overwrite = false ) {
 
+	}
+
+	public void FixedUpdate () {
+		string debugThisAction = this.ToString();
+
+		_Actions.CheckConnectedActions(_positionInActionList);
 	}
 
 	public void ReadyAction () {
@@ -89,6 +98,26 @@ public class S_Action_Base : MonoBehaviour, IAction
 		if(enabled && this is IMainAction) { _Actions._ActionDefault.StartAction(); }
 	}
 
+	//Responsible for taking in inputs the player performs to switch or activate other actions, or other effects.
+	public virtual void HandleInputs () {
+		//Moving camera behind
+		if (!_Actions._isPaused) _CamHandler.AttemptCameraReset();
+
+		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
+		_Actions.HandleInputs(_positionInActionList);
+	}
+
+	public void ActionEveryFrame () {
+		string debugThisAction = this.ToString();
+		_inAStateConnectedToThis = _framesWithoutLocalCheckActionCalled < 3;
+		if(this is IMainAction && enabled) { _inAStateConnectedToThis = false; }
+		_framesWithoutLocalCheckActionCalled++;
+	}
+
+	public void CheckAction () {
+		_framesWithoutLocalCheckActionCalled = 0;
+	}
+
 }
 
 /// <summary>
@@ -98,6 +127,10 @@ public class S_Action_Base : MonoBehaviour, IAction
 public interface IAction
 {
 	bool AttemptAction ();
+
+	void CheckAction ();
+
+	void ActionEveryFrame ();
 
 	void StartAction ( bool overwrite = false );
 
