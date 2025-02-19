@@ -82,6 +82,9 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 	public string[] _listOfOtherFields_ { get; private set; }
 	public float[] _fieldPrioritySizes_ { get; private set; }
 
+	float _labelPriority_ = 1.4f;
+	float _fieldPriority_ = 0.6f;
+
 	//Constructor
 	public DrawHorizontalWithOthersAttribute ( string[] listOfOtherFields, float[] fieldBalances = null ) {
 		_listOfOtherFields_ = listOfOtherFields;
@@ -90,7 +93,6 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 	}
 
 
-	float _elementWidth;
 	int _linesToDraw;
 	float _propertiesPerLine;
 	float _propertiesInTotal;
@@ -109,40 +111,30 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 
 		if (Event.current.type == EventType.Layout) { return; }
 
-		//Draw all in line.
-		if (Event.current.type == EventType.Layout)
-			EditorGUILayout.BeginHorizontal();
 		SetPartWidth();
 
-		float localWidth = GetPrioritySize(-1);
+		//Rather than all properties taking an equal portion, more important ones may have higher priority. -1 is used for the main property as it's not included in _listOfOtherFields_
+		float widthPercentage = GetWidthPercentageFromPriorityValues(-1);
 
-		switch (_propertiesPerLine)
-		{
-			case 1:
-			case 2:
-				DrawNormally();
-				break;
-			default:
-				DrawLabelAndFieldSeperately();
-				break;
-		}
+		if (widthPercentage < 0.5f )
+			DrawLabelAndFieldSeperately();
+		else
+			DrawLabelAndFieldTogether();
 
-		void DrawNormally () {
-			BaseAttribute._fieldRect_ = new Rect(position.x, position.y, position.width / _propertiesPerLine, position.height / _linesToDraw);
+		void DrawLabelAndFieldTogether () {
+			//BaseAttribute._fieldRect_ = new Rect(position.x, position.y, position.width / _propertiesPerLine, position.height / _linesToDraw);
+			BaseAttribute._fieldRect_ = new Rect(position.x, position.y, position.width * widthPercentage, position.height / _linesToDraw);
 		}
 
 		void DrawLabelAndFieldSeperately () {
+			float elementWidth = widthPercentage / 2f;
+
 			//Draw Label of Property
-			BaseAttribute._fieldRect_ = new Rect(position.x , position.y, _elementWidth * 1.4f, position.height);
+			BaseAttribute._fieldRect_ = new Rect(position.x , position.y, elementWidth * 1.4f, position.height / _linesToDraw);
 			EditorGUI.PrefixLabel(BaseAttribute._fieldRect_, label);
 
-			BaseAttribute._GUIContentOnDraw_ = GUIContent.none;
-
-			//Draw editable field of Property
-			//if (_linesToDraw == 1)
-			//	BaseAttribute._fieldRect_ = new Rect( _elementWidth * 1.4f, position.y, _elementWidth * 0.6f, position.height);
-			//else
-				BaseAttribute._fieldRect_ = new Rect( _elementWidth * 1.4f, 0, _elementWidth * 0.6f, position.height / _linesToDraw);
+			BaseAttribute._GUIContentOnDraw_ = GUIContent.none; //Ensures when field is drawn in PropertyDrawer, it won't do so with a label.
+			BaseAttribute._fieldRect_ = new Rect( elementWidth * 1.4f * EditorGUIUtility.currentViewWidth, 0, elementWidth * 0.6f * EditorGUIUtility.currentViewWidth, position.height / _linesToDraw);
 		}
 	}
 
@@ -157,77 +149,90 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		float elementHeight = position.height / _linesToDraw;
 		int line = 0;
 
-		//Go through each string name that was added when applying this attributre, and draw properties that match it. They must be set to HideInInspector to ensure they aren't drawn twice.
+		float thisPropertyWidth = 0 ;
+		float lastPropertyWidth = position.width * GetWidthPercentageFromPriorityValues(-1);
+		lastPropertyWidth *= _propertiesPerLine > 2 ? 0.5f * _fieldPriority_ : 1;
+
+		//Go through each string name that was added when applying this attribute, and draw properties that match it. They must be set to HideInInspector to ensure they aren't drawn twice.
 		for (int i = 0 ; i < _listOfOtherFields_.Length ; i++)
 		{
 			string newPropertyName = _listOfOtherFields_[i];
 			SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
 
-			bool newLine = false;
+			thisPropertyWidth = position.width * GetWidthPercentageFromPriorityValues(i);
+
+			bool isNewLine = false;
 			if (((i + 1) % _propertiesPerLine == 0 && i > 0) || (i == 0 && _propertiesPerLine == 1))
 			{
 				line = (i / (int)_propertiesPerLine) + 1;
-				fieldRect = new Rect(0, elementHeight * line, _elementWidth * 1.4f, elementHeight);
-				newLine = true;
+				lastPropertyWidth = 0;
+				isNewLine = true;
 			}
 
-			switch (_propertiesPerLine)
-			{
-				case 1:
-				case 2:
-					DrawNormally();
-					break;
-				default:
-					DrawLabelAndFieldSeperately();
-					break;
-			}
+			if(thisPropertyWidth < EditorGUIUtility.currentViewWidth / 2)
+				DrawLabelAndFieldSeperately();
+			else
+				DrawLabelAndFieldTogether();
 
 			continue;
 
-			void DrawNormally () {
+			void DrawLabelAndFieldTogether () {
 				float evenOrOdd = (i + 1) % _propertiesPerLine;
-				fieldRect = new Rect(evenOrOdd * (position.width / 2), elementHeight * line, position.width / _propertiesPerLine, elementHeight);
+				fieldRect = new Rect(evenOrOdd * (lastPropertyWidth), elementHeight * line, thisPropertyWidth, elementHeight);
 				EditorGUI.PropertyField(fieldRect, newProperty);
+
+				lastPropertyWidth = thisPropertyWidth;
 			}
 
 			void DrawLabelAndFieldSeperately () {
+				thisPropertyWidth /= 2;
+
 				//If this property is the first after a multiple of how many can be on one line, then move where it should be drawn to the next line.
-				if (newLine)
+				if (isNewLine)
 				{
-					fieldRect = new Rect(0, elementHeight * line, _elementWidth * 1.4f, elementHeight);
+					fieldRect = new Rect(0, elementHeight * line, thisPropertyWidth * _labelPriority_, elementHeight);
 				}
 				else
 					//Draw Label of Property
-					MoveAlong(0.6f, 1.4f);
+					GetNewRectFromOldRect(lastPropertyWidth, thisPropertyWidth * _labelPriority_);
 
 				label = EditorGUIUtility.TrTextContent(newProperty.displayName);
 				EditorGUI.PrefixLabel(fieldRect, label);
 
 				//Draw editable field of Property
-				MoveAlong(1.4f, 0.6f);
+				GetNewRectFromOldRect(thisPropertyWidth * _labelPriority_, thisPropertyWidth * _fieldPriority_);
 				EditorGUI.PropertyField(fieldRect, newProperty, GUIContent.none);
 
+				lastPropertyWidth = thisPropertyWidth * _fieldPriority_;
 			}
 
-			void MoveAlong (float moveModi, float widthModi) {
-				fieldRect = new Rect(fieldRect.x + _elementWidth * moveModi, fieldRect.y, _elementWidth * widthModi, elementHeight);
+			void GetNewRectFromOldRect (float move, float width) {
+				fieldRect = new Rect(fieldRect.x + move, fieldRect.y,width , elementHeight);
 			}
 		}
-
-		EditorGUILayout.EndHorizontal();
 	}
 
-	private float GetPrioritySize(int n ) {
+	//Takes all priorities for this properties line, and returns the percentage of the total this property gives.
+	private float GetWidthPercentageFromPriorityValues(int n ) {
 		if(_propertiesPerLine == 1) { return 1f; }
+
 		float percentage = 1f;
 		float totalPriority = 0;
-		for (int i = 0 ; i < _propertiesPerLine ; i++)
+		float currentPriority = _fieldPrioritySizes_[n + 1]; //Must be +1, because _fieldPropertySizes_ includes the base property, when _listOfOtherProperties does not.
+		currentPriority = currentPriority <= 0 ? 1 : currentPriority;
+
+		int startOfThisLine =  (int)S_S_MoreMathMethods.GetNumberAsIncrement(n + 1, _propertiesPerLine); //Gets the index for the property at the start of the current line.
+		//Goes through each value on this line, and adds up their priorities. If its 0, it means none were set, so use 1.
+		for (int i = 0 ; i < _propertiesPerLine; i++)
 		{
-			float thisPriority = _fieldPrioritySizes_[n + 1 + i];
-			totalPriority += thisPriority == 0 ? 1 : thisPriority;
+			float thisPriority;
+			if (startOfThisLine + i > _fieldPrioritySizes_.Length - 1)
+				thisPriority = totalPriority / i; //If no other properties left to draw, then use the average so far. Means the size will stay as it should.
+			else 
+				thisPriority = _fieldPrioritySizes_[startOfThisLine + i];
+			totalPriority += thisPriority <= 0 ? 1 : thisPriority;
 		}
-		float currentPriority = _fieldPrioritySizes_[n + 1];
-		currentPriority = currentPriority == 0 ? 1 : currentPriority;
+		//Percentage of width is how much of the total priority this property is.
 		percentage = currentPriority / totalPriority;
 		return percentage;
 	}
@@ -238,14 +243,13 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 
 		//Get approrpriate sizes of elements, based on inspector panel.
 		float fullWidth = EditorGUIUtility.currentViewWidth;
-		_elementWidth = fullWidth / _propertiesInTotal;
-		_elementWidth /= 2;
+		float propertyWidth = fullWidth / _propertiesInTotal;
 
 		//If there isn't enough space for a property field, decrease how many properties can be on one line to create more space until possible.
-		while(_elementWidth * 2 < 220 && _propertiesInTotal > 1 && _propertiesPerLine > 1)
+		while(propertyWidth < 220 && _propertiesInTotal > 1 && _propertiesPerLine > 1)
 		{
 			float newPropertiesPerLine = Mathf.Max(1, _propertiesPerLine - 1);
-			_elementWidth *= _propertiesPerLine / newPropertiesPerLine;
+			propertyWidth *= _propertiesPerLine / newPropertiesPerLine;
 			_propertiesPerLine = newPropertiesPerLine;
 		}
 

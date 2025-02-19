@@ -14,7 +14,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 		_isLogicInPlayerScript = true;
 	}
 
-	[Header("Functionality"), DrawHorizontalWithOthers(new string[] {"_willReleaseOnExit"})]
+	[Header("Functionality"), DrawHorizontalWithOthers(new string[] {"_willReleaseOnExit"}, new float[] {2.5f, 1f})]
 	public enumCameraControlType            _whatType;
 	[Tooltip("If true, all of the above effects will be undone when the player leaves the trigger (but the rotation will not)."), HideInInspector]
 	public bool _willReleaseOnExit = false;
@@ -30,7 +30,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 	[HideInInspector] public Vector3                _directionToSet;
 
 	[OnlyDrawIfNot("_whatType", enumCameraControlType.RemoveEffects), Tooltip("Disables most camera interactions and automatic rotating ")]
-	[DrawHorizontalWithOthers(new string[] { "_lockCameraX", "_lockCameraY", "_lockToCharacterRotation" })]
+	[DrawHorizontalWithOthers(new string[] { "_lockCameraX", "_lockCameraY", "_lockToCharacterRotation", "_lockCameraPause" })]
 	public bool _lockCamera;
 	[HideInInspector, Tooltip("Prevents manually moving camera left and right")]
 	public bool _lockCameraX;
@@ -40,8 +40,6 @@ public class S_Trigger_Camera : S_Trigger_Base
 	public bool _lockToCharacterRotation;
 	[HideInInspector, Tooltip("Prevents certain actions like boost or spin dash leaving the camera behind as they burst forwards")]
 	public bool _lockCameraPause;
-
-
 
 	[Header("Turning")]
 	[Tooltip("How quickly the camera will rotate to face the trigger direction."), DrawHorizontalWithOthers(new string[] {"_duration"})]
@@ -92,7 +90,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 	[Tooltip("If true, the offset will be unaffected by any HedgeCamera calculations that move the offset. If false, the offset will be affected by other offsets like input direction")]
 	public bool _overWriteAllOffsets;
 
-	[DrawHorizontalWithOthers(new string[] {"_meshScale" })]
+	[DrawHorizontalWithOthers(new string[] {"_meshScale" }, new float[] {2.5f, 1f})]
 	[OnlyDrawIf("_willOffsetTarget", true)]
 	[BaseColour(0.8f,0.8f,0.8f,1)]
 	public Mesh _VisualiseWithMesh;
