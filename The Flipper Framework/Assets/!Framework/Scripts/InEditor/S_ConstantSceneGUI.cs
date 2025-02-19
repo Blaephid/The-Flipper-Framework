@@ -98,8 +98,7 @@ public class S_ConstantSceneGUI : MonoBehaviour
 		//prefabStage = prefabStage == null ? PrefabStageUtility.GetCurrentPrefabStage() : prefabStage;
 
 		//Prevents the PREFAB ASSETS from enabling this. If this wasn't here, all prefabs with this would call in every scene, as well as their instances.
-		if (prefabStage == null && PrefabUtility.IsPartOfPrefabAsset(gameObject)) 
-		{ return; }
+		if (prefabStage == null && PrefabUtility.IsPartOfPrefabAsset(gameObject)) { return; }
 
 		//Prevents the scene objects from enabling if currently in prefab view. This prevents a bunch of things being drawn when this object is not relevant.
 		else if (prefabStage != null)

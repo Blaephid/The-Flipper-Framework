@@ -142,53 +142,35 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 1
       - serializedVersion: 3
-        time: 0.16314912
-        value: 1.0004516
-        inSlope: -0.053846795
-        outSlope: -0.053846795
+        time: 0.26765656
+        value: 1.0996261
+        inSlope: -0.005327362
+        outSlope: -0.005327362
         tangentMode: 0
         weightedMode: 0
         inWeight: 1
-        outWeight: 0.33333334
+        outWeight: 0.553181
       - serializedVersion: 3
-        time: 0.32706457
-        value: 0.65009236
-        inSlope: 0
-        outSlope: 0
+        time: 0.5635224
+        value: 0.84758687
+        inSlope: -0.66595143
+        outSlope: -0.66595143
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.5219278
       - serializedVersion: 3
-        time: 0.4549701
-        value: 0.4680855
-        inSlope: 0
-        outSlope: 0
+        time: 0.76297295
+        value: 0.50602096
+        inSlope: -0.85724056
+        outSlope: -0.85724056
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.21606667
       - serializedVersion: 3
-        time: 0.73506284
-        value: 0.38258705
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1.0211059
-        value: 0.312754
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1.3068415
-        value: 0.29987463
+        time: 1.012788
+        value: 0.39879563
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -289,7 +271,7 @@ MonoBehaviour:
     deadZone: {x: 0, y: 0.1}
   cinemachineStats:
     dampingBehind: {x: 0.18, y: 0, z: 0.15}
-    dampingInFront: {x: 0.1, y: 0, z: 0.1}
+    dampingInFront: {x: 0.05, y: 0, z: 0.05}
     softZone: {x: 0, y: 0.3}
     deadZone: {x: 0, y: 0.1}
   DefaultAligningStats:

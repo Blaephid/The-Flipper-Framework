@@ -165,7 +165,8 @@ public class S_HedgeCamera : MonoBehaviour
 	private float                 _lockTimer;
 
 	//Effects
-	private Vector3               _lookAtDirection;
+	private Vector3               _lookAtDirection; //A direction in world space the camera will aim to look towards. Usually set by Camera Triggers
+	private Transform              _lookAtLockOn;  //If not null, will update the above every frame to be the direction of this object.
 	private bool                  _willChangeHeight;
 	private bool                  _isPlayerTransformCopyControlledExternally;
 
@@ -253,6 +254,9 @@ public class S_HedgeCamera : MonoBehaviour
 		//If LookTimer is currently below zero, then direct the camera towards the point of interest
 		if (_lookTimer < 0 || _lookTimer == 1)
 		{
+			if(_lookAtLockOn) 
+			{ _lookAtDirection = (_lookAtLockOn.position - _Skin.position).normalized; }
+
 			RotateDirection(_lookAtDirection, _lockedRotationSpeed, _heightToLook, _willChangeHeight);
 
 			//Count down timer to zero
@@ -802,24 +806,26 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	//Tells the camera to look in the direction, changing eulers over the next few frames to do so. See camera movement and rotate direction for more.
-	public void SetCameraWithSeperateHeight ( Vector3 dir, float duration, float heightSet, float speed, Vector3 externalAlignment ) {
+	public void SetCameraWithSeperateHeight ( Vector3 dir, float duration, float heightSet, float speed, Vector3 externalAlignment, Transform TargetLockOn = null ) {
 
 		_lookAtDirection = dir;
 		_lookTimer = duration > 0 ? -duration : 1;
 		_heightToLook = heightSet;
 		_lockedRotationSpeed = speed;
 		_willChangeHeight = true;
+		_lookAtLockOn = TargetLockOn;
 
 		AlignPlayerTransformExternally(externalAlignment);
 	}
 
 	//Tell camera to look in direction but not change height seperately from the target.
-	public void SetCameraNoSeperateHeight ( Vector3 dir, float duration, float speed, Vector3 externalAlignment, bool directionIncludesHeight ) {
+	public void SetCameraNoSeperateHeight ( Vector3 dir, float duration, float speed, Vector3 externalAlignment, bool directionIncludesHeight, Transform TargetLockOn = null ) {
 		_lookAtDirection = dir;
 		_lookTimer = duration > 0 ? -duration : 1;
 		_heightToLook = 0;
 		_lockedRotationSpeed = speed;
 		_willChangeHeight = directionIncludesHeight;
+		_lookAtLockOn = TargetLockOn;
 
 		AlignPlayerTransformExternally(externalAlignment);
 	}

@@ -21,7 +21,7 @@ public class S_S_EditorMethods : MonoBehaviour
 	//
 	public static string TranslateStringToVariableName ( string input, S_EditorEnums.CasingTypes casing ) {
 
-		if(input == "") { return ""; }
+		if (input == "") { return ""; }
 
 		//Uses System.Linq to remove any potential spaces from input, as variables can't have these.
 		string noSpaces =  new string(input.Where(c => !char.IsWhiteSpace(c)).ToArray());
@@ -37,7 +37,7 @@ public class S_S_EditorMethods : MonoBehaviour
 		//Gets the first letter or number in the string, as this would be when casing starts.
 		char firstChar = noSpaces[0];
 		int firstCharIndex = 0;
-		while (!(char.IsLetter(firstChar) || char.IsNumber(firstChar)) & firstCharIndex < noSpaces.Length-1)
+		while (!(char.IsLetter(firstChar) || char.IsNumber(firstChar)) & firstCharIndex < noSpaces.Length - 1)
 		{
 			firstCharIndex++;
 			firstChar = noSpaces[firstCharIndex];
@@ -57,7 +57,7 @@ public class S_S_EditorMethods : MonoBehaviour
 		}
 
 		if (input != noSpaces)
-			UnityEngine.Debug.LogWarning("Converted  " +input+  "  to  " +noSpaces);
+			UnityEngine.Debug.LogWarning("Converted  " + input + "  to  " + noSpaces);
 
 		return noSpaces;
 	}
@@ -96,7 +96,7 @@ public class S_S_EditorMethods : MonoBehaviour
 
 		string temp = inputName;
 		//If given  a struct name, find that struct first.
-		if(structName != "") inputName = structName;
+		if (structName != "") inputName = structName;
 
 		Type type = obj.GetType();
 
@@ -120,15 +120,15 @@ public class S_S_EditorMethods : MonoBehaviour
 	}
 
 	//Checks if a gameObject is seleted, or one of its children or any from an aditional list
-	public static bool IsThisOrListOrChildrenSelected ( Transform transform ,GameObject[] ObjectList = null, int childrenLevels = 1) {
-	
+	public static bool IsThisOrListOrChildrenSelected ( Transform transform, GameObject[] ObjectList = null, int childrenLevels = 1 ) {
+
 		if (S_S_EditorMethods.IsSelected(transform.gameObject)) { return true; }
-	
+
 		//Goes through list to see if any are selected.
-		if(ObjectList != null) for (int i = 0 ; i < ObjectList.Length ; i++) {if (IsSelected(ObjectList[i])){ return true;}}
+		if (ObjectList != null) for (int i = 0 ; i < ObjectList.Length ; i++) { if (IsSelected(ObjectList[i])) { return true; } }
 
 		//Checks if any immediate children are selected
-		if(childrenLevels > 0 && transform.childCount > 0)
+		if (childrenLevels > 0 && transform.childCount > 0)
 			if (IsChildSelected(transform)) return true;
 
 		//Goes through multiple levels to see if any are selected (E.g. Children, Children's children, Children's Children's children.)
@@ -144,7 +144,7 @@ public class S_S_EditorMethods : MonoBehaviour
 			return false;
 
 		// Iterate through each child
-		for (int i = 0 ;  i < parent.childCount ; i++)
+		for (int i = 0 ; i < parent.childCount ; i++)
 		{
 			Transform child = parent.GetChild(i);
 			if (IsChildSelected(child)) return true;
@@ -158,7 +158,7 @@ public class S_S_EditorMethods : MonoBehaviour
 		return false;
 	}
 
-	public static bool IsChildSelected (Transform transform) {
+	public static bool IsChildSelected ( Transform transform ) {
 		//Goes through children to see if any are selected
 		for (int i = 0 ; i < transform.childCount ; i++) { if (IsSelected(transform.GetChild(i).gameObject)) { return true; } }
 
@@ -166,9 +166,9 @@ public class S_S_EditorMethods : MonoBehaviour
 		return false;
 	}
 
-	public static void FaceSceneViewCamera (Transform transform, float offset) {
+	public static void FaceSceneViewCamera ( Transform transform, float offset ) {
 
-		if(Application.isPlaying) return;
+		if (Application.isPlaying) return;
 
 		SceneView sceneView = SceneView.lastActiveSceneView;
 		if (sceneView != null && sceneView.camera != null)
@@ -188,13 +188,13 @@ public class S_S_EditorMethods : MonoBehaviour
 	public static GameObject FindChild ( GameObject parentObject, string newObjectName ) {
 		//Searches for a child of this name
 		var childTransform = parentObject.transform.Find(newObjectName);
-		
+
 		if (childTransform == null) return null;
 		return childTransform.gameObject;
 	}
 
 
-	public static GameObject FindOrCreateChild (GameObject ParentObject ,string newObjectName, Type[] AddComponents, bool replace = false, GameObject InstantiateFrom = null ) {
+	public static GameObject FindOrCreateChild ( GameObject ParentObject, string newObjectName, Type[] AddComponents, bool replace = false, GameObject InstantiateFrom = null ) {
 
 		//Searches for a child of this name
 		var childTransform = ParentObject.transform.Find(newObjectName);
@@ -238,7 +238,7 @@ public class S_S_EditorMethods : MonoBehaviour
 	}
 
 	public static GameObject CreateChildFromBase ( GameObject ParentObject, GameObject InstantiateFrom, string newObjectName, Type[] AddComponents ) {
-		
+
 		//Create a clone of the given base object and set it as a child.
 		GameObject childObject = Instantiate(InstantiateFrom, ParentObject.transform);
 		childObject.name = newObjectName;
@@ -256,7 +256,7 @@ public class S_S_EditorMethods : MonoBehaviour
 	}
 
 
-	public static void AddComponentIfMissing (GameObject Target, Type Component) {
+	public static void AddComponentIfMissing ( GameObject Target, Type Component ) {
 		if (!Target.GetComponent(Component)) { Target.AddComponent(Component); }
 	}
 

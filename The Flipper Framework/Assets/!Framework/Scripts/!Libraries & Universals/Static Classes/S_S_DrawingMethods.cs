@@ -10,20 +10,21 @@ public class S_S_DrawingMethods
 	//Gizmos
 	//
 
-	public static void DrawArrowHandle ( Color colour, Transform transform, float scale, bool isLocal ) {
+	public static void DrawArrowHandle ( Color colour, Transform transform, float scale, bool isLocal, Vector3 direction) {
 
 		//An alpha under 0.1 means dont change from colour was already set to
 		if (colour.a < 0.1f) { colour = Handles.color; }
 
-		using (new Handles.DrawingScope(colour, isLocal ? transform.localToWorldMatrix : transform.worldToLocalMatrix))
+		using (new Handles.DrawingScope(colour, isLocal ? transform.localToWorldMatrix : Matrix4x4.identity))
 		{
+			Vector3 relativeRight = Vector3.Cross(!isLocal ? transform.rotation * direction : direction, !isLocal ? transform.rotation * Vector3.up : Vector3.up);
 
 			//Get positions to make up arrow shape. Gizmo matrix may have been let to local or world, so respond accordingly.
 			Vector3 middle = isLocal ? Vector3.zero : transform.position;
-			Vector3 forwardFar = isLocal ? Vector3.forward * scale : transform.position + Vector3.forward * scale;
-			Vector3 forwardSmall = isLocal ? Vector3.forward * scale * 0.3f : transform.position + Vector3.forward * scale * 0.3f;
-			Vector3 right = isLocal ? Vector3.right * scale * 0.8f : transform.position + Vector3.right * scale * 0.8f;
-			Vector3 left = isLocal ? -Vector3.right * scale * 0.8f : transform.position - Vector3.right * scale * 0.8f;
+			Vector3 forwardFar = isLocal ? direction * scale : transform.position + direction * scale;
+			Vector3 forwardSmall = isLocal ? direction * scale * 0.3f : transform.position + direction * scale * 0.3f;
+			Vector3 right = isLocal ? relativeRight * scale * 0.8f : transform.position + relativeRight * scale * 0.8f;
+			Vector3 left = isLocal ? -relativeRight * scale * 0.8f : transform.position - relativeRight * scale * 0.8f;
 
 			//Draw lines making up arrow. Remember that if in local space from a previous line, this should be called as isLocal so points are correct.
 			Handles.DrawLine(middle, forwardFar);

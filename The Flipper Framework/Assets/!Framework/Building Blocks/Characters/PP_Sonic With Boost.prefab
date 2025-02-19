@@ -25,8 +25,8 @@ Transform:
   m_GameObject: {fileID: 1118500399814704}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -0.19}
-  m_LocalScale: {x: 0.09344364, y: 0.09344378, z: 0.09344378}
+  m_LocalPosition: {x: 0, y: 1.968, z: -0.285}
+  m_LocalScale: {x: 0.09344364, y: 0.09344378, z: 0.1039562}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4784440040089898}
@@ -23705,10 +23705,13 @@ MonoBehaviour:
   _lockedRotationSpeed: 0
   _canAffectDistanceBySpeed: 1
   _canAffectFOVBySpeed: 1
+  _distanceModifier: 1
+  _FOVModifier: 1
   _invertedX: 0
   _invertedY: 0
   _sensiX: 0
   _sensiY: 0
+  _cameraPausedLocked: 0
 --- !u!114 &3746882815934870565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29863,6 +29866,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _MainActions.Array.data[11].SituationalStates.Array.size
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _MainActions.Array.data[12].SituationalStates.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}

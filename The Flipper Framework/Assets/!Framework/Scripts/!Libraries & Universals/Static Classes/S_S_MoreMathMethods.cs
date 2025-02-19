@@ -39,6 +39,10 @@ public class S_S_MoreMathMethods
 		return Mathf.Max(vector.x, Mathf.Max(vector.y, vector.z));
 	}
 
+	public static float GetAverageOfVector(Vector3 vector ) {
+		return ((vector.x + vector.y + vector.z) / 3);
+	}
+
 	public static float GetNumberAsIncrement (float number, float increments) {
 		number = increments * (int)(number / increments);
 		return number;
