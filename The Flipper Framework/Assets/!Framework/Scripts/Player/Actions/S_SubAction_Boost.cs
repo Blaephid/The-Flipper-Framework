@@ -270,6 +270,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	//Called when a boost should come to an end. Applies trackers to tell the script the boost is over, and applie ending effects.
 	private void EndBoost ( bool skipSlowing = false ) {
 
+
 		//Flow control
 		_PlayerPhys._isBoosting = false;
 
