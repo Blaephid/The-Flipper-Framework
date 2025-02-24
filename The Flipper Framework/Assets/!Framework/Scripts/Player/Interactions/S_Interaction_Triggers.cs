@@ -205,8 +205,10 @@ public class S_Interaction_Triggers : MonoBehaviour
 		if (list.Count == 0) { list = new List<S_Trigger_Base>() { TriggerData }; }
 
 		//If the new trigger is set to trigger the logic already in effect, add it to list for tracking how long until out of every trigger, and don't restart the logic.
-		else if (TriggerData == list[0]) { list.Add(TriggerData); return null; }
+		else if (TriggerData == list[0])
+		{ list.Add(TriggerData); return null; }
 
+		list.Add(TriggerData);
 		TriggerData._isSelected = true;
 		return TriggerData;
 	}

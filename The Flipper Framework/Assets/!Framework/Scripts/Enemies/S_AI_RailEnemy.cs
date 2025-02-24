@@ -62,6 +62,8 @@ namespace SplineMesh
 
 
 		private void Start () {
+			if(!startSpline) { return; }
+
 			startPos = transform.position;
 			ConnectedRails = startingConnectedRails;
 			RailSpline = startSpline;

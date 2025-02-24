@@ -155,7 +155,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//In air
 	[HideInInspector]
-	public bool                   _wasInAirLastFrame;
+	public bool                   _wasInAirLastFrame = true;
 	[HideInInspector]
 	public Vector3                _currentFallGravity;          //The actual gravity used in calculations, set to start gravity at start, and will return to that after temporary changes expire.
 	[HideInInspector]
@@ -202,11 +202,13 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//On start, assigns stats.
 	private void Awake () {
+		//Set grounded to true then not to ensure all default values are set.
+		SetIsGrounded(true);
+		SetIsGrounded(false);
+
 		_Tools = GetComponent<S_CharacterTools>();
 		AssignTools();
 		AssignStats();
-
-		SetIsGrounded(false);
 	}
 
 	//On FixedUpdate,  call HandleGeneralPhysics if relevant.
@@ -883,7 +885,8 @@ public class S_PlayerPhysics : MonoBehaviour
 				_wasInAirLastFrame = true;
 				_groundingDelay = timer;
 				_timeOnGround = 0;
-				_Events._OnLoseGround.Invoke();
+
+				if(_Actions) _Events._OnLoseGround.Invoke();
 			}
 			//If changed to be on the ground when was in the air
 			else if (_isGrounded)
@@ -899,7 +902,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				}
 				_keepNormalCounter = 0;
 
-				_Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
+				if(_Actions) _Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
 			}
 		}
 	}

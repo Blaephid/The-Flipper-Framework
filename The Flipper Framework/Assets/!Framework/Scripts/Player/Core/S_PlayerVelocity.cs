@@ -109,7 +109,7 @@ public class S_PlayerVelocity : MonoBehaviour
 			_PlayerPhys._wasInAirLastFrame = false;
 		}
 
-		Debug.DrawRay(transform.position, velocityThisFrame * Time.deltaTime, Color.red, 10f);
+		Debug.DrawRay(transform.position, velocityThisFrame * Time.deltaTime, Color.magenta, 10f);
 		Debug.DrawRay(transform.position, velocityLastFrame * Time.deltaTime, Color.green, 10f);
 
 		//General velocities applied just for last frame (like an anti offset set when groundsticking) are removed later on in this script so should not be factored in here.
@@ -128,6 +128,7 @@ public class S_PlayerVelocity : MonoBehaviour
 		if (speedThisFrameSquared < speedLastFrameSquared)
 		{
 			Debug.DrawRay(transform.position, Vector3.up * 2, Color.black, 10f);
+			Debug.DrawRay(transform.position, _coreVelocity.normalized * 8, Color.red, 10f);
 
 			float angleChange = Vector3.Angle(velocityThisFrame, velocityLastFrame);
 			if (speedThisFrameSquared < 0.01f) { angleChange = 0; } //Because angle would still be calculated even if a one vector is zero.
@@ -213,6 +214,8 @@ public class S_PlayerVelocity : MonoBehaviour
 					_environmentalVelocity = Vector3.zero;
 				}
 			}
+
+			Debug.DrawRay(transform.position, _coreVelocity.normalized * 5, Color.yellow, 10f);
 		}
 		//World velocity is the actual rigidbody velocity found at the start of the frame, edited here if needed, with some of the removed velocity reapplied.
 		_worldVelocity = velocityThisFrame + _velocityToCarryOntoNextFrame;
@@ -354,26 +357,26 @@ public class S_PlayerVelocity : MonoBehaviour
 	}
 
 	//Environmental. Caused by objects in the world, but can b removed by others.
-	public void SetEnvironmentalVelocity ( Vector3 force, bool willRemoveOnGrounded, bool willRemoveOnAirAction,
+	public void SetEnvironmentalVelocity ( Vector3 force, bool willReturnDecelOnGrounded, bool willReturnDecelOnAirAction,
 		S_GeneralEnums.ChangeLockState whatToDoWithDeceleration = S_GeneralEnums.ChangeLockState.Ignore, bool shouldPrintForce = false ) {
 
 		_environmentalVelocity = force;
 
 		//Because HandleDeceleration can be called to lock multiple times before being called to unlock (because Unlock should only be called when removing environmnetal velocity),
 		//only add a new lock if it hasn't locked this way already.
-		if ((_resetEnvironmentalOnAirAction && willRemoveOnAirAction) || (_resetEnvironmentalOnGrounded && willRemoveOnGrounded))
+		if ((_resetEnvironmentalOnAirAction && willReturnDecelOnAirAction) || (_resetEnvironmentalOnGrounded && willReturnDecelOnGrounded))
 		{
-			//Intentionally empty, so the else only happens if the above is false.
+			//Intentionally empty, as this prevents applying multiple lockDecelerations from env velocity.
 		}
 		else
 		{
-			//This will apply or remove constraints on deceleration, as certain calls will prevent manual deceleration, while calls that remove this velocity will allow it again. But will usually be ignored.
-			if (willRemoveOnAirAction && willRemoveOnGrounded) { whatToDoWithDeceleration = S_GeneralEnums.ChangeLockState.Lock; }
+			//This will apply or remove constraints on deceleration, as certain calls will prevent manual deceleration, while calls that remove this velocity will allow it again.
+			if (willReturnDecelOnAirAction && willReturnDecelOnGrounded) { whatToDoWithDeceleration = S_GeneralEnums.ChangeLockState.Lock; }
 			HandleDecelerationWhenEnvironmentalForce(whatToDoWithDeceleration);
 		}
 
-		_resetEnvironmentalOnGrounded = willRemoveOnGrounded;
-		_resetEnvironmentalOnAirAction = willRemoveOnAirAction;
+		_resetEnvironmentalOnGrounded = willReturnDecelOnGrounded;
+		_resetEnvironmentalOnAirAction = willReturnDecelOnAirAction;
 
 		if (shouldPrintForce) Debug.Log("Set Environmental FORCE  " + force);
 	}

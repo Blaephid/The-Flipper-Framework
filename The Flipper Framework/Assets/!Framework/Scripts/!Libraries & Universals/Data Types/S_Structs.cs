@@ -30,8 +30,10 @@ public class S_Structs
 	{
 		[Tooltip("The magnitude of the environmental velocity added to player.")]
 		public float	_force_;
-		[Tooltip("The direction for the player to be launched in. Usually calculated seperately based on transforms."), ReadOnly(true)]
-		public Vector3	_direction_;
+		[Tooltip("The direction for the player to be launched in. Affected By Transform")]
+		public Vector3  _direction_;
+		[HideInInspector]
+		public Vector3	_directionToUse_;
 		[Tooltip("How many frames until the player regains control.")]
 		public int          _lockInputFrames_;
 		[Tooltip("How amy frames until the player can perform aerial actions like jumps and jump dashes.")]

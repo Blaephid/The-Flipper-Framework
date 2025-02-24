@@ -11,8 +11,6 @@ public class S_Data_Spring : S_Data_Base
 	public bool _keepHorizontal_;
 
 	[Header("Objects")]
-	[Tooltip("This transform is used for bounce direction and position player is set to before the launch..")]
-	public Vector3 _directionOffset;
 	[Tooltip("The spring animator, will be triggered when used.")]
 	public Animator _Animator { get; set; }
 
@@ -39,7 +37,8 @@ public class S_Data_Spring : S_Data_Base
 		_launchData_ = new S_Structs.LaunchPlayerData()
 		{
 			_force_ = _launchData_._force_,
-			_direction_ = (transform.up + _directionOffset).normalized,
+			_direction_ = _launchData_._direction_,
+			_directionToUse_ = (transform.rotation * _launchData_._direction_).normalized,
 			_lockInputFrames_ = _launchData_._lockInputFrames_,
 			_lockAirMovesFrames_ = _launchData_._lockAirMovesFrames_,
 			_overwriteGravity_ = _launchData_._overwriteGravity_,

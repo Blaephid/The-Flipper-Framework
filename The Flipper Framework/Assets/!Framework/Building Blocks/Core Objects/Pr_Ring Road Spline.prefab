@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 853586103888125666}
   - component: {fileID: 5455047339599456840}
   - component: {fileID: 553594820864921953}
-  - component: {fileID: 3617762599319094144}
   m_Layer: 0
   m_Name: Spline
   m_TagString: Untagged
@@ -122,58 +121,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateThis: 0
-  justStart: 0
-  onlyOne: 0
-  none: 0
-  onEnd: 0
-  prefab: {fileID: 1543253352267630, guid: 8f33dd768b24bc44084c70b4c9605d8f, type: 3}
-  asPrefab: 1
-  scale: 1
-  scaleRange: 0
-  spacing: 8
-  spacingRange: 0
-  offset: 0
-  offsetRange: 0
-  Offset3d: {x: 0, y: 0, z: 0}
-  offsetRotation: {x: 0, y: 0, z: 0}
-  initialSpacing: 0
-  EndingSpacing: 0
-  isRandomYaw: 0
-  randomSeed: 0
-  alingwithterrain: 0
---- !u!114 &3617762599319094144
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1752959267358373740}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  whatToSpawn: 0
-  _GeneralSpawner:
-    _TeleportSparkle: {fileID: 0}
-    _ObjectToSpawn: {fileID: 0}
-    _willRespawnOnDeath: 0
-    _distanceFromPlayerToSpawn: 0
-    _willAutoSpawn: 0
-    _willRespawnWhenDestroyed: 0
-    _respawnDelay: 0
-  _RingSpawner:
-    _TransformToFollow: {fileID: 0}
-    _followOffset: {x: 0, y: 0, z: 0}
-  isBooster: 0
-  speed: 0
-  setRailSpeed: 0
-  addRailSpeed: 0
-  isSpring: 0
-  force: 100
-  LockControl: 1
-  LockTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  toUpdate: 1
+  _spacingRange_: {x: 20, y: 20}
+  _maxNumber_: -1
+  _spaceFromStart_: 0
+  _spaceFromEnd_: 0
+  _addOnStart_: 0
+  _addOnEnd_: 0
+  _PrefabToPlace_: {fileID: 1543253352267630, guid: 41f48bd94c27ee141880c4de20d81fdc,
+    type: 3}
+  _placeAsPrefab_: 1
+  _DataForPrefabs: {fileID: 0}
+  _scale_: {x: 1, y: 1, z: 1}
+  _offset3d_: {x: 0, y: 0, z: 0}
+  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 0
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

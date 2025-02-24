@@ -105,7 +105,7 @@ public class S_Vis_ShotDirection : S_Vis_Base
 			_upGravity = launcherData._overwriteGravity_;
 		}
 		_lockFrames = launcherData._lockInputFrames_;
-		Vector3 direction = launcherData._direction_;
+		Vector3 direction = launcherData._directionToUse_;
 
 		//Use the launch data to proejct where player will go.
 		return PreviewTrajectory(_ShotCenter.position, direction * launcherData._force_, direction * 2, launcherData._lockInputTo_);

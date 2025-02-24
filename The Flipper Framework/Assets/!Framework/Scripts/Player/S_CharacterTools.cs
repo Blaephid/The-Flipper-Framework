@@ -84,11 +84,34 @@ public class S_CharacterTools : MonoBehaviour
 
 		if (Spawner != null)
 		{
-			MainCamera = Spawner._CameraBrain;
 
+			//Setting values from spawner
+			MainCamera = Spawner._CameraBrain;
 			S_SpawnCharacter._SpawnedPlayer = transform;
+
+			//Rotation
 			transform.up = Spawner.transform.up;
 			MainSkin.rotation = Quaternion.LookRotation(Spawner.transform.forward, transform.up);
+
+			StartCoroutine(DelayForValuesToBeSetBeforeLaunch(Spawner));
+		}
+	}
+
+	IEnumerator DelayForValuesToBeSetBeforeLaunch (S_SpawnCharacter Spawner) {
+
+		for (int i = 0 ; i < 2 ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+
+		//Applying launch
+		if (_ActionManager._ObjectForInteractions.TryGetComponent(out S_Interaction_Objects Objects))
+		{
+			S_Structs.LaunchPlayerData launch = Spawner._launchOnSpawnData_;
+			if(launch._force_ <= 0 && launch._directionToUse_.sqrMagnitude <= 1) { yield break; }
+
+			Objects.ApplyLaunchEffects(launch);
+			Objects.LaunchInDirection(launch._directionToUse_, launch._force_, Vector3.zero, Spawner.transform, true);
 		}
 	}
 }

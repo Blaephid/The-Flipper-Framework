@@ -423,7 +423,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			speed = Mathf.Max(speed, _PlayerVel._currentRunningSpeed);
 		}
 
-		SnapToObject(Col, SpeedPadScript._PositionToLockTo);
+		SnapToObject(Col.transform, SpeedPadScript._PositionToLockTo);
 
 		//Effects
 		ObjectRotatesCamera(Col, SpeedPadScript._cameraEffect);
@@ -453,18 +453,16 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (!Col.TryGetComponent(out S_Data_DashRing DashRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 		Col.GetComponent<AudioSource>().Play();
 
-		HitAirLauncher(DashRingScript._launchData_);
-
-		//Player Visual
-		_CharacterAnimator.SetBool("Grounded", false);
+		HitAirLauncher();
 
 		//Calculate launch
 		float force = DashRingScript._willCarrySpeed_ ? Mathf.Max(DashRingScript._launchData_._force_, _PlayerVel._currentRunningSpeed) : 
 			DashRingScript._launchData_._force_ ;
-		Vector3 direction = DashRingScript._launchData_._direction_;
+		Vector3 direction = DashRingScript._launchData_._directionToUse_;
 
+		ApplyLaunchEffects(DashRingScript._launchData_);
+		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col.transform);
 
-		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col);
 		ObjectRotatesCamera(Col, DashRingScript._cameraEffect);
 	}
 
@@ -475,7 +473,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Attaches the player to the rail this rail booster is on.
 		if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Rail)
 		{
-			SnapToObject(Col, RailBoosterScript._PositionToLockTo);
+			SnapToObject(Col.transform, RailBoosterScript._PositionToLockTo);
 		}
 		else
 		{
@@ -486,9 +484,9 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	}
 
-	private Vector3 SnapToObject (Collider Col ,Vector3 snapTo) {
+	private Vector3 SnapToObject (Transform Object ,Vector3 Offset) {
 		//For consistency, ensure player always launches out of ring of off booster from the same point.
-		Vector3 snapPosition = Col.transform.position + (Col.transform.rotation * snapTo);
+		Vector3 snapPosition = Object.position + (Object.rotation * Offset);
 
 		snapPosition -= _PlayerPhys._feetOffsetFromPivotPoint; //Because on ground, feet should be set to pad position.
 		_PlayerPhys.SetPlayerPosition(snapPosition);
@@ -506,7 +504,10 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 
-	private void HitAirLauncher (S_Structs.LaunchPlayerData launchData) {
+	private void HitAirLauncher () {
+		//Player Visual
+		_CharacterAnimator.SetBool("Grounded", false);
+
 		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
 		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
@@ -518,21 +519,12 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._isAirDashAvailable = true;
 		_Actions._jumpCount = 1;
 
-		//Delays air actions
-		if (launchData._lockAirMovesFrames_ > 0)
-		{
-			StopCoroutine(_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_)); //Overwrites coroutine if already in use, resetting the timer.
-			StartCoroutine(_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_));
-		}
+		//Prevents immediate air actions.
+		_Input._JumpPressed = false;
+		_Input._SpecialPressed = false;
+		_Input._BouncePressed = false;
 
-		//Effect on movement
-		if (launchData._lockInputFrames_ > 0)
-		{
-			_Input.LockInputForAWhile(launchData._lockInputFrames_, false, launchData._direction_, launchData._lockInputTo_);
-		}
 
-		//Because this is to launch the player through the sky, certain stats can have different gravities. This ensures characters will always fall the same way by overwriting their stats until landing.
-		StartCoroutine(LockPlayerGraivtyUntilGrounded(launchData._overwriteGravity_));
 
 		_Events._OnTriggerAirLauncher.Invoke();
 	}
@@ -540,17 +532,14 @@ public class S_Interaction_Objects : MonoBehaviour
 	private void LaunchFromSpring ( Collider Col ) {
 		if (!Col.TryGetComponent(out S_Data_Spring SpringScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 
-		HitAirLauncher(SpringScript._launchData_);
+		HitAirLauncher();
 
 		_Actions._ActionDefault.StartAction();
-		_CharacterAnimator.SetBool("Grounded", false);
 
-		//Prevents immediate air actions.
-		_Input._JumpPressed = false;
-		_Input._SpecialPressed = false;
-		_Input._BouncePressed = false;
+		Vector3 direction = SpringScript._launchData_._directionToUse_;
 
-		Vector3 direction = SpringScript._launchData_._direction_;
+		ApplyLaunchEffects(SpringScript._launchData_);
+
 		//Calculate force
 
 		//If spring should not take complete control of player velocity, calculate direction based on movement into spring, including spring direction.
@@ -586,12 +575,12 @@ public class S_Interaction_Objects : MonoBehaviour
 				newCoreVelocity = combinedVelocityMagnitude;
 			}
 
-			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, Col));
+			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, Col.transform));
 		}
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
-		else
+		else if(!SpringScript._keepHorizontal_)
 		{
-			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col);
+			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col.transform);
 		}
 
 
@@ -609,36 +598,59 @@ public class S_Interaction_Objects : MonoBehaviour
 			SpringScript._Animator.SetTrigger("Hit");
 	}
 
-	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
-	private void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Collider Col ) {
-		//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
-		//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
-		//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
-
-		Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
-		float horizontalSpeed = launchHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
-
-		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
-		float coreSpeed = _PlayerVel._horizontalSpeedMagnitude;
-
-		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  coreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
-
-		if (coreSpeed > horizontalSpeed)
+	public void ApplyLaunchEffects ( S_Structs.LaunchPlayerData launchData ) {
+		//Delays air actions
+		if (launchData._lockAirMovesFrames_ > 0)
 		{
-			coreSpeed = horizontalSpeed; //In this case, bounce will be entirely through core velocity, not environmental.
+			StopCoroutine(_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_)); //Overwrites coroutine if already in use, resetting the timer.
+			StartCoroutine(_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_));
 		}
 
-		//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
+		//Effect on movement
+		if (launchData._lockInputFrames_ > 0)
+		{
+			_Input.LockInputForAWhile(launchData._lockInputFrames_, false, launchData._directionToUse_, launchData._lockInputTo_);
+		}
 
-		Vector3 totalEnvironment = (launchHorizontalVelocity.normalized * horizontalEnvSpeed) + (new Vector3(0, (direction * launchPower).y,0));
+		//Because this is to launch the player through the sky, certain stats can have different gravities. This ensures characters will always fall the same way by overwriting their stats until landing.
+		StartCoroutine(LockPlayerGraivtyUntilGrounded(launchData._overwriteGravity_));
+	}
 
-		launchHorizontalVelocity = _PlayerVel.transform.TransformDirection(launchHorizontalVelocity);
+	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
+	public void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, bool useCoreVelocity = false ) {
+		HandleCoreAndEvironmentalVelocity();
 
-		StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed, Col));
+		void HandleCoreAndEvironmentalVelocity () {
+			//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
+			//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
+			//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
+
+			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
+			float horizontalSpeed = launchHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
+
+			//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
+			float coreSpeed = _PlayerVel._horizontalSpeedMagnitude;
+
+			if (coreSpeed > horizontalSpeed || useCoreVelocity)
+			{
+				coreSpeed = Mathf.Min(horizontalSpeed, _PlayerPhys._PlayerMovement._currentMaxSpeed); //In this case, bounce will be entirely through core velocity, not environmental.
+			}
+
+			float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  coreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+
+
+			//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
+
+			Vector3 totalEnvironment = (launchHorizontalVelocity.normalized * horizontalEnvSpeed) + (new Vector3(0, (direction * launchPower).y,0));
+
+			launchHorizontalVelocity = _PlayerVel.transform.TransformDirection(launchHorizontalVelocity);
+
+			StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed, Object));
+		}
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
-	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 position, Vector3 coreVelocity, Collider Col, int frames = 3) {
+	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 offset, Vector3 coreVelocity, Transform Object, int frames = 3) {
 
 		_Actions._canChangeActions = false;
 		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.
@@ -659,7 +671,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		for (int i = 0 ; i < frames ; i++)
 		{
 			_Actions._ActionDefault.StartAction(); //Ensures player cant change into another action, like a rail, while hitting a spring.
-			SnapToObject(Col, position);
+			SnapToObject(Object, offset);
 			_PlayerVel.SetCoreVelocity(Vector3.zero, "Overwrite");
 			_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
@@ -667,7 +679,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		_Actions._canChangeActions = true;
 
-		SnapToObject(Col, position); ; //Ensures player is set to inside of spring, so bounce is consistant. 
+		SnapToObject(Object, offset); ; //Ensures player is set to inside of spring, so bounce is consistant. 
 
 		_PlayerPhys._listOfCanControl.RemoveAt(0);
 

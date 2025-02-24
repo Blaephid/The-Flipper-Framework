@@ -156,6 +156,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4166593742353262}
   - component: {fileID: 114054063417180178}
+  - component: {fileID: 5384479115405628245}
   m_Layer: 0
   m_Name: Pr_CharacterSpawner
   m_TagString: SpawnPoint
@@ -195,17 +196,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fdf6f360dcdb74459b21937ea0c0f80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
+  _VisualiseWithMesh: {fileID: 7709263546091118420, guid: 45ab1ef62915dac4184d8c28fcf243cb,
+    type: 3}
+  _meshScale: 5
   _isActive: 1
   _DefaultCharacter: {fileID: 1493631986700570, guid: 71fa442458744984f909f71d50a2c086,
     type: 3}
   _CameraBrain: {fileID: 6625669370527078817}
   _spawnDelay: 2
+  _launchOnSpawnData_:
+    _force_: 50
+    _direction_: {x: 1.42, y: 1, z: 0}
+    _lockInputFrames_: 0
+    _lockAirMovesFrames_: 0
+    _overwriteGravity_: {x: 0, y: 0, z: 0}
+    _lockInputTo_: 0
   _ListOfDeactivationsToDelay:
   - {fileID: 114442497798827590}
   _ReplaceReferenceForSpawners:
     _shouldReplacePlayerSourceOfSpawn: 0
     _Replacement: {fileID: 0}
     _spawnDistanceModifier: 1
+--- !u!114 &5384479115405628245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654750592445254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.50461483, g: 0.7058824, b: 0.1960784, a: 0.39215687}
+  _selectedOutlineColour: {r: 0.010012442, g: 0.7075472, b: 0.036040876, a: 0.5882353}
+  _selectedFillColour: {r: 0.0008454987, g: 0.1792453, b: 0.017026132, a: 0.5882353}
+  _isSelected: 0
+  _debugForce: 1
+  _calculations: 87
+  _LauncherScript: {fileID: 114054063417180178}
+  _launcherStructName: _launchOnSpawnData_
+  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
+    type: 2}
+  _ShotCenter: {fileID: 4166593742353262}
+  _coreVelAtEnd: {x: 85.121506, y: -228.23836, z: 0}
+  _environmentalVelAtStart: {x: 71, y: 50, z: 0}
 --- !u!1 &1684355444514644
 GameObject:
   m_ObjectHideFlags: 0

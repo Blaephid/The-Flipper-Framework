@@ -33,7 +33,8 @@ public class S_Data_DashRing : S_Data_Base
 		_launchData_ = new S_Structs.LaunchPlayerData()
 		{
 			_force_ = _launchData_._force_,
-			_direction_ = transform.forward,
+			_direction_ = _launchData_._direction_,
+			_directionToUse_ = (transform.rotation * _launchData_._direction_),
 			_lockInputFrames_ = _launchData_._lockInputFrames_,
 			_lockAirMovesFrames_ = _launchData_._lockAirMovesFrames_,
 			_overwriteGravity_ = _launchData_._overwriteGravity_,

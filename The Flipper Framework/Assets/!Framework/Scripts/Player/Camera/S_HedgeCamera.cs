@@ -666,6 +666,8 @@ public class S_HedgeCamera : MonoBehaviour
 	//Causes the camera to turn around to face a designated vector direction in world space.
 	private void RotateDirection ( Vector3 dir, float speed, float height, bool changeHeight ) {
 
+		Debug.Log("Rotate at speed =" + speed);
+
 		dir = dir == Vector3.zero ? transform.forward : dir;
 
 		//Get a rotation based off the look direction without compensating player's current up.	
@@ -685,7 +687,9 @@ public class S_HedgeCamera : MonoBehaviour
 		if (_xPositionOfCamera - eulerY < -180) { eulerY -= 360; }
 		else if (eulerY - _xPositionOfCamera < -180) { eulerY += 360; }
 
-		_xPositionOfCamera = Mathf.Lerp(_xPositionOfCamera, eulerY, Time.deltaTime * xSpeed);
+		xSpeed = xSpeed < 0 ? 1 : xSpeed * Time.deltaTime;
+
+		_xPositionOfCamera = Mathf.Lerp(_xPositionOfCamera, eulerY, xSpeed);
 		//True either if hieght is set manually, or told to include vertical in look direction.
 		if (changeHeight)
 		{
@@ -697,7 +701,8 @@ public class S_HedgeCamera : MonoBehaviour
 			//If height was not preset, then use this.
 			height = height != 0 ? height : yTarget;
 
-			_yPositionOfCamera = Mathf.MoveTowards(_yPositionOfCamera, height, speed);
+			float ySpeed = speed < 0 ? 10000 : speed;
+			_yPositionOfCamera = Mathf.MoveTowards(_yPositionOfCamera, height, ySpeed);
 		}
 	}
 	#endregion
@@ -758,7 +763,7 @@ public class S_HedgeCamera : MonoBehaviour
 	//Called by other scripts to immediately set the camera to behind the character.
 	public void SetBehind ( int height ) {
 		bool changeHeight = height != 0;
-		RotateDirection(_Skin.forward, 2000, 14, changeHeight);
+		RotateDirection(_Skin.forward, -1, 14, changeHeight);
 	}
 
 	public IEnumerator KeepGoingToHeightForFrames ( int frames, float height, float speed ) {
