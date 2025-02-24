@@ -109,7 +109,6 @@ public class S_PlayerVelocity : MonoBehaviour
 			_PlayerPhys._wasInAirLastFrame = false;
 		}
 
-
 		Debug.DrawRay(transform.position, velocityThisFrame * Time.deltaTime, Color.red, 10f);
 		Debug.DrawRay(transform.position, velocityLastFrame * Time.deltaTime, Color.green, 10f);
 
@@ -216,7 +215,6 @@ public class S_PlayerVelocity : MonoBehaviour
 			}
 		}
 		//World velocity is the actual rigidbody velocity found at the start of the frame, edited here if needed, with some of the removed velocity reapplied.
-		//_worldVelocity = velocityThisFrame + _velocityToNotCountWhenCheckingForAChange;
 		_worldVelocity = velocityThisFrame + _velocityToCarryOntoNextFrame;
 
 		_velocityToCarryOntoNextFrame = Vector3.zero;

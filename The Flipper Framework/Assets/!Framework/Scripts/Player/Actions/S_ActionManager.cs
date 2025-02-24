@@ -151,8 +151,7 @@ public class S_ActionManager : MonoBehaviour
 		//Set player to start in default action.
 		DeactivateAllActions(true);
 		_currentAction = _MainActions[0];
-		//ChangeAction(S_Enums.PrimaryPlayerStates.Default);
-		//_ActionDefault.enabled = true;
+
 		_ActionDefault.StartAction();
 	}
 

@@ -140,6 +140,9 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 				{
 					_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * _regularSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
+
+				_Input._BoostPressed = false;
+
 				return true;
 			}	
 		}

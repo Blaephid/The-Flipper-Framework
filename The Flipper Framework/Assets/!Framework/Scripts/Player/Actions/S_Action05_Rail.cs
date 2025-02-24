@@ -175,7 +175,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		//Effects
 		_Sounds.RailLandSound();
 
-
 		_canEnterRail = false;
 
 		//ignore further rail collisions
@@ -255,7 +254,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		// Apply minimum speed
 		_grindingSpeed = Mathf.Max(_grindingSpeed, _minStartSpeed_);
 
-		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
+		//_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Rail);
 		enabled = true;
