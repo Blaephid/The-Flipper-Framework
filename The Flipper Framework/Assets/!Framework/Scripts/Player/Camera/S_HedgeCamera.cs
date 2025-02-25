@@ -666,8 +666,6 @@ public class S_HedgeCamera : MonoBehaviour
 	//Causes the camera to turn around to face a designated vector direction in world space.
 	private void RotateDirection ( Vector3 dir, float speed, float height, bool changeHeight ) {
 
-		Debug.Log("Rotate at speed =" + speed);
-
 		dir = dir == Vector3.zero ? transform.forward : dir;
 
 		//Get a rotation based off the look direction without compensating player's current up.	
@@ -682,8 +680,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 		//Lerp can't compute looping where -1 is actually 359. This lies to it about having higher and lower values so it moves accurately. These are then back to within 360 later.
 		float xSpeed = speed;
-		//if (_posX < 90 && eulerY > 270) { eulerY -= 360; }
-		//else if (_posX > 270 && eulerY < 90) { eulerY += 360; }
+
 		if (_xPositionOfCamera - eulerY < -180) { eulerY -= 360; }
 		else if (eulerY - _xPositionOfCamera < -180) { eulerY += 360; }
 

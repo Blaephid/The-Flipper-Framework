@@ -10,7 +10,7 @@ public class S_S_DrawingMethods
 	//Gizmos
 	//
 
-	public static void DrawArrowHandle ( Color colour, Transform transform, float scale, bool isLocal, Vector3 direction) {
+	public static void DrawArrowHandle ( Color colour, Transform transform, float scale, bool isLocal, Vector3 direction ) {
 
 		//An alpha under 0.1 means dont change from colour was already set to
 		if (colour.a < 0.1f) { colour = Handles.color; }
@@ -35,6 +35,17 @@ public class S_S_DrawingMethods
 		}
 
 	}
+
+	public static void DrawCubeHandle ( Color colour, Transform transform, float radius, bool isLocal ) {
+		//An alpha under 0.1 means dont change from colour was already set to
+		if (colour.a < 0.1f) { colour = Handles.color; }
+
+		using (new Handles.DrawingScope(colour, isLocal ? transform.localToWorldMatrix : Matrix4x4.identity))
+		{
+			Handles.DrawWireCube(isLocal ? Vector3.zero : transform.position, Vector3.one * radius);
+		}
+	}
+
 
 
 	public static void DrawSelectableHandle ( Vector3 handlePosition, GameObject targetObject, float size = 1 ) {

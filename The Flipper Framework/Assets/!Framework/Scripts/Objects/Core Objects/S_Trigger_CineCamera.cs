@@ -88,8 +88,8 @@ public class S_Trigger_CineCamera : S_Trigger_Base, ITriggerable
 		{
 			using (new Handles.DrawingScope(colour))
 			{
-				S_S_DrawingMethods.DrawArrowHandle(colour, _CinematicCamObject.transform, 0.4f, true, Vector3.forward);
-				Handles.DrawLine(transform.position, _CinematicCamObject.transform.position, 1.5f);
+				S_S_DrawingMethods.DrawArrowHandle(colour, _CinematicCamObject.transform, 1.5f, false, _CinematicCamObject.transform.forward);
+				Handles.DrawLine(transform.position, _CinematicCamObject.transform.position, 0.5f);
 			}
 		}
 		

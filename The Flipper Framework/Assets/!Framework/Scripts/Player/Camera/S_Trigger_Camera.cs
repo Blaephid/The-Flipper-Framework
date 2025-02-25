@@ -125,6 +125,8 @@ public class S_Trigger_Camera : S_Trigger_Base
 				case enumCameraControlType.SetToViewTarget:
 					if (!_lockOnTarget) break;
 					S_S_DrawingMethods.DrawArrowHandle(colour, transform, S_S_MoreMathMethods.GetAverageOfVector(transform.lossyScale) / 2, false, (_lockOnTarget.position - transform.position).normalized); break;
+				case enumCameraControlType.OnlyApplyEffects: case enumCameraControlType.RemoveEffects:
+					S_S_DrawingMethods.DrawCubeHandle(colour, transform, 2f, false); break;
 				default:
 					S_S_DrawingMethods.DrawArrowHandle(colour, transform, 0.4f, true, Vector3.forward); break;
 			}
@@ -154,7 +156,9 @@ public class S_Trigger_Camera : S_Trigger_Base
 			if(float.IsNaN(_newOffset.x)) 
 			{ _newOffset = Vector3.zero; }
 
-			Vector3 useOffset = _newOffset * Mathf.Max(_meshScale, 0.1f);
+			_meshScale = Mathf.Max(_meshScale, 0.2f);
+
+			Vector3 useOffset = _newOffset * _meshScale;
 			Vector3 currentPos2 = currentPos + (_asLocalOffset ? transform.rotation * useOffset : useOffset);
 			
 

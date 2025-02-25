@@ -51,6 +51,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 	//Trackers
 	S_ConstantSceneGUI ConstantGUI;
+	S_PlayerPhysics _Player;
 
 	/// <summary>
 	///			Inherited
@@ -71,12 +72,11 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 			if (TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
 
-		//Go through each given gameObject and trigger if possible.
-		for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
-		{
-			if (_TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
-				Trigger.TriggerObjectOn();
-		}
+		other.TryGetComponent(out _Player);
+		if(!_Player) { _Player = other.GetComponentInParent<S_PlayerPhysics>(); }
+
+		TriggerGivenObjects(true, _TriggerObjects._ObjectsToTriggerOn);
+		TriggerGivenObjects(false, _TriggerObjects._ObjectsToTriggerOff);
 	}
 
 	private void OnTriggerExit ( Collider other ) {
@@ -85,12 +85,14 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		if (_TriggerObjects._triggerSelf)
 			if (TryGetComponent(out ITriggerable Trigger))
 				Trigger.TriggerObjectOn();
+	}
 
+	public virtual void TriggerGivenObjects (bool on, List<GameObject> gameObjects) {
 		//Go through each given gameObject and trigger if possible.
-		for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
+		for (int i = 0 ; i < gameObjects.Count ; i++)
 		{
-			if (_TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out ITriggerable Trigger))
-				Trigger.TriggerObjectOff();
+			if (gameObjects[i].TryGetComponent(out ITriggerable Trigger))
+				if (on) Trigger.TriggerObjectOn(_Player); else Trigger.TriggerObjectOff(_Player);
 		}
 	}
 
@@ -361,35 +363,3 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 #endif
 }
 
-#if UNITY_EDITOR
-
-[CustomEditor(typeof(S_Trigger_Base))]
-public class TriggerEditor : S_CustomInspector_Base
-{
-	[SerializeField]
-	public S_Trigger_Base _OwnerScript;
-	[SerializeField]
-	public GameObject _OwnerObject;
-
-
-	public override void OnEnable () {
-		//Setting variables
-		_OwnerScript = (S_Trigger_Base)target;
-		_OwnerObject = _OwnerScript.gameObject;
-
-		base.OnEnable();
-	}
-
-
-	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
-		return _OwnerScript._InspectorTheme;
-	}
-
-	public override void DrawInspectorNotInherited () {
-		//Describe what the script does
-		EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
-		DrawDefaultInspector();
-	}
-
-}
-#endif

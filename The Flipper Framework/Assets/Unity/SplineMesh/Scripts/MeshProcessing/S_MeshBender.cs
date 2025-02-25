@@ -320,10 +320,19 @@ namespace SplineMesh
 				}
 				else
 				{
+					float previousDistance = 0;
 					// for each mesh vertex, we found its projection on the curve
 					foreach (var vert in source.Vertices)
 					{
+						
 						float distance = vert.position.x - source.MinX + offset;
+
+						if(Mathf.Abs(previousDistance - distance) < 0.02f && distance > 10)
+						{
+							Debug.LogError("The distance is too small. Try rotating or using a different mesh.");
+							return;
+						}
+
 						CurveSample sample;
 						if (!sampleCache.TryGetValue(distance, out sample))
 						{
@@ -333,6 +342,7 @@ namespace SplineMesh
 							sampleCache[distance] = sample;
 						}
 						_bentVerticies.Add(sample.GetBent(vert));
+						previousDistance = 0;
 					}
 				}
 				offset += source.Length;
