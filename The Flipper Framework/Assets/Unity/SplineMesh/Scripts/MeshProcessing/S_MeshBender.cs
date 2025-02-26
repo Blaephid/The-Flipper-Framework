@@ -174,6 +174,7 @@ namespace SplineMesh
 		}
 
 		private void Update () {
+			if (Application.isPlaying) { return; }
 			ComputeIfNeeded();
 		}
 

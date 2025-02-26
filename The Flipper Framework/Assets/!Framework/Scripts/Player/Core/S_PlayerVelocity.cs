@@ -89,7 +89,6 @@ public class S_PlayerVelocity : MonoBehaviour
 	//If the rigidbody velocity is smaller than it was last frame (such as from hitting a wall),
 	//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 	public void CheckAndApplyVelocityChanges () {
-		if(!_PlayerPhys._arePhysicsOn) { return; }
 
 		Vector3 velocityThisFrame = _RB.velocity;
 		Vector3 velocityLastFrame = _previousVelocity[0];
@@ -109,7 +108,7 @@ public class S_PlayerVelocity : MonoBehaviour
 			_PlayerPhys._wasInAirLastFrame = false;
 		}
 
-		Debug.DrawRay(transform.position, velocityThisFrame * Time.deltaTime, Color.magenta, 10f);
+		Debug.DrawRay(transform.position, velocityThisFrame * Time.deltaTime, Color.blue, 10f);
 		Debug.DrawRay(transform.position, velocityLastFrame * Time.deltaTime, Color.green, 10f);
 
 		//General velocities applied just for last frame (like an anti offset set when groundsticking) are removed later on in this script so should not be factored in here.
@@ -215,7 +214,7 @@ public class S_PlayerVelocity : MonoBehaviour
 				}
 			}
 
-			Debug.DrawRay(transform.position, _coreVelocity.normalized * 5, Color.yellow, 10f);
+			//Debug.DrawRay(transform.position, _coreVelocity.normalized * 5, Color.cyan, 10f);
 		}
 		//World velocity is the actual rigidbody velocity found at the start of the frame, edited here if needed, with some of the removed velocity reapplied.
 		_worldVelocity = velocityThisFrame + _velocityToCarryOntoNextFrame;

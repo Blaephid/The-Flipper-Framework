@@ -13,7 +13,6 @@ public class S_Trigger_Path : S_Trigger_Base
 	public bool _isExit_;
 	public S_Trigger_Path _ExternalPathData_;
 
-	[Header("Path Data")]
 	public StrucAutoPathData _PathData_ = new StrucAutoPathData ()
 	{
 		_speedLimits_ = new Vector2(30, 200),

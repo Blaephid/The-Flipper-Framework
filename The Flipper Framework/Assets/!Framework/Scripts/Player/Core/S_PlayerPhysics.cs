@@ -105,7 +105,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	private bool        _isPositiveUpdate;  //Alternates between on and off every update, so can be used universally for anything that should only happen every other frame.
 	[HideInInspector]
-	public int         _frameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
+	public static int         _frameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
 
 	[HideInInspector]
 	public bool                   _arePhysicsOn = true;         //If false, no changes to velocity will be calculated or applied. This script will be inactive.
@@ -119,6 +119,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3          _CharacterCenterPosition;
 	[HideInInspector]
 	public Vector3          _CharacterPivotPosition;
+	[HideInInspector]
+	public Vector3		_CharacterPhysicsPosition;
 	[HideInInspector]
 	public Vector3                _feetOffsetFromPivotPoint;
 	[HideInInspector]
@@ -331,6 +333,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private void UpdatePositionTrackers () {
 		_CharacterPivotPosition = transform.position;
 
+		_CharacterPhysicsPosition = _RB.position;
+
 		_feetOffsetFromPivotPoint = _FeetTransform.position - _CharacterPivotPosition;
 		_colliderOffsetFromCentre = (_CharacterCapsule.transform.position + (_CharacterCapsule.transform.rotation * _CharacterCapsule.center));
 		_colliderOffsetFromCentre -= _CharacterPivotPosition;
@@ -360,26 +364,34 @@ public class S_PlayerPhysics : MonoBehaviour
 		_groundCheckDirection = -transform.up;
 
 		//Uses the ray to check for ground, if found, sets grounded to true and takes the normal.
-		Vector3 castStartPosition = _CharacterPivotPosition - (_groundCheckDirection * 0.1f);
+		Vector3 castStartPosition = _CharacterCenterPosition;
 		Vector3 castEndPosition = _CharacterPivotPosition + (_groundCheckDirection * groundCheckerDistance);
 
 		if (Physics.Linecast(castStartPosition, castEndPosition, out RaycastHit hitGroundTemp, _Groundmask_))
 		{
 			Vector3 tempNormal = hitGroundTemp.normal;
+			castEndPosition = hitGroundTemp.point;
 
 			if (_isGrounded)
 			{
 				//Because terrain can be bumpy, find an average normal between multiple around the same area.
-				float[] checksAtRotations = new float[]{0,20,40,40,80,80,40,40 }; //Each element is a check, and the value is how much to rotate (relative to player up), before checking.
-				Vector3 offSetForCheck = _PlayerVelocity._horizontalSpeedMagnitude > 30 ? _PlayerVelocity._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.5f; //The offset from the main check that will rotate
+				float[] checksAtRotations = new float[]{0,20,20,20,40,40,40,40,40,40,20,20 }; //Each element is a check, and the value is how much to rotate (relative to player up), before checking.
+				float[] distances = new float[] {0.5f, 1f};
+				Vector3 offSetForCheck = _PlayerVelocity._horizontalSpeedMagnitude > 30 ? _PlayerVelocity._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.8f; //The offset from the main check that will rotate
 
-				for (int i = 0 ; i < checksAtRotations.Length ; i++)
+				for (int i = 0 ; i < checksAtRotations.Length * distances.Length ; i++)
 				{
+					int distancesLevel = i / (checksAtRotations.Length);
+
 					//Gets a new position for this check instance, by rotating to the right from the last.
-					Quaternion thisRotation = Quaternion.AngleAxis(checksAtRotations[i], transform.up);
+					Quaternion thisRotation = Quaternion.AngleAxis(checksAtRotations[i / (distancesLevel + 1)], transform.up);
 					offSetForCheck = thisRotation * offSetForCheck;
 
-					Vector3 thisEndPosition = castEndPosition + offSetForCheck;
+					Vector3 thisEndPosition = Vector3.Lerp(castEndPosition ,castEndPosition + offSetForCheck, distances[distancesLevel]);
+					Vector3 thisDirection = (thisEndPosition - castStartPosition).normalized;
+					thisEndPosition += thisDirection;
+
+					Debug.DrawLine(castStartPosition, thisEndPosition, Color.gray);
 
 					if (Physics.Linecast(castStartPosition, thisEndPosition, out RaycastHit hitSecondTemp, _Groundmask_))
 					{
@@ -416,7 +428,9 @@ public class S_PlayerPhysics : MonoBehaviour
 					_groundNormal = tempNormal;
 					return;
 				}
+				else { }
 			}
+			else { }
 		}
 		SetIsGrounded(false, 0.01f);
 	}
@@ -425,6 +439,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private void GroundMovement () {
 
 		_timeOnGround += Time.deltaTime;
+
+		if (!_arePhysicsOn) { return; }
 
 		//To avoid jittering against a wall if going to and from 0 to even some speed, only call this if there isn't a wall SUPER close in the input direction.
 		if (!(_PlayerVelocity._horizontalSpeedMagnitude < 10 && Physics.SphereCast(_CharacterCenterPosition, _CharacterCapsule.radius * 0.99f,
@@ -586,8 +602,6 @@ public class S_PlayerPhysics : MonoBehaviour
 			{
 				float upwardsDirectionDifference =  Vector3.Angle(currentGroundNormal, hitSticking.normal);
 
-				//Debug.DrawRay(hitSticking.point, hitSticking.normal, Color.cyan, 10f);
-
 				//If the angle difference between current slope and encountered one is under the limit	
 				if (upwardsDirectionDifference < 70f)
 					velocity = AlignToUpwardsSlope(currentGroundNormal, hitSticking, velocity);
@@ -615,8 +629,6 @@ public class S_PlayerPhysics : MonoBehaviour
 			}
 			_PlayerVelocity.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false);
 		}
-
-		//Debug.DrawRay(transform.position, velocity * Time.deltaTime, Color.yellow, 10f);
 		return velocity;
 	}
 
@@ -634,6 +646,8 @@ public class S_PlayerPhysics : MonoBehaviour
 			Vector3 newPos = _HitGround.point  -(_groundCheckDirection * _placeAboveGroundBuffer_) - _feetOffsetFromPivotPoint;
 			SetPlayerPosition(newPos);
 		}
+
+		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.red, 5f);
 
 		return velocity;
 	}
@@ -662,6 +676,10 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
 		_PlayerVelocity.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
+
+		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.cyan, 5f);
+
+		Debug.Log(_frameCount);
 
 		return velocity;
 	}
@@ -855,8 +873,6 @@ public class S_PlayerPhysics : MonoBehaviour
 		}
 
 		UpdatePositionTrackers();
-
-		//Debug.DrawRay(_FeetTransform.position, Vector3.down, Color.magenta, 10f);
 
 		_listOfPreviousGroundNormals.Insert(0, normal);
 		_listOfPreviousGroundNormals.RemoveAt(3);

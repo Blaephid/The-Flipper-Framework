@@ -8,7 +8,7 @@ public enum enumCameraControlType
 	SetToDirection, SetToInfrontOfCharacter, SetToBehindCharacter, OnlyApplyEffects, RemoveEffects, SetToViewTarget
 }
 
-public class S_Trigger_Camera : S_Trigger_Base
+public class S_Trigger_Camera : S_Trigger_External
 {
 	public S_Trigger_Camera () {
 		_isLogicInPlayerScript = true;
@@ -118,6 +118,7 @@ public class S_Trigger_Camera : S_Trigger_Base
 #if UNITY_EDITOR
 
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
+		base.DrawAdditionalGizmos( selected, colour );
 		if (_hasTrigger)
 		{
 			switch (_whatType)

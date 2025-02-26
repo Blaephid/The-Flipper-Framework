@@ -79,6 +79,9 @@ public class S_PlayerMovement : MonoBehaviour
 	public Vector3                _trackMoveInput;    //Follows the input direction, and it is has changed but the controller input hasn't, that means the camera was moved to change direction.
 
 	[HideInInspector]
+	public float _useFlatTurnRate = 0;
+
+	[HideInInspector]
 	public float                  _currentTopSpeed;   //Player cannot exceed this speed by just running on flat ground. May be changed across gameplay.
 	[HideInInspector]
 	public float                  _currentMaxSpeed;   //Player's core velocity can not exceed this by any means.
@@ -196,6 +199,8 @@ public class S_PlayerMovement : MonoBehaviour
 	//This will only be called by delegates, but is the default means of handling acceleration and turn. See CallAccelerationAndTurning for more.
 	public Vector3 DefaultAccelerateAndTurn ( Vector3 lateralVelocity, Vector3 input, Vector2 modifier ) {
 
+		Debug.DrawRay(transform.position, input * 10, Color.yellow);
+
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;
 		float inputMagnitude = Mathf.Max(Mathf.Abs(_Input._inputOnController.x), Mathf.Abs(_Input._inputOnController.z));
@@ -225,17 +230,30 @@ public class S_PlayerMovement : MonoBehaviour
 			//         The ammount rotated is determined by turn speed multiplied by turn rate (defined by the difference in angles, and current speed).
 			//	Turn speed will also increase if the difference in pure input (ignoring camera) is different, allowing precise movement with the camera.
 
-			float turnRate = (_PlayerPhys._isRolling ? _rollingTurningModifier_ : 1.0f);
-			turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
-			turnRate *= _TurnRateBySpeed_.Evaluate((_PlayerVel._coreVelocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
-
-			if (_Input.IsTurningBecauseOfCamera(inputDirection))
-			{
-				turnRate *= _TurnRateByInputChange_.Evaluate(Vector3.Angle(_Input._inputOnController, _Input._prevInputWithoutCamera) / 180);
-			}
+			float turnRate = 1;
 			dragRate = _DragByAngle_.Evaluate(deviationFromInput) * _curvePosDrag; //If turning, may lose speed.
 
-			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Mathf.Deg2Rad * modifier.x, 0.0f); //Apply turn by calculate speed
+			if (_useFlatTurnRate == 0)
+			{
+				turnRate = (_PlayerPhys._isRolling ? _rollingTurningModifier_ : 1.0f);
+				turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
+				turnRate *= _TurnRateBySpeed_.Evaluate((_PlayerVel._coreVelocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
+
+				if (_Input.IsTurningBecauseOfCamera(inputDirection))
+				{
+					turnRate *= _TurnRateByInputChange_.Evaluate(Vector3.Angle(_Input._inputOnController, _Input._prevInputWithoutCamera) / 180);
+				}
+
+				turnRate *= _turnSpeed_;
+				turnRate *= modifier.x;
+			}
+			else
+			{
+				turnRate = _useFlatTurnRate;
+				turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
+			}
+
+			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, turnRate * Mathf.Deg2Rad, 0.0f); //Apply turn by calculate speed
 		}
 
 		// Step 3) Get current velocity (if it's zero then use input)

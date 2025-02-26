@@ -24,7 +24,7 @@ scopes = {
 	"last_search.5A656512" = "ref=\"Assets/!Framework/Scripts/Objects/Rails/SplineController.cs\""
 	"OpenInspectorPreview.5A656512" = "0"
 	"currentGroup.5A656512" = ""
-	"last_search.98CF4AA6" = ""
+	"last_search.98CF4AA6" = "rigid"
 	"OpenInspectorPreview.98CF4AA6" = "0"
 	"currentGroup.98CF4AA6" = "scene"
 }

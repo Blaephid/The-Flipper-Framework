@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class S_Trigger_LoadLevelBeats : MonoBehaviour
+public class S_Trigger_LoadLevelBeats : S_Trigger_Base
 {
 	//Tracking objects to enable
 	private S_Trigger_LoadLevelBeats[]	_ListOfAllTriggers;

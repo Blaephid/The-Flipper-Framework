@@ -71,6 +71,9 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 	void Update () {
 		_Actions._ActionDefault.SetSkinRotationToVelocity(10);
 		_Actions._ActionDefault.HandleAnimator(0);
+
+		GetNewPointOnSpline();
+		GetSampleOfSpline();
 	}
 
 	new private void FixedUpdate () {
@@ -128,6 +131,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 
 		_PlayerMovement._currentMinSpeed = 0;
 		_PlayerMovement._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
+		_PlayerMovement._useFlatTurnRate = 0;
 	}
 
 	#endregion
@@ -139,10 +143,10 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 	#region private
 	private void MoveAlongPath () {
 
-		GetNewPointOnSpline();
-		GetSampleOfSpline();
+		//GetNewPointOnSpline();
+		//GetSampleOfSpline();
 
-		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(transform.forward, _sampleUpwards));
+		//_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(transform.forward, _sampleUpwards));
 		_PlayerPhys.CheckForGround();
 
 		SetVelocityAlongSpline(); 
@@ -268,8 +272,9 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 	private void MoveTowardsPathMiddle () {
 		if (_PlayerPhys._isGrounded && _playerSpeed > 20)
 		{
-			Vector3 FootPos = _PlayerPhys._CharacterPivotPosition - _Pathers._FeetTransform.position;
-			Vector3 direction = _sampleLocation - _Pathers._FeetTransform.position;
+			Vector3 footPos = _Pathers._FeetTransform.position;
+			Vector3 direction = _sampleLocation - footPos;
+			direction.Normalize();
 
 			//Don't apply any velocity upwards, so take relevant to player, remove veritcal, then return.
 			direction = _PlayerPhys.GetRelevantVector(direction, false);
@@ -301,10 +306,14 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		//Speed and direction to move this action
 		_pathMinSpeed = PathData._speedLimits_.x;
 		_PlayerMovement._currentMinSpeed = _pathMinSpeed;
+
 		_pathMaxSpeed = PathData._speedLimits_.y;
 		_PlayerMovement._currentMaxSpeed = _pathMaxSpeed;
+
 		_playerSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed, startSpeed);
 		_playerSpeed = Mathf.Clamp(_playerSpeed, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
+
+		_PlayerMovement._useFlatTurnRate = 15;
 
 		_isGoingBackwards = isGoingBack;
 		_moveDirection = _isGoingBackwards ? -1 : 1;

@@ -108,7 +108,7 @@ namespace SplineMesh
 		}
 
 
-		private void Update () {
+		private void LateUpdate () {
 			if (Application.isPlaying) { return; }
 
 			if (toUpdate)
@@ -129,7 +129,7 @@ namespace SplineMesh
 			//These placements are easier, so happen seperate from the main calculation along spline.
 			if (_addOnEnd_)
 			{
-				PlaceSingleElement(_Spline.Length);
+				PlaceSingleElement(_Spline.Length - 1);
 			}
 			if (_addOnStart_)
 			{

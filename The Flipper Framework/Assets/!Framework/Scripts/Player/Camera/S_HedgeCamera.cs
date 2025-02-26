@@ -672,8 +672,6 @@ public class S_HedgeCamera : MonoBehaviour
 		Vector3 newDirection = _PlayerTransformCopy.InverseTransformDirection(dir);
 		Quaternion localDirection = Quaternion.LookRotation(newDirection, _PlayerTransformCopy.up);
 
-		Debug.DrawRay(_FinalTarget.position, newDirection * 2, Color.black);
-
 		//Get local versions of the euler angles which are used for x and y cam positons.
 		Vector3 eulers = localDirection.eulerAngles;
 		int eulerY = (int)eulers.y;

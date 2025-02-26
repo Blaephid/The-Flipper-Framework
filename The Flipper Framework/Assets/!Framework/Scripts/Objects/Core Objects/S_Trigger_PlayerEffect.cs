@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class S_Trigger_PlayerEffect : S_Trigger_Base
+public class S_Trigger_PlayerEffect : S_Trigger_External
 {
 
 	public S_Trigger_PlayerEffect () {
@@ -31,6 +31,7 @@ public class S_Trigger_PlayerEffect : S_Trigger_Base
 
 #if UNITY_EDITOR
 	public override void DrawAdditionalGizmos (bool selected, Color colour ) {
+		base.DrawAdditionalGizmos(selected, colour );
 		if (_hasTrigger)
 			S_S_DrawingMethods.DrawArrowHandle(colour, transform, 0.2f, true, Vector3.forward);
 	}

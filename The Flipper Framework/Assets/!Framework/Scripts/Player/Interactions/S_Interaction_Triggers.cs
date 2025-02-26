@@ -194,12 +194,12 @@ public class S_Interaction_Triggers : MonoBehaviour
 	public static S_Trigger_Base CheckTriggerEnter ( Collider Col, ref List<S_Trigger_Base> list ) {
 
 		//What happens depends on the data set to the camera trigger in its script.
-		if (!Col.TryGetComponent(out S_Trigger_Base TriggerData)) { return null; };
+		if (!Col.TryGetComponent(out S_Trigger_External TriggerData)) { return null; };
 
 		//If no logic is found, ignore.
 		if (TriggerData == null || TriggerData._TriggerForPlayerToRead == null) return null;
 
-		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_Base>();
+		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_External>();
 
 		//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
 		if (list.Count == 0) { list = new List<S_Trigger_Base>() { TriggerData }; }
@@ -215,12 +215,12 @@ public class S_Interaction_Triggers : MonoBehaviour
 
 	public static S_Trigger_Base CheckTriggerExit ( Collider Col, ref List<S_Trigger_Base> list ) {
 		//What happens depends on the data set to the camera trigger in its script.
-		if (!Col.TryGetComponent(out S_Trigger_Base TriggerData)) { return null; }
+		if (!Col.TryGetComponent(out S_Trigger_External TriggerData)) { return null; }
 
 		//If no logic is found, ignore.
 		if (TriggerData == null || TriggerData._TriggerForPlayerToRead == null) return null;
 
-		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_Base>();
+		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_External>();
 
 		//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
 		if (list.Count > 0 && TriggerData != list[0]) { return null; }
