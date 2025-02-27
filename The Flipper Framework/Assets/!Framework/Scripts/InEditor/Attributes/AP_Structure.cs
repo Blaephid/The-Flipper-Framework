@@ -160,7 +160,14 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		for (int i = 0 ; i < _listOfOtherFields_.Length ; i++)
 		{
 			string newPropertyName = _listOfOtherFields_[i];
-			SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
+			SerializedProperty newProperty;
+			newProperty = property.serializedObject.FindProperty(newPropertyName);
+			
+			if(newProperty == null)
+			{
+				Debug.LogError(newPropertyName + " is Not Valid");
+				continue;
+			}
 
 			thisPropertyWidth = position.width * GetWidthPercentageFromPriorityValues(i);
 
@@ -226,7 +233,7 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		float currentPriority = _fieldPrioritySizes_[n + 1]; //Must be +1, because _fieldPropertySizes_ includes the base property, when _listOfOtherProperties does not.
 		currentPriority = currentPriority <= 0 ? 1 : currentPriority;
 
-		int startOfThisLine =  (int)S_S_MoreMathMethods.GetNumberAsIncrement(n + 1, _propertiesPerLine); //Gets the index for the property at the start of the current line.
+		int startOfThisLine =  (int)S_S_MoreMaths.GetNumberAsIncrement(n + 1, _propertiesPerLine); //Gets the index for the property at the start of the current line.
 														 //Goes through each value on this line, and adds up their priorities. If its 0, it means none were set, so use 1.
 		for (int i = 0 ; i < _propertiesPerLine ; i++)
 		{
@@ -258,14 +265,13 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 			_propertiesPerLine = newPropertiesPerLine;
 		}
 
-		_linesToDraw = Mathf.Max(1, S_S_MoreMathMethods.DivideWhileRoundingUp(_propertiesInTotal, _propertiesPerLine));
+		_linesToDraw = Mathf.Max(1, S_S_MoreMaths.DivideWhileRoundingUp(_propertiesInTotal, _propertiesPerLine));
 	}
 
 	private void SetLabelAndFieldWidthOnPropertyType ( SerializedProperty property ) {
+		if(property == null) { return; }
 		switch (property.propertyType)
 		{
-			default: _labelPriority_ = 1.4f; _fieldPriority_ = 0.6f; break;
-
 			case SerializedPropertyType.Float:
 				_labelPriority_ = 1.5f; _fieldPriority_ = 0.5f; break;
 
@@ -274,6 +280,8 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 
 			case SerializedPropertyType.ObjectReference:
 				_labelPriority_ = 0.8f; _fieldPriority_ = 1.2f; break;
+
+			default: _labelPriority_ = 1.4f; _fieldPriority_ = 0.6f; break;
 		}
 	}
 

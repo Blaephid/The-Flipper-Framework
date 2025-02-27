@@ -33,7 +33,7 @@ public class S_Trigger_PlayerEffect : S_Trigger_External
 	public override void DrawAdditionalGizmos (bool selected, Color colour ) {
 		base.DrawAdditionalGizmos(selected, colour );
 		if (_hasTrigger)
-			S_S_DrawingMethods.DrawArrowHandle(colour, transform, 0.2f, true, Vector3.forward);
+			S_S_Drawing.DrawArrowHandle(colour, transform, 0.2f, true, Vector3.forward);
 	}
 #endif
 }

@@ -142,29 +142,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f92537ab1025b7740af8066810e49070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _InspectorTheme: {fileID: 0}
-  _ObjectsToTriggerOn: []
-  _ObjectsToTriggerOff: []
-  _triggerSelf: 0
-  _isLogicInPlayScript: 0
-  _TriggerForPlayerToRead: {fileID: 0}
-  _whatTriggerShape: 0
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
   _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
   _normalOutlineColour: {r: 0.42183694, g: 0.9592679, b: 0.98490566, a: 1}
   _selectedOutlineColour: {r: 0.0041651228, g: 0.7261845, b: 0.735849, a: 1}
   _selectedFillColour: {r: 0.41320753, g: 0.8273843, b: 1, a: 0.078431375}
-  _willActivateCamera: 1
+  _isSelected: 1
+  _InspectorTheme: {fileID: 0}
+  _whatTriggerShape: 0
+  _Player: {fileID: 0}
+  _TriggerObjects:
+    _triggerSelfOn: 0
+    _triggerSelfOff: 0
+    _ObjectsToTriggerOn: []
+    _ObjectsToTriggerOff: []
+  _hasTrigger: 0
+  _ObjectsThatTriggerThis: []
+  _isLogicInPlayerScript: 0
+  _TriggerForPlayerToRead: {fileID: 0}
   _defaultCameraToFaceTrigger: 1
   _CinematicCamComponent: {fileID: 6276180955197928732}
   _CinematicCamObject: {fileID: 6276180955197928734}
-  _EndThisTriggerInstead: {fileID: 0}
+  _deactivateCameraIfActionChanges: 0
   _ListOfActionsThisWorksOn: 0000000002000000040000000100000005000000060000000700000008000000030000000a000000
-  _willDeactivateCameraIfActonChanges: 0
-  _moveCinematicCamToMainCamPoint: 0
+  _startFromCurrentCam: 0
   _startOffset: {x: 0, y: 0, z: 0}
-  _endOnEnterTrigger: 0
-  _endOnExitTrigger: 1
-  _delayEndForFrames: 0
+  _framesIn: 0
+  _framesOut: 0
+  _delayBeforeDeactivating: 0
   lookPlayer: 1
   followPlayer: 0
   _willSetCameraBehind: 1

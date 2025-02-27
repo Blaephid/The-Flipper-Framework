@@ -127,7 +127,7 @@ public class S_PlayerMovement : MonoBehaviour
 	public Vector3 HandleControlledVelocity ( Vector3 startVelocity, Vector2 modifier, float decelerationModifier = 1 ) {
 
 		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
-		if (_PlayerPhys._listOfCanControl.Count != 0)
+		if (_PlayerPhys._locksForCanControl.Count != 0)
 		{
 			_PlayerVel._externalRunningSpeed = -1;
 			return startVelocity;
@@ -224,7 +224,7 @@ public class S_PlayerMovement : MonoBehaviour
 		}
 
 		//A list is used rather than a single boolean because if just one was used, anything that takes turning away would overlap. This way means all instances of turning being disabled must stop in order to regain control.
-		else if (_PlayerPhys._listOfCanTurns.Count == 0)
+		else if (_PlayerPhys._locksForCanTurn.Count == 0)
 		{
 			// Step 2) Rotate lateral velocity towards the same velocity under the desired rotation.
 			//         The ammount rotated is determined by turn speed multiplied by turn rate (defined by the difference in angles, and current speed).
@@ -291,7 +291,7 @@ public class S_PlayerMovement : MonoBehaviour
 
 		float decelAmount = 0;
 		//Manual decelerations can only happen if nothing is denying them.
-		if (_PlayerPhys._listOfCanDecelerates.Count == 0)
+		if (_PlayerPhys._locksForCanDecelerate.Count == 0)
 		{         //If there is no input, ready conventional deceleration.
 			if (input.sqrMagnitude < 0.1)
 			{

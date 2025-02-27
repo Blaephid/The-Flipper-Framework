@@ -83,8 +83,10 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 
 		_speedBeforeUpreel = _PlayerVel._previousHorizontalSpeeds[1];
 
-		_PlayerPhys._listOfCanControl.Add(false); //Removes ability to control velocity until empty
-		_PlayerPhys._listOfIsGravityOn.Add(false);
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Upreel");
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Upreel");
+		//_PlayerPhys._locksForCanControl.Add(false); //Removes ability to control velocity until empty
+		//_PlayerPhys._locksForIsGravityOn.Add(false);
 		_PlayerPhys.SetIsGrounded(false);
 		_PlayerPhys._canChangeGrounded = false;
 
@@ -97,7 +99,8 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		enabled = false;
 		if (isFirstTime) { ReadyAction();  return; } //If first time, then return after setting to disabled.
 
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		//_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Upreel");
 		_PlayerPhys._canChangeGrounded = true;
 
 		_Actions._isAirDashAvailable = true;
@@ -183,7 +186,8 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	IEnumerator EndUpreel ( Transform Upreel ) {
 		//Restores control but prevents input for a moment
 		_Input.LockInputForAWhile(15f, false, _MainSkin.forward);
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
+		//_PlayerPhys._locksForCanControl.RemoveAt(0);
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "Upreel");
 
 		//Launched over the lip the Upreel was on, then starts falling.
 		_PlayerVel.SetCoreVelocity(Vector3.zero);

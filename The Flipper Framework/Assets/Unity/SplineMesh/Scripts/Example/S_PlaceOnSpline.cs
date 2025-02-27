@@ -213,7 +213,7 @@ namespace SplineMesh
 				{
 					Type derivedType = DataBase.GetType();
 					// Add a component of the actual derived class
-					S_S_EditorMethods.AddComponentIfMissing(gameObject, derivedType);
+					S_S_Editor.AddComponentIfMissing(gameObject, derivedType);
 					_DataForPrefabs = GetComponent<S_Data_Base>();
 
 					EditorUtility.CopySerialized(DataBase, _DataForPrefabs);
@@ -269,12 +269,12 @@ namespace SplineMesh
 			void DrawButtons () {
 				EditorGUILayout.Space(_spaceSize);
 
-				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Update", _BigButtonStyle, _OwnerScript, "Update Placed Object"))
+				if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Update", _BigButtonStyle, _OwnerScript, "Update Placed Object"))
 				{
 					_OwnerScript.CheckNow();
 					_OwnerScript.PlaceAllElements();
 				}
-				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Reset Data To Default", _BigButtonStyle, _OwnerScript, "Default Data on Placed Object"))
+				if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Reset Data To Default", _BigButtonStyle, _OwnerScript, "Default Data on Placed Object"))
 				{
 					_OwnerScript.HandleDataComponentForSpawnedObjects(true);
 				}

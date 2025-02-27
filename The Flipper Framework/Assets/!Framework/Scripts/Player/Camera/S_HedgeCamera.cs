@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Cinemachine;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 //using UnityEngine.UIElements;
 
 [RequireComponent(typeof(CinemachineVirtualCamera))]
@@ -195,7 +198,7 @@ public class S_HedgeCamera : MonoBehaviour
 	private Vector3               _AngleOffset;
 
 	[HideInInspector]
-	public bool             _cameraPausedLocked;
+	public List<string>             _locksForCameraFallBack = new List<string>();
 	#endregion
 
 	#endregion
@@ -454,7 +457,7 @@ public class S_HedgeCamera : MonoBehaviour
 		if (_Transposer && _VirtualCamera.enabled)
 		{
 			_Transposer.m_CameraDistance = dist;
-			_currentDistance = S_S_MoreMathMethods.GetDistanceOfVectors(transform.position, _FinalTarget.position);
+			_currentDistance = S_S_MoreMaths.GetDistanceOfVectors(transform.position, _FinalTarget.position);
 		}
 		//If not, position is calculated by distance and if there is a wall in the way.
 		else
@@ -876,7 +879,7 @@ public class S_HedgeCamera : MonoBehaviour
 	//Called externally and temporarily creates activates the second camera at the position of the main one, before transitioning back to the primary.
 	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
 	public IEnumerator ApplyCameraPause ( Vector2 frames, Vector2 speedBeforeAndAfter, float minDifference = 0 ) {
-		if(_cameraPausedLocked) { yield break; }
+		if(_locksForCameraFallBack.Count > 0) { yield break; }
 
 		if (_SecondaryCamera.gameObject.activeSelf) { yield break; } //If secondary camera is already active, don't move it, let it play out.
 

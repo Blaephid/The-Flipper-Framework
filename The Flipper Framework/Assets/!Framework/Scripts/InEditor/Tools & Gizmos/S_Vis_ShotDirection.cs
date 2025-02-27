@@ -90,8 +90,8 @@ public class S_Vis_ShotDirection : S_Vis_Base
 
 	private Vector3[] SetUpLauncherSimulation () {
 
-		string translatedVariableName = S_S_EditorMethods.TranslateStringToVariableName(_launcherStructName, S_EditorEnums.CasingTypes.camelCase);
-		object value = S_S_EditorMethods.FindFieldByName(_LauncherScript, translatedVariableName, "");
+		string translatedVariableName = S_S_Editor.TranslateStringToVariableName(_launcherStructName, S_EditorEnums.CasingTypes.camelCase);
+		object value = S_S_Editor.FindFieldByName(_LauncherScript, translatedVariableName, "");
 
 		if (value == null || value.GetType() != typeof(S_Structs.LaunchPlayerData)) { return null; }
 

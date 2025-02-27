@@ -174,6 +174,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//Effects
 		_Sounds.RailLandSound();
+		_Sounds.RailGrindSound(true);
 
 		_canEnterRail = false;
 
@@ -207,8 +208,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			_boostTime = 0;
 
 			//Set controls
-			_PlayerPhys._listOfIsGravityOn.Add(false);
-			_PlayerPhys._listOfCanControl.Add(false);
+			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Rail");
+			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Rail");
+			//_PlayerPhys._locksForIsGravityOn.Add(false);
+			//_PlayerPhys._locksForCanControl.Add(false);
 			_PlayerPhys._canChangeGrounded = false;
 
 			_Input._JumpPressed = false;
@@ -287,9 +290,12 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		}
 
 		//Restore Control
-		if (_PlayerPhys._listOfIsGravityOn.Count > 0)
-			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
+		//if (_PlayerPhys._locksForIsGravityOn.Count > 0)
+		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
+
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Rail");
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "Rail");
+		//_PlayerPhys._locksForCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
 		//To prevent instant actions
@@ -451,7 +457,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	private void LoseRail () {
 
 		_Input.LockInputForAWhile(5f, false, _sampleForwards); //Prevent instant turning off the end of the rail
-		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 10));
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"RailLost", 10));
 		_distanceToStep = 0; //Stop a step that might be happening
 
 		_isGrinding = false;

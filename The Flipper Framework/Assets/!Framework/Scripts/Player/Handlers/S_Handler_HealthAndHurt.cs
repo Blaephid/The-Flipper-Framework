@@ -260,7 +260,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 			//Set public
 			_ringAmount = 0;
-			_PlayerPhys._listOfCanControl.Add(false);
+			//_PlayerPhys._locksForCanControl.Add(false);
+			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Dead"); //Does not have to be undone because on respawn, this will be cleared.
 
 			//Enter the hurt action until respawn
 			StartCoroutine(TrackDeath());
@@ -270,7 +271,6 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//A coroutine that updates independantly even when the player object is disabled. This handles the different events that happen when dead until respawning.
 	private IEnumerator TrackDeath () {
-		_PlayerPhys._listOfCanControl.Add(false); //Does not have to be undone because on respawn, this will be cleared.
 
 		while (_isDead)
 		{
@@ -338,8 +338,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_CharacterAnimator.SetBool("Dead", false);
 
 		//Reset trackers
-		_PlayerPhys._listOfCanControl.Clear();
-		_PlayerPhys._listOfCanTurns.Clear();
+		_PlayerPhys._locksForCanControl.Clear();
+		_PlayerPhys._locksForCanTurn.Clear();
 		_PlayerPhys._canChangeGrounded = true;
 		_PlayerPhys._arePhysicsOn = true;
 

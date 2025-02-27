@@ -41,7 +41,7 @@ namespace templates
 			void DrawGeneralButton () {
 
 				//Add new element button.
-				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Button Name", _BigButtonStyle, _OwnerScript, "Undo Description"))
+				if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Button Name", _BigButtonStyle, _OwnerScript, "Undo Description"))
 				{
 					//Insert Action
 				}
@@ -56,16 +56,16 @@ namespace templates
 			DrawStructWithDefault();
 			DrawGeneralStruct();
 			DrawGeneralButton();
-			S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"", "", false);
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"", "", false);
 
 
 			//Struct With Default
 			#region Struct
 			void DrawStructWithDefault () {
 				EditorGUILayout.Space(_spaceSize);
-				S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"StructWithDefault", "Struct With Default", true);
+				S_S_CustomInspector.DrawEditableProperty(serializedObject,"StructWithDefault", "Struct With Default", true);
 
-				if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Default", _BigButtonStyle, _OwnerScript, "set to defaults"))
+				if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Default", _BigButtonStyle, _OwnerScript, "set to defaults"))
 				{
 					//Owner.StructWithDefault = Owner.DefaultStruct;
 				}
@@ -77,7 +77,7 @@ namespace templates
 			#region GeneralStruct
 			void DrawGeneralStruct () {
 				EditorGUILayout.Space(_spaceSize);
-				S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"GeneralStruct", "GeneralStruct", false);
+				S_S_CustomInspector.DrawEditableProperty(serializedObject,"GeneralStruct", "GeneralStruct", false);
 			}
 			#endregion
 		}

@@ -171,7 +171,7 @@ namespace SplineMesh
 
 		private GameObject FindOrCreate ( string name ) {
 			var childTransform = generated.transform.Find(name);
-			GameObject newObject = S_S_EditorMethods.FindOrCreateChild(generated, name, 
+			GameObject newObject = S_S_Editor.FindOrCreateChild(generated, name, 
 				new Type[] { typeof(MeshFilter),
 				    typeof(MeshRenderer),
 				    typeof(S_MeshBender),
@@ -250,11 +250,11 @@ public class SplineMeshEditor : S_CustomInspector_Base
 			EditorGUILayout.Space(_spaceSize);
 			EditorGUILayout.BeginHorizontal();
 
-			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Update This Spline Mesh", _BigButtonStyle, _OwnerScript, "Update Single Spline Meshes"))
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Update This Spline Mesh", _BigButtonStyle, _OwnerScript, "Update Single Spline Meshes"))
 			{
 				_OwnerScript.rebuild();
 			}
-			if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Update All Spline Meshes", _BigButtonStyle, _OwnerScript, "Update All Spline Meshes"))
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Update All Spline Meshes", _BigButtonStyle, _OwnerScript, "Update All Spline Meshes"))
 			{
 				S_SplineMeshTiling[] railsMeshes = FindObjectsByType<S_SplineMeshTiling>((FindObjectsSortMode.None));
 				foreach (S_SplineMeshTiling mesh in railsMeshes)

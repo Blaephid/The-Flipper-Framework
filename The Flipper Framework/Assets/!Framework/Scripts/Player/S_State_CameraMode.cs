@@ -130,11 +130,11 @@ public class S_State_CameraMode : MonoBehaviour
 			_CamTransform.Translate(direction * _moveSpeed * _timeValuePerFrame, Space.World);
 
 			//If this new position is too far away from the character.
-			float newDistanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(_CamTransform.position, _playerPosition);
+			float newDistanceSquared = S_S_MoreMaths.GetDistanceOfVectors(_CamTransform.position, _playerPosition);
 			if (newDistanceSquared > Mathf.Pow(_maxDistanceFromPlayer, 2))
 			{
 				//If moved further away from character, set back to previous position. This prevents moving too far from character, but if already too far, can still move back at least.
-				if(newDistanceSquared > S_S_MoreMathMethods.GetDistanceOfVectors(_playerPosition, previousPosition))
+				if(newDistanceSquared > S_S_MoreMaths.GetDistanceOfVectors(_playerPosition, previousPosition))
 				{
 					_CamTransform.position = previousPosition;
 				}

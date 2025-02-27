@@ -182,10 +182,10 @@ public class MetricCalculatorEditor : S_CustomInspector_Base
 		//Describe what the script does
 		EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
 
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_Stats", "Stats");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_Stats", "Stats");
 
 		//Add new element button.
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Calculate All", _BigButtonStyle, _OwnerScript, "Calculate All"))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Calculate All", _BigButtonStyle, _OwnerScript, "Calculate All"))
 		{
 			_OwnerScript.CalculateAll();
 		}

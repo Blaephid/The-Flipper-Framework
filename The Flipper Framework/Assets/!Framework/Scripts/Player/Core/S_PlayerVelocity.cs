@@ -388,10 +388,12 @@ public class S_PlayerVelocity : MonoBehaviour
 		{
 			//This should always be called before Unlock. As such, whenever an environmental velocity is setting willRemoveOnGrounded to true, it should do this. Because the check will call unlock if true, then stop checking.
 			case S_GeneralEnums.ChangeLockState.Lock:
-				_PlayerPhys._listOfCanDecelerates.Add(false); break;
+				S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanDecelerate, "EnvironmentForce");
+				//_PlayerPhys._locksForCanDecelerate.Add(false); 
+				break;
 			//This should only be called when environmental velocity is being removed.
 			case S_GeneralEnums.ChangeLockState.Unlock:
-				_PlayerPhys._listOfCanDecelerates.RemoveAt(0); break;
+				S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanDecelerate, "EnvironmentForce"); break;
 				//Ignore is the default state, which means this call won't change the deceleration ability.
 		}
 	}

@@ -155,7 +155,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 	void PlaceTargetInOrder ( Transform thisTarget, Vector3 scannerCentre ) {
 
 		//Get the distance and direction of this target from the scanning centre
-		float thisDistanceFromScannerSquared = S_S_MoreMathMethods.GetDistanceOfVectors(scannerCentre, thisTarget.position);
+		float thisDistanceFromScannerSquared = S_S_MoreMaths.GetDistanceOfVectors(scannerCentre, thisTarget.position);
 
 		//Go through the new ordered list so far.
 		for (int i = 0 ; i < _ListOfCloseTargets.Count ; i++)
@@ -168,7 +168,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 			}
 
 			//If our checking target is closer than the target in this array space, then it goes before it. If not, check next array element.
-			float tempDistanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(scannerCentre, _ListOfCloseTargets[i].position);
+			float tempDistanceSquared = S_S_MoreMaths.GetDistanceOfVectors(scannerCentre, _ListOfCloseTargets[i].position);
 			if(thisDistanceFromScannerSquared < tempDistanceSquared)
 			{
 				_ListOfCloseTargets.Insert(i, thisTarget);

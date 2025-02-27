@@ -50,24 +50,24 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		switch (_whatTriggerShape)
 		{
 			case S_EditorEnums.ColliderTypes.Box:
-				S_S_EditorMethods.AddComponentIfMissing(gameObject, typeof(BoxCollider));
-				S_S_EditorMethods.FindAndRemoveComponent(gameObject, typeof(SphereCollider));
+				S_S_Editor.AddComponentIfMissing(gameObject, typeof(BoxCollider));
+				S_S_Editor.FindAndRemoveComponent(gameObject, typeof(SphereCollider));
 
 				BoxCollider Box = GetComponent<BoxCollider>();
 				Box.isTrigger = true;
 				Box.size = Vector3.one;
 				break;
 			case S_EditorEnums.ColliderTypes.Sphere:
-				S_S_EditorMethods.AddComponentIfMissing(gameObject, typeof(SphereCollider));
-				S_S_EditorMethods.FindAndRemoveComponent(gameObject, typeof(BoxCollider));
+				S_S_Editor.AddComponentIfMissing(gameObject, typeof(SphereCollider));
+				S_S_Editor.FindAndRemoveComponent(gameObject, typeof(BoxCollider));
 
 				SphereCollider Sphere = GetComponent<SphereCollider>();
 				Sphere.isTrigger = true;
 				Sphere.radius = 0.5f;
 				break;
 			case S_EditorEnums.ColliderTypes.External:
-				S_S_EditorMethods.FindAndRemoveComponent(gameObject, typeof(BoxCollider));
-				S_S_EditorMethods.FindAndRemoveComponent(gameObject, typeof(SphereCollider));
+				S_S_Editor.FindAndRemoveComponent(gameObject, typeof(BoxCollider));
+				S_S_Editor.FindAndRemoveComponent(gameObject, typeof(SphereCollider));
 				break;
 		}
 
@@ -125,7 +125,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 				//Constant outline
 				SphereCollider Sphere = GetComponent<SphereCollider>();
 				//Because sphere triggers are always perfectly spherical and only expand to match the largest scale dimension
-				float radius =  Sphere.radius * S_S_MoreMathMethods.GetLargestOfVector(transform.lossyScale);
+				float radius =  Sphere.radius * S_S_MoreMaths.GetLargestOfVector(transform.lossyScale);
 				Vector3 centre = Sphere.center + transform.position;
 
 				using (new Handles.DrawingScope(colour))
@@ -160,7 +160,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	//Inherited from ICustomEditorLogic Interface. This will be attached to the DuringSceneGUI event, or called seperately when certain objects are selected.
 	public void CustomOnSceneGUI ( SceneView sceneView ) {
 		if (this == null) { return; }
-		float handleRadius = 2 * Mathf.Clamp(S_S_MoreMathMethods.GetLargestOfVector(transform.lossyScale) / 40, 1, 20);
+		float handleRadius = 2 * Mathf.Clamp(S_S_MoreMaths.GetLargestOfVector(transform.lossyScale) / 40, 1, 20);
 		base.VisualiseWithSelectableHandle(transform.position, handleRadius);
 		AdditionalTriggerSceneGUI();
 	}

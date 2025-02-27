@@ -43,7 +43,7 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 			if (_SplineToDisplay.Length == f) { return; }
 
 			//If at the halfway point of the spline. Found by checking f against the closest increment to half distance
-			else if (f == S_S_MoreMathMethods.GetNumberAsIncrement(Mathf.Lerp(0, _SplineToDisplay.Length, 0.5f), _distancePerCalculation)){
+			else if (f == S_S_MoreMaths.GetNumberAsIncrement(Mathf.Lerp(0, _SplineToDisplay.Length, 0.5f), _distancePerCalculation)){
 				_middleOfSpline = sample1;
 			}
 		}

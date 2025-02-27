@@ -95,19 +95,19 @@ public class TakeScreenShotEditor : S_CustomInspector_Base
 		EditorGUILayout.TextArea("Adding this script to an object allows you to take screenshots of the current game view, both in edit and play mode. \n" +
 			"Make sure you've set the correct path for a file to store the image.", EditorStyles.textArea);
 
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Take Shot", _BigButtonStyle, null))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Take Shot", _BigButtonStyle, null))
 		{
 			_OwnerScript.TakeShot();
 		}
 
 		EditorGUILayout.LabelField("File", _HeaderStyle);
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"_fileName", "File Name");
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"_folderPathFromAssets", "Folder Path From Assets");
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"_scaleValue", "Scale Value");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject,"_fileName", "File Name");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject,"_folderPathFromAssets", "Folder Path From Assets");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject,"_scaleValue", "Scale Value");
 
 		EditorGUILayout.LabelField("Options", _HeaderStyle);
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"_withUI", "Include UI");
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject,"_fileNameWithTimeStamp", "Include Time Stamp");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject,"_withUI", "Include UI");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject,"_fileNameWithTimeStamp", "Include Time Stamp");
 	}
 }
 

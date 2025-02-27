@@ -231,7 +231,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _Actions._charge), 0.25f)); //The camera will fall back before catching up.
 
 		//Control
-		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"DropChargeTimed", 15));
 	}
 
 	////When releasing in the air, requires different effects to ensure not falling.

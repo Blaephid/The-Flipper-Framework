@@ -99,10 +99,12 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 
 		//Physics
 		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one); //Prevent character moving outside of the path.
-		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "RingRoad");
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "RingRoad");
+		//_PlayerPhys._locksForCanControl.Add(false); //Prevent controlled movement until end of action.
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys.SetIsGrounded(false);
-		_PlayerPhys._listOfIsGravityOn.Add(false);
+		//_PlayerPhys._locksForIsGravityOn.Add(false);
 
 		//Effects
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -146,15 +148,17 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 
 		//Here to ensure this is always called no matter why the action ends.
 		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
-		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"RingRoadTimed", 15));
 
 		_PlayerPhys._canChangeGrounded = true;
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		//_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "RingRoad");
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
-		_PlayerPhys._listOfCanControl.RemoveAt(0); //Remove lock on control before this, but add a new delay before control returns.
-		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f));
+		//_PlayerPhys._locksForCanControl.RemoveAt(0); //Remove lock on control before this, but add a new delay before control returns.
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "RingRoad");
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f, "RingRoadTimed"));
 
 		//End effects
 		for (int i = _HomingTrailContainer.transform.childCount - 1 ; i >= 0 ; i--)

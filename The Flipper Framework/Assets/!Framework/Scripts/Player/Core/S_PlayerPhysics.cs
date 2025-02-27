@@ -170,15 +170,15 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Disabling options
 	[HideInInspector]
-	public List<bool>                   _listOfIsGravityOn = new List<bool>();
+	public List<string>                   _locksForIsGravityOn = new List<string>();
 
 	//Disabling aspects of control. These are used as lists because if multiple things disable control, they all have to end it before that control is restored. If they just used single bools, multiple aspects taking control would overlap.
 	[HideInInspector]
-	public List<bool>             _listOfCanTurns = new List<bool>();
+	public List<string>             _locksForCanTurn = new List<string>();
 	[HideInInspector]
-	public List<bool>             _listOfCanControl = new List<bool>();
+	public List<string>             _locksForCanControl = new List<string>();
 	[HideInInspector]
-	public List<bool>             _listOfCanDecelerates = new List<bool>();
+	public List<string>             _locksForCanDecelerate = new List<string>();
 
 	public enum EnumControlLimitations
 	{
@@ -496,7 +496,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	//A seperate public method so it can be called without HandleAirMovement or needing to call all of its used fields.
 	public Vector3 CheckGravity ( Vector3 coreVelocity, bool overwrite = false ) {
 		//Apply Gravity (vertical velocity)
-		if (_listOfIsGravityOn.Count == 0 || overwrite)
+		if (_locksForIsGravityOn.Count == 0 || overwrite)
 			coreVelocity = ApplyGravityToIncreaseFallSpeed(coreVelocity, _currentFallGravity, _currentUpwardsFallGravity, _maxFallingSpeed_, _PlayerVelocity._worldVelocity);
 		return coreVelocity;
 	}
@@ -806,7 +806,8 @@ public class S_PlayerPhysics : MonoBehaviour
 						if (!_isUpsideDown)
 						{
 							_isUpsideDown = true;
-							_listOfCanTurns.Add(false);
+							S_S_Logic.AddLockToList(ref _locksForCanTurn, "isUpsideDown");
+							//_locksForCanTurn.Add(false);
 						}
 
 						// Going off the current rotation, can tell if needs to rotate right or left (rotate right if right side is higher than left), and prepare the angle to rotate around. 
@@ -858,7 +859,8 @@ public class S_PlayerPhysics : MonoBehaviour
 					{
 						if (_isUpsideDown)
 						{
-							_listOfCanTurns.Remove(false);
+							S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, "isUpsideDown");
+							//_locksForCanTurn.Remove(false);
 						}
 						else if (_amountToRotate > 60)
 							StartCoroutine(_CamHandler._HedgeCam.KeepGoingToHeightForFrames(30, 50, 60));
@@ -912,7 +914,8 @@ public class S_PlayerPhysics : MonoBehaviour
 				if (_isUpsideDown)
 				{
 					_isUpsideDown = false;
-					_listOfCanTurns.Remove(false);
+					S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, "isUpsideDown");
+					//_locksForCanTurn.Remove(false);
 				}
 				_keepNormalCounter = 0;
 
@@ -947,18 +950,21 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.
-	public IEnumerator LockFunctionForTime ( EnumControlLimitations whatToLimit, float seconds, int frames = 0 ) {
+	public IEnumerator LockFunctionForTime ( EnumControlLimitations whatToLimit, float seconds, string source, int frames = 0) {
 		//Add lock to a list based on enum input
 		switch (whatToLimit)
 		{
 			case EnumControlLimitations.canControl:
-				_listOfCanControl.Add(false);
+				S_S_Logic.AddLockToList(ref _locksForCanControl, source);
+				//_locksForCanControl.Add(false);
 				break;
 			case EnumControlLimitations.canTurn:
-				_listOfCanTurns.Add(false);
+				S_S_Logic.AddLockToList(ref _locksForCanTurn, source);
+				//_locksForCanTurn.Add(false);
 				break;
 			case EnumControlLimitations.canDecelerate:
-				_listOfCanDecelerates.Add(false);
+				S_S_Logic.AddLockToList(ref _locksForCanDecelerate, source);
+				//_locksForCanDecelerate.Add(false);
 				break;
 		}
 
@@ -972,13 +978,16 @@ public class S_PlayerPhysics : MonoBehaviour
 		switch (whatToLimit)
 		{
 			case EnumControlLimitations.canControl:
-				_listOfCanControl.RemoveAt(0);
+				S_S_Logic.RemoveLockFromList(ref _locksForCanControl, source);
+				//_locksForCanControl.RemoveAt(0);
 				break;
 			case EnumControlLimitations.canTurn:
-				_listOfCanTurns.RemoveAt(0);
+				S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, source);
+				//_locksForCanTurn.RemoveAt(0);
 				break;
 			case EnumControlLimitations.canDecelerate:
-				_listOfCanDecelerates.RemoveAt(0);
+				S_S_Logic.RemoveLockFromList(ref _locksForCanDecelerate, source);
+				//_locksForCanDecelerate.RemoveAt(0);
 				break;
 		}
 	}

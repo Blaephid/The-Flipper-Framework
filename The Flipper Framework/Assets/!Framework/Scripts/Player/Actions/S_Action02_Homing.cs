@@ -147,10 +147,12 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_currentDirection = Vector3.RotateTowards(_MainSkin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
 
 		//Setting public
-		_PlayerPhys._listOfIsGravityOn.Add(false);
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Homing");
+		//_PlayerPhys._locksForIsGravityOn.Add(false);
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys._canChangeGrounded = false;
-		_PlayerPhys._listOfCanControl.Add(false);
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Homing");
+		//_PlayerPhys._locksForCanControl.Add(false);
 
 		_PlayerPhys.SetIsGrounded(false);
 		_Input._JumpPressed = false;
@@ -223,7 +225,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		//Get direction to move in.
 		Vector3 newDirection = _Target.position - _PlayerPhys._CharacterCenterPosition;
-		_distanceFromTargetSquared = S_S_MoreMathMethods.GetDistanceOfVectors(_Target.position, _PlayerPhys._CharacterCenterPosition);
+		_distanceFromTargetSquared = S_S_MoreMaths.GetDistanceOfVectors(_Target.position, _PlayerPhys._CharacterCenterPosition);
 		float thisTurn =  _homingTurnSpeed_;
 
 		//Set Player location when close enough, for precision. Remember to square anything compared to a distance as the method we made does not square root the answer.
@@ -288,10 +290,15 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		//Return control options that were lost.
 		_PlayerPhys._canChangeGrounded = true;
-		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
-			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-		if(_PlayerPhys._listOfCanControl.Count > 0)
-			_PlayerPhys._listOfCanControl.RemoveAt(0);
+		//if(_PlayerPhys._locksForIsGravityOn.Count > 0)
+		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
+
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Homing");
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "Homing");
+
+		//if (_PlayerPhys._locksForCanControl.Count > 0)
+		//	_PlayerPhys._locksForCanControl.RemoveAt(0);
+
 		if(_Actions._listOfSpeedOnPaths.Count > 0)
 			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 	}

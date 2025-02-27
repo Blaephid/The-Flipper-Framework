@@ -41,7 +41,7 @@ public class S_CustomInspector_Base : Editor
 
 	public bool IsThemeNotSet () {
 		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
-		if (S_S_CustomInspectorMethods.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
+		if (S_S_CustomInspector.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
 		{
 			_InspectorTheme = GetInspectorStyleFromSerializedObject();
 			ApplyStyle();

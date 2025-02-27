@@ -33,7 +33,7 @@ public class CustomInpsectorEditor : Editor
 
 		//Default Main Header
 		DrawLabel("_MainHeaders", "Main Headers", new GUIStyle(Details._MainHeaders));
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset")) 
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset")) 
 			{ Details._MainHeaders = new GUIStyle(GUI.skin.label); }
 		serializedObject.ApplyModifiedProperties();
 		GUILayout.EndHorizontal();
@@ -41,7 +41,7 @@ public class CustomInpsectorEditor : Editor
 
 		//Default Sub Header
 		DrawLabel("_SubHeaders", "Sub-Headers", new GUIStyle(Details._SubHeaders));
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset"))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset"))
 			{ Details._SubHeaders = new GUIStyle(GUI.skin.label); }
 		serializedObject.ApplyModifiedProperties();
 		GUILayout.EndHorizontal();
@@ -49,7 +49,7 @@ public class CustomInpsectorEditor : Editor
 
 		//Default Normal Header
 		DrawLabel("_ReplaceNormalHeaders", "Normal Headers", new GUIStyle(Details._ReplaceNormalHeaders));
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset"))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset"))
 			{ Details._ReplaceNormalHeaders = new GUIStyle(GUI.skin.label); }
 		serializedObject.ApplyModifiedProperties();
 		GUILayout.EndHorizontal();
@@ -57,7 +57,7 @@ public class CustomInpsectorEditor : Editor
 
 		//General Button
 		DrawButton("_GeneralButton", "General Buton", new GUIStyle(Details._GeneralButton));
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset"))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset"))
 		{ Details._GeneralButton = new GUIStyle(GUI.skin.button); }
 		serializedObject.ApplyModifiedProperties();
 		GUILayout.EndHorizontal();
@@ -65,7 +65,7 @@ public class CustomInpsectorEditor : Editor
 
 		//reset Button
 		DrawButton("_ResetButton", "Reset Button", new GUIStyle(Details._ResetButton));
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset"))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Reset", new GUIStyle(Details._ResetButton), Details, "Reset"))
 			{ Details._ResetButton = new GUIStyle(GUI.skin.button); }
 		serializedObject.ApplyModifiedProperties();
 		GUILayout.EndHorizontal();
@@ -76,7 +76,7 @@ public class CustomInpsectorEditor : Editor
 			EditorGUILayout.Space(Details.__spaceSize);
 			EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
 			GUILayout.BeginHorizontal();			
-			S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject,"Example", new GUIStyle(inputStyle), null);		
+			S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Example", new GUIStyle(inputStyle), null);		
 		}
 
 		void DrawLabel ( string property, string outputName, GUIStyle inputStyle ) {

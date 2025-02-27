@@ -12,6 +12,21 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Mat_lamp_a2_RC
+    second: {fileID: 2100000, guid: f23445f90ec36174baeff75783798a61, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_lamp_a_RC
+    second: {fileID: 2100000, guid: f23445f90ec36174baeff75783798a61, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_light_sign_RC
+    second: {fileID: 2100000, guid: 6d7fda52f5cc11245adaccefc8c4cce8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Mat_metal_duct_RC
     second: {fileID: 2100000, guid: 1ed18402e8b3b964aaaeeedd2e4ff493, type: 2}
   - first:

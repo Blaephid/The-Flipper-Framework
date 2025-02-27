@@ -31,7 +31,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	private S_Handler_CharacterAttacks      _AttackHandler;
 	private S_Handler_HealthAndHurt         _HurtAndHealth;
-	private S_Interaction_Triggers	_TriggerInteraction;
+	private S_Interaction_Triggers  _TriggerInteraction;
 
 	private S_Handler_Camera      _CamHandler;
 	private S_Control_SoundsPlayer _Sounds;
@@ -138,7 +138,8 @@ public class S_Interaction_Objects : MonoBehaviour
 					if (Col.transform.up.y > 0.7f)
 					{
 						StartCoroutine(RemoveAdditionalVerticalVelocity(_PlayerVel._coreVelocity.y));
-						_PlayerPhys._listOfIsGravityOn.Add(false);
+						S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "InUpdraft");
+						//_PlayerPhys._locksForIsGravityOn.Add(false);
 						_PlayerPhys.SetIsGrounded(false);
 					}
 				}
@@ -204,7 +205,8 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "Wind":
 				_numberOfWindForces -= 1;
 				if (Col.transform.up.y > 0.7f)
-					_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+					//_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
+					S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "InUpDraft");
 				if (_numberOfWindForces == 0)
 					_totalWindDirection = Vector3.zero;
 				break;
@@ -302,7 +304,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		Destroy(newGameObject);
 
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
-		float distanceSquared = S_S_MoreMathMethods.GetDistanceOfVectors(relativePlayerPosition, _PlayerPhys._CharacterPivotPosition);
+		float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(relativePlayerPosition, _PlayerPhys._CharacterPivotPosition);
 
 		float power = 0;
 		if (distanceSquared < 9)
@@ -339,7 +341,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			//If the wind will increase velocity overall, then apply to coreVelocity so it remains, rather than just being temporary like with the constant general.
 			if (nextVelocity.sqrMagnitude > relevantCoreVelocity.sqrMagnitude)
 			{
-				lateralWind = S_S_MoreMathMethods.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
+				lateralWind = S_S_MoreMaths.ClampMagnitudeWithSquares(lateralWind, 0, 30); //To prevent player suddenly shooting off at 100+ speed when slowing down infront of a strong fan.
 
 				//If added normally, then running perpendicular to the wind, the full force would be added, but immediately turned away, increasing velocity in the unintended direction.
 				//So only add the amount specifically in the wind direction, using project.
@@ -456,7 +458,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		HitAirLauncher();
 
 		//Calculate launch
-		float force = DashRingScript._willCarrySpeed_ ? Mathf.Max(DashRingScript._launchData_._force_, _PlayerVel._currentRunningSpeed) : 
+		float force = DashRingScript._willCarrySpeed_ ? Mathf.Max(DashRingScript._launchData_._force_, _PlayerVel._currentRunningSpeed) :
 			DashRingScript._launchData_._force_ ;
 		Vector3 direction = DashRingScript._launchData_._directionToUse_;
 
@@ -484,7 +486,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	}
 
-	private Vector3 SnapToObject (Transform Object ,Vector3 Offset) {
+	private Vector3 SnapToObject ( Transform Object, Vector3 Offset ) {
 		//For consistency, ensure player always launches out of ring of off booster from the same point.
 		Vector3 snapPosition = Object.position + (Object.rotation * Offset);
 
@@ -510,7 +512,7 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		// Immediate effects on player
 		_Actions._ActionDefault.CancelCoyote(); //Ensures can't make a normal jump being launched.
-		_PlayerPhys._listOfIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
+		_PlayerPhys._locksForIsGravityOn.Clear(); //Counteracts any actions that might have disabled this.
 
 		//Sets player to immediately face upwards so launch direction is always correct.
 		_PlayerPhys.SetPlayerRotation(Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation, true);
@@ -578,7 +580,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, Col.transform));
 		}
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
-		else if(!SpringScript._keepHorizontal_)
+		else if (!SpringScript._keepHorizontal_)
 		{
 			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col.transform);
 		}
@@ -591,7 +593,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			_Actions._ActionDefault.SetSkinRotationToVelocity(0, SpringScript.transform.forward, Vector2.zero, transform.up);
 		}
-		
+
 		//Effects on spring
 		if (Col.GetComponent<AudioSource>()) { Col.GetComponent<AudioSource>().Play(); }
 		if (SpringScript._Animator != null)
@@ -650,12 +652,13 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
-	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 offset, Vector3 coreVelocity, Transform Object, int frames = 3) {
+	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 offset, Vector3 coreVelocity, Transform Object, int frames = 3 ) {
 
 		_Actions._canChangeActions = false;
 		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.
 
-		_PlayerPhys._listOfCanControl.Add(false); //Prevents any input interactions changing core velocity while locked here.
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "ReadyForce");
+		//_PlayerPhys._locksForCanControl.Add(false); //Prevents any input interactions changing core velocity while locked here.
 
 		//Player rotation. Will be determined by the force direction. Usually based on core, but if that isnt present, based on environment.
 		if (coreVelocity.sqrMagnitude > 1)
@@ -681,7 +684,9 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		SnapToObject(Object, offset); ; //Ensures player is set to inside of spring, so bounce is consistant. 
 
-		_PlayerPhys._listOfCanControl.RemoveAt(0);
+
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "ReadyForce");
+		//_PlayerPhys._locksForCanControl.RemoveAt(0);
 
 		_PlayerVel.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
 		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_GeneralEnums.ChangeLockState.Lock); //Apply bounce

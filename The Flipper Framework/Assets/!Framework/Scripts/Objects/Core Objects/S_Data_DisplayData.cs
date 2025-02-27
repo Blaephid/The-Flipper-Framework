@@ -77,7 +77,7 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 	private void OnSelectionChanged () {
 		//If a reference object or this is selected, reveal the text.
-		if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, _ObjectsToReference, 2))
+		if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, _ObjectsToReference, 2))
 		{
 			_isSelected = true;
 			RevealOrHide(true);
@@ -121,14 +121,14 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 			StrucDataToDisplay ThisData = _DataToDisplay[i];
 
 			//Ensures the name taken in from a human matches code style, so it can find a field.
-			string translatedVariableName = S_S_EditorMethods.TranslateStringToVariableName(ThisData.variableName, ThisData.casing);
+			string translatedVariableName = S_S_Editor.TranslateStringToVariableName(ThisData.variableName, ThisData.casing);
 			if (translatedVariableName == "")
 			{
 				UpdateData(ThisData.structName, "");
 				continue;
 			}
 
-			string translatedStructName = ThisData.structName == "" ? "" : S_S_EditorMethods.TranslateStringToVariableName(ThisData.structName, S_EditorEnums.CasingTypes.Either);
+			string translatedStructName = ThisData.structName == "" ? "" : S_S_Editor.TranslateStringToVariableName(ThisData.structName, S_EditorEnums.CasingTypes.Either);
 
 			if(_DataSources.Count == 0)
 			{
@@ -139,7 +139,7 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 			//Goes through each data source until a field matching the given name is found, and returns that value
 			object value = null;
 			for (int s = 0 ; value == null & s < _DataSources.Count ; s++)
-				value = (S_S_EditorMethods.FindFieldByName(_DataSources[s], translatedVariableName, translatedStructName));
+				value = (S_S_Editor.FindFieldByName(_DataSources[s], translatedVariableName, translatedStructName));
 
 			//If nothing was found
 			if(value == null) { _updateAutomatically = false; break; }
@@ -149,8 +149,8 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 			displayValue = GetContentsIfListOrArray(displayValue, value);
 
-			displayValue = S_S_EditorMethods.CleanBracketsInString(displayValue, '(', ')');
-			displayValue = S_S_EditorMethods.CleanBracketsInString(displayValue, '[', ']');
+			displayValue = S_S_Editor.CleanBracketsInString(displayValue, '(', ')');
+			displayValue = S_S_Editor.CleanBracketsInString(displayValue, '[', ']');
 
 			UpdateData(translatedStructName, displayValue);
 			continue;
@@ -251,13 +251,13 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 		transform.localRotation = Quaternion.identity; //If in line with parent, scaling for children will be as if they have no parents, as this object "resets" it.
 		 //180 makes them face the other way, as if the Rect transforms faced the player, they'd actually be looking away.
-		S_S_EditorMethods.FaceSceneViewCamera(_3DTitle.transform, 180);
+		S_S_Editor.FaceSceneViewCamera(_3DTitle.transform, 180);
 
 		float affectedScale = transform.parent != null ?
-			Mathf.Clamp(_scale, _scale * S_S_MoreMathMethods.GetLargestOfVector(transform.parent.lossyScale) / 50, 20)
+			Mathf.Clamp(_scale, _scale * S_S_MoreMaths.GetLargestOfVector(transform.parent.lossyScale) / 50, 20)
 			: 1;
 
-		transform.localScale = S_S_ObjectMethods.LockScale(transform, affectedScale); //Ensures object is never stretched. Cannot rotate this object, else calculations will fail.
+		transform.localScale = S_S_Objects.LockScale(transform, affectedScale); //Ensures object is never stretched. Cannot rotate this object, else calculations will fail.
 	}
 
 	//This is called by S_EditorLink, and in the OnSceneGUI in the editor class below.
@@ -289,34 +289,34 @@ public class DisplayDataEditor : S_CustomInspector_Base
 		EditorGUILayout.TextArea("Details.", EditorStyles.textArea);
 
 		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Settings", _NormalHeaderStyle);
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_updateAutomatically", "Update Automatically");
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_onlyDisplayWhenSelected", "Only Display When Selected");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_updateAutomatically", "Update Automatically");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_onlyDisplayWhenSelected", "Only Display When Selected");
 		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Transform", _NormalHeaderStyle);
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_updateTransform", "Update Transform");
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_scale", "Scale");
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_placeAboveObject", "Place Above Object");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_updateTransform", "Update Transform");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_scale", "Scale");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_placeAboveObject", "Place Above Object");
 		EditorGUILayout.Space(_spaceSize); EditorGUILayout.LabelField("Object References", _NormalHeaderStyle);
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_ObjectsToReference", "Objects To Reference", false, true);
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_3DTitle", "Title Object");
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_3DText", "Text Object");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_ObjectsToReference", "Objects To Reference", false, true);
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_3DTitle", "Title Object");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_3DText", "Text Object");
 
 		EditorGUILayout.Space(_spaceSize);
 
 		EditorGUILayout.LabelField("Data", _NormalHeaderStyle);
-		S_S_CustomInspectorMethods.DrawEditableProperty(serializedObject, "_displayTitle", "Object Title");
+		S_S_CustomInspector.DrawEditableProperty(serializedObject, "_displayTitle", "Object Title");
 
 		//Add new element button.
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Manually Update Data", _BigButtonStyle, _OwnerScript, "Update 3D Text"))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Manually Update Data", _BigButtonStyle, _OwnerScript, "Update 3D Text"))
 		{
 			_OwnerScript.UpdateData();
 		}
 
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Add New Data", _BigButtonStyle, _OwnerScript))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Add New Data", _BigButtonStyle, _OwnerScript))
 		{
 			_OwnerScript._DataToDisplay.Add(new S_Data_DisplayData.StrucDataToDisplay());
 		}
 
-		S_S_CustomInspectorMethods.DrawListCustom(serializedObject, "_DataToDisplay", _SmallButtonStyle, _OwnerScript,
+		S_S_CustomInspector.DrawListCustom(serializedObject, "_DataToDisplay", _SmallButtonStyle, _OwnerScript,
 			DrawListElementName, DrawWithEachListElement);
 	}
 

@@ -224,13 +224,13 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 		if (_counter <= _keepLockingControlUntil)
 		{
 			_Input.LockInputForAWhile(1, false,  _lockInputToThis);
-			StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0, 1));
+			StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0, "HurtOneFrame", 1));
 		}
 	}
 
 	private void AffectMovement() {
 		//If given feedback and doesn't have control right now.
-		if ((!_HurtControl._wasHurtWithoutKnockback || _HurtControl._isDead) && _PlayerPhys._listOfCanControl.Count > 0)
+		if ((!_HurtControl._wasHurtWithoutKnockback || _HurtControl._isDead) && _PlayerPhys._locksForCanControl.Count > 0)
 		{
 			//If on the ground, use the decelerate method (which is currently disabled normally) to decrease horizontal movement.
 			if (_PlayerPhys._isGrounded && _counter > 10)

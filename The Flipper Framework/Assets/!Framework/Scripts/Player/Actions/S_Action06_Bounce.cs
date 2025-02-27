@@ -106,7 +106,8 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		_trackedVerticalSpeed = _PlayerVel._coreVelocity.y;
 
 		//Physics
-		_PlayerPhys._listOfIsGravityOn.Add(false); //Moving down will be handled here rather than through the premade gravity in physics script.
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
+		//_PlayerPhys._locksForIsGravityOn.Add(false); //Moving down will be handled here rather than through the premade gravity in physics script.
 		_PlayerVel.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
 		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerVel._coreVelocity.y - 20);
 		_PlayerVel.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0)); // Apply downward force, this is instant rather than  ramp up like gravity.
@@ -137,7 +138,8 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 
 		//Incase this was disabled by changing action, rather than a bounce.
 		if(!_hasBounced)
-			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+			//_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
+			S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
 
 		_HomingTrailScript.emitTime = 0.2f;
 	}
@@ -250,8 +252,9 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		}
 
 		//Starts applying normal force downwards again, even before exiting action.
-		if(_PlayerPhys._listOfIsGravityOn.Count > 0) 
-			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		//if(_PlayerPhys._locksForIsGravityOn.Count > 0) 
+		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
 
 		Vector3 input = transform.TransformDirection(_PlayerPhys._PlayerMovement._moveInput);
 

@@ -663,10 +663,10 @@ MonoBehaviour:
   _Groundmask_:
     serializedVersion: 2
     m_Bits: 0
-  _frameCount: 0
   _arePhysicsOn: 1
   _CharacterCenterPosition: {x: 0, y: 0, z: 0}
   _CharacterPivotPosition: {x: 0, y: 0, z: 0}
+  _CharacterPhysicsPosition: {x: 0, y: 0, z: 0}
   _feetOffsetFromPivotPoint: {x: 0, y: 0, z: 0}
   _colliderOffsetFromCentre: {x: 0, y: 0, z: 0}
   _isGrounded: 0
@@ -1144,6 +1144,7 @@ MonoBehaviour:
   _lockAccelerationAndTurningToDefault: 0
   _moveInput: {x: 0, y: 0, z: 0}
   _trackMoveInput: {x: 0, y: 0, z: 0}
+  _useFlatTurnRate: 0
   _currentTopSpeed: 0
   _currentMaxSpeed: 0
   _currentMinSpeed: 0
@@ -13078,7 +13079,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.8
+  m_Volume: 0.676
   m_Pitch: 1
   Loop: 0
   Mute: 0

@@ -206,20 +206,27 @@ public class S_Handler_Camera : MonoBehaviour
 	}
 
 	//Will either make it so the camera can't be moved in the hedge cam script, or that it can.
-	public void SetLockCameras ( S_Trigger_Camera cameraData, bool setTo,  bool overWriteIfFalse = true ) {
+	public void SetLockCameras ( S_Trigger_Camera cameraData, bool setTo, bool overWriteIfFalse = true ) {
 		//For each boolean, only set if camera data is set true (meaning camera data effects this, ignore if not.
 		//If overwritting everything, then just set to false.
 
-		_HedgeCam._isMasterLocked = !overWriteIfFalse? false : 
-			(cameraData._lockCamera ? setTo : _HedgeCam._isMasterLocked);
-		_HedgeCam._isLocked = !overWriteIfFalse ? false :
-			(cameraData._lockCamera ? setTo : _HedgeCam._isLocked);
-		_HedgeCam._isYLocked = !overWriteIfFalse ? false :
-			(cameraData._lockCameraY ? setTo : _HedgeCam._isYLocked);
-		_HedgeCam._isXLocked = !overWriteIfFalse ? false :
-			(cameraData._lockCameraX ? setTo : _HedgeCam._isXLocked);
-		_HedgeCam._cameraPausedLocked = !overWriteIfFalse ? false :
-			(cameraData._lockCameraPause ? setTo : _HedgeCam._cameraPausedLocked);
+
+		if (!overWriteIfFalse)
+		{
+			_HedgeCam._isXLocked = false;
+			_HedgeCam._isYLocked = false;
+			_HedgeCam._isLocked = false;
+			_HedgeCam._isMasterLocked = false;
+			S_S_Logic.RemoveLockFromList(ref _HedgeCam._locksForCameraFallBack, "cameraTrigger");
+		}
+		else
+		{
+			_HedgeCam._isMasterLocked = cameraData._lockCamera ? setTo : _HedgeCam._isMasterLocked;
+			_HedgeCam._isLocked = cameraData._lockCamera ? setTo : _HedgeCam._isLocked;
+			_HedgeCam._isYLocked = cameraData._lockCameraY ? setTo : _HedgeCam._isYLocked;
+			_HedgeCam._isXLocked = cameraData._lockCameraX ? setTo : _HedgeCam._isXLocked;
+			if (cameraData._lockCameraFallBack) { S_S_Logic.AddLockToList(ref _HedgeCam._locksForCameraFallBack, "cameraTrigger"); }
+		}
 	}
 
 	//Calls the hedgecam to rotate towards or change height.

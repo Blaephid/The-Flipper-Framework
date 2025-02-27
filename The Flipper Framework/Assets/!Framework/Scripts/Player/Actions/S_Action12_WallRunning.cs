@@ -158,8 +158,10 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		_PlayerPhys._canChangeGrounded = false;
 
 		//Control
-		_PlayerPhys._listOfCanControl.Add(false);
-		_PlayerPhys._listOfIsGravityOn.Add(false);
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "WallRunning");
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "WallRunning");
+		//_PlayerPhys._locksForCanControl.Add(false);
+		//_PlayerPhys._locksForIsGravityOn.Add(false);
 
 		this.enabled = true;
 	}
@@ -178,11 +180,14 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		_CamHandler._HedgeCam._shouldSetHeightWhenMoving_ = false;
 
 		//Control
-		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
-			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-		if(_PlayerPhys._listOfCanControl.Count > 0)
-			_PlayerPhys._listOfCanControl.RemoveAt(0);
+		//if(_PlayerPhys._locksForIsGravityOn.Count > 0)
+		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
+		//if(_PlayerPhys._locksForCanControl.Count > 0)
+		//	_PlayerPhys._locksForCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
+
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "WallRunning");
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "WallRunning");
 
 		//Return camera to normal position
 		_CamHandler._HedgeCam.ReturnCameraTargetsToNormal(_CamHandler._HedgeCam._BaseTarget, 30);

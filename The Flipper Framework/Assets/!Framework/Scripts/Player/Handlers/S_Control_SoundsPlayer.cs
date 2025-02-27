@@ -91,8 +91,8 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		}
 	}
 
-	public void RailGrindSound () {
-		if (FeetSource.isPlaying) { return; }
+	public void RailGrindSound (bool overwrite = false) {
+		if (FeetSource.isPlaying && !overwrite) { return; }
 		FeetSource.clip = RailGrind;
 		FeetSource.Play();
 	}

@@ -51,11 +51,11 @@ public class S_Vis_Base : MonoBehaviour
 		if (transform.parent != null)
 		{
 			if(_drawIfParentSelected)
-				if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform.parent, new GameObject[] { transform.parent.gameObject })) { DrawGizmosAndHandles(true); return; }
-			if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject })) { DrawGizmosAndHandles(true); return; }
+				if (S_S_Editor.IsThisOrListOrChildrenSelected(transform.parent, new GameObject[] { transform.parent.gameObject })) { DrawGizmosAndHandles(true); return; }
+			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject })) { DrawGizmosAndHandles(true); return; }
 		}
 		else
-			if (S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null)){ DrawGizmosAndHandles(true); return; }
+			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, null)){ DrawGizmosAndHandles(true); return; }
 
 		if (_drawAtAllTimes)
 		{
@@ -71,7 +71,7 @@ public class S_Vis_Base : MonoBehaviour
 
 	public virtual void VisualiseWithSelectableHandle (Vector3 position ,float handleRadius) {
 		//Only draw select handle if not already selected.
-		if (gameObject == null || transform == null || S_S_EditorMethods.IsThisOrListOrChildrenSelected(transform, null, 0))
+		if (gameObject == null || transform == null || S_S_Editor.IsThisOrListOrChildrenSelected(transform, null, 0))
 		{ return; }
 
 		//Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
@@ -80,7 +80,7 @@ public class S_Vis_Base : MonoBehaviour
 
 		using (new Handles.DrawingScope(color))
 		{
-			S_S_DrawingMethods.DrawSelectableHandle(position, gameObject, handleRadius);
+			S_S_Drawing.DrawSelectableHandle(position, gameObject, handleRadius);
 		}
 	}
 }

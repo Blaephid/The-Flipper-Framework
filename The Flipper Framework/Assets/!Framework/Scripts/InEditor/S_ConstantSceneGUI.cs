@@ -103,7 +103,7 @@ public class S_ConstantSceneGUI : MonoBehaviour
 		//Prevents the scene objects from enabling if currently in prefab view. This prevents a bunch of things being drawn when this object is not relevant.
 		else if (prefabStage != null)
 		{
-			if(S_S_EditorMethods.CheckCallerMethodsFor("OnEnable")) {return;} //Because prefabContentsRoot cannot be used when called during an OnEnable, if this was called from that, do nothing and continue.
+			if(S_S_Editor.CheckCallerMethodsFor("OnEnable")) {return;} //Because prefabContentsRoot cannot be used when called during an OnEnable, if this was called from that, do nothing and continue.
 			else if (prefabStage.prefabContentsRoot != gameObject.transform.root.gameObject) { return; }
 		}
 
@@ -148,7 +148,7 @@ public class SceneGuiConstantEditor : S_CustomInspector_Base
 		EditorGUILayout.TextArea("Link a component using ICustomEditorLogic CustomOnSceneGUI() to call that constantly no matter what is selected. It will use the built in SceneView.duringSceneGui event ", EditorStyles.textArea);
 		DrawDefaultInspector();
 
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Enable", _BigButtonStyle))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Enable", _BigButtonStyle))
 		{
 			_OwnerScript.OnEnable();
 		}

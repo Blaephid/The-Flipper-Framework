@@ -128,7 +128,9 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		{
 			//Disables on control of character.
 			_Input._move = Vector3.zero;
-			_PlayerPhys._listOfCanControl.Add(false);
+			//_PlayerPhys._locksForCanControl.Add(false);
+			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "NextStage");
+
 
 			_readyCount += Time.deltaTime;
 

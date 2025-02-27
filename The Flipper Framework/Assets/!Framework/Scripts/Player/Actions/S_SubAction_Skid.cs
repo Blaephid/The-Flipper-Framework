@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Cinemachine.DocumentationSortingAttribute;
+
 
 public class S_SubAction_Skid : S_Action_Base, ISubAction
 {
@@ -95,7 +95,7 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 
 			_Tools.CharacterAnimator.SetBool("Skidding", true);
 			_isSkidding = true;
-			if (_shouldSkiddingDisableTurning_) { _PlayerPhys._listOfCanTurns.Add(false); }
+			if (_shouldSkiddingDisableTurning_) { S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanTurn, "Skid"); }
 		}
 	}
 
@@ -105,7 +105,7 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 		{
 			_Tools.CharacterAnimator.SetBool("Skidding", false);
 			_isSkidding = false;
-			if (_shouldSkiddingDisableTurning_) { _PlayerPhys._listOfCanTurns.Remove(false); }
+			if (_shouldSkiddingDisableTurning_) { S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanTurn, "Skid"); }
 		}
 	}
 

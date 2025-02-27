@@ -14,7 +14,7 @@ public class S_DeactivateOnStart : MonoBehaviour
 		Deactivate
 	}
 
-	void OnEnable () {
+	void Start () {
 		StartCoroutine(Delay());
 	}
 

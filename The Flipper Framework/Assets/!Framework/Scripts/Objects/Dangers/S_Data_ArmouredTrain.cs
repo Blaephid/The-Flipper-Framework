@@ -42,7 +42,7 @@ public class S_Data_ArmouredTrain : S_Data_Base
 		{
 			for (int i = _Segments.Length ; i < _ChildObjectSegments.Count ; i++)
 			{
-				GameObject extraSegment = S_S_EditorMethods.FindChild(gameObject, "Segment - " +(i+1));
+				GameObject extraSegment = S_S_Editor.FindChild(gameObject, "Segment - " +(i+1));
 				if (extraSegment) GameObject.DestroyImmediate(extraSegment);
 			}
 		}
@@ -59,7 +59,7 @@ public class S_Data_ArmouredTrain : S_Data_Base
 			GameObject source = _Segments[i]._Source;
 
 			//This will either find the child object by name, create it, of if replace is true, find the child but delete and recreate it (allowing all needed components to be set properly)
-			GameObject thisSegment = S_S_EditorMethods.FindOrCreateChild(gameObject, "Segment - " +(i+1),
+			GameObject thisSegment = S_S_Editor.FindOrCreateChild(gameObject, "Segment - " +(i+1),
 				new System.Type[] {
 				typeof(MeshCollider),
 				typeof(Animator)}
@@ -110,7 +110,7 @@ public class ArmouredTrainEditor : S_CustomInspector_Base
 
 		DrawDefaultInspector();
 
-		if (S_S_CustomInspectorMethods.IsDrawnButtonPressed(serializedObject, "Reset Segment Children", _BigButtonStyle, _OwnerScript, "Reset Segment Children"))
+		if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Reset Segment Children", _BigButtonStyle, _OwnerScript, "Reset Segment Children"))
 		{
 			_OwnerScript.RemoveExtraSegmentsIfNotWanted();
 			_OwnerScript.ResetOrCreateSegmentChildren(true);

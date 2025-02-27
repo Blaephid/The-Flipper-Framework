@@ -15,7 +15,7 @@ public class S_FlameThrower : MonoBehaviour
 	}
 
 	void Flame () {
-		if (S_S_MoreMathMethods.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.position, transform.position) < Mathf.Pow(Distance, 2))
+		if (S_S_MoreMaths.GetDistanceOfVectors(S_SpawnCharacter._SpawnedPlayer.position, transform.position) < Mathf.Pow(Distance, 2))
 		{
 			Particle.Emit(1);
 		}
