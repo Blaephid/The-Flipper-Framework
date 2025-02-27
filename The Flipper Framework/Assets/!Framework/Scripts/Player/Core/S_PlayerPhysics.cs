@@ -679,8 +679,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.cyan, 5f);
 
-		Debug.Log(_frameCount);
-
 		return velocity;
 	}
 
