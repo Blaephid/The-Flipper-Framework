@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 
 [ExecuteAlways]
@@ -30,22 +31,29 @@ public class S_FollowObject : MonoBehaviour
 		}
 
 		_RememberParent = _Parent;
+
+		Follow();
 	}
 
 	private void OnEnable () {
-		if((_followInPlay && Application.isPlaying ) || !Application.isPlaying) { _isFollowing = true; }
+		if((_followInPlay && Application.isPlaying ) || !Application.isPlaying) { _isFollowing = true; Follow(); }
 	}
 
 	private void OnDisable () {
-		if ((_followInPlay && Application.isPlaying) || !Application.isPlaying) { _isFollowing = true; }
+		if ((_followInPlay && Application.isPlaying) || !Application.isPlaying) { _isFollowing = true; Follow(); }
 	}
 
-	[ExecuteInEditMode]
+	[ExecuteAlways]
 	// Update is called once per frame
 	void Update () {
-		if(!_isFollowing || !_Parent) { return; }
+		Follow(true);
+	}
 
-		if (transform.position - _Parent.position != _rememberOffset && _rememberOffset == _offset)
+	private void Follow (bool canAdjust = false) {
+
+		if (!_isFollowing || !_Parent) { return; }
+
+		if (canAdjust && Selection.activeGameObject == gameObject &&  transform.position - _Parent.position != _rememberOffset && _rememberOffset == _offset)
 			_offset = transform.position - _Parent.position;
 
 		transform.position = _Parent.position + _offset;

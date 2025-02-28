@@ -371,7 +371,7 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   DeactivateOnStart: 0
   updateInPlayMode: 0
-  curveSpace: 0
+  curveSpace: 1
   enableCollider: 0
   enableVisual: 1
   ObjTag: Rail
@@ -587,7 +587,7 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   DeactivateOnStart: 0
   updateInPlayMode: 0
-  curveSpace: 0
+  curveSpace: 1
   enableCollider: 1
   enableVisual: 1
   ObjTag: Rail
@@ -649,7 +649,7 @@ MonoBehaviour:
   scale: {x: 1, y: 1, z: 1}
   DeactivateOnStart: 0
   updateInPlayMode: 0
-  curveSpace: 0
+  curveSpace: 1
   enableCollider: 0
   enableVisual: 1
   ObjTag: Rail

@@ -22,7 +22,7 @@ public class S_Handler_Camera : MonoBehaviour
 	[HideInInspector] public float _initialFOV;
 
 	//This is used to check what the current dominant trigger is, as multiple triggers might be working together under one effect. These will have their read values set to the same.
-	private List<S_Trigger_Base> _CurrentActiveCameraTriggers = new List<S_Trigger_Base>();
+	private List<S_Trigger_External> _CurrentActiveCameraTriggers = new List<S_Trigger_External>();
 
 	void Awake () {
 		_Tools = GetComponentInParent<S_CharacterTools>();

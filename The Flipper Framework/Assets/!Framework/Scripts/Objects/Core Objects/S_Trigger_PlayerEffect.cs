@@ -11,7 +11,6 @@ public class S_Trigger_PlayerEffect : S_Trigger_External
 
 	[Header("Interaction")]
 	[SetBoolIfOther(true, "_ActionsToDisable", 0), SetBoolIfOther(true, "_SubActionsToDisable", 0)]
-	public bool		_deactivateOnExit;
 	public float	_framesBeforeDeactivate = 0;
 
 	[Header("Input")]

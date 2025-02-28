@@ -86,6 +86,7 @@ public class S_Trigger_Camera : S_Trigger_External
 
 	[DrawHorizontalWithOthers(new string[] { "_asLocalOffset", "_overWriteAllOffsets" })]
 	[Tooltip("How many frames it takes to reach this offset")]
+	[OnlyDrawIf("_willOffsetTarget", true)]
 	public int _framesToOffset;
 	[OnlyDrawIf("_willOffsetTarget", true)]
 	[HideInInspector]
@@ -93,6 +94,7 @@ public class S_Trigger_Camera : S_Trigger_External
 	public bool _asLocalOffset = true;
 	[HideInInspector]
 	[Tooltip("If true, the offset will be unaffected by any HedgeCamera calculations that move the offset. If false, the offset will be affected by other offsets like input direction")]
+	[OnlyDrawIf("_willOffsetTarget", true)]
 	public bool _overWriteAllOffsets;
 
 	[DrawHorizontalWithOthers(new string[] { "_meshScale" }, new float[] { 2.5f, 1f })]

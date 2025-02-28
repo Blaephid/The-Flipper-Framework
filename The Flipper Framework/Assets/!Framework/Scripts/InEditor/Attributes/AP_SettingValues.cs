@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 
@@ -43,7 +44,7 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 		_propertyToSet = property;
 
 		//If this property should be set to something else based on another, then change it now, before drawing.
-		if (ShouldSetBoolean(_propertyToSet))
+		if (ShouldSetBoolean(_propertyToSet) && _propertyToSet.propertyType == SerializedPropertyType.Boolean)
 		{
 			_propertyToSet.boolValue = _setThisBoolTo; //Set property
 		}

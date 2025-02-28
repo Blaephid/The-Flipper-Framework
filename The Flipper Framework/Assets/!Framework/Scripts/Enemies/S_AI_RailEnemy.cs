@@ -7,12 +7,12 @@ using System.Linq;
 namespace SplineMesh
 {
 	[RequireComponent(typeof(Spline))]
-	public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
+	public class S_AI_RailEnemy : S_Action05_Rail, ITriggerable
 	{
 
 		[Header("Tools")]
-		public Rigidbody rb;
-		public GameObject[] models;
+		private Rigidbody _RB;
+		public GameObject[] _Models;
 		public float modelDistance = 30;
 		public LayerMask railMask;
 
@@ -38,10 +38,6 @@ namespace SplineMesh
 		public AnimationCurve followBySpeedDif;
 		public float followSpeed = 0.5f;
 		public float SlopePower = 2.5f;
-		public float UpHillMultiplier = 0.25f;
-		public float DownHillMultiplier = 0.35f;
-		public float HopDelay;
-		public float hopDistance = 12;
 
 		bool active = false;
 		[HideInInspector] public S_Action05_Rail playerRail;
@@ -60,6 +56,7 @@ namespace SplineMesh
 		bool firstSet = true;
 		Vector3 useOffset;
 
+		#region inherited
 
 		private void Start () {
 			if(!startSpline) { return; }
@@ -78,6 +75,12 @@ namespace SplineMesh
 			alignCars();
 		}
 
+		private void OnValidate () {
+			
+		}
+
+		#endregion
+
 
 		public void TriggerObjectOn () {
 			active = true;
@@ -89,21 +92,21 @@ namespace SplineMesh
 		}
 
 		void alignCars () {
-			if (models.Length > 0)
+			if (_Models.Length > 0)
 			{
 				float tempRange = GetClosestPos(transform.position, RailSpline);
 				Spline thisSpline = RailSpline;
 
 				if (firstSet)
 				{
-					float maxSpace = models.Length * modelDistance;
+					float maxSpace = _Models.Length * modelDistance;
 					tempRange = Mathf.Clamp(tempRange, maxSpace, thisSpline.Length - maxSpace);
 					firstSet = false;
 				}
 
-				for (int i = 0 ; i < models.Length ; i++)
+				for (int i = 0 ; i < _Models.Length ; i++)
 				{
-					GameObject model = models[i];
+					GameObject model = _Models[i];
 					if ((RailSpline.IsLoop) && (tempRange < 0 || tempRange > thisSpline.Length))
 					{
 						if (!backwards)
@@ -227,8 +230,8 @@ namespace SplineMesh
 			}
 			else if (Rhino)
 			{
-				rb.freezeRotation = false;
-				rb.useGravity = true;
+				_RB.freezeRotation = false;
+				_RB.useGravity = true;
 				active = false;
 			}
 			else if (ArmouredTrain)
@@ -253,29 +256,29 @@ namespace SplineMesh
 			{
 				thisObj.transform.rotation = Quaternion.LookRotation(thisSample.tangent, thisSample.up);
 				if (thisObj == gameObject)
-					rb.velocity = thisSample.tangent * -currentSpeed;
+					_RB.velocity = thisSample.tangent * -currentSpeed;
 			}
 			else
 			{
 				thisObj.transform.rotation = Quaternion.LookRotation(-thisSample.tangent, thisSample.up);
 				if (thisObj == gameObject)
-					rb.velocity = thisSample.tangent * currentSpeed;
+					_RB.velocity = thisSample.tangent * currentSpeed;
 			}
 		}
 
 		void trackPlayer () {
 			if (playerRail._Rail_int._PathSpline == RailSpline)
 			{
-				if (backwards == playerRail._isGoingBackwards)
+				if (backwards == playerRail._RF._isGoingBackwards)
 				{
 					if (backwards)
 					{
-						playerDistance = range - playerRail._pointOnSpline;
+						playerDistance = range - playerRail._RF._pointOnSpline;
 
 					}
 					else
 					{
-						playerDistance = playerRail._pointOnSpline - range;
+						playerDistance = playerRail._RF._pointOnSpline - range;
 					}
 
 					playerSpeed = (_PlayerActions._listOfSpeedOnPaths[0] - currentSpeed) / playerRail._railmaxSpeed_;
@@ -343,9 +346,9 @@ namespace SplineMesh
 
 			firstSet = true;
 			gameObject.SetActive(true);
-			rb.velocity = Vector3.zero;
-			rb.useGravity = false;
-			rb.freezeRotation = true;
+			_RB.velocity = Vector3.zero;
+			_RB.useGravity = false;
+			_RB.freezeRotation = true;
 
 			active = false;
 			RailSpline = startSpline;

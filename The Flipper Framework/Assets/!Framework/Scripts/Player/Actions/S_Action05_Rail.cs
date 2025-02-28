@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.Windows;
 using SplineMesh;
 
+[RequireComponent(typeof(S_RailFollow_Base))]
 public class S_Action05_Rail : S_Action_Base, IMainAction
 {
 
@@ -20,15 +21,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	public S_Interaction_Pathers  _Rail_int;
 	private S_AddOnRail            _ConnectedRails;
 
-	//Current rail
-	private Transform             _RailTransform;
-	private CurveSample            _Sample;
+	[HideInInspector] public S_RailFollow_Base _RF;
 
-	//ZipLine
-	[HideInInspector]
-	public Transform              _ZipHandle;
-	[HideInInspector]
-	public Rigidbody              _ZipBody;
 	#endregion
 
 
@@ -71,30 +65,12 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	#region trackers
 
 	private bool         _canEnterRail = true;            //Prevents the start action method being called multiple times when on a rail. Must be set to false when leaving or starting a hop.
-
-	[HideInInspector]
-	public S_Interaction_Pathers.PathTypes _whatKindOfRail;     //Set when entering the action, deciding if this is a zipline, rail or later added type
-
 	private float                 _pulleyRotate;      //Set by inputs and incorperated into position and rotation on spline when using a zipline. Decides how much to tilt the handle and player.
 
 	private float                 _pushTimer = 0f;    //Constantly goes up, is set to zzero after pushing forward. Implements the delay to prevent constant pushing.
 	[HideInInspector]
-	public float                  _pointOnSpline = 0f; //The actual place on the spline being travelled. The number is how many units along the length of the spline it is (not affected by spline length).
-	[HideInInspector]
-	public bool                   _isGoingBackwards;  //Is the player going up or down on the spline points.
-	private int                   _movingDirection;   //A 1 or -1 based on going backwards or not. Used in calculations.
 	private bool                  _isCrouching;       //Set by input, will change slope calculations
 	private bool                   _isBraking;        //Set by input, if true will decrease speed.
-
-	private Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
-	private Vector3               _sampleLocation;
-	private Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
-
-	//Quaternion rot;
-	private Vector3               _setOffSet;         //Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
-
-
-	private bool                  _isRailLost;        //Set to true when point on spline surpasses the limit, to inform later if statements that update.
 
 
 	//Stepping
@@ -104,9 +80,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	private bool        _isSteppingRight;   //Hopping to a rail on the right or on the left.
 
 	private bool        _isFacingRight = true;        //Used by the animator, changed on push forward.
-
-	private float       _grindingSpeed;     //Set by action pathSpeeds every frame. Used to check movement along rail.
-
+	
 	//Boosters
 	[HideInInspector]
 	public bool         _isBoosted;
@@ -136,7 +110,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		SoundControl();
 		//Handle animations
-		switch (_whatKindOfRail)
+		switch (_RF._whatKindOfRail)
 		{
 			case S_Interaction_Pathers.PathTypes.rail:
 				_Actions._ActionDefault.HandleAnimator(10);
@@ -155,13 +129,13 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (!enabled || !_isGrinding) { return; }
 
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
-		if (_Actions._listOfSpeedOnPaths.Count > 0) { _grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
+		if (_Actions._listOfSpeedOnPaths.Count > 0) { _RF._grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
 
-		PlaceOnRail();
+		_RF.PlaceOnRail(SetRotation, SetPosition);
 		MoveOnRail();
 		if (_canInput) { HandleInputs(); }
 
-		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _grindingSpeed; }//Apples all changes to grind speed.
+		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _RF._grindingSpeed; }//Apples all changes to grind speed.
 	}
 
 	new public bool AttemptAction () {
@@ -186,7 +160,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//Set private 
 		_isGrinding = true;
-		_isRailLost = false;
+		_RF._isRailLost = false;
 		_canInput = true;
 		_pushTimer = _pushFowardDelay_;
 		_distanceToStep = 0; //Ensure not immediately stepping when called
@@ -194,9 +168,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_Rail_int._canGrindOnRail = false; //Prevents calling this multiple times in one update
 
 		//Get how much the character is facing the same way as the point.
-		CurveSample sample = _Rail_int._PathSpline.GetSampleAtDistance(_pointOnSpline);
-		_sampleForwards = _RailTransform.rotation * sample.tangent;
-		float facingDot = Vector3.Dot(_PlayerVel._worldVelocity.normalized, _sampleForwards);
+		CurveSample sample = _RF._PathSpline.GetSampleAtDistance(_RF._pointOnSpline);
+		_RF._sampleForwards = _RF._RailTransform.rotation * sample.tangent;
+		float facingDot = Vector3.Dot(_PlayerVel._worldVelocity.normalized, _RF._sampleForwards);
 
 		//Because this action can start itself by hopping from one rail to another, only do this if hasn't just done so.
 		if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Rail)
@@ -219,14 +193,14 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//Animator
 			_Actions._ActionDefault.SwitchSkin(true);
 			_CharacterAnimator.SetTrigger("ChangedState");
-			switch (_whatKindOfRail)
+			switch (_RF._whatKindOfRail)
 			{
 				case S_Interaction_Pathers.PathTypes.rail:
 					_CharacterAnimator.SetBool("GrindRight", _isFacingRight);   //Sets which direction the character animation is facing. Tracked between rails to hopping doesn't change it.
 					_CharacterAnimator.SetInteger("Action", 10);
 					break;
 				case S_Interaction_Pathers.PathTypes.zipline:
-					_ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; //Ensures there won't be weird collisions along the zipline.
+					_RF._ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; //Ensures there won't be weird collisions along the zipline.
 					_CharacterAnimator.SetInteger("Action", 9);
 					break;
 			}
@@ -234,28 +208,28 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//If got onto this rail from anything except a rail hop, set speed to physics.
 			_Actions._listOfSpeedOnPaths.Add(Mathf.Sqrt(_PlayerVel._speedMagnitudeSquared));
 
-			_grindingSpeed = _PlayerVel._horizontalSpeedMagnitude;
+			_RF._grindingSpeed = _PlayerVel._horizontalSpeedMagnitude;
 			//What action before this one.
 			switch (_Actions._whatCurrentAction)
 			{
 				// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
 				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
-					facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _sampleForwards);
-					_grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
+					facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _RF._sampleForwards);
+					_RF._grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
 					break;
 				//If it was a drop charge, add speed from the charge to the grind speed.
 				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
 					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
-					_grindingSpeed = Mathf.Clamp(charge, _grindingSpeed + (charge / 6), 160);
+					_RF._grindingSpeed = Mathf.Clamp(charge,_RF._grindingSpeed + (charge / 6), 160);
 					break;
 			}
 		}
 
 		// Get Direction for the Rail
-		_isGoingBackwards = facingDot < 0;
+		_RF._isGoingBackwards = facingDot < 0;
 
 		// Apply minimum speed
-		_grindingSpeed = Mathf.Max(_grindingSpeed, _minStartSpeed_);
+		_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _minStartSpeed_);
 
 		//_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
 
@@ -276,15 +250,15 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		//If left this action to perform a jump,
 		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Jump)
 		{
-			switch (_whatKindOfRail)
+			switch (_RF._whatKindOfRail)
 			{
 				case S_Interaction_Pathers.PathTypes.zipline:
-					_PlayerVel.SetCoreVelocity(_sampleForwards * _grindingSpeed, "Overwrite");  //Ensure player carries on momentum
+					_PlayerVel.SetCoreVelocity(_RF._sampleForwards * _RF._grindingSpeed, "Overwrite");  //Ensure player carries on momentum
 					_PlayerPhys._groundNormal = Vector3.up; // Fix rotation
 
 					//After a delay, restore zipline collisions and physics
-					StartCoroutine(_Rail_int.JumpFromZipLine(_ZipHandle, 1));
-					_ZipBody.isKinematic = true;
+					StartCoroutine(_Rail_int.JumpFromZipLine(_RF._ZipHandle, 1));
+					_RF._ZipBody.isKinematic = true;
 					break;
 			}
 		}
@@ -304,8 +278,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_Input._BouncePressed = false;
 
 		//If left, they would still be called if the player went from a zipline onto a rail as they wouldn't be overwritten.
-		_ZipBody = null;
-		_ZipHandle = null;
+		_RF._ZipBody = null;
+		_RF._ZipHandle = null;
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
@@ -320,64 +294,39 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	/// 
 	#region private
 
-	//Physics
-	//Gets new location on rail, changing position and rotation to match. Called in update in order to ensure the character matches the rail in real time.
-	public void PlaceOnRail () {
-		//Increase/decrease the Amount of distance travelled on the Spline by DeltaTime and direction
-		float travelAmount = (Time.deltaTime * _grindingSpeed);
-		_movingDirection = _isGoingBackwards ? -1 : 1;
 
-		_pointOnSpline += travelAmount * _movingDirection;
-		_isRailLost = _pointOnSpline < 0 || _pointOnSpline > _Rail_int._PathSpline.Length;
-		float clampedPoint = Mathf.Clamp(_pointOnSpline, 0, _Rail_int._PathSpline.Length - 1);
+	public virtual void SetRotation ( S_Interaction_Pathers.PathTypes pathType) {
 
-		//Get the data of the spline at that point along it (rotation, location, etc)
-		_Sample = _Rail_int._PathSpline.GetSampleAtDistance(clampedPoint);
-		_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
-		_sampleUpwards = (_RailTransform.rotation * _Sample.up);
-		_sampleLocation = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
-
-		//Set player Position and rotation on Rail
-		switch (_whatKindOfRail)
-		{
-			//Place character in world space on point in rail
+		switch(pathType)
+			{
 			case S_Interaction_Pathers.PathTypes.rail:
-
-				_PlayerVel.transform.up = _sampleUpwards;
-				if(!_isRailLost)
-					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards, default(Vector3), _sampleUpwards);
+				_PlayerVel.transform.up = _RF._sampleUpwards;
+				if (!_RF._isRailLost)
+					_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _RF._sampleForwards, default(Vector3), _RF._sampleUpwards);
 				else
-					_Actions._ActionDefault.SetSkinRotationToVelocity(0, _sampleForwards, default(Vector3), _sampleUpwards); //Turn is complete and isntant so player always ends facing the right direction.
+					_Actions._ActionDefault.SetSkinRotationToVelocity(0, _RF._sampleForwards, default(Vector3), _RF._sampleUpwards); //Turn is complete and isntant so player always ends facing the right direction.
 
-				Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
-
-				//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
-				Vector3 newPos = _sampleLocation;
-				newPos += (_sampleUpwards * _offsetRail_) + relativeOffset;
-				_PlayerPhys.SetPlayerPosition(newPos);
 				break;
 
 			case S_Interaction_Pathers.PathTypes.zipline:
-
 				//Set ziphandle rotation to follow sample
-				_ZipHandle.rotation = _RailTransform.rotation * _Sample.Rotation;
+				_RF._ZipHandle.rotation = _RF._RailTransform.rotation * _RF._Sample.Rotation;
 				//Since the handle and by extent the player can be tilted up to the sides (not changing forward direction), adjust the eueler angles to reflect this.
 				//_pulleyRotate is handled in input, but applied here.
-				_ZipHandle.eulerAngles = new Vector3(_ZipHandle.eulerAngles.x, _ZipHandle.eulerAngles.y, _ZipHandle.eulerAngles.z + _pulleyRotate * 70f * _movingDirection);
+				_RF._ZipHandle.eulerAngles = new Vector3(_RF._ZipHandle.eulerAngles.x, _RF._ZipHandle.eulerAngles.y, _RF._ZipHandle.eulerAngles.z + _pulleyRotate * 70f * _RF._movingDirection);
 
 				//_PlayerPhys.transform.up = _PlayerPhys.transform.rotation * (_RailTransform.rotation * _Sample.up);
-				_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _sampleForwards);
+				_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _RF._sampleForwards);
 				_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _pulleyRotate * 70f);
 
-				//Similar to on rail, but place handle first, and player relevant to that.
-				newPos = _sampleLocation;
-				newPos += _setOffSet;
-				_ZipHandle.transform.position = newPos;
-				_PlayerPhys.SetPlayerPosition(newPos + (_ZipHandle.transform.up * _offsetZip_));
 				break;
 		}
-
 	}
+
+	public virtual void SetPosition (Vector3 position) {
+		_PlayerPhys.SetPlayerPosition(position);
+	}
+
 	//Takes the data from the previous method but handles physics for smoothing and applying if lost rail.
 	public void MoveOnRail () {
 
@@ -387,98 +336,98 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		HandleRailSpeed(); //Make changes to player speed based on angle
 
 		//Set Player Speed correctly so that it becomes smooth grinding
-		_PlayerVel.SetBothVelocities(_sampleForwards * _grindingSpeed, new Vector2(1, 0));
-		if (_ZipBody) { _ZipBody.velocity = _sampleForwards * _grindingSpeed; }
+		_PlayerVel.SetBothVelocities(_RF._sampleForwards * _RF._grindingSpeed, new Vector2(1, 0));
+		if (_RF._ZipBody) { _RF._ZipBody.velocity = _RF._sampleForwards * _RF._grindingSpeed; }
 
-		
-		if(_isRailLost)	
-			CheckLoseRail();
+
+		if (_RF._isRailLost)
+			_RF.CheckLoseRail(LoseRail);
 		
 	}
 
-	//Checks the properties of the rail to see if should enter 
-	void CheckLoseRail () {
+	////Checks the properties of the rail to see if should enter 
+	//void CheckLoseRail () {
 
-		//If the spline loops around then just move place on length back to the start or end.
-		if (_Rail_int._PathSpline.IsLoop)
-		{
-			_pointOnSpline = _pointOnSpline + (_Rail_int._PathSpline.Length * -_movingDirection);
-			_isRailLost = false;
-			return;
-		}
+	//	//If the spline loops around then just move place on length back to the start or end.
+	//	if (_RF._PathSpline.IsLoop)
+	//	{
+	//		_RF._pointOnSpline = _RF._pointOnSpline + (_RF._PathSpline.Length * -_RF._movingDirection);
+	//		_RF._isRailLost = false;
+	//		return;
+	//	}
 
-		//Or if this rail has either a next rail or previous rail attached.
-		else if (_ConnectedRails != null)
-		{
-			_isRailLost = false;
+	//	//Or if this rail has either a next rail or previous rail attached.
+	//	else if (_ConnectedRails != null)
+	//	{
+	//		_RF._isRailLost = false;
 
-			//If going forwards, and the rail has a rail off the end, then go onto it.
-			if (!_isGoingBackwards && _ConnectedRails.nextRail != null && _ConnectedRails.nextRail.isActiveAndEnabled)
-			{
-				//Set point on spline to be how much over this grind went over the current rail.
-				_pointOnSpline = Mathf.Max(0, _pointOnSpline - _Rail_int._PathSpline.Length);
+	//		//If going forwards, and the rail has a rail off the end, then go onto it.
+	//		if (!_RF._isGoingBackwards && _ConnectedRails.nextRail != null && _ConnectedRails.nextRail.isActiveAndEnabled)
+	//		{
+	//			//Set point on spline to be how much over this grind went over the current rail.
+	//			_RF._pointOnSpline = Mathf.Max(0, _RF._pointOnSpline - _RF._PathSpline.Length);
 
-				//The data storing next and previous rails is changed to the one for the new rail, meaning this rail will now become PrevRail.
-				_ConnectedRails = _ConnectedRails.nextRail;
+	//			//The data storing next and previous rails is changed to the one for the new rail, meaning this rail will now become PrevRail.
+	//			_ConnectedRails = _ConnectedRails.nextRail;
 
-				//Change the offset to match this rail (since may go from a rail offset from a spline, straight onto rail directily on a different spline)
-				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
+	//			//Change the offset to match this rail (since may go from a rail offset from a spline, straight onto rail directily on a different spline)
+	//			_RF._setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 
-				//Set path and positions to follow.
-				_Rail_int._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
-				_RailTransform = _Rail_int._PathSpline.transform.parent;
-				return;
-			}
-			//If going backwards, and the rail has a rail off the end, then go onto it.
-			else if (_isGoingBackwards && _ConnectedRails.PrevRail != null && _ConnectedRails.PrevRail.isActiveAndEnabled)
-			{
-				//Set data first, because will need to affect point by new length.
-				_ConnectedRails = _ConnectedRails.PrevRail;
+	//			//Set path and positions to follow.
+	//			_RF._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
+	//			_RF._RailTransform = _RF._PathSpline.transform.parent;
+	//			return;
+	//		}
+	//		//If going backwards, and the rail has a rail off the end, then go onto it.
+	//		else if (_RF._isGoingBackwards && _ConnectedRails.PrevRail != null && _ConnectedRails.PrevRail.isActiveAndEnabled)
+	//		{
+	//			//Set data first, because will need to affect point by new length.
+	//			_ConnectedRails = _ConnectedRails.PrevRail;
 
-				// Change offset to match the new rail.
-				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
+	//			// Change offset to match the new rail.
+	//			_RF._setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 
-				//Set path and positions to follow.
-				_Rail_int._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
-				_RailTransform = _Rail_int._PathSpline.transform.parent;
+	//			//Set path and positions to follow.
+	//			_RF._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
+	//			_RF._RailTransform = _RF._PathSpline.transform.parent;
 
-				//Since coming onto this new rail from the end of it, must have a reference to its length. This is why the point is acquired at the end of this if flow, rather than the start.
-				_pointOnSpline = _pointOnSpline + _Rail_int._PathSpline.Length;
-				_pointOnSpline = _Rail_int._PathSpline.Length;
-				return;
-			}
-		}
-		//If hasn't returned yet, then there is nothing to follow, so actually leave the rail.
+	//			//Since coming onto this new rail from the end of it, must have a reference to its length. This is why the point is acquired at the end of this if flow, rather than the start.
+	//			_RF._pointOnSpline = _RF._pointOnSpline + _RF._PathSpline.Length;
+	//			_RF._pointOnSpline = _RF._PathSpline.Length;
+	//			return;
+	//		}
+	//	}
+	//	//If hasn't returned yet, then there is nothing to follow, so actually leave the rail.
 
-		LoseRail();
-	}
+	//	LoseRail();
+	//}
 
 	//Called when the player is at the end of a rail and being launched off.
 	private void LoseRail () {
 
-		_Input.LockInputForAWhile(5f, false, _sampleForwards); //Prevent instant turning off the end of the rail
+		_Input.LockInputForAWhile(5f, false, _RF._sampleForwards); //Prevent instant turning off the end of the rail
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"RailLost", 10));
 		_distanceToStep = 0; //Stop a step that might be happening
 
 		_isGrinding = false;
 
-		switch (_whatKindOfRail)
+		switch (_RF._whatKindOfRail)
 		{
 			case S_Interaction_Pathers.PathTypes.zipline:
 
 				//If the end of a zipline, then the handle must go flying off the end, so disable trigger for player and homing target, but renable collider with world.
-				_ZipHandle.GetComponent<CapsuleCollider>().enabled = false;
-				if (_ZipHandle.GetComponentInChildren<MeshCollider>()) { _ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; }
-				GameObject target = _ZipHandle.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
+				_RF._ZipHandle.GetComponent<CapsuleCollider>().enabled = false;
+				if (_RF._ZipHandle.GetComponentInChildren<MeshCollider>()) { _RF._ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; }
+				GameObject target = _RF._ZipHandle.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
 				target.SetActive(false);
 
 				//_PlayerPhys.SetCoreVelocity(_ZipBody.velocity); //Make sure zip handle flies off
 
-				_PlayerVel.SetCoreVelocity(_sampleForwards * _grindingSpeed); //Make sure player flies off the end of the rail consitantly.
+				_PlayerVel.SetCoreVelocity(_RF._sampleForwards * _RF._grindingSpeed); //Make sure player flies off the end of the rail consitantly.
 				break;
 
 			case S_Interaction_Pathers.PathTypes.rail:
-				_PlayerVel.SetBothVelocities(_sampleForwards * _grindingSpeed, new Vector2(1, 0)); //Make sure player flies off the end of the rail consitantly.
+				_PlayerVel.SetBothVelocities(_RF._sampleForwards * _RF._grindingSpeed, new Vector2(1, 0)); //Make sure player flies off the end of the rail consitantly.
 				break;
 		}
 
@@ -502,18 +451,18 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	}
 
 	void HandleRailSpeed () {
-		if (_isBraking && _grindingSpeed > _minStartSpeed_) _grindingSpeed *= _playerBrakePower_;
+		if (_isBraking && _RF._grindingSpeed > _minStartSpeed_) _RF._grindingSpeed *= _playerBrakePower_;
 
 		HandleBoost();
 		HandleSlopes();
 
 		//Decrease speed if over max or top speed on the rail.
-		_grindingSpeed = Mathf.Min(_grindingSpeed, _railmaxSpeed_);
+		_RF._grindingSpeed = Mathf.Min(_RF._grindingSpeed, _railmaxSpeed_);
 
-		if (_grindingSpeed > _railTopSpeed_)
-			_grindingSpeed -= _decaySpeed_;
+		if (_RF._grindingSpeed > _railTopSpeed_)
+			_RF._grindingSpeed -= _decaySpeed_;
 
-		_grindingSpeed = Mathf.Clamp(_grindingSpeed, 10, _PlayerPhys._PlayerMovement._currentMaxSpeed);
+		_RF._grindingSpeed = Mathf.Clamp(_RF._grindingSpeed, 10, _PlayerPhys._PlayerMovement._currentMaxSpeed);
 	}
 
 	//Set to true outside of this script. But when boosted on a rail will gain a bunch of speed at once before having some of it quickly drop off.
@@ -525,7 +474,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			_boostTime -= Time.fixedDeltaTime;
 			if (_boostTime < 0)
 			{
-				if (_grindingSpeed > 60) { _grindingSpeed -= _boostDecaySpeed_; } //Speed can never decay to go under 60.
+				if (_RF._grindingSpeed > 60) { _RF._grindingSpeed -= _boostDecaySpeed_; } //Speed can never decay to go under 60.
 										      //Keep losing speed until _decayTime_ amount of time has passed.
 				if (_boostTime < -_boostDecayTime_)
 				{
@@ -557,7 +506,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		}
 		force = (0.1f * force);
 		//Apply to moving speed (if uphill will be a negative/
-		_grindingSpeed += force;
+		_RF._grindingSpeed += force;
 	}
 
 	public override void HandleInputs () {
@@ -569,7 +518,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_pushTimer += Time.deltaTime;
 
 		//Certain types of rail have unique controls / subactions to them.
-		switch (_whatKindOfRail)
+		switch (_RF._whatKindOfRail)
 		{
 			case S_Interaction_Pathers.PathTypes.rail:
 
@@ -581,9 +530,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				if (_Input._SpecialPressed && _pushTimer > _pushFowardDelay_)
 				{
 					//Will only increase speed if under the max trick speed.
-					if (_grindingSpeed < _pushFowardmaxSpeed_)
+					if (_RF._grindingSpeed < _pushFowardmaxSpeed_)
 					{
-						_grindingSpeed += _pushFowardIncrements_ * _accelBySpeed_.Evaluate(_grindingSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
+						_RF._grindingSpeed += _pushFowardIncrements_ * _accelBySpeed_.Evaluate(_RF._grindingSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
 					}
 					_isFacingRight = !_isFacingRight; //This will cause the animator to perform a small hop and face the other way.
 					_pushTimer = 0f; //Resets timer so delay must be exceeded again.
@@ -652,13 +601,13 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			float move = _hopSpeed_ * Time.deltaTime;
 			if (_isSteppingRight)
 				move = -move;
-			if (_isGoingBackwards)
+			if (_RF._isGoingBackwards)
 				move = -move;
 
 			move = Mathf.Clamp(move, -_distanceToStep, _distanceToStep);
 
 			//To show hopping off a rail, change the offset, this means the player will still follow the rail during the hop.
-			_setOffSet.Set(_setOffSet.x + move, _setOffSet.y, _setOffSet.z);
+			_RF._setOffSet.Set(_RF._setOffSet.x + move, _RF._setOffSet.y, _RF._setOffSet.z);
 
 			//If moving, check for walls, and if there's a collision, end state.
 			if (move < 0)
@@ -712,13 +661,13 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	//Called by the pathers interaction script to ready important stats gained from the collision. This is seperate to startAction because startAction is inherited from an interface.
 	public void AssignForThisGrind ( float range, Transform Rail, S_Interaction_Pathers.PathTypes type, Vector3 thisOffset, S_AddOnRail AddOn ) {
 
-		_setOffSet = -thisOffset; //Offset is obtianed from the offset on the collider, and will be followed consitantly to allow folowing different rails on the same spline.
+		_RF._setOffSet = -thisOffset; //Offset is obtianed from the offset on the collider, and will be followed consitantly to allow folowing different rails on the same spline.
 
-		_whatKindOfRail = type; //Zipline or rail
+		_RF._whatKindOfRail = type; //Zipline or rail
 
 		//Setting up Rails
-		_pointOnSpline = range; //Starts at this position along the spline.
-		_RailTransform = Rail; //Player position must add this as spline positions are in local space.
+		_RF._pointOnSpline = range; //Starts at this position along the spline.
+		_RF._RailTransform = Rail; //Player position must add this as spline positions are in local space.
 
 		_ConnectedRails = AddOn; //Will be used to go onto subsequent rails without recalculating collisions.
 	}
@@ -733,9 +682,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//Set means completely changing the speed to a specific value.
 			if (set)
 			{
-				if (_grindingSpeed < speed)
+				if (_RF._grindingSpeed < speed)
 				{
-					_grindingSpeed = speed;
+					_RF._grindingSpeed = speed;
 					_isBoosted = true;
 					_boostTime = 0.9f; //How long the boost lasts before decaying.
 
@@ -746,7 +695,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//Keep checking if on a rail before applying this.
 			if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail)
 			{
-				_grindingSpeed += addSpeed;
+				_RF._grindingSpeed += addSpeed;
 				_isBoosted = true;
 				_boostTime = 0.7f; //How long the boost lasts before decaying.
 
@@ -756,9 +705,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 			//Changes which direction to grind in.
 			if (backwards)
-				_isGoingBackwards = true;
+				_RF._isGoingBackwards = true;
 			else
-				_isGoingBackwards = false;
+				_RF._isGoingBackwards = false;
 		}
 	}
 	#endregion
@@ -773,6 +722,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		base.AssignTools();
 
 		_Rail_int = _Tools.PathInteraction;
+		_RF = GetComponent<S_RailFollow_Base>();
 	}
 
 	//Reponsible for assigning stats from the stats script.

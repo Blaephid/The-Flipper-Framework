@@ -36,7 +36,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 	private S_Handler_Camera            _CamHandler;
 
 	//This is used to check what the current dominant trigger is, as multiple triggers might be working together under one effect. These will have their read values set to the same.
-	private List<S_Trigger_Base> _CurrentActiveEffectTriggers = new List<S_Trigger_Base>();
+	private List<S_Trigger_External> _CurrentActiveEffectTriggers = new List<S_Trigger_External>();
 
 	private S_Spawn_UI.StrucCoreUIElements _CoreUIElements;
 	#endregion
@@ -66,7 +66,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 
 	public void CheckEffectsTriggerEnter(Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		S_Trigger_PlayerEffect EffectsData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
+		S_Trigger_PlayerEffect EffectsData = CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
 		if (EffectsData) { ApplyEffectsOnPlayer(EffectsData); }
 	}
 	
@@ -95,7 +95,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 
 	public void CheckEffectsTriggerExit ( Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		S_Trigger_PlayerEffect EffectsData = S_Interaction_Triggers.CheckTriggerExit(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
+		S_Trigger_PlayerEffect EffectsData = CheckTriggerExit(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
 		if (EffectsData) { StartCoroutine(DelayBeforeRemovingEffectsOnPlayer(EffectsData)); }
 	}
 
@@ -108,9 +108,10 @@ public class S_Interaction_Triggers : MonoBehaviour
 	}
 
 	private void RemoveEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
-		if(EffectsData._deactivateOnExit)
+		if(EffectsData._TriggerObjects._triggerSelfOff)
 		{
-			_Input.UnLockInput();
+			if(EffectsData._lockPlayerInputFor > 0)
+				_Input.UnLockInput();
 
 			DisableOrEnableActions(EffectsData, true);
 		}
@@ -191,7 +192,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 	/// Public ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Public And Static
-	public static S_Trigger_Base CheckTriggerEnter ( Collider Col, ref List<S_Trigger_Base> list ) {
+	public static S_Trigger_Base CheckTriggerEnter ( Collider Col, ref List<S_Trigger_External> list ) {
 
 		//What happens depends on the data set to the camera trigger in its script.
 		if (!Col.TryGetComponent(out S_Trigger_External TriggerData)) { return null; };
@@ -202,7 +203,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_External>();
 
 		//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
-		if (list.Count == 0) { list = new List<S_Trigger_Base>() { TriggerData }; }
+		if (list.Count == 0) { list = new List<S_Trigger_External>(); }
 
 		//If the new trigger is set to trigger the logic already in effect, add it to list for tracking how long until out of every trigger, and don't restart the logic.
 		else if (TriggerData == list[0])
@@ -213,7 +214,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 		return TriggerData;
 	}
 
-	public static S_Trigger_Base CheckTriggerExit ( Collider Col, ref List<S_Trigger_Base> list ) {
+	public static S_Trigger_Base CheckTriggerExit ( Collider Col, ref List<S_Trigger_External> list ) {
 		//What happens depends on the data set to the camera trigger in its script.
 		if (!Col.TryGetComponent(out S_Trigger_External TriggerData)) { return null; }
 

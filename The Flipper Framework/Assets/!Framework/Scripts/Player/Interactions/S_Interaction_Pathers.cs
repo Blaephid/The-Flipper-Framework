@@ -241,8 +241,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 		//Assigns what is the Zipline and handle, and sets it to not be kinematic to avoid gravity.
 		Rigidbody zipbody = col.GetComponent<Rigidbody>();
-		_RailAction._ZipHandle = col.transform;
-		_RailAction._ZipBody = zipbody;
+		_RailAction._RF._ZipHandle = col.transform;
+		_RailAction._RF._ZipBody = zipbody;
 		zipbody.isKinematic = false;
 
 		Vector2 rangeAndDistanceSquared = GetClosestPointOfSpline(zipbody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.

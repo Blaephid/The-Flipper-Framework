@@ -101,7 +101,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 #endif
 
 	private void FaceCinematicCameraIn () {
-		if (_hasTrigger && _defaultCameraToFaceTrigger)
+		if (_hasTrigger && _defaultCameraToFaceTrigger && !Application.isPlaying)
 		{
 			Vector3 direction = (transform.position - _CinematicCamObject.transform.position).normalized;
 			_CinematicCamObject.transform.forward = direction;
@@ -131,8 +131,6 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		//Only check if the player has already been saved to check its actions.
 		if (_PlayerActions != null)
 		{
-			bool isPlayerIsRightAction = false;
-
 			//Check if players current action is one this cinematic is set to work with.
 			for (int i = 0 ; i < _ListOfActionsThisWorksOn.Length ; i++)
 			{

@@ -29,6 +29,7 @@ namespace SplineMesh
 
 		private List<MeshVertex> _bentVerticies;
 
+		private int _loopsThisDraw;
 
 		private SourceMesh source;
 
@@ -194,6 +195,8 @@ namespace SplineMesh
 		/// Consider using <see cref="ComputeIfNeeded"/> for faster result.
 		/// </summary>
 		private void Compute () {
+			_loopsThisDraw = 0;
+
 			isDirty = false;
 			if(source == null || source.Vertices == null) { return; }
 			_bentVerticies = new List<MeshVertex>(source.Vertices.Count);
@@ -307,6 +310,11 @@ namespace SplineMesh
 			for (int i = 0 ; i < repetitionCount ; i++)
 			{
 				sampleCache.Clear();
+
+				_loopsThisDraw++;
+
+				if(_loopsThisDraw > 160) 
+				{ return; }
 
 				//If the last one instance to spawn
 				if (i == repetitionCount - 1)
