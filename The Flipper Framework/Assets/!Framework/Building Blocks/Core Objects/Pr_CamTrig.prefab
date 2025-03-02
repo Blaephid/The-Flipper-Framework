@@ -59,23 +59,27 @@ MonoBehaviour:
   _isSelected: 1
   _InspectorTheme: {fileID: 0}
   _whatTriggerShape: 0
+  _Player: {fileID: 0}
   _TriggerObjects:
-    _triggerSelf: 0
+    _triggerSelfOn: 0
+    _triggerSelfOff: 0
     _ObjectsToTriggerOn: []
     _ObjectsToTriggerOff: []
-  _isLogicInPlayerScript: 1
-  _TriggerForPlayerToRead: {fileID: 0}
   _hasTrigger: 0
   _ObjectsThatTriggerThis: []
+  _isLogicInPlayerScript: 1
+  _TriggerForPlayerToRead: {fileID: 0}
   _whatType: 2
+  _willReleaseOnExit: 0
   _Direction: {fileID: 4000014063325986}
-  _ViewTarget: {fileID: 0}
+  _removeAll: 1
+  _lockOnTarget: {fileID: 0}
   _directionToSet: {x: -0.9999985, y: 0, z: 0.0017535686}
   _lockCamera: 0
   _lockCameraX: 0
   _lockCameraY: 0
   _lockToCharacterRotation: 0
-  _willReleaseOnExit: 0
+  _lockCameraFallBack: 0
   _faceSpeed: 2
   _duration: 1
   _setCameraReferenceWorldRotation: 0
@@ -90,8 +94,8 @@ MonoBehaviour:
   _newFOV: {x: 100, y: 5}
   _willOffsetTarget: 1
   _newOffset: {x: 0, y: 0, z: 0}
-  _asLocalOffset: 0
   _framesToOffset: 0
+  _asLocalOffset: 0
   _overWriteAllOffsets: 0
   _VisualiseWithMesh: {fileID: 7709263546091118420, guid: 45ab1ef62915dac4184d8c28fcf243cb,
     type: 3}
@@ -226,22 +230,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.99963546
+      value: 0.026074141
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.01592837
+      value: 0.000032535812
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.021796195
+      value: 0.9996593
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.00034730506
+      value: -0.0012473952
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

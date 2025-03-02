@@ -168,6 +168,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_Rail_int._canGrindOnRail = false; //Prevents calling this multiple times in one update
 
 		//Get how much the character is facing the same way as the point.
+		_RF._PathSpline = _Rail_int._PathSpline;
 		CurveSample sample = _RF._PathSpline.GetSampleAtDistance(_RF._pointOnSpline);
 		_RF._sampleForwards = _RF._RailTransform.rotation * sample.tangent;
 		float facingDot = Vector3.Dot(_PlayerVel._worldVelocity.normalized, _RF._sampleForwards);

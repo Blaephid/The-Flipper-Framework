@@ -38,6 +38,7 @@ public class S_Action_Base : MonoBehaviour, IAction
 	}
 
 	public void FixedUpdate () {
+		if (_Actions == null) { return; }
 		string debugThisAction = this.ToString();
 
 		_Actions.CheckConnectedActions(_positionInActionList);
