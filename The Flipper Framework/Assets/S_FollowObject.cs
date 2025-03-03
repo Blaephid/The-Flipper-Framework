@@ -24,6 +24,7 @@ public class S_FollowObject : MonoBehaviour
 
 	private void OnValidate () {
 		if (!_Parent) { return; }
+		if (!Application.isPlaying) { _isFollowing = true; }
 
 		if(_RememberParent != _Parent)
 		{

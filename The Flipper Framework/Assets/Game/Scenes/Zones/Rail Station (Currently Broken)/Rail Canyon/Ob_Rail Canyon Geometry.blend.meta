@@ -27,6 +27,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Mat_metal_7025_partswall_RC
+    second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Mat_metal_duct_RC
     second: {fileID: 2100000, guid: 1ed18402e8b3b964aaaeeedd2e4ff493, type: 2}
   - first:

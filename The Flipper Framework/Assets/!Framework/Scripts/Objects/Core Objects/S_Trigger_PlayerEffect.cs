@@ -31,8 +31,7 @@ public class S_Trigger_PlayerEffect : S_Trigger_External
 #if UNITY_EDITOR
 	public override void DrawAdditionalGizmos (bool selected, Color colour ) {
 		base.DrawAdditionalGizmos(selected, colour );
-		if (_hasTrigger)
-			S_S_Drawing.DrawArrowHandle(colour, transform, 0.2f, true, Vector3.forward);
+	
 	}
 #endif
 }

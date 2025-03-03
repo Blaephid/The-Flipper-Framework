@@ -121,6 +121,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				break;
 		}
 
+		_RF.GetNewSampleOnRail();
+		_RF.PlaceOnRail(SetRotation, SetPosition);
 	}
 
 	new private void FixedUpdate () {
@@ -131,7 +133,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _RF._grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
 
-		_RF.PlaceOnRail(SetRotation, SetPosition);
+		//_RF.PlaceOnRail(SetRotation, SetPosition);
 		MoveOnRail();
 		if (_canInput) { HandleInputs(); }
 
@@ -232,8 +234,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		// Apply minimum speed
 		_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _minStartSpeed_);
 
-		//_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(1, 0)); //Freeze player before gaining speed from the grind next frame.
-
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Rail);
 		enabled = true;
 	}
@@ -296,7 +296,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	#region private
 
 
-	public virtual void SetRotation ( S_Interaction_Pathers.PathTypes pathType) {
+	public void SetRotation ( S_Interaction_Pathers.PathTypes pathType) {
 
 		switch(pathType)
 			{
@@ -324,7 +324,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		}
 	}
 
-	public virtual void SetPosition (Vector3 position) {
+	public void SetPosition (Vector3 position) {
 		_PlayerPhys.SetPlayerPosition(position);
 	}
 
@@ -340,68 +340,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_PlayerVel.SetBothVelocities(_RF._sampleForwards * _RF._grindingSpeed, new Vector2(1, 0));
 		if (_RF._ZipBody) { _RF._ZipBody.velocity = _RF._sampleForwards * _RF._grindingSpeed; }
 
-
 		if (_RF._isRailLost)
 			_RF.CheckLoseRail(LoseRail);
 		
 	}
-
-	////Checks the properties of the rail to see if should enter 
-	//void CheckLoseRail () {
-
-	//	//If the spline loops around then just move place on length back to the start or end.
-	//	if (_RF._PathSpline.IsLoop)
-	//	{
-	//		_RF._pointOnSpline = _RF._pointOnSpline + (_RF._PathSpline.Length * -_RF._movingDirection);
-	//		_RF._isRailLost = false;
-	//		return;
-	//	}
-
-	//	//Or if this rail has either a next rail or previous rail attached.
-	//	else if (_ConnectedRails != null)
-	//	{
-	//		_RF._isRailLost = false;
-
-	//		//If going forwards, and the rail has a rail off the end, then go onto it.
-	//		if (!_RF._isGoingBackwards && _ConnectedRails.nextRail != null && _ConnectedRails.nextRail.isActiveAndEnabled)
-	//		{
-	//			//Set point on spline to be how much over this grind went over the current rail.
-	//			_RF._pointOnSpline = Mathf.Max(0, _RF._pointOnSpline - _RF._PathSpline.Length);
-
-	//			//The data storing next and previous rails is changed to the one for the new rail, meaning this rail will now become PrevRail.
-	//			_ConnectedRails = _ConnectedRails.nextRail;
-
-	//			//Change the offset to match this rail (since may go from a rail offset from a spline, straight onto rail directily on a different spline)
-	//			_RF._setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
-
-	//			//Set path and positions to follow.
-	//			_RF._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
-	//			_RF._RailTransform = _RF._PathSpline.transform.parent;
-	//			return;
-	//		}
-	//		//If going backwards, and the rail has a rail off the end, then go onto it.
-	//		else if (_RF._isGoingBackwards && _ConnectedRails.PrevRail != null && _ConnectedRails.PrevRail.isActiveAndEnabled)
-	//		{
-	//			//Set data first, because will need to affect point by new length.
-	//			_ConnectedRails = _ConnectedRails.PrevRail;
-
-	//			// Change offset to match the new rail.
-	//			_RF._setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
-
-	//			//Set path and positions to follow.
-	//			_RF._PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
-	//			_RF._RailTransform = _RF._PathSpline.transform.parent;
-
-	//			//Since coming onto this new rail from the end of it, must have a reference to its length. This is why the point is acquired at the end of this if flow, rather than the start.
-	//			_RF._pointOnSpline = _RF._pointOnSpline + _RF._PathSpline.Length;
-	//			_RF._pointOnSpline = _RF._PathSpline.Length;
-	//			return;
-	//		}
-	//	}
-	//	//If hasn't returned yet, then there is nothing to follow, so actually leave the rail.
-
-	//	LoseRail();
-	//}
 
 	//Called when the player is at the end of a rail and being launched off.
 	private void LoseRail () {
@@ -748,6 +690,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		_offsetRail_ = _Tools.Stats.RailPosition.offsetRail;
 		_offsetZip_ = _Tools.Stats.RailPosition.offsetZip;
+		_RF._upOffsetRail_ = _offsetRail_;
+		_RF._upOffsetZip_ = _offsetZip_;
 		_boostDecaySpeed_ = _Tools.Stats.RailStats.railBoostDecaySpeed;
 		_boostDecayTime_ = _Tools.Stats.RailStats.railBoostDecayTime;
 	}

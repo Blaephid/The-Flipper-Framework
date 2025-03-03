@@ -75,6 +75,7 @@ public class S_Data_ArmouredTrain : S_Data_Base
 			else if(source.GetComponentInChildren<MeshRenderer>())
 				meshForCollider = source.GetComponentInChildren<MeshFilter>().sharedMesh;
 			thisSegment.GetComponent<MeshCollider>().sharedMesh = meshForCollider;
+			thisSegment.GetComponent<MeshCollider>().convex = true;
 
 			thisSegment.transform.localPosition = _Segments[i]._localOffset;
 			thisSegment.transform.localEulerAngles = _Segments[i]._rotationOffset;

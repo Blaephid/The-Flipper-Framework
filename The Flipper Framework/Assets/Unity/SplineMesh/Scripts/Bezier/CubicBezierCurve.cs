@@ -191,6 +191,11 @@ namespace SplineMesh
 			else if (d < 0 || d > Length)
 				throw new ArgumentException("Distance must be positive and less than curve length. Length = " + Length + ", given distance was " + d);
 
+			if(samples == null || samples.Count == 0)
+			{
+				return new CurveSample();
+			}
+
 			CurveSample previous = samples[0];
 			CurveSample next = default(CurveSample);
 			bool found = false;

@@ -78,33 +78,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodes:
-  - position: {x: 5, y: 0, z: 0}
-    direction: {x: 5, y: 0, z: -3}
+  - position: {x: 0, y: 0, z: 0}
+    direction: {x: 0, y: 0, z: -3}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
-  - position: {x: 10, y: 0, z: 0}
-    direction: {x: 10, y: 0, z: 3}
+  - position: {x: 50, y: 0, z: 0}
+    direction: {x: 50, y: 0, z: 0}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
   curves:
   - n1:
-      position: {x: 5, y: 0, z: 0}
-      direction: {x: 5, y: 0, z: -3}
+      position: {x: 0, y: 0, z: 0}
+      direction: {x: 0, y: 0, z: -3}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
     n2:
-      position: {x: 10, y: 0, z: 0}
-      direction: {x: 10, y: 0, z: 3}
+      position: {x: 50, y: 0, z: 0}
+      direction: {x: 50, y: 0, z: 0}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
     Changed:
       m_PersistentCalls:
         m_Calls: []
-  Length: 7.5348897
+  Length: 50.304535
   isLoop: 0
   CurveChanged:
     m_PersistentCalls:
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toUpdate: 1
-  _spacingRange_: {x: 20, y: 20}
+  _spacingRange_: {x: 6, y: 6}
   _maxNumber_: -1
   _spaceFromStart_: 0
   _spaceFromEnd_: 0

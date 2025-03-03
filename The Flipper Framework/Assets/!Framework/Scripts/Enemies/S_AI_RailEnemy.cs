@@ -6,365 +6,335 @@ using System.Linq;
 
 namespace SplineMesh
 {
-	[RequireComponent(typeof(Spline))]
-	public class S_AI_RailEnemy : S_Action05_Rail, ITriggerable
+	[RequireComponent(typeof(S_RailFollow_Base))]
+	//[RequireComponent(typeof(Spline))]
+	[RequireComponent(typeof(Rigidbody))]
+	public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	{
 
+		[AsButton("Set To Spline", "SetToSpline", null)]
+		[SerializeField] bool SetToSplineButton;
+
 		[Header("Tools")]
+		[HideInInspector,SerializeField]
+		private S_RailFollow_Base _RF;
 		private Rigidbody _RB;
 		public GameObject[] _Models;
-		public float modelDistance = 30;
-		public LayerMask railMask;
+		public Vector3[] _modelStartRotations;
+		public float _disanceBetweenModels = 30;
 
 		[Header("Start Rails")]
-		public Spline startSpline;
-		Spline RailSpline;
-		public S_AddOnRail startingConnectedRails;
-		S_AddOnRail ConnectedRails;
+		public Spline _StartSpline;
+		public S_AddOnRail _StartingConnectedRails;
 
 		[Header("Type")]
-		public bool Rhino;
-		public bool ArmouredTrain;
+		[DrawHorizontalWithOthers(new string[]{"_armouredTrain"})]
+		public bool _rhino;
+		[HideInInspector]
+		public bool _armouredTrain;
 
 		[Header("Control")]
-		public float StartSpeed = 60f;
-		public float OffsetRail;
-		public Vector3 setOffSet;
-		public bool followPlayer;
-		public bool backwards;
+		[SerializeField] float StartSpeed = 60f;
+		[SerializeField] float _railUpOffset;
+		[SerializeField] bool _followPlayer;
+		[SerializeField] bool _isBackwards;
 
 		[Header("Stats")]
-		public AnimationCurve followByDistance;
-		public AnimationCurve followBySpeedDif;
-		public float followSpeed = 0.5f;
-		public float SlopePower = 2.5f;
+		[SerializeField] AnimationCurve _FollowByDistance_;
+		[SerializeField] AnimationCurve _FollowBySpeedDif_;
+		[SerializeField] float _followSpeed_ = 0.5f;
+		//[SerializeField] float _slopePower_ = 2.5f;
 
-		bool active = false;
+		bool _isActive = false;
 		[HideInInspector] public S_Action05_Rail playerRail;
 		[HideInInspector] public S_ActionManager _PlayerActions;
-		float currentSpeed;
-		float range;
-		CurveSample sample;
 
-		float CurrentDist, dist;
-		float ClosestSample = 0f;
-		Transform RailTransform;
-		float playerDistance;
-		float playerSpeed;
-		Vector3 startPos;
+		float _playerDistance;
+		float _playerSpeed;
 
-		bool firstSet = true;
-		Vector3 useOffset;
+		Vector3 _startPosition;
+		private bool _isFirstSet = true;
 
 		#region inherited
 
 		private void Start () {
-			if(!startSpline) { return; }
+			_RF = GetComponent<S_RailFollow_Base>();
+			_RB = GetComponent<Rigidbody>();
+			ResetRigidBody();
 
-			startPos = transform.position;
-			ConnectedRails = startingConnectedRails;
-			RailSpline = startSpline;
-			RailTransform = RailSpline.transform;
-			currentSpeed = 0;
+			if (!_StartSpline) { return; }
+			_startPosition = transform.position;
 
-			range = GetClosestPos(transform.position, RailSpline);
-			sample = RailSpline.GetSampleAtDistance(range);
-			useOffset = setOffSet;
+			SetSplineDetails();
 
-			setPos(sample, gameObject);
-			alignCars();
-		}
-
-		private void OnValidate () {
-			
-		}
-
-		#endregion
-
-
-		public void TriggerObjectOn () {
-			active = true;
-			if (currentSpeed == 0)
-				currentSpeed = StartSpeed;
-
-			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
-
-		}
-
-		void alignCars () {
-			if (_Models.Length > 0)
-			{
-				float tempRange = GetClosestPos(transform.position, RailSpline);
-				Spline thisSpline = RailSpline;
-
-				if (firstSet)
-				{
-					float maxSpace = _Models.Length * modelDistance;
-					tempRange = Mathf.Clamp(tempRange, maxSpace, thisSpline.Length - maxSpace);
-					firstSet = false;
-				}
-
-				for (int i = 0 ; i < _Models.Length ; i++)
-				{
-					GameObject model = _Models[i];
-					if ((RailSpline.IsLoop) && (tempRange < 0 || tempRange > thisSpline.Length))
-					{
-						if (!backwards)
-						{
-							tempRange += thisSpline.Length;
-						}
-						else
-						{
-							tempRange -= thisSpline.Length;
-						}
-					}
-					else if (ConnectedRails != null)
-					{
-						if (tempRange < 0 && !backwards && ConnectedRails.PrevRail != null && ConnectedRails.PrevRail.isActiveAndEnabled)
-						{
-							thisSpline = ConnectedRails.PrevRail.GetComponentInParent<Spline>();
-							tempRange += thisSpline.Length;
-						}
-						else if (tempRange > thisSpline.Length && backwards && ConnectedRails.nextRail != null && ConnectedRails.nextRail.isActiveAndEnabled)
-						{
-							tempRange -= thisSpline.Length;
-							thisSpline = ConnectedRails.PrevRail.GetComponentInParent<Spline>();
-						}
-					}
-
-					CurveSample tempSample = thisSpline.GetSampleAtDistance(tempRange);
-					setPos(tempSample, model);
-
-					if (backwards)
-					{
-						tempRange += modelDistance;
-					}
-					else
-					{
-						tempRange -= modelDistance;
-					}
-				}
-			}
+			PlaceOnSplineToStart();
 		}
 
 		private void Update () {
-			if (active && range < RailSpline.Length && range > 0)
-			{
-				railGrind();
+			if (!_isActive) { return; }
 
-				setPos(sample, gameObject);
-				alignCars();
-			}
+			_RF.GetNewSampleOnRail();
+			_RF.PlaceOnRail(SetRotation, SetPosition);
 		}
 
-		void railGrind () {
-			float ammount = (Time.deltaTime * currentSpeed);
+		private void FixedUpdate () {
+			if (!_isActive) { return; }
+			MoveOnRail();
+			HandleGrindSpeed();
 
-			if (backwards)
+			if (_RF._isRailLost)
+				_RF.CheckLoseRail(LoseRail);
+		}
+
+		public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+			SetIsActive(true);
+			if (!_isActive) { return; }
+
+			if (_RF._grindingSpeed == 0)
+				_RF._grindingSpeed = StartSpeed;
+
+			_PlayerActions = Player.GetComponent<S_CharacterTools>()._ActionManager;
+
+			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+		}
+
+		public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
+			SetIsActive(false);
+			_RF._grindingSpeed = 0;
+		}
+		#endregion
+
+		private void SetIsActive ( bool set ) {
+			_isActive = set;
+
+			if (!_RF || !_RF._PathSpline) { _isActive = false; }
+		}
+
+		/// 
+		///	PLACING
+		/// 
+		#region Placing
+
+		public void SetPosition ( Vector3 position ) {
+			transform.position = position;
+		}
+
+		public void SetRotation ( S_Interaction_Pathers.PathTypes pathType ) {
+			AlignCars();
+		}
+
+		void AlignCars () {
+			if (_Models.Length == 0)
 			{
-				range -= ammount;
+				transform.rotation = Quaternion.LookRotation(_RF._sampleForwards, _RF._sampleUpwards);
+				return;
 			}
-			else
-				range += ammount;
 
+			float tempPointOnSpline = _RF._pointOnSpline;
+			Spline thisSpline = _RF._PathSpline;
+
+			for (int i = 0 ; i < _Models.Length ; i++)
+			{
+				GameObject ModelObject = _Models[i];
+				//Crossing models over the loop
+				if (_RF._PathSpline.IsLoop && (tempPointOnSpline < 0 || tempPointOnSpline > thisSpline.Length))
+				{
+					tempPointOnSpline += thisSpline.Length * -_RF._movingDirection;
+
+				}
+				//If this car is on a previous 
+				else if (_RF._ConnectedRails != null)
+				{
+					if (tempPointOnSpline < 0 && !_isBackwards && _RF._ConnectedRails.PrevRail != null && _RF._ConnectedRails.PrevRail.isActiveAndEnabled)
+					{
+						thisSpline = _RF._ConnectedRails.PrevRail.GetComponentInParent<Spline>();
+						tempPointOnSpline += thisSpline.Length;
+					}
+					else if (tempPointOnSpline > thisSpline.Length && _isBackwards && _RF._ConnectedRails.nextRail != null && _RF._ConnectedRails.nextRail.isActiveAndEnabled)
+					{
+						tempPointOnSpline -= thisSpline.Length;
+						thisSpline = _RF._ConnectedRails.PrevRail.GetComponentInParent<Spline>();
+					}
+				}
+
+				CurveSample TempSample = thisSpline.GetSampleAtDistance(Mathf.Clamp(tempPointOnSpline, 0, thisSpline.Length - 0.5f));
+				SetTransformDirectly(TempSample, ModelObject, _modelStartRotations[i]);
+
+				tempPointOnSpline -= _disanceBetweenModels * _RF._movingDirection;
+			}
+
+		}
+
+		void SetTransformDirectly ( CurveSample ThisSample, GameObject ThisObject, Vector3 localEuler ) {
+			Vector3 thisSampleForwards = _RF._RailTransform.rotation * ThisSample.tangent * _RF._movingDirection;
+			Vector3 thisSampleUpwards = (_RF._RailTransform.rotation * ThisSample.up);
+			Vector3 thisSampleLocation = _RF._RailTransform.position + (_RF._RailTransform.rotation * ThisSample.location);
+
+			ThisObject.transform.position = thisSampleLocation + (thisSampleUpwards * _railUpOffset);
+			Quaternion newRotation = Quaternion.LookRotation(thisSampleForwards, thisSampleUpwards);
+			newRotation *= Quaternion.Euler(localEuler);
+			ThisObject.transform.rotation = newRotation;
+
+		}
+		#endregion
+
+		/// 
+		///	PHYSICS
+		/// 
+		#region Physics
+		public void MoveOnRail () {
+			_RB.velocity = _RF._sampleForwards * _RF._grindingSpeed;
+		}
+
+		private void HandleGrindSpeed () {
 			//Speed Changes
-			if (followPlayer)
+			if (_followPlayer)
 			{
-				trackPlayer();
+				TrackPlayer();
 			}
 
-			slopePhys();
+			SlopePhysics();
+		}
 
+		void TrackPlayer () {
+			if (!_followPlayer) return;
 
-			if (range < RailSpline.Length && range > 0)
+			if (playerRail._Rail_int._PathSpline == _RF._PathSpline)
 			{
-				sample = RailSpline.GetSampleAtDistance(range);
+				if (_isBackwards == playerRail._RF._isGoingBackwards)
+				{
+					if (_isBackwards)
+					{
+						_playerDistance = _RF._pointOnSpline - playerRail._RF._pointOnSpline;
 
-			}
-			else
-			{
-				loseRail();
+					}
+					else
+					{
+						_playerDistance = playerRail._RF._pointOnSpline - _RF._pointOnSpline;
+					}
+
+					_playerSpeed = (_PlayerActions._listOfSpeedOnPaths[0] - _RF._grindingSpeed) / playerRail._railmaxSpeed_;
+					float changeSpeed = _followSpeed_ * _FollowBySpeedDif_.Evaluate(Mathf.Abs(_playerSpeed));
+
+
+					if (_playerDistance > 0)
+					{
+						if (_RF._grindingSpeed < _PlayerActions._listOfSpeedOnPaths[0] - 3)
+							_RF._grindingSpeed += changeSpeed;
+
+						_RF._grindingSpeed += _followSpeed_ * _FollowByDistance_.Evaluate(Mathf.Abs(_playerDistance));
+					}
+
+					else
+					{
+
+						_RF._grindingSpeed = Mathf.MoveTowards(_RF._grindingSpeed, _PlayerActions._listOfSpeedOnPaths[0] - 2, changeSpeed);
+					}
+				}
 			}
 		}
 
-		void loseRail () {
-			if (RailSpline.IsLoop)
+
+		void SlopePhysics () {
+			if (Mathf.Abs(_RF._sampleUpwards.y) < 0.1)
 			{
-				if (!backwards)
-				{
-					range = range - RailSpline.Length;
-					railGrind();
-				}
-				else
-				{
-					range = range + RailSpline.Length;
-					railGrind();
-				}
+
 			}
-			else if (ConnectedRails != null && ((!backwards && ConnectedRails.nextRail != null && ConnectedRails.nextRail.isActiveAndEnabled) || (backwards && ConnectedRails.PrevRail != null && ConnectedRails.PrevRail.isActiveAndEnabled)))
+		}
+		#endregion
+
+		/// 
+		///	SETTING VALUES	
+		/// 
+		#region Setting Values
+
+		private void SetSplineDetails () {
+			if (!_StartSpline) { return; }
+			_RF._ConnectedRails = _StartingConnectedRails;
+			_RF._PathSpline = _StartSpline;
+			_RF._RailTransform = _StartSpline.transform;
+
+			_RF._grindingSpeed = 0;
+			_RF._isGoingBackwards = _isBackwards;
+			_RF._upOffsetRail_ = _railUpOffset;
+		}
+
+		private void PlaceOnSplineToStart () {
+			if (!_RF || !_StartSpline) return;
+
+
+			Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, _StartSpline, Vector3.zero);
+			_RF._pointOnSpline = rangeAndDistanceSquared.x;
+
+			if (_isFirstSet)
 			{
-				if (!backwards)
+				_modelStartRotations = new Vector3[_Models.Length];
+				for (int i = 0 ; i < _Models.Length ; i++)
 				{
-					range = range - RailSpline.Length;
-					S_AddOnRail temp = ConnectedRails;
-					ConnectedRails = ConnectedRails.nextRail;
-					useOffset = new Vector3(-ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
-
-					RailSpline = ConnectedRails.GetComponentInParent<Spline>();
-					RailTransform = RailSpline.transform.parent;
+					Vector3 localRotation = _Models[i].transform.localEulerAngles;
+					_modelStartRotations[i] = localRotation;
 				}
-				else
-				{
-					S_AddOnRail temp = ConnectedRails;
-					ConnectedRails = ConnectedRails.PrevRail;
-					useOffset = new Vector3(-ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
-
-					RailSpline = ConnectedRails.GetComponentInParent<Spline>();
-					RailTransform = RailSpline.transform.parent;
-
-					range = range + RailSpline.Length;
-				}
-
-
-				railGrind();
+				if (Application.isPlaying) { _isFirstSet = false; }
 			}
-			else if (Rhino)
+
+			float maxSpace = _Models.Length * _disanceBetweenModels;
+			_RF._pointOnSpline = Mathf.Clamp(_RF._pointOnSpline, maxSpace, _StartSpline.Length - maxSpace);
+			_RF.GetNewSampleOnRail(0);
+
+			_RF._upOffsetRail_ = _railUpOffset;
+
+			transform.position = _RF._sampleLocation;
+			transform.rotation = Quaternion.LookRotation(_RF._sampleForwards, _RF._sampleUpwards);
+			AlignCars();
+		}
+		#endregion
+
+		/// 
+		///	ENDING RAIL
+		/// 
+		#region endingRail
+		public void LoseRail () {
+			if (_rhino)
 			{
 				_RB.freezeRotation = false;
 				_RB.useGravity = true;
-				active = false;
 			}
-			else if (ArmouredTrain)
+			else if (_armouredTrain)
 			{
-				currentSpeed = 0;
-				active = false;
+				_RF._grindingSpeed = 0;
+				_RB.velocity = Vector3.zero;
 			}
+			_RF._grindingSpeed = 0;
+			_isActive = false;
 		}
 
-		void setPos ( CurveSample thisSample, GameObject thisObj ) {
-
-			Vector3 binormal = Vector3.zero;
-
-			if (useOffset != Vector3.zero)
-			{
-				binormal += sample.Rotation * -useOffset;
-			}
-
-			thisObj.transform.position = (thisSample.location + RailTransform.position + (thisSample.up * OffsetRail)) + binormal;
-
-			if (backwards)
-			{
-				thisObj.transform.rotation = Quaternion.LookRotation(thisSample.tangent, thisSample.up);
-				if (thisObj == gameObject)
-					_RB.velocity = thisSample.tangent * -currentSpeed;
-			}
-			else
-			{
-				thisObj.transform.rotation = Quaternion.LookRotation(-thisSample.tangent, thisSample.up);
-				if (thisObj == gameObject)
-					_RB.velocity = thisSample.tangent * currentSpeed;
-			}
-		}
-
-		void trackPlayer () {
-			if (playerRail._Rail_int._PathSpline == RailSpline)
-			{
-				if (backwards == playerRail._RF._isGoingBackwards)
-				{
-					if (backwards)
-					{
-						playerDistance = range - playerRail._RF._pointOnSpline;
-
-					}
-					else
-					{
-						playerDistance = playerRail._RF._pointOnSpline - range;
-					}
-
-					playerSpeed = (_PlayerActions._listOfSpeedOnPaths[0] - currentSpeed) / playerRail._railmaxSpeed_;
-					float changeSpeed = followSpeed * followBySpeedDif.Evaluate(Mathf.Abs(playerSpeed));
-
-
-					if (playerDistance > 0)
-					{
-						if (currentSpeed < _PlayerActions._listOfSpeedOnPaths[0] - 3)
-							currentSpeed += changeSpeed;
-
-						currentSpeed += followSpeed * followByDistance.Evaluate(Mathf.Abs(playerDistance));
-					}
-
-					else
-					{
-
-						currentSpeed = Mathf.MoveTowards(currentSpeed, _PlayerActions._listOfSpeedOnPaths[0] - 2, changeSpeed);
-					}
-
-
-				}
-			}
-		}
-
-
-		void slopePhys () {
-			if (Mathf.Abs(sample.up.y) < 0.1)
-			{
-
-			}
-
-			currentSpeed = Mathf.Clamp(currentSpeed, 30, 120);
-		}
-
-		public float GetClosestPos ( Vector3 ColPos, Spline thisSpline ) {
-
-			CurrentDist = 9999999f;
-			for (float n = 0 ; n < thisSpline.Length ; n += 3)
-			{
-				dist = ((thisSpline.GetSampleAtDistance(n).location + thisSpline.transform.position) - ColPos).sqrMagnitude;
-				if (dist < CurrentDist)
-				{
-					CurrentDist = dist;
-					ClosestSample = n;
-				}
-
-			}
-			return ClosestSample;
-		}
-
-		private void OnTriggerEnter ( Collider other ) {
-			if (other.tag == "Rail")
-			{
-				if (other.GetComponentInParent<Spline>())
-				{
-					RailSpline = other.GetComponentInParent<Spline>();
-					TriggerObjectOn();
-				}
-			}
-		}
-
-
-		void EventReturnOnDeath ( object sender, EventArgs e ) {
-
-			firstSet = true;
-			gameObject.SetActive(true);
+		private void ResetRigidBody () {
 			_RB.velocity = Vector3.zero;
 			_RB.useGravity = false;
 			_RB.freezeRotation = true;
-
-			active = false;
-			RailSpline = startSpline;
-			RailTransform = RailSpline.transform;
-
-			currentSpeed = 0;
-			RailSpline = startSpline;
-			useOffset = setOffSet;
-			ConnectedRails = startingConnectedRails;
-
-			range = GetClosestPos(startPos, RailSpline);
-			sample = RailSpline.GetSampleAtDistance(range);
-
-			setPos(sample, gameObject);
-			alignCars();
 		}
+
+		void EventReturnOnDeath ( object sender, EventArgs e ) {
+			gameObject.SetActive(true);
+
+			SetIsActive(false);
+
+			transform.position = _startPosition;
+			SetSplineDetails();
+			PlaceOnSplineToStart();
+			ResetRigidBody();
+
+			S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+		}
+
+
+		public void SetToSpline () {
+			_RF = GetComponent<S_RailFollow_Base>();
+			SetSplineDetails();
+			PlaceOnSplineToStart();
+		}
+
+		#endregion
 	}
 
 }

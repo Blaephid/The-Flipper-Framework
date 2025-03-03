@@ -30,6 +30,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	[HideInInspector]
 	public float                  _pointOnSpline = 0f; //The actual place on the spline being travelled. The number is how many units along the length of the spline it is (not affected by spline length).
+	private float                  _clampedPointOnSpline = 0f;
 
 	[HideInInspector] public Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
 	[HideInInspector] public Vector3               _sampleLocation;
@@ -39,66 +40,65 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	//Quaternion rot;
 	[HideInInspector] public Vector3               _setOffSet;         //Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
-	private float                 _offsetRail_ = 2.05f;
-	private float                 _offsetZip_ = -2.05f;
+	[HideInInspector] public float                 _upOffsetRail_ = 2.05f;
+	[HideInInspector] public float                 _upOffsetZip_ = -2.05f;
 
 	[HideInInspector] public bool                  _isRailLost;        //Set to true when point on spline surpasses the limit, to inform later if statements that update.
 
 
-	//Physics
-	//Gets new location on rail, changing position and rotation to match. Called in update in order to ensure the character matches the rail in real time.
-	public void PlaceOnRail (Action<S_Interaction_Pathers.PathTypes> SetRotationOnRail, Action<Vector3> SetPosition) {
+	public void GetNewSampleOnRail ( float moveModifier = 1 ) {
 		//Increase/decrease the Amount of distance travelled on the Spline by DeltaTime and direction
-		float travelAmount = (Time.deltaTime * _grindingSpeed);
+		float travelAmount = (Time.deltaTime * _grindingSpeed) * moveModifier;
 		_movingDirection = _isGoingBackwards ? -1 : 1;
 
 		_pointOnSpline += travelAmount * _movingDirection;
 		_isRailLost = _pointOnSpline < 0 || _pointOnSpline > _PathSpline.Length;
-		float clampedPoint = Mathf.Clamp(_pointOnSpline, 0, _PathSpline.Length - 1);
+		_clampedPointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _PathSpline.Length - 0.5f);
 
 		//Get the data of the spline at that point along it (rotation, location, etc)
-		_Sample = _PathSpline.GetSampleAtDistance(clampedPoint);
+		_Sample = _PathSpline.GetSampleAtDistance(_clampedPointOnSpline);
 		_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
 		_sampleUpwards = (_RailTransform.rotation * _Sample.up);
 		_sampleLocation = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
+	}
 
-		//Set player Position and rotation on Rail
+	//Physics
+	//Gets new location on rail, changing position and rotation to match. Called in update in order to ensure the character matches the rail in real time.
+	public void PlaceOnRail ( Action<S_Interaction_Pathers.PathTypes> SetRotationOnRail, Action<Vector3> SetPosition ) {
+		//Set Position and rotation on Rail
 		switch (_whatKindOfRail)
 		{
 			//Place character in world space on point in rail
 			case S_Interaction_Pathers.PathTypes.rail:
-
-				SetRotationOnRail.Invoke(_whatKindOfRail);
 				Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
 
 				//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
 				Vector3 newPos = _sampleLocation;
-				newPos += (_sampleUpwards * _offsetRail_) + relativeOffset;
+				newPos += (_sampleUpwards * _upOffsetRail_) + relativeOffset;
 				SetPosition(newPos);
 				break;
 
 			case S_Interaction_Pathers.PathTypes.zipline:
 
-				SetRotationOnRail.Invoke(_whatKindOfRail);
-
 				//Similar to on rail, but place handle first, and player relevant to that.
 				newPos = _sampleLocation;
 				newPos += _setOffSet;
 				_ZipHandle.transform.position = newPos;
-				SetPosition(newPos + (_ZipHandle.transform.up * _offsetZip_));
+				SetPosition(newPos + (_ZipHandle.transform.up * _upOffsetZip_));
 				break;
 		}
 
+		SetRotationOnRail.Invoke(_whatKindOfRail);
 	}
 
 
 	//Checks the properties of the rail to see if should enter 
-	public void CheckLoseRail (Action LoseRail) {
+	public void CheckLoseRail ( Action LoseRail ) {
 
 		//If the spline loops around then just move place on length back to the start or end.
 		if (_PathSpline.IsLoop)
 		{
-			_pointOnSpline = _pointOnSpline + (_PathSpline.Length * -_movingDirection);
+			_pointOnSpline += _PathSpline.Length * -_movingDirection;
 			_isRailLost = false;
 			return;
 		}
@@ -147,5 +147,35 @@ public class S_RailFollow_Base : MonoBehaviour
 		//If hasn't returned yet, then there is nothing to follow, so actually leave the rail.
 
 		LoseRail();
+	}
+
+	//Goes through whole spline and returns the point closests to the given position, along with how far it is.
+	public static Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline, Vector3 offset ) {
+		float CurrentDistanceSquared = 9999999f;
+		float closestSample = 0;
+		if (!thisSpline || !thisSpline.transform) { return Vector2.zero; }
+
+		for (float n = 0 ; n < thisSpline.Length ; n += 5)
+		{
+			n = Mathf.Min(n, thisSpline.Length);
+
+			CurveSample splineSample = thisSpline.GetSampleAtDistance(n);
+
+			//Place on spline relative to object rotation and offset.
+			Vector3 checkPos = thisSpline.transform.position + (thisSpline.transform.rotation * (splineSample.location + (splineSample.Rotation * offset)));
+
+			//The distance between the point at distance n along the spline, and the current collider position.
+			float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(checkPos,colliderPosition);
+
+			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
+			if (distanceSquared <= CurrentDistanceSquared)
+			{
+				CurrentDistanceSquared = distanceSquared;
+				closestSample = n;
+			}
+
+			if (distanceSquared < 1) { break; }
+		}
+		return new Vector2(closestSample, CurrentDistanceSquared);
 	}
 }

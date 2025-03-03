@@ -182,7 +182,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 			offset = Col.GetComponentInParent<S_PlaceOnSpline>()._offset3d_;
 		}
 
-		Vector2 rangeAndDistanceSquared = GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
+		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
 
 		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
 		float speedToCheckAgainst = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude, _PlayerVel._coreVelocity.y);
@@ -245,7 +245,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		_RailAction._RF._ZipBody = zipbody;
 		zipbody.isKinematic = false;
 
-		Vector2 rangeAndDistanceSquared = GetClosestPointOfSpline(zipbody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.
+		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(zipbody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.
 
 		//Disables the homing target so it isn't a presence if homing attack can be performed in the grind action
 		GameObject target = col.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
@@ -296,7 +296,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		//If the player has been given a path to follow. This cuts out speed pads that don't have attached paths.
 		if (!_PathSpline) { return; }
 
-		Vector2 rangeAndDistanceSquared = GetClosestPointOfSpline(transform.position, _PathSpline, Vector2.zero);
+		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, _PathSpline, Vector2.zero);
 
 		if (PathData._removeVerticalVelocityOnStart_)
 		{
@@ -336,28 +336,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 			CollisionPointTransform.position = pointSum;
 		}
 		return CollisionPointTransform;
-	}
-
-
-	//Goes through whole spline and returns the point closests to the given position, along with how far it is.
-	public Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline, Vector3 offset ) {
-		float CurrentDistanceSquared = 9999999f;
-		float closestSample = 0;
-		for (float n = 0 ; n < thisSpline.Length ; n += 5)
-		{
-			Vector3 checkPos = thisSpline.transform.position + //Object position
-				(thisSpline.transform.rotation * (thisSpline.GetSampleAtDistance(n).location + (thisSpline.GetSampleAtDistance(n).Rotation * offset))); //Place on spline relative to object rotation and offset.
-																	      //The distance between the point at distance n along the spline, and the current collider position.
-			float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(checkPos,colliderPosition);
-
-			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
-			if (distanceSquared <= CurrentDistanceSquared)
-			{
-				CurrentDistanceSquared = distanceSquared;
-				closestSample = n;
-			}
-		}
-		return new Vector2(closestSample, CurrentDistanceSquared);
 	}
 
 	//Called when leaving a pulley to prevent player attaching to it immediately.

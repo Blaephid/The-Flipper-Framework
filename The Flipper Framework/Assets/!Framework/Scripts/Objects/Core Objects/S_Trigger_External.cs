@@ -96,8 +96,9 @@ public class S_Trigger_External : S_Trigger_Base
 		//Go through each given gameObject and trigger if possible.
 		for (int i = 0 ; i < gameObjects.Count ; i++)
 		{
-			if (!gameObjects[i]) { continue; }
-			if (gameObjects[i].TryGetComponent(out ITriggerable Trigger))
+			GameObject thisObject = gameObjects[i];
+			if (!thisObject) { continue; }
+			if (thisObject.TryGetComponent(out ITriggerable Trigger))
 			{
 				switch (triggerType)
 				{
