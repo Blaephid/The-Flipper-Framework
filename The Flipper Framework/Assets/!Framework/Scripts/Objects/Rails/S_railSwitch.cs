@@ -71,7 +71,7 @@ public class S_railSwitch : MonoBehaviour
             {
                 foreach (S_AddOnRail rail in connectedRails)
                 {
-                    rail.switchTrigger();
+                    rail.SwitchRailsToAlternate();
                 }
             }
 
@@ -147,7 +147,7 @@ public class S_railSwitch : MonoBehaviour
             {
                 foreach (S_AddOnRail rail in connectedRails)
                 {
-                    rail.switchTrigger();
+                    rail.SwitchRailsToAlternate();
                 }
             }
             

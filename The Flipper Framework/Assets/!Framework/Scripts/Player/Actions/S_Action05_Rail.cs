@@ -19,7 +19,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	[HideInInspector]
 	public S_Interaction_Pathers  _Rail_int;
-	private S_AddOnRail            _ConnectedRails;
 
 	[HideInInspector] public S_RailFollow_Base _RF;
 
@@ -612,7 +611,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_RF._pointOnSpline = range; //Starts at this position along the spline.
 		_RF._RailTransform = Rail; //Player position must add this as spline positions are in local space.
 
-		_ConnectedRails = AddOn; //Will be used to go onto subsequent rails without recalculating collisions.
+		_RF._ConnectedRails = AddOn; //Will be used to go onto subsequent rails without recalculating collisions.
 	}
 
 	//Called externally when entering a booster on a rail. Changes speed. 

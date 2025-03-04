@@ -175,7 +175,10 @@ namespace SplineMesh
 					return curve.GetSampleAtDistance(d);
 				}
 			}
-			throw new Exception("Something went wrong with GetSampleAtDistance.");
+			if (curves[0].Length != 0) //Length is 0 if ever trying to get distance when exiting game mode. This isn't a concern as its fixed after.
+				throw new Exception("Something went wrong with GetSampleAtDistance. With curve count of" + curves.Count);
+			else
+				return new CurveSample();
 		}
 
 		/// <summary>

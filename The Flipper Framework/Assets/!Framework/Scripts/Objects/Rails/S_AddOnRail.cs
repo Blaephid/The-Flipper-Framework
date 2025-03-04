@@ -10,13 +10,17 @@ using System.Linq;
 public class S_AddOnRail : MonoBehaviour
 {
 	[Header("Updating in Editor")]
+	[AsButton("Update", "Place", null)]
 	public bool UpdateAll = false;
+	[AsButton("Update All", "UpdateAllInstances", null)]
 	public bool UpdateNow = false;
-	public S_AddOnRail[] AddThis;
-	public S_AddOnRail[] AddBehindThese;
+	[AsButton("Set Values Of Connected Rails", "SetValueOfConnectedRails", null)]
+	public bool SetValues = false;
+
+	public S_AddOnRail[] AddThis = new S_AddOnRail[0];
+	public S_AddOnRail[] AddBehindThese = new S_AddOnRail[0];
 
 	[Header("Main Rails")]
-	public bool setConnectedOfOtherObjects;
 	public S_AddOnRail nextRail;
 	public S_AddOnRail PrevRail;
 
@@ -26,24 +30,15 @@ public class S_AddOnRail : MonoBehaviour
 
 	Vector3 offset;
 
-	[HideInInspector] public bool toUpdate = false;
-
 #if UNITY_EDITOR
 
 	private void OnEnable () {
 		if (Application.isPlaying) return;
-		toUpdate = true;
-	}
-
-
-	private void OnValidate () {
-		if (Application.isPlaying) return;
-		if (AddThis.Length == 0) return;
-		toUpdate = true;
+		Place();
 	}
 #endif
 
-	public void switchTrigger () {
+	public void SwitchRailsToAlternate () {
 		if (altNextRail != null)
 		{
 			S_AddOnRail temp = nextRail;
@@ -59,51 +54,35 @@ public class S_AddOnRail : MonoBehaviour
 	}
 
 #if UNITY_EDITOR
-	private void Update () {
-		// we can prevent the generated content to be updated during playmode to preserve baked data saved in the scene
-		if (Application.isPlaying) return;
+	public void SetValueOfConnectedRails () {
 
-		if (UpdateAll)
+		if (PrevRail != null)
+			PrevRail.nextRail = this;
+
+		if (nextRail != null)
+			nextRail.PrevRail = this;
+
+		if (altNextRail != null)
+			altNextRail.PrevRail = this;
+
+		if (altPrevRail != null)
+			altPrevRail.nextRail = this;
+	}
+
+	public void UpdateAllInstances () {
+		S_AddOnRail[] railsMeshes = FindObjectsByType<S_AddOnRail>(FindObjectsSortMode.None);
+		for (int i = 0 ; i < railsMeshes.Length ; i++)
 		{
-			S_AddOnRail[] railsMeshes = FindObjectsByType<S_AddOnRail>(FindObjectsSortMode.None);
-			for (int i = 0 ; i < railsMeshes.Length ; i++)
+			S_AddOnRail add = railsMeshes[i];
+			if (add.AddThis.Length != 0)
 			{
-				S_AddOnRail add = railsMeshes[i];
-				if (add.AddThis.Length != 0)
-				{
-					add.toUpdate = true;
-				}
+				add.Place();
 			}
-			UpdateAll = false;
-		}
-
-		if (setConnectedOfOtherObjects)
-		{
-			if (PrevRail != null)
-				PrevRail.nextRail = this;
-
-			if (nextRail != null)
-				nextRail.PrevRail = this;
-
-			if (altNextRail != null)
-				altNextRail.PrevRail = this;
-
-			if (altPrevRail != null)
-				altPrevRail.nextRail = this;
-
-			setConnectedOfOtherObjects = false;
-		}
-
-		if (toUpdate)
-		{
-			toUpdate = false;
-			Place();
 		}
 	}
 
-	void Place () {
+	public void Place () {
 		offset = new Vector3(GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
-		//offset = Vector3.zero;
 
 		if (AddThis.Length > 0)
 		{

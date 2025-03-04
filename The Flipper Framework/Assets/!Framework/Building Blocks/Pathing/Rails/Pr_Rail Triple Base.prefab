@@ -44,6 +44,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3451855950167031811}
   - component: {fileID: 3451855950167031836}
+  - component: {fileID: 2488079957721031538}
   m_Layer: 23
   m_Name: HomingTargets
   m_TagString: Untagged
@@ -94,6 +95,28 @@ MonoBehaviour:
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+--- !u!114 &2488079957721031538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3451855950167031810}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf7678d3c3d0e343a641447758f8591, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpdateAll: 0
+  UpdateNow: 0
+  AddThis: []
+  AddBehindThese: []
+  setConnectedOfOtherObjects: 0
+  nextRail: {fileID: 0}
+  PrevRail: {fileID: 0}
+  altNextRail: {fileID: 0}
+  altPrevRail: {fileID: 0}
+  toUpdate: 1
 --- !u!1 &3451855950444054796
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,6 +414,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6149141966842531107}
   - component: {fileID: 6149141966842531104}
+  - component: {fileID: 3956309310451012041}
   m_Layer: 23
   m_Name: RailCollision
   m_TagString: Untagged
@@ -441,6 +465,28 @@ MonoBehaviour:
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+--- !u!114 &3956309310451012041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6149141966842531106}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf7678d3c3d0e343a641447758f8591, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpdateAll: 0
+  UpdateNow: 0
+  AddThis: []
+  AddBehindThese: []
+  setConnectedOfOtherObjects: 0
+  nextRail: {fileID: 0}
+  PrevRail: {fileID: 0}
+  altNextRail: {fileID: 0}
+  altPrevRail: {fileID: 0}
+  toUpdate: 1
 --- !u!1 &6149141967069890977
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,6 +775,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6149141967462350158}
   - component: {fileID: 6149141967462350159}
+  - component: {fileID: 6908148701900499743}
   m_Layer: 23
   m_Name: RailCollision
   m_TagString: Untagged
@@ -779,6 +826,28 @@ MonoBehaviour:
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+--- !u!114 &6908148701900499743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6149141967462350153}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf7678d3c3d0e343a641447758f8591, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpdateAll: 0
+  UpdateNow: 0
+  AddThis: []
+  AddBehindThese: []
+  setConnectedOfOtherObjects: 0
+  nextRail: {fileID: 0}
+  PrevRail: {fileID: 0}
+  altNextRail: {fileID: 0}
+  altPrevRail: {fileID: 0}
+  toUpdate: 1
 --- !u!1 &6149141968731903500
 GameObject:
   m_ObjectHideFlags: 0
