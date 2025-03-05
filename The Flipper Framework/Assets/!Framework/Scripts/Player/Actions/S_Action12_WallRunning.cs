@@ -180,10 +180,6 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		_CamHandler._HedgeCam._shouldSetHeightWhenMoving_ = false;
 
 		//Control
-		//if(_PlayerPhys._locksForIsGravityOn.Count > 0)
-		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
-		//if(_PlayerPhys._locksForCanControl.Count > 0)
-		//	_PlayerPhys._locksForCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "WallRunning");

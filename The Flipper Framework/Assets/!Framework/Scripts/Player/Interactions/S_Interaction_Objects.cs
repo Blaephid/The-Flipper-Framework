@@ -205,7 +205,6 @@ public class S_Interaction_Objects : MonoBehaviour
 			case "Wind":
 				_numberOfWindForces -= 1;
 				if (Col.transform.up.y > 0.7f)
-					//_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
 					S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "InUpDraft");
 				if (_numberOfWindForces == 0)
 					_totalWindDirection = Vector3.zero;

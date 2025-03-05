@@ -39,19 +39,29 @@ namespace SplineMesh
 		private Spline _Spline = null;
 		[HideInInspector] public bool toUpdate = true;
 
+		[AsButton("Update","UpdateCommand", null)]
+		[SerializeField] bool UpdateButton;
+		[AsButton("Reset Data To Default","HandleDataComponentForSpawnedObjects", new object[]{true})]
+		[SerializeField] bool DataResetButton;
+
 		[Header("Main Placement")]
 		public Vector2 _spacingRange_ = new Vector2 (20,20);
 		[Tooltip("If not negative, will not place more than this number. Use zero to prevent anything placed normally."), Min(-1)]
 		public int	_maxNumber_ = -1;
+
+		[DrawHorizontalWithOthers(new string[]{"_spaceFromEnd_"})]
 		[Tooltip("How far along the spline until objects start being placed."), Min(-1)]
 		public float _spaceFromStart_ = 0f;
 		[Tooltip("How far from the end of the spline when objects can no longer be placed.")]
+		[HideInInspector]
 		public float _spaceFromEnd_ = 0f;
 
 		[Header("Additional Placement")]
+		[DrawHorizontalWithOthers(new string[]{"_addOnStart_"})]
 		[Tooltip("If true, place an additional object at distance 0. Set maxNumber to 0 to make this the only placed object"),]
 		public bool	_addOnStart_ = false;
 		[Tooltip("If true, place an additional object at the furthest distance."),]
+		[HideInInspector]
 		public bool         _addOnEnd_;
 
 		[Header("Object")]
@@ -236,55 +246,13 @@ namespace SplineMesh
 			}
 		}
 
-		public S_O_CustomInspectorStyle _InspectorTheme;
+		public void UpdateCommand () {
+			CheckNow();
+			PlaceAllElements();
+		}
 #endif
 	}
 
-
-
-#if UNITY_EDITOR
-	[CustomEditor(typeof(S_PlaceOnSpline))]
-	public class PlaceOnSplineEditor : S_CustomInspector_Base
-	{
-		S_PlaceOnSpline _OwnerScript;
-
-		public override void OnEnable () {
-			//Setting variables
-			_OwnerScript = (S_PlaceOnSpline)target;
-			_InspectorTheme = _OwnerScript._InspectorTheme;
-
-			base.OnEnable();
-		}
-
-		public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
-			return _OwnerScript._InspectorTheme;
-		}
-
-		public override void DrawInspectorNotInherited () {
-
-			//Order of Drawing
-			EditorGUILayout.Space(_spaceSize);
-			DrawButtons();
-
-			void DrawButtons () {
-				EditorGUILayout.Space(_spaceSize);
-
-				if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Update", _BigButtonStyle, _OwnerScript, "Update Placed Object"))
-				{
-					_OwnerScript.CheckNow();
-					_OwnerScript.PlaceAllElements();
-				}
-				if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Reset Data To Default", _BigButtonStyle, _OwnerScript, "Default Data on Placed Object"))
-				{
-					_OwnerScript.HandleDataComponentForSpawnedObjects(true);
-				}
-				serializedObject.ApplyModifiedProperties();
-			}
-
-			DrawDefaultInspector();
-		}
-	}
-#endif
 }
 
 

@@ -151,12 +151,11 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"RingRoadTimed", 15));
 
 		_PlayerPhys._canChangeGrounded = true;
-		//_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "RingRoad");
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
-		//_PlayerPhys._locksForCanControl.RemoveAt(0); //Remove lock on control before this, but add a new delay before control returns.
+		 //Remove lock on control before this, but add a new delay before control returns.
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "RingRoad");
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f, "RingRoadTimed"));
 

@@ -185,7 +185,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
 
 		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
-		float speedToCheckAgainst = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude, _PlayerVel._coreVelocity.y);
+		float speedToCheckAgainst = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude, Mathf.Abs(_PlayerVel._coreVelocity.y));
 		if (rangeAndDistanceSquared.y < Mathf.Pow(Mathf.Clamp(speedToCheckAgainst / 13, 2f, 11f), 2))
 		{
 			SetOnRail(true, Col, rangeAndDistanceSquared);
@@ -225,7 +225,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				addOn = collider.gameObject.GetComponentInParent<S_AddOnRail>();
 
 				//Check there is a potential rail to go to either way, otherwise don't add it.
-				if (addOn.nextRail == null && addOn.PrevRail == null) { addOn = null; }
+				if (addOn.UseNextRail == null && addOn.UsePrevRail == null) { addOn = null; }
 			}
 
 			//Sets the player to the rail grind action, and sets their position and what spline to follow.

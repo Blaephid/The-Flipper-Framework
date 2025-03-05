@@ -2,6 +2,7 @@ using SplineMesh;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class S_RailFollow_Base : MonoBehaviour
@@ -53,13 +54,26 @@ public class S_RailFollow_Base : MonoBehaviour
 
 		_pointOnSpline += travelAmount * _movingDirection;
 		_isRailLost = _pointOnSpline < 0 || _pointOnSpline > _PathSpline.Length;
-		_clampedPointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _PathSpline.Length - 0.5f);
+		_clampedPointOnSpline = _pointOnSpline;
+
+		if (_isRailLost)
+		{
+			if (CheckLoseRail())	
+				_clampedPointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _PathSpline.Length);
+			else
+				_clampedPointOnSpline = _pointOnSpline;
+
+		}
 
 		//Get the data of the spline at that point along it (rotation, location, etc)
 		_Sample = _PathSpline.GetSampleAtDistance(_clampedPointOnSpline);
 		_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
 		_sampleUpwards = (_RailTransform.rotation * _Sample.up);
 		_sampleLocation = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
+	}
+
+	private void ClampToSplineIfNecessary () {
+		_clampedPointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _PathSpline.Length);
 	}
 
 	//Physics
@@ -93,60 +107,56 @@ public class S_RailFollow_Base : MonoBehaviour
 
 
 	//Checks the properties of the rail to see if should enter 
-	public void CheckLoseRail ( Action LoseRail ) {
+	public bool CheckLoseRail ( ) {
 
 		//If the spline loops around then just move place on length back to the start or end.
 		if (_PathSpline.IsLoop)
 		{
 			_pointOnSpline += _PathSpline.Length * -_movingDirection;
 			_isRailLost = false;
-			return;
+			return false;
 		}
 
 		//Or if this rail has either a next rail or previous rail attached.
 		else if (_ConnectedRails != null)
 		{
-			_isRailLost = false;
 
 			//If going forwards, and the rail has a rail off the end, then go onto it.
-			if (!_isGoingBackwards && _ConnectedRails.nextRail != null && _ConnectedRails.nextRail.isActiveAndEnabled)
+			if (!_isGoingBackwards && _ConnectedRails.UseNextRail != null && _ConnectedRails.UseNextRail.isActiveAndEnabled)
 			{
 				//Set point on spline to be how much over this grind went over the current rail.
 				_pointOnSpline = Mathf.Max(0, _pointOnSpline - _PathSpline.Length);
 
-				//The data storing next and previous rails is changed to the one for the new rail, meaning this rail will now become PrevRail.
-				_ConnectedRails = _ConnectedRails.nextRail;
+				//The data storing next and previous rails is changed to the one for the new rail, meaning this rail will now become UsePrevRail.
+				SetNewRail(_ConnectedRails.UseNextRail);
+				return false;
+			}
+			//If going backwards, and the rail has a rail off the end, then go onto it.
+			else if (_isGoingBackwards && _ConnectedRails.UsePrevRail != null && _ConnectedRails.UsePrevRail.isActiveAndEnabled)
+			{
+				//Set data first, because will need to affect point by new length.
+				SetNewRail(_ConnectedRails.UsePrevRail);
 
+				//Since coming onto this new rail from the end of it, must have a reference to its length. This is why the point is acquired at the end of this if flow, rather than the start.
+				_pointOnSpline = _pointOnSpline + _PathSpline.Length;
+				return false;
+			}
+
+			void SetNewRail(S_AddOnRail NewRail ) {
+				_isRailLost = false;
+
+				_ConnectedRails = NewRail;
 				//Change the offset to match this rail (since may go from a rail offset from a spline, straight onto rail directily on a different spline)
 				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 
 				//Set path and positions to follow.
 				_PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
 				_RailTransform = _PathSpline.transform.parent;
-				return;
-			}
-			//If going backwards, and the rail has a rail off the end, then go onto it.
-			else if (_isGoingBackwards && _ConnectedRails.PrevRail != null && _ConnectedRails.PrevRail.isActiveAndEnabled)
-			{
-				//Set data first, because will need to affect point by new length.
-				_ConnectedRails = _ConnectedRails.PrevRail;
-
-				// Change offset to match the new rail.
-				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
-
-				//Set path and positions to follow.
-				_PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
-				_RailTransform = _PathSpline.transform.parent;
-
-				//Since coming onto this new rail from the end of it, must have a reference to its length. This is why the point is acquired at the end of this if flow, rather than the start.
-				_pointOnSpline = _pointOnSpline + _PathSpline.Length;
-				_pointOnSpline = _PathSpline.Length;
-				return;
 			}
 		}
 		//If hasn't returned yet, then there is nothing to follow, so actually leave the rail.
 
-		LoseRail();
+		return true;
 	}
 
 	//Goes through whole spline and returns the point closests to the given position, along with how far it is.

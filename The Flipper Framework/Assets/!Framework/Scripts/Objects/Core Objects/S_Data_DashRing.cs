@@ -30,6 +30,15 @@ public class S_Data_DashRing : S_Data_Base
 	private new void OnValidate () {
 		base.OnValidate();
 
+		UpdateLaunchDataToDirection();
+	}
+
+	[ExecuteInEditMode]
+	private void Update () {
+		if(!Application.isPlaying){UpdateLaunchDataToDirection();}
+	}
+
+	void UpdateLaunchDataToDirection () {
 		_launchData_ = new S_Structs.LaunchPlayerData()
 		{
 			_force_ = _launchData_._force_,

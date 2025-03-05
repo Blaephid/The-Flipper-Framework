@@ -105,7 +105,7 @@ public class S_CharacterTools : MonoBehaviour
 		}
 
 		//Applying launch
-		if (_ActionManager._ObjectForInteractions.TryGetComponent(out S_Interaction_Objects Objects))
+		if (Spawner._launch && _ActionManager._ObjectForInteractions.TryGetComponent(out S_Interaction_Objects Objects))
 		{
 			S_Structs.LaunchPlayerData launch = Spawner._launchOnSpawnData_;
 			if(launch._force_ <= 0 && launch._directionToUse_.sqrMagnitude <= 1) { yield break; }

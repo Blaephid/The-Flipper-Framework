@@ -290,14 +290,9 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		//Return control options that were lost.
 		_PlayerPhys._canChangeGrounded = true;
-		//if(_PlayerPhys._locksForIsGravityOn.Count > 0)
-		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
 
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Homing");
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "Homing");
-
-		//if (_PlayerPhys._locksForCanControl.Count > 0)
-		//	_PlayerPhys._locksForCanControl.RemoveAt(0);
 
 		if(_Actions._listOfSpeedOnPaths.Count > 0)
 			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.

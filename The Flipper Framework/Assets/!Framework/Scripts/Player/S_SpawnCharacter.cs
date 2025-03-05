@@ -28,6 +28,7 @@ public class S_SpawnCharacter : S_Vis_Base
 
 	[Header("On Spawn")]
 	public int      _spawnDelay = 5;
+	public bool	_launch;
 	[Tooltip("If data is provided, player will start with a velocity, rather than just dropping. This is applied in S_CharacterTools.")]
 	public S_Structs.LaunchPlayerData _launchOnSpawnData_;
 

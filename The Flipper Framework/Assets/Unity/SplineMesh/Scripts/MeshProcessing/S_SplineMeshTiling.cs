@@ -7,6 +7,7 @@ using UnityEditor;
 using System.Collections;
 using SplineMesh;
 using templates;
+using Unity.VisualScripting;
 
 namespace SplineMesh
 {
@@ -23,9 +24,16 @@ namespace SplineMesh
 	public class S_SplineMeshTiling : MonoBehaviour
 	{
 		private GameObject generated;
-		private Spline _Spline = null;
+		[CustomReadOnly]
+		[SerializeField] Spline _Spline = null;
 		private bool toUpdate = false;
 
+		[AsButton("Update Self","UpdateSelfCommand", null)]
+		[SerializeField] bool UpdateButton;
+		[AsButton("Update All","UpdateAllCommand", null)]
+		[SerializeField] bool UpdateAllButton;
+
+		[Header("Object")]
 		[Tooltip("Mesh to bend along the spline.")]
 		public Mesh mesh;
 		[Tooltip("Material to apply on the bent mesh.")]
@@ -39,21 +47,30 @@ namespace SplineMesh
 		[Tooltip("Scale to apply on the mesh before bending it.")]
 		public Vector3 scale = Vector3.one;
 
+		[Header("Components")]
+		[DrawHorizontalWithOthers(new string[]{"updateInPlayMode"})]
 		public bool DeactivateOnStart;
 
 		[Tooltip("If true, the mesh will be bent on play mode. If false, the bent mesh will be kept from the editor mode, allowing lighting baking.")]
+		[HideInInspector]
 		public bool updateInPlayMode;
 
 		[Tooltip("If true, a mesh will be placed on each curve of the spline. If false, a single mesh will be placed for the whole spline.")]
 		public bool curveSpace = false;
 
+		[DrawHorizontalWithOthers(new string[]{"enableCollider"})]
 		public bool enableCollider = false;
+		[HideInInspector]
 		public bool enableVisual = true;
+		[DrawHorizontalWithOthers(new string[]{"ObjLayer"}, new float[] {1f, 1f })]
 		public string ObjTag = "Rail";
+		[HideInInspector]
 		public int ObjLayer = 23;
 
 		public GameObject refDir;
+		[DrawHorizontalWithOthers(new string[]{"showStartDir"}, new float[] {1.3f, 0.7f })]
 		public bool showEndDir;
+		[HideInInspector]
 		public bool showStartDir;
 
 
@@ -65,9 +82,17 @@ namespace SplineMesh
 			// tip : if you name all generated content in the same way, you can easily find all of it
 			// at once in the scene view, with a single search.
 			GenerateChild();
-			_Spline = GetComponentInParent<Spline>();
+			SetSpline();
 
 			toUpdate = true;
+		}
+
+		private void SetSpline () {
+			if(!TryGetComponent(out _Spline))
+			{
+				_Spline = GetComponentInParent<Spline>();
+			}
+			else if(!_Spline) { enabled = false; }
 		}
 
 		private void GenerateChild () {
@@ -95,13 +120,14 @@ namespace SplineMesh
 			}
 		}
 
-		public void rebuild () {
+		public void Rebuild () {
 			//curveSpace = !curveSpace;
 			//CreateMeshes();
 			//curveSpace = !curveSpace;
 			if (curveSpace)
 			{
 				int i = 0;
+				if(_Spline == null) { return; }
 				foreach (var curve in _Spline.curves)
 				{
 					var go = FindOrCreate("segment " + i++ + " mesh");
@@ -170,6 +196,7 @@ namespace SplineMesh
 		}
 
 		private GameObject FindOrCreate ( string name ) {
+			if (!generated || generated.IsDestroyed()) { GenerateChild(); }
 			var childTransform = generated.transform.Find(name);
 			GameObject newObject = S_S_Editor.FindOrCreateChild(generated, name, 
 				new Type[] { typeof(MeshFilter),
@@ -217,56 +244,18 @@ namespace SplineMesh
 
 			return newObject;
 		}
-		public S_O_CustomInspectorStyle _InspectorTheme;
-#endif
-	}
-}
 
-#if UNITY_EDITOR
-[CustomEditor(typeof(S_SplineMeshTiling))]
-public class SplineMeshEditor : S_CustomInspector_Base
-{
-	S_SplineMeshTiling _OwnerScript;
-
-	public override void OnEnable () {
-		//Setting variables
-		_OwnerScript = (S_SplineMeshTiling)target;
-		_InspectorTheme = _OwnerScript._InspectorTheme;
-
-		base.OnEnable();
-	}
-
-	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
-		return _OwnerScript._InspectorTheme;
-	}
-
-	public override void DrawInspectorNotInherited () {
-
-		//Order of Drawing
-		EditorGUILayout.Space(_spaceSize);
-		DrawButtons();
-
-		void DrawButtons () {
-			EditorGUILayout.Space(_spaceSize);
-			EditorGUILayout.BeginHorizontal();
-
-			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Update This Spline Mesh", _BigButtonStyle, _OwnerScript, "Update Single Spline Meshes"))
+		public void UpdateAllCommand () {
+			S_SplineMeshTiling[] railsMeshes = FindObjectsByType<S_SplineMeshTiling>((FindObjectsSortMode.None));
+			foreach (S_SplineMeshTiling mesh in railsMeshes)
 			{
-				_OwnerScript.rebuild();
+				mesh.Rebuild();
 			}
-			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Update All Spline Meshes", _BigButtonStyle, _OwnerScript, "Update All Spline Meshes"))
-			{
-				S_SplineMeshTiling[] railsMeshes = FindObjectsByType<S_SplineMeshTiling>((FindObjectsSortMode.None));
-				foreach (S_SplineMeshTiling mesh in railsMeshes)
-				{
-					mesh.rebuild();
-				}
-			}
-			serializedObject.ApplyModifiedProperties();
-			GUILayout.EndHorizontal();
 		}
 
-		DrawDefaultInspector();
+		public void UpdateSelfCommand () {
+			Rebuild();
+		}
+#endif
 	}
 }
-#endif

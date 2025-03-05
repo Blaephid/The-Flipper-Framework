@@ -157,20 +157,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 449ecafe41cb81840a8866154cf514d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
   _InspectorTheme: {fileID: 0}
   _launchData_:
-    _force_: 0
-    _direction_: {x: 0, y: 0, z: 0}
-    _lockInputFrames_: 0
-    _lockAirMovesFrames_: 0
+    _force_: 100
+    _direction_: {x: 0, y: 0, z: 1}
+    _directionToUse_: {x: 0, y: 0, z: -1}
+    _lockInputFrames_: 30
+    _lockAirMovesFrames_: 30
     _overwriteGravity_: {x: 0, y: 0, z: 0}
-    _lockInputTo_: 0
+    _lockInputTo_: 2
   _willCarrySpeed_: 1
-  _speedToSet_: 100
   _cameraEffect:
     _willAffectCamera_: 1
     _CameraRotateTime_: {x: 0.15, y: 20}
-  _PositionToLockTo: {fileID: 0}
+  _PositionToLockTo: {x: 0, y: 0, z: 0}
   _lockControlFrames_: 30
   _lockInputTo_: 0
   _overwriteGravity_: {x: 0, y: 0, z: 0}
@@ -187,6 +196,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
   _InspectorTheme: {fileID: 0}
   _Path: {fileID: 0}
   _speedToSet_: 80
@@ -195,7 +213,7 @@ MonoBehaviour:
   _cameraEffect:
     _willAffectCamera_: 1
     _CameraRotateTime_: {x: 0.15, y: 20}
-  _PositionToLockTo: {fileID: 4000013130497754}
+  _PositionToLockTo: {x: 0, y: 0, z: 0}
   _lockControlFrames_: 30
   _lockInputTo_: 1
 --- !u!114 &4628160381923001816
@@ -210,7 +228,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _onlyDrawWhenSelected: 1
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 1
+  _normalOutlineColour: {r: 1, g: 0, b: 0, a: 0.5}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 0.5, g: 0, b: 0, a: 1}
+  _isSelected: 0
   _debugForce: 1
   _calculations: 60
   _LauncherScript: {fileID: 4887761807873569939}
@@ -218,8 +244,8 @@ MonoBehaviour:
   _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
     type: 2}
   _ShotCenter: {fileID: 4000013130497754}
-  _coreVelAtEnd: {x: 0, y: -159.29991, z: 0}
-  _environmentalVelAtStart: {x: 0, y: 0, z: 0}
+  _coreVelAtEnd: {x: 64.97458, y: -157.97897, z: 1.0443445}
+  _environmentalVelAtStart: {x: 98.64585, y: 16.324324, z: 1.5855467}
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0
@@ -352,22 +378,22 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.24483916
+      value: 0.24483913
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.0000042357783
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.50681716
+      value: 0.51001686
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.2339896
+      value: 2.719895
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -412,22 +438,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7620989
+      value: 0.95942914
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.10767913
+      value: 0.18089157
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.6321648
+      value: -0.21621892
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.08932036
+      value: 0.004838953
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -441,18 +467,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
+      propertyPath: _isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
       propertyPath: _displayTitle
       value: Dash Ring
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
+      propertyPath: _placeAboveObject.x
+      value: 10.618164
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
       propertyPath: _placeAboveObject.y
-      value: 2.0700002
+      value: 3.8685799
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _placeAboveObject.z
-      value: -5.0400004
+      value: 0.1706543
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -477,7 +513,12 @@ PrefabInstance:
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _DataToDisplay.Array.data[0].value
-      value: 80
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
+      propertyPath: _DataToDisplay.Array.data[0].structName
+      value: _launchData_
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -487,7 +528,7 @@ PrefabInstance:
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _DataToDisplay.Array.data[0].variableName
-      value: _speedToSet_
+      value: _force_
       objectReference: {fileID: 0}
     - target: {fileID: 5765654182386527770, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -497,7 +538,7 @@ PrefabInstance:
     - target: {fileID: 6358358358702903592, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_text
-      value: 'Speed = 80
+      value: 'Speed = 100
 
 '
       objectReference: {fileID: 0}

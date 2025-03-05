@@ -4,9 +4,11 @@ using UnityEngine;
 using SplineMesh;
 using System;
 using System.Linq;
+using UnityEditor;
 
 [DisallowMultipleComponent]
 [ExecuteInEditMode]
+[RequireComponent(typeof(S_PlaceOnSpline))]
 public class S_AddOnRail : MonoBehaviour
 {
 	[Header("Updating in Editor")]
@@ -21,16 +23,26 @@ public class S_AddOnRail : MonoBehaviour
 	public S_AddOnRail[] AddBehindThese = new S_AddOnRail[0];
 
 	[Header("Main Rails")]
-	public S_AddOnRail nextRail;
+	public S_AddOnRail NextRail;
 	public S_AddOnRail PrevRail;
 
-	[Header("Switch Rails")]
-	public S_AddOnRail altNextRail;
-	public S_AddOnRail altPrevRail;
+	[HideInInspector] public S_AddOnRail UseNextRail;
+	[HideInInspector] public S_AddOnRail UsePrevRail;
 
-	Vector3 offset;
+	[Header("Switch Rails")]
+	public S_AddOnRail AltNextRail;
+	public S_AddOnRail AltPrevRail;
+
+	Vector3 _selfOffset, _otherOffset;
+	[SerializeField, HideInInspector]
+	Vector3? _startPos, _endPos, _nextPos, _prevPos;
 
 #if UNITY_EDITOR
+
+	private void Start () {
+		UseNextRail = NextRail;
+		UsePrevRail = PrevRail;
+	}
 
 	private void OnEnable () {
 		if (Application.isPlaying) return;
@@ -39,34 +51,53 @@ public class S_AddOnRail : MonoBehaviour
 #endif
 
 	public void SwitchRailsToAlternate () {
-		if (altNextRail != null)
+		if (AltNextRail != null)
 		{
-			S_AddOnRail temp = nextRail;
-			nextRail = altNextRail;
-			altNextRail = temp;
+			UseNextRail = UseNextRail == NextRail ? AltNextRail : NextRail;
 		}
-		if (altPrevRail != null)
+		if (AltPrevRail != null)
 		{
-			S_AddOnRail temp = PrevRail;
-			PrevRail = altPrevRail;
-			altPrevRail = temp;
+			UsePrevRail = UsePrevRail == PrevRail ? AltPrevRail : NextRail;
 		}
+	}
+
+	private void OnValidate () {
+		GetPositions();
 	}
 
 #if UNITY_EDITOR
 	public void SetValueOfConnectedRails () {
+		if(!this.isActiveAndEnabled) { return; }
 
 		if (PrevRail != null)
-			PrevRail.nextRail = this;
+		{
+			PrevRail.NextRail = this; 
+			PrevRail.GetPositions();
+			EditorUtility.SetDirty(PrevRail);
+		}
 
-		if (nextRail != null)
-			nextRail.PrevRail = this;
+		if (NextRail != null)
+		{
+			NextRail.PrevRail = this; 
+			NextRail.GetPositions();
+			EditorUtility.SetDirty(NextRail);
+		}
 
-		if (altNextRail != null)
-			altNextRail.PrevRail = this;
+		if (AltNextRail != null)
+		{
+			AltNextRail.PrevRail = this; 
+			PrevRail.GetPositions();
+			EditorUtility.SetDirty(AltNextRail);
+		}
 
-		if (altPrevRail != null)
-			altPrevRail.nextRail = this;
+		if (AltPrevRail != null)
+		{
+			AltPrevRail.NextRail = this; 
+			NextRail.GetPositions();
+			EditorUtility.SetDirty(AltPrevRail);
+		}
+
+		GetPositions();
 	}
 
 	public void UpdateAllInstances () {
@@ -82,7 +113,7 @@ public class S_AddOnRail : MonoBehaviour
 	}
 
 	public void Place () {
-		offset = new Vector3(GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
+		_selfOffset = new Vector3(GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
 
 		if (AddThis.Length > 0)
 		{
@@ -93,9 +124,8 @@ public class S_AddOnRail : MonoBehaviour
 				Spline otherSpline = rail.GetComponentInParent<Spline>();
 
 				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
-				offset = sample.Rotation * offset;
 
-				otherSpline.gameObject.transform.parent.position = thisSpline.gameObject.transform.parent.position + offset;
+				otherSpline.gameObject.transform.position = thisSpline.gameObject.transform.parent.position;
 				otherSpline.nodes[0].Position = thisSpline.nodes[thisSpline.nodes.Count - 1].Position;
 				otherSpline.nodes[0].Direction = thisSpline.nodes[thisSpline.nodes.Count - 1].Direction;
 			}
@@ -107,13 +137,61 @@ public class S_AddOnRail : MonoBehaviour
 				Spline otherSpline = rail.GetComponentInParent<Spline>();
 
 				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
-				offset = sample.Rotation * offset;
 
-				otherSpline.gameObject.transform.parent.position = thisSpline.gameObject.transform.parent.position + offset;
+				otherSpline.gameObject.transform.position = thisSpline.gameObject.transform.parent.position;
 				otherSpline.nodes[otherSpline.nodes.Count - 1].Position = thisSpline.nodes[0].Position;
 				otherSpline.nodes[otherSpline.nodes.Count - 1].Direction = thisSpline.nodes[0].Direction;
 			}
+		}
 
+		GetPositions();
+	}
+
+	public void GetPositions () {
+		Spline thisSpline = GetComponentInParent<Spline>();
+		if(!thisSpline) { return; }
+
+		_endPos = GetPositionFromSplineData(thisSpline, _selfOffset, thisSpline.Length);
+		_startPos = GetPositionFromSplineData(thisSpline, _selfOffset, 0);
+
+		if(NextRail)
+		{
+			Spline otherSpline = NextRail.GetComponentInParent<Spline>();
+			_nextPos = GetPositionFromSplineData(otherSpline, _selfOffset, 0);
+		}
+		if (PrevRail)
+		{
+			Spline otherSpline = PrevRail.GetComponentInParent<Spline>();
+			_prevPos = GetPositionFromSplineData(otherSpline, _selfOffset, otherSpline.Length);
+		}
+	}
+
+	private Vector3? GetPositionFromSplineData(Spline spline, Vector3 offset, float point ) {
+		if(!spline) { return null; }
+		Transform transform = spline.transform;
+		CurveSample sample = spline.GetSampleAtDistance(point);
+		Vector3 useOffset = (transform.rotation * sample.Rotation) * _selfOffset;
+
+		return transform.position + (transform.rotation * sample.location) + useOffset;
+	}
+
+	private void OnDrawGizmosSelected () {
+
+		if (NextRail)
+		{
+			Gizmos.color = Color.magenta;
+			if(_endPos.HasValue)
+				Gizmos.DrawWireCube(_endPos.Value + (Vector3.up * 2f), Vector3.one * 5);
+			if(_nextPos.HasValue)
+				Gizmos.DrawWireCube(_nextPos.Value + (Vector3.up * -2f), Vector3.one * 5);
+		}
+		if (PrevRail)
+		{
+			Gizmos.color = Color.magenta;
+			if(_startPos.HasValue)
+				Gizmos.DrawWireCube(_startPos.Value + (Vector3.up * 2f), Vector3.one * 5);
+			if(_prevPos.HasValue)
+				Gizmos.DrawWireCube(_prevPos.Value + (Vector3.up * -2f), Vector3.one * 5);
 		}
 	}
 #endif

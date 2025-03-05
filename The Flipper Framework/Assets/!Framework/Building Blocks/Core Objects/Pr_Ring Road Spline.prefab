@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 853586103888125666}
   - component: {fileID: 5455047339599456840}
   - component: {fileID: 553594820864921953}
+  - component: {fileID: 6119010090249839587}
   m_Layer: 0
   m_Name: Spline
   m_TagString: Untagged
@@ -78,33 +79,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodes:
-  - position: {x: 0, y: 0, z: 0}
-    direction: {x: 0, y: 0, z: -3}
+  - position: {x: -0.00045776367, y: 0.0000038146973, z: 0.000015258789}
+    direction: {x: 4.9997253, y: 0.0000038146973, z: -0.000009536743}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
-  - position: {x: 50, y: 0, z: 0}
-    direction: {x: 50, y: 0, z: 0}
+  - position: {x: 49.999817, y: 0.0000019073486, z: 0.000024795532}
+    direction: {x: 49.999817, y: 0.0000019073486, z: 0.000024795532}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
   curves:
   - n1:
-      position: {x: 0, y: 0, z: 0}
-      direction: {x: 0, y: 0, z: -3}
+      position: {x: -0.00045776367, y: 0.0000038146973, z: 0.000015258789}
+      direction: {x: 4.9997253, y: 0.0000038146973, z: -0.000009536743}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
     n2:
-      position: {x: 50, y: 0, z: 0}
-      direction: {x: 50, y: 0, z: 0}
+      position: {x: 49.999817, y: 0.0000019073486, z: 0.000024795532}
+      direction: {x: 49.999817, y: 0.0000019073486, z: 0.000024795532}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
     Changed:
       m_PersistentCalls:
         m_Calls: []
-  Length: 50.304535
+  Length: 50.000275
   isLoop: 0
   CurveChanged:
     m_PersistentCalls:
@@ -137,3 +138,27 @@ MonoBehaviour:
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+--- !u!114 &6119010090249839587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752959267358373740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9c8b87cf845f3c4cb854007700733aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 1
+  _viewVisualisationDataHidden: 1
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.6792453, g: 0.6120927, b: 0.40690637, a: 1}
+  _selectedOutlineColour: {r: 0.6981132, g: 0.52600914, b: 0, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
+  _distancePerCalculation: 20
+  _selectPointOffset: {x: 0, y: 0, z: 0}
+  _SplineToDisplay: {fileID: 5455047339599456840}

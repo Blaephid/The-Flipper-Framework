@@ -927,7 +927,9 @@ public class S_PlayerPhysics : MonoBehaviour
 
 
 	public void SetPlayerPosition ( Vector3 newPosition, bool shouldPrintLocation = false ) {
-		Debug.DrawLine(transform.position, newPosition, Color.magenta, 10f);
+		Vector3 halfPoint = Vector3.Lerp(transform.position, newPosition, 0.5f);
+		Debug.DrawLine(transform.position, halfPoint, new Color(1f, 0, 1f, 0.5f), 10f);
+		Debug.DrawLine(halfPoint,newPosition, new Color(0.4f,0,0.8f, 0.8f), 10f);
 
 		transform.position = newPosition;
 		UpdatePositionTrackers();

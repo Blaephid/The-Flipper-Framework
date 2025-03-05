@@ -138,7 +138,6 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 
 		//Incase this was disabled by changing action, rather than a bounce.
 		if(!_hasBounced)
-			//_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
 			S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
 
 		_HomingTrailScript.emitTime = 0.2f;
@@ -252,8 +251,6 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		}
 
 		//Starts applying normal force downwards again, even before exiting action.
-		//if(_PlayerPhys._locksForIsGravityOn.Count > 0) 
-		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
 
 		Vector3 input = transform.TransformDirection(_PlayerPhys._PlayerMovement._moveInput);

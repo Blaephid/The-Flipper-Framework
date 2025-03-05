@@ -263,13 +263,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			}
 		}
 
-		//Restore Control
-		//if (_PlayerPhys._locksForIsGravityOn.Count > 0)
-		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
-
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Rail");
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "Rail");
-		//_PlayerPhys._locksForCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
 		//To prevent instant actions
@@ -340,7 +335,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (_RF._ZipBody) { _RF._ZipBody.velocity = _RF._sampleForwards * _RF._grindingSpeed; }
 
 		if (_RF._isRailLost)
-			_RF.CheckLoseRail(LoseRail);
+			LoseRail();
 		
 	}
 

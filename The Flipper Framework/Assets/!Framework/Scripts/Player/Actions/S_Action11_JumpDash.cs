@@ -204,11 +204,8 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 		_Input._SpecialPressed = false;
 
 		//Physics
-		//_PlayerPhys._locksForCanControl.RemoveAt(0);
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "JumpDash");
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "JumpDash");
-		//if (_PlayerPhys._locksForIsGravityOn.Count > 0 )
-		//	_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
 	}
 
 	#endregion

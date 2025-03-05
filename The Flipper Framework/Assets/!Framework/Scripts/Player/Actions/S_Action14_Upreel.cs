@@ -99,7 +99,6 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		enabled = false;
 		if (isFirstTime) { ReadyAction();  return; } //If first time, then return after setting to disabled.
 
-		//_PlayerPhys._locksForIsGravityOn.RemoveAt(0);
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Upreel");
 		_PlayerPhys._canChangeGrounded = true;
 

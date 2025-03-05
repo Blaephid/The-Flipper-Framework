@@ -83,7 +83,7 @@ namespace SplineMesh
 			HandleGrindSpeed();
 
 			if (_RF._isRailLost)
-				_RF.CheckLoseRail(LoseRail);
+				LoseRail();
 		}
 
 		public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
@@ -150,7 +150,7 @@ namespace SplineMesh
 						thisSpline = _RF._ConnectedRails.PrevRail.GetComponentInParent<Spline>();
 						tempPointOnSpline += thisSpline.Length;
 					}
-					else if (tempPointOnSpline > thisSpline.Length && _isBackwards && _RF._ConnectedRails.nextRail != null && _RF._ConnectedRails.nextRail.isActiveAndEnabled)
+					else if (tempPointOnSpline > thisSpline.Length && _isBackwards && _RF._ConnectedRails.NextRail != null && _RF._ConnectedRails.NextRail.isActiveAndEnabled)
 					{
 						tempPointOnSpline -= thisSpline.Length;
 						thisSpline = _RF._ConnectedRails.PrevRail.GetComponentInParent<Spline>();
