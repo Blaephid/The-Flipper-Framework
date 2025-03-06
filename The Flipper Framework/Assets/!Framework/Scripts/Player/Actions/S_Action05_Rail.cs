@@ -133,7 +133,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _RF._grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
 
-		//_RF.PlaceOnRail(SetRotation, SetPosition);
 		MoveOnRail();
 		if (_canInput) { HandleInputs(); }
 
@@ -172,7 +171,19 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		//Get how much the character is facing the same way as the point.
 		_RF._PathSpline = _Rail_int._PathSpline;
 		_RF.GetNewSampleOnRail(0);
-		float facingDot = Vector3.Dot(_PlayerVel._worldVelocity.normalized, _RF._sampleForwards);
+
+		//Use biased so horizontal velociity has slightly more say than vertical velocity. This 
+		Vector3 biasedPlayerDirection = _PlayerVel._worldVelocity.normalized;
+		biasedPlayerDirection.y = 0;
+		biasedPlayerDirection.Normalize();
+		biasedPlayerDirection = Vector3.Lerp(biasedPlayerDirection, _PlayerVel._worldVelocity.normalized.y * Vector3.up, 0.4f);
+
+		float facingDot = Vector3.Dot(biasedPlayerDirection, _RF._sampleTransforms.forwards);
+
+		Debug.DrawRay(transform.position, biasedPlayerDirection * 10, Color.black, 20f);
+		Debug.DrawRay(transform.position, _RF._sampleTransforms.forwards * 10, Color.red, 20f);
+
+		_RF._movingDirection = facingDot < 0 ? -1 : 1;
 
 		//Because this action can start itself by hopping from one rail to another, only do this if hasn't just done so.
 		if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Rail)
@@ -206,7 +217,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			}
 
 			//If got onto this rail from anything except a rail hop, set speed to physics.
-			_Actions._listOfSpeedOnPaths.Add(Mathf.Sqrt(_PlayerVel._speedMagnitudeSquared));
+			//_Actions._listOfSpeedOnPaths.Add(Mathf.Sqrt(_PlayerVel._speedMagnitudeSquared));
 
 			_RF._grindingSpeed = _PlayerVel._horizontalSpeedMagnitude;
 			//What action before this one.
@@ -222,14 +233,32 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
 					_RF._grindingSpeed = Mathf.Clamp(charge,_RF._grindingSpeed + (charge / 6), 160);
 					break;
+				default:
+					//If any other action, then check if speed on rail is gained from falling onto, or being launched up into.
+					if (Mathf.Abs(_PlayerVel._worldVelocity.y) > _RF._grindingSpeed)
+					{
+						//If direction to grind is upwards, and player is being launched up.
+						if(Mathf.Sign(_PlayerVel._worldVelocity.y) == 1 && (_RF._sampleUpwards * _RF._movingDirection).y > 0.5f)
+						{
+							_RF._grindingSpeed = Mathf.Abs(_PlayerVel._worldVelocity.y);
+						}
+						//If direction to grind is downwards enough, and player is falling down.
+						else if (Mathf.Sign(_PlayerVel._worldVelocity.y) == -1 && (_RF._sampleUpwards * _RF._movingDirection).y < -0.5)
+						{
+							_RF._grindingSpeed = Mathf.Abs(_PlayerVel._worldVelocity.y);
+						}
+					}
+					break;
 			}
+			// Apply minimum speed
+			_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _minStartSpeed_);
+			_Actions._listOfSpeedOnPaths.Add(_RF._grindingSpeed);
 		}
+		else
+			_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _minStartSpeed_);
 
 		// Get Direction for the Rail
 		_RF._isGoingBackwards = facingDot < 0;
-
-		// Apply minimum speed
-		_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _minStartSpeed_);
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Rail);
 		enabled = true;

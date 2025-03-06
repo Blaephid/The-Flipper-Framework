@@ -33,7 +33,7 @@ public class S_RailFollow_Base : MonoBehaviour
 	public float                  _pointOnSpline = 0f; //The actual place on the spline being travelled. The number is how many units along the length of the spline it is (not affected by spline length).
 	private float                  _clampedPointOnSpline = 0f;
 
-	private Spline.SampleTransforms			_sampleTransforms;
+	[HideInInspector] public Spline.SampleTransforms			_sampleTransforms;
 	[HideInInspector] public Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
 	[HideInInspector] public Vector3               _sampleLocation;
 	[HideInInspector] public Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.

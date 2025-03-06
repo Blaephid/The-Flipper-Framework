@@ -35,7 +35,7 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 		else { Handles.color = _normalOutlineColour; }
 		
 		//At each increment of the set distance, draw a line from that sample and the last sample, leading to one consistant bending line.
-		for (float f = _distancePerCalculation ; f < _SplineToDisplay.Length ; f = Mathf.Min (f + _distancePerCalculation, _SplineToDisplay.Length))
+		for (float f = _distancePerCalculation ; f <= _SplineToDisplay.Length ; f = Mathf.Min (f + _distancePerCalculation, _SplineToDisplay.Length))
 		{
 			sample = _SplineToDisplay.GetSampleAtDistance(f);
 			sampleTransform = Spline.GetSampleTransformInfo(_SplineToDisplay.transform, sample);
@@ -46,12 +46,21 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 			samplePoint1 = samplePoint2;
 
 			//Because F won't go over the length, make sure to end loop if it does after drawing the last line.
-			if (_SplineToDisplay.Length == f) { return; }
+			if (_SplineToDisplay.Length == f) 
+			{ break; }
 
 			//If at the halfway point of the spline. Found by checking f against the closest increment to half distance
 			else if (f == S_S_MoreMaths.GetNumberAsIncrement(Mathf.Lerp(0, _SplineToDisplay.Length, 0.5f), _distancePerCalculation)){
 				_middleOfSpline = samplePoint1;
 			}
+		}
+
+		for (int i = 0 ; i < _SplineToDisplay.nodes.Count ; i++)
+		{
+			SplineNode thisNode = _SplineToDisplay.nodes[i];
+			Vector3 position = _SplineToDisplay.transform.position + (_SplineToDisplay.transform.rotation * thisNode.Position);
+
+			Handles.DrawWireCube(position, Vector3.one);
 		}
 	}
 

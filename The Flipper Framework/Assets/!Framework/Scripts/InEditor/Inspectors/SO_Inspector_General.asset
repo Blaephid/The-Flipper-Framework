@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25902cf1dc5729643ad361f0efa12b19, type: 3}
   m_Name: SO_Inspector_General
   m_EditorClassIdentifier: 
-  _spaceSize: 3
+  __spaceSize: 1
   _ResetButton:
     m_Name: button
     m_Normal:
@@ -161,7 +161,7 @@ MonoBehaviour:
     m_Normal:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.43137258, g: 0.7929987, b: 0.8666667, a: 1}
+      m_TextColor: {r: 0.64315593, g: 0.8685463, b: 0.9150943, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
@@ -211,7 +211,7 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Font: {fileID: 12800000, guid: 0ac12ae04128ca8429cfd0ce838dfa41, type: 3}
-    m_FontSize: 25
+    m_FontSize: 18
     m_FontStyle: 1
     m_Alignment: 0
     m_WordWrap: 1
@@ -220,7 +220,7 @@ MonoBehaviour:
     m_ImagePosition: 3
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
-    m_FixedHeight: 39.98
+    m_FixedHeight: 24.07
     m_StretchWidth: 1
     m_StretchHeight: 0
   _SubHeaders:
@@ -278,7 +278,7 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Font: {fileID: 0}
-    m_FontSize: 21
+    m_FontSize: 15
     m_FontStyle: 0
     m_Alignment: 3
     m_WordWrap: 0

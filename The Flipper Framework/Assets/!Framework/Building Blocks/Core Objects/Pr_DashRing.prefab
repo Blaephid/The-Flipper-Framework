@@ -170,7 +170,7 @@ MonoBehaviour:
   _launchData_:
     _force_: 100
     _direction_: {x: 0, y: 0, z: 1}
-    _directionToUse_: {x: 0, y: 0, z: -1}
+    _directionToUse_: {x: -0.9999016, y: 0, z: 0.0140327215}
     _lockInputFrames_: 30
     _lockAirMovesFrames_: 30
     _overwriteGravity_: {x: 0, y: 0, z: 0}
@@ -229,13 +229,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hasVisualisationScripted: 1
-  _viewVisualisationData: 0
-  _viewVisualisationDataHidden: 0
+  _viewVisualisationData: 1
+  _viewVisualisationDataHidden: 1
   _drawAtAllTimes: 1
   _drawIfParentSelected: 1
-  _normalOutlineColour: {r: 1, g: 0, b: 0, a: 0.5}
-  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
-  _selectedFillColour: {r: 0.5, g: 0, b: 0, a: 1}
+  _normalOutlineColour: {r: 1, g: 0.49574798, b: 0, a: 0.5}
+  _selectedOutlineColour: {r: 0.9811321, g: 0, b: 0, a: 0.5176471}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 1}
   _isSelected: 0
   _debugForce: 1
   _calculations: 60
@@ -244,8 +244,8 @@ MonoBehaviour:
   _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
     type: 2}
   _ShotCenter: {fileID: 4000013130497754}
-  _coreVelAtEnd: {x: 64.97458, y: -157.97897, z: 1.0443445}
-  _environmentalVelAtStart: {x: 98.64585, y: 16.324324, z: 1.5855467}
+  _coreVelAtEnd: {x: 0, y: -159.29991, z: 0}
+  _environmentalVelAtStart: {x: -99.99016, y: 0, z: 1.4032722}
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0
@@ -368,7 +368,7 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.24483916
+      value: 0.24483913
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -383,7 +383,7 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0000042357783
+      value: 0.0000044145495
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -393,7 +393,7 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.719895
+      value: 2.7198973
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -438,22 +438,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.95942914
+      value: -0.6209999
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.18089157
+      value: -0.15828015
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.21621892
+      value: -0.7438807
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.004838953
+      value: 0.18959995
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -478,17 +478,17 @@ PrefabInstance:
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _placeAboveObject.x
-      value: 10.618164
+      value: -11.107819
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _placeAboveObject.y
-      value: 3.8685799
+      value: 2.0830688
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _placeAboveObject.z
-      value: 0.1706543
+      value: 0.15590668
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

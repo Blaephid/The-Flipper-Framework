@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4677150627836716203}
   - component: {fileID: 6280620296068505828}
   - component: {fileID: 3771959845014693265}
-  - component: {fileID: 925100017085631}
   m_Layer: 12
   m_Name: Model
   m_TagString: Spring
@@ -86,28 +85,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &925100017085631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 369012428676099016}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _onlyDrawWhenSelected: 1
-  _debugForce: 1
-  _calculations: 33
-  _LauncherScript: {fileID: 0}
-  _launcherStructName: 
-  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
-    type: 2}
-  _ShotCenter: {fileID: 3294779520160681149}
-  _coreVelAtEnd: {x: 0, y: 0, z: 0}
-  _environmentalVelAtStart: {x: 0, y: 0, z: 0}
 --- !u!1 &632222330389134452
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,6 +183,7 @@ GameObject:
   - component: {fileID: 3211197611018253583}
   - component: {fileID: 3180417062812895097}
   - component: {fileID: 3183672666482499671}
+  - component: {fileID: 5091144489841664403}
   m_Layer: 12
   m_Name: Pr_Bumper_Blue
   m_TagString: Spring
@@ -265,16 +243,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5626e6442bcc31848b513053d594ce12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
   _InspectorTheme: {fileID: 0}
   _launchData_:
-    _force_: 0
+    _force_: 40
     _direction_: {x: 0, y: 1, z: 0}
+    _directionToUse_: {x: 0, y: 1, z: 0}
     _lockInputFrames_: 0
     _lockAirMovesFrames_: 0
     _overwriteGravity_: {x: 0, y: 0, z: 0}
     _lockInputTo_: 0
   _keepHorizontal_: 0
-  _directionOffset: {x: 0, y: 0, z: 0}
   _changePlayerForwards: 0
 --- !u!82 &3211197611018253583
 AudioSource:
@@ -401,6 +388,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9d02b444549974b946d5f306e77118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
   _InspectorTheme: {fileID: 0}
   _projectPath: 0
   _calculations: 0
@@ -519,6 +515,36 @@ MonoBehaviour:
     _willReturnOnY: 1
     _YDelay: 0
   _isPhysicsActive: 0
+--- !u!114 &5091144489841664403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3292289748283438119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 1
+  _normalOutlineColour: {r: 1, g: 0, b: 0, a: 0.5}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 0.5, g: 0, b: 0, a: 1}
+  _isSelected: 0
+  _debugForce: 1
+  _calculations: 50
+  _LauncherScript: {fileID: 3180474081878667623}
+  _launcherStructName: _launchData_
+  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
+    type: 2}
+  _ShotCenter: {fileID: 3294779520160681149}
+  _coreVelAtEnd: {x: 0, y: -132.29994, z: 0}
+  _environmentalVelAtStart: {x: 0, y: 40, z: 0}
 --- !u!1001 &5434402128590000877
 PrefabInstance:
   m_ObjectHideFlags: 0
