@@ -36,6 +36,7 @@ namespace SplineMesh
 	public class S_PlaceOnSpline : MonoBehaviour
 	{
 		private GameObject generated;
+		[CustomReadOnly, SerializeField]
 		private Spline _Spline = null;
 		[HideInInspector] public bool toUpdate = true;
 
@@ -93,6 +94,7 @@ namespace SplineMesh
 			generated = generatedTranform != null ? generatedTranform.gameObject : UOUtility.Create(generatedName, gameObject);
 
 			_Spline = GetComponentInParent<Spline>();
+			if (!_Spline) return;
 			_Spline.NodeListChanged += ( s, e ) =>
 			{
 				toUpdate = true;
@@ -177,19 +179,21 @@ namespace SplineMesh
 			GO.transform.localPosition = Vector3.zero;
 			GO.transform.localScale = Vector3.one;
 
+			Spline.SampleTransforms sampleTransforms = Spline.GetSampleTransformInfo(transform, sample);
+
 			// Apply position from spline point and offset
-			GO.transform.position = transform.position + (transform.rotation * sample.location);
+			GO.transform.position = sampleTransforms.location;
 
 			// move orthogonaly to the spline, according to offset + random
-			Vector3 binormal = sample.tangent;
+			Vector3 binormal = sampleTransforms.forwards;
 
-			binormal += transform.rotation * sample.Rotation * _offset3d_;
+			binormal += sampleTransforms.rotation * _offset3d_;
 			GO.transform.position += binormal;
 
 			// apply scale
 			GO.transform.localScale = new Vector3(_scale_.x, _scale_.y, _scale_.z);
 			// rotate with random yaw
-			GO.transform.rotation = transform.rotation * sample.Rotation * Quaternion.Euler(_offsetRotation_);
+			GO.transform.rotation = sampleTransforms.rotation * Quaternion.Euler(_offsetRotation_);
 			
 
 			if (_alignWithTerrain_) GroundAlign(GO.transform);

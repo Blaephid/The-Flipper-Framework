@@ -111,7 +111,7 @@ public class S_CharacterTools : MonoBehaviour
 			if(launch._force_ <= 0 && launch._directionToUse_.sqrMagnitude <= 1) { yield break; }
 
 			Objects.ApplyLaunchEffects(launch);
-			Objects.LaunchInDirection(launch._directionToUse_, launch._force_, Vector3.zero, Spawner.transform, true);
+			Objects.LaunchInDirection(launch._directionToUse_, launch._force_, Vector3.zero, Spawner.transform, Objects.transform, true);
 		}
 	}
 }

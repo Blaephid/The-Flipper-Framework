@@ -33,6 +33,7 @@ public class S_RailFollow_Base : MonoBehaviour
 	public float                  _pointOnSpline = 0f; //The actual place on the spline being travelled. The number is how many units along the length of the spline it is (not affected by spline length).
 	private float                  _clampedPointOnSpline = 0f;
 
+	private Spline.SampleTransforms			_sampleTransforms;
 	[HideInInspector] public Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
 	[HideInInspector] public Vector3               _sampleLocation;
 	[HideInInspector] public Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
@@ -62,14 +63,15 @@ public class S_RailFollow_Base : MonoBehaviour
 				_clampedPointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _PathSpline.Length);
 			else
 				_clampedPointOnSpline = _pointOnSpline;
-
 		}
 
 		//Get the data of the spline at that point along it (rotation, location, etc)
 		_Sample = _PathSpline.GetSampleAtDistance(_clampedPointOnSpline);
-		_sampleForwards = _RailTransform.rotation * _Sample.tangent * _movingDirection;
-		_sampleUpwards = (_RailTransform.rotation * _Sample.up);
-		_sampleLocation = _RailTransform.position + (_RailTransform.rotation * _Sample.location);
+
+		_sampleTransforms = Spline.GetSampleTransformInfo(_RailTransform, _Sample);
+		_sampleForwards = _sampleTransforms.forwards * _movingDirection;
+		_sampleUpwards = _sampleTransforms.upwards;
+		_sampleLocation = _sampleTransforms.location;
 	}
 
 	private void ClampToSplineIfNecessary () {
@@ -170,9 +172,10 @@ public class S_RailFollow_Base : MonoBehaviour
 			n = Mathf.Min(n, thisSpline.Length);
 
 			CurveSample splineSample = thisSpline.GetSampleAtDistance(n);
+			Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(thisSpline.transform, splineSample);
 
 			//Place on spline relative to object rotation and offset.
-			Vector3 checkPos = thisSpline.transform.position + (thisSpline.transform.rotation * (splineSample.location + (splineSample.Rotation * offset)));
+			Vector3 checkPos = sampleTransform.location + (splineSample.Rotation * offset);
 
 			//The distance between the point at distance n along the spline, and the current collider position.
 			float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(checkPos,colliderPosition);

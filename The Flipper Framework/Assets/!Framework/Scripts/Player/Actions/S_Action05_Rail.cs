@@ -47,6 +47,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	private float                 _pushFowardDelay_ = 0.5f;
 
 	private float                 _generalHillModifier = 2.5f;
+	private AnimationCurve          _forceBySlopeAngle_;
 	private float                 _upHillMultiplier_ = 0.25f;
 	private float                 _downHillMultiplier_ = 0.35f;
 	private float                 _upHillMultiplierCrouching_ = 0.4f;
@@ -170,8 +171,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//Get how much the character is facing the same way as the point.
 		_RF._PathSpline = _Rail_int._PathSpline;
-		CurveSample sample = _RF._PathSpline.GetSampleAtDistance(_RF._pointOnSpline);
-		_RF._sampleForwards = _RF._RailTransform.rotation * sample.tangent;
+		_RF.GetNewSampleOnRail(0);
 		float facingDot = Vector3.Dot(_PlayerVel._worldVelocity.normalized, _RF._sampleForwards);
 
 		//Because this action can start itself by hopping from one rail to another, only do this if hasn't just done so.
@@ -186,8 +186,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//Set controls
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Rail");
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Rail");
-			//_PlayerPhys._locksForIsGravityOn.Add(false);
-			//_PlayerPhys._locksForCanControl.Add(false);
 			_PlayerPhys._canChangeGrounded = false;
 
 			_Input._JumpPressed = false;
@@ -391,13 +389,15 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (_isBraking && _RF._grindingSpeed > _minStartSpeed_) _RF._grindingSpeed *= _playerBrakePower_;
 
 		HandleBoost();
-		HandleSlopes();
-
+		if(!HandleSlopes())
+		{
+			if (_RF._grindingSpeed > _railTopSpeed_)
+			{
+				_RF._grindingSpeed -= _decaySpeed_;
+			}
+		}
 		//Decrease speed if over max or top speed on the rail.
 		_RF._grindingSpeed = Mathf.Min(_RF._grindingSpeed, _railmaxSpeed_);
-
-		if (_RF._grindingSpeed > _railTopSpeed_)
-			_RF._grindingSpeed -= _decaySpeed_;
 
 		_RF._grindingSpeed = Mathf.Clamp(_RF._grindingSpeed, 10, _PlayerPhys._PlayerMovement._currentMaxSpeed);
 	}
@@ -422,11 +422,17 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		}
 	}
 
-	private void HandleSlopes () {
+	private bool HandleSlopes () {
+		bool onSlope = false;
+
 		//Start a force to apply based on the curve position and general modifier for all slopes handled in physics script 
 		float force = _generalHillModifier;
-		force *= (1 - (Mathf.Abs(_PlayerVel.transform.up.y) / 10)) + 1; //Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force, ranging from 1 - 2
-								     //float AbsYPow = Mathf.Abs(_PlayerPhys._RB.velocity.normalized.y * _PlayerPhys._RB.velocity.normalized.y);
+
+		//Force affected by steepness of slope. The closer to 0 (completely horizontal), the greater the force.
+		float slopeEffect = (1 - (Mathf.Abs(_RF._sampleUpwards.y) / 10)) + 1;
+		slopeEffect = 1 - Mathf.Abs(_RF._sampleUpwards.y);
+		slopeEffect = _forceBySlopeAngle_.Evaluate(Mathf.Abs(_RF._sampleUpwards.y));
+		force *= slopeEffect;
 
 		//use player vertical speed to find if player is going up or down
 		//if going uphill on rail
@@ -435,15 +441,18 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//Get main modifier and multiply by position on curve and general hill modifer used for other slope physics.
 			force *= _isCrouching ? _upHillMultiplierCrouching_ : _upHillMultiplier_;
 			force *= -1;
+			onSlope = force < -0.5f;
 		}
 		else if (_PlayerVel._worldVelocity.y < -0.05f)
 		{
 			//Downhill
 			force *= _isCrouching ? _downHillMultiplierCrouching_ : _downHillMultiplier_;
+			onSlope = force > 0.5f;
 		}
-		force = (0.1f * force);
+
 		//Apply to moving speed (if uphill will be a negative/
 		_RF._grindingSpeed += force;
+		return onSlope;
 	}
 
 	public override void HandleInputs () {
@@ -671,7 +680,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_pushFowardmaxSpeed_ = _Tools.Stats.RailStats.RailPushFowardmaxSpeed;
 		_pushFowardIncrements_ = _Tools.Stats.RailStats.RailPushFowardIncrements;
 		_pushFowardDelay_ = _Tools.Stats.RailStats.RailPushFowardDelay;
-		_generalHillModifier = _Tools.Stats.SlopeStats.generalHillMultiplier;
+
+		_forceBySlopeAngle_ = _Tools.Stats.SlopeStats.SlopePowerByAngle;
+		_generalHillModifier = _Tools.Stats.RailStats.RailSlopePower;
 		_upHillMultiplier_ = _Tools.Stats.RailStats.RailUpHillMultiplier.x;
 		_downHillMultiplier_ = _Tools.Stats.RailStats.RailDownHillMultiplier.x;
 		_upHillMultiplierCrouching_ = _Tools.Stats.RailStats.RailUpHillMultiplier.y;

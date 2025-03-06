@@ -1118,31 +1118,49 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.44166666
       - serializedVersion: 3
-        time: 0.25777882
-        value: 1.4634968
-        inSlope: -0.396147
-        outSlope: -0.396147
+        time: 0.148001
+        value: 1.4528819
+        inSlope: -1.0120953
+        outSlope: -1.0120953
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.30479956
       - serializedVersion: 3
-        time: 0.7
-        value: 0.6
-        inSlope: -0.029690564
-        outSlope: -0.029690564
+        time: 0.2407178
+        value: 0.98097605
+        inSlope: -2.107266
+        outSlope: -2.107266
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 1
+        outWeight: 0.27234745
       - serializedVersion: 3
-        time: 1
-        value: 0.5
-        inSlope: -0.3333334
-        outSlope: -0.3333334
-        tangentMode: 34
+        time: 0.5092479
+        value: 0.79762155
+        inSlope: -0.3164844
+        outSlope: -0.3164844
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
+        outWeight: 0.9373587
+      - serializedVersion: 3
+        time: 0.8031901
+        value: 0.2353742
+        inSlope: -3.2258272
+        outSlope: -3.2258272
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.18938246
+        outWeight: 0.20397285
+      - serializedVersion: 3
+        time: 0.98999023
+        value: 0
+        inSlope: -0.12303343
+        outSlope: -0.12303343
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -1712,6 +1730,7 @@ MonoBehaviour:
     forceUpwards: 30
     horizontalAngle: 45
     lockMoveInputOnStart: 0
+    timeBeforeCanChangeAction: 0.1
     turnSpeed: 5
     maxDuration: 0.3
     minDuration: 0.15
@@ -1727,6 +1746,7 @@ MonoBehaviour:
     forceUpwards: 0
     horizontalAngle: 45
     lockMoveInputOnStart: 0
+    timeBeforeCanChangeAction: 0.1
     turnSpeed: 8
     maxDuration: 0.3
     minDuration: 0.15
@@ -2682,8 +2702,8 @@ MonoBehaviour:
     stateLengthWithKnockback: 130
     stateLengthWithoutKnockback: 90
   RailStats:
-    railMaxSpeed: 125
-    railTopSpeed: 80
+    railMaxSpeed: 170
+    railTopSpeed: 90
     minimumStartSpeed: 20
     RailPushFowardmaxSpeed: 100
     RailPushFowardIncrements: 10
@@ -2741,7 +2761,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     RailSlopePower: 2.5
     RailUpHillMultiplier: {x: 1.2, y: 1.8}
-    RailDownHillMultiplier: {x: 0.6, y: 0.85}
+    RailDownHillMultiplier: {x: 1, y: 1.4}
     railDecaySpeed: 0.015
     RailPlayerBrakePower: 0.97
     railBoostDecaySpeed: 0.4

@@ -27,12 +27,6 @@ public class S_Data_DashRing : S_Data_Base
 	public Vector3      _overwriteGravity_;
 	public float	_lockAirMovesFor_ = 30f;
 
-	private new void OnValidate () {
-		base.OnValidate();
-
-		UpdateLaunchDataToDirection();
-	}
-
 	[ExecuteInEditMode]
 	private void Update () {
 		if(!Application.isPlaying){UpdateLaunchDataToDirection();}

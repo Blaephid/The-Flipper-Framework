@@ -176,10 +176,10 @@ namespace SplineMesh
 				GameObject go = Instantiate(refDir, generated.transform);
 
 				CurveSample sample = _Spline.GetSampleAtDistance(_Spline.Length);
+				Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_Spline.transform, sample);
 
-
-				go.transform.localPosition = sample.location;
-				go.transform.rotation = Quaternion.LookRotation(sample.up, sample.tangent);
+				go.transform.position = sampleTransform.location;
+				go.transform.rotation = sampleTransform.rotation;
 
 			}
 
@@ -188,9 +188,10 @@ namespace SplineMesh
 				GameObject go = Instantiate(refDir, generated.transform);
 
 				CurveSample sample = _Spline.GetSampleAtDistance(0);
+				Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_Spline.transform, sample);
 
-				go.transform.localPosition = sample.location;
-				go.transform.rotation = Quaternion.LookRotation(sample.up, sample.tangent);
+				go.transform.position = sampleTransform.location;
+				go.transform.rotation = sampleTransform.rotation;
 
 			}
 		}

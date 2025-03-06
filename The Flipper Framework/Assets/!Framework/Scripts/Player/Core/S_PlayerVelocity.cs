@@ -108,8 +108,8 @@ public class S_PlayerVelocity : MonoBehaviour
 			_PlayerPhys._wasInAirLastFrame = false;
 		}
 
-		Debug.DrawRay(transform.position, velocityThisFrame * Time.deltaTime, Color.blue, 10f);
-		Debug.DrawRay(transform.position, velocityLastFrame * Time.deltaTime, Color.green, 10f);
+		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, velocityThisFrame * Time.deltaTime, Color.blue, 10f);
+		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, velocityLastFrame * Time.deltaTime, Color.green, 10f);
 
 		//General velocities applied just for last frame (like an anti offset set when groundsticking) are removed later on in this script so should not be factored in here.
 		if (_velocityToNotCountWhenCheckingForAChange != Vector3.zero)

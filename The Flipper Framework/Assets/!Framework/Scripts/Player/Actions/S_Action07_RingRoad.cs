@@ -2,6 +2,8 @@
 using System.Collections;
 using SplineMesh;
 using System.Collections.Generic;
+using static UnityEngine.ParticleSystem;
+using UnityEditor.PackageManager.UI;
 
 
 [RequireComponent(typeof(S_Handler_RingRoad))]
@@ -214,14 +216,15 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 			//Get the world transform point of that point on the spline.
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
 
+			Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_CreatedSpline.transform, Sample);
 			//Rotate towards the next ring, according to the created spline.
-			_directionToGo = Sample.tangent;
-			Quaternion targetRotation = Quaternion.LookRotation(Sample.tangent);
+			_directionToGo = sampleTransform.forwards;
+			Quaternion targetRotation = sampleTransform.rotation;
 			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, targetRotation, 0.6f);
 
 			//Place player on it (since called in update, not fixed update, won't be too jittery).
-			_PlayerPhys.SetPlayerPosition(Sample.location);
-			_PlayerVel.SetBothVelocities(Sample.tangent * _Actions._listOfSpeedOnPaths[0], Vector2.right); //Ensures each ring will be collected and the move will look smooth even if only updating in FixedUpdate
+			_PlayerPhys.SetPlayerPosition(sampleTransform.location);
+			_PlayerVel.SetBothVelocities(sampleTransform.forwards * _Actions._listOfSpeedOnPaths[0], Vector2.right); //Ensures each ring will be collected and the move will look smooth even if only updating in FixedUpdate
 
 			//_PlayerPhys._horizontalSpeedMagnitude = _Actions._listOfSpeedOnPaths[0];
 		}
@@ -240,12 +243,14 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 		if (!_willCarrySpeed_) endingSpeedResult = _minimumEndingSpeed_; //Speed unaffected by how it was before the action.
 
 		//Sends the player in the direction of the end of the spline.
-		CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length - 1);
-		_directionToGo = Sample.tangent;
+		CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length);
+		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_CreatedSpline.transform, Sample);
+
+		_directionToGo = sampleTransform.forwards;
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _directionToGo);
 
-		_PlayerPhys.SetPlayerPosition( Sample.location);
+		_PlayerPhys.SetPlayerPosition(sampleTransform.location);
 		_PlayerVel.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.

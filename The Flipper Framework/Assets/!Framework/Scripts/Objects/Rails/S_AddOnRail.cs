@@ -168,11 +168,12 @@ public class S_AddOnRail : MonoBehaviour
 
 	private Vector3? GetPositionFromSplineData(Spline spline, Vector3 offset, float point ) {
 		if(!spline) { return null; }
-		Transform transform = spline.transform;
-		CurveSample sample = spline.GetSampleAtDistance(point);
-		Vector3 useOffset = (transform.rotation * sample.Rotation) * _selfOffset;
 
-		return transform.position + (transform.rotation * sample.location) + useOffset;
+		CurveSample sample = spline.GetSampleAtDistance(point);
+		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(spline.transform, sample);
+
+		Vector3 useOffset = sampleTransform.rotation * _selfOffset;
+		return sampleTransform.location + useOffset;
 	}
 
 	private void OnDrawGizmosSelected () {

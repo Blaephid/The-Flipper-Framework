@@ -64,9 +64,9 @@ public class S_Control_Zipline : MonoBehaviour
 	//Get correct transform in world space based on spline
 	void PlaceOnRope () {
 		CurveSample sample = (_shouldPlaceFromEnd) ? _Rail.GetSampleAtDistance(_Rail.Length - _offset) : _Rail.GetSampleAtDistance(1 + _offset);
-		transform.position =  _Rail.transform.position + (_Rail.transform.rotation * sample.location);
+		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_Rail.transform, sample);
 
-		Vector3 dir = _Rail.transform.rotation * sample.tangent;
-		transform.rotation = Quaternion.LookRotation(dir, _Rail.transform.rotation * sample.up);
+		transform.position = sampleTransform.location;
+		transform.rotation = sampleTransform.rotation;
 	}
 }

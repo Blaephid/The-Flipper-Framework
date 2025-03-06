@@ -7,6 +7,8 @@ using UnityEngine.Events;
 
 namespace SplineMesh
 {
+
+
 	/// <summary>
 	/// A curved line made of oriented nodes.
 	/// Each segment is a cubic Bézier curve connected to spline nodes.
@@ -17,6 +19,29 @@ namespace SplineMesh
 	[ExecuteInEditMode]
 	public class Spline : MonoBehaviour
 	{
+		public struct SampleTransforms
+		{
+			public Vector3 location;
+			public Vector3 forwards;
+			public Vector3 upwards;
+			public Quaternion rotation;
+		}
+
+		public static SampleTransforms GetSampleTransformInfo ( Transform SplineTransform, CurveSample sample ) {
+			Vector3 sampleForwards = SplineTransform.rotation * sample.tangent;
+			Vector3 sampleUpwards = SplineTransform.rotation * sample.up;
+			Vector3 sampleLocation = SplineTransform.position + (SplineTransform.rotation * sample.location);
+			Quaternion sampleRotation = SplineTransform.rotation * sample.Rotation;
+
+			return new SampleTransforms()
+			{
+				location = sampleLocation,
+				forwards = sampleForwards,
+				upwards = sampleUpwards,
+				rotation = sampleRotation,
+			};
+		}
+
 		/// <summary>
 		/// The spline nodes.
 		/// Warning, this collection shouldn't be changed manualy. Use specific methods to add and remove nodes.
@@ -176,7 +201,7 @@ namespace SplineMesh
 				}
 			}
 			if (curves[0].Length != 0) //Length is 0 if ever trying to get distance when exiting game mode. This isn't a concern as its fixed after.
-				throw new Exception("Something went wrong with GetSampleAtDistance. With curve count of" + curves.Count+ "For spline - " +this);
+				throw new Exception("Something went wrong with GetSampleAtDistance. With curve count of" + curves.Count + "For spline - " + this);
 			else
 				return new CurveSample();
 		}

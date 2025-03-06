@@ -21,7 +21,6 @@ public class S_Structs
 		public List<ISubAction> SubActions;
 	}
 
-
 	///
 	//Physics
 	///

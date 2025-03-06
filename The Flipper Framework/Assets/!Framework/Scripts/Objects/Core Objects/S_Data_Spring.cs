@@ -23,17 +23,17 @@ public class S_Data_Spring : S_Data_Base
 		_Animator = GetComponent<Animator>();
 	}
 
-	private new void OnValidate () {
-		base.OnValidate();
-
-		UpdateDirectionsToRotation();
+	[ExecuteInEditMode]
+	void Update () {
+		if (Application.isPlaying) { return; }
+		UpdateLaunchDataToDirection();
 	}
 
 	private void OnEnable () {
-		UpdateDirectionsToRotation();
+		UpdateLaunchDataToDirection();
 	}
 
-	private void UpdateDirectionsToRotation () {
+	private void UpdateLaunchDataToDirection () {
 		_launchData_ = new S_Structs.LaunchPlayerData()
 		{
 			_force_ = _launchData_._force_,

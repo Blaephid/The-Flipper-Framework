@@ -97,8 +97,6 @@ public class S_Interaction_Objects : MonoBehaviour
 		UpdateSpeed();
 
 		_CoreUIElements.RingsCounter.text = "" + (int)_HurtAndHealth._ringAmount;
-
-
 	}
 
 	private void Update () {
@@ -462,7 +460,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		Vector3 direction = DashRingScript._launchData_._directionToUse_;
 
 		ApplyLaunchEffects(DashRingScript._launchData_);
-		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col.transform);
+		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col.transform, _PlayerPhys.transform);
 
 		ObjectRotatesCamera(Col, DashRingScript._cameraEffect);
 	}
@@ -581,7 +579,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else if (!SpringScript._keepHorizontal_)
 		{
-			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col.transform);
+			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col.transform, _PlayerPhys.transform);
 		}
 
 
@@ -614,40 +612,54 @@ public class S_Interaction_Objects : MonoBehaviour
 		}
 
 		//Because this is to launch the player through the sky, certain stats can have different gravities. This ensures characters will always fall the same way by overwriting their stats until landing.
-		StartCoroutine(LockPlayerGraivtyUntilGrounded(launchData._overwriteGravity_));
+		StartCoroutine(LockPlayerGravityUntilGrounded(launchData._overwriteGravity_));
 	}
 
 	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
-	public void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, bool useCoreVelocity = false ) {
-		HandleCoreAndEvironmentalVelocity();
+	public void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, Transform Player, bool useCoreVelocity = false ) {
+		Vector3[] split = SplitCoreAndEnvironmentalVelocities(Player,direction,launchPower,_PlayerVel._horizontalSpeedMagnitude,_PlayerPhys._PlayerMovement._currentMaxSpeed,useCoreVelocity);
+		StartCoroutine(ApplyForceAfterDelay(split[0], lockPosition, split[1], Object));
+	}
 
-		void HandleCoreAndEvironmentalVelocity () {
-			//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
-			//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
-			//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
+	public static Vector3[] SplitCoreAndEnvironmentalVelocities (Transform Player, Vector3 direction, float launchPower, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity) {
+		//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
+		//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
+		//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
 
-			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * launchPower, false); //Combined the spring direction with force to get only the force horizontally
-			float horizontalSpeed = launchHorizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
+		Vector3 launchHorizontalVelocity = Player? Player.InverseTransformDirection(direction * launchPower) : direction * launchPower; //Combined the spring direction with force to get only the force horizontally
+		launchHorizontalVelocity.y = 0;
 
-			//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
-			float coreSpeed = _PlayerVel._horizontalSpeedMagnitude;
+		Vector2 speeds = GetSpeedsForLaunch(launchHorizontalVelocity, currentCoreSpeed,maxSpeed, useCoreVelocity );
+		float coreSpeed = speeds.x;
+		float horizontalEnvSpeed = speeds.y;
 
-			if (coreSpeed > horizontalSpeed || useCoreVelocity)
-			{
-				coreSpeed = Mathf.Min(horizontalSpeed, _PlayerPhys._PlayerMovement._currentMaxSpeed); //In this case, bounce will be entirely through core velocity, not environmental.
-			}
+		Vector3 totalEnvironment = GetEnvironmentalVelocityForLaunch(launchHorizontalVelocity, horizontalEnvSpeed, direction, launchPower);
+		launchHorizontalVelocity = Player ? Player.TransformDirection(launchHorizontalVelocity) : launchHorizontalVelocity ;
 
-			float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  coreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+		return new Vector3[2] { totalEnvironment, launchHorizontalVelocity.normalized * coreSpeed };
+	}
 
+	public static Vector2 GetSpeedsForLaunch (Vector3 horizontalVelocity, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity = false) {
+		float horizontalSpeed = horizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
 
-			//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
+		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
 
-			Vector3 totalEnvironment = (launchHorizontalVelocity.normalized * horizontalEnvSpeed) + (new Vector3(0, (direction * launchPower).y,0));
-
-			launchHorizontalVelocity = _PlayerVel.transform.TransformDirection(launchHorizontalVelocity);
-
-			StartCoroutine(ApplyForceAfterDelay(totalEnvironment, lockPosition, launchHorizontalVelocity.normalized * coreSpeed, Object));
+		if (currentCoreSpeed > horizontalSpeed || useCoreVelocity)
+		{
+			currentCoreSpeed = Mathf.Min(horizontalSpeed, maxSpeed); //In this case, bounce will be entirely through core velocity, not environmental.
 		}
+
+		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  currentCoreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+
+		return new Vector2(currentCoreSpeed, horizontalEnvSpeed );
+		//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
+	}
+
+	public static Vector3 GetEnvironmentalVelocityForLaunch (Vector3 launchHorizontalVelocity, float horizontalEnvSpeed, Vector3 direction, float launchPower) {
+		Vector3 envHorizontal = (launchHorizontalVelocity.normalized * horizontalEnvSpeed);
+		Vector3 envVertical = new Vector3(0, (direction * launchPower).y,0);
+		Vector3 totalEnvironment = envHorizontal + envVertical;
+		return totalEnvironment;
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
@@ -683,16 +695,14 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		SnapToObject(Object, offset); ; //Ensures player is set to inside of spring, so bounce is consistant. 
 
-
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "ReadyForce");
-		//_PlayerPhys._locksForCanControl.RemoveAt(0);
 
 		_PlayerVel.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
 		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_GeneralEnums.ChangeLockState.Lock); //Apply bounce
 	}
 
 	//Until the players hit the ground, all gravity calculations will use the set gravity value.
-	private IEnumerator LockPlayerGraivtyUntilGrounded ( Vector3 newGrav ) {
+	private IEnumerator LockPlayerGravityUntilGrounded ( Vector3 newGrav ) {
 
 		if (newGrav == Vector3.zero) yield break;
 

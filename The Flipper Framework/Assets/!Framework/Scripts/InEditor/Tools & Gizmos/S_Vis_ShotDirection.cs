@@ -7,6 +7,7 @@ using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
 #if UNITY_EDITOR
+[ExecuteInEditMode]
 public class S_Vis_ShotDirection : S_Vis_Base
 {
 	public S_Vis_ShotDirection () {
@@ -23,7 +24,7 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	[Header("Gizmo")]
 	[Tooltip("If true, creates a series of gizmos that show the trajectory of the player after being launched by this. The red lines are the path and positions every frame. The blue line represents when the control lock ends.")]
 	public bool	_debugForce;
-	[Range(0f, 150f), Tooltip("This is how many phyiscs checks this gizmo should make. This means how many FixedUpdates would be called for the player when calculating their movement after the bounce.")]
+	[Range(0f, 150f), Tooltip("This is how many physics checks this gizmo should make. This means how many FixedUpdates would be called for the player when calculating their movement after the bounce.")]
 	public int	_calculations = 1;
 
 	[Header("Launcher")]
@@ -56,22 +57,35 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	[CustomReadOnly]
 	public Vector3 _environmentalVelAtStart;
 
+	private Vector3[] _debugTrajectoryPoints;
+
 	public override void DrawGizmosAndHandles ( bool selected ) {
 		DrawShot(selected);
 	}
 
-	private void DrawShot (bool selected) {
-		if(!_LauncherScript) { return; }
+
+	private void OnValidate () {
+		SetUpShot();
+	}
+
+	[ExecuteInEditMode]
+	void Update () {
+		if(Application.isPlaying) { return; }
+		SetUpShot();
+	}
+
+	private void SetUpShot () {
+		GetValuesFromScriptableObject();
+		//This array will make points along a line following the path the player should take.
+		_debugTrajectoryPoints = SetUpLauncherSimulation();
+	}
+
+	private void DrawShot ( bool selected ) {
+		if (!_LauncherScript) { return; }
 
 		if (_debugForce && _calculations > 0) //Will only show line if there's a line to create.
 		{
-			GetValuesFromScriptableObject();
-
-			Vector3[] debugTrajectoryPoints; //This array will make points along a line following the path the player should take.
-			debugTrajectoryPoints = SetUpLauncherSimulation();
-
-
-			DrawGizmosFromArray(debugTrajectoryPoints, selected);
+			DrawGizmosFromArray(_debugTrajectoryPoints, selected);
 		}
 	}
 
@@ -107,8 +121,10 @@ public class S_Vis_ShotDirection : S_Vis_Base
 		_lockFrames = launcherData._lockInputFrames_;
 		Vector3 direction = launcherData._directionToUse_;
 
+		Vector3[] velocitySplit = S_Interaction_Objects.SplitCoreAndEnvironmentalVelocities(null, direction, launcherData._force_, 0, _maxSpeed, false);
+
 		//Use the launch data to proejct where player will go.
-		return PreviewTrajectory(_ShotCenter.position, direction * launcherData._force_, direction * 2, launcherData._lockInputTo_);
+		return PreviewTrajectory(_ShotCenter.position, velocitySplit[0], velocitySplit[1], launcherData._lockInputTo_);
 
 	}
 

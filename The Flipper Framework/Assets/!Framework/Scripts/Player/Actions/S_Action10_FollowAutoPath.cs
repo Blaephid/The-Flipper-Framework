@@ -181,10 +181,11 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 
 		//Get Sample of the Path to put player
 		_Sample = _Pathers._PathSpline.GetSampleAtDistance(_pointOnSpline);
-		_sampleForwards = _PathTransform.rotation * _Sample.tangent * _moveDirection;
+		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_Pathers._PathSpline.transform, _Sample);
 
-		_sampleUpwards = _PathTransform.rotation * _Sample.up;
-		_sampleLocation = (_PathTransform.rotation * _Sample.location) + _PathTransform.position;
+		_sampleForwards = sampleTransform.forwards * _moveDirection;
+		_sampleUpwards = sampleTransform.upwards;
+		_sampleLocation = sampleTransform.location ;
 	}
 
 	private void PlaceOnSpline () {

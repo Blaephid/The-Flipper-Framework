@@ -60,16 +60,20 @@ public class S_SpawnCharacter : S_Vis_Base
 		public float        _spawnDistanceModifier;
 	}
 
-	private void OnValidate () {
+	[ExecuteInEditMode]
+	private void Update () {
+		if(Application.isPlaying) { return; }
 		_hasVisualisationScripted = true;
-		UpdateDirectionsToRotation();
+		UpdateLaunchDataToDirection();
 	}
 
 	private void OnEnable () {
-		UpdateDirectionsToRotation();
+		if (Application.isPlaying) { return; }
+		UpdateLaunchDataToDirection();
 	}
 
-	private void UpdateDirectionsToRotation () {
+	[ExecuteInEditMode]
+	private void UpdateLaunchDataToDirection () {
 		_launchOnSpawnData_ = new S_Structs.LaunchPlayerData()
 		{
 			_force_ = _launchOnSpawnData_._force_,

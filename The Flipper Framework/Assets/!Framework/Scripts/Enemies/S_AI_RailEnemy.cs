@@ -166,12 +166,11 @@ namespace SplineMesh
 		}
 
 		void SetTransformDirectly ( CurveSample ThisSample, GameObject ThisObject, Vector3 localEuler ) {
-			Vector3 thisSampleForwards = _RF._RailTransform.rotation * ThisSample.tangent * _RF._movingDirection;
-			Vector3 thisSampleUpwards = (_RF._RailTransform.rotation * ThisSample.up);
-			Vector3 thisSampleLocation = _RF._RailTransform.position + (_RF._RailTransform.rotation * ThisSample.location);
 
-			ThisObject.transform.position = thisSampleLocation + (thisSampleUpwards * _railUpOffset);
-			Quaternion newRotation = Quaternion.LookRotation(thisSampleForwards, thisSampleUpwards);
+			Spline.SampleTransforms ThisSampleTransform = Spline.GetSampleTransformInfo(_RF._RailTransform, ThisSample);
+
+			ThisObject.transform.position = ThisSampleTransform.location + (ThisSampleTransform.upwards * _railUpOffset);
+			Quaternion newRotation = Quaternion.LookRotation(ThisSampleTransform.forwards, ThisSampleTransform.upwards);
 			newRotation *= Quaternion.Euler(localEuler);
 			ThisObject.transform.rotation = newRotation;
 
