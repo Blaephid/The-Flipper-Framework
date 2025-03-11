@@ -35,6 +35,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	[HideInInspector] public Spline.SampleTransforms			_sampleTransforms;
 	[HideInInspector] public Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
+	[HideInInspector] public Vector3               _sampleRight;  
 	[HideInInspector] public Vector3               _sampleLocation;
 	[HideInInspector] public Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
 
@@ -71,11 +72,8 @@ public class S_RailFollow_Base : MonoBehaviour
 		_sampleTransforms = Spline.GetSampleTransformInfo(_RailTransform, _Sample);
 		_sampleForwards = _sampleTransforms.forwards * _movingDirection;
 		_sampleUpwards = _sampleTransforms.upwards;
+		_sampleRight = _sampleTransforms.right;
 		_sampleLocation = _sampleTransforms.location;
-	}
-
-	private void ClampToSplineIfNecessary () {
-		_clampedPointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _PathSpline.Length);
 	}
 
 	//Physics
@@ -162,12 +160,12 @@ public class S_RailFollow_Base : MonoBehaviour
 	}
 
 	//Goes through whole spline and returns the point closests to the given position, along with how far it is.
-	public static Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline, Vector3 offset ) {
-		float CurrentDistanceSquared = 9999999f;
+	public static Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline, Vector3 offset, float incrementsToIncrease = 5 ) {
+		float ClosestDistanceSquared = 9999999f;
 		float closestSample = 0;
 		if (!thisSpline || !thisSpline.transform) { return Vector2.zero; }
 
-		for (float n = 0 ; n < thisSpline.Length ; n += 5)
+		for (float n = 0 ; n < thisSpline.Length ; n += incrementsToIncrease)
 		{
 			n = Mathf.Min(n, thisSpline.Length);
 
@@ -181,14 +179,16 @@ public class S_RailFollow_Base : MonoBehaviour
 			float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(checkPos,colliderPosition);
 
 			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
-			if (distanceSquared <= CurrentDistanceSquared)
+			if (distanceSquared <= ClosestDistanceSquared)
 			{
-				CurrentDistanceSquared = distanceSquared;
+				ClosestDistanceSquared = distanceSquared;
 				closestSample = n;
 			}
 
 			if (distanceSquared < 1) { break; }
+			if(ClosestDistanceSquared < incrementsToIncrease * incrementsToIncrease &&  distanceSquared > 500 * 500) 
+			{ break; }
 		}
-		return new Vector2(closestSample, CurrentDistanceSquared);
+		return new Vector2(closestSample, ClosestDistanceSquared);
 	}
 }

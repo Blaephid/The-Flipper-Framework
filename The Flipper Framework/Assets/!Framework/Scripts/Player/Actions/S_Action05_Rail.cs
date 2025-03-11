@@ -64,7 +64,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	// Trackers
 	#region trackers
 
-	private bool         _canEnterRail = true;            //Prevents the start action method being called multiple times when on a rail. Must be set to false when leaving or starting a hop.
+	[HideInInspector]
+	public bool         _canEnterRail = true;            //Prevents the start action method being called multiple times when on a rail. Must be set to false when leaving or starting a hop.
 	private float                 _pulleyRotate;      //Set by inputs and incorperated into position and rotation on spline when using a zipline. Decides how much to tilt the handle and player.
 
 	private float                 _pushTimer = 0f;    //Constantly goes up, is set to zzero after pushing forward. Implements the delay to prevent constant pushing.
@@ -98,6 +99,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	/// 
 	#region Inherited
 
+	public S_Action05_Rail () {
+		_canEnterStateFromSelf = true;
+	}
+
 	// Start is called before the first frame update
 	void Start () {
 
@@ -105,8 +110,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	// Update is called once per frame
 	void Update () {
-		if (!enabled || !_isGrinding) { return; }
-		PerformHop();
+		if (!enabled || !_isGrinding || !_RF._RailTransform) { return; }
+		ApplyHopUpdate();
 
 		SoundControl();
 		//Handle animations
@@ -130,6 +135,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		if (!enabled || !_isGrinding) { return; }
 
+		ApplyHopFixedUpdate();
+
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _RF._grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
 
@@ -139,16 +146,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _RF._grindingSpeed; }//Apples all changes to grind speed.
 	}
 
-	new public bool AttemptAction () {
-		return false;
-	}
-
 	new public void StartAction (bool overwrite = false) {
-		if (!_canEnterRail) { return; }
 		if (!_Actions._canChangeActions && !overwrite) { return; }
 
-		//Effects
-		_Sounds.RailLandSound();
 		_Sounds.RailGrindSound(true);
 
 		_canEnterRail = false;
@@ -156,7 +156,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		//ignore further rail collisions
 		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, true);
 
-		//Prevents raill hopping temporarily
+		//Prevents rail hopping temporarily
 		StartCoroutine(DelayHopOnLanding());
 
 		//Set private 
@@ -174,20 +174,53 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//Use biased so horizontal velociity has slightly more say than vertical velocity. This 
 		Vector3 biasedPlayerDirection = _PlayerVel._worldVelocity.normalized;
-		biasedPlayerDirection.y = 0;
-		biasedPlayerDirection.Normalize();
-		biasedPlayerDirection = Vector3.Lerp(biasedPlayerDirection, _PlayerVel._worldVelocity.normalized.y * Vector3.up, 0.4f);
+		float facingDot = 1;
 
-		float facingDot = Vector3.Dot(biasedPlayerDirection, _RF._sampleTransforms.forwards);
-
-		Debug.DrawRay(transform.position, biasedPlayerDirection * 10, Color.black, 20f);
-		Debug.DrawRay(transform.position, _RF._sampleTransforms.forwards * 10, Color.red, 20f);
-
-		_RF._movingDirection = facingDot < 0 ? -1 : 1;
-
-		//Because this action can start itself by hopping from one rail to another, only do this if hasn't just done so.
+		//The following won't be performed if already in the rail action, as this can be called when rail hopping as the action doesn't change.
 		if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Rail)
 		{
+			//Effects
+			_Sounds.RailLandSound();
+
+			biasedPlayerDirection.y = 0;
+			biasedPlayerDirection.Normalize();
+			biasedPlayerDirection = Vector3.Lerp(biasedPlayerDirection, _PlayerVel._worldVelocity.normalized.y * Vector3.up, 0.4f);
+
+
+			facingDot = Vector3.Dot(biasedPlayerDirection, _RF._sampleTransforms.forwards); //Use sampleTransforms because _sampleForwards is affected by previous move direction.
+
+			_RF._grindingSpeed = _PlayerVel._horizontalSpeedMagnitude;
+			//What action before this one.
+			switch (_Actions._whatCurrentAction)
+			{
+				// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
+				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
+					facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _RF._sampleForwards);
+					_RF._grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
+					break;
+				//If it was a drop charge, add speed from the charge to the grind speed.
+				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
+					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
+					_RF._grindingSpeed = Mathf.Clamp(charge, _RF._grindingSpeed + (charge / 6), 160);
+					break;
+				default:
+					//If any other action, then check if speed on rail is gained from falling onto, or being launched up into.
+					if (Mathf.Abs(_PlayerVel._worldVelocity.y) > _RF._grindingSpeed)
+					{
+						//If direction to grind is upwards, and player is being launched up.
+						if (Mathf.Sign(_PlayerVel._worldVelocity.y) == 1 && (_RF._sampleUpwards * _RF._movingDirection).y > 0.5f)
+						{
+							_RF._grindingSpeed = Mathf.Abs(_PlayerVel._worldVelocity.y);
+						}
+						//If direction to grind is downwards enough, and player is falling down.
+						else if (Mathf.Sign(_PlayerVel._worldVelocity.y) == -1 && (_RF._sampleUpwards * _RF._movingDirection).y < -0.5)
+						{
+							_RF._grindingSpeed = Mathf.Abs(_PlayerVel._worldVelocity.y);
+						}
+					}
+					break;
+			}
+
 			_isCrouching = false;
 			_pulleyRotate = 0f;
 
@@ -217,51 +250,29 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			}
 
 			//If got onto this rail from anything except a rail hop, set speed to physics.
-			//_Actions._listOfSpeedOnPaths.Add(Mathf.Sqrt(_PlayerVel._speedMagnitudeSquared));
 
-			_RF._grindingSpeed = _PlayerVel._horizontalSpeedMagnitude;
-			//What action before this one.
-			switch (_Actions._whatCurrentAction)
-			{
-				// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
-				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
-					facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _RF._sampleForwards);
-					_RF._grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
-					break;
-				//If it was a drop charge, add speed from the charge to the grind speed.
-				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
-					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
-					_RF._grindingSpeed = Mathf.Clamp(charge,_RF._grindingSpeed + (charge / 6), 160);
-					break;
-				default:
-					//If any other action, then check if speed on rail is gained from falling onto, or being launched up into.
-					if (Mathf.Abs(_PlayerVel._worldVelocity.y) > _RF._grindingSpeed)
-					{
-						//If direction to grind is upwards, and player is being launched up.
-						if(Mathf.Sign(_PlayerVel._worldVelocity.y) == 1 && (_RF._sampleUpwards * _RF._movingDirection).y > 0.5f)
-						{
-							_RF._grindingSpeed = Mathf.Abs(_PlayerVel._worldVelocity.y);
-						}
-						//If direction to grind is downwards enough, and player is falling down.
-						else if (Mathf.Sign(_PlayerVel._worldVelocity.y) == -1 && (_RF._sampleUpwards * _RF._movingDirection).y < -0.5)
-						{
-							_RF._grindingSpeed = Mathf.Abs(_PlayerVel._worldVelocity.y);
-						}
-					}
-					break;
-			}
 			// Apply minimum speed
 			_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _minStartSpeed_);
 			_Actions._listOfSpeedOnPaths.Add(_RF._grindingSpeed);
+
+			_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Rail);
+			enabled = true;
+
+			SetDirection();
 		}
 		else
+		{
+			facingDot = Vector3.Dot(biasedPlayerDirection, _RF._sampleTransforms.forwards); //Use sampleTransforms because _sampleForwards is affected by previous move direction.
 			_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _minStartSpeed_);
+			SetDirection();
+		}
 
-		// Get Direction for the Rail
-		_RF._isGoingBackwards = facingDot < 0;
-
-		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Rail);
-		enabled = true;
+		return;
+		void SetDirection () {
+			// Get Direction for the Rail
+			_RF._isGoingBackwards = facingDot < 0;
+			_RF._movingDirection = facingDot < 0 ? -1 : 1;
+		}
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -273,6 +284,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_Sounds.FeetSource.Stop();
 
 		_isGrinding = false;
+		_RF._RailTransform = null; //Set this to null so there's nothing to compare to on next rail.
 
 		//If left this action to perform a jump,
 		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Jump)
@@ -409,26 +421,34 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	//Prevent colliding with rails until slightly after losing the current rail.
 	IEnumerator DelayCollision () {
-		yield return new WaitForSeconds(0.45f);
+		yield return new WaitForSeconds(0.55f);
 		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
 		_canEnterRail = true;
 	}
 
 	void HandleRailSpeed () {
-		if (_isBraking && _RF._grindingSpeed > _minStartSpeed_) _RF._grindingSpeed *= _playerBrakePower_;
+		if (_isBraking && _RF._grindingSpeed > _minStartSpeed_)
+		{
+			_RF._grindingSpeed *= _playerBrakePower_;
+		}
 
 		HandleBoost();
-		if(!HandleSlopes())
+		if(IsOnSlope())
 		{
-			if (_RF._grindingSpeed > _railTopSpeed_)
+			if(_RF._grindingSpeed < 5) 
 			{
-				_RF._grindingSpeed -= _decaySpeed_;
+				_RF._movingDirection *= -1;
+				_RF._isGoingBackwards = !_RF._isGoingBackwards;
+				_RF._grindingSpeed = 6;
 			}
 		}
+		else if (_RF._grindingSpeed > _railTopSpeed_)
+		{
+				_RF._grindingSpeed -= _decaySpeed_;
+			
+		}
 		//Decrease speed if over max or top speed on the rail.
-		_RF._grindingSpeed = Mathf.Min(_RF._grindingSpeed, _railmaxSpeed_);
-
-		_RF._grindingSpeed = Mathf.Clamp(_RF._grindingSpeed, 10, _PlayerPhys._PlayerMovement._currentMaxSpeed);
+		_RF._grindingSpeed = Mathf.Clamp(_RF._grindingSpeed, 0, Mathf.Min(_railmaxSpeed_,_PlayerPhys._PlayerMovement._currentMaxSpeed));
 	}
 
 	//Set to true outside of this script. But when boosted on a rail will gain a bunch of speed at once before having some of it quickly drop off.
@@ -451,7 +471,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		}
 	}
 
-	private bool HandleSlopes () {
+	private bool IsOnSlope () {
 		bool onSlope = false;
 
 		//Start a force to apply based on the curve position and general modifier for all slopes handled in physics script 
@@ -470,15 +490,14 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//Get main modifier and multiply by position on curve and general hill modifer used for other slope physics.
 			force *= _isCrouching ? _upHillMultiplierCrouching_ : _upHillMultiplier_;
 			force *= -1;
-			onSlope = force < -0.5f;
+			onSlope = force < -Mathf.Min(0.3f, _RF._grindingSpeed / 100f);
 		}
 		else if (_PlayerVel._worldVelocity.y < -0.05f)
 		{
 			//Downhill
 			force *= _isCrouching ? _downHillMultiplierCrouching_ : _downHillMultiplier_;
-			onSlope = force > 0.5f;
+			onSlope = force > Mathf.Min(0.3f, _RF._grindingSpeed / 100f);
 		}
-
 		//Apply to moving speed (if uphill will be a negative/
 		_RF._grindingSpeed += force;
 		return onSlope;
@@ -501,18 +520,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				_isCrouching = _Input._RollPressed;
 				_CharacterAnimator.SetBool("isRolling", _isCrouching);
 
-				//RailTrick to accelerate, but only after delay
-				if (_Input._SpecialPressed && _pushTimer > _pushFowardDelay_)
-				{
-					//Will only increase speed if under the max trick speed.
-					if (_RF._grindingSpeed < _pushFowardmaxSpeed_)
-					{
-						_RF._grindingSpeed += _pushFowardIncrements_ * _accelBySpeed_.Evaluate(_RF._grindingSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
-					}
-					_isFacingRight = !_isFacingRight; //This will cause the animator to perform a small hop and face the other way.
-					_pushTimer = 0f; //Resets timer so delay must be exceeded again.
-					_Input._SpecialPressed = false; //Prevents it being spammed by holding		
-				}
+				RailTrick();
 
 				CheckHopping();
 				break;
@@ -527,7 +535,26 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				break;
 		}
 		//Breaking
-		_isBraking = _Input._BouncePressed;
+		_isBraking = _Input._PowerPressed;
+	}
+
+	private void RailTrick () {
+		//RailTrick to accelerate, but only after delay
+		if (_Input._SpecialPressed && _pushTimer > _pushFowardDelay_)
+		{
+			//Will only increase speed if under the max trick speed.
+			if (_RF._grindingSpeed < _pushFowardmaxSpeed_)
+			{
+				_RF._grindingSpeed += _pushFowardIncrements_ * _accelBySpeed_.Evaluate(_RF._grindingSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
+			}
+			SwapFacingSide();	
+		}
+	}
+
+	private void SwapFacingSide () {
+		_isFacingRight = !_isFacingRight; //This will cause the animator to perform a small hop and face the other way.
+		_Input._SpecialPressed = false; //Prevents it being spammed by holding	
+		_pushTimer = 0f; //Resets timer so delay must be exceeded again.
 	}
 
 	private void CheckHopping () {
@@ -566,9 +593,11 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_canInput = false;
 		_Input._RightStepPressed = false;
 		_Input._LeftStepPressed = false;
+
+		SwapFacingSide();
 	}
 
-	private void PerformHop () {
+	private void ApplyHopUpdate () {
 		//If this is set to over zero in checkHopping, then the player should be moved off the rail accordingly.
 		if (_distanceToStep > 0)
 		{
@@ -585,7 +614,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			_RF._setOffSet.Set(_RF._setOffSet.x + move, _RF._setOffSet.y, _RF._setOffSet.z);
 
 			//If moving, check for walls, and if there's a collision, end state.
-			if (move < 0)
+			if (move > 0)
+			{
 				if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), -_MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
 					_Actions._ActionDefault.StartAction();
@@ -594,25 +624,40 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				{
 					_Actions._ActionDefault.StartAction();
 				}
+			}
 
 			//Decrease how far to move by how far has moved.
 			_distanceToStep -= Mathf.Abs(move);
+			_distanceToStep = Mathf.Max(_distanceToStep, 0.1f);
 
 			//Near the end of a step, renable collision so can collide again with grind on them instead.
-			if (_distanceToStep < 3)
+			if (_distanceToStep < _hopDistance_ / 2 && !_canEnterRail)
 			{
-				AttemptAction();
 				Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
 				_canEnterRail = true;
-
-				//Once a step is over and the player hasn't started this action through collisions, exit state.
-				if (_distanceToStep <= 0)
-				{
-					_Actions._ActionDefault.StartAction();
-				}
 			}
 		}
 	}
+
+	private void ApplyHopFixedUpdate () {
+		if (_distanceToStep > 0)
+		{
+			float direction = -_hopSpeed_;
+			if (_isSteppingRight)
+				direction = -direction;
+			if (_RF._isGoingBackwards)
+				direction = -direction;
+
+			_PlayerVel.AddGeneralVelocity(_RF._sampleRight * direction);
+
+			//Once a step is over and the player hasn't started this action through collisions, exit state.
+			if (_distanceToStep <= 0.1f)
+			{
+				LoseRail();
+			}
+		} 
+	}
+	
 
 	//Make it so can't rail hop until being on a rail for long enough. This includes hopping from one rail to another.
 	private IEnumerator DelayHopOnLanding () {
@@ -636,12 +681,17 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	//Called by the pathers interaction script to ready important stats gained from the collision. This is seperate to startAction because startAction is inherited from an interface.
 	public void AssignForThisGrind ( float range, Transform Rail, S_Interaction_Pathers.PathTypes type, Vector3 thisOffset, S_AddOnRail AddOn ) {
 
+
 		_RF._setOffSet = -thisOffset; //Offset is obtianed from the offset on the collider, and will be followed consitantly to allow folowing different rails on the same spline.
 
 		_RF._whatKindOfRail = type; //Zipline or rail
 
 		//Setting up Rails
-		_RF._pointOnSpline = range; //Starts at this position along the spline.
+		//If same spline, landing from a hop, pre-existing PointOnSpline already works.
+		if (!_RF._RailTransform || _RF._RailTransform != Rail)
+		{
+			_RF._pointOnSpline = range; //Starts at this position along the spline.
+		}
 		_RF._RailTransform = Rail; //Player position must add this as spline positions are in local space.
 
 		_RF._ConnectedRails = AddOn; //Will be used to go onto subsequent rails without recalculating collisions.

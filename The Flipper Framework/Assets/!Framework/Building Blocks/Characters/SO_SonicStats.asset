@@ -562,8 +562,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.95
-        value: 0.2
+        time: 0.9333374
+        value: 0.2848999
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -571,8 +571,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
-        value: 0
+        time: 1.0166769
+        value: 0.28655544
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2705,9 +2705,9 @@ MonoBehaviour:
     railMaxSpeed: 170
     railTopSpeed: 90
     minimumStartSpeed: 20
-    RailPushFowardmaxSpeed: 100
-    RailPushFowardIncrements: 10
-    RailPushFowardDelay: 0.35
+    RailPushFowardmaxSpeed: 120
+    RailPushFowardIncrements: 7
+    RailPushFowardDelay: 0.2
     PushBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -2759,16 +2759,16 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    RailSlopePower: 2.5
-    RailUpHillMultiplier: {x: 1.2, y: 1.8}
+    RailSlopePower: 1.4
+    RailUpHillMultiplier: {x: 0.7, y: 1.1}
     RailDownHillMultiplier: {x: 1, y: 1.4}
     railDecaySpeed: 0.015
-    RailPlayerBrakePower: 0.97
+    RailPlayerBrakePower: 0.975
     railBoostDecaySpeed: 0.4
     railBoostDecayTime: 0.4
-    hopDelay: 0.3
-    hopSpeed: 80
-    hopDistance: 12
+    hopDelay: 0.22
+    hopSpeed: 50
+    hopDistance: 11
   StartRailStats:
     railMaxSpeed: 125
     railTopSpeed: 80
@@ -2838,7 +2838,7 @@ MonoBehaviour:
     hopSpeed: 70
     hopDistance: 12
   RailPosition:
-    offsetRail: 2
+    offsetRail: 0
     offsetZip: -6
   StartRailPosition:
     offsetRail: 2

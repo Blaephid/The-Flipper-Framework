@@ -88,14 +88,19 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 	new public void StartAction(bool overwrite = false) {
 		if (!_isSkidding)
 		{
+			_Input._BoostPressed = false;
 			_Actions._whatSubAction = S_S_ActionHandling.SubPlayerStates.Skidding;
 			if (!enabled) { enabled = true; }
 
-			_Sounds.SkiddingSound();
+			if (_PlayerPhys._isGrounded)
+			{
+				_Sounds.SkiddingSound();
 
-			_Tools.CharacterAnimator.SetBool("Skidding", true);
+				_Tools.CharacterAnimator.SetBool("Skidding", true);
+			}
 			_isSkidding = true;
 			if (_shouldSkiddingDisableTurning_) { S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanTurn, "Skid"); }
+			else { _PlayerMovement._externalTurnModi = 0.5f; }
 		}
 	}
 
@@ -103,6 +108,7 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 	public void StopAction() {
 		if (_isSkidding)
 		{
+			_PlayerMovement._externalTurnModi = 1f;
 			_Tools.CharacterAnimator.SetBool("Skidding", false);
 			_isSkidding = false;
 			if (_shouldSkiddingDisableTurning_) { S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanTurn, "Skid"); }
@@ -140,9 +146,6 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 				{
 					_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * _regularSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
-
-				_Input._BoostPressed = false;
-
 				return true;
 			}	
 		}
@@ -156,7 +159,7 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 		if(!_canSkidInAir_) { return false; }
 
 		//If the input direction is different enough to the current movement direction, then a skid should be performed. 
-		if ((_PlayerMovement._inputVelocityDifference > _regularSkidAngleStartPoint_) && !_Input._isInputLocked)
+		if ((_PlayerMovement._inputVelocityDifference > _regularSkidAngleStartPoint_ && _PlayerVel._horizontalSpeedMagnitude > 20) && !_Input._isInputLocked)
 		{
 			//Uses relevant velocity rather whan world in order to not skid against vertical speed from jumping or falling.
 			Vector3 releVel = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity);
@@ -169,6 +172,7 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 				{
 					_PlayerVel.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _airSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
+			StartAction();
 			return true;
 		}
 		//In case the player lost ground but was skidding before doing so.
@@ -183,6 +187,7 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 		if (_PlayerMovement._inputVelocityDifference > _spinSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
 			_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * _regularSkiddingIntensity_ * 0.6f);
+			StartAction();
 			return true;
 		}
 		return false;

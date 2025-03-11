@@ -23,6 +23,7 @@ namespace SplineMesh
 		{
 			public Vector3 location;
 			public Vector3 forwards;
+			public Vector3 right;
 			public Vector3 upwards;
 			public Quaternion rotation;
 		}
@@ -30,12 +31,15 @@ namespace SplineMesh
 		public static SampleTransforms GetSampleTransformInfo ( Transform SplineTransform, CurveSample sample ) {
 			Vector3 sampleForwards = SplineTransform.rotation * sample.tangent;
 			Vector3 sampleUpwards = SplineTransform.rotation * sample.up;
+			Vector3 sampleRight = Vector3.Cross( sampleUpwards, sampleForwards);
+
 			Vector3 sampleLocation = SplineTransform.position + (SplineTransform.rotation * sample.location);
 			Quaternion sampleRotation = SplineTransform.rotation * sample.Rotation;
 
 			return new SampleTransforms()
 			{
 				location = sampleLocation,
+				right = sampleRight,
 				forwards = sampleForwards,
 				upwards = sampleUpwards,
 				rotation = sampleRotation,

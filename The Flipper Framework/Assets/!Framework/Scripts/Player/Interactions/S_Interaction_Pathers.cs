@@ -75,10 +75,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Start () {
-		StartCoroutine(DisablingEnteringPathsAtIntervals());
-	}
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
@@ -86,8 +82,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
-		_canGrindOnRail = _RailAction ? _RailAction._inAStateConnectedToThis : false;
-		//_canEnterAutoPath = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Path);
+		_canGrindOnRail = _RailAction ? _RailAction._inAStateConnectedToThis && _RailAction._canEnterRail : false;
 		_canEnterAutoPath = _PathAction ? _PathAction._inAStateConnectedToThis : false;
 	}
 
@@ -155,20 +150,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 	/// 
 	#region private
 
-
-	//This will constantly run in the background, disabling checks to enter paths, enabled in AttemptAction methods. These counterballance, so as long as AttemptAction is called, these are true, but when it stops, these will stay false
-	private IEnumerator DisablingEnteringPathsAtIntervals () {
-		while (true)
-		{
-			//yield return new WaitForSeconds(0.04f);
-			yield return new WaitForFixedUpdate();
-			//_canGrindOnRail = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Rail); ;
-			_canGrindOnRail = _RailAction ? _RailAction._inAStateConnectedToThis : false;
-			//_canEnterAutoPath = _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None, S_S_ActionHandling.PlayerSituationalStates.Path);
-			_canEnterAutoPath = _PathAction ? _PathAction._inAStateConnectedToThis : false;
-		}
-	}
-
 	private void CheckRail ( Collider Col ) {
 		Spline ThisSpline = Col.gameObject.GetComponentInParent<Spline>(); //Create a temporary variable to check this rail before confirming it.
 
@@ -182,11 +163,18 @@ public class S_Interaction_Pathers : MonoBehaviour
 			offset = Col.GetComponentInParent<S_PlaceOnSpline>()._offset3d_;
 		}
 
-		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, ThisSpline, offset); //Returns the closest point on the rail by position.
+		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, ThisSpline, offset, 3); //Returns the closest point on the rail by position.
 
-		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed..
-		float speedToCheckAgainst = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude, Mathf.Abs(_PlayerVel._coreVelocity.y));
-		if (rangeAndDistanceSquared.y < Mathf.Pow(Mathf.Clamp(speedToCheckAgainst / 13, 2f, 11f), 2))
+		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed.
+		float maxDistanceNeededBasedOnSpeed = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude, Mathf.Abs(_PlayerVel._coreVelocity.y));
+		maxDistanceNeededBasedOnSpeed /= 13;
+
+		//If rail hopping, movement is set horizontally, so ensure player can't get stuck on the same rail they just left.
+		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail) { maxDistanceNeededBasedOnSpeed = 5f; }
+
+		maxDistanceNeededBasedOnSpeed = Mathf.Pow(Mathf.Clamp(maxDistanceNeededBasedOnSpeed, 2f, 11f), 2);
+		//Compare distance squared, to distance needed depending on speed squared.
+		if (rangeAndDistanceSquared.y < maxDistanceNeededBasedOnSpeed)
 		{
 			SetOnRail(true, Col, rangeAndDistanceSquared);
 		}
@@ -200,6 +188,9 @@ public class S_Interaction_Pathers : MonoBehaviour
 			_PathSpline = collider.gameObject.GetComponentInParent<Spline>();
 
 			Vector3 offSet = Vector3.zero;
+
+			Debug.DrawRay(collider.transform.position, Vector3.up * 10, UnityEngine.Color.red, 10f);
+			Debug.DrawRay(transform.position, Vector3.up * 10, UnityEngine.Color.blue, 10f);
 
 			//Trigger Collisions on rails are organised by the PlaceOnSpline script, so if that had an offset to move the rail collision away from the spline, then follow that (this allows for multiple rails next to each other all following the same spline).
 			if (isTrigger)
@@ -364,7 +355,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 	public void ReadyScript () {
 		if (_PlayerPhys == null)
 		{
-
 			//Assign all external values needed for gameplay.
 			_Tools = GetComponentInParent<S_CharacterTools>();
 			AssignTools();

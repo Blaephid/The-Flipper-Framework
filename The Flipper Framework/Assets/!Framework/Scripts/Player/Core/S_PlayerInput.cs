@@ -72,6 +72,7 @@ public class S_PlayerInput : MonoBehaviour
 	[HideInInspector] public bool		_LeftStepPressed;
 	[HideInInspector] public bool		_RightStepPressed;
 	[HideInInspector] public bool		_BouncePressed;
+	[HideInInspector] public bool		_PowerPressed;
 	[HideInInspector] public bool		_InteractPressed;
 	[HideInInspector] public bool		_CamResetPressed;
 	[HideInInspector] public bool		_HomingPressed;
@@ -353,16 +354,16 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void Power ( InputAction.CallbackContext ctx ) {
+
 		if (ctx.performed)
 		{
-			if (!_PlayerPhys._isGrounded)
-			{
-				_BouncePressed = ctx.ReadValueAsButton();
-			}
+			_PowerPressed = ctx.ReadValueAsButton();
+			_BouncePressed = !_PlayerPhys._isGrounded;
 		}
 
 		else if (ctx.canceled)
 		{
+			_PowerPressed = ctx.ReadValueAsButton();
 			_BouncePressed = ctx.ReadValueAsButton();
 		}
 	}

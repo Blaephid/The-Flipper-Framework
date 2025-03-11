@@ -25,7 +25,7 @@ public class S_Action_Base : MonoBehaviour, IAction
 
 	[HideInInspector] public int        _framesWithoutLocalCheckActionCalled; //Increases every frame, but set to zero when AttemptAction is called, if it reaches 3, then sets the below to false.
 	[HideInInspector] public bool       _inAStateConnectedToThis;        //Used by children to check when should end a state, of if possible to enter.
-
+	[HideInInspector] public bool           _canEnterStateFromSelf; //Set by inherited classes (not per instance), to allow an action to call itself.
 
 	public bool AttemptAction () {
 		if(!_isActionCurrentlyValid) { return false; }
@@ -111,7 +111,7 @@ public class S_Action_Base : MonoBehaviour, IAction
 	public void ActionEveryFrame () {
 		string debugThisAction = this.ToString();
 		_inAStateConnectedToThis = _framesWithoutLocalCheckActionCalled < 3;
-		if(this is IMainAction && enabled) { _inAStateConnectedToThis = false; }
+		if(this is IMainAction && enabled) { _inAStateConnectedToThis = _canEnterStateFromSelf; }
 		_framesWithoutLocalCheckActionCalled++;
 	}
 

@@ -25,8 +25,6 @@ public class S_PlayerMovement : MonoBehaviour
 	private Transform   _MainSkin;
 	#endregion
 
-
-
 	//Stats
 	#region Stats
 	[Header("Grounded Movement")]
@@ -78,6 +76,9 @@ public class S_PlayerMovement : MonoBehaviour
 	[HideInInspector]
 	public Vector3                _trackMoveInput;    //Follows the input direction, and it is has changed but the controller input hasn't, that means the camera was moved to change direction.
 
+	public float _externalAccelModi { private get; set; } = 1;
+	public float _externalTurnModi { private get; set; } = 1;
+
 	[HideInInspector]
 	public float _useFlatTurnRate = 0;
 
@@ -125,6 +126,8 @@ public class S_PlayerMovement : MonoBehaviour
 	//Handles core velocity, which is the velocity directly under the player's control (seperate from environmental velocity which is placed on the character by other things).
 	//This turns, decreases and/or increases the velocity based on input.
 	public Vector3 HandleControlledVelocity ( Vector3 startVelocity, Vector2 modifier, float decelerationModifier = 1 ) {
+
+		modifier.Set(modifier.x * _externalAccelModi, modifier.y * _externalTurnModi);
 
 		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
 		if (_PlayerPhys._locksForCanControl.Count != 0)
