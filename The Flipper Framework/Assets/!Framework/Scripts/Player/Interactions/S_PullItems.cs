@@ -17,7 +17,7 @@ public class S_PullItems : MonoBehaviour
 
 	GameObject currentMonitor;
 
-	List<Transform> allRings = new List<Transform>();
+	List<Transform> _allRings = new List<Transform>();
 
 	public void Start () {
 		//Tools
@@ -34,6 +34,9 @@ public class S_PullItems : MonoBehaviour
 
 	private void FixedUpdate () {
 		SearchForRingsNearby();
+	}
+
+	private void Update () {
 		PullSavedRingsIn();
 	}
 
@@ -43,30 +46,30 @@ public class S_PullItems : MonoBehaviour
 		Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerVel._horizontalSpeedMagnitude / _PlayerPhys._PlayerMovement._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
 		for (int i = 0 ; i < rings.Length ; i++)
 		{
-			Collider r = rings[i];
-			allRings.Add(r.transform.parent);
-			r.transform.parent = null; //This is to ensure they will remain being pulled even if their parents become inactive.
-			Destroy(r);
+			Collider ring = rings[i];
+			_allRings.Add(ring.transform.parent);
+			ring.transform.parent = null; //This is to ensure they will remain being pulled even if their parents become inactive.
+			Destroy(ring);
 		}
 	}
 
 	//Go through each ring that was added to be pulled, and change their position to be closer.
 	public void PullSavedRingsIn () {
-		if (allRings.Count > 0)
+		if (_allRings.Count > 0)
 		{
-			for (int i = 0 ; i < allRings.Count ; i++)
+			for (int i = 0 ; i < _allRings.Count ; i++)
 			{
-				Transform r = allRings[i];
+				Transform ring = _allRings[i];
 				//If ring was picked up, this would be deleted.
-				if (!r)
+				if (!ring)
 				{
-					allRings.RemoveAt(i);
+					_allRings.RemoveAt(i);
 					i--;
 				}
 
 				else
 				{
-					r.position = Vector3.MoveTowards(r.position, _PlayerPhys._CharacterCenterPosition, Time.deltaTime * _basePullSpeed_ * _PlayerVel._horizontalSpeedMagnitude);
+					ring.position = Vector3.MoveTowards(ring.position, _PlayerPhys._CharacterCenterPosition + (_PlayerVel._totalVelocity * Time.fixedDeltaTime), Time.deltaTime * _basePullSpeed_ * _PlayerVel._horizontalSpeedMagnitude);
 				}
 			}
 		}

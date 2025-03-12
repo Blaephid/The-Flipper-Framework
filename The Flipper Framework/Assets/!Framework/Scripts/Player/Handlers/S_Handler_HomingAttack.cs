@@ -36,12 +36,10 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	[HideInInspector]
 	public Transform            _TargetObject;                //The target set at the end of an update
 	[HideInInspector]
-	public Transform		_PreviousTarget;
+	public Transform                _PreviousTarget;
 	private Transform            _targetPlayedAnimationOn;     //If different to the current target, then play animation and set to current target so it doesn't happen again until new target.
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
@@ -74,7 +72,6 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	#endregion
 
 	#endregion
-	#endregion
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -90,6 +87,10 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		StartCoroutine(ScanForTargets(_timeBetweenScans_)); //For efficiency, this is not done every frame, instead being every x seconds.
 	}
 
+	private void Update () {
+		UpdateHomingReticle();
+	}
+
 	#endregion
 
 	/// <summary>
@@ -102,12 +103,10 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		//Will constantly be checking, but only performing calculations if isScanning
 		while (true)
 		{
-			yield return new WaitForSeconds(.02f);
 			yield return new WaitForEndOfFrame();
 
 			//Determined in the homing action script, based on if attempt action is called, which means this only updates if the current action can perform homing attacks.
-			//if (_Actions != null & _Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.Homing, S_S_ActionHandling.PlayerSituationalStates.None))
-				if(_HomingAction._inAStateConnectedToThis)
+			if (_HomingAction._inAStateConnectedToThis && _isHomingAvailable)
 			{
 				UpdateHomingTargets();
 
@@ -130,6 +129,8 @@ public class S_Handler_HomingAttack : MonoBehaviour
 				_PreviousTarget = null;
 				UpdateHomingReticle();
 			}
+			else
+				yield return new WaitForSeconds(secondsBetweenChecks);
 		}
 	}
 
@@ -137,11 +138,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private void UpdateHomingTargets () {
 
 		_TargetObject = GetClosestTarget(_TargetLayer_, _targetSearchDistance_);
-
 		DelayingTargetSwitch();
-
-		UpdateHomingReticle();
-
 	}
 
 	//Checks for potential target then finds the closest.
@@ -175,12 +172,12 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 		//If nothing found yet, check fir all potential targets around the player.
 		Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, radius, TargetMask);
-		if(TargetsInRange.Length > 0)
+		if (TargetsInRange.Length > 0)
 		{
 			for (int i = 0 ; i < TargetsInRange.Length ; i++)
 			{
 				Collider hit = TargetsInRange[i];
-				float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(transform.position, hit.transform.position);
+				float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, hit.transform.position);
 
 				//If has the homing target component and is far enough away, then compare to current closest.
 				if (hit.gameObject.GetComponent<S_Data_HomingTarget>() && distanceSquared > _minTargetDistanceSquared_)
@@ -198,7 +195,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		//If there is currently already a target, compare it to the new closest, with a modification to distance that makes it seem closer, and therefore higher priority.
 		if (_PreviousTarget != null)
 		{
-			float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(transform.position, _PreviousTarget.transform.position);
+			float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, _PreviousTarget.transform.position);
 			closestTarget = CheckTarget(_PreviousTarget.transform, distanceSquared * _currentTargetPriority_, closestTarget, _facingAmount_);
 		}
 
@@ -209,14 +206,14 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private Transform CheckTarget ( Transform newTarget, float distanceSquared, Transform closest, float facingAmount, bool skipIsOnScreen = false ) {
 
 		//If this new target is out of the maximum range, then ignore it, no matter the check. Gets its own distance because the distance parameter won't always be the exact distance.
-		if (S_S_MoreMaths.GetDistanceOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_ ) { return closest; } 
+		if (S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_) { return closest; }
 
 
 		//Make sure Sonic is facing the target enough
 		Vector3 direction = (newTarget.position - transform.position).normalized;
 		float angle = Vector3.Angle(new Vector3(_MainSkin.forward.x, 0, _MainSkin.forward.z), new Vector3 (direction.x, 0, direction.z));
 		bool isFacing = angle < facingAmount;
-		
+
 		bool isOnScreen = true;
 		if (!skipIsOnScreen)
 		{
@@ -245,7 +242,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	}
 
 	//Prevents targets from changing too quickly.
-	private void DelayingTargetSwitch() {
+	private void DelayingTargetSwitch () {
 		if (_PreviousTarget)
 		{
 			//If there is no current target but there is still a previous target
@@ -292,8 +289,11 @@ public class S_Handler_HomingAttack : MonoBehaviour
 			_IconTransform.position = _TargetObject.transform.position; //Places icon on target
 
 			//Effects icon size by camera distance
-			float camDist = S_S_MoreMaths.GetDistanceOfVectors(transform.position, _MainCamera.position);
-			_IconTransform.localScale = (Vector3.one * _iconScale_) + (Vector3.one * (camDist * Mathf.Pow(_iconDistanceScaling_, 2)));
+			float camDist = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, _MainCamera.position);
+			float newSize = camDist * Mathf.Pow(_iconDistanceScaling_, 2);
+			newSize += _iconScale_;
+			newSize = Mathf.Clamp(newSize, 0.1f, _iconScale_ * 3f);
+			_IconTransform.localScale = Vector3.one * newSize;
 
 			//If this is a new target, then play sound and animation.
 			if (_targetPlayedAnimationOn != _TargetObject)
@@ -359,7 +359,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		_IconAnim = _IconTransform.gameObject.GetComponent<Animator>();
 
 		_HomingAction = GetComponent<S_Action02_Homing>();
-		if(!_HomingAction) { enabled = false; }
+		if (!_HomingAction) { enabled = false; }
 	}
 
 	//Reponsible for assigning stats from the stats script.
@@ -367,7 +367,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		_targetSearchDistance_ = _Tools.Stats.HomingSearch.targetSearchDistance;
 		_faceRange_ = _Tools.Stats.HomingSearch.distanceModifierInCameraDirection;
 		_minTargetDistanceSquared_ = Mathf.Pow(_Tools.Stats.HomingSearch.minimumTargetDistance, 2);
-		_maxTargetDistanceSquared_ = Mathf.Pow( _Tools.Stats.HomingSearch.maximumTargetDistance,2);
+		_maxTargetDistanceSquared_ = Mathf.Pow(_Tools.Stats.HomingSearch.maximumTargetDistance, 2);
 		_TargetLayer_ = _Tools.Stats.HomingSearch.TargetLayer;
 		_BlockingLayers_ = _Tools.Stats.HomingSearch.blockingLayers;
 		_facingAmount_ = _Tools.Stats.HomingSearch.facingAmount;

@@ -102,15 +102,15 @@ public class S_Trigger_External : S_Trigger_Base
 			{
 				switch (triggerType)
 				{
-					case TriggerTypes.On: Trigger.TriggerObjectOn(_Player); return;
+					case TriggerTypes.On: Trigger.TriggerObjectOn(_Player); break;
 
-					case TriggerTypes.Off: Trigger.TriggerObjectOff(_Player); return;
+					case TriggerTypes.Off: Trigger.TriggerObjectOff(_Player); break;
 
-					case TriggerTypes.Either: Trigger.TriggerObjectEither(_Player); return;
+					case TriggerTypes.Either: Trigger.TriggerObjectEither(_Player); break;
 
-					case TriggerTypes.Reset: Trigger.ResetObject(_Player); return;
+					case TriggerTypes.Reset: Trigger.ResetObject(_Player); break;
 
-					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(_Player); return;
+					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(_Player); break;
 				}
 			}
 		}

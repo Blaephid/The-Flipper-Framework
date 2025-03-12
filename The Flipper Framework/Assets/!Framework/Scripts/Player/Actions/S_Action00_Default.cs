@@ -92,7 +92,10 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 
 		//Set Effects
 		if(_CharacterAnimator.GetInteger("Action") != 0)
+		{
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
+			if (!_isAnimatorControlledExternally) _CharacterAnimator.SetInteger("Action", _animationAction);
+		}
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Default);
 		enabled = true;

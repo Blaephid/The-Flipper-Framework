@@ -305,6 +305,8 @@ public class S_PlayerVelocity : MonoBehaviour
 
 		_previousRunningSpeeds.Insert(0, _currentRunningSpeed);
 		_previousRunningSpeeds.RemoveAt(3);
+
+		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _totalVelocity * Time.deltaTime, Color.red, 10f);
 	}
 	#endregion
 

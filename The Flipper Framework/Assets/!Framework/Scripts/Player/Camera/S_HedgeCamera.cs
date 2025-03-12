@@ -457,7 +457,7 @@ public class S_HedgeCamera : MonoBehaviour
 		if (_Transposer && _VirtualCamera.enabled)
 		{
 			_Transposer.m_CameraDistance = dist;
-			_currentDistance = S_S_MoreMaths.GetDistanceOfVectors(transform.position, _FinalTarget.position);
+			_currentDistance = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, _FinalTarget.position);
 		}
 		//If not, position is calculated by distance and if there is a wall in the way.
 		else

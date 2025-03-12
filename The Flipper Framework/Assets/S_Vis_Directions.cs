@@ -10,8 +10,10 @@ public class S_Vis_Directions : S_Vis_Base
 		_hasVisualisationScripted = true;
 	}
 
-	[SerializeField] float _thickness = 1;
-
+	[SerializeField, DrawHorizontalWithOthers(new string[] {"_scale"})]
+	private float _thickness = 1;
+	[SerializeField, HideInInspector, Min(0.2f)]
+	private float _scale = 1.5f;
 	[SerializeField, DrawHorizontalWithOthers(new string[] {"_backwards"})]
 	private bool _forwards;
 	[SerializeField, HideInInspector]
@@ -30,7 +32,7 @@ public class S_Vis_Directions : S_Vis_Base
 
 	public override void DrawGizmosAndHandles ( bool selected ) {
 		float baseScale = S_S_MoreMaths.GetAverageOfVector(transform.lossyScale);
-		float distance = 2 * baseScale;
+		float distance = Mathf.Max(0.2f, _scale) * baseScale;
 		float useThickness = selected ? _thickness * 1.2f : _thickness;
 
 		Handles.color = _normalOutlineColour;

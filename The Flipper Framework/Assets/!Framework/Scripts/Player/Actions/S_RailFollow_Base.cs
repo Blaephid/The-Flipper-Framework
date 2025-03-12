@@ -176,7 +176,7 @@ public class S_RailFollow_Base : MonoBehaviour
 			Vector3 checkPos = sampleTransform.location + (splineSample.Rotation * offset);
 
 			//The distance between the point at distance n along the spline, and the current collider position.
-			float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(checkPos,colliderPosition);
+			float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(checkPos,colliderPosition);
 
 			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
 			if (distanceSquared <= ClosestDistanceSquared)

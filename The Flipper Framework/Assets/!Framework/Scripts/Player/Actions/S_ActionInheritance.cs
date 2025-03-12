@@ -108,7 +108,7 @@ public class S_Action_Base : MonoBehaviour, IAction
 		_Actions.HandleInputs(_positionInActionList);
 	}
 
-	public void ActionEveryFrame () {
+	public virtual void ActionEveryFixedUpdate () {
 		string debugThisAction = this.ToString();
 		_inAStateConnectedToThis = _framesWithoutLocalCheckActionCalled < 3;
 		if(this is IMainAction && enabled) { _inAStateConnectedToThis = _canEnterStateFromSelf; }
@@ -131,7 +131,7 @@ public interface IAction
 
 	void CheckAction ();
 
-	void ActionEveryFrame ();
+	void ActionEveryFixedUpdate ();
 
 	void StartAction ( bool overwrite = false );
 

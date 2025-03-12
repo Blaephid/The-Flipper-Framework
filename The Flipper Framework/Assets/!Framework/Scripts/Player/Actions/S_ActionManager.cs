@@ -168,7 +168,7 @@ public class S_ActionManager : MonoBehaviour
 		//For actions that continue calculations even when no active, use ActionEveryFrame
 		for (int a = 0 ; a < _AllActions.Count ; a++)
 		{
-			_AllActions[a].ActionEveryFrame();
+			_AllActions[a].ActionEveryFixedUpdate();
 		}
 	}
 

@@ -6,7 +6,7 @@ public class S_S_MoreMaths
 {
 
 	//A faster versopm of Vector3.Distance because it doesn't calculate the actual magnitude. Therefore, remember that anything you compare this to MUST be squared, as this wont give the square root.
-   public static float GetDistanceOfVectors(Vector3 Vector1, Vector3 Vector2 ) {
+   public static float GetDistanceSqrOfVectors(Vector3 Vector1, Vector3 Vector2 ) {
 		return (Vector1 - Vector2).sqrMagnitude;
 	}
 

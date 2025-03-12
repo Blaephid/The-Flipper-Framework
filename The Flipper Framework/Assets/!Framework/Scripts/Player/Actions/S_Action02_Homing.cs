@@ -23,7 +23,8 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private bool        _CanBePerformedOnGround_;
+	[HideInInspector]
+	public bool        _CanBePerformedOnGround_;
 
 	private float       _homingAttackSpeed_;
 	private float       _homingTimerLimit_;
@@ -47,7 +48,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 	// Trackers
 	#region trackers
-	
+
 
 	public float        _skinRotationSpeed = 7;
 
@@ -97,7 +98,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		if (_isHoming)
 		{
 			HomeInOnTarget();
-			
+
 			HandleInputs();
 		}
 	}
@@ -106,22 +107,26 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	new public bool AttemptAction () {
 		if (!base.AttemptAction()) return false;
 
-		//Depending on stats, this can only be performed when grounded.
-		if (!_PlayerPhys._isGrounded || _CanBePerformedOnGround_)
-		{
 
-			//Must have a valid target when pressed
-			if (_HomingHandler._TargetObject && _Input._HomingPressed)
-			{
-				//Homing attack must be currently allowed
-				if (_Actions._isAirDashAvailable && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount))
-				{
-					StartAction();
-					return true;
-				}
-			}
+		//Must have a valid target when pressed
+		if (_HomingHandler._TargetObject && _Input._HomingPressed && _HomingHandler._isHomingAvailable)
+		{
+			StartAction();
+			return true;
 		}
+
 		return false;
+	}
+
+	public override void ActionEveryFixedUpdate () {
+		base.ActionEveryFixedUpdate();
+
+		//Must current be allowed
+		_HomingHandler._isHomingAvailable = _Actions._isAirDashAvailable && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount);
+		//Depending on stats, this can only be performed when grounded.
+		_HomingHandler._isHomingAvailable = _HomingHandler._isHomingAvailable && _PlayerPhys._isGrounded || _CanBePerformedOnGround_;
+
+		_HomingHandler._isHomingAvailable = _HomingHandler._isHomingAvailable && _Actions._areAirActionsAvailable;
 	}
 
 	new public void StartAction ( bool overwrite = false ) {
@@ -171,7 +176,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		//Get speed of attack and speed to return to on hit.		
 		_speedAtStart = Mathf.Max(_speedBeforeAttack * 0.9f, _homingAttackSpeed_);
 		_speedAtStart = Mathf.Min(_speedAtStart, _maxHomingSpeed_);
-		_Actions._listOfSpeedOnPaths.Add (_speedAtStart);
+		_Actions._listOfSpeedOnPaths.Add(_speedAtStart);
 
 
 		_speedBeforeAttack = Mathf.Max(_speedBeforeAttack, _minSpeedGainOnHit_);
@@ -194,7 +199,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	}
 
 	public void EventCollisionEnter ( Collision collision ) {
-		if(!enabled) { return; }
+		if (!enabled) { return; }
 
 		//If something is blocking the way, bounce off it.
 		if (Physics.Linecast(transform.position, collision.contacts[0].point, out RaycastHit hit, _PlayerPhys._Groundmask_))
@@ -225,7 +230,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		//Get direction to move in.
 		Vector3 newDirection = _Target.position - _PlayerPhys._CharacterCenterPosition;
-		_distanceFromTargetSquared = S_S_MoreMaths.GetDistanceOfVectors(_Target.position, _PlayerPhys._CharacterCenterPosition);
+		_distanceFromTargetSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(_Target.position, _PlayerPhys._CharacterCenterPosition);
 		float thisTurn =  _homingTurnSpeed_;
 
 		//Set Player location when close enough, for precision. Remember to square anything compared to a distance as the method we made does not square root the answer.
@@ -247,7 +252,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		if (_PlayerMovement._moveInput.sqrMagnitude > 0.2f && _canBeControlled_ && _timer > 0.02f)
 		{
 			//Get horizontal input
-			_currentInput =  transform.TransformDirection(_PlayerMovement._moveInput);
+			_currentInput = transform.TransformDirection(_PlayerMovement._moveInput);
 			_currentInput.y = 0;
 
 			//Get current horizontal direction
@@ -281,7 +286,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_currentDirection = Vector3.RotateTowards(_currentDirection, newDirection, Mathf.Deg2Rad * thisTurn, 0.0f);
 
 
-		_PlayerVel.SetBothVelocities(_currentDirection * _Actions._listOfSpeedOnPaths[0], new Vector2 (1, 0)); //Move in direction but remove all environmental velocity.
+		_PlayerVel.SetBothVelocities(_currentDirection * _Actions._listOfSpeedOnPaths[0], new Vector2(1, 0)); //Move in direction but remove all environmental velocity.
 	}
 
 	//Undoes the homing movement but doesn't end the actions (as special interactions may keep happening).
@@ -294,7 +299,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Homing");
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "Homing");
 
-		if(_Actions._listOfSpeedOnPaths.Count > 0)
+		if (_Actions._listOfSpeedOnPaths.Count > 0)
 			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 	}
 
@@ -314,7 +319,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		//Effects
 		_HomingTrailScript.emitTime = 0.1f;
 
-		if (_Actions._jumpCount > 0) 
+		if (_Actions._jumpCount > 0)
 			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount - 1, 1, _Actions._jumpCount); //Allows double jumping again after a hit
 
 		_CharacterAnimator.SetInteger("Action", 1);
@@ -372,7 +377,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 			newSpeed *= 3;
 			newSpeed.y = _homingBouncingPower_; ;
 
-			StopHoming ();
+			StopHoming();
 		}
 
 		void GetDirectionPostHit () {
@@ -417,9 +422,9 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		//Bounce backwards and upwards 
 
-		Vector3 reboundDirection = -faceDirection; 
-		if(reboundDirection.y < 0.4f && reboundDirection.y > -0.4f) reboundDirection = new Vector3(-faceDirection.x, 0.8f, -faceDirection.z); //If rebound is too horizontal, ensure it bounces upwards slighty.
-		_PlayerVel.SetBothVelocities(reboundDirection * force, new Vector2(1,0));
+		Vector3 reboundDirection = -faceDirection;
+		if (reboundDirection.y < 0.4f && reboundDirection.y > -0.4f) reboundDirection = new Vector3(-faceDirection.x, 0.8f, -faceDirection.z); //If rebound is too horizontal, ensure it bounces upwards slighty.
+		_PlayerVel.SetBothVelocities(reboundDirection * force, new Vector2(1, 0));
 
 		for (int i = 0 ; i < duration * 0.2f && !_PlayerPhys._isGrounded ; i++)
 		{
@@ -461,9 +466,9 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
-	public void EventOnGrounded () {		
-			_Actions._isAirDashAvailable = true;
-			_homingCount = 0;		
+	public void EventOnGrounded () {
+		_Actions._isAirDashAvailable = true;
+		_homingCount = 0;
 	}
 	#endregion
 

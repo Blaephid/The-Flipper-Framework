@@ -59,6 +59,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	private float                 _hopSpeed_ = 3.5f;
 	private float                 _hopDelay_;
 	private float                 _hopDistance_ = 12;
+	private AnimationCurve          _HopSpeedByTime_;
 	#endregion
 
 	// Trackers
@@ -77,8 +78,12 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	//Stepping
 	private bool        _canInput = true;   //Set true when entering a rail, but set false when rail hopping. Must be two to perform any actions.
 	private bool        _canHop = false;    //Set false when entering a rail, but true after a moment.
-	private float       _distanceToStep;    //Set when starting a hop and will go down by distance traveled every frame, ending action when zero.
-	private bool        _isSteppingRight;   //Hopping to a rail on the right or on the left.
+
+	private float       _hopThisFrame;
+	private float       _distanceToHop;    //Set when starting a hop and will go down by distance traveled every frame, ending action when zero.
+	private float       _timeHopping;    
+	private float       _timeToCompleteHop;    
+	private bool        _isHoppingRight;   //Hopping to a rail on the right or on the left.
 
 	private bool        _isFacingRight = true;        //Used by the animator, changed on push forward.
 	
@@ -164,7 +169,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_RF._isRailLost = false;
 		_canInput = true;
 		_pushTimer = _pushFowardDelay_;
-		_distanceToStep = 0; //Ensure not immediately stepping when called
+		_distanceToHop = 0; //Ensure not immediately stepping when called
 
 		_Rail_int._canGrindOnRail = false; //Prevents calling this multiple times in one update
 
@@ -272,6 +277,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			// Get Direction for the Rail
 			_RF._isGoingBackwards = facingDot < 0;
 			_RF._movingDirection = facingDot < 0 ? -1 : 1;
+
+			_PlayerVel.SetBothVelocities(_RF._sampleTransforms.forwards * _RF._movingDirection * _RF._grindingSpeed, new Vector2(1, 0));
+			_RF.PlaceOnRail(SetRotation, SetPosition);
 		}
 	}
 
@@ -349,7 +357,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				//_pulleyRotate is handled in input, but applied here.
 				_RF._ZipHandle.eulerAngles = new Vector3(_RF._ZipHandle.eulerAngles.x, _RF._ZipHandle.eulerAngles.y, _RF._ZipHandle.eulerAngles.z + _pulleyRotate * 70f * _RF._movingDirection);
 
-				//_PlayerPhys.transform.up = _PlayerPhys.transform.rotation * (_RailTransform.rotation * _Sample.up);
 				_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _RF._sampleForwards);
 				_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _pulleyRotate * 70f);
 
@@ -383,7 +390,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		_Input.LockInputForAWhile(5f, false, _RF._sampleForwards); //Prevent instant turning off the end of the rail
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"RailLost", 10));
-		_distanceToStep = 0; //Stop a step that might be happening
+		_distanceToHop = 0; //Stop a step that might be happening
 
 		_isGrinding = false;
 
@@ -574,7 +581,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				_Input._LeftStepPressed = false;
 			}
 
-			//If there is still an input, set the distance to step, which will be taken and handled in PerformHop();
+			//If there is still an input, set the distance to step, which will be taken and handled in ApplyHop();
 			if (_Input._RightStepPressed || _Input._LeftStepPressed)
 			{
 				StartHop();
@@ -586,8 +593,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_Sounds.FeetSource.Stop();
 		_Sounds.QuickStepSound();
 
-		_distanceToStep = _hopDistance_;
-		_isSteppingRight = _Input._RightStepPressed; //Right step has priority over left
+		_distanceToHop = _hopDistance_;
+		_isHoppingRight = _Input._RightStepPressed; //Right step has priority over left
+		_timeHopping = 0;
+		_timeToCompleteHop = _hopDistance_ / _hopSpeed_;
 
 		//Disable inputs until the hop is over
 		_canInput = false;
@@ -599,22 +608,27 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	private void ApplyHopUpdate () {
 		//If this is set to over zero in checkHopping, then the player should be moved off the rail accordingly.
-		if (_distanceToStep > 0)
+		if (_distanceToHop > 0)
 		{
-			//Get how far to move this frame and in which direction.
-			float move = _hopSpeed_ * Time.deltaTime;
-			if (_isSteppingRight)
-				move = -move;
-			if (_RF._isGoingBackwards)
-				move = -move;
+			_timeHopping += Time.deltaTime;
 
-			move = Mathf.Clamp(move, -_distanceToStep, _distanceToStep);
+			//Get how far to move this frame and in which direction.
+			_hopThisFrame = _hopSpeed_;
+			_hopThisFrame *= _HopSpeedByTime_.Evaluate(_timeHopping / _timeToCompleteHop);
+
+			_hopThisFrame *= Time.deltaTime;
+			if (_isHoppingRight)
+				_hopThisFrame = -_hopThisFrame;
+			if (_RF._isGoingBackwards)
+				_hopThisFrame = -_hopThisFrame;
+
+			_hopThisFrame = Mathf.Clamp(_hopThisFrame, -_distanceToHop, _distanceToHop);
 
 			//To show hopping off a rail, change the offset, this means the player will still follow the rail during the hop.
-			_RF._setOffSet.Set(_RF._setOffSet.x + move, _RF._setOffSet.y, _RF._setOffSet.z);
+			_RF._setOffSet.Set(_RF._setOffSet.x + _hopThisFrame, _RF._setOffSet.y, _RF._setOffSet.z);
 
 			//If moving, check for walls, and if there's a collision, end state.
-			if (move > 0)
+			if (_hopThisFrame > 0)
 			{
 				if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), -_MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
@@ -627,11 +641,11 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			}
 
 			//Decrease how far to move by how far has moved.
-			_distanceToStep -= Mathf.Abs(move);
-			_distanceToStep = Mathf.Max(_distanceToStep, 0.1f);
+			_distanceToHop -= Mathf.Abs(_hopThisFrame);
+			_distanceToHop = Mathf.Max(_distanceToHop, 0.1f);
 
 			//Near the end of a step, renable collision so can collide again with grind on them instead.
-			if (_distanceToStep < _hopDistance_ / 2 && !_canEnterRail)
+			if (_distanceToHop < _hopDistance_ / 2 && !_canEnterRail)
 			{
 				Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
 				_canEnterRail = true;
@@ -640,18 +654,12 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	}
 
 	private void ApplyHopFixedUpdate () {
-		if (_distanceToStep > 0)
+		if (_distanceToHop > 0)
 		{
-			float direction = -_hopSpeed_;
-			if (_isSteppingRight)
-				direction = -direction;
-			if (_RF._isGoingBackwards)
-				direction = -direction;
-
-			_PlayerVel.AddGeneralVelocity(_RF._sampleRight * direction);
+			_PlayerVel.AddGeneralVelocity(_RF._sampleRight * ((_hopThisFrame  * -1) / Time.deltaTime));
 
 			//Once a step is over and the player hasn't started this action through collisions, exit state.
-			if (_distanceToStep <= 0.1f)
+			if (_distanceToHop <= 0.1f)
 			{
 				LoseRail();
 			}
@@ -668,7 +676,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	//Effects
 	void SoundControl () {
-		if(_distanceToStep == 0)
+		if(_distanceToHop == 0)
 			_Sounds.RailGrindSound();
 	}
 	#endregion
@@ -770,6 +778,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_hopDelay_ = _Tools.Stats.RailStats.hopDelay;
 		_hopSpeed_ = _Tools.Stats.RailStats.hopSpeed;
 		_hopDistance_ = _Tools.Stats.RailStats.hopDistance;
+		_HopSpeedByTime_ = _Tools.Stats.RailStats.HopSpeedByTime;
 		_accelBySpeed_ = _Tools.Stats.RailStats.PushBySpeed;
 
 		_offsetRail_ = _Tools.Stats.RailPosition.offsetRail;

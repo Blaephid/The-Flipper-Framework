@@ -69,7 +69,6 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Health
 	[HideInInspector]
 	public float _ringAmount;			//The amount of health the player has. Goes down on hit, up on gaining rings.
-	private bool _gainedRingThisFrame;
 
 	//States
 	[HideInInspector]
@@ -547,13 +546,15 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		Instantiate(Particle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity);
 		Destroy(col.gameObject);
 
-		_gainedRingThisFrame = false;
-
 		float ThisFramesRingCount = _ringAmount;
 		yield return new WaitForEndOfFrame();
 
-		_ringAmount = Mathf.Clamp(ThisFramesRingCount + amount, _ringAmount, ThisFramesRingCount + 100); 
-		if(!_gainedRingThisFrame && onRingGet != null) { onRingGet.Invoke(null, amount); }
+		//Prevents multiple rings being gained in the same frame.
+		if(_ringAmount != ThisFramesRingCount + 1)
+		{
+			if (onRingGet != null && _ringAmount != ThisFramesRingCount) { onRingGet.Invoke(null, amount); }
+			_ringAmount = ThisFramesRingCount + 1;
+		}
 	}
 
 	//Called whenever the player should gain or lose a shield, which blocks one hit.

@@ -301,7 +301,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		Destroy(newGameObject);
 
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
-		float distanceSquared = S_S_MoreMaths.GetDistanceOfVectors(relativePlayerPosition, _PlayerPhys._CharacterPivotPosition);
+		float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(relativePlayerPosition, _PlayerPhys._CharacterPivotPosition);
 
 		float power = 0;
 		if (distanceSquared < 9)

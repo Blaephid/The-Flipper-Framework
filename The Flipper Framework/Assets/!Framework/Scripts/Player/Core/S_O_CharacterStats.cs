@@ -1360,7 +1360,14 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(1f, 1.2f),
 			}),
 			railBoostDecaySpeed = 0.45f,
-			railBoostDecayTime = 0.45f
+			railBoostDecayTime = 0.45f,
+			HopSpeedByTime = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0),
+				new Keyframe(0.1f, 0),
+				new Keyframe(0.25f, 1),
+				new Keyframe(1f, 0.9f),
+			}),
 		};
 	}
 
@@ -1407,6 +1414,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float            hopSpeed;
 		[Tooltip("Core: The total distance a hop will travel to hit a rail.")]
 		public float            hopDistance;
+		[Tooltip("Used to prevent raill hopping being completely linear, so it can align to an animation. Maybe it starts slower, before raming up, as Sonic jumps, maybe there's a delay?")]
+		public AnimationCurve HopSpeedByTime;
 
 	}
 

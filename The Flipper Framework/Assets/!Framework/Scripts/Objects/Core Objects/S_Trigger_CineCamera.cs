@@ -87,11 +87,11 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
 		base.DrawAdditionalGizmos(selected, colour);
-		if (_TriggerObjects._triggerSelfOn)
+		if (_hasTrigger)
 		{
 			using (new Handles.DrawingScope(colour))
 			{
-				S_S_Drawing.DrawArrowHandle(colour, _CinematicCamObject.transform, 1.5f, false, _CinematicCamObject.transform.forward);
+				S_S_Drawing.DrawArrowHandle(colour, _CinematicCamObject.transform, 3f, false, Vector3.forward);
 				Handles.DrawLine(transform.position, _CinematicCamObject.transform.position, 0.5f);
 			}
 		}
@@ -104,7 +104,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		if (_hasTrigger && _defaultCameraToFaceTrigger && !Application.isPlaying)
 		{
 			Vector3 direction = (transform.position - _CinematicCamObject.transform.position).normalized;
-			_CinematicCamObject.transform.forward = direction;
+			if(direction != Vector3.zero) _CinematicCamObject.transform.forward = direction;
 
 			if(followPlayer) { _CinematicCamComponent.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = _CinematicCamObject.transform.position - transform.position; }
 		}
