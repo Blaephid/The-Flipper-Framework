@@ -10,19 +10,21 @@ public class S_S_Drawing
 	//Gizmos
 	//
 
-	public static void DrawArrowHandle ( Color colour, Transform transform, float scale, bool isLocal, Vector3 direction ) {
+	public static void DrawArrowHandle ( Color colour, Transform transform, float scale, bool localMatrix, Vector3 direction, Vector3 position ) {
 
 		//An alpha under 0.1 means dont change from colour was already set to
 		if (colour.a < 0.1f) { colour = Handles.color; }
 
-		using (new Handles.DrawingScope(colour, isLocal ? transform.localToWorldMatrix : Matrix4x4.identity))
+		using (new Handles.DrawingScope(colour, localMatrix && transform ? transform.localToWorldMatrix : Matrix4x4.identity))
 		{
-			Vector3 relativeFowards = !isLocal ? transform.rotation * direction : direction;
-			Vector3 relativeUp =  !isLocal ? transform.rotation * Vector3.up : Vector3.up;
+			Quaternion relativeRotation = transform ? transform.rotation : Quaternion.identity;
+
+			Vector3 relativeFowards = !localMatrix ? relativeRotation * direction : direction;
+			Vector3 relativeUp =  !localMatrix ? relativeRotation * Vector3.up : Vector3.up;
 			Vector3 relativeRight = Vector3.Cross(relativeUp,relativeFowards);
 
 			//Get positions to make up arrow shape. Gizmo matrix may have been let to local or world, so respond accordingly.
-			Vector3 middle = isLocal ? Vector3.zero : transform.position;
+			Vector3 middle = position;
 			Vector3 forwardFar = middle + relativeFowards * scale;
 			Vector3 forwardSmall = middle + relativeFowards * scale * 0.3f;
 			Vector3 right = middle + relativeRight * scale * 0.8f;

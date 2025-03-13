@@ -63,30 +63,51 @@ public class S_S_Editor : MonoBehaviour
 	}
 
 
-	//Depending on the the type of value, some values as strings will contain unnecesary information. E.G, gameObjects will add on (UnityEngine.GameObject). This removes brackets and their contents.
-	public static string CleanBracketsInString ( string input, char bracket1 = '(', char bracket2 = ')' ) {
+	//Depending on the the type of value, some values as strings will contain unnecesary information. E.G, gameObjects will add on (UnityEngine.GameObject). This returns the string without brackets, and each of the brackets removed.
+	public static List<string> CleanBracketsInString ( string input, char bracket1 = '(', char bracket2 = ')', int sizeOfBracket = 6, bool onlyRemoveNumberedBrackets = false ) {
 
-		int bracketStart = 0;
+		int bracketStart = -1;
+		int lastBracketStart = -1;
 		int bracketEnd = 0;
 
-		string newInput = input;
+		List<string> returnStrings = new List<string>() {input};
 
 		for (int i = 0 ; i < input.Length ; i++)
 		{
-			if (input[i] == bracket1) { bracketStart = i; }
+			//Checks for different types of brackets, (, [, {
+			if (input[i] == bracket1) 
+			{ 
+				if (bracketStart != -1) { lastBracketStart = bracketStart; }
+				bracketStart = i;
+			}
 			else if (input[i] == bracket2) { bracketEnd = i; }
 
-
-			//If there are brackets containing more than 6 characters
-			if (bracketStart > 0 && bracketEnd > 0 & Mathf.Abs(bracketEnd - bracketStart) > 6)
+			//If there are brackets containing more than how many character specified (so can vary on dominance of brackets)
+			if (bracketStart >= 0 && bracketEnd > 0 & Mathf.Abs(bracketEnd - bracketStart) > sizeOfBracket)
 			{
 				//Remove brackets
-				newInput = input.Substring(0, bracketStart) + input.Substring(bracketEnd + 1);
-				newInput = CleanBracketsInString(newInput); //Call function again with the changes in place to look for more brackets.
-				return newInput;
+				string newInput = input.Substring(0, bracketStart) + input.Substring(bracketEnd + 1);
+				string bracketInput = input.Substring(bracketStart, bracketEnd - bracketStart + 1);
+
+				//If only removing brackets with numbers, and this doesn't, then keek going.
+				if(onlyRemoveNumberedBrackets && !bracketInput.Any(char.IsDigit))
+				{
+					bracketStart = lastBracketStart; bracketEnd = 0;
+					continue;
+				}
+
+				//Call again without this bracket, to clean again.
+				List<string> additionalBrackets = CleanBracketsInString(newInput, bracket1, bracket2, sizeOfBracket, onlyRemoveNumberedBrackets);
+
+				//This returns the backets, and passes up to the previous call, which then adds theirs on too, rinse and repeat.
+				if (bracketInput != "") { returnStrings.Add(bracketInput); }
+				for (int sub = 1 ; sub < additionalBrackets.Count ; sub++) { returnStrings.Add(additionalBrackets[sub]); }
+
+				input = additionalBrackets[0];
 			}
 		}
-		return input;
+		returnStrings[0] = input;
+		return returnStrings;
 	}
 
 	//Takes an object and a string, then finds the value of a variable/field with that name, in said object.

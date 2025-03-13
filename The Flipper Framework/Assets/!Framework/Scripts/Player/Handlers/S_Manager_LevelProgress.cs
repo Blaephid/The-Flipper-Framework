@@ -182,7 +182,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 		//Temporarily prevents movement of any kind.
 		_Input.LockInputForAWhile(20, true, Vector3.zero);
-		StartCoroutine(_Actions.LockAirMovesForFrames(20));
+		_Actions.LockAirMovesForFrames(20);
 
 		//Ends hurt state.
 		_Actions._ActionDefault.StartAction();

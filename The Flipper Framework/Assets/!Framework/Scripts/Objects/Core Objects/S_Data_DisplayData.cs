@@ -149,8 +149,8 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 			displayValue = GetContentsIfListOrArray(displayValue, value);
 
-			displayValue = S_S_Editor.CleanBracketsInString(displayValue, '(', ')');
-			displayValue = S_S_Editor.CleanBracketsInString(displayValue, '[', ']');
+			displayValue = S_S_Editor.CleanBracketsInString(displayValue, '(', ')')[0];
+			displayValue = S_S_Editor.CleanBracketsInString(displayValue, '[', ']')[0];
 
 			UpdateData(translatedStructName, displayValue);
 			continue;

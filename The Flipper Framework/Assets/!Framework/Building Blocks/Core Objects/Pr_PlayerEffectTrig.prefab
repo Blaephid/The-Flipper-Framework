@@ -77,16 +77,19 @@ MonoBehaviour:
   _selectedFillColour: {r: 0.669946, g: 1, b: 0.390566, a: 0.1}
   _isSelected: 1
   _InspectorTheme: {fileID: 0}
-  _TriggerObjects:
-    _triggerSelf: 0
-    _ObjectsToTriggerOn: []
-    _ObjectsToTriggerOff: []
-    _isLogicInPlayScript: 1
-  _TriggerForPlayerToRead: {fileID: 0}
   _whatTriggerShape: 0
-  _hasTrigger: 0
-  _ObjectsThatTriggerThis: []
-  _deactivateOnExit: 0
+  _Player: {fileID: 0}
+  _TriggerObjects:
+    _triggerSelfOn: 1
+    _triggerSelfOff: 0
+    _ObjectsToTriggerOn:
+    - {fileID: 1000014119029628}
+    _ObjectsToTriggerOff: []
+  _hasTrigger: 1
+  _ObjectsThatTriggerThis:
+  - {fileID: 1000014119029628}
+  _isLogicInPlayerScript: 1
+  _TriggerForPlayerToRead: {fileID: 1000014119029628}
   _framesBeforeDeactivate: 0
   _lockPlayerInputFor: 5
   _LockInputTo_: 1

@@ -2,6 +2,10 @@
 using System.Collections;
 using System.ComponentModel;
 using UnityEditor;
+using SplineMesh;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 
 public enum enumCameraControlType
 {
@@ -107,6 +111,12 @@ public class S_Trigger_Camera : S_Trigger_External
 	[HideInInspector, SerializeField]
 	private Vector3 _offsetReferenceInWorld;
 
+	[SerializeField, AsButton("Update Name", "UpdateNameCommand", null)]
+	private bool updateNameButton;
+
+	[SerializeField,AsButton("Update All Names", "UpdateAllNamesCommand", null)]
+	private bool updateAllNamesButton;
+
 
 	private void Awake () {
 		if (_Direction == null)
@@ -120,18 +130,19 @@ public class S_Trigger_Camera : S_Trigger_External
 #if UNITY_EDITOR
 
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
-		base.DrawAdditionalGizmos( selected, colour );
+		base.DrawAdditionalGizmos(selected, colour);
 		if (_hasTrigger)
 		{
 			switch (_whatType)
 			{
 				case enumCameraControlType.SetToViewTarget:
 					if (!_lockOnTarget) break;
-					S_S_Drawing.DrawArrowHandle(colour, transform, S_S_MoreMaths.GetAverageOfVector(transform.lossyScale) / 2, false, (_lockOnTarget.position - transform.position).normalized); break;
-				case enumCameraControlType.OnlyApplyEffects: case enumCameraControlType.RemoveEffects:
+					S_S_Drawing.DrawArrowHandle(colour, null, S_S_MoreMaths.GetAverageOfVector(transform.lossyScale) / 2, false, (_lockOnTarget.position - transform.position).normalized, transform.position); break;
+				case enumCameraControlType.OnlyApplyEffects:
+				case enumCameraControlType.RemoveEffects:
 					S_S_Drawing.DrawCubeHandle(colour, transform, 2f, false); break;
 				default:
-					S_S_Drawing.DrawArrowHandle(colour, transform, 0.4f, true, Vector3.forward); break;
+					S_S_Drawing.DrawArrowHandle(colour, transform, 0.4f, true, Vector3.forward, Vector3.zero); break;
 			}
 		}
 
@@ -156,20 +167,51 @@ public class S_Trigger_Camera : S_Trigger_External
 		{
 			Vector3 currentPos = transform.position;
 
-			if(float.IsNaN(_newOffset.x)) 
+			if (float.IsNaN(_newOffset.x))
 			{ _newOffset = Vector3.zero; }
 
 			_meshScale = Mathf.Max(_meshScale, 0.2f);
 
 			Vector3 useOffset = _newOffset * _meshScale;
 			Vector3 currentPos2 = currentPos + (_asLocalOffset ? transform.rotation * useOffset : useOffset);
-			
+
 
 			_offsetReferenceInWorld = Handles.FreeMoveHandle(currentPos2, _meshScale, Vector3.zero, Handles.RectangleHandleCap);
 			Vector3 difference = (_offsetReferenceInWorld - currentPos2) / _meshScale;
 
 			_newOffset += _asLocalOffset ? transform.rotation * difference : difference;
 		}
+	}
+
+	public void UpdateAllNamesCommand () {
+		S_Trigger_Camera[] cameraTriggers = FindObjectsByType<S_Trigger_Camera>((FindObjectsSortMode.None));
+		foreach (S_Trigger_Camera Trig in cameraTriggers)
+		{
+			Trig.UpdateNameCommand();
+		}
+	}
+
+	//Changes the game objects name to include what type of cam trig it is.
+	public void UpdateNameCommand () {
+		//Removes brackets, so number can be added at end, and so there aren't multiple types listed.
+		List<string> input = S_S_Editor.CleanBracketsInString(gameObject.name, '(', ')', 0);
+		string newName = input[0];
+
+		string typeString = _whatType.ToString();
+		//Set is used a lot in the types, but is just clutter for an object name.
+		if (typeString.Contains("Set"))
+		{
+			typeString = typeString.Replace("Set", ""); // Remove "world"
+		}
+		newName += ("(" + typeString +")");
+		
+		//Adds any number related brackets to the end, for identifying instances.
+		for (int i = 1 ; i < input.Count ; i++)
+		{
+			if (input[i].Any(char.IsDigit)) { newName += input[i]; }
+		}
+
+		gameObject.name = newName;
 	}
 #endif
 }

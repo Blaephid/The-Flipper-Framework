@@ -601,8 +601,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Delays air actions
 		if (launchData._lockAirMovesFrames_ > 0)
 		{
-			StopCoroutine(_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_)); //Overwrites coroutine if already in use, resetting the timer.
-			StartCoroutine(_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_));
+			_Actions.LockAirMovesForFrames(launchData._lockAirMovesFrames_);
 		}
 
 		//Effect on movement

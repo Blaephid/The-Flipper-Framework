@@ -23,6 +23,8 @@ public class S_FollowObject : MonoBehaviour
 	}
 
 	private void OnValidate () {
+		_offset = _offset == default(Vector3) ? Vector3.up * 0.1f : _offset;
+
 		if (!_Parent) { return; }
 		if (!Application.isPlaying) { _isFollowing = true; }
 
@@ -54,7 +56,7 @@ public class S_FollowObject : MonoBehaviour
 
 		if (!_isFollowing || !_Parent) { return; }
 
-		if (canAdjust && Selection.activeGameObject == gameObject &&  transform.position - _Parent.position != _rememberOffset && _rememberOffset == _offset)
+		if (canAdjust && Selection.activeGameObject == gameObject &&  transform.position - _Parent.position != _rememberOffset && _rememberOffset == _offset && _rememberOffset != default(Vector3))
 			_offset = transform.position - _Parent.position;
 
 		transform.position = _Parent.position + _offset;

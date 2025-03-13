@@ -147,8 +147,10 @@ public class S_HedgeCamera : MonoBehaviour
 	[HideInInspector]
 	public bool                   _isMasterLocked;
 	private float                 _heightToLook;
-	[HideInInspector]
-	public float                  _lookTimer;
+
+	private float _backingLookTimer;
+	public float _lookTimer { get { return _backingLookTimer; } set { _backingLookTimer = value; } }
+
 	private float                 _backBehindTimer;
 	private float                 _equalHeightTimer;
 

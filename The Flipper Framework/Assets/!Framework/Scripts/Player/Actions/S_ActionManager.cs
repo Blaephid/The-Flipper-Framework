@@ -81,6 +81,7 @@ public class S_ActionManager : MonoBehaviour
 	//The bellow are all temporarily locked under certain situations, like using a spring.
 	[HideInInspector]
 	public bool         _areAirActionsAvailable = true;
+	private int             _framesAirActionsLockedFor;
 
 	[HideInInspector]
 	public bool         _isPaused;
@@ -163,6 +164,12 @@ public class S_ActionManager : MonoBehaviour
 		{
 			_dashDelayCounter -= Time.deltaTime;
 			if (_dashDelayCounter <= 0) { _isAirDashAvailable = true; }
+		}
+
+		if(!_areAirActionsAvailable && _framesAirActionsLockedFor > 0)
+		{
+			_framesAirActionsLockedFor--;
+			if(_framesAirActionsLockedFor == 0) { _areAirActionsAvailable = true; }
 		}
 
 		//For actions that continue calculations even when no active, use ActionEveryFrame
@@ -258,27 +265,6 @@ public class S_ActionManager : MonoBehaviour
 		}
 	}
 
-	//Takes a controlled or situational action, and returns true if the current active action has that set as an action is can transition into.
-	//Used to check if the player can enter this given action, from the current active one.
-	//public bool IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates givenConAction, S_S_ActionHandling.PlayerSituationalStates givenSitAction) {
-	//	if (givenConAction != S_S_ActionHandling.PlayerControlledStates.None)
-	//	{
-	//		for (int i = 0 ; i < _currentAction.ConnectedStates.Count ; i++)
-	//		{
-	//			if (_currentAction.ConnectedStates[i] == givenConAction) { return true; }
-	//		}
-	//	}
-	//	if (givenSitAction != S_S_ActionHandling.PlayerSituationalStates.None)
-	//	{
-	//		for (int i = 0 ; i < _currentAction.SituationalStates.Count ; i++)
-	//		{
-	//			if (_currentAction.SituationalStates[i] == givenSitAction) { return true; }
-	//		}
-	//	}
-
-	//	return false;
-	//}
-
 	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.
 	public void ChangeAction ( S_S_ActionHandling.PrimaryPlayerStates ActionToChange) {
 		_whatPreviousAction = _whatCurrentAction;
@@ -287,18 +273,10 @@ public class S_ActionManager : MonoBehaviour
 	}
 
 	//Called externally to prevent certain actions from being performed until time is up.
-	public IEnumerator LockAirMovesForFrames ( float frames ) {
+	public void LockAirMovesForFrames(int frames ) {
 		_areAirActionsAvailable = false;
-
-		//Apply delay, in frames.
-		for (int s = 0 ; s < frames ; s++)
-		{
-			yield return new WaitForFixedUpdate();
-			if (_PlayerPhys._isGrounded)
-				break;
-		}
-
-		_areAirActionsAvailable = true;
+		if(frames > _framesAirActionsLockedFor)
+			_framesAirActionsLockedFor = frames;
 	}
 
 	//Called upon successful attacks to set the counter (which will tick down when above 0)

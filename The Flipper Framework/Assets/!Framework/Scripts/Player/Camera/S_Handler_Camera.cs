@@ -234,7 +234,6 @@ public class S_Handler_Camera : MonoBehaviour
 		Vector3 targetUpDirection = cameraData._setCameraReferenceWorldRotation
 			? cameraData.transform.up : Vector3.zero;
 
-
 		if (cameraData._willChangeAltitude)
 			_HedgeCam.SetCameraWithSeperateHeight(direction, cameraData._duration, cameraData._newAltitude, cameraData._faceSpeed, targetUpDirection, LockOn);
 		else

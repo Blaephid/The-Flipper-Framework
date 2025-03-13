@@ -91,7 +91,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		{
 			using (new Handles.DrawingScope(colour))
 			{
-				S_S_Drawing.DrawArrowHandle(colour, _CinematicCamObject.transform, 3f, false, Vector3.forward);
+				S_S_Drawing.DrawArrowHandle(colour, _CinematicCamObject.transform, 3f, false, Vector3.forward, transform.position);
 				Handles.DrawLine(transform.position, _CinematicCamObject.transform.position, 0.5f);
 			}
 		}

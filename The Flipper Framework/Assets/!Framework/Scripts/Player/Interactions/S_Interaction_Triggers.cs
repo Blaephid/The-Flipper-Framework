@@ -206,7 +206,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 		if (list.Count == 0) { list = new List<S_Trigger_External>(); }
 
 		//If the new trigger is set to trigger the logic already in effect, add it to list for tracking how long until out of every trigger, and don't restart the logic.
-		else if (TriggerData == list[0])
+		else if (list.Contains(TriggerData))
 		{ list.Add(TriggerData); return null; }
 
 		list.Add(TriggerData);
@@ -224,11 +224,12 @@ public class S_Interaction_Triggers : MonoBehaviour
 		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_External>();
 
 		//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
-		if (list.Count > 0 && TriggerData != list[0]) { return null; }
-		//If it is, then remove one from the list to track how many triggers under the same logic have been left. This allows the effect to not end until not in any triggers under the same logic.
-		list.RemoveAt(list.Count - 1);
+		if (list.Count > 0 && !list.Contains(TriggerData)) { return null; }
 
-		if (list.Count > 0) { return null; } //Only perform exit logic when out of all triggers using that logic.
+		//If it is, then remove one from the list to track how many triggers under the same logic have been left. This allows the effect to not end until not in any triggers under the same logic.
+		list.Remove(TriggerData);
+
+		if (list.Contains(TriggerData)) { return null; } //Only perform exit logic when out of all triggers using that logic.
 
 		TriggerData._isSelected = false;
 		return TriggerData;

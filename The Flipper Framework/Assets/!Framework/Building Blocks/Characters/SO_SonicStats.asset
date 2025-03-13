@@ -2767,7 +2767,7 @@ MonoBehaviour:
     railBoostDecaySpeed: 0.4
     railBoostDecayTime: 0.4
     hopDelay: 0.22
-    hopSpeed: 50
+    hopSpeed: 40
     hopDistance: 11
     HopSpeedByTime:
       serializedVersion: 2
@@ -2782,7 +2782,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.2166687
+        time: 0.35
         value: 0
         inSlope: 0
         outSlope: 0
@@ -2791,8 +2791,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.3125
-        value: 1
+        time: 0.4
+        value: 1.2
         inSlope: 0
         outSlope: 0
         tangentMode: 0
