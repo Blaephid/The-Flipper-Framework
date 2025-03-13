@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 
 using UnityEngine.Profiling;
+using System;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(S_PlayerMovement))]
@@ -47,23 +48,23 @@ public class S_PlayerPhysics : MonoBehaviour
 	[Header("Slopes")]
 	public bool                   _isUsingSlopePhysics_ = true;
 
-	private float                 _slopeEffectLimit_ = 0.9f;
-	private AnimationCurve        _SlopeSpeedLimitByAngle_;
-	private AnimationCurve        _SlopePowerByAngle_;
+	[NonSerialized] public float                 _slopeEffectLimit_ = 0.9f;
+	[NonSerialized] public AnimationCurve        _SlopeSpeedLimitByAngle_;
+	[NonSerialized] public AnimationCurve        _SlopePowerByAngle_;
 
-	private float                 _generalHillMultiplier_ = 1;
-	private float                 _uphillMultiplier_ = 0.5f;
-	private float                 _downhillMultiplier_ = 2;
-	private float                 _downHillThreshold_ = -7;
-	private float                 _upHillThreshold = -7;
+	[NonSerialized] public float                 _generalHillMultiplier_ = 1;
+	[NonSerialized] public float                 _uphillMultiplier_ = 0.5f;
+	[NonSerialized] public float                 _downhillMultiplier_ = 2;
+	[NonSerialized] public float                 _downHillThreshold_ = -7;
+	[NonSerialized] public float                 _upHillThreshold = -7;
 
-	private AnimationCurve        _slopePowerUpBySpeed_;
-	private AnimationCurve        _slopePowerDownBySpeed_;
-	private AnimationCurve        _UpHillByTime_;
+	[NonSerialized] public AnimationCurve        _slopePowerUpBySpeed_;
+	[NonSerialized] public AnimationCurve        _slopePowerDownBySpeed_;
+	[NonSerialized] public AnimationCurve        _UpHillByTime_;
 
 	[Header("Air Movement Extras")]
 	Vector2                       _airControlAmmount_;
-	private float                 _keepNormalForThis_ = 0.083f;
+	[NonSerialized] public float                 _keepNormalForThis_ = 0.083f;
 	[HideInInspector]
 	public float                 _maxFallingSpeed_;
 	[HideInInspector]
@@ -71,29 +72,29 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public Vector3                _startFallGravity_;
 
-	private float                 _jumpExtraControlThreshold_;
-	private Vector2               _jumpAirControl_;
-	private Vector2               _bounceAirControl_;
+	[NonSerialized] public float                 _jumpExtraControlThreshold_;
+	[NonSerialized] public Vector2               _jumpAirControl_;
+	[NonSerialized] public Vector2               _bounceAirControl_;
 
 	[Header("Rolling Values")]
-	private float                 _rollingDownhillBoost_;
-	private float                 _rollingUphillBoost_;
+	[NonSerialized] public float                 _rollingDownhillBoost_;
+	[NonSerialized] public float                 _rollingUphillBoost_;
 
 	[Header("Stick To Ground")]
-	private Vector2                _forceTowardsGround_;
-	private Vector2               _stickingLerps_ = new Vector2(0.885f, 1.5f);
-	private float                 _stickingNormalLimit_ = 0.4f;
-	private float                 _stickCastAhead_ = 1.9f;
-	private AnimationCurve        _upwardsLimitByCurrentSlope_;
+	[NonSerialized] public Vector2                _forceTowardsGround_;
+	[NonSerialized] public Vector2               _stickingLerps_ = new Vector2(0.885f, 1.5f);
+	[NonSerialized] public float                 _stickingNormalLimit_ = 0.4f;
+	[NonSerialized] public float                 _stickCastAhead_ = 1.9f;
+	[NonSerialized] public AnimationCurve        _upwardsLimitByCurrentSlope_;
 	[HideInInspector]
 	public float                  _placeAboveGroundBuffer_ = 0.6115f;
 	[HideInInspector]
 	public Vector2                _rayToGroundDistance_ ;
-	private float                 _raytoGroundSpeedRatio_ = 0.01f;
-	private float                 _raytoGroundSpeedMax_ = 2.4f;
-	private float                 _rotationResetThreshold_ = -0.1f;
-	private float                 _stepHeight_ = 0.6f;
-	private Vector3                 _groundDifferenceLimit_;
+	[NonSerialized] public float                 _raytoGroundSpeedRatio_ = 0.01f;
+	[NonSerialized] public float                 _raytoGroundSpeedMax_ = 2.4f;
+	[NonSerialized] public float                 _rotationResetThreshold_ = -0.1f;
+	[NonSerialized] public float                 _stepHeight_ = 0.6f;
+	[NonSerialized] public Vector3                 _groundDifferenceLimit_;
 
 	[HideInInspector]
 	public LayerMask              _Groundmask_;

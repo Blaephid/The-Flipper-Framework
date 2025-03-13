@@ -603,6 +603,7 @@ MonoBehaviour:
   PathInteraction: {fileID: 7941823437262557940}
   CamHandler: {fileID: 5736244429373450162}
   PlayerEvents: {fileID: 4777535912325801024}
+  Root: {fileID: 1493631986700570}
   UISpawner: {fileID: 8180601928860910201}
   CharacterCapsule: {fileID: 38880623587908062}
   StandingCapsule: {fileID: 1605683383104138}
@@ -714,6 +715,7 @@ MonoBehaviour:
   _LeftStepPressed: 0
   _RightStepPressed: 0
   _BouncePressed: 0
+  _PowerPressed: 0
   _InteractPressed: 0
   _CamResetPressed: 0
   _HomingPressed: 0
@@ -23734,7 +23736,6 @@ MonoBehaviour:
   _isYLocked: 0
   _isXLocked: 0
   _isMasterLocked: 0
-  _lookTimer: 0
   _lockedRotationSpeed: 0
   _canAffectDistanceBySpeed: 1
   _canAffectFOVBySpeed: 1

@@ -9,6 +9,9 @@ using UnityEngine.InputSystem.Switch;
 using UnityEngine.ProBuilder;
 using System.Collections.Generic;
 using UnityEngine.Rendering.Universal;
+using System.ComponentModel;
+using System;
+using static UnityEngine.Rendering.DebugUI;
 
 public class S_Interaction_Triggers : MonoBehaviour
 {
@@ -69,7 +72,14 @@ public class S_Interaction_Triggers : MonoBehaviour
 		S_Trigger_PlayerEffect EffectsData = CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
 		if (EffectsData) { ApplyEffectsOnPlayer(EffectsData); }
 	}
-	
+
+
+	public void CheckEffectsTriggerExit ( Collider Col ) {
+		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
+		S_Trigger_PlayerEffect EffectsData = CheckTriggerExit(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
+		if (EffectsData) { StartCoroutine(DelayBeforeRemovingEffectsOnPlayer(EffectsData)); }
+	}
+
 	private void ApplyEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
 
 		switch (EffectsData._setPlayerGrounded)
@@ -91,12 +101,21 @@ public class S_Interaction_Triggers : MonoBehaviour
 			_Input.LockInputIndefinately(true, Vector3.zero, EffectsData._LockInputTo_);
 
 		DisableOrEnableActions(EffectsData, false);
+
+		ChangePlayerValues(EffectsData);
 	}
 
-	public void CheckEffectsTriggerExit ( Collider Col ) {
-		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		S_Trigger_PlayerEffect EffectsData = CheckTriggerExit(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
-		if (EffectsData) { StartCoroutine(DelayBeforeRemovingEffectsOnPlayer(EffectsData)); }
+	private void ChangePlayerValues ( S_Trigger_PlayerEffect EffectsData ) {
+		for (int i = 0 ; i < EffectsData._EditValues.Length ; i++)
+		{
+			ValueEditing ValueEditor = EffectsData._EditValues[i];
+			UnityEngine.Component component = _Tools.Root.GetComponentInChildren(Type.GetType(ValueEditor.ComponentName));
+			if(!component) { continue; }
+
+			object value = (S_S_Editor.FindFieldByName(component, ValueEditor.valueName));
+			if(value == null) { Debug.LogError("Could not find" + ValueEditor.valueName); continue; }
+			Debug.Log(value.ToString());
+		}
 	}
 
 	private IEnumerator DelayBeforeRemovingEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {

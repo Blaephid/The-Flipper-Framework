@@ -8,7 +8,6 @@ using System.ComponentModel;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
 namespace SplineMesh
 {
 	/// <summary>
@@ -239,7 +238,8 @@ namespace SplineMesh
 		}
 
 		private void ApplyDataToSpawnedObject (GameObject go) {
-			if(!_DataForPrefabs) { return; }
+			_DataForPrefabs = GetComponent<S_Data_Base>();
+			if (!_DataForPrefabs) { return; }
 			//If the prefab to spawn inherits from the data class, add that class as a component to this, to allow full control of the spawned objects' values.
 			if (go.TryGetComponent(out S_Data_Base DataBase))
 			{

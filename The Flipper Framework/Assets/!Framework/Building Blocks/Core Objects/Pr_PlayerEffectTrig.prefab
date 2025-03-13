@@ -68,8 +68,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hasVisualisationScripted: 1
-  _viewVisualisationData: 1
-  _viewVisualisationDataHidden: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
   _drawAtAllTimes: 1
   _drawIfParentSelected: 0
   _normalOutlineColour: {r: 0.08726152, g: 0.3886792, b: 0, a: 1}
@@ -81,10 +81,11 @@ MonoBehaviour:
   _Player: {fileID: 0}
   _TriggerObjects:
     _triggerSelfOn: 1
-    _triggerSelfOff: 0
+    _triggerSelfOff: 1
     _ObjectsToTriggerOn:
     - {fileID: 1000014119029628}
-    _ObjectsToTriggerOff: []
+    _ObjectsToTriggerOff:
+    - {fileID: 1000014119029628}
   _hasTrigger: 1
   _ObjectsThatTriggerThis:
   - {fileID: 1000014119029628}
@@ -97,6 +98,13 @@ MonoBehaviour:
   _ActionsToDisable: 
   _SubActionsToDisable: 
   _setPlayerGrounded: 0
+  _EditValues:
+  - ComponentName: 
+    valueName: 
+    casing: 0
+    DataType: 0
+    replaceFloat: 0
+    rememberFloat: 0
 --- !u!114 &2025760485226347324
 MonoBehaviour:
   m_ObjectHideFlags: 0

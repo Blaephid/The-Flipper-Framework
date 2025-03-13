@@ -12,6 +12,14 @@ using UnityEngine.UIElements;
 using Unity.VisualScripting;
 using UnityEngine.InputSystem.HID;
 using System.Diagnostics;
+using System.Xml.Linq;
+
+public enum DataTypes{
+	Float,
+	Boolean,
+	Vector,
+	String,
+}
 
 public class S_S_Editor : MonoBehaviour
 {
@@ -19,7 +27,7 @@ public class S_S_Editor : MonoBehaviour
 #if UNITY_EDITOR
 	//Takes a string and converts it to align with variable naming conventions, allowing the human's input to not have to be 100%.
 	//
-	public static string TranslateStringToVariableName ( string input, S_EditorEnums.CasingTypes casing ) {
+	public static string TranslateStringToVariableName ( string input, S_EditorEnums.CasingTypes casing = S_EditorEnums.CasingTypes.Either ) {
 
 		if (input == "") { return ""; }
 
@@ -300,6 +308,23 @@ public class S_S_Editor : MonoBehaviour
 			}
 		}
 		return false;
+	}
+
+	public static void FindObjectAndSetActive ( string name, bool set, Transform Parent = null ) {
+		GameObject Target;
+		if (Parent)
+		{
+			Transform TargetT = Parent.Find(name);
+			Target = TargetT ? TargetT.gameObject : null;
+		}
+		else
+			Target = GameObject.Find(name);
+
+		EditorApplication.delayCall += () =>
+		{
+			if (!Target) { return; }
+			Target.SetActive(set);
+		};
 	}
 #endif
 }

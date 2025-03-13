@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +28,8 @@ public class S_Trigger_PlayerEffect : S_Trigger_External
 	[Tooltip("In case the player needs to be in a specific state. Mainly used to call on Grounded events while still in the air. E.G. Returning jump dash in scripted sections.")]
 	public S_GeneralEnums.ChangeGroundedState      _setPlayerGrounded;
 
+	public ValueEditing[] _EditValues;
+
 
 #if UNITY_EDITOR
 	public override void DrawAdditionalGizmos (bool selected, Color colour ) {
@@ -34,4 +37,17 @@ public class S_Trigger_PlayerEffect : S_Trigger_External
 	
 	}
 #endif
+}
+
+[Serializable]
+public class ValueEditing
+{
+	public string ComponentName = "S_PlayerPhysics";
+	public string valueName;
+	[Space]
+	public DataTypes DataType;
+
+	[OnlyDrawIf("DataType", DataTypes.Float)]
+	public float replaceFloat;
+	[HideInInspector] public float rememberFloat;
 }
