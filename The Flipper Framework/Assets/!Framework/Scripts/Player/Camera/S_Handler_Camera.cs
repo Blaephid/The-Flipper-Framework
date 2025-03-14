@@ -46,8 +46,11 @@ public class S_Handler_Camera : MonoBehaviour
 
 	public void CheckCameraTriggerEnter (Collider Col) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		S_Trigger_Camera cameraData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveCameraTriggers) as S_Trigger_Camera;
-		if(cameraData) { StartCameraEffect(cameraData); }
+		List<S_Trigger_Base> cameraData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveCameraTriggers, typeof(S_Trigger_Camera));
+
+		for (int i = 0 ; i < cameraData.Count; i++){
+			StartCameraEffect(cameraData[i] as S_Trigger_Camera);
+		}
 	}
 
 	public void EventTriggerExit ( Collider col ) {
@@ -59,8 +62,12 @@ public class S_Handler_Camera : MonoBehaviour
 
 	public void CheckCameraTriggerExit ( Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		S_Trigger_Camera cameraData = S_Interaction_Triggers.CheckTriggerExit(Col, ref _CurrentActiveCameraTriggers) as S_Trigger_Camera;
-		if(cameraData) EndCameraEffect(cameraData);
+		List<S_Trigger_Base> cameraData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveCameraTriggers, typeof(S_Trigger_Camera));
+
+		for (int i = 0 ; i < cameraData.Count ; i++)
+		{
+			EndCameraEffect(cameraData[i] as S_Trigger_Camera);
+		}
 	}
 
 

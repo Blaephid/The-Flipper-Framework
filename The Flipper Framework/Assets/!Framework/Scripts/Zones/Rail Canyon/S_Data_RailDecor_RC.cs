@@ -36,7 +36,8 @@ public class S_Data_RailDecor_RC : S_Data_Base
 	private string _underClamps = "Ob_WallClamps2_RC";
 	[SerializeField, HideInInspector] bool _showUnderClamps;
 
-	private void OnValidate () {
+	private new void OnValidate () {
+		base.OnValidate();
 		S_S_Editor.FindObjectAndSetActive(_underPlatform, _showUnderPlatform, transform);
 		S_S_Editor.FindObjectAndSetActive(_leftSignPost, _showSignPostLeft, transform);
 		S_S_Editor.FindObjectAndSetActive(_rightSignPost, _showSignPostRight, transform);

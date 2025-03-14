@@ -12,6 +12,7 @@ using UnityEngine.Rendering.Universal;
 using System.ComponentModel;
 using System;
 using static UnityEngine.Rendering.DebugUI;
+using System.Reflection;
 
 public class S_Interaction_Triggers : MonoBehaviour
 {
@@ -67,17 +68,27 @@ public class S_Interaction_Triggers : MonoBehaviour
 	/// 
 	#region private (can be called externally as long as only working on scripts purpose)
 
-	public void CheckEffectsTriggerEnter(Collider Col ) {
+	#region Enabling and Disabling
+
+	public void CheckEffectsTriggerEnter ( Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		S_Trigger_PlayerEffect EffectsData = CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
-		if (EffectsData) { ApplyEffectsOnPlayer(EffectsData); }
+		List<S_Trigger_Base> EffectsData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers, typeof(S_Trigger_Camera));
+
+		for (int i = 0 ; i < EffectsData.Count ; i++)
+		{
+			ApplyEffectsOnPlayer(EffectsData[i] as S_Trigger_PlayerEffect);
+		}
 	}
 
 
 	public void CheckEffectsTriggerExit ( Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		S_Trigger_PlayerEffect EffectsData = CheckTriggerExit(Col, ref _CurrentActiveEffectTriggers) as S_Trigger_PlayerEffect;
-		if (EffectsData) { StartCoroutine(DelayBeforeRemovingEffectsOnPlayer(EffectsData)); }
+		List<S_Trigger_Base> EffectsData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers, typeof(S_Trigger_Camera));
+
+		for (int i = 0 ; i < EffectsData.Count ; i++)
+		{
+			ApplyEffectsOnPlayer(EffectsData[i] as S_Trigger_PlayerEffect);
+		}
 	}
 
 	private void ApplyEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
@@ -90,7 +101,7 @@ public class S_Interaction_Triggers : MonoBehaviour
 				_PlayerPhys.SetIsGrounded(true); break;
 			case S_GeneralEnums.ChangeGroundedState.SetToOppositeThenBack:
 				bool current = _PlayerPhys._isGrounded;
-				_PlayerPhys.SetIsGrounded(!current); 
+				_PlayerPhys.SetIsGrounded(!current);
 				_PlayerPhys.SetIsGrounded(current);
 				break;
 		}
@@ -105,19 +116,6 @@ public class S_Interaction_Triggers : MonoBehaviour
 		ChangePlayerValues(EffectsData);
 	}
 
-	private void ChangePlayerValues ( S_Trigger_PlayerEffect EffectsData ) {
-		for (int i = 0 ; i < EffectsData._EditValues.Length ; i++)
-		{
-			ValueEditing ValueEditor = EffectsData._EditValues[i];
-			UnityEngine.Component component = _Tools.Root.GetComponentInChildren(Type.GetType(ValueEditor.ComponentName));
-			if(!component) { continue; }
-
-			object value = (S_S_Editor.FindFieldByName(component, ValueEditor.valueName));
-			if(value == null) { Debug.LogError("Could not find" + ValueEditor.valueName); continue; }
-			Debug.Log(value.ToString());
-		}
-	}
-
 	private IEnumerator DelayBeforeRemovingEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
 		for (int i = 0 ; i < EffectsData._framesBeforeDeactivate ; i++)
 		{
@@ -127,16 +125,93 @@ public class S_Interaction_Triggers : MonoBehaviour
 	}
 
 	private void RemoveEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
-		if(EffectsData._TriggerObjects._triggerSelfOff)
-		{
-			if(EffectsData._lockPlayerInputFor > 0)
-				_Input.UnLockInput();
+		if (EffectsData._lockPlayerInputFor > 0)
+			_Input.UnLockInput();
 
-			DisableOrEnableActions(EffectsData, true);
+		DisableOrEnableActions(EffectsData, true);
+
+		ResetPlayerValues(EffectsData);
+	}
+
+	#endregion
+
+	private void ChangePlayerValues ( S_Trigger_PlayerEffect EffectsData ) {
+		for (int i = 0 ; i < EffectsData._EditValues.Length ; i++)
+		{
+			ValueEditing ValueEditor = EffectsData._EditValues[i];
+
+			UnityEngine.Component component = _Tools.Root.GetComponentInChildren(Type.GetType(ValueEditor.ComponentName));
+			if (!component) { continue; }
+
+			FieldAndValue fieldAndvalue = S_S_Editor.FindFieldByName(component, ValueEditor.valueName);
+			object value = fieldAndvalue.value;
+			FieldInfo field = fieldAndvalue.field;
+
+			if (value == null) { Debug.LogError("Could not find " + ValueEditor.valueName); continue; }
+			else Debug.Log(value.ToString());
+
+			ValueEditor.rememberComponent = component;
+			ValueEditor.rememberValueObject = value;
+			ValueEditor.rememberField = field;
+			SetOrResetValue(ValueEditor, value, value, true, component, field);
 		}
 	}
 
-	private void DisableOrEnableActions( S_Trigger_PlayerEffect EffectsData, bool set ) {
+	private void ResetPlayerValues ( S_Trigger_PlayerEffect EffectsData ) {
+		for (int i = 0 ; i < EffectsData._EditValues.Length ; i++)
+		{
+			ValueEditing ValueEditor = EffectsData._EditValues[i];
+
+			UnityEngine.Component component = ValueEditor.rememberComponent;
+			FieldInfo field = ValueEditor.rememberField;
+			object value = field.GetValue(component);
+
+			if (value == null || component == null) { continue; }
+
+			SetOrResetValue(ValueEditor, value, null, false, component, field);
+		}
+	}
+
+	private void SetOrResetValue ( ValueEditing ValueEditor, object value, object setRemember, bool replace, UnityEngine.Component component, FieldInfo field ) {
+		switch (ValueEditor.DataType)
+		{
+			case DataTypes.Float:
+				field.SetValue(component, replace ? ValueEditor.replaceFloat : ValueEditor.rememberFloat);
+				ValueEditor.rememberFloat = setRemember == null ? 0f : (float)setRemember;
+				break;
+
+			case DataTypes.Boolean:
+				field.SetValue(component, replace ? ValueEditor.replaceBool : ValueEditor.rememberBool);
+				ValueEditor.rememberBool = setRemember == null ? false : (bool)setRemember;
+				break;
+
+			case DataTypes.Vector3:
+				field.SetValue(component, replace ? ValueEditor.replaceVector3 : ValueEditor.rememberVector3);
+				ValueEditor.rememberVector3 = setRemember == null ? Vector3.zero : (Vector3)setRemember;
+				break;
+
+			case DataTypes.Vector2:
+				field.SetValue(component, replace ? ValueEditor.replaceVector2 : ValueEditor.rememberVector2);
+				ValueEditor.rememberVector2 = setRemember == null ? Vector2.zero : (Vector2)setRemember;
+				break;
+
+			case DataTypes.String:
+				field.SetValue(component, replace ? ValueEditor.replaceString : ValueEditor.rememberString);
+				ValueEditor.rememberString = setRemember == null ? "" : (string)setRemember;
+				break;
+
+			case DataTypes.Int:
+				field.SetValue(component, replace ? ValueEditor.replaceInt : ValueEditor.rememberInt);
+				ValueEditor.rememberInt = setRemember == null ? 0 : (int)setRemember;
+				break;
+
+			default:
+				Debug.LogError("Unhandled DataType: " + ValueEditor.DataType);
+				break;
+		}
+	}
+
+	private void DisableOrEnableActions ( S_Trigger_PlayerEffect EffectsData, bool set ) {
 		for (int i = 0 ; i < EffectsData._ActionsToDisable.Length ; i++)
 		{
 			_Actions.DisableOrEnableActionOfType(EffectsData._ActionsToDisable[i], set);
@@ -211,47 +286,64 @@ public class S_Interaction_Triggers : MonoBehaviour
 	/// Public ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Public And Static
-	public static S_Trigger_Base CheckTriggerEnter ( Collider Col, ref List<S_Trigger_External> list ) {
+	public static List<S_Trigger_Base> CheckTriggerEnter ( Collider Col, ref List<S_Trigger_External> list, Type TypeOfTriggerScript ) {
+
+		List <S_Trigger_Base> TriggerList = new List<S_Trigger_Base>();
 
 		//What happens depends on the data set to the camera trigger in its script.
 		if (!Col.TryGetComponent(out S_Trigger_External TriggerData)) { return null; };
 
 		//If no logic is found, ignore.
-		if (TriggerData == null || TriggerData._TriggerForPlayerToRead == null) return null;
+		if (TriggerData == null || TriggerData._TriggersForPlayerToRead.Count == 0) return null;
 
-		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_External>();
+		for(int i = 0 ; i < TriggerData._TriggersForPlayerToRead.Count ; i++)
+		{
+			TriggerData = TriggerData._TriggersForPlayerToRead[i].GetComponent<S_Trigger_External>();
 
-		//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
-		if (list.Count == 0) { list = new List<S_Trigger_External>(); }
+			//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
+			if (list.Count == 0) { list = new List<S_Trigger_External>(); }
 
-		//If the new trigger is set to trigger the logic already in effect, add it to list for tracking how long until out of every trigger, and don't restart the logic.
-		else if (list.Contains(TriggerData))
-		{ list.Add(TriggerData); return null; }
+			//If the new trigger is set to trigger the logic already in effect, add it to list for tracking how long until out of every trigger, and don't restart the logic.
+			else if (list.Contains(TriggerData))
+			{ list.Add(TriggerData); return null; }
 
-		list.Add(TriggerData);
-		TriggerData._isSelected = true;
-		return TriggerData;
+			list.Add(TriggerData);
+			TriggerData._isSelected = true;
+
+			TriggerList.Add(TriggerData);
+		}
+		return TriggerList;
 	}
 
-	public static S_Trigger_Base CheckTriggerExit ( Collider Col, ref List<S_Trigger_External> list ) {
+	public static List<S_Trigger_Base> CheckTriggerExit ( Collider Col, ref List<S_Trigger_External> list ) {
+
+
+		List <S_Trigger_Base> TriggerList = new List<S_Trigger_Base>();
+
 		//What happens depends on the data set to the camera trigger in its script.
 		if (!Col.TryGetComponent(out S_Trigger_External TriggerData)) { return null; }
 
 		//If no logic is found, ignore.
-		if (TriggerData == null || TriggerData._TriggerForPlayerToRead == null) return null;
+		if (TriggerData == null || TriggerData._TriggersForPlayerToRead == null) return null;
 
-		TriggerData = TriggerData._TriggerForPlayerToRead.GetComponent<S_Trigger_External>();
+		for (int i = 0 ; i < TriggerData._TriggersForPlayerToRead.Count ; i++)
+		{
 
-		//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
-		if (list.Count > 0 && !list.Contains(TriggerData)) { return null; }
+			TriggerData = TriggerData._TriggersForPlayerToRead[i].GetComponent<S_Trigger_External>();
 
-		//If it is, then remove one from the list to track how many triggers under the same logic have been left. This allows the effect to not end until not in any triggers under the same logic.
-		list.Remove(TriggerData);
+			//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
+			if (list.Count > 0 && !list.Contains(TriggerData)) { return null; }
 
-		if (list.Contains(TriggerData)) { return null; } //Only perform exit logic when out of all triggers using that logic.
+			//If it is, then remove one from the list to track how many triggers under the same logic have been left. This allows the effect to not end until not in any triggers under the same logic.
+			list.Remove(TriggerData);
 
-		TriggerData._isSelected = false;
-		return TriggerData;
+			if (list.Contains(TriggerData)) { return null; } //Only perform exit logic when out of all triggers using that logic.
+
+			TriggerData._isSelected = false;
+			TriggerList.Add(TriggerData);
+		}
+
+		return TriggerList;
 	}
 
 	#endregion

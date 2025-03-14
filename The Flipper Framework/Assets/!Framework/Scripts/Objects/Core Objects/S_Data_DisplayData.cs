@@ -139,7 +139,7 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 			//Goes through each data source until a field matching the given name is found, and returns that value
 			object value = null;
 			for (int s = 0 ; value == null & s < _DataSources.Count ; s++)
-				value = (S_S_Editor.FindFieldByName(_DataSources[s], translatedVariableName, translatedStructName));
+				value = (S_S_Editor.FindFieldByName(_DataSources[s], translatedVariableName, translatedStructName)).value;
 
 			//If nothing was found
 			if(value == null) { _updateAutomatically = false; break; }

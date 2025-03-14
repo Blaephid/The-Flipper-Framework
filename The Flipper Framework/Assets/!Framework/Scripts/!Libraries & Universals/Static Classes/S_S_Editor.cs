@@ -17,8 +17,16 @@ using System.Xml.Linq;
 public enum DataTypes{
 	Float,
 	Boolean,
-	Vector,
+	Vector3,
+	Vector2,
 	String,
+	Int,
+}
+
+public struct FieldAndValue
+{
+	public FieldInfo field;
+	public object value;
 }
 
 public class S_S_Editor : MonoBehaviour
@@ -119,9 +127,9 @@ public class S_S_Editor : MonoBehaviour
 	}
 
 	//Takes an object and a string, then finds the value of a variable/field with that name, in said object.
-	public static object FindFieldByName ( object obj, string inputName, string structName = "" ) {
+	public static FieldAndValue FindFieldByName ( object obj, string inputName, string structName = "" ) {
 		if (obj == null || string.IsNullOrEmpty(inputName))
-			return null;
+			return new FieldAndValue();
 
 		string temp = inputName;
 		//If given  a struct name, find that struct first.
@@ -130,17 +138,17 @@ public class S_S_Editor : MonoBehaviour
 		Type type = obj.GetType();
 
 		FieldInfo field = type.GetField(inputName);
-		if (field == null) return null;
+		if (field == null) return new FieldAndValue();
 
 		object value = field.GetValue(obj);
 
 		//If given a struct name, search the obtained struct for the required field.
 		if (structName != "")
 		{
-			value = FindFieldByName(value, temp, "");
+			value = FindFieldByName(value, temp, "").value;
 		}
 
-		return value;
+		return new FieldAndValue() {field = field, value = value};
 	}
 
 	// Check if a given GameObject is part of the current selection

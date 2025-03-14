@@ -92,19 +92,13 @@ MonoBehaviour:
   _isLogicInPlayerScript: 1
   _TriggerForPlayerToRead: {fileID: 1000014119029628}
   _framesBeforeDeactivate: 0
-  _lockPlayerInputFor: 5
+  _lockPlayerInputFor: 0
   _LockInputTo_: 1
   _lockToDirectionIfChange: {x: 0, y: 0, z: 0}
   _ActionsToDisable: 
   _SubActionsToDisable: 
   _setPlayerGrounded: 0
-  _EditValues:
-  - ComponentName: 
-    valueName: 
-    casing: 0
-    DataType: 0
-    replaceFloat: 0
-    rememberFloat: 0
+  _EditValues: []
 --- !u!114 &2025760485226347324
 MonoBehaviour:
   m_ObjectHideFlags: 0

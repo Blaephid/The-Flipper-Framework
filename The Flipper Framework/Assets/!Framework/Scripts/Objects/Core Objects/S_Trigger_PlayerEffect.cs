@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 public class S_Trigger_PlayerEffect : S_Trigger_External
@@ -47,7 +48,32 @@ public class ValueEditing
 	[Space]
 	public DataTypes DataType;
 
+	[HideInInspector] public object rememberValueObject;
+	[HideInInspector] public UnityEngine.Component rememberComponent;
+	[HideInInspector] public FieldInfo rememberField;
+
 	[OnlyDrawIf("DataType", DataTypes.Float)]
 	public float replaceFloat;
 	[HideInInspector] public float rememberFloat;
+
+	[OnlyDrawIf("DataType", DataTypes.Vector3)]
+	public Vector3 replaceVector3;
+	[HideInInspector] public Vector3 rememberVector3;
+
+	[OnlyDrawIf("DataType", DataTypes.Vector2)]
+	public Vector2 replaceVector2;
+	[HideInInspector] public Vector2 rememberVector2;
+
+	[OnlyDrawIf("DataType", DataTypes.String)]
+	public string replaceString;
+	[HideInInspector] public string rememberString;
+
+	[OnlyDrawIf("DataType", DataTypes.Boolean)]
+	public bool replaceBool;
+	[HideInInspector] public bool rememberBool;
+
+
+	[OnlyDrawIf("DataType", DataTypes.Int)]
+	public int replaceInt;
+	[HideInInspector] public int rememberInt;
 }

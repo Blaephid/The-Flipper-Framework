@@ -60,51 +60,51 @@ public class S_HedgeCamera : MonoBehaviour
 	#region Stats
 	[HideInInspector]
 	public bool                   _shouldSetHeightWhenMoving_;
-	private float                 _lockHeightSpeed_;
-	private bool                  _shouldFaceDownWhenInAir_;
-	private float                 _minHeightToLookDown_ = 50;
-	private float                 _heightToLock_;
-	private float                 _heightFollowSpeed_;
-	private float                 _fallSpeedThreshold_;
+	[NonSerialized] public float                 _lockHeightSpeed_;
+	[NonSerialized] public bool                  _shouldFaceDownWhenInAir_;
+	[NonSerialized] public float                 _minHeightToLookDown_ = 50;
+	[NonSerialized] public float                 _heightToLock_;
+	[NonSerialized] public float                 _heightFollowSpeed_;
+	[NonSerialized] public float                 _fallSpeedThreshold_;
 
 	[HideInInspector]
 	public float                  _cameraMaxDistance_ = 11;
 	private AnimationCurve        _cameraDistanceBySpeed_;
-	private bool                  _shouldAffectDistanceBySpeed_;
-	private Vector3               _angleThreshold_;
+	[NonSerialized] public bool                  _shouldAffectDistanceBySpeed_;
+	[NonSerialized] public Vector2               _angleThreshold_;
 
-	private bool                  _shouldAffectFOVBySpeed_;
+	[NonSerialized] public bool                  _shouldAffectFOVBySpeed_;
 	[HideInInspector]
 	public float                 _baseFOV_;
 	private AnimationCurve        _cameraFOVBySpeed_;
 
-	private Vector3               _dampingBehind_;
-	private Vector3               _dampingInFront_;
+	[NonSerialized] public Vector3               _dampingBehind_;
+	[NonSerialized] public Vector3               _dampingInFront_;
 
-	private float                 _cameraVerticalRotationSpeed_ = 10;
+	[NonSerialized] public float                 _cameraVerticalRotationSpeed_ = 10;
 	private AnimationCurve        _VerticalFollowSpeedByAngle_;
 
-	private float                 _inputXSpeed_ = 1;
-	private float                 _inputYSpeed_ = 0.5f;
+	[NonSerialized] public float                 _inputXSpeed_ = 1;
+	[NonSerialized] public float                 _inputYSpeed_ = 0.5f;
 
-	private float                 _afterMoveXDelay_ = 0.3f;
-	private float                 _afterMoveYDelay_ = 0.5f;
+	[NonSerialized] public float                 _afterMoveXDelay_ = 0.3f;
+	[NonSerialized] public float                 _afterMoveYDelay_ = 0.5f;
 
-	private float                 _stationaryCamIncrease_ = 1.2f;
+	[NonSerialized] public float                 _stationaryCamIncrease_ = 1.2f;
 
-	private float                 _yMinLimit_ = -20f;
-	private float                 _yMaxLimit_ = 80f;
+	[NonSerialized] public float                 _yMinLimit_ = -20f;
+	[NonSerialized] public float                 _yMaxLimit_ = 80f;
 
 	[HideInInspector]
 	public float                  _lockCamAtSpeed_ = 130;
 
-	private float                 _shakeDampen_;
-	private float                  _rotateToBehindSpeed_;
-	private float                  _rotateCharacterBeforeCameraFollows_;
-	private float                 _followFacingDirectionSpeed_;
+	[NonSerialized] public float                 _shakeDampen_;
+	[NonSerialized] public float                  _rotateToBehindSpeed_;
+	[NonSerialized] public float                  _rotateCharacterBeforeCameraFollows_;
+	[NonSerialized] public float                 _followFacingDirectionSpeed_;
 
-	private float                 _inputPredictonDistance_;
-	private float                 _cameraMoveToInputSpeed_;
+	[NonSerialized] public float                 _inputPredictonDistance_;
+	[NonSerialized] public float                 _cameraMoveToInputSpeed_;
 
 
 	LayerMask                     _CollidableLayers_;
