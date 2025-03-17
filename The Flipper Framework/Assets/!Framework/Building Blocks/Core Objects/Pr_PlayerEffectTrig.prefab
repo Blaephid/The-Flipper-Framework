@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2025760485226347324}
   m_Layer: 0
   m_Name: Pr_PlayerEffectTrig
-  m_TagString: Player Effect
+  m_TagString: EffectTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -90,7 +90,8 @@ MonoBehaviour:
   _ObjectsThatTriggerThis:
   - {fileID: 1000014119029628}
   _isLogicInPlayerScript: 1
-  _TriggerForPlayerToRead: {fileID: 1000014119029628}
+  _TriggersForPlayerToRead:
+  - {fileID: 1000014119029628}
   _framesBeforeDeactivate: 0
   _lockPlayerInputFor: 0
   _LockInputTo_: 1

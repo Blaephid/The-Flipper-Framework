@@ -175,7 +175,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9207472972790294701}
   - component: {fileID: 7102068879407087277}
-  - component: {fileID: 5128246033798620572}
+  - component: {fileID: 7787818284396180707}
   m_Layer: 23
   m_Name: Rail Decor
   m_TagString: Untagged
@@ -224,12 +224,13 @@ MonoBehaviour:
   _PrefabToPlace_: {fileID: 1589989004120913270, guid: 92c719f12f9776141af3453a5fa52c19,
     type: 3}
   _placeAsPrefab_: 0
-  _DataForPrefabs: {fileID: 5128246033798620572}
+  _CurrentPrefabToSpawn: ObPr_PlaceOnRailDecorations
+  _DataForPrefabs: {fileID: 7787818284396180707}
   _scale_: {x: 1, y: 1, z: 1}
   _offset3d_: {x: 0, y: -1.9, z: 0}
   _offsetRotation_: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
---- !u!114 &5128246033798620572
+--- !u!114 &7787818284396180707
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -252,11 +253,11 @@ MonoBehaviour:
   _isSelected: 0
   _InspectorTheme: {fileID: 0}
   _underPlatform: Ob_RailUnderPlatform_RC
-  _showUnderPlatform: 0
+  _showUnderPlatform: 1
   _leftSignPost: Ob_Signpost_RC Left
-  _showSignPostLeft: 0
+  _showSignPostLeft: 1
   _rightSignPost: Ob_Signpost_RC Right
-  _showSignPostRight: 0
+  _showSignPostRight: 1
   _leftRailWall: Ob_RailSideDecorator_RC Left
   _showLeftRailWall: 0
   _rightRailWall: Ob_RailSideDecorator_RC Right
@@ -306,6 +307,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3451855950444054797}
     m_Modifications:
+    - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5010467065650553803, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _DataForPrefabs
+      value: 
+      objectReference: {fileID: 9014488850291905247}
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
@@ -368,7 +379,11 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 9207472972790294701}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9014488850291905247}
   m_SourcePrefab: {fileID: 100100000, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
 --- !u!4 &1162080432941416777 stripped
 Transform:
@@ -376,6 +391,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6594115188675505428}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2165037266645798593 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7,
+    type: 3}
+  m_PrefabInstance: {fileID: 6594115188675505428}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9014488850291905247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2165037266645798593}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b1a46ddb4e93c48bfea5b68621b70f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
+  _InspectorTheme: {fileID: 0}
+  _offset: {x: 0, y: 0, z: 0}
+  drawColour: {r: 1, g: 0, b: 0, a: 1}
+  type: 0
 --- !u!1001 &6701165001341103830
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -386,9 +432,24 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
-      propertyPath: _offset3d_.x
-      value: -10
+      propertyPath: _scale_.z
+      value: 1.2
       objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _offset3d_.x
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5010467065650553803, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _DataForPrefabs
+      value: 
+      objectReference: {fileID: 3569503629054911857}
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
@@ -447,12 +508,16 @@ PrefabInstance:
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: translation.z
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3569503629054911857}
   m_SourcePrefab: {fileID: 100100000, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
 --- !u!4 &1683461415346782859 stripped
 Transform:
@@ -460,6 +525,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6701165001341103830}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1835097205813431555 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7,
+    type: 3}
+  m_PrefabInstance: {fileID: 6701165001341103830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3569503629054911857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1835097205813431555}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b1a46ddb4e93c48bfea5b68621b70f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
+  _InspectorTheme: {fileID: 0}
+  _offset: {x: 0, y: 0, z: 0}
+  drawColour: {r: 1, g: 0, b: 0, a: 1}
+  type: 0
 --- !u!1001 &8150905483666476204
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -470,9 +566,24 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
-      propertyPath: _offset3d_.x
-      value: 10
+      propertyPath: _scale_.z
+      value: 1.2
       objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _offset3d_.x
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5010467065650553803, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _DataForPrefabs
+      value: 
+      objectReference: {fileID: 7869428677494879104}
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
@@ -531,13 +642,48 @@ PrefabInstance:
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: translation.z
-      value: -10
+      value: -15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7869428677494879104}
   m_SourcePrefab: {fileID: 100100000, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
+--- !u!1 &3788957089709977465 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7,
+    type: 3}
+  m_PrefabInstance: {fileID: 8150905483666476204}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7869428677494879104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3788957089709977465}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b1a46ddb4e93c48bfea5b68621b70f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
+  _InspectorTheme: {fileID: 0}
+  _offset: {x: 0, y: 0, z: 0}
+  drawColour: {r: 1, g: 0, b: 0, a: 1}
+  type: 0
 --- !u!4 &4232922363921719537 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1776048518034437252}
   m_Layer: 0
   m_Name: Pr_TriggerObjects
-  m_TagString: CameraTrigger
+  m_TagString: NormalTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -68,7 +68,7 @@ MonoBehaviour:
   _hasTrigger: 0
   _ObjectsThatTriggerThis: []
   _isLogicInPlayerScript: 0
-  _TriggerForPlayerToRead: {fileID: 0}
+  _TriggersForPlayerToRead: []
 --- !u!65 &4111547859856773781
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -203,22 +203,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.72604024
+      value: 0.743944
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0017588749
+      value: 0.012955698
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.68764794
+      value: 0.6680152
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0016658672
+      value: -0.011633406
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

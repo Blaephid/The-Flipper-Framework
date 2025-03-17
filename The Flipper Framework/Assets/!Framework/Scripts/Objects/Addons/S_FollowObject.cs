@@ -53,7 +53,6 @@ public class S_FollowObject : MonoBehaviour
 	}
 
 	private void Follow (bool canAdjust = false) {
-
 		if (!_isFollowing || !_Parent) { return; }
 
 		if (canAdjust && Selection.activeGameObject == gameObject &&  transform.position - _Parent.position != _rememberOffset && _rememberOffset == _offset && _rememberOffset != default(Vector3))

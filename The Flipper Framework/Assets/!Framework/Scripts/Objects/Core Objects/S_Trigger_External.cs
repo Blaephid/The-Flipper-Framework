@@ -151,31 +151,34 @@ public class S_Trigger_External : S_Trigger_Base
 	}
 
 	private void CheckTriggerForPlayerToRead () {
-		//If this trigger doesn't perform its logic in a player script, then this isn't needed, so return null.
-		if (!_isLogicInPlayerScript)
-		{ SetTriggerForPlayerToRead(null); return; }
 
-		//If set to trigger self, then this is the logic the player will need to reference.
-		if (_TriggerObjects._triggerSelfOn)
+		//First, clear the triggers to read, and their references to this, so they can be readded if necessary
+		for (int trig = 0 ; trig < _TriggersForPlayerToRead.Count ; trig++)
+		{
+			//Remove each reading trigger's reference to what needs to be read now, as it may no longer have that reference soon.
+			if (_TriggersForPlayerToRead[trig] && _TriggersForPlayerToRead[trig].TryGetComponent(out S_Trigger_External TriggerData))
+			{
+				CheckExternalTriggerDataHasTrigger(true, TriggerData);
+			}
+		}
+		_TriggersForPlayerToRead.Clear();
 
-		{ SetTriggerForPlayerToRead(gameObject); return; }
-
-		//Otherwise Get the class derived class using this as a type, then look through objects that will be triggered and see if they match.
-		//E.G. S_Trigger_Camera will look for other S_Trigger_Cameras. And the first will be what to read.
-		System.Type scriptType = GetType();
-
+		//Go through each object to trigger on (remember, this inlcudes itself is _TriggerSelfOn, and if they have logic to read, add them to the list of scripts to read.
 		for (int i = 0 ; i < _TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
-			if (_TriggerObjects._ObjectsToTriggerOn[i].GetComponent(scriptType))
-			{ SetTriggerForPlayerToRead(_TriggerObjects._ObjectsToTriggerOn[i].gameObject); return; }
+			if (_TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out S_Trigger_External Trigger))
+			{
+				if (Trigger._isLogicInPlayerScript)
+				{
+					_TriggersForPlayerToRead.Add(Trigger.gameObject);
+					CheckExternalTriggerDataHasTrigger(false, Trigger);
+				}
+			}
 		}
-
-		//If none, then this trigger has no trigger data for the player.
-		SetTriggerForPlayerToRead(null);
 	}
 
 	//Ensures the GameObject that acts as the source of data knows this, and will display in its own inspector.
-	private void SetTriggerForPlayerToRead ( GameObject SetTo ) {
+	private void SetTriggersForPlayerToRead ( GameObject SetTo ) {
 
 		if (!_TriggersForPlayerToRead.Contains(SetTo)) { _TriggersForPlayerToRead.Add(SetTo); }
 
@@ -185,7 +188,7 @@ public class S_Trigger_External : S_Trigger_Base
 		for (int trig = 0 ; trig < _TriggersForPlayerToRead.Count ; trig++)
 		{
 			//Remove this trigger's reference to what needs to be read now, as it may no longer have that reference soon.
-			if (_TriggersForPlayerToRead[trig].TryGetComponent(out S_Trigger_External TriggerData))
+			if (_TriggersForPlayerToRead[trig] && _TriggersForPlayerToRead[trig].TryGetComponent(out S_Trigger_External TriggerData))
 			{
 				CheckExternalTriggerDataHasTrigger(true, TriggerData);
 			}

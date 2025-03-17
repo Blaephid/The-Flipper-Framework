@@ -36,42 +36,7 @@ public class S_Handler_Camera : MonoBehaviour
 
 	#region Trigger Interaction
 
-	//Called when entering a trigger in the physics script (must be assigned in Unity editor)
-	public void EventTriggerEnter ( Collider col ) {
-		if (col.tag == "CameraTrigger")
-		{
-			CheckCameraTriggerEnter(col);
-		}
-	}
-
-	public void CheckCameraTriggerEnter (Collider Col) {
-		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		List<S_Trigger_Base> cameraData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveCameraTriggers, typeof(S_Trigger_Camera));
-
-		for (int i = 0 ; i < cameraData.Count; i++){
-			StartCameraEffect(cameraData[i] as S_Trigger_Camera);
-		}
-	}
-
-	public void EventTriggerExit ( Collider col ) {
-		if (col.tag == "CameraTrigger")
-		{
-			CheckCameraTriggerExit(col);
-		}
-	}
-
-	public void CheckCameraTriggerExit ( Collider Col ) {
-		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		List<S_Trigger_Base> cameraData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveCameraTriggers, typeof(S_Trigger_Camera));
-
-		for (int i = 0 ; i < cameraData.Count ; i++)
-		{
-			EndCameraEffect(cameraData[i] as S_Trigger_Camera);
-		}
-	}
-
-
-	private void StartCameraEffect ( S_Trigger_Camera cameraData ) {
+	public void StartCameraEffect ( S_Trigger_Camera cameraData ) {
 		switch (cameraData._whatType)
 		{
 			//Rotates the camera in direction and prevents controlled rotation.
@@ -112,7 +77,7 @@ public class S_Handler_Camera : MonoBehaviour
 	}
 
 
-	private void EndCameraEffect ( S_Trigger_Camera cameraData ) {
+	public void EndCameraEffect ( S_Trigger_Camera cameraData ) {
 		//If trigger was set to undo effects on exit, then reset all data to how they should be again.
 		if (cameraData._willReleaseOnExit)
 		{

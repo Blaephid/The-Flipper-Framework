@@ -2766,9 +2766,9 @@ MonoBehaviour:
     RailPlayerBrakePower: 0.975
     railBoostDecaySpeed: 0.4
     railBoostDecayTime: 0.4
-    hopDelay: 0.22
-    hopSpeed: 40
-    hopDistance: 11
+    hopDelay: 0.06
+    hopSpeed: 65
+    hopDistance: 16
     HopSpeedByTime:
       serializedVersion: 2
       m_Curve:
@@ -2800,8 +2800,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.99998575
-        value: 0.7584937
+        time: 0.99580485
+        value: 0.99622566
         inSlope: -0.5563673
         outSlope: -0.5563673
         tangentMode: 0

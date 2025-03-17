@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 4180244983473809469}
   m_Layer: 0
   m_Name: Pr_Cinemachine Trigger
-  m_TagString: Untagged
+  m_TagString: NormalTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -162,7 +162,7 @@ MonoBehaviour:
   _hasTrigger: 0
   _ObjectsThatTriggerThis: []
   _isLogicInPlayerScript: 0
-  _TriggerForPlayerToRead: {fileID: 0}
+  _TriggersForPlayerToRead: []
   _defaultCameraToFaceTrigger: 1
   _CinematicCamComponent: {fileID: 6276180955197928732}
   _CinematicCamObject: {fileID: 6276180955197928734}

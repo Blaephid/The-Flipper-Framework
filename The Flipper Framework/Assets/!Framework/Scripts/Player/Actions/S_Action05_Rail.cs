@@ -81,17 +81,21 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	private float       _hopThisFrame;
 	private float       _distanceToHop;    //Set when starting a hop and will go down by distance traveled every frame, ending action when zero.
-	private float       _timeHopping;    
-	private float       _timeToCompleteHop;    
+	private float       _timeHopping;
+	private float       _timeToCompleteHop;
 	private bool        _isHoppingRight;   //Hopping to a rail on the right or on the left.
 
 	private bool        _isFacingRight = true;        //Used by the animator, changed on push forward.
-	
+
 	//Boosters
 	[HideInInspector]
 	public bool         _isBoosted;
 	[HideInInspector]
 	public float        _boostTime;
+	private bool            _firstBoosterApply;
+	private float        _boostSpeedToSettle;
+	private float        _boostSpeedAddOn;
+	private float           _boostToDecay;
 
 	[HideInInspector]
 	public bool         _isGrinding; //USed to ensure no calculations are made from this still being active for possibly one frame called by Update when ending action.
@@ -151,7 +155,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _RF._grindingSpeed; }//Apples all changes to grind speed.
 	}
 
-	new public void StartAction (bool overwrite = false) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (!_Actions._canChangeActions && !overwrite) { return; }
 
 		_Sounds.RailGrindSound(true);
@@ -337,10 +341,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	#region private
 
 
-	public void SetRotation ( S_Interaction_Pathers.PathTypes pathType) {
+	public void SetRotation ( S_Interaction_Pathers.PathTypes pathType ) {
 
-		switch(pathType)
-			{
+		switch (pathType)
+		{
 			case S_Interaction_Pathers.PathTypes.rail:
 				_PlayerVel.transform.up = _RF._sampleUpwards;
 				if (!_RF._isRailLost)
@@ -364,7 +368,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		}
 	}
 
-	public void SetPosition (Vector3 position) {
+	public void SetPosition ( Vector3 position ) {
 		_PlayerPhys.SetPlayerPosition(position);
 	}
 
@@ -382,14 +386,14 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		if (_RF._isRailLost)
 			LoseRail();
-		
+
 	}
 
 	//Called when the player is at the end of a rail and being launched off.
 	private void LoseRail () {
 
 		_Input.LockInputForAWhile(5f, false, _RF._sampleForwards); //Prevent instant turning off the end of the rail
-		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"RailLost", 10));
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, "RailLost", 10));
 		_distanceToHop = 0; //Stop a step that might be happening
 
 		_isGrinding = false;
@@ -439,10 +443,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			_RF._grindingSpeed *= _playerBrakePower_;
 		}
 
-		HandleBoost();
-		if(IsOnSlope())
+		if (IsOnSlope())
 		{
-			if(_RF._grindingSpeed < 5) 
+			if (_RF._grindingSpeed < 5)
 			{
 				_RF._movingDirection *= -1;
 				_RF._isGoingBackwards = !_RF._isGoingBackwards;
@@ -451,31 +454,54 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		}
 		else if (_RF._grindingSpeed > _railTopSpeed_)
 		{
-				_RF._grindingSpeed -= _decaySpeed_;
-			
+			_RF._grindingSpeed -= _decaySpeed_;
+
 		}
-		//Decrease speed if over max or top speed on the rail.
-		_RF._grindingSpeed = Mathf.Clamp(_RF._grindingSpeed, 0, Mathf.Min(_railmaxSpeed_,_PlayerPhys._PlayerMovement._currentMaxSpeed));
+
+		HandleBoosterLogic();
 	}
 
 	//Set to true outside of this script. But when boosted on a rail will gain a bunch of speed at once before having some of it quickly drop off.
-	void HandleBoost () {
+	void HandleBoosterLogic () {
 		//If currently being boosted
 		if (_isBoosted)
 		{
-			//When boost starts, boost time is set to positive, so when it goes below 0 it should start losing speed.
+			//When boost starts, boost time is set to positive, so when it goes below 0, decay starts setting in
 			_boostTime -= Time.fixedDeltaTime;
+			float boostSpeedTotal = _boostSpeedToSettle + _boostSpeedAddOn;
+
+			if (!_firstBoosterApply && _RF._grindingSpeed != boostSpeedTotal)
+			{
+				float difference = _RF._grindingSpeed - boostSpeedTotal;
+				_boostSpeedToSettle += difference;
+				_boostSpeedToSettle = Mathf.Clamp(_boostSpeedToSettle, 0, Mathf.Min(_railmaxSpeed_, _PlayerPhys._PlayerMovement._currentMaxSpeed));
+
+				if (difference > 0 && _RF._grindingSpeed < _railmaxSpeed_) //Booster add on speed won't be lost if speed is gained in its place from other sources.
+					_boostToDecay = Mathf.Max(_boostToDecay - difference, 0);
+			}
+
+			//Start decayingSpeed
 			if (_boostTime < 0)
 			{
-				if (_RF._grindingSpeed > 60) { _RF._grindingSpeed -= _boostDecaySpeed_; } //Speed can never decay to go under 60.
-										      //Keep losing speed until _decayTime_ amount of time has passed.
-				if (_boostTime < -_boostDecayTime_)
+				//Boost to settle speed can't go over rail max speed, but the boostAdd on can, so that is what decays away. This allows the gained speed being lost over time.
+				float loseThisFrame = _boostToDecay * Time.deltaTime;
+				if (_boostSpeedToSettle > 60) { _boostSpeedAddOn -= loseThisFrame; } 
+
+				if (_boostTime <= -_boostDecayTime_ || _boostSpeedAddOn <= 0)
 				{
 					_isBoosted = false;
 					_boostTime = 0;
 				}
 			}
+
+			boostSpeedTotal = _boostSpeedToSettle + _boostSpeedAddOn;
+			_RF._grindingSpeed = boostSpeedTotal;
+
+			_firstBoosterApply = false;
 		}
+		else
+			//Decrease speed if over max or top speed on the rail.
+			_RF._grindingSpeed = Mathf.Clamp(_RF._grindingSpeed, 0, Mathf.Min(_railmaxSpeed_, _PlayerPhys._PlayerMovement._currentMaxSpeed));
 	}
 
 	private bool IsOnSlope () {
@@ -554,7 +580,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			{
 				_RF._grindingSpeed += _pushFowardIncrements_ * _accelBySpeed_.Evaluate(_RF._grindingSpeed / _pushFowardmaxSpeed_); //Increae by flat increment, affected by current speed
 			}
-			SwapFacingSide();	
+			SwapFacingSide();
 		}
 	}
 
@@ -656,16 +682,16 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	private void ApplyHopFixedUpdate () {
 		if (_distanceToHop > 0)
 		{
-			_PlayerVel.AddGeneralVelocity(_RF._sampleRight * ((_hopThisFrame  * -1) / Time.deltaTime));
+			_PlayerVel.AddGeneralVelocity(_RF._sampleRight * ((_hopThisFrame * -1) / Time.deltaTime));
 
 			//Once a step is over and the player hasn't started this action through collisions, exit state.
 			if (_distanceToHop <= 0.1f)
 			{
 				LoseRail();
 			}
-		} 
+		}
 	}
-	
+
 
 	//Make it so can't rail hop until being on a rail for long enough. This includes hopping from one rail to another.
 	private IEnumerator DelayHopOnLanding () {
@@ -676,7 +702,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	//Effects
 	void SoundControl () {
-		if(_distanceToHop == 0)
+		if (_distanceToHop == 0)
 			_Sounds.RailGrindSound();
 	}
 	#endregion
@@ -706,41 +732,31 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	}
 
 	//Called externally when entering a booster on a rail. Changes speed. 
-	public IEnumerator ApplyBoosters ( float speed, bool set, float addSpeed, bool backwards ) {
-		//Rather than apply boost immediately, stretch it over three frames for smoothness and to ensure player proerly enters rail.
+	public IEnumerator ApplyBoosters ( S_Data_RailBooster BoosterLogic ) {
+		//Rather than apply boost immediately, add a slight delay to give time to be set on rail before boost. If already on rail, no delay.
 		for (int i = 0 ; i < 3 ; i++)
 		{
 			yield return new WaitForFixedUpdate();
 
-			//Set means completely changing the speed to a specific value.
-			if (set)
-			{
-				if (_RF._grindingSpeed < speed)
-				{
-					_RF._grindingSpeed = speed;
-					_isBoosted = true;
-					_boostTime = 0.9f; //How long the boost lasts before decaying.
-
-				}
-				else
-					set = false; //If speed higher than what will be set, go through the other option instead.
-			}
-			//Keep checking if on a rail before applying this.
 			if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail)
 			{
-				_RF._grindingSpeed += addSpeed;
 				_isBoosted = true;
-				_boostTime = 0.7f; //How long the boost lasts before decaying.
+				_boostTime = BoosterLogic._timeBeforeDecay; //How long the boost lasts before decaying.
+				_firstBoosterApply = true;
+
+				float newSpeed = BoosterLogic._NewSpeedByCurrentSpeed.Evaluate(_RF._grindingSpeed);
+				_boostSpeedToSettle = newSpeed = Mathf.Clamp(newSpeed, 0, Mathf.Min(_railmaxSpeed_, _PlayerPhys._PlayerMovement._currentMaxSpeed));
+
+				_boostSpeedAddOn = BoosterLogic._BoostAddOnByCurrentSpeed.Evaluate(_RF._grindingSpeed);
+
+				_boostToDecay = _boostSpeedAddOn;
+
+				//Changes which direction to grind in.
+				_RF._isGoingBackwards = BoosterLogic._willSetBackwards_;
 
 				break; //Since speed has now been applied, can end checking for if on rail.
 
 			}
-
-			//Changes which direction to grind in.
-			if (backwards)
-				_RF._isGoingBackwards = true;
-			else
-				_RF._isGoingBackwards = false;
 		}
 	}
 	#endregion

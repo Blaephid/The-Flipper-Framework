@@ -46,8 +46,9 @@ namespace SplineMesh
 
 		[Header("Main Placement")]
 		public Vector2 _spacingRange_ = new Vector2 (20,20);
+		private Vector2 _rememberspacingRange_ = new Vector2 (20,20);
 		[Tooltip("If not negative, will not place more than this number. Use zero to prevent anything placed normally."), Min(-1)]
-		public int	_maxNumber_ = -1;
+		public int      _maxNumber_ = -1;
 
 		[DrawHorizontalWithOthers(new string[]{"_spaceFromEnd_"})]
 		[Tooltip("How far along the spline until objects start being placed."), Min(-1)]
@@ -57,9 +58,9 @@ namespace SplineMesh
 		public float _spaceFromEnd_ = 0f;
 
 		[Header("Additional Placement")]
-		[DrawHorizontalWithOthers(new string[]{"_addOnStart_"})]
+		[DrawHorizontalWithOthers(new string[]{"_addOnEnd_"})]
 		[Tooltip("If true, place an additional object at distance 0. Set maxNumber to 0 to make this the only placed object"),]
-		public bool	_addOnStart_ = false;
+		public bool     _addOnStart_ = false;
 		[Tooltip("If true, place an additional object at the furthest distance."),]
 		[HideInInspector]
 		public bool         _addOnEnd_;
@@ -70,7 +71,8 @@ namespace SplineMesh
 		public GameObject _PrefabToPlace_ = null;
 		public bool _placeAsPrefab_ = true;
 
-		private GameObject _CurrentPrefabToSpawn;
+		[CustomReadOnly]
+		public string _CurrentPrefabToSpawn;
 		[CustomReadOnly, Tooltip("Read only. If placing objects with S_Data classes, that component will be added to this object, to control all of the placed ones' values.")]
 		public S_Data_Base _DataForPrefabs;
 
@@ -116,6 +118,13 @@ namespace SplineMesh
 			//Ensure spacing can't go behind length of spline.
 			_spaceFromEnd_ = MathF.Min(_spaceFromEnd_, _Spline.Length);
 			_spaceFromStart_ = MathF.Min(_spaceFromStart_, _Spline.Length);
+
+			if(_rememberspacingRange_.y != _spacingRange_.y)
+				_spacingRange_.x = Mathf.Min(_spacingRange_.x, _spacingRange_.y);
+			else
+				_spacingRange_.y = Mathf.Max(_spacingRange_.x, _spacingRange_.y);
+
+			_rememberspacingRange_ = _spacingRange_;
 		}
 
 
@@ -132,6 +141,8 @@ namespace SplineMesh
 		}
 
 		public void PlaceAllElements () {
+			if (!_Spline) { return; }
+
 			UOUtility.DestroyChildren(generated);
 
 			//Only place if there is space and a valid object.
@@ -193,7 +204,7 @@ namespace SplineMesh
 			GO.transform.localScale = new Vector3(_scale_.x, _scale_.y, _scale_.z);
 			// rotate with random yaw
 			GO.transform.rotation = sampleTransforms.rotation * Quaternion.Euler(_offsetRotation_);
-			
+
 
 			if (_alignWithTerrain_) GroundAlign(GO.transform);
 
@@ -212,12 +223,20 @@ namespace SplineMesh
 			}
 
 		}
-		public void HandleDataComponentForSpawnedObjects (bool overwrite = false) {
+		public void HandleDataComponentForSpawnedObjects (bool overide = false) {
+
+			if (!_PrefabToPlace_)
+			{
+				_CurrentPrefabToSpawn = "";
+				if (_DataForPrefabs != null) DestroyImmediate(_DataForPrefabs);
+				_DataForPrefabs = null;
+				return;
+			}
 
 			//If prefab to spawn was changed
-			if (_PrefabToPlace_ != _CurrentPrefabToSpawn || overwrite)
+			if (_PrefabToPlace_.name != _CurrentPrefabToSpawn || overide) //Overide is set as true when this method is called from the AsButton field.
 			{
-				_CurrentPrefabToSpawn = _PrefabToPlace_;
+				_CurrentPrefabToSpawn = _PrefabToPlace_.name;
 				if (_DataForPrefabs != null) DestroyImmediate(_DataForPrefabs);
 				_DataForPrefabs = null;
 
@@ -237,12 +256,16 @@ namespace SplineMesh
 
 		}
 
-		private void ApplyDataToSpawnedObject (GameObject go) {
+		private void ApplyDataToSpawnedObject ( GameObject go ) {
+
 			_DataForPrefabs = GetComponent<S_Data_Base>();
 			if (!_DataForPrefabs) { return; }
+			if (_PrefabToPlace_.name != _CurrentPrefabToSpawn) { return; }
+
 			//If the prefab to spawn inherits from the data class, add that class as a component to this, to allow full control of the spawned objects' values.
 			if (go.TryGetComponent(out S_Data_Base DataBase))
 			{
+				if(_DataForPrefabs.GetType() != DataBase.GetType()) { return; }
 				EditorUtility.CopySerialized(_DataForPrefabs, DataBase);
 
 				_DataForPrefabs.enabled = false;

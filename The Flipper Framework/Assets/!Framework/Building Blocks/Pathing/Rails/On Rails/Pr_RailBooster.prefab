@@ -10,13 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 4000013130497754}
   - component: {fileID: 65000010017290134}
+  - component: {fileID: 2618382156289611987}
   - component: {fileID: 8399873651291111674}
-  - component: {fileID: 114000010754803480}
-  - component: {fileID: 5993487390788943478}
   - component: {fileID: 82000010483717982}
   m_Layer: 0
   m_Name: Pr_RailBooster
-  m_TagString: SpeedPad
+  m_TagString: RailBooster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -31,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
   m_LocalPosition: {x: 159.76059, y: 50, z: -261.4}
-  m_LocalScale: {x: 4.084314, y: 4.084314, z: 4.084314}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4602447262574837150}
@@ -56,8 +55,111 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.35, y: 0.9, z: 0.71}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 5.87, y: 4.54, z: 7.39}
+  m_Center: {x: 0, y: -1.82, z: -0.44}
+--- !u!114 &2618382156289611987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013037187298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabfc7277ca891f4a91b004704051129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _isSelected: 0
+  _InspectorTheme: {fileID: 0}
+  _willSetBackwards_: 0
+  _PositionToLockTo: {x: 0, y: 0, z: 0}
+  _NewSpeedByCurrentSpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 50
+      inSlope: 0.18611585
+      outSlope: 0.18611585
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.6133302
+    - serializedVersion: 3
+      time: 50.66667
+      value: 79.363205
+      inSlope: 0.5294842
+      outSlope: 0.5294842
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.4054022
+    - serializedVersion: 3
+      time: 100
+      value: 120
+      inSlope: 0.4713535
+      outSlope: 0.4713535
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.46575192
+    - serializedVersion: 3
+      time: 148.66666
+      value: 155.89151
+      inSlope: 0.38702938
+      outSlope: 0.38702938
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 1
+    - serializedVersion: 3
+      time: 160
+      value: 160
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _BoostAddOnByCurrentSpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 15
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 160
+      value: 20
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _timeBeforeDecay: 0.7
+  _cameraEffect:
+    _willAffectCamera_: 0
+    _CameraRotateTime_: {x: 0.15, y: 20}
 --- !u!114 &8399873651291111674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,8 +173,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hasVisualisationScripted: 1
-  _viewVisualisationData: 1
-  _viewVisualisationDataHidden: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
   _drawAtAllTimes: 1
   _drawIfParentSelected: 0
   _normalOutlineColour: {r: 0.6037736, g: 0.57693547, b: 0, a: 0.39215687}
@@ -80,72 +182,13 @@ MonoBehaviour:
   _selectedFillColour: {r: 0.8113208, g: 0.026788909, b: 0.026788909, a: 0.39215687}
   _isSelected: 0
   _thickness: 4
+  _scale: 2.2
   _forwards: 1
   _backwards: 0
   _upwards: 1
   _downwards: 1
   _right: 1
   _left: 1
---- !u!114 &114000010754803480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013037187298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _hasVisualisationScripted: 0
-  _viewVisualisationData: 0
-  _viewVisualisationDataHidden: 0
-  _drawAtAllTimes: 1
-  _drawIfParentSelected: 0
-  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
-  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _InspectorTheme: {fileID: 0}
-  _Path: {fileID: 0}
-  _speedToSet_: 100
-  _willCarrySpeed_: 1
-  _willSnap: 0
-  _cameraEffect:
-    _willAffectCamera_: 1
-    _CameraRotateTime_: {x: 0.15, y: 20}
-  _PositionToLockTo: {x: 0, y: 0, z: 0}
-  _lockControlFrames_: 30
-  _lockInputTo_: 0
---- !u!114 &5993487390788943478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013037187298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 025dd8a9986532a48a5fea4a4fd2b824, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _hasVisualisationScripted: 0
-  _viewVisualisationData: 0
-  _viewVisualisationDataHidden: 0
-  _drawAtAllTimes: 1
-  _drawIfParentSelected: 0
-  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
-  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _thickness: 1
-  _forwards: 0
-  _backwards: 0
-  _upwards: 0
-  _downwards: 0
-  _right: 0
-  _left: 0
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0
@@ -255,17 +298,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 6097a38b99f0f8c499b85578b39bc569,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 50.502003
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6097a38b99f0f8c499b85578b39bc569,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 50.502003
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6097a38b99f0f8c499b85578b39bc569,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 50.502003
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6097a38b99f0f8c499b85578b39bc569,
         type: 3}

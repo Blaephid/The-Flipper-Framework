@@ -183,7 +183,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				break;
 
 
-			case "Player Effect":
+			case "EffectTrigger":
 				_TriggerInteraction.CheckEffectsTriggerEnter(Col); break;
 		}
 	}
@@ -207,7 +207,7 @@ public class S_Interaction_Objects : MonoBehaviour
 				if (_numberOfWindForces == 0)
 					_totalWindDirection = Vector3.zero;
 				break;
-			case "Player Effect":
+			case "EffectTrigger":
 				_TriggerInteraction.CheckEffectsTriggerExit(Col); break;
 		}
 	}
@@ -474,13 +474,12 @@ public class S_Interaction_Objects : MonoBehaviour
 		{
 			SnapToObject(Col.transform, RailBoosterScript._PositionToLockTo);
 		}
-		else
+		if (_Actions._ObjectForActions.TryGetComponent(out S_Action05_Rail RailAction))
 		{
-			StartCoroutine(_Actions._ObjectForActions.GetComponent<S_Action05_Rail>().ApplyBoosters(RailBoosterScript._speedToSet_, RailBoosterScript._willSetSpeed_, RailBoosterScript._addSpeed_, RailBoosterScript._willSetBackwards_));
+			StartCoroutine(RailAction.ApplyBoosters(RailBoosterScript));
 		}
 
 		ObjectRotatesCamera(Col, RailBoosterScript._cameraEffect);
-
 	}
 
 	private Vector3 SnapToObject ( Transform Object, Vector3 Offset ) {

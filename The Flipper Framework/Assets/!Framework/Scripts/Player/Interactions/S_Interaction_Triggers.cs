@@ -72,22 +72,34 @@ public class S_Interaction_Triggers : MonoBehaviour
 
 	public void CheckEffectsTriggerEnter ( Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		List<S_Trigger_Base> EffectsData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers, typeof(S_Trigger_Camera));
+		List<S_Trigger_Base> EffectsData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers);
 
+		if (EffectsData == null) { return; }
 		for (int i = 0 ; i < EffectsData.Count ; i++)
 		{
-			ApplyEffectsOnPlayer(EffectsData[i] as S_Trigger_PlayerEffect);
+			S_Trigger_Base ThisTrigger = EffectsData[i];
+
+			if (ThisTrigger is S_Trigger_PlayerEffect)
+				ApplyEffectsOnPlayer(ThisTrigger as S_Trigger_PlayerEffect);
+			else if (ThisTrigger is S_Trigger_Camera)
+				_CamHandler.StartCameraEffect(ThisTrigger as S_Trigger_Camera);
 		}
 	}
 
 
 	public void CheckEffectsTriggerExit ( Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
-		List<S_Trigger_Base> EffectsData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers, typeof(S_Trigger_Camera));
+		List<S_Trigger_Base> EffectsData = S_Interaction_Triggers.CheckTriggerExit(Col, ref _CurrentActiveEffectTriggers);
 
+		if (EffectsData == null) { return; }
 		for (int i = 0 ; i < EffectsData.Count ; i++)
 		{
-			ApplyEffectsOnPlayer(EffectsData[i] as S_Trigger_PlayerEffect);
+			S_Trigger_Base ThisTrigger = EffectsData[i];
+
+			if (ThisTrigger is S_Trigger_PlayerEffect)
+				StartCoroutine(DelayBeforeRemovingEffectsOnPlayer(ThisTrigger as S_Trigger_PlayerEffect));
+			else if (ThisTrigger is S_Trigger_Camera)
+				_CamHandler.EndCameraEffect(ThisTrigger as S_Trigger_Camera);
 		}
 	}
 
@@ -148,7 +160,6 @@ public class S_Interaction_Triggers : MonoBehaviour
 			FieldInfo field = fieldAndvalue.field;
 
 			if (value == null) { Debug.LogError("Could not find " + ValueEditor.valueName); continue; }
-			else Debug.Log(value.ToString());
 
 			ValueEditor.rememberComponent = component;
 			ValueEditor.rememberValueObject = value;
@@ -286,64 +297,63 @@ public class S_Interaction_Triggers : MonoBehaviour
 	/// Public ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Public And Static
-	public static List<S_Trigger_Base> CheckTriggerEnter ( Collider Col, ref List<S_Trigger_External> list, Type TypeOfTriggerScript ) {
+	public static List<S_Trigger_Base> CheckTriggerEnter ( Collider Col, ref List<S_Trigger_External> list ) {
 
-		List <S_Trigger_Base> TriggerList = new List<S_Trigger_Base>();
+		List <S_Trigger_Base> TriggersToActivate = new List<S_Trigger_Base>();
 
 		//What happens depends on the data set to the camera trigger in its script.
-		if (!Col.TryGetComponent(out S_Trigger_External TriggerData)) { return null; };
+		if (!Col.TryGetComponent(out S_Trigger_External HostTriggerData)) { return null; };
 
 		//If no logic is found, ignore.
-		if (TriggerData == null || TriggerData._TriggersForPlayerToRead.Count == 0) return null;
+		if (HostTriggerData == null || HostTriggerData._TriggersForPlayerToRead.Count == 0) return null;
 
-		for(int i = 0 ; i < TriggerData._TriggersForPlayerToRead.Count ; i++)
+		for (int i = 0 ; i < HostTriggerData._TriggersForPlayerToRead.Count ; i++)
 		{
-			TriggerData = TriggerData._TriggersForPlayerToRead[i].GetComponent<S_Trigger_External>();
+			S_Trigger_External ReferencedTriggerData = HostTriggerData._TriggersForPlayerToRead[i].GetComponent<S_Trigger_External>();
 
 			//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
 			if (list.Count == 0) { list = new List<S_Trigger_External>(); }
 
-			//If the new trigger is set to trigger the logic already in effect, add it to list for tracking how long until out of every trigger, and don't restart the logic.
-			else if (list.Contains(TriggerData))
-			{ list.Add(TriggerData); return null; }
+			//If the new trigger is set to trigger the logic already in effect, add it to list for tracking how long until out of every trigger, but don't set it to be activate
+			if (!list.Contains(ReferencedTriggerData))
+			{
+				ReferencedTriggerData._isSelected = true;
+				TriggersToActivate.Add(ReferencedTriggerData);
+			}
 
-			list.Add(TriggerData);
-			TriggerData._isSelected = true;
-
-			TriggerList.Add(TriggerData);
+			list.Add(ReferencedTriggerData);
 		}
-		return TriggerList;
+		return TriggersToActivate;
 	}
 
 	public static List<S_Trigger_Base> CheckTriggerExit ( Collider Col, ref List<S_Trigger_External> list ) {
 
-
-		List <S_Trigger_Base> TriggerList = new List<S_Trigger_Base>();
+		List <S_Trigger_Base> TriggersToDeactivate = new List<S_Trigger_Base>();
 
 		//What happens depends on the data set to the camera trigger in its script.
-		if (!Col.TryGetComponent(out S_Trigger_External TriggerData)) { return null; }
+		if (!Col.TryGetComponent(out S_Trigger_External HostTriggerData)) { return null; }
 
 		//If no logic is found, ignore.
-		if (TriggerData == null || TriggerData._TriggersForPlayerToRead == null) return null;
+		if (HostTriggerData == null || HostTriggerData._TriggersForPlayerToRead == null) return null;
 
-		for (int i = 0 ; i < TriggerData._TriggersForPlayerToRead.Count ; i++)
+		for (int i = 0 ; i < HostTriggerData._TriggersForPlayerToRead.Count ; i++)
 		{
-
-			TriggerData = TriggerData._TriggersForPlayerToRead[i].GetComponent<S_Trigger_External>();
+			S_Trigger_External ReferencedTriggerData = HostTriggerData._TriggersForPlayerToRead[i].GetComponent<S_Trigger_External>();
 
 			//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
-			if (list.Count > 0 && !list.Contains(TriggerData)) { return null; }
+			if (list.Count > 0 && !list.Contains(ReferencedTriggerData)) { continue; }
 
 			//If it is, then remove one from the list to track how many triggers under the same logic have been left. This allows the effect to not end until not in any triggers under the same logic.
-			list.Remove(TriggerData);
+			list.Remove(ReferencedTriggerData);
 
-			if (list.Contains(TriggerData)) { return null; } //Only perform exit logic when out of all triggers using that logic.
-
-			TriggerData._isSelected = false;
-			TriggerList.Add(TriggerData);
+			if (!list.Contains(ReferencedTriggerData)) //Only perform exit logic when out of all triggers using that logic.
+			{
+				ReferencedTriggerData._isSelected = false;
+				TriggersToDeactivate.Add(ReferencedTriggerData);
+			}
 		}
 
-		return TriggerList;
+		return TriggersToDeactivate;
 	}
 
 	#endregion

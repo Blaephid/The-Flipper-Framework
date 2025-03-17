@@ -16,7 +16,6 @@ TagManager:
   - Enemy
   - Ring Road
   - MovingRing
-  - CameraTrigger
   - HintRing
   - Switch
   - SpeedPad
@@ -29,9 +28,11 @@ TagManager:
   - Upreel
   - CancelHoming
   - Enable Objects Physics
-  - Player Effect
   - Recorder
   - DashRing
+  - EffectTrigger
+  - NormalTrigger
+  - RailBooster
   layers:
   - Default
   - TransparentFX

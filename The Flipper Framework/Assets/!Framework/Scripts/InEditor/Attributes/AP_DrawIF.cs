@@ -65,13 +65,18 @@ public class OnlyDrawIfAttribute : MultiPropertyAttribute
 
 	public static SerializedProperty GetFieldToCheck ( SerializedProperty propertyToEdit, string propertyToFind) {
 		//Find the field that determines if this property should be drawn.
-		string propertyToCheck = propertyToEdit.propertyPath.Contains(".") ? System.IO.Path.ChangeExtension(propertyToEdit.propertyPath, propertyToFind) : propertyToFind;
+		//string propertyToCheck = propertyToEdit.propertyPath.Contains("." +propertyToEdit.name) ? System.IO.Path.ChangeExtension(propertyToEdit.propertyPath, propertyToFind) : propertyToFind;
+		string propertyToCheck =  System.IO.Path.ChangeExtension(propertyToEdit.propertyPath, propertyToFind);
 		SerializedProperty fieldToCheck = propertyToEdit.serializedObject.FindProperty(propertyToCheck);
 
 		if (fieldToCheck == null)
 		{
-			Debug.LogError("Cannot find property with name: " + propertyToCheck);
-			return null;
+			fieldToCheck = propertyToEdit.serializedObject.FindProperty(propertyToFind);
+			if(fieldToCheck == null)
+			{
+				Debug.LogError("Called by " + propertyToEdit.name + ". Cannot find property with name: " + propertyToCheck);
+				return null;
+			}
 		}
 		return fieldToCheck;
 	}
