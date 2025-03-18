@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -57,13 +59,13 @@ public class OnlyDrawIfAttribute : MultiPropertyAttribute
 	/// Errors default to showing the property.
 	/// </summary>
 	public virtual bool WillDraw ( SerializedProperty propertyToDraw ) {
-		_fieldToCheck = GetFieldToCheck(propertyToDraw, _propertyToCheck);
+		_fieldToCheck = GetField(propertyToDraw, _propertyToCheck);
 		if(_fieldToCheck == null) { return true; }
 
 		return DrawOthersIfAttribute.IsPropertyEqualToValue(_fieldToCheck, _valueToCheckFor);
 	}
 
-	public static SerializedProperty GetFieldToCheck ( SerializedProperty propertyToEdit, string propertyToFind) {
+	public static SerializedProperty GetField ( SerializedProperty propertyToEdit, string propertyToFind) {
 		//Find the field that determines if this property should be drawn.
 		//string propertyToCheck = propertyToEdit.propertyPath.Contains("." +propertyToEdit.name) ? System.IO.Path.ChangeExtension(propertyToEdit.propertyPath, propertyToFind) : propertyToFind;
 		string propertyToCheck =  System.IO.Path.ChangeExtension(propertyToEdit.propertyPath, propertyToFind);
@@ -174,7 +176,7 @@ public class DrawOthersIfAttribute : MultiPropertyAttribute
 			for (int i = 0 ; i < _otherPropertiesToDraw.Length ; i++)
 			{
 				string newPropertyName = _otherPropertiesToDraw[i];
-				SerializedProperty newProperty = property.serializedObject.FindProperty(newPropertyName);
+				SerializedProperty newProperty = OnlyDrawIfAttribute.GetField(property, newPropertyName);
 				EditorGUI.PropertyField(position, newProperty);
 
 				position.y += _heightParts;
@@ -182,3 +184,5 @@ public class DrawOthersIfAttribute : MultiPropertyAttribute
 		}
 	}
 }
+
+#endif

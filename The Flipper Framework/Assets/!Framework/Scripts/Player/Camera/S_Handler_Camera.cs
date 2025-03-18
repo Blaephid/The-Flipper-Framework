@@ -101,7 +101,7 @@ public class S_Handler_Camera : MonoBehaviour
 
 		SetLockCameras(cameraData, true);
 		if (cameraData._lockToCharacterRotation)
-			_HedgeCam.SetToStickToLocalRotation(true, cameraData._directionToSet);
+			_HedgeCam.SetToStickToLocalRotation(true, cameraData._directionToSet, cameraData._followPlayerSpeed);
 	}
 
 	private void RemoveAdditonalCameraEffects(S_Trigger_Camera cameraData, bool removeAll = false ) {
@@ -113,7 +113,7 @@ public class S_Handler_Camera : MonoBehaviour
 		SetLockCameras(cameraData, false, !removeAll);
 
 		if (removeAll || cameraData._lockToCharacterRotation)
-			_HedgeCam.SetToStickToLocalRotation(false, Vector3.zero);
+			_HedgeCam.SetToStickToLocalRotation(false, Vector3.zero, 0);
 
 		if(removeAll || cameraData._willOffsetTarget)
 			_HedgeCam.ReturnCameraTargetsToNormal(null, cameraData ? cameraData._framesToOffset : 0);

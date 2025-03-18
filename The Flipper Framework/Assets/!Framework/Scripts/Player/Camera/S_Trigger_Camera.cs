@@ -38,16 +38,18 @@ public class S_Trigger_Camera : S_Trigger_External
 	[HideInInspector] public Vector3 _directionToSet;
 
 	[OnlyDrawIfNot("_whatType", enumCameraControlType.RemoveEffects), Tooltip("Disables most camera interactions and automatic rotating ")]
-	[DrawHorizontalWithOthers(new string[] { "_lockCameraX", "_lockCameraY", "_lockToCharacterRotation", "_lockCameraFallBack" })]
+	[DrawHorizontalWithOthers(new string[] { "_lockCameraX", "_lockCameraY", "_lockCameraFallBack", "_lockToCharacterRotation", "_followPlayerSpeed" })]
 	public bool _lockCamera;
 	[HideInInspector, Tooltip("Prevents manually moving camera left and right")]
 	public bool _lockCameraX;
 	[HideInInspector, Tooltip("Prevents manually moving camera up and down")]
 	public bool _lockCameraY;
-	[HideInInspector, Tooltip("If true, camera will be locked to characters movement, constantly trying to stay at the angle relative to the character. E.G. If set behind player, will lock behind player.")]
-	public bool _lockToCharacterRotation;
 	[HideInInspector, Tooltip("Prevents certain actions like boost or spin dash leaving the camera behind as they burst forwards")]
 	public bool _lockCameraFallBack;
+	[HideInInspector, Tooltip("If true, camera will be locked to characters movement, constantly trying to stay at the angle relative to the character. E.G. If set behind player, will lock behind player.")]
+	public bool _lockToCharacterRotation;
+	[HideInInspector, OnlyDrawIf("_lockToCharacterRotation", true)]
+	public float _followPlayerSpeed = 6;
 
 	[Header("Turning")]
 	[Tooltip("How quickly the camera will rotate to face the trigger direction."), DrawHorizontalWithOthers(new string[] { "_duration" })]

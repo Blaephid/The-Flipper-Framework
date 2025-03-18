@@ -46,6 +46,7 @@ public class S_PlayerInput : MonoBehaviour
 	public bool	_isInputLocked { get; set; }
 	float               _lockedTime;
 	float               _lockedCounter = 0;
+	private bool            _lockedToCharacter;
 	[HideInInspector]
 	public bool	_isCamLocked { get; set; }
 
@@ -163,7 +164,6 @@ public class S_PlayerInput : MonoBehaviour
 			_inputOnController = _lockedControllerInput;
 			HandleLockedInput();
 		}
-
 	}
 
 	//Takes in a direction and returns it relative to the camera and player
@@ -190,6 +190,8 @@ public class S_PlayerInput : MonoBehaviour
 	private void HandleLockedInput () {
 		_lockedCounter += 1;
 
+		UpdateCharacterForwardsInput();
+
 		//Sets the camera behind if locked when input is.
 		if (_isCamLocked)
 		{
@@ -209,7 +211,11 @@ public class S_PlayerInput : MonoBehaviour
 	/// 
 	#region public 
 	//Called by other scripts to set the input to a specific thing, unable to change for a period of time.
-	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change) {
+	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change, bool overwrite = false) {
+
+		if(_isInputLocked && frames < _lockedTime - _lockedCounter) { return; } //If this new lock has less frames than the amount left of the current one, then ignore it.
+
+		_lockedToCharacter = false;
 
 		//While the enum won't be used freqeuntly, it is short hand for removing input or setting player to forwards without having to calculate it before being called.
 		switch (whatLock)
@@ -224,18 +230,27 @@ public class S_PlayerInput : MonoBehaviour
 			case S_GeneralEnums.LockControlDirection.CharacterForwards:
 				_lockedControllerInput = Vector2.one;
 				Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _MainSkin.forward * 5, Color.red, 20f);
+				_lockedToCharacter = true;
 				_lockedMoveInput = _MainSkin.forward; break;
 		}
 
 		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.
-		_lockedTime = Mathf.Max(frames, _lockedTime - _lockedCounter);
+		_lockedTime = frames;
 
 		//Will be locked until counter exceeds timer.
 		_lockedCounter = 0;
 		_isInputLocked = true;
 		_isCamLocked = lockCam; //Also prevents camera control
+	}
+
+	private void UpdateCharacterForwardsInput () {
+		if (!_lockedToCharacter) { return; }
+
+		_lockedControllerInput = Vector2.one;
+		_lockedMoveInput = _MainSkin.forward;
+		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
 	}
 
 	public void LockInputIndefinately ( bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change ) {

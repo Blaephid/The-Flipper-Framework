@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using templates;
@@ -6,10 +7,10 @@ using UnityEditor.SceneManagement;
 using UnityEditor.TerrainTools;
 using UnityEngine;
 
-#if UNITY_EDITOR
 [ExecuteInEditMode]
 public class S_ConstantSceneGUI : MonoBehaviour
 {
+
 	public MonoBehaviour	_LinkedComponent;
 	public ICustomEditorLogic	_LinkedEditorLogic;
 

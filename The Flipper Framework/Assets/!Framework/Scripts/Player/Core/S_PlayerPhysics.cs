@@ -949,7 +949,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		UpdatePositionTrackers();
 
-		if (shouldPrintRotation) Debug.Log("Change Position to  " + newRotation);
+		if (shouldPrintRotation) Debug.Log("Change Rotation to  " + newRotation);
 	}
 
 	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.

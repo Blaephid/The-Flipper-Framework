@@ -17,36 +17,41 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	public static event EventHandler OnReset;
 
 
-	private S_CharacterTools		_Tools;
-	private S_Handler_HealthAndHurt	_HealthAndHurt;
+	private S_CharacterTools                _Tools;
+	private S_Handler_HealthAndHurt _HealthAndHurt;
 
-	private S_ActionManager		_Actions;
-	private S_PlayerPhysics	_PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_Handler_Camera	_CamHandler;
-	private S_PlayerInput	_Input;
+	private S_ActionManager         _Actions;
+	private S_PlayerPhysics _PlayerPhys;
+	private S_PlayerVelocity        _PlayerVel;
+	private S_Handler_Camera        _CamHandler;
+	private S_PlayerInput   _Input;
 
-	private Transform		_MainSkin;
+	private Transform               _MainSkin;
 
-	public AudioClip		_GoalRingTouchingSound;
+	public AudioClip                _GoalRingTouchingSound;
 
 	private Collider              _GoalRingObject;
 	#endregion
 
 	// Trackers
 	#region trackers
+	[NonSerialized]
+	public S_SpawnCharacter _Spawner;
+
 	//Reset transforms. Set on start and by checkpoints.
-	public Vector3		_resumePosition { get; set; }
-	public Quaternion		_resumeRotation { get; set; }
-	private Vector3		_resumeForwards;
+	public Transform _respawnTransform { get; set; }
+	public Vector3 _respawnPosition { get; set; }
+	public Quaternion _respawnRotation { get; set; }
+	private Vector3         _respawnForwards;
+	public LaunchPlayerData _respawnLaunch { get; set; }
 
 	//
-	public string		_nextLevelNameLeft;
-	public string		_nextLevelNameRight;
+	public string           _nextLevelNameLeft;
+	public string           _nextLevelNameRight;
 
 	//Tracking ending levels.
-	private bool		_readyForNextStage = false;
-	private float		_readyCount = 0;
+	private bool            _readyForNextStage = false;
+	private float           _readyCount = 0;
 	#endregion
 	#endregion
 
@@ -58,24 +63,23 @@ public class S_Manager_LevelProgress : MonoBehaviour
 
 	// Start is called before the first frame update
 	void Awake () {
-		
 
-		_Tools =		GetComponentInParent<S_CharacterTools>();
-		_CamHandler =	_Tools.CamHandler;
-		_Actions =	_Tools._ActionManager;
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
-		_Input =		_Tools.GetComponent<S_PlayerInput>();
-		_HealthAndHurt =	_Tools.GetComponent<S_Handler_HealthAndHurt>();
 
-		_MainSkin =	_Tools.MainSkin;
+		_Tools = GetComponentInParent<S_CharacterTools>();
+		_CamHandler = _Tools.CamHandler;
+		_Actions = _Tools._ActionManager;
+		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
+		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
+		_Input = _Tools.GetComponent<S_PlayerInput>();
+		_HealthAndHurt = _Tools.GetComponent<S_Handler_HealthAndHurt>();
 
-		_resumePosition =	_MainSkin.position;
-		_resumeRotation =	_MainSkin.rotation;
-		_resumeForwards =	_MainSkin.forward;
+		_MainSkin = _Tools.MainSkin;
+
+		SetCheckPoint(_Spawner.transform, _Spawner);
 
 		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 	}
+
 
 	// Update is called once per frame
 	void Update () {
@@ -171,7 +175,6 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	public void RespawnObjects () {
 		if (OnReset != null)
 		{
-			Debug.LogWarning("Has begun respawning");
 			OnReset.Invoke(this, EventArgs.Empty);
 		}
 
@@ -181,8 +184,8 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	public void ResetToCheckPoint () {
 
 		//Temporarily prevents movement of any kind.
-		_Input.LockInputForAWhile(20, true, Vector3.zero);
-		_Actions.LockAirMovesForFrames(20);
+		_Input.LockInputForAWhile(9, true, Vector3.zero);
+		_Actions.LockAirMovesForFrames(9);
 
 		//Ends hurt state.
 		_Actions._ActionDefault.StartAction();
@@ -195,21 +198,44 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_HealthAndHurt.SetShield(false);
 
 		//Transform
-		_PlayerPhys.SetPlayerPosition(_resumePosition);
-		_MainSkin.forward = _resumeForwards;
+		_PlayerPhys.SetPlayerPosition(_respawnPosition);
+		_PlayerPhys.SetPlayerRotation(Quaternion.identity.normalized, true);
+		_MainSkin.forward = _respawnForwards;
 
 		//Ensures rotation is correct and can lead into instant movement.
-		_PlayerVel.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
+		_PlayerVel.SetBothVelocities(_MainSkin.forward * 0.05f, new Vector2(1, 0));
 
 		//Camera
 		_CamHandler._HedgeCam._lookTimer = 0;
-		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
+		_CamHandler._HedgeCam.SetBehind(0); //Sets camera back to behind player.
+	}
+
+	public void LaunchOnRespawn () {
+		LaunchFromCheckpoint(true, _respawnLaunch, _respawnTransform);
+	}
+
+	public void LaunchFromCheckpoint ( bool launch, LaunchPlayerData launchData, Transform transform ) {
+
+		//Applying launch
+		if (launch && _Actions._ObjectForInteractions.TryGetComponent(out S_Interaction_Objects Objects))
+		{
+			if (launchData._force_ <= 0 && launchData._directionToUse_.sqrMagnitude <= 1) { return; }
+
+			_respawnLaunch = launchData;
+			_respawnTransform = transform;
+
+			Objects.ApplyLaunchEffects(launchData);
+			Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, Vector3.zero, transform, Objects.transform, true);
+		}
 	}
 
 	//Checkpoints simply retain transform data, as the level will always reset to its base.
-	public void SetCheckPoint ( Transform position ) {
-		_resumePosition = position.position;
-		_resumeForwards = position.forward;
+	public void SetCheckPoint ( Transform checkPointTransform, S_SpawnCharacter Spawner = null ) {
+		_Spawner = Spawner;
+		_respawnTransform = checkPointTransform;
+		_respawnPosition = checkPointTransform.position;
+		_respawnForwards = checkPointTransform.forward;
+		_respawnLaunch = _Spawner && _Spawner._launch ? _Spawner._launchOnSpawnData_ :  new LaunchPlayerData();
 	}
 	#endregion
 

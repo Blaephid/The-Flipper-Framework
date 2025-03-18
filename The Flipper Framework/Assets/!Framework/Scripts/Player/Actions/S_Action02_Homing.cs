@@ -124,7 +124,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		//Must current be allowed
 		_HomingHandler._isHomingAvailable = _Actions._isAirDashAvailable && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount);
 		//Depending on stats, this can only be performed when grounded.
-		_HomingHandler._isHomingAvailable = _HomingHandler._isHomingAvailable && _PlayerPhys._isGrounded || _CanBePerformedOnGround_;
+		_HomingHandler._isHomingAvailable = _HomingHandler._isHomingAvailable && !_PlayerPhys._isGrounded || _CanBePerformedOnGround_;
 
 		_HomingHandler._isHomingAvailable = _HomingHandler._isHomingAvailable && _Actions._areAirActionsAvailable;
 	}

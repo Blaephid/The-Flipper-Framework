@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Cinemachine.AxisState;
 
 public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 {
@@ -18,8 +20,12 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
 		if (!enabled) { return; }
 
+		Debug.Log("Trigged On");
+
 		SetAnimatorSpeed(Player);
 		_Animator.SetTrigger("TriggerOn");
+
+		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
 
 	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
@@ -27,6 +33,8 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 
 		SetAnimatorSpeed(Player);
 		_Animator.SetTrigger("TriggerOff");
+
+		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 
 	private void SetAnimatorSpeed ( S_PlayerPhysics Player = null ) {
@@ -35,5 +43,12 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 			speedModi = _animSpeedByPlayerSpeed.Evaluate(Player._PlayerVelocity._horizontalSpeedMagnitude / Player._PlayerMovement._currentMaxSpeed);
 
 		_Animator.speed = _defaultSpeed * speedModi;
+	}
+
+	void EventReturnOnDeath ( object sender, EventArgs e ) {
+		_Animator.speed = 5;
+		_Animator.SetTrigger("TriggerOff");
+
+		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 }

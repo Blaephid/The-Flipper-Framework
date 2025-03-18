@@ -8,7 +8,7 @@ public class S_Data_DashRing : S_Data_Base
 {
 
 	[Header("Force")]
-	public S_Structs.LaunchPlayerData _launchData_;
+	public LaunchPlayerData _launchData_ = new LaunchPlayerData();
 	[Tooltip ("If true, then when launching the player, will use the players speed if its higher than the launch force")]
 	public bool         _willCarrySpeed_ = true;
 
@@ -33,16 +33,7 @@ public class S_Data_DashRing : S_Data_Base
 	}
 
 	void UpdateLaunchDataToDirection () {
-		_launchData_ = new S_Structs.LaunchPlayerData()
-		{
-			_force_ = _launchData_._force_,
-			_direction_ = _launchData_._direction_,
-			_directionToUse_ = (transform.rotation * _launchData_._direction_),
-			_lockInputFrames_ = _launchData_._lockInputFrames_,
-			_lockAirMovesFrames_ = _launchData_._lockAirMovesFrames_,
-			_overwriteGravity_ = _launchData_._overwriteGravity_,
-			_lockInputTo_ = _launchData_._lockInputTo_
-		};
+		_launchData_ = LaunchPlayerData.SetLaunchDataToDirection(transform, _launchData_);
 	}
 }
 

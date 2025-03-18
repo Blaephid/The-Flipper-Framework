@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +8,6 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
-#if UNITY_EDITOR
 [ExecuteInEditMode]
 [AddComponentMenu("Data Components/Armoured Train")]
 public class S_Data_ArmouredTrain : S_Data_Base
@@ -85,8 +86,8 @@ public class S_Data_ArmouredTrain : S_Data_Base
 			_ChildObjectSegments.Add(thisSegment);
 		}
 	}
-#endif
 }
+#endif
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(S_Data_ArmouredTrain))]

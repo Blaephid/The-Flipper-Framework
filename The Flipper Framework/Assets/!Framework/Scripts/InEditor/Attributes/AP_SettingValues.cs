@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,7 +7,6 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
-
 
 /// <summary>
 /// Set this property to a boolean value if the given object matches matches a given value. Use if this property can only be true if another is.
@@ -32,7 +33,7 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 	private bool ShouldSetBoolean ( SerializedProperty propertyToSet ) {
 		//Find the field that determines if this property should be drawn.
 
-		_fieldToCheck = OnlyDrawIfAttribute.GetFieldToCheck(propertyToSet, _propertyToCheck);
+		_fieldToCheck = OnlyDrawIfAttribute.GetField(propertyToSet, _propertyToCheck);
 		if (_fieldToCheck == null) { return false; }
 
 		return DrawOthersIfAttribute.IsPropertyEqualToValue(_fieldToCheck, _valueToCheckFor);
@@ -85,3 +86,4 @@ public class CustomReadOnlyAttribute : MultiPropertyAttribute
 		return true;
 	}
 }
+#endif

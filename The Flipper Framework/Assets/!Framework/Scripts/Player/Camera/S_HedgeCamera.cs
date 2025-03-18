@@ -161,7 +161,7 @@ public class S_HedgeCamera : MonoBehaviour
 	public float                  _lockedRotationSpeed;
 	private Vector3                _currentFaceDirection;
 	private bool                  _isRotatingBehind;
-
+	private float                   _stickToPlayerSpeed;
 
 	[HideInInspector]
 	public bool                         _canAffectDistanceBySpeed = true;
@@ -593,6 +593,10 @@ public class S_HedgeCamera : MonoBehaviour
 			{
 				GoBehindCharacter(_rotateToBehindSpeed_, 0, false);
 			}
+			else if (_PlayerVel._horizontalSpeedMagnitude < minSpeed)
+			{
+				_isRotatingBehind = false;
+			}
 			//_CurrentFaceDirection is used to add a delay to rotating before the camera starts following. It moves towards the player rotation, and GoBehindCharacter sets isRotatingBehind to true until rotation is completed, resetting the delay.
 			if (!_isRotatingBehind)
 			{
@@ -603,7 +607,8 @@ public class S_HedgeCamera : MonoBehaviour
 		//This is set externally, and every frame will rotate towards the intended local rotation. This means rather than looking at a world space direction, the camera stays at the same point relative to the 
 		//characters rotation. Similar to rotating behind the character, but for any angle, not just directly behind.
 		void HandleSetLocalRotation () {
-			if (_isRotatingBehind || !_rotateToLocalDirection) { return; }
+			if (_isRotatingBehind || !_rotateToLocalDirection ) { return; }
+			if(_lookTimer < 0 || _lookTimer == 1) { return; } //Only take control if not being directed to look in a different direction.
 
 			Vector3 directionInWorldSpace = _Skin.transform.rotation * _localLookAtDirection;
 			float turnThisFrame = Vector3.Angle(directionInWorldSpace, _previousTranslatedLocalLookAtDirection);
@@ -624,7 +629,7 @@ public class S_HedgeCamera : MonoBehaviour
 			_previousTranslatedLocalLookAtDirection = directionInWorldSpace;
 
 			if (turnThisFrame < 25 && _isCurrentlyRotationTowardsLocalDirection)
-				RotateDirection(directionInWorldSpace, 6, 0, false);
+				RotateDirection(directionInWorldSpace, _stickToPlayerSpeed, 0, false);
 		}
 	}
 
@@ -721,27 +726,25 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 	}
 
-	public void SetToStickToLocalRotation ( bool set, Vector3 rotationInWorld ) {
+	public void SetToStickToLocalRotation ( bool set, Vector3 rotationInWorld, float speed ) {
 		_rotateToLocalDirection = set;
 		_isCurrentlyRotationTowardsLocalDirection = set;
+		_stickToPlayerSpeed = speed;
 		if (!set) { return; }
 
 		_localLookAtDirection = _Skin.transform.InverseTransformDirection(rotationInWorld);
 		_previousTranslatedLocalLookAtDirection = _Skin.rotation * _localLookAtDirection;
 		_lookTimer = 0;
-
 	}
 
 	//Called by other scripts to make the camera face the direction the character is facing.
 	public void GoBehindCharacter ( float speed, float height, bool evenIfLocked = false ) {
 		bool changeHeight = height != 0;
 
-
 		if (!_isLocked || evenIfLocked)
 		{
 			RotateDirection(_Skin.forward, speed, height, changeHeight);
 		}
-
 
 		//These are relevant to auto rotating behind player, when camera completes its rotation, rotation delay is reset.
 		_isRotatingBehind = true;

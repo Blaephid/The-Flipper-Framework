@@ -1250,7 +1250,7 @@ public class S_O_CharacterStats : ScriptableObject
 			invincibilityTime = 90,
 			maxRingLoss = 20,
 			ringReleaseSpeed = 550f,
-			respawnAfter = new Vector3(90, 120, 170),
+			respawnAfter = new Vector4(30, 80, 100, 108),
 			ringArcSpeed = 250f,
 			flickerTimes = new Vector2(5, 10),
 			RingsLostInSpawnByAmount = new AnimationCurve(new Keyframe[]
@@ -1274,7 +1274,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: The character will flicker when invincible. X = how long it will be visible, Y = how long it will be hidden.")]
 		public Vector2            flickerTimes;
 		[Tooltip("Core: How long in frames the three stages of respawning will take in total. X = when to start fading out. Y = when to end fading out (this is when the level will be reset). Z = When to respawn and fade back in.")]
-		public Vector3                respawnAfter;
+		public Vector4                respawnAfter;
 		[Header("Ring Loss")]
 		[Tooltip("Surface: When damage, will never lose more rings than this.")]
 		public int              maxRingLoss;

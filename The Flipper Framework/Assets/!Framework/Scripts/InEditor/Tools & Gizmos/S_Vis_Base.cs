@@ -7,9 +7,11 @@ using UnityEngine;
 using System;
 using static UnityEngine.Rendering.DebugUI;
 
-#if UNITY_EDITOR
 public class S_Vis_Base : MonoBehaviour
 {
+	[HideInInspector] public bool _isSelected;
+
+#if UNITY_EDITOR
 	[CustomReadOnly]
 	[Tooltip("Must be defined in code. If true, will serialize fields releveant to Visualisation, as not all classes will have the necessary implementation for this.")]
 	[DrawHorizontalWithOthers(new string[] { "_viewVisualisationData"})]
@@ -38,9 +40,6 @@ public class S_Vis_Base : MonoBehaviour
 	[HideInInspector]
 	public Color _selectedFillColour = new Color(1,1,1,0.1f);
 
-
-	[HideInInspector] public bool _isSelected;
-
 	private void OnEnable () {
 		_isSelected = false;
 	}
@@ -48,24 +47,25 @@ public class S_Vis_Base : MonoBehaviour
 	private void OnDrawGizmos () {
 		if (!enabled || !_hasVisualisationScripted) { return; }
 
+		_isSelected = false;
+
 		if (transform.parent != null)
 		{
 			if(_drawIfParentSelected)
-				if (S_S_Editor.IsThisOrListOrChildrenSelected(transform.parent, new GameObject[] { transform.parent.gameObject })) { DrawGizmosAndHandles(true); return; }
-			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject })) { DrawGizmosAndHandles(true); return; }
+				if (S_S_Editor.IsThisOrListOrChildrenSelected(transform.parent, new GameObject[] { transform.parent.gameObject })) { _isSelected = true; }
+			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject })) { _isSelected = true; }
 		}
 		else
-			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, null)){ DrawGizmosAndHandles(true); return; }
+			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, null)){ _isSelected = true; }
 
-		if (_drawAtAllTimes)
+		if (_drawAtAllTimes || _isSelected)
 		{
-			DrawGizmosAndHandles(false);
+			DrawGizmosAndHandles(_isSelected);
 		}
 	}
 
 	//Called whenever object is selected when gizmos are enabled.
 	public virtual void DrawGizmosAndHandles ( bool selected ) {
-
 	}
 
 
@@ -83,5 +83,5 @@ public class S_Vis_Base : MonoBehaviour
 			S_S_Drawing.DrawSelectableHandle(position, gameObject, handleRadius);
 		}
 	}
-}
 #endif
+}

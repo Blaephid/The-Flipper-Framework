@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class S_Trigger_External : S_Trigger_Base
 {
@@ -177,33 +176,6 @@ public class S_Trigger_External : S_Trigger_Base
 		}
 	}
 
-	//Ensures the GameObject that acts as the source of data knows this, and will display in its own inspector.
-	private void SetTriggersForPlayerToRead ( GameObject SetTo ) {
-
-		if (!_TriggersForPlayerToRead.Contains(SetTo)) { _TriggersForPlayerToRead.Add(SetTo); }
-
-		//If not changing, none of this is needed.
-		if ((_TriggersForPlayerToRead.Count == 0 && !SetTo) || (SetTo && _TriggersForPlayerToRead.Contains(SetTo))) { return; }
-
-		for (int trig = 0 ; trig < _TriggersForPlayerToRead.Count ; trig++)
-		{
-			//Remove this trigger's reference to what needs to be read now, as it may no longer have that reference soon.
-			if (_TriggersForPlayerToRead[trig] && _TriggersForPlayerToRead[trig].TryGetComponent(out S_Trigger_External TriggerData))
-			{
-				CheckExternalTriggerDataHasTrigger(true, TriggerData);
-			}
-
-			else
-			{
-				_TriggersForPlayerToRead.RemoveAt(trig);
-				trig--;
-			}
-
-			//if (!(_TriggersForPlayerToRead && _TriggersForPlayerToRead.TryGetComponent(out S_Trigger_External TriggerData2))) { return; }
-			////If valid TriggerToRead, update it as being triggered by this, even if its itself.
-			//CheckExternalTriggerDataHasTrigger(false, TriggerData2);
-		}
-	}
 
 	private void CheckExternalTriggerDataHasTrigger ( bool removeThisTrigger, S_Trigger_External TargetTriggerData ) {
 

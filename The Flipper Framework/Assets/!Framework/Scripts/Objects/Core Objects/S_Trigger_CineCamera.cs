@@ -91,7 +91,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		{
 			using (new Handles.DrawingScope(colour))
 			{
-				S_S_Drawing.DrawArrowHandle(colour, _CinematicCamObject.transform, 3f, false, Vector3.forward, transform.position);
+				S_S_Drawing.DrawArrowHandle(colour, _CinematicCamObject.transform, 3f, false, Vector3.forward, _CinematicCamObject.transform.position);
 				Handles.DrawLine(transform.position, _CinematicCamObject.transform.position, 0.5f);
 			}
 		}
@@ -151,12 +151,16 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 
 		_isCurrentlyActive = true;
 
+		_CinematicCamObject.transform.position = cameraOriginalPosition;
+		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
+
 		//If the cinematic is supposed to start from the player cameras current position.
 		if (_startFromCurrentCam)
 		{
 			_CinematicCamObject.transform.position = _PlayerCameraHandler._HedgeCam.transform.position;
 			_CinematicCamObject.transform.rotation = _PlayerCameraHandler._HedgeCam.transform.rotation;
 		}
+		
 
 		//Apply requirements onto cinemachine
 		if (lookPlayer)
@@ -165,15 +169,24 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		if (followPlayer)
 			_CinematicCamComponent.Follow = _PlayerTools.transform;
 
-		_CinematicCamObject.transform.position = cameraOriginalPosition;
-		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
 		_CinematicCamObject.transform.position += _startOffset;
 
+		SetBlend(_framesIn);
+
 		S_S_Logic.AddLockToList(ref _HedgeCamera._locksForCameraFallBack, gameObject.name);
-		_MainCameraBrain.m_DefaultBlend.m_Time = _framesIn / 55f;
 		_CinematicCamObject.SetActive(true); //Blending is handled by the blend object attached to the main camera cinemachine brain.
 
 		S_Manager_LevelProgress.OnReset += ResetCamera; //Ensures camera will end if player dies when its active.
+	}
+
+	private void SetBlend(float frames ) {
+
+		if (frames != 0)
+		{
+			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, frames / 55f);
+		}
+		else
+			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0);
 	}
 
 	public void ResetCamera ( object sender, EventArgs e ) {
@@ -203,7 +216,8 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		if (_lockPlayerInputFor > 0)
 			_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(_lockPlayerInputFor, true, Vector3.zero, _LockInputTo_);
 
-		_MainCameraBrain.m_DefaultBlend.m_Time = _framesOut / 55f;
+		SetBlend(_framesOut);
+
 		_CinematicCamObject.SetActive(false); //Blending is handled by the blend object attached to the main camera cinemachine brain.
 		for (int i = 0 ; i < 3 ; i++)
 		{

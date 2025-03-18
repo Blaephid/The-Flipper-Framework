@@ -1727,16 +1727,16 @@ MonoBehaviour:
     behaviour: 0
     dashSpeed: 80
     dashIncrease: 15
-    forceUpwards: 30
-    horizontalAngle: 45
+    forceUpwards: 35
+    horizontalAngle: 109
     lockMoveInputOnStart: 0
     timeBeforeCanChangeAction: 0.1
     turnSpeed: 5
     maxDuration: 0.3
     minDuration: 0.15
-    faceDownwardsSpeed: 3
-    maxDownwardsSpeed: -10
-    lockMoveInputOnEnd: 0
+    faceDownwardsSpeed: 4
+    maxDownwardsSpeed: -13
+    lockMoveInputOnEnd: 1
     speedAfterDash: -5
     framesToChangeSpeed: 5
   StartJumpDashStats:
@@ -1756,11 +1756,11 @@ MonoBehaviour:
     speedAfterDash: -5
     framesToChangeSpeed: 5
   HomingSearch:
-    timeBetweenScans: 0.06
-    targetSearchDistance: 44
+    timeBetweenScans: 0.03
+    targetSearchDistance: 60
     distanceModifierInCameraDirection: 1.2
     radiusOfCameraTargetCheck: 15
-    minimumTargetDistance: 4
+    minimumTargetDistance: 5
     maximumTargetDistance: 80
     TargetLayer:
       serializedVersion: 2
@@ -1794,10 +1794,10 @@ MonoBehaviour:
     iconScale: 1.5
     iconDistanceScaling: 0.2
   HomingStats:
-    canBePerformedOnGround: 1
+    canBePerformedOnGround: 0
     canDashWhenFalling: 1
     homingCountLimit: 0
-    attackSpeed: 100
+    attackSpeed: 180
     timerLimit: 1.5
     turnSpeed: 7
     successDelay: 0.3
@@ -1805,8 +1805,8 @@ MonoBehaviour:
     lerpToNewInputOnHit: 0.292
     lerpToPreviousDirectionOnHit: 0.782
     canBeControlled: 0
-    maximumSpeed: 140
-    minimumSpeed: 60
+    maximumSpeed: 200
+    minimumSpeed: 80
     deceleration: 55
     acceleration: 70
   StartHomingStats:
@@ -2566,7 +2566,7 @@ MonoBehaviour:
   WhenHurt:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
-    respawnAfter: {x: 90, y: 120, z: 170}
+    respawnAfter: {x: 30, y: 70, z: 100, w: 108}
     maxRingLoss: 20
     ringReleaseSpeed: 550
     ringArcSpeed: 250
@@ -2624,7 +2624,7 @@ MonoBehaviour:
   StartWhenHurt:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
-    respawnAfter: {x: 90, y: 120, z: 170}
+    respawnAfter: {x: 90, y: 120, z: 170, w: 108}
     maxRingLoss: 20
     ringReleaseSpeed: 550
     ringArcSpeed: 250

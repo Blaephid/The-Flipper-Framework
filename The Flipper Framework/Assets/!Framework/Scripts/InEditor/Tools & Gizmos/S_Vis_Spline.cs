@@ -16,6 +16,7 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 	[SerializeField] private int _distancePerCalculation = 10;
 
 	[SerializeField] private Vector3 _selectPointOffset;
+	[SerializeField] private float _selectHandleSize = 6;
 	private Vector3 _middleOfSpline;
 
 	public Spline _SplineToDisplay;
@@ -66,7 +67,7 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 
 
 	public void CustomOnSceneGUI ( SceneView sceneView ) {
-		VisualiseWithSelectableHandle(_middleOfSpline + (transform.rotation * _selectPointOffset), 6);
+		VisualiseWithSelectableHandle(_middleOfSpline + (transform.rotation * _selectPointOffset), _selectHandleSize);
 	}
 }
 

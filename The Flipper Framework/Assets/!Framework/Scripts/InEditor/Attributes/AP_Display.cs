@@ -1,3 +1,5 @@
+
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,6 +34,7 @@ public class BaseColourAttribute : MultiPropertyAttribute
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class ColourIfNullAttribute : MultiPropertyAttribute
 {
+#if UNITY_EDITOR
 	public Color            _colour;
 
 	public ColourIfNullAttribute ( float r, float g, float b, float a ) {
@@ -46,6 +49,7 @@ public class ColourIfNullAttribute : MultiPropertyAttribute
 
 		return true;
 	}
+#endif
 }
 
 /// <summary>

@@ -7,7 +7,6 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.ShaderGraph;
 using UnityEngine;
 
 [ExecuteInEditMode]

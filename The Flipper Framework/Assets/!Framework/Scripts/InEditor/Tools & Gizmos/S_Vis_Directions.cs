@@ -49,6 +49,7 @@ public class S_Vis_Directions : S_Vis_Base
 	}
 
 	private void DrawLineInDirection ( Vector3 direction, float useThickness ) {
+		Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
 		Handles.DrawLine(transform.position, transform.position + direction, useThickness);
 	}
 }

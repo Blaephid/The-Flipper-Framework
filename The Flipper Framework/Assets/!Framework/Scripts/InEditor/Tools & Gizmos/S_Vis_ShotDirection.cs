@@ -71,7 +71,8 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	[ExecuteInEditMode]
 	void Update () {
 		if(Application.isPlaying) { return; }
-		SetUpShot();
+		if(_isSelected)
+			SetUpShot();
 	}
 
 	private void SetUpShot () {
@@ -107,11 +108,11 @@ public class S_Vis_ShotDirection : S_Vis_Base
 		string translatedVariableName = S_S_Editor.TranslateStringToVariableName(_launcherStructName, S_EditorEnums.CasingTypes.camelCase);
 		object value = S_S_Editor.FindFieldByName(_LauncherScript, translatedVariableName, "").value;
 
-		if (value == null || value.GetType() != typeof(S_Structs.LaunchPlayerData)) { return null; }
+		if (value == null || value.GetType() != typeof(LaunchPlayerData)) { return null; }
 
 		_launcherStructName = translatedVariableName;
 
-		S_Structs.LaunchPlayerData launcherData = (S_Structs.LaunchPlayerData) value;
+		LaunchPlayerData launcherData = (LaunchPlayerData) value;
 
 		if (launcherData._overwriteGravity_ != Vector3.zero)
 		{
@@ -121,40 +122,16 @@ public class S_Vis_ShotDirection : S_Vis_Base
 		_lockFrames = launcherData._lockInputFrames_;
 		Vector3 direction = launcherData._directionToUse_;
 
-		Vector3[] velocitySplit = S_Interaction_Objects.SplitCoreAndEnvironmentalVelocities(null, direction, launcherData._force_, 0, _maxSpeed, false);
+		Vector3[] velocitySplit = S_Interaction_Objects.SplitCoreAndEnvironmentalVelocities(null, direction, launcherData._force_, 0, _maxSpeed, launcherData._useCore);
 
 		//Use the launch data to proejct where player will go.
 		return PreviewTrajectory(_ShotCenter.position, velocitySplit[0], velocitySplit[1], launcherData._lockInputTo_);
 
 	}
 
-	private void DrawGizmosFromArray ( Vector3[] debugTrajectoryPoints, bool selected ) {
-
-		if (debugTrajectoryPoints == null || debugTrajectoryPoints.Length == 0) { return; }
-
-		if (selected) { Gizmos.color = _selectedOutlineColour; }
-		else { Gizmos.color = _normalOutlineColour; }
-
-		//Create a series of line gizmos representing a path along the points.
-		for (int i = 1 ; i < debugTrajectoryPoints.Length ; i++)
-		{
-			Gizmos.DrawLine(debugTrajectoryPoints[i - 1], debugTrajectoryPoints[i]);
-
-			if (i == _lockFrames)
-			{
-				if (selected) { Gizmos.color = _selectedFillColour; }
-				else { Gizmos.color = _selectedOutlineColour; }
-				Gizmos.DrawLine(debugTrajectoryPoints[i], debugTrajectoryPoints[i] + Vector3.up * 2);
-			}
-			else
-			{
-				Gizmos.DrawLine(debugTrajectoryPoints[i], debugTrajectoryPoints[i] + Vector3.up);
-			}
-		}
-	}
 
 	//Will take a velocity and important character stats, and create a path the player would follow if they weren't inputting.
-	private Vector3[] PreviewTrajectory ( Vector3 position, Vector3 enVelocity, Vector3 coreVelocity, S_GeneralEnums.LockControlDirection whatInput) {
+	private Vector3[] PreviewTrajectory ( Vector3 position, Vector3 enVelocity, Vector3 coreVelocity, S_GeneralEnums.LockControlDirection whatInput ) {
 
 		//How many fixed update calculations will be performed in space of line length.
 		float timeStep = Time.fixedDeltaTime;
@@ -181,13 +158,9 @@ public class S_Vis_ShotDirection : S_Vis_Base
 			switch (whatInput)
 			{
 				//If there is input in a direction, then player will be accelerating, so reflect that.
-				case S_GeneralEnums.LockControlDirection.CharacterForwards: case S_GeneralEnums.LockControlDirection.Change: 
-					float useMod = _accellModInAir;
-					if(coreSpeed < 20)
-					{
-						useMod += 0.5f;
-					}
-					decelAmount -= _acceleration * _AcellBySpeed.Evaluate(coreSpeed / _maxSpeed) * useMod; break;
+				case S_GeneralEnums.LockControlDirection.CharacterForwards:
+				case S_GeneralEnums.LockControlDirection.Change:
+					AccelerateSim(); break;
 
 			}
 			coreSpeed -= decelAmount;
@@ -199,8 +172,44 @@ public class S_Vis_ShotDirection : S_Vis_Base
 			vel = _coreVelAtEnd + _environmentalVelAtStart;
 			pos += vel * timeStep;
 			path[i] = pos;
+
+			continue;
+			void AccelerateSim () {
+				float useMod = _accellModInAir;
+				if (coreSpeed < 20)
+				{
+					useMod += 0.5f;
+				}
+				float acceleration = _acceleration * _AcellBySpeed.Evaluate(coreSpeed / _maxSpeed) * useMod;
+				decelAmount -= acceleration;
+			}
 		}
 		return path;
+	}
+
+	private void DrawGizmosFromArray ( Vector3[] debugTrajectoryPoints, bool selected ) {
+
+		if (debugTrajectoryPoints == null || debugTrajectoryPoints.Length == 0) { return; }
+
+		if (selected) { Gizmos.color = _selectedOutlineColour; }
+		else { Gizmos.color = _normalOutlineColour; }
+
+		//Create a series of line gizmos representing a path along the points.
+		for (int i = 1 ; i < debugTrajectoryPoints.Length ; i++)
+		{
+			Gizmos.DrawLine(debugTrajectoryPoints[i - 1], debugTrajectoryPoints[i]);
+
+			if (i == _lockFrames)
+			{
+				if (selected) { Gizmos.color = _selectedFillColour; }
+				else { Gizmos.color = _selectedOutlineColour; }
+				Gizmos.DrawLine(debugTrajectoryPoints[i], debugTrajectoryPoints[i] + Vector3.up * 2);
+			}
+			else
+			{
+				Gizmos.DrawLine(debugTrajectoryPoints[i], debugTrajectoryPoints[i] + Vector3.up);
+			}
+		}
 	}
 }
 #endif

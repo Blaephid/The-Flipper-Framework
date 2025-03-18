@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
 [DisallowMultipleComponent]
 [CanEditMultipleObjects]
+#endif
 public class S_Data_Base : S_Vis_Base
 {
 	public event        EventHandler onObjectValidate;

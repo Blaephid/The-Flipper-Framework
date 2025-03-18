@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -53,7 +55,7 @@ public class DrawTickBoxBeforeAttribute : MultiPropertyAttribute
 		EditorGUI.PrefixLabel(_labelRect, label);
 
 		//Find the field that will be used as the checkbox between the field and name of field.
-		SerializedProperty fieldToCheck = property.serializedObject.FindProperty(_booleanForTickBox);
+		SerializedProperty fieldToCheck =  OnlyDrawIfAttribute.GetField(property, _booleanForTickBox);
 		EditorGUI.PropertyField(_tickBoxRect, fieldToCheck, GUIContent.none);
 	}
 
@@ -161,7 +163,7 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		{
 			string newPropertyName = _listOfOtherFields_[i];
 			SerializedProperty newProperty;
-			newProperty = property.serializedObject.FindProperty(newPropertyName);
+			newProperty = OnlyDrawIfAttribute.GetField(property, newPropertyName);
 			
 			if(newProperty == null)
 			{
@@ -286,3 +288,4 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 	}
 
 }
+#endif

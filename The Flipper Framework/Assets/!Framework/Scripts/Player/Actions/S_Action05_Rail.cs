@@ -99,6 +99,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	[HideInInspector]
 	public bool         _isGrinding; //USed to ensure no calculations are made from this still being active for possibly one frame called by Update when ending action.
+
+	private float _previousTimeBetweenUpdates;
 	#endregion
 	#endregion
 
@@ -135,8 +137,11 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				break;
 		}
 
+		_previousTimeBetweenUpdates = Time.deltaTime;
+
 		_RF.GetNewSampleOnRail();
 		_RF.PlaceOnRail(SetRotation, SetPosition);
+
 	}
 
 	new private void FixedUpdate () {
@@ -148,8 +153,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _RF._grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
-
+	
 		MoveOnRail();
+
 		if (_canInput) { HandleInputs(); }
 
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _RF._grindingSpeed; }//Apples all changes to grind speed.
@@ -369,6 +375,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	}
 
 	public void SetPosition ( Vector3 position ) {
+
 		_PlayerPhys.SetPlayerPosition(position);
 	}
 

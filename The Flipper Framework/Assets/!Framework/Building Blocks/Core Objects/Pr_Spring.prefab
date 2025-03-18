@@ -109,10 +109,12 @@ MonoBehaviour:
   _launchData_:
     _force_: 100
     _direction_: {x: 0, y: 1, z: 0}
-    _directionToUse_: {x: 0.422489, y: 0.8469813, z: -0.3226853}
+    _directionToUse_: {x: 0.49285725, y: 0.61334103, z: -0.6171746}
+    _overwriteGravity_: {x: 0, y: 0, z: 0}
+    _useCore: 0
+    _simCoreSpeed: 0
     _lockInputFrames_: 55
     _lockAirMovesFrames_: 30
-    _overwriteGravity_: {x: 0, y: 0, z: 0}
     _lockInputTo_: 1
   _keepHorizontal_: 0
   _changePlayerForwards: 0
@@ -229,7 +231,7 @@ MonoBehaviour:
   _hasVisualisationScripted: 1
   _viewVisualisationData: 1
   _viewVisualisationDataHidden: 1
-  _drawAtAllTimes: 1
+  _drawAtAllTimes: 0
   _drawIfParentSelected: 0
   _normalOutlineColour: {r: 0.7075472, g: 0.32916558, b: 0.19691172, a: 0.39215687}
   _selectedOutlineColour: {r: 0.8396226, g: 0.04356533, b: 0.04356533, a: 0.5882353}
@@ -243,7 +245,7 @@ MonoBehaviour:
     type: 2}
   _ShotCenter: {fileID: 4000012764413882}
   _coreVelAtEnd: {x: 0, y: -199.79987, z: 0}
-  _environmentalVelAtStart: {x: 42.248898, y: 84.69813, z: -32.26853}
+  _environmentalVelAtStart: {x: 49.285725, y: 61.334103, z: -61.71746}
 --- !u!114 &2685212621995745683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,22 +761,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.7037217
+      value: -0.69372004
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0092246
+      value: -0.0021253943
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7103548
+      value: 0.7202382
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.00931155
+      value: -0.0022066394
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -1012,7 +1014,7 @@ PrefabInstance:
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}
       propertyPath: _offset.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

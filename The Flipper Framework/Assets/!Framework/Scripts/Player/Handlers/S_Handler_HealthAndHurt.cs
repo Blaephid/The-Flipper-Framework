@@ -58,7 +58,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private float		_damageShakeAmmount_;
 	private float		_enemyHitShakeAmmount_;
 	private AnimationCurve	_RingsLostInSpawnByAmount_;
-	private Vector3		_respawnAfter_;
+	private Vector4		_respawnAfter_;
 
 	private Vector2		_minSpeedToBonk_;
 	private LayerMask		_BonkWall_;
@@ -102,8 +102,12 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	#region Inherited
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
+	private void Awake () {
 		ReadyScript();
+
+		_isDead = true;
+		_deadCounter = (int)_respawnAfter_.z - 1;
+		StartCoroutine(TrackDeath());
 	}
 
 	private void FixedUpdate () {
@@ -259,7 +263,6 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 			//Set public
 			_ringAmount = 0;
-			//_PlayerPhys._locksForCanControl.Add(false);
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Dead"); //Does not have to be undone because on respawn, this will be cleared.
 
 			//Enter the hurt action until respawn
@@ -275,12 +278,13 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		{
 			yield return new WaitForFixedUpdate();
 
-			_Input._move = Vector3.zero;
 			_deadCounter += 1;
 
 			//Start fading out the screen
 			if (_deadCounter > _respawnAfter_.x && _deadCounter < _respawnAfter_.y)
 			{
+				_Input._move = Vector3.zero;
+
 				//Gets the percentage value of the movement from start fade out time to end fade out time
 				float lerpTotal = _respawnAfter_.y - _respawnAfter_.x; //The difference between start and end
 				float lerpAmount = (_deadCounter - _respawnAfter_.x); //The amount after the start
@@ -304,30 +308,39 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			else if (_deadCounter == _respawnAfter_.z)
 			{
 				ResetStatsOnRespawn();
+				_Input._move = Vector3.zero;
 
 				//Move player back to checkPoint
 				_LevelHandler.ResetToCheckPoint();
 
 				_CharacterCapsule.gameObject.SetActive(true); ; //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
+				_FadeOutImage.color = Color.black ;
 			}
 			//Removed screen overlay to reveal new location
 			else if (_deadCounter > _respawnAfter_.z)
 			{
-				float lerpAmount = (_deadCounter - _respawnAfter_.x); //The amount after the start
-				lerpAmount = lerpAmount / 10;    //The progress as a percentage
+				float lerpAmount = (_deadCounter - _respawnAfter_.z); //The amount after the start
+				lerpAmount = lerpAmount / (_respawnAfter_.w - _respawnAfter_.z);    //The progress as a percentage
 
 				//Change colour according to the lerp value
 				Color imageColour = Color.black;
 				imageColour.a = 0;
 				_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
 
+				if (_deadCounter == _respawnAfter_.z + 2)
+				{
+					_LevelHandler.LaunchOnRespawn();
+				}
+
 				//End state
-				if (_deadCounter == _respawnAfter_.z + 10)
+				else if (_deadCounter == _respawnAfter_.w)
 				{
 					_isDead = false;
 					_deadCounter = 0;
 				}
 			}
+			else
+				_Input._move = Vector3.zero;
 		}
 	}
 
@@ -341,6 +354,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_PlayerPhys._locksForCanTurn.Clear();
 		_PlayerPhys._canChangeGrounded = true;
 		_PlayerPhys._arePhysicsOn = true;
+
+		_Input.UnLockInput();
 
 		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(0, 0));
 	}

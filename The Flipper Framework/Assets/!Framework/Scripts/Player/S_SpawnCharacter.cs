@@ -30,7 +30,7 @@ public class S_SpawnCharacter : S_Vis_Base
 	public int      _spawnDelay = 5;
 	public bool	_launch;
 	[Tooltip("If data is provided, player will start with a velocity, rather than just dropping. This is applied in S_CharacterTools.")]
-	public S_Structs.LaunchPlayerData _launchOnSpawnData_;
+	public LaunchPlayerData _launchOnSpawnData_;
 
 
 	//Spawning
@@ -74,16 +74,7 @@ public class S_SpawnCharacter : S_Vis_Base
 
 	[ExecuteInEditMode]
 	private void UpdateLaunchDataToDirection () {
-		_launchOnSpawnData_ = new S_Structs.LaunchPlayerData()
-		{
-			_force_ = _launchOnSpawnData_._force_,
-			_direction_ = _launchOnSpawnData_._direction_,
-			_directionToUse_ = (transform.rotation * _launchOnSpawnData_._direction_).normalized,
-			_lockInputFrames_ = _launchOnSpawnData_._lockInputFrames_,
-			_lockAirMovesFrames_ = _launchOnSpawnData_._lockAirMovesFrames_,
-			_overwriteGravity_ = _launchOnSpawnData_._overwriteGravity_,
-			_lockInputTo_ = _launchOnSpawnData_._lockInputTo_
-		};
+		_launchOnSpawnData_ = LaunchPlayerData.SetLaunchDataToDirection(transform, _launchOnSpawnData_);
 	}
 
 	// Use this for initialization

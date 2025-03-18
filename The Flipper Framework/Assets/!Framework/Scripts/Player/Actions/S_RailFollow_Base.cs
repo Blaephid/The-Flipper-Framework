@@ -48,8 +48,12 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	[HideInInspector] public bool                  _isRailLost;        //Set to true when point on spline surpasses the limit, to inform later if statements that update.
 
+	private float _timeBetweenUpdates;
 
 	public void GetNewSampleOnRail ( float moveModifier = 1 ) {
+
+		_timeBetweenUpdates = Mathf.Min(Time.fixedDeltaTime, Time.deltaTime);
+
 		//Increase/decrease the Amount of distance travelled on the Spline by DeltaTime and direction
 		float travelAmount = (Time.deltaTime * _grindingSpeed) * moveModifier;
 		_movingDirection = _isGoingBackwards ? -1 : 1;
