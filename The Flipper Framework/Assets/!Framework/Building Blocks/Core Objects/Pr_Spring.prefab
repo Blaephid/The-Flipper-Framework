@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5626e6442bcc31848b513053d594ce12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
   _hasVisualisationScripted: 0
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -104,15 +105,12 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _InspectorTheme: {fileID: 0}
   _launchData_:
     _force_: 100
     _direction_: {x: 0, y: 1, z: 0}
     _directionToUse_: {x: 0.49285725, y: 0.61334103, z: -0.6171746}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
     _useCore: 0
-    _simCoreSpeed: 0
     _lockInputFrames_: 55
     _lockAirMovesFrames_: 30
     _lockInputTo_: 1
@@ -228,6 +226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
   _hasVisualisationScripted: 1
   _viewVisualisationData: 1
   _viewVisualisationDataHidden: 1
@@ -236,7 +235,6 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.7075472, g: 0.32916558, b: 0.19691172, a: 0.39215687}
   _selectedOutlineColour: {r: 0.8396226, g: 0.04356533, b: 0.04356533, a: 0.5882353}
   _selectedFillColour: {r: 0.1509434, g: 0.013527942, b: 0.013527942, a: 0.5882353}
-  _isSelected: 0
   _debugForce: 1
   _calculations: 75
   _LauncherScript: {fileID: 114000012005501162}
@@ -761,22 +759,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.69372004
+      value: -0.7073742
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.0021253943
+      value: 0.009524794
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7202382
+      value: 0.70671105
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0022066394
+      value: 0.009515866
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

@@ -6,10 +6,10 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
-#if UNITY_EDITOR
 [ExecuteInEditMode]
 public class S_Vis_ShotDirection : S_Vis_Base
 {
+#if UNITY_EDITOR
 	public S_Vis_ShotDirection () {
 		_hasVisualisationScripted = true;
 		_drawIfParentSelected = true;
@@ -91,6 +91,8 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	}
 
 	private void GetValuesFromScriptableObject () {
+		if (!_CharacterStatsToFollow) { enabled = false; return; }
+
 		//Gets values for simulation from stats object.
 		_constantDeceleration = _CharacterStatsToFollow.DecelerationStats.airConstantDecel;
 		_fallGravity = _CharacterStatsToFollow.WhenInAir.fallGravity;
@@ -211,5 +213,5 @@ public class S_Vis_ShotDirection : S_Vis_Base
 			}
 		}
 	}
-}
 #endif
+}

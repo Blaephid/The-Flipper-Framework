@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class S_Vis_Directions : S_Vis_Base
 {
+#if UNITY_EDITOR
 	public S_Vis_Directions () {
 		_hasVisualisationScripted = true;
 	}
@@ -52,4 +53,5 @@ public class S_Vis_Directions : S_Vis_Base
 		Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
 		Handles.DrawLine(transform.position, transform.position + direction, useThickness);
 	}
+#endif
 }

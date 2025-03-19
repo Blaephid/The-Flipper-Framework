@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
+#if UNITY_EDITOR
 public class S_S_Drawing
 {
 
@@ -97,3 +97,4 @@ public class S_S_Drawing
 	}
 
 }
+#endif

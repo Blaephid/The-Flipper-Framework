@@ -1,17 +1,19 @@
-#if UNITY_EDITOR
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using templates;
 using UnityEditor;
+#if UNITY_EDITOR
 using UnityEditor.Animations;
+#endif
 using UnityEngine;
 
 [ExecuteInEditMode]
 [AddComponentMenu("Data Components/Armoured Train")]
 public class S_Data_ArmouredTrain : S_Data_Base
 {
+#if UNITY_EDITOR
 	public bool _updateAutomatically = true;
 
 	public StrucSegments[] _Segments;
@@ -24,17 +26,21 @@ public class S_Data_ArmouredTrain : S_Data_Base
 		public GameObject		_Source;
 		public Vector3		_localOffset;
 		public Vector3                _rotationOffset;
+#if UNITY_EDITOR
 		public AnimatorController	_ControllerIfNeeded;
+#endif
 	}
 
 	private void Update () {
-		if(Application.isPlaying) { return; }
+#if UNITY_EDITOR
+		if (Application.isPlaying) { return; }
 
 		if (_updateAutomatically)
 		{
 			RemoveExtraSegmentsIfNotWanted();
 			ResetOrCreateSegmentChildren(false);
 		}
+#endif
 	}
 
 	public void RemoveExtraSegmentsIfNotWanted () {
@@ -86,8 +92,10 @@ public class S_Data_ArmouredTrain : S_Data_Base
 			_ChildObjectSegments.Add(thisSegment);
 		}
 	}
-}
+
+	public S_O_CustomInspectorStyle _InspectorTheme;
 #endif
+}
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(S_Data_ArmouredTrain))]

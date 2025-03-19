@@ -103,12 +103,14 @@ public class S_Trigger_Camera : S_Trigger_External
 	[OnlyDrawIf("_willOffsetTarget", true)]
 	public bool _overWriteAllOffsets;
 
+#if UNITY_EDITOR
 	[DrawHorizontalWithOthers(new string[] { "_meshScale" }, new float[] { 2.5f, 1f })]
 	[OnlyDrawIf("_willOffsetTarget", true)]
 	[BaseColour(0.8f, 0.8f, 0.8f, 1)]
 	public Mesh _VisualiseWithMesh;
 	[OnlyDrawIf("_willOffsetTarget", true), HideInInspector, Min(0.2f)]
 	[SerializeField] private float _meshScale = 1;
+#endif
 
 	[HideInInspector, SerializeField]
 	private Vector3 _offsetReferenceInWorld;
@@ -130,7 +132,6 @@ public class S_Trigger_Camera : S_Trigger_External
 	}
 
 #if UNITY_EDITOR
-
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
 		base.DrawAdditionalGizmos(selected, colour);
 		if (_hasTrigger)

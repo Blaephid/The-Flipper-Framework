@@ -1,5 +1,3 @@
-#if UNITY_EDITOR
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +20,7 @@ public class AsButtonAttribute : MultiPropertyAttribute
 		_buttonName = buttonName;
 	}
 
+#if UNITY_EDITOR
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 
 		if (GUI.Button(position, _buttonName))
@@ -40,6 +39,6 @@ public class AsButtonAttribute : MultiPropertyAttribute
 
 		return false;
 	}
+#endif
 }
 
-#endif

@@ -32,7 +32,6 @@ public struct FieldAndValue
 public class S_S_Editor : MonoBehaviour
 {
 
-#if UNITY_EDITOR
 	//Takes a string and converts it to align with variable naming conventions, allowing the human's input to not have to be 100%.
 	//
 	public static string TranslateStringToVariableName ( string input, S_EditorEnums.CasingTypes casing = S_EditorEnums.CasingTypes.Either ) {
@@ -151,6 +150,7 @@ public class S_S_Editor : MonoBehaviour
 		return new FieldAndValue() {field = field, value = value};
 	}
 
+#if UNITY_EDITOR
 	// Check if a given GameObject is part of the current selection
 	public static bool IsSelected ( GameObject gameObject ) {
 		return Array.Exists(Selection.gameObjects, obj => obj == gameObject);
@@ -220,7 +220,7 @@ public class S_S_Editor : MonoBehaviour
 			transform.rotation = Quaternion.LookRotation(camDirection);
 		}
 	}
-
+#endif
 
 	public static GameObject FindChild ( GameObject parentObject, string newObjectName ) {
 		//Searches for a child of this name
@@ -318,6 +318,7 @@ public class S_S_Editor : MonoBehaviour
 		return false;
 	}
 
+#if UNITY_EDITOR
 	public static void FindObjectAndSetActive ( string name, bool set, Transform Parent = null ) {
 		GameObject Target;
 		if (Parent)

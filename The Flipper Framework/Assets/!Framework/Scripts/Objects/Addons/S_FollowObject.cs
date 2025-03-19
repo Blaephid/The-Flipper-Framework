@@ -22,6 +22,7 @@ public class S_FollowObject : MonoBehaviour
 		_isFollowing = _followInPlay;
 	}
 
+#if UNITY_EDITOR
 	private void OnValidate () {
 		_offset = _offset == default(Vector3) ? Vector3.up * 0.1f : _offset;
 
@@ -37,6 +38,7 @@ public class S_FollowObject : MonoBehaviour
 
 		Follow();
 	}
+#endif
 
 	private void OnEnable () {
 		if((_followInPlay && Application.isPlaying ) || !Application.isPlaying) { _isFollowing = true; Follow(); }
@@ -55,8 +57,10 @@ public class S_FollowObject : MonoBehaviour
 	private void Follow (bool canAdjust = false) {
 		if (!_isFollowing || !_Parent) { return; }
 
+#if UNITY_EDITOR
 		if (canAdjust && Selection.activeGameObject == gameObject &&  transform.position - _Parent.position != _rememberOffset && _rememberOffset == _offset && _rememberOffset != default(Vector3))
 			_offset = transform.position - _Parent.position;
+#endif
 
 		transform.position = _Parent.position + _offset;
 		_rememberOffset = _offset;

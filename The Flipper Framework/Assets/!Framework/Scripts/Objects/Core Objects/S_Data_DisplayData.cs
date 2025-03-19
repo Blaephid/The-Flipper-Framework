@@ -265,6 +265,9 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 		if (_updateTransform) HandleTransform();
 	}
 
+#if UNITY_EDITOR
+	public S_O_CustomInspectorStyle _InspectorTheme;
+#endif
 }
 
 

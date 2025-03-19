@@ -9,6 +9,8 @@ using UnityEngine;
 [AttributeUsage(AttributeTargets.Field)]
 public abstract class MultiPropertyAttribute : PropertyAttribute
 {
+
+#if UNITY_EDITOR
 	//List of all the Attributes to be applied onto the property. Set in the Property Drawer.
 	public List<object> _AttributesToApply = new List<object>();
 
@@ -59,4 +61,6 @@ public abstract class MultiPropertyAttribute : PropertyAttribute
 	public virtual void DrawAfterProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 
 	}
+
+#endif
 }

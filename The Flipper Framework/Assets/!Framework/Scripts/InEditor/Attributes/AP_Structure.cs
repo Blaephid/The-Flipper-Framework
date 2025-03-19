@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+
 
 using System;
 using System.Collections;
@@ -15,12 +15,14 @@ using UnityEngine.UIElements;
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class DontShowFieldNameAttribute : MultiPropertyAttribute
 {
+#if UNITY_EDITOR
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		BaseAttribute._GUIContentOnDraw_ = GUIContent.none;
 
 		//EditorGUI.PropertyField(position, property, GUIContent.none);
 		return true;
 	}
+#endif
 }
 
 
@@ -37,6 +39,7 @@ public class DrawTickBoxBeforeAttribute : MultiPropertyAttribute
 		_booleanForTickBox = booleanField;
 	}
 
+#if UNITY_EDITOR
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 
 		SettingRects(position, BaseAttribute);
@@ -72,6 +75,7 @@ public class DrawTickBoxBeforeAttribute : MultiPropertyAttribute
 	public override void DrawAfterProperty ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		EditorGUILayout.EndHorizontal();
 	}
+#endif
 }
 
 
@@ -94,6 +98,7 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 		_fieldPrioritySizes_ = fieldBalances;
 	}
 
+#if UNITY_EDITOR
 
 	int _linesToDraw;
 	float _propertiesPerLine;
@@ -286,6 +291,5 @@ public class DrawHorizontalWithOthersAttribute : MultiPropertyAttribute
 			default: _labelPriority_ = 1.4f; _fieldPriority_ = 0.6f; break;
 		}
 	}
-
-}
 #endif
+}

@@ -10,6 +10,7 @@ using UnityEngine;
 #endif
 public class S_Data_Base : S_Vis_Base
 {
+#if UNITY_EDITOR
 	public event        EventHandler onObjectValidate;
 
 	public virtual void OnValidate () {
@@ -21,8 +22,5 @@ public class S_Data_Base : S_Vis_Base
 	public virtual void OnValidateOverride () {
 
 	}
-
-#if UNITY_EDITOR
-	[HideInInspector] public S_O_CustomInspectorStyle _InspectorTheme;
 #endif
 }

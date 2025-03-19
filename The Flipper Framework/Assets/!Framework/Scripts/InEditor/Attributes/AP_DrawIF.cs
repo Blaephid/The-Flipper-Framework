@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 
 using System;
 using System.Collections;
@@ -24,7 +23,7 @@ public class OnlyDrawIfAttribute : MultiPropertyAttribute
 		_propertyToCheck = comparedPropertyName;
 		_valueToCheckFor = comparedValue;
 	}
-
+#if UNITY_EDITOR
 
 	// Field that is being compared.
 	public SerializedProperty _fieldToCheck;
@@ -54,7 +53,6 @@ public class OnlyDrawIfAttribute : MultiPropertyAttribute
 		}
 	}
 
-
 	/// <summary>
 	/// Errors default to showing the property.
 	/// </summary>
@@ -82,6 +80,7 @@ public class OnlyDrawIfAttribute : MultiPropertyAttribute
 		}
 		return fieldToCheck;
 	}
+#endif
 }
 
 /// <summary>
@@ -96,10 +95,12 @@ public class OnlyDrawIfNotAttribute : OnlyDrawIfAttribute
 		_valueToCheckFor = comparedValue;
 	}
 
+#if UNITY_EDITOR
 
 	public override bool WillDraw ( SerializedProperty propertyToDraw ) {
 		return !base.WillDraw(propertyToDraw);
 	}
+#endif
 }
 
 	/// <summary>
@@ -118,6 +119,8 @@ public class DrawOthersIfAttribute : MultiPropertyAttribute
 		_otherPropertiesToDraw = otherPropertiesToDraw;
 		_valueToCheckFor = comparedValue;
 	}
+
+#if UNITY_EDITOR
 
 	float _heightParts;
 
@@ -183,6 +186,5 @@ public class DrawOthersIfAttribute : MultiPropertyAttribute
 			}
 		}
 	}
-}
-
 #endif
+}

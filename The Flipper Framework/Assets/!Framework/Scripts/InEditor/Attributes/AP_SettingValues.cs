@@ -1,11 +1,6 @@
-#if UNITY_EDITOR
-
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEditor;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 /// <summary>
@@ -25,6 +20,7 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 		_propertyToCheck = propertyToCheck;
 		_valueToCheckFor = comparedValue;
 	}
+#if UNITY_EDITOR
 
 	// Tracking Fields for the Drawer
 	SerializedProperty _fieldToCheck;
@@ -72,6 +68,7 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 
 		_propertyToSet.serializedObject.ApplyModifiedProperties();
 	}
+#endif
 }
 
 
@@ -81,9 +78,10 @@ public class SetBoolIfOtherAttribute : MultiPropertyAttribute
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class CustomReadOnlyAttribute : MultiPropertyAttribute
 {
+#if UNITY_EDITOR
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		BaseAttribute._isReadOnly = true;
 		return true;
 	}
-}
 #endif
+}

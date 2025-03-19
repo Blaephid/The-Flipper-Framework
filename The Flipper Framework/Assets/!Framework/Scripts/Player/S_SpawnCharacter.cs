@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class S_SpawnCharacter : S_Vis_Base
 {
+#if UNITY_EDITOR
 	[OnlyDrawIf("_viewVisualisationData", true)]
 	[DrawHorizontalWithOthers(new string[] { "_meshScale" }, new float[] { 2.5f, 1f })]
 	[BaseColour(0.8f, 0.8f, 0.8f, 1)]
@@ -14,6 +15,7 @@ public class S_SpawnCharacter : S_Vis_Base
 	[OnlyDrawIf("_viewVisualisationData", true)]
 	[HideInInspector, Min(1)]
 	[SerializeField] private float _meshScale = 1;
+#endif
 
 	[Space]
 	[SerializeField]
@@ -60,6 +62,8 @@ public class S_SpawnCharacter : S_Vis_Base
 		public float        _spawnDistanceModifier;
 	}
 
+#if UNITY_EDITOR
+
 	[ExecuteInEditMode]
 	private void Update () {
 		if(Application.isPlaying) { return; }
@@ -76,6 +80,7 @@ public class S_SpawnCharacter : S_Vis_Base
 	private void UpdateLaunchDataToDirection () {
 		_launchOnSpawnData_ = LaunchPlayerData.SetLaunchDataToDirection(transform, _launchOnSpawnData_);
 	}
+#endif
 
 	// Use this for initialization
 	void Awake () {
@@ -125,6 +130,7 @@ public class S_SpawnCharacter : S_Vis_Base
 		}
 	}
 
+#if UNITY_EDITOR
 	public override void DrawGizmosAndHandles ( bool selected ) {
 		if(selected) { return;}
 
@@ -132,4 +138,5 @@ public class S_SpawnCharacter : S_Vis_Base
 		
 		Gizmos.DrawWireMesh(_VisualiseWithMesh, transform.position, transform.rotation, Vector3.one * _meshScale * 10);
 	}
+#endif
 }

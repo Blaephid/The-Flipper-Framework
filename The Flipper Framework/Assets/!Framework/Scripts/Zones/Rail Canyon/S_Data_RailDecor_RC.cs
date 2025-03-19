@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+#if UNITY_EDITOR
 public class S_Data_RailDecor_RC : S_Data_Base
 {
 	[SerializeField, DrawTickBoxBefore("_showUnderPlatform"), Delayed]
@@ -48,3 +48,4 @@ public class S_Data_RailDecor_RC : S_Data_Base
 		S_S_Editor.FindObjectAndSetActive(_underClamps, _showUnderClamps, transform);
 	}
 }
+#endif

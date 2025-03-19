@@ -21,11 +21,13 @@ public class BaseColourAttribute : MultiPropertyAttribute
 		_colour = new Color(r, g, b, a);
 	}
 
+#if UNITY_EDITOR
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		GUI.color = _colour;
 
 		return true;
 	}
+#endif
 }
 
 /// <summary>
@@ -34,12 +36,12 @@ public class BaseColourAttribute : MultiPropertyAttribute
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 public class ColourIfNullAttribute : MultiPropertyAttribute
 {
-#if UNITY_EDITOR
 	public Color            _colour;
 
 	public ColourIfNullAttribute ( float r, float g, float b, float a ) {
 		_colour = new Color( r, g, b, a );
 	}
+#if UNITY_EDITOR
 
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		if (property.propertyType == SerializedPropertyType.ObjectReference && property.objectReferenceValue == null)
@@ -66,6 +68,7 @@ public class ColourIfEqualToAttribute : MultiPropertyAttribute
 		_compare = compare;
 	}
 
+#if UNITY_EDITOR
 	public override bool WillDrawOnGUI ( Rect position, SerializedProperty property, GUIContent label, MultiPropertyAttribute BaseAttribute ) {
 		if (property.propertyType == SerializedPropertyType.Boolean && property.boolValue == _compare)
 		{
@@ -74,4 +77,5 @@ public class ColourIfEqualToAttribute : MultiPropertyAttribute
 
 		return true;
 	}
+#endif
 }

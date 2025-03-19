@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 {
+#if UNITY_EDITOR
 	public S_Vis_Spline () {
 		_hasVisualisationScripted = true;
 	}
@@ -65,9 +66,9 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 		}
 	}
 
-
 	public void CustomOnSceneGUI ( SceneView sceneView ) {
 		VisualiseWithSelectableHandle(_middleOfSpline + (transform.rotation * _selectPointOffset), _selectHandleSize);
 	}
+#endif
 }
 

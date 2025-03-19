@@ -61,11 +61,11 @@ public class S_AddOnRail : MonoBehaviour
 		}
 	}
 
+#if UNITY_EDITOR
 	private void OnValidate () {
 		GetPositions();
 	}
 
-#if UNITY_EDITOR
 	public void SetValueOfConnectedRails () {
 		if(!this.isActiveAndEnabled) { return; }
 

@@ -1,15 +1,13 @@
-#if UNITY_EDITOR
-using System.Collections;
-using System.Collections.Generic;
-using templates;
 using UnityEditor;
+#if UNITY_EDITOR
 using UnityEditor.SceneManagement;
-using UnityEditor.TerrainTools;
+#endif
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class S_ConstantSceneGUI : MonoBehaviour
 {
+#if UNITY_EDITOR
 
 	public MonoBehaviour	_LinkedComponent;
 	public ICustomEditorLogic	_LinkedEditorLogic;
@@ -25,7 +23,6 @@ public class S_ConstantSceneGUI : MonoBehaviour
 		else
 			OnDisable();
 	}
-
 
 	void OnValidate () {	
 		OnEnable();
@@ -83,7 +80,6 @@ public class S_ConstantSceneGUI : MonoBehaviour
 		AddToDuringSceneGUI(null);
 	}
 
-
 	//DuringSceneGUI Event. This event is called every frame in editor, so add and remove from this.
 	public void AddToDuringSceneGUI ( PrefabStage prefabStage) {
 		if (!this || _currentlyAddedToDuringSceneGUI || !gameObject) { return; }
@@ -128,8 +124,11 @@ public class S_ConstantSceneGUI : MonoBehaviour
 
 	[HideInInspector]
 	public S_O_CustomInspectorStyle _InspectorTheme;
+
+#endif
 }
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(S_ConstantSceneGUI))]
 public class SceneGuiConstantEditor : S_CustomInspector_Base
 {

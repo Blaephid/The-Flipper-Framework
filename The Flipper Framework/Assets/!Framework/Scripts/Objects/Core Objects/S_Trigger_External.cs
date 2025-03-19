@@ -60,6 +60,32 @@ public class S_Trigger_External : S_Trigger_Base
 		TriggerGivenObjects(TriggerTypes.Off, _TriggerObjects._ObjectsToTriggerOff);
 	}
 
+	public virtual void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects ) {
+		//Go through each given gameObject and trigger if possible.
+		for (int i = 0 ; i < gameObjects.Count ; i++)
+		{
+			GameObject thisObject = gameObjects[i];
+			if (!thisObject) { continue; }
+			if (thisObject.TryGetComponent(out ITriggerable Trigger))
+			{
+				switch (triggerType)
+				{
+					case TriggerTypes.On: Trigger.TriggerObjectOn(_Player); break;
+
+					case TriggerTypes.Off: Trigger.TriggerObjectOff(_Player); break;
+
+					case TriggerTypes.Either: Trigger.TriggerObjectEither(_Player); break;
+
+					case TriggerTypes.Reset: Trigger.ResetObject(_Player); break;
+
+					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(_Player); break;
+				}
+			}
+		}
+	}
+
+
+#if UNITY_EDITOR
 	public override void OnValidate () {
 		base.OnValidate();
 		UpdateExternalTriggers();
@@ -91,29 +117,9 @@ public class S_Trigger_External : S_Trigger_Base
 		else if (!included && add) { TriggerList.Add(gameObject); }
 	}
 
-	public virtual void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects ) {
-		//Go through each given gameObject and trigger if possible.
-		for (int i = 0 ; i < gameObjects.Count ; i++)
-		{
-			GameObject thisObject = gameObjects[i];
-			if (!thisObject) { continue; }
-			if (thisObject.TryGetComponent(out ITriggerable Trigger))
-			{
-				switch (triggerType)
-				{
-					case TriggerTypes.On: Trigger.TriggerObjectOn(_Player); break;
+#endif
 
-					case TriggerTypes.Off: Trigger.TriggerObjectOff(_Player); break;
-
-					case TriggerTypes.Either: Trigger.TriggerObjectEither(_Player); break;
-
-					case TriggerTypes.Reset: Trigger.ResetObject(_Player); break;
-
-					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(_Player); break;
-				}
-			}
-		}
-	}
+#if UNITY_EDITOR
 	private void UpdateExternalTriggers () {
 
 		//Goes through what is set to trigger on, and ensure it knows this is set to trigger it.
@@ -199,7 +205,6 @@ public class S_Trigger_External : S_Trigger_Base
 		}
 	}
 
-
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
 		using (new Handles.DrawingScope(colour))
 		{
@@ -216,5 +221,6 @@ public class S_Trigger_External : S_Trigger_Base
 			}
 		}
 	}
+#endif
 }
 

@@ -22,9 +22,10 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	S_ConstantSceneGUI ConstantGUI;
 	[HideInInspector] public S_PlayerPhysics _Player;
 
-	/// <summary>
+#if UNITY_EDITOR
+	/// 
 	///			Inherited
-	/// </summary>
+	///
 	#region inherited
 
 	private void OnEnable () {
@@ -33,16 +34,12 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		ConstantGUI._LinkedComponent = this;
 	}
 
-
 	public override void OnValidate () {
-
 		base.OnValidate();
 		_hasVisualisationScripted = true;
 
 	}
 
-
-#if UNITY_EDITOR
 	private void Update () {
 		if (Selection.activeGameObject != gameObject) { return; }
 
@@ -71,17 +68,13 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 		}
 
 	}
-#endif
 
 	#endregion
-
-#if UNITY_EDITOR
 
 	/// <summary>
 	///			Gizmo Drawing
 	/// </summary>
 	#region Gizmo Drawing
-
 
 	public override void DrawGizmosAndHandles ( bool selected ) {
 
