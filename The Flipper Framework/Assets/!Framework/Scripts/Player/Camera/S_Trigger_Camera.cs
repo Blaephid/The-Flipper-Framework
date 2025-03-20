@@ -15,7 +15,7 @@ public enum enumCameraControlType
 public class S_Trigger_Camera : S_Trigger_External
 {
 	public S_Trigger_Camera () {
-		_isLogicInPlayerScript = true;
+		TriggerObjects._isLogicInPlayerScript = true;
 	}
 
 	[Header("Functionality"), DrawHorizontalWithOthers(new string[] { "_willReleaseOnExit" }, new float[] { 2.5f, 1f })]
@@ -90,25 +90,28 @@ public class S_Trigger_Camera : S_Trigger_External
 	[DrawTickBoxBefore("_willOffsetTarget")]
 	public Vector3 _newOffset = Vector3.zero;
 
-	[DrawHorizontalWithOthers(new string[] { "_asLocalOffset", "_overWriteAllOffsets" })]
+	[SetBoolIfOther(false, "_willOffsetTarget", false)]
+	[SetBoolIfOther(true, "_willOffsetTarget", true)]
+	[DrawOthersIf(false, new string[] { "_framesToOffset", "_asLocalOffset", "_overWriteAllOffsets", "_VisualiseWithMesh", "_meshScale" }, true)]
+	[SerializeField]
+	private bool _willOffsetTargetHidden;
+
 	[Tooltip("How many frames it takes to reach this offset")]
-	[OnlyDrawIf("_willOffsetTarget", true)]
+	[HideInInspector]
 	public int _framesToOffset;
-	[OnlyDrawIf("_willOffsetTarget", true)]
 	[HideInInspector]
 	[Tooltip("If true, offSet will be relative to the characters look direction. So if they turn, it orbits around them.")]
 	public bool _asLocalOffset = true;
 	[HideInInspector]
 	[Tooltip("If true, the offset will be unaffected by any HedgeCamera calculations that move the offset. If false, the offset will be affected by other offsets like input direction")]
-	[OnlyDrawIf("_willOffsetTarget", true)]
 	public bool _overWriteAllOffsets;
 
 #if UNITY_EDITOR
-	[DrawHorizontalWithOthers(new string[] { "_meshScale" }, new float[] { 2.5f, 1f })]
-	[OnlyDrawIf("_willOffsetTarget", true)]
+	[HideInInspector]
 	[BaseColour(0.8f, 0.8f, 0.8f, 1)]
 	public Mesh _VisualiseWithMesh;
-	[OnlyDrawIf("_willOffsetTarget", true), HideInInspector, Min(0.2f)]
+	[HideInInspector]
+	[BaseColour(0.8f, 0.8f, 0.8f, 1)]
 	[SerializeField] private float _meshScale = 1;
 #endif
 
@@ -134,7 +137,7 @@ public class S_Trigger_Camera : S_Trigger_External
 #if UNITY_EDITOR
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
 		base.DrawAdditionalGizmos(selected, colour);
-		if (_hasTrigger)
+		if (TriggerObjects._hasTrigger)
 		{
 			switch (_whatType)
 			{

@@ -156,6 +156,10 @@ public class S_S_Editor : MonoBehaviour
 		return Array.Exists(Selection.gameObjects, obj => obj == gameObject);
 	}
 
+	public static bool IsHidden (GameObject gameObject) {
+		return SceneVisibilityManager.instance.IsHidden(gameObject);
+	}
+
 	//Checks if a gameObject is seleted, or one of its children or any from an aditional list
 	public static bool IsThisOrListOrChildrenSelected ( Transform transform, GameObject[] ObjectList = null, int childrenLevels = 1 ) {
 

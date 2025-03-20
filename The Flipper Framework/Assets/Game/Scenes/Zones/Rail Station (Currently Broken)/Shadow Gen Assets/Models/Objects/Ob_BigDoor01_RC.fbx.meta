@@ -3,7 +3,12 @@ guid: ee7ccf5c4b1e18f43b20f56f7f4d1b08
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7025_partswall_RC
+    second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -42,7 +42,7 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 		if (Player)
 			speedModi = _animSpeedByPlayerSpeed.Evaluate(Player._PlayerVelocity._horizontalSpeedMagnitude / Player._PlayerMovement._currentMaxSpeed);
 
-		_Animator.speed = _defaultSpeed * speedModi;
+		_Animator.speed = (_defaultSpeed * speedModi);
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {

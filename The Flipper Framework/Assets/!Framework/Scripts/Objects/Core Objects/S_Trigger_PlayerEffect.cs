@@ -8,7 +8,7 @@ public class S_Trigger_PlayerEffect : S_Trigger_External
 {
 
 	public S_Trigger_PlayerEffect () {
-		_isLogicInPlayerScript = true;
+		TriggerObjects._isLogicInPlayerScript = true;
 	}
 
 	[Header("Interaction")]

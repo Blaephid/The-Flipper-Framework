@@ -16,7 +16,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &331773413043442172
 Transform:
@@ -222,7 +222,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &3096930638159615604
 Transform:
@@ -708,6 +708,7 @@ MonoBehaviour:
   _movingDirection: 1
   _pointOnSpline: 0
   _sampleForwards: {x: 0, y: 0, z: 0}
+  _sampleRight: {x: 0, y: 0, z: 0}
   _sampleLocation: {x: 0, y: 0, z: 0}
   _sampleUpwards: {x: 0, y: 0, z: 0}
   _grindingSpeed: 0
@@ -727,6 +728,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fe5653bb60098b479b5e559eacda8d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SetToSplineButton: 0
   _RF: {fileID: 5025221690079566641}
   _Models:
   - {fileID: 117431874968579458}
@@ -734,6 +736,7 @@ MonoBehaviour:
   - {fileID: 8435023406543711212}
   - {fileID: 6176670419736023774}
   - {fileID: 8636354947971197984}
+  _modelStartRotations: []
   _disanceBetweenModels: 22
   _StartSpline: {fileID: 0}
   _StartingConnectedRails: {fileID: 0}
@@ -770,6 +773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b81a4457899de4cb2f13431304364f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
   _hasVisualisationScripted: 0
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -778,8 +782,6 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
   _updateAutomatically: 1
   _Segments:
   - _Source: {fileID: 919132149155446097, guid: 107009738aa951045b0bbf5c5a71ff13,
@@ -815,6 +817,7 @@ MonoBehaviour:
   - {fileID: 8435023406543711212}
   - {fileID: 6176670419736023774}
   - {fileID: 8636354947971197984}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!114 &8848486114476074316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -837,6 +840,7 @@ MonoBehaviour:
   _movingDirection: 0
   _pointOnSpline: 0
   _sampleForwards: {x: 0, y: 0, z: 0}
+  _sampleRight: {x: 0, y: 0, z: 0}
   _sampleLocation: {x: 0, y: 0, z: 0}
   _sampleUpwards: {x: 0, y: 0, z: 0}
   _grindingSpeed: 0
@@ -1435,7 +1439,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &7921464288948194711
 Transform:
@@ -1794,7 +1798,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &2197576458941001741
 Transform:
@@ -1925,7 +1929,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &1795540696516120566
 Transform:

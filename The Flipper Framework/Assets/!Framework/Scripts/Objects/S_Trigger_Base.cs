@@ -41,7 +41,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	}
 
 	private void Update () {
-		if (Selection.activeGameObject != gameObject) { return; }
+		if (!S_S_Editor.IsSelected(gameObject)) { return; }
 
 		switch (_whatTriggerShape)
 		{
@@ -152,6 +152,8 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	//Inherited from ICustomEditorLogic Interface. This will be attached to the DuringSceneGUI event, or called seperately when certain objects are selected.
 	public void CustomOnSceneGUI ( SceneView sceneView ) {
 		if (this == null) { return; }
+		if(S_S_Editor.IsHidden(gameObject)) { return; }	
+
 		float handleRadius = 2 * Mathf.Clamp(S_S_MoreMaths.GetLargestOfVector(transform.lossyScale) / 40, 1, 20);
 		base.VisualiseWithSelectableHandle(transform.position, handleRadius);
 		AdditionalTriggerSceneGUI();

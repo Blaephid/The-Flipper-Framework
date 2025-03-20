@@ -87,7 +87,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
 		base.DrawAdditionalGizmos(selected, colour);
-		if (_hasTrigger)
+		if (TriggerObjects._hasTrigger)
 		{
 			using (new Handles.DrawingScope(colour))
 			{
@@ -101,7 +101,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 #endif
 
 	private void FaceCinematicCameraIn () {
-		if (_hasTrigger && _defaultCameraToFaceTrigger && !Application.isPlaying)
+		if (TriggerObjects._hasTrigger && _defaultCameraToFaceTrigger && !Application.isPlaying)
 		{
 			Vector3 direction = (transform.position - _CinematicCamObject.transform.position).normalized;
 			if(direction != Vector3.zero) _CinematicCamObject.transform.forward = direction;

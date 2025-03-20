@@ -67,6 +67,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 882a4d35b46376144885b3c63dfbe3c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -75,23 +76,21 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.08726152, g: 0.3886792, b: 0, a: 1}
   _selectedOutlineColour: {r: 0.17987192, g: 1, b: 0, a: 1}
   _selectedFillColour: {r: 0.669946, g: 1, b: 0.390566, a: 0.1}
-  _isSelected: 1
-  _InspectorTheme: {fileID: 0}
   _whatTriggerShape: 0
   _Player: {fileID: 0}
-  _TriggerObjects:
+  TriggerObjects:
     _triggerSelfOn: 1
     _triggerSelfOff: 1
     _ObjectsToTriggerOn:
     - {fileID: 1000014119029628}
     _ObjectsToTriggerOff:
     - {fileID: 1000014119029628}
-  _hasTrigger: 1
-  _ObjectsThatTriggerThis:
-  - {fileID: 1000014119029628}
-  _isLogicInPlayerScript: 1
-  _TriggersForPlayerToRead:
-  - {fileID: 1000014119029628}
+    _hasTrigger: 1
+    _ObjectsThatTriggerThis:
+    - {fileID: 1000014119029628}
+    _isLogicInPlayerScript: 1
+    _TriggersForPlayerToRead:
+    - {fileID: 1000014119029628}
   _framesBeforeDeactivate: 0
   _lockPlayerInputFor: 0
   _LockInputTo_: 1

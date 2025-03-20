@@ -105,7 +105,7 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 	public void Validate ( object sender, EventArgs e ) {
 
-		if (!_updateAutomatically) { return; }
+		//if (!_updateAutomatically) { return; }
 
 		if (!_onlyDisplayWhenSelected || _isSelected)
 		{

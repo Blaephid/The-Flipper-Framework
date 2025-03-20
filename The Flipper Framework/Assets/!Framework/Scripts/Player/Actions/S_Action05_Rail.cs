@@ -139,8 +139,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		_previousTimeBetweenUpdates = Time.deltaTime;
 
-		_RF.GetNewSampleOnRail();
-		_RF.PlaceOnRail(SetRotation, SetPosition);
+		//_RF.GetNewSampleOnRail();
+		//_RF.PlaceOnRail(SetRotation, SetPosition);
 
 	}
 
@@ -153,7 +153,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _RF._grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
-	
+
+		_RF.GetNewSampleOnRail();
+		_RF.PlaceOnRail(SetRotation, SetPosition);
 		MoveOnRail();
 
 		if (_canInput) { HandleInputs(); }
