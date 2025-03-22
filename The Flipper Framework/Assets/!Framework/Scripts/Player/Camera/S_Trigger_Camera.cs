@@ -124,7 +124,6 @@ public class S_Trigger_Camera : S_Trigger_External
 	[SerializeField,AsButton("Update All Names", "UpdateAllNamesCommand", null)]
 	private bool updateAllNamesButton;
 
-
 	private void Awake () {
 		if (_Direction == null)
 		{

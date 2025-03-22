@@ -73,12 +73,14 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private void Update () {
 		if (!_isActive) { return; }
 
-		_RF.GetNewSampleOnRail();
+		_RF.CustomUpdate();
 		_RF.PlaceOnRail(SetRotation, SetPosition);
 	}
 
 	private void FixedUpdate () {
 		if (!_isActive) { return; }
+
+		_RF.CustomFixedUpdate();
 		_RF.PlaceOnRail(SetRotation, SetPosition);
 		MoveOnRail();
 		HandleGrindSpeed();
@@ -89,6 +91,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
 		SetIsActive(true);
+		_RF.StartOnRail();
+
 		if (!_isActive) { return; }
 
 		if (_RF._grindingSpeed == 0)
@@ -315,10 +319,11 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		//gameObject.SetActive(true);
+		gameObject.SetActive(true);
 
 		TriggerObjectOff();
 
+		Debug.Log(gameObject);
 		transform.position = _startPosition;
 		SetSplineDetails();
 		PlaceOnSplineToStart();

@@ -105,8 +105,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	#region trackers
 
 	private bool        _isPositiveUpdate;  //Alternates between on and off every update, so can be used universally for anything that should only happen every other frame.
-	[HideInInspector]
-	public static int         _frameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
+
+	[HideInInspector]       public static int         _frameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
+	[HideInInspector]	public static int         _fixedFrameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
 
 	[HideInInspector]
 	public bool                   _arePhysicsOn = true;         //If false, no changes to velocity will be calculated or applied. This script will be inactive.
@@ -122,6 +123,10 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3          _CharacterPivotPosition;
 	[HideInInspector]
 	public Vector3		_CharacterPhysicsPosition;
+	[HideInInspector]
+	public Vector3          _CharacterCenterPositionUpper;
+	[HideInInspector]
+	public Vector3          _CharacterCenterPositionLower;
 	[HideInInspector]
 	public Vector3                _feetOffsetFromPivotPoint;
 	[HideInInspector]
@@ -212,10 +217,14 @@ public class S_PlayerPhysics : MonoBehaviour
 		_Tools = GetComponent<S_CharacterTools>();
 		AssignTools();
 		AssignStats();
+
+		_fixedFrameCount = 0;
+		_frameCount = 0;
 	}
 
 	//On FixedUpdate,  call HandleGeneralPhysics if relevant.
 	void FixedUpdate () {
+		_fixedFrameCount++;
 		_isCurrentlyOnSlope = false; //Set to false at the end of a frame but will be set to true if slope physics are called next frame.
 
 		HandleGeneralPhysics();
@@ -231,7 +240,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	//Sets public variables relevant to other calculations 
 	void LateUpdate () {
 		_frameCount++;
-
 	}
 
 	///----Collision Trackers
@@ -341,6 +349,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		_colliderOffsetFromCentre -= _CharacterPivotPosition;
 
 		_CharacterCenterPosition = _CharacterPivotPosition + _colliderOffsetFromCentre;
+		_CharacterCenterPositionUpper = _CharacterCenterPosition + transform.up * _CharacterCapsule.height / 4;
+		_CharacterCenterPositionLower = _CharacterCenterPosition - transform.up * _CharacterCapsule.height / 4;
 	}
 
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
@@ -591,7 +601,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (_timeOnGround > 0.12f && _PlayerVelocity._horizontalSpeedMagnitude > 3)
 		{
 
-			Debug.DrawRay(_CharacterCenterPosition, velocity * Time.deltaTime, Color.white, 10f);
+			Debug.DrawRay(_CharacterCenterPosition, velocity * Time.deltaTime, Color.white);
 
 			Vector3 currentGroundNormal = _groundNormal;
 			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.07f);
@@ -648,7 +658,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			SetPlayerPosition(newPos);
 		}
 
-		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.red, 5f);
+		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.red);
 
 		return velocity;
 	}
@@ -678,7 +688,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
 		_PlayerVelocity.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
 
-		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.cyan, 5f);
+		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.cyan);
 
 		return velocity;
 	}
@@ -930,11 +940,12 @@ public class S_PlayerPhysics : MonoBehaviour
 	public void SetPlayerPosition ( Vector3 newPosition, bool shouldPrintLocation = false ) {
 		Vector3 halfPoint = Vector3.Lerp(transform.position, newPosition, 0.5f);
 		Debug.DrawLine(transform.position, halfPoint, new Color(1f, 0, 1f, 0.5f), 10f);
+		Debug.DrawRay(halfPoint, Vector3.up, new Color(1f, 0, 1f, 0.5f), 10f);
 		Debug.DrawLine(halfPoint,newPosition, new Color(0.4f,0,0.8f, 0.8f), 10f);
 
 		transform.position = newPosition;
 		UpdatePositionTrackers();
-		if (shouldPrintLocation) Debug.Log("Change Position to  ");
+		if (shouldPrintLocation) Debug.Log("Change Position to  " +newPosition+ " On frame " +_fixedFrameCount);
 	}
 	public void AddToPlayerPosition ( Vector3 Add ) {
 		transform.Translate(Add);

@@ -2161,7 +2161,7 @@ MonoBehaviour:
     maxBoostEnergy: 100
     energyDrainedPerSecond: 5
     energyDrainedOnStart: 5
-    cameraPauseEffect: {x: 2, y: 40}
+    cameraPauseEffect: {x: 2, y: 25}
   StartBoostStats:
     startBoostSpeed: 70
     framesToReachBoostSpeed: 5
@@ -2332,7 +2332,7 @@ MonoBehaviour:
   WhenHurt:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
-    respawnAfter: {x: 90, y: 120, z: 170}
+    respawnAfter: {x: 90, y: 120, z: 170, w: 108}
     maxRingLoss: 20
     ringReleaseSpeed: 550
     ringArcSpeed: 250
@@ -2390,7 +2390,7 @@ MonoBehaviour:
   StartWhenHurt:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
-    respawnAfter: {x: 90, y: 120, z: 170}
+    respawnAfter: {x: 90, y: 120, z: 170, w: 108}
     maxRingLoss: 20
     ringReleaseSpeed: 550
     ringArcSpeed: 250
@@ -2535,6 +2535,48 @@ MonoBehaviour:
     hopDelay: 0.3
     hopSpeed: 70
     hopDistance: 12
+    HopSpeedByTime:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.25
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.9
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   StartRailStats:
     railMaxSpeed: 125
     railTopSpeed: 80
@@ -2603,6 +2645,48 @@ MonoBehaviour:
     hopDelay: 0.3
     hopSpeed: 70
     hopDistance: 12
+    HopSpeedByTime:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.25
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.9
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   RailPosition:
     offsetRail: 1
     offsetZip: -6

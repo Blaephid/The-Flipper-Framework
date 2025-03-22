@@ -42,7 +42,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 	private int         _lockMoveInputOnStart_ = 0;
 	private int         _lockMoveInputOnEnd_ = 10;
 
-	private Vector2         _cameraPauseEffectFromDropCharge_ = new Vector2(3, 40);
+	private Vector3        _cameraPauseEffectFromDropCharge_ = new Vector3(3, 40);
 	#endregion
 
 	// Trackers
@@ -109,7 +109,8 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 					_dashSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed + _airDashIncrease_, _airDashSpeed_);
 					_dashSpeedBonus = Mathf.Max(10, (_Actions._charge * 0.7f) - _dashSpeed);
 					//Effects
-					StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffectFromDropCharge_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _Actions._charge), 0.25f)); //The camera will fall back before catching up.
+					StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffectFromDropCharge_, _cameraPauseEffectFromDropCharge_.z,
+						_PlayerVel._horizontalSpeedMagnitude, _Actions._charge, 0.25f)); //The camera will fall back before catching up.
 					
 					SetStartDirection(_Actions._dashAngle);
 					StartAction();
@@ -363,7 +364,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 		_framesToSpendChangingSpeed_ = _Tools.Stats.JumpDashStats.framesToChangeSpeed;
 
 		_timeBeforeCanChangeAction_ = _Tools.Stats.JumpDashStats.timeBeforeCanChangeAction;
-		_cameraPauseEffectFromDropCharge_ = _Tools.Stats.DropChargeStats.cameraPauseEffect;
+		_cameraPauseEffectFromDropCharge_ = _Tools.Stats.DropChargeStats.cameraFallBack;
 }
 	#endregion
 

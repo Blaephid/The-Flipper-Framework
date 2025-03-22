@@ -32,5 +32,7 @@ public class S_Data_RailBooster : S_Data_Base
 		_CameraRotateTime_ = new Vector2 (0.15f, 20f),
 	};
 
+	public Vector3 _cameraFallBack = new Vector3 (20, 40, 0.7f);
+
 }
 

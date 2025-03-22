@@ -299,8 +299,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			else if (_deadCounter == _respawnAfter_.y)
 			{
 				_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
-				_LevelHandler.RespawnObjects();
-				_CamHandler.ResetOnDeath();
+				_LevelHandler.CallRespawnEvents();
 
 				_counter = _invincibilityTime_; //Ends the counter for flickering so the character will be fully visible on respawn.
 			}
@@ -313,7 +312,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 				//Move player back to checkPoint
 				_LevelHandler.ResetToCheckPoint();
 
-				_CharacterCapsule.gameObject.SetActive(true); ; //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
+				_CharacterCapsule.gameObject.SetActive(true); //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
 				_FadeOutImage.color = Color.black ;
 			}
 			//Removed screen overlay to reveal new location
@@ -374,25 +373,35 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			case S_S_ActionHandling.PrimaryPlayerStates.JumpDash:
 				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
 				break;
+			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
+				TryBonk(transform.up * 0.5f);
+				break;
 		}
 	}
 
 	//Checks walls infront of the character, ready to rebound off if too close.
-	private void TryBonk () {
+	private void TryBonk (Vector3 offset = default(Vector3)) {
 
 		Vector3 movingDirection = _PlayerVel._worldVelocity.normalized;
-		float distance = _PlayerVel._horizontalSpeedMagnitude * Time.fixedDeltaTime + 0.2f; //Uses timme.delta time to check where the character should probably be next frame.
-		Vector3 sphereStartOffset = transform.up * (_CharacterCapsule.height / 2); // Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
-		Vector3 startPosition = _PlayerPhys._CharacterCenterPosition;
+		float distance = _PlayerVel._horizontalSpeedMagnitude * Time.fixedDeltaTime + 0.2f; //Uses time.delta time to check where the character should probably be next frame.
+		
+		// Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
+		Vector3 sphereStart1 =_PlayerPhys._CharacterCenterPositionUpper + offset; 
+		Vector3 sphereStart2 =_PlayerPhys._CharacterCenterPositionLower + offset; 
+
+		Debug.DrawRay(sphereStart1, movingDirection * distance, Color.red);
+		Debug.DrawRay(sphereStart2, movingDirection * distance, Color.red);
+		Debug.DrawLine(sphereStart1 + (transform.up * _CharacterCapsule.radius * 0.8f),
+			 sphereStart2 - (transform.up * _CharacterCapsule.radius * 0.8f), Color.red);
 
 		//Checks for a wall, and if the direction of it is similar to movement direction, ready bonk.
-		if (Physics.CapsuleCast(startPosition + sphereStartOffset, startPosition,
-			_CharacterCapsule.radius / 1.5f, movingDirection, out RaycastHit wallHit, distance, _BonkWall_))
+		if (Physics.CapsuleCast(sphereStart1, sphereStart2,
+			_CharacterCapsule.radius * 0.8f, movingDirection, out RaycastHit wallHit, distance, _BonkWall_))
 		{
-			float directionAngle = Vector3.Angle(movingDirection, wallHit.point - startPosition); //Difference between moving direction and direction of collision
+			float directionAngle = Vector3.Angle(movingDirection, wallHit.point - _PlayerPhys._CharacterCenterPosition); //Difference between moving direction and direction of collision
 			float intoAngle = Vector3.Angle(movingDirection, wallHit.normal); //Difference between the player movement direction and wall they're going into. 180 means running straight into a wall facing directily flat on.
 			float surfaceAngle = Vector3.Angle(transform.up, wallHit.normal); //Difference between character upwards direction and surface upwards direction
-			if (directionAngle < 80 && surfaceAngle > 50 && intoAngle > 158)
+			if (directionAngle < 80 && surfaceAngle > 60 && intoAngle > 165)
 				StartCoroutine(DelayBonk());
 		}
 	}
@@ -402,34 +411,36 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		Vector3 rememberDirection = _MainSkin.forward; //Saves the direction so the player can't rotate from it until bonk is over
 		float rememberSpeed = _PlayerVel._horizontalSpeedMagnitude;
 
-		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
-		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.WallClimbing)
+		switch (_Actions._whatCurrentAction)
 		{
-			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
-			_HurtAction._wasHit = false;
-			_Actions._ActionHurt.StartAction();
-		}
-		else
-		{
-			//Trigger the 3 frame delay, ensuring player can't move or rotate until it is over.
-			for (int i = 0 ; i < 3 ; i++)
-			{
-				yield return new WaitForFixedUpdate();
-
-				if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Hurt) { break; }
-
-					_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
-				_PlayerVel._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
-				_MainSkin.forward = rememberDirection;
-			}
-
-			//If still not in a wallrunning state or been hurt, then rebound off the wall.
-			if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Hurt)
-			{
-				_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[3].normalized;
+			//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
+			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing: 
+			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
+				_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 				_HurtAction._wasHit = false;
 				_Actions._ActionHurt.StartAction();
-			}
+				break;
+			default:
+				//Trigger the 3 frame delay, ensuring player can't move or rotate until it is over.
+				for (int i = 0 ; i < 3 ; i++)
+				{
+					yield return new WaitForFixedUpdate();
+
+					if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Hurt) { break; }
+
+					_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
+					_PlayerVel._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
+					_MainSkin.forward = rememberDirection;
+				}
+
+				//If still not in a wallrunning state or been hurt, then rebound off the wall.
+				if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Hurt)
+				{
+					_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[3].normalized;
+					_HurtAction._wasHit = false;
+					_Actions._ActionHurt.StartAction();
+				}
+				break;
 		}
 	}
 

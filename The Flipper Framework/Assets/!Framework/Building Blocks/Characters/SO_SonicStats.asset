@@ -2031,7 +2031,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    cameraPauseEffect: {x: 3, y: 40}
+    cameraFallBack: {x: 15, y: 25, z: 0.5}
     shouldSetRolling: 0
     forceAgainstMovement: 1.2
     SpeedLossByTime:
@@ -2275,7 +2275,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    cameraPauseEffect: {x: 3, y: 40}
+    cameraFallBack: {x: 15, y: 25, z: 0.5}
     shouldSetRolling: 1
     forceAgainstMovement: 1.2
     SpeedLossByTime:
@@ -2327,7 +2327,7 @@ MonoBehaviour:
     lerpTowardsInput: 0.5
     bounceCoolDown: 0.4
     coolDownModiferBySpeed: 0.003
-    cameraPauseEffect: {x: 2, y: 30}
+    cameraFallBack: {x: 13, y: 17, z: 0.8}
   StartBounceStats:
     startDropSpeed: -100
     maxDropSpeed: 0
@@ -2342,7 +2342,7 @@ MonoBehaviour:
     lerpTowardsInput: 0.5
     bounceCoolDown: 0.4
     coolDownModiferBySpeed: 0.003
-    cameraPauseEffect: {x: 2, y: 30}
+    cameraFallBack: {x: 13, y: 17, z: 0.8}
   RingRoadStats:
     dashSpeed: 120
     minimumEndingSpeed: 80
@@ -2366,13 +2366,13 @@ MonoBehaviour:
     minimunCharge: 40
     maximunCharge: 150
     minimumHeightToPerform: 3
-    cameraPauseEffect: {x: 3, y: 40}
+    cameraFallBack: {x: 15, y: 25, z: 0.4}
   StartDropChargeStats:
     chargingSpeed: 1.2
     minimunCharge: 40
     maximunCharge: 150
     minimumHeightToPerform: 3
-    cameraPauseEffect: {x: 3, y: 40}
+    cameraFallBack: {x: 15, y: 25, z: 0.4}
   BoostStats:
     startBoostSpeed: 70
     framesToReachBoostSpeed: 7
@@ -2395,7 +2395,7 @@ MonoBehaviour:
     maxBoostEnergy: 100
     energyDrainedPerSecond: 0
     energyDrainedOnStart: 0
-    cameraPauseEffect: {x: 2, y: 50}
+    cameraFallBack: {x: 10, y: 15, z: 0.85}
   StartBoostStats:
     startBoostSpeed: 70
     framesToReachBoostSpeed: 5
@@ -2418,7 +2418,7 @@ MonoBehaviour:
     maxBoostEnergy: 100
     energyDrainedPerSecond: 5
     energyDrainedOnStart: 5
-    cameraPauseEffect: {x: 2, y: 40}
+    cameraFallBack: {x: 20, y: 30, z: 0.8}
   EnemyInteraction:
     bouncingPower: 45
     homingBouncingPower: 40

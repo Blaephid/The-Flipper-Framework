@@ -406,7 +406,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	public IEnumerator HittingObstacle ( Vector3 wallNormal = default(Vector3), float force = 25 ) {
 		_isHoming = false;
 
-		float duration = 0.6f * 55;
+		float duration = 0.6f * 50;
 
 		_PlayerPhys._canChangeGrounded = true;
 

@@ -827,7 +827,7 @@ public class S_O_CharacterStats : ScriptableObject
 			maximumSpeedPerformedAt = 200f,
 			maximumSlopePerformedAt = -0.5f,
 			releaseShakeAmmount = new Vector4 (7, 0.1f, 15, 10),
-			cameraPauseEffect = new Vector2(3,40),
+			cameraFallBack = new Vector3(15,25, 0.5f),
 			SpeedLossByTime = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0f, 0.1f),
@@ -892,7 +892,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: How much to rotate launch direction from velocity to facing direction, by the angle between.")]
 		public AnimationCurve         LerpRotationByAngle;
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
-		public Vector2 cameraPauseEffect;
+		public Vector3 cameraFallBack;
 		[Header("Control")]
 		[Tooltip("Core: If true, movement calculations will be taken as if the player is in the rolling state. Will also enter the rolling state when launched..")]
 		public bool                   shouldSetRolling;
@@ -931,7 +931,7 @@ public class S_O_CharacterStats : ScriptableObject
 			bounceCoolDown = 0.4f,
 			coolDownModiferBySpeed = 0.003f,
 
-			cameraPauseEffect = new Vector2(2, 30)
+			cameraFallBack = new Vector3(13, 17, 0.8f)
 		};
 	}
 
@@ -963,7 +963,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: Delay between bounces will be increase by this per unit of speed")]
 		public float                  coolDownModiferBySpeed;
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
-		public Vector2 cameraPauseEffect;
+		public Vector3 cameraFallBack;
 	}
 	#endregion
 
@@ -1017,7 +1017,7 @@ public class S_O_CharacterStats : ScriptableObject
 			minimunCharge = 40f,
 			maximunCharge = 150f,
 			minimumHeightToPerform = 3,
-			cameraPauseEffect = new Vector2 (3,40),
+			cameraFallBack = new Vector3 (15,25, 0.4f),
 		};
 	}
 
@@ -1033,7 +1033,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: Can only start the action if higher than this above the ground.")]
 		public float      minimumHeightToPerform;
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
-		public Vector2 cameraPauseEffect;
+		public Vector3 cameraFallBack;
 	}
 	#endregion
 
@@ -1067,7 +1067,7 @@ public class S_O_CharacterStats : ScriptableObject
 			maxBoostEnergy = 100,
 			energyDrainedOnStart = 5,
 			energyDrainedPerSecond = 5,
-			cameraPauseEffect = new Vector2(2,40),
+			cameraFallBack = new Vector3(20,30, 0.8f),
 		};
 	}
 
@@ -1124,7 +1124,7 @@ public class S_O_CharacterStats : ScriptableObject
 		public float       energyDrainedOnStart;
 		[Header("Effects")]
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
-		public Vector2 cameraPauseEffect;
+		public Vector3 cameraFallBack;
 	}
 	#endregion
 

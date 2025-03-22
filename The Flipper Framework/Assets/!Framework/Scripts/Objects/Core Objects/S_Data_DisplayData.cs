@@ -98,6 +98,11 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 	}
 	#endregion
 
+	public void Awake () {
+		if (Application.isPlaying) { return; }
+		UpdateData();
+	}
+
 	//Called whenever a property is updated
 	public override void OnValidate () {
 		Validate(null, null);
@@ -105,7 +110,7 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 	public void Validate ( object sender, EventArgs e ) {
 
-		//if (!_updateAutomatically) { return; }
+		if (!_updateAutomatically) { return; }
 
 		if (!_onlyDisplayWhenSelected || _isSelected)
 		{
@@ -132,7 +137,7 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 
 			if(_DataSources.Count == 0)
 			{
-				Debug.LogError("No data sources assigned");
+				//Debug.LogError("No data sources assigned");
 				return;
 			}
 

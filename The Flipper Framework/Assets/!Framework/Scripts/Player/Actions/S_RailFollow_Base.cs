@@ -33,9 +33,9 @@ public class S_RailFollow_Base : MonoBehaviour
 	public float                  _pointOnSpline = 0f; //The actual place on the spline being travelled. The number is how many units along the length of the spline it is (not affected by spline length).
 	private float                  _clampedPointOnSpline = 0f;
 
-	[HideInInspector] public Spline.SampleTransforms			_sampleTransforms;
+	[HideInInspector] public Spline.SampleTransforms                        _sampleTransforms;
 	[HideInInspector] public Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
-	[HideInInspector] public Vector3               _sampleRight;  
+	[HideInInspector] public Vector3               _sampleRight;
 	[HideInInspector] public Vector3               _sampleLocation;
 	[HideInInspector] public Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
 
@@ -48,23 +48,62 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	[HideInInspector] public bool                  _isRailLost;        //Set to true when point on spline surpasses the limit, to inform later if statements that update.
 
-	private float _timeBetweenUpdates;
+	private float _distanceMovedSinceLastFixedUpdate;
+	private float _timeAtLastFixedUpdate;
 
-	public void GetNewSampleOnRail ( float moveModifier = 1 ) {
+	public void CustomUpdate () {
 
-		_timeBetweenUpdates = Mathf.Min(Time.fixedDeltaTime, Time.deltaTime);
+		//Amount along rail to travel is based on how long it's been since the last Update OR FixedUpdate call.
+		float travelAmount = Time.deltaTime * _grindingSpeed;
+
+		if (_distanceMovedSinceLastFixedUpdate == 0) //If last move was a fixedUpdate, then go from that
+		{
+			float timeSinceLastFixedUpdate = Time.time - _timeAtLastFixedUpdate;
+			travelAmount = timeSinceLastFixedUpdate * _grindingSpeed;
+		}
+
+		_distanceMovedSinceLastFixedUpdate += travelAmount;
+
+		//Prevents player from moving more than one FixedUpdates worth across mutliple Updates.
+		if (_distanceMovedSinceLastFixedUpdate > Time.fixedDeltaTime * _grindingSpeed)
+		{
+			float limit = Time.fixedDeltaTime * _grindingSpeed;
+			travelAmount = _distanceMovedSinceLastFixedUpdate - limit;
+			_distanceMovedSinceLastFixedUpdate = limit;
+		}
+
+		GetNewSampleOnRail(travelAmount);
+	}
+
+	public void CustomFixedUpdate () {
+		float travelAmount = Time.fixedDeltaTime * _grindingSpeed;
+		travelAmount -= _distanceMovedSinceLastFixedUpdate;
+
+		_timeAtLastFixedUpdate = Time.time;
+
+		_distanceMovedSinceLastFixedUpdate = 0;
+		GetNewSampleOnRail(travelAmount);
+	}
+
+	public void StartOnRail () {
+		_timeAtLastFixedUpdate = Time.time;
+		_distanceMovedSinceLastFixedUpdate = 0;
+	}
+
+	public void GetNewSampleOnRail ( float travelAmount ) {
+
+		//Debug.Log("Move " +travelAmount);
 
 		//Increase/decrease the Amount of distance travelled on the Spline by DeltaTime and direction
-		float travelAmount = (Time.deltaTime * _grindingSpeed) * moveModifier;
 		_movingDirection = _isGoingBackwards ? -1 : 1;
-
 		_pointOnSpline += travelAmount * _movingDirection;
+
 		_isRailLost = _pointOnSpline < 0 || _pointOnSpline > _PathSpline.Length;
 		_clampedPointOnSpline = _pointOnSpline;
 
 		if (_isRailLost)
 		{
-			if (CheckLoseRail())	
+			if (CheckLoseRail())
 				_clampedPointOnSpline = Mathf.Clamp(_pointOnSpline, 0, _PathSpline.Length);
 			else
 				_clampedPointOnSpline = _pointOnSpline;
@@ -111,7 +150,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 
 	//Checks the properties of the rail to see if should enter 
-	public bool CheckLoseRail ( ) {
+	public bool CheckLoseRail () {
 
 		//If the spline loops around then just move place on length back to the start or end.
 		if (_PathSpline.IsLoop)
@@ -146,7 +185,7 @@ public class S_RailFollow_Base : MonoBehaviour
 				return false;
 			}
 
-			void SetNewRail(S_AddOnRail NewRail ) {
+			void SetNewRail ( S_AddOnRail NewRail ) {
 				_isRailLost = false;
 
 				_ConnectedRails = NewRail;
@@ -190,7 +229,7 @@ public class S_RailFollow_Base : MonoBehaviour
 			}
 
 			if (distanceSquared < 1) { break; }
-			if(ClosestDistanceSquared < incrementsToIncrease * incrementsToIncrease &&  distanceSquared > 500 * 500) 
+			if (ClosestDistanceSquared < incrementsToIncrease * incrementsToIncrease && distanceSquared > 500 * 500)
 			{ break; }
 		}
 		return new Vector2(closestSample, ClosestDistanceSquared);

@@ -213,7 +213,7 @@ public class S_PlayerInput : MonoBehaviour
 	//Called by other scripts to set the input to a specific thing, unable to change for a period of time.
 	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change, bool overwrite = false) {
 
-		if(_isInputLocked && frames < _lockedTime - _lockedCounter) { return; } //If this new lock has less frames than the amount left of the current one, then ignore it.
+		if(_isInputLocked && frames < _lockedTime - _lockedCounter && !overwrite) { return; } //If this new lock has less frames than the amount left of the current one, then ignore it.
 
 		_lockedToCharacter = false;
 

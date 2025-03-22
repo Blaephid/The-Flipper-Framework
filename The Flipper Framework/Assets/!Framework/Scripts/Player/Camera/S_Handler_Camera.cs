@@ -33,6 +33,12 @@ public class S_Handler_Camera : MonoBehaviour
 		_initialDistance = _Tools.CameraStats.DistanceStats.CameraDistance;
 		_initialFOV = _Tools.CameraStats.FOVStats.baseFOV;
 	}
+	private void OnEnable () {
+		S_Manager_LevelProgress.OnDeath += EventOnDeath;
+	}
+	private void OnDisable () {
+		S_Manager_LevelProgress.OnDeath -= EventOnDeath;
+	}
 
 	#region Trigger Interaction
 
@@ -229,7 +235,7 @@ public class S_Handler_Camera : MonoBehaviour
 		}
 	}
 
-	public void ResetOnDeath () {
+	public void EventOnDeath ( object sender, EventArgs e ) {
 		RemoveAdditonalCameraEffects(null, true);
 
 		_HedgeCam._cameraMaxDistance_ = _initialDistance;

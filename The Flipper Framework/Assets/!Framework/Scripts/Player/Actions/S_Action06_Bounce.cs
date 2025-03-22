@@ -35,7 +35,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 	private float	_bounceCoolDown_;
 	private float	_cooldownModifierBySpeed_;
 
-	private Vector2               _cameraPauseEffect_ = new Vector2(3, 35);
+	private Vector3 _cameraPauseEffect_ = new Vector3(3, 35);
 	#endregion
 
 	// Trackers
@@ -118,7 +118,8 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false); //Ball animation rather than character ones.
 		_BallAnimator.SetInteger("Action", 1); //Ensures it is set to jump first, because it will then transition from that to bounce.
 
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2 ( -_PlayerVel._coreVelocity.y, -thisDropSpeed), 1f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
+			-_PlayerVel._coreVelocity.y, -thisDropSpeed, 1f)); //The camera will fall back before catching up.
 
 		_Sounds.BounceStartSound();
 
@@ -319,7 +320,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		_bounceHaltFactor_ =	_Tools.Stats.BounceStats.bounceHaltFactor;
 		_horizontalSpeedDecay_ =	_Tools.Stats.BounceStats.horizontalSpeedDecay;
 
-		_cameraPauseEffect_ =	_Tools.Stats.BounceStats.cameraPauseEffect;
+		_cameraPauseEffect_ =	_Tools.Stats.BounceStats.cameraFallBack;
 	}
 	#endregion
 

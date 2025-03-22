@@ -24,6 +24,10 @@ public class S_Data_RailDecor_RC : S_Data_Base
 	private string _rightRailWall = "Ob_RailSideDecorator_RC Right";
 	[SerializeField, HideInInspector] bool _showRightRailWall;
 
+	[SerializeField,DrawTickBoxBefore("_showRailWallConnector"), Delayed]
+	private string _railWallConnector = "Ob_RailUnderConnector_RC";
+	[SerializeField, HideInInspector] bool _showRailWallConnector;
+
 	[SerializeField,DrawTickBoxBefore("_showLeftRailDirector"), Delayed]
 	private string _leftRailDirector = "Ob_SideDecor_RC Left";
 	[SerializeField, HideInInspector] bool _showLeftRailDirector;
@@ -46,6 +50,7 @@ public class S_Data_RailDecor_RC : S_Data_Base
 		S_S_Editor.FindObjectAndSetActive(_leftRailDirector, _showLeftRailDirector, transform);
 		S_S_Editor.FindObjectAndSetActive(_rightRailDirector, _showRightRailDirector, transform);
 		S_S_Editor.FindObjectAndSetActive(_underClamps, _showUnderClamps, transform);
+		S_S_Editor.FindObjectAndSetActive(_railWallConnector, _showRailWallConnector, transform);
 	}
 }
 #endif

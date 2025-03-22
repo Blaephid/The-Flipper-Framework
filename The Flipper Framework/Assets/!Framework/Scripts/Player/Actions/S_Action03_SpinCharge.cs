@@ -42,7 +42,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	private AnimationCurve        _turnAmountByAngle_;
 	private AnimationCurve	_gainBySpeed_;
 	private Vector4                 _releaseShakeAmmount_;
-	private Vector2               _cameraPauseEffect_ = new Vector2(3, 40);
+	private Vector3               _cameraPauseEffect_ = new Vector3(3, 40, 0.6f);
 	private S_GeneralEnums.SpinChargeAimingTypes _whatControl_;
 	private float                 _tappingBonus_;
 	private int                   _delayBeforeLaunch_;
@@ -259,7 +259,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _Actions._charge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(shake, (int)_releaseShakeAmmount_.w));
 
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, newSpeed), 0.25f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z, _PlayerVel._horizontalSpeedMagnitude, newSpeed, 0.25f)); //The camera will fall back before catching up.
 
 	}
 
@@ -364,7 +364,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_delayBeforeLaunch_ =	_Tools.Stats.SpinChargeStats.delayBeforeLaunch;
 		_shouldSetRolling_ =	_Tools.Stats.SpinChargeStats.shouldSetRolling;
 
-		_cameraPauseEffect_ =	_Tools.Stats.SpinChargeStats.cameraPauseEffect;
+		_cameraPauseEffect_ =	_Tools.Stats.SpinChargeStats.cameraFallBack;
 	}
 	public override void AssignTools () {
 		base.AssignTools();

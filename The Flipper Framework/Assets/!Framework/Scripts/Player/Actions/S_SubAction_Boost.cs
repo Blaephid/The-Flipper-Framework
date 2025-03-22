@@ -57,7 +57,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 	private float       _boostCooldown_ = 0.5f;
 
-	private Vector2     _cameraPauseEffect_ = new Vector2(3, 40);
+	private Vector3 _cameraPauseEffect_ = new Vector3(3, 40);
 	#endregion
 
 	// Trackers
@@ -202,7 +202,8 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		_savedSkinDirection = _MainSkin.forward; //Keeps track of which way was facing when started, and if these stop being equal it means something external has affected the character's direction.
 
 		//Effects
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2), 0.5f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
+			_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2, 0.5f)); //The camera will fall back before catching up.
 
 		_Sounds.BoostStartSound();
 
@@ -560,7 +561,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		if (_gainEnergyFromRings_)
 			_Tools.GetComponent<S_Handler_HealthAndHurt>().onRingGet += EventGainEnergyFromRings;
 
-		_cameraPauseEffect_ = _Tools.Stats.BoostStats.cameraPauseEffect;
+		_cameraPauseEffect_ = _Tools.Stats.BoostStats.cameraFallBack;
 
 		_hasAirBoost_ = _Tools.Stats.BoostStats.hasAirBoost;
 		_boostFramesInAir_ = _Tools.Stats.BoostStats.boostFramesInAir;

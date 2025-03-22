@@ -15,6 +15,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	#region Unity Specific Properties
 
 	public static event EventHandler OnReset;
+	public static event EventHandler OnDeath;
 
 
 	private S_CharacterTools                _Tools;
@@ -172,10 +173,14 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	#region public 
 
 	//Called as soon as the fade to black is completed, and calls an event that should reset the level to how it was at the start (the player is handled in other methods). Remember that these events will be set locally in their own scripts.
-	public void RespawnObjects () {
+	public void CallRespawnEvents () {
 		if (OnReset != null)
 		{
 			OnReset.Invoke(this, EventArgs.Empty);
+		}
+		if(OnDeath != null)
+		{
+			OnDeath.Invoke(this, EventArgs.Empty);
 		}
 
 	}

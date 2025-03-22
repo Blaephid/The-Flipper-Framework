@@ -202,8 +202,6 @@ public class S_PlayerMovement : MonoBehaviour
 	//This will only be called by delegates, but is the default means of handling acceleration and turn. See CallAccelerationAndTurning for more.
 	public Vector3 DefaultAccelerateAndTurn ( Vector3 lateralVelocity, Vector3 input, Vector2 modifier ) {
 
-		Debug.DrawRay(transform.position, input * 10, Color.yellow, 10f);
-
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;
 		float inputMagnitude = Mathf.Max(Mathf.Abs(_Input._inputOnController.x), Mathf.Abs(_Input._inputOnController.z));

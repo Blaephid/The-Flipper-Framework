@@ -223,7 +223,7 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 		//Since the lock input here may be interupted, keep setting to lock for one frame until this is up.
 		if (_counter <= _keepLockingControlUntil)
 		{
-			_Input.LockInputForAWhile(1, false,  _lockInputToThis);
+			_Input.LockInputForAWhile(1, false,  _lockInputToThis, S_GeneralEnums.LockControlDirection.Change, true);
 			StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0, "HurtOneFrame", 1));
 		}
 	}

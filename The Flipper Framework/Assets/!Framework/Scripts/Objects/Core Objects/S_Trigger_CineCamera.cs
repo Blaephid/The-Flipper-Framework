@@ -75,15 +75,12 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		cameraOriginalPosition = _CinematicCamObject.transform.position;
 		cameraOriginalRotation = _CinematicCamObject.transform.rotation;
 		_CinematicCamObject.SetActive(false);
-
 	}
 
 #if UNITY_EDITOR
 	public override void OnValidate () {
 		base.OnValidate();
-
 	}
-
 
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
 		base.DrawAdditionalGizmos(selected, colour);
@@ -176,20 +173,25 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		S_S_Logic.AddLockToList(ref _HedgeCamera._locksForCameraFallBack, gameObject.name);
 		_CinematicCamObject.SetActive(true); //Blending is handled by the blend object attached to the main camera cinemachine brain.
 
-		S_Manager_LevelProgress.OnReset += ResetCamera; //Ensures camera will end if player dies when its active.
+		S_Manager_LevelProgress.OnReset += ReturnOnDeath; //Ensures camera will end if player dies when its active.
 	}
 
 	private void SetBlend(float frames ) {
 
 		if (frames != 0)
 		{
-			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, frames / 55f);
+			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, frames / 50f);
 		}
 		else
 			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0);
 	}
 
-	public void ResetCamera ( object sender, EventArgs e ) {
+	public void ReturnOnDeath ( object sender, EventArgs e ) {
+		SetBlend(0);
+		ResetCamera();
+	}
+
+	public void ResetCamera() {
 		//Deactivate
 		_isCurrentlyActive = false;
 		_PlayerActions = null;
@@ -198,7 +200,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		_CinematicCamObject.transform.position = cameraOriginalPosition;
 		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
 
-		S_Manager_LevelProgress.OnReset -= ResetCamera; //Ensures camera will end if player dies when its active.
+		S_Manager_LevelProgress.OnReset -= ReturnOnDeath; //Ensures camera will end if player dies when its active.
 	}
 
 	public IEnumerator DeactivateCam () {
@@ -223,7 +225,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		{
 			yield return new WaitForFixedUpdate();
 		}
-		ResetCamera(null, null);
+		ResetCamera();
 
 		yield return new WaitForSeconds(_framesOut / 60);
 		S_S_Logic.RemoveLockFromList(ref _HedgeCamera._locksForCameraFallBack, gameObject.name);

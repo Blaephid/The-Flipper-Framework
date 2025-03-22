@@ -24,7 +24,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	private float        _minimunCharge_ = 10;
 	private float        _maximunCharge_ = 100;
 
-	private Vector2	_cameraPauseEffect_ = new Vector2(3, 40);
+	private Vector3	_cameraPauseEffect_ = new Vector2(3, 40);
 
 	private float       _minimumHeightToDropCharge_;
 	#endregion
@@ -228,7 +228,8 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 		StartCoroutine(DelayForce(force, 2)); //Will apply this force after a few frames, this is to give a chance to properly align to the ground.
 
 		//Effects
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _Actions._charge), 0.25f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
+			_PlayerVel._horizontalSpeedMagnitude, _Actions._charge, 0.25f)); //The camera will fall back before catching up.
 
 		//Control
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"DropChargeTimed", 15));
@@ -340,7 +341,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 		_maximunCharge_ =		_Tools.Stats.DropChargeStats.maximunCharge;
 		_minimumHeightToDropCharge_ =	_Tools.Stats.DropChargeStats.minimumHeightToPerform;
 
-		_cameraPauseEffect_ =	_Tools.Stats.DropChargeStats.cameraPauseEffect;
+		_cameraPauseEffect_ =	_Tools.Stats.DropChargeStats.cameraFallBack;
 	}
 	#endregion
 }

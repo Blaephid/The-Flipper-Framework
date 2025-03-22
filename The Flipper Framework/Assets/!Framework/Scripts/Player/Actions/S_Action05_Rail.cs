@@ -99,8 +99,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	[HideInInspector]
 	public bool         _isGrinding; //USed to ensure no calculations are made from this still being active for possibly one frame called by Update when ending action.
-
-	private float _previousTimeBetweenUpdates;
 	#endregion
 	#endregion
 
@@ -137,24 +135,23 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				break;
 		}
 
-		_previousTimeBetweenUpdates = Time.deltaTime;
-
-		//_RF.GetNewSampleOnRail();
-		//_RF.PlaceOnRail(SetRotation, SetPosition);
+		_RF.CustomUpdate();
+		_RF.PlaceOnRail(SetRotation, SetPosition);
 
 	}
 
 	new private void FixedUpdate () {
 		base.FixedUpdate();
-
 		if (!enabled || !_isGrinding) { return; }
+
+		_PlayerPhys._timeOnGround = 0;
 
 		ApplyHopFixedUpdate();
 
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _RF._grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
 
-		_RF.GetNewSampleOnRail();
+		_RF.CustomFixedUpdate();
 		_RF.PlaceOnRail(SetRotation, SetPosition);
 		MoveOnRail();
 
@@ -187,6 +184,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//Get how much the character is facing the same way as the point.
 		_RF._PathSpline = _Rail_int._PathSpline;
+		_RF.StartOnRail();
 		_RF.GetNewSampleOnRail(0);
 
 		//Use biased so horizontal velociity has slightly more say than vertical velocity. This 
@@ -662,19 +660,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//To show hopping off a rail, change the offset, this means the player will still follow the rail during the hop.
 			_RF._setOffSet.Set(_RF._setOffSet.x + _hopThisFrame, _RF._setOffSet.y, _RF._setOffSet.z);
 
-			//If moving, check for walls, and if there's a collision, end state.
-			if (_hopThisFrame > 0)
-			{
-				if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), -_MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
-				{
-					_Actions._ActionDefault.StartAction();
-				}
-				else if (Physics.BoxCast(_MainSkin.position, new Vector3(1.3f, 3f, 1.3f), _MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
-				{
-					_Actions._ActionDefault.StartAction();
-				}
-			}
-
 			//Decrease how far to move by how far has moved.
 			_distanceToHop -= Mathf.Abs(_hopThisFrame);
 			_distanceToHop = Mathf.Max(_distanceToHop, 0.1f);
@@ -692,6 +677,19 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (_distanceToHop > 0)
 		{
 			_PlayerVel.AddGeneralVelocity(_RF._sampleRight * ((_hopThisFrame * -1) / Time.deltaTime));
+
+			//If moving, check for walls, and if there's a collision, end state.
+			if (_hopThisFrame > 0)
+			{
+				if (Physics.BoxCast(transform.position, new Vector3(1.3f, 3f, 1.3f), -_MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
+				{
+					_Actions._ActionDefault.StartAction();
+				}
+				else if (Physics.BoxCast(transform.position, new Vector3(1.3f, 3f, 1.3f), _MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
+				{
+					_Actions._ActionDefault.StartAction();
+				}
+			}
 
 			//Once a step is over and the player hasn't started this action through collisions, exit state.
 			if (_distanceToHop <= 0.1f)
@@ -749,6 +747,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 			if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail)
 			{
+
 				_isBoosted = true;
 				_boostTime = BoosterLogic._timeBeforeDecay; //How long the boost lasts before decaying.
 				_firstBoosterApply = true;
@@ -762,6 +761,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 				//Changes which direction to grind in.
 				_RF._isGoingBackwards = BoosterLogic._willSetBackwards_;
+
+				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(BoosterLogic._cameraFallBack, BoosterLogic._cameraFallBack.z,
+					_RF._grindingSpeed,_boostSpeedAddOn + _boostSpeedToSettle, 0.5f)); //The camera will fall back before catching up.
 
 				break; //Since speed has now been applied, can end checking for if on rail.
 

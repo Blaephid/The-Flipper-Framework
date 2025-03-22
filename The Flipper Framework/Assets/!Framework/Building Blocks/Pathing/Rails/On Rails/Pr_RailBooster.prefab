@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eabfc7277ca891f4a91b004704051129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
   _hasVisualisationScripted: 0
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -77,8 +78,6 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _InspectorTheme: {fileID: 0}
   _willSetBackwards_: 0
   _PositionToLockTo: {x: 0, y: 0, z: 0}
   _NewSpeedByCurrentSpeed:
@@ -160,6 +159,7 @@ MonoBehaviour:
   _cameraEffect:
     _willAffectCamera_: 0
     _CameraRotateTime_: {x: 0.15, y: 20}
+  _cameraFallBack: {x: 30, y: 60}
 --- !u!114 &8399873651291111674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 025dd8a9986532a48a5fea4a4fd2b824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -180,7 +181,6 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.6037736, g: 0.57693547, b: 0, a: 0.39215687}
   _selectedOutlineColour: {r: 0.6039216, g: 0.20798692, b: 0, a: 0.39215687}
   _selectedFillColour: {r: 0.8113208, g: 0.026788909, b: 0.026788909, a: 0.39215687}
-  _isSelected: 0
   _thickness: 4
   _scale: 2.2
   _forwards: 1

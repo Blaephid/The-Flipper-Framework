@@ -60,6 +60,13 @@ public class S_Interaction_Triggers : MonoBehaviour
 		}
 	}
 
+	private void OnEnable () {
+		S_Manager_LevelProgress.OnDeath += EventOnDeath;
+	}
+	private void OnDisable () {
+		S_Manager_LevelProgress.OnDeath -= EventOnDeath;
+	}
+
 	#endregion
 
 	/// <summary>
@@ -374,6 +381,10 @@ public class S_Interaction_Triggers : MonoBehaviour
 		_CamHandler = _Tools.CamHandler;
 
 		_CoreUIElements = _Tools.UISpawner._BaseUIElements;
+	}
+
+	public void EventOnDeath ( object sender, EventArgs e ) {
+		_CurrentActiveEffectTriggers.Clear();
 	}
 	#endregion
 }

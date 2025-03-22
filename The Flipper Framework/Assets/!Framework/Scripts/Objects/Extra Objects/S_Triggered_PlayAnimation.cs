@@ -20,10 +20,10 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
 		if (!enabled) { return; }
 
-		Debug.Log("Trigged On");
-
 		SetAnimatorSpeed(Player);
 		_Animator.SetTrigger("TriggerOn");
+
+		Debug.DrawRay(Player.transform.position, Vector3.up * 10, Color.black, 200f);
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
@@ -46,7 +46,7 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		_Animator.speed = 5;
+		_Animator.speed = 50;
 		_Animator.SetTrigger("TriggerOff");
 
 		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
