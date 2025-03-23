@@ -681,11 +681,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//If moving, check for walls, and if there's a collision, end state.
 			if (_hopThisFrame > 0)
 			{
-				if (Physics.BoxCast(transform.position, new Vector3(1.3f, 3f, 1.3f), -_MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
-				{
-					_Actions._ActionDefault.StartAction();
-				}
-				else if (Physics.BoxCast(transform.position, new Vector3(1.3f, 3f, 1.3f), _MainSkin.right, Quaternion.identity, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
+				float direction = _isHoppingRight ? 1 : -1;
+				float radius = _CharacterCapsule.radius;
+				if (Physics.BoxCast(_PlayerPhys._CharacterCenterPosition, new Vector3(radius, 2.5f, radius), _MainSkin.right * direction, 
+					_MainSkin.rotation, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
 					_Actions._ActionDefault.StartAction();
 				}

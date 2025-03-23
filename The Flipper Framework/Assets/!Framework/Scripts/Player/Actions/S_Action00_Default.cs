@@ -20,7 +20,6 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	private Animator              _CurrentAnimator;
 	private Transform             _SkinOffset;
 
-	private CapsuleCollider		_CharacterCapsule;
 	private CapsuleCollider                 _StandingCapsule;
 	private List<SkinnedMeshRenderer>       _PlayerSkin = new List<SkinnedMeshRenderer>();
 	private SkinnedMeshRenderer             _SpinDashBall;
@@ -314,7 +313,6 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 		_PlayerSkin.Add(_Tools.SkinRenderer);
 		_SkinOffset =	_Tools.CharacterModelOffset;
 		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
-		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
 	}
 	#endregion

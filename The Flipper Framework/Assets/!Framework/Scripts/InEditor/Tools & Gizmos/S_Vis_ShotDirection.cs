@@ -21,6 +21,8 @@ public class S_Vis_ShotDirection : S_Vis_Base
 		_selectedFillColour.a = 1;
 	}
 
+	LaunchPlayerData _launcherData;
+
 	[Header("Gizmo")]
 	[Tooltip("If true, creates a series of gizmos that show the trajectory of the player after being launched by this. The red lines are the path and positions every frame. The blue line represents when the control lock ends.")]
 	public bool	_debugForce;
@@ -62,7 +64,6 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	public override void DrawGizmosAndHandles ( bool selected ) {
 		DrawShot(selected);
 	}
-
 
 	private void OnValidate () {
 		SetUpShot();
@@ -114,20 +115,20 @@ public class S_Vis_ShotDirection : S_Vis_Base
 
 		_launcherStructName = translatedVariableName;
 
-		LaunchPlayerData launcherData = (LaunchPlayerData) value;
+		_launcherData = (LaunchPlayerData) value;
 
-		if (launcherData._overwriteGravity_ != Vector3.zero)
+		if (_launcherData._overwriteGravity_ != Vector3.zero)
 		{
-			_fallGravity = launcherData._overwriteGravity_;
-			_upGravity = launcherData._overwriteGravity_;
+			_fallGravity = _launcherData._overwriteGravity_;
+			_upGravity = _launcherData._overwriteGravity_;
 		}
-		_lockFrames = launcherData._lockInputFrames_;
-		Vector3 direction = launcherData._directionToUse_;
+		_lockFrames = _launcherData._lockInputFrames_;
+		Vector3 direction = _launcherData._directionToUse_;
 
-		Vector3[] velocitySplit = S_Interaction_Objects.SplitCoreAndEnvironmentalVelocities(null, direction, launcherData._force_, 0, _maxSpeed, launcherData._useCore);
+		Vector3[] velocitySplit = S_Interaction_Objects.SplitCoreAndEnvironmentalVelocities(null, direction, _launcherData._force_, 0, _maxSpeed, _launcherData._useCore);
 
 		//Use the launch data to proejct where player will go.
-		return PreviewTrajectory(_ShotCenter.position, velocitySplit[0], velocitySplit[1], launcherData._lockInputTo_);
+		return PreviewTrajectory(_ShotCenter.position, velocitySplit[0], velocitySplit[1], _launcherData._lockInputTo_);
 
 	}
 
@@ -161,8 +162,9 @@ public class S_Vis_ShotDirection : S_Vis_Base
 			{
 				//If there is input in a direction, then player will be accelerating, so reflect that.
 				case S_GeneralEnums.LockControlDirection.CharacterForwards:
+					AccelerateSim(true); break;
 				case S_GeneralEnums.LockControlDirection.Change:
-					AccelerateSim(); break;
+					AccelerateSim(false); break;
 
 			}
 			coreSpeed -= decelAmount;
@@ -176,14 +178,11 @@ public class S_Vis_ShotDirection : S_Vis_Base
 			path[i] = pos;
 
 			continue;
-			void AccelerateSim () {
-				float useMod = _accellModInAir;
-				if (coreSpeed < 20)
-				{
-					useMod += 0.5f;
-				}
-				float acceleration = _acceleration * _AcellBySpeed.Evaluate(coreSpeed / _maxSpeed) * useMod;
+			void AccelerateSim (bool accelerationLockedToBase) {
+				float acceleration = S_PlayerMovement.BuiltInAcceleration(_accellModInAir, accelerationLockedToBase, true, _acceleration, 1, 1);
+
 				decelAmount -= acceleration;
+
 			}
 		}
 		return path;

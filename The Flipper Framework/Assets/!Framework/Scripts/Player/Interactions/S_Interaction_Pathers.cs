@@ -189,8 +189,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 			Vector3 offSet = Vector3.zero;
 
-			Debug.DrawRay(collider.transform.position, Vector3.up * 10, UnityEngine.Color.red, 10f);
-			Debug.DrawRay(transform.position, Vector3.up * 10, UnityEngine.Color.blue, 10f);
+			//Debug.DrawRay(collider.transform.position, Vector3.up * 10, UnityEngine.Color.red, 10f);
+			//Debug.DrawRay(transform.position, Vector3.up * 10, UnityEngine.Color.blue, 10f);
 
 			//Trigger Collisions on rails are organised by the PlaceOnSpline script, so if that had an offset to move the rail collision away from the spline, then follow that (this allows for multiple rails next to each other all following the same spline).
 			if (isTrigger)

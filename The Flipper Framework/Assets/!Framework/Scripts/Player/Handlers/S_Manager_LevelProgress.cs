@@ -229,8 +229,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 			_respawnLaunch = launchData;
 			_respawnTransform = transform;
 
-			Objects.ApplyLaunchEffects(launchData);
-			Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, Vector3.zero, transform, Objects.transform, true);
+			Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, Vector3.zero, transform, Objects.transform, launchData);
 		}
 	}
 

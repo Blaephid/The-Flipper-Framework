@@ -157,7 +157,7 @@ public class S_PlayerMovement : MonoBehaviour
 			lateralVelocity = DefaultAccelerateAndTurn(lateralVelocity, _moveInput, modifier);
 		}
 
-		lateralVelocity = Decelerate(lateralVelocity, _moveInput * decelerationModifier, _curvePosDecell);
+		lateralVelocity = Decelerate(lateralVelocity, _moveInput * decelerationModifier);
 
 		//If external core speed has been set to a positive value this frame, overwrite running speed without losing direction.
 		if (_PlayerVel._externalRunningSpeed >= 0 && lateralVelocity.sqrMagnitude > -1)
@@ -262,17 +262,17 @@ public class S_PlayerMovement : MonoBehaviour
 		//         The total change is decided by acceleration based on input and speed, then drag from the turn.
 
 		Vector3 setVelocity = lateralVelocity.sqrMagnitude > 0 ? lateralVelocity : inputDirection;
-		float accelRate = 0;
+		float accelRate = modifier.y;
 
-		if (deviationFromInput < _angleToAccelerate_ || _PlayerVel._currentRunningSpeed < 10) //Will only accelerate if inputing in direction enough, unless under certain speed.
-		{
-			accelRate = (_PlayerPhys._isRolling && _PlayerPhys._isGrounded ? _currentRollAccell : _currentRunAccell) * inputMagnitude;
-			accelRate *= _curvePosAcell;
-			if (_PlayerPhys._isGrounded) accelRate *= _AccelBySlope_.Evaluate(_PlayerPhys._groundNormal.y);
-		}
+		//Setup for static method. Done for easier reading, as a static is used for visualisers.
+		float accellFromCurves = _curvePosAcell;
+		accellFromCurves *= _PlayerPhys._isGrounded ? _AccelBySlope_.Evaluate(_PlayerPhys._groundNormal.y) : 1;
+		bool inputtingEnough = deviationFromInput < _angleToAccelerate_ || _PlayerVel._currentRunningSpeed < 10;
+		float baseAccel =  _PlayerPhys._isRolling && _PlayerPhys._isGrounded ? _currentRollAccell : _currentRunAccell;
 
-		float speedChange = accelRate - (dragRate * _turnDrag_) * modifier.y;
+		accelRate = BuiltInAcceleration(modifier.y, _Input._lockedToCharacter, inputtingEnough, baseAccel, inputMagnitude, accellFromCurves);
 
+		float speedChange = accelRate - (dragRate * _turnDrag_);
 		setVelocity = Vector3.MoveTowards(setVelocity, Vector3.zero, -speedChange);
 
 		//Step 4) If the change is still under the current top speed, or the change is a decrease in total, then apply it.
@@ -285,40 +285,61 @@ public class S_PlayerMovement : MonoBehaviour
 		return lateralVelocity;
 	}
 
+	public static float BuiltInAcceleration (float startAccel, bool lockedToBase, bool inputtingEnough, float baseOrRollAccell, float inputMagnitude, float accelerationFromCurves) {
+		float accelRate = startAccel;
+
+		if (lockedToBase)
+		{
+			accelRate = baseOrRollAccell;
+		}
+		//Will only accelerate if inputing in direction enough, unless under certain speed.
+		else if (inputtingEnough) //Will only accelerate if inputing in direction enough, unless under certain speed.
+		{
+			accelRate *= baseOrRollAccell;
+			accelRate *= inputMagnitude;
+			accelRate *= accelerationFromCurves;
+		}
+
+		return accelRate;
+	}
+
 	//Handles decreasing the magnitude of the player's controlled velocity, usually only if there is no input, but other circumstances may decrease speed as well.
 	//Deceleration is calculated, then applied at the end of the method.
 	//is static so it can be called by simulations.
-	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier ) {
+	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier = 1) {
 
-		float decelAmount = 0;
-		//Manual decelerations can only happen if nothing is denying them.
-		if (_PlayerPhys._locksForCanDecelerate.Count == 0)
-		{         //If there is no input, ready conventional deceleration.
-			if (input.sqrMagnitude < 0.1)
-			{
-				if (_PlayerPhys._isGrounded)
-				{
-					decelAmount = _moveDeceleration_ * modifier;
-				}
-				else if (_shouldStopAirMovementIfNoInput_)
-				{
-					decelAmount = _airDecel_ * modifier;
-				}
-			}
-			//If grounded and rolling but not on a slope, even with input, ready deceleration. 
-			else if (_PlayerPhys._isRolling && _PlayerPhys._groundNormal.y > _slopeEffectLimit_ && _PlayerVel._currentRunningSpeed > 10)
-			{
-				decelAmount = _rollingDecel_ * modifier;
-			}
-		}
-		//If in air, a constant deceleration is applied in addition to any others.
-		if (!_PlayerPhys._isGrounded && _PlayerVel._currentRunningSpeed > 14)
-		{
-			decelAmount += _constantAirDecel_;
-		}
+		bool canDecel = _PlayerPhys._locksForCanDecelerate.Count == 0;
+		bool notOnSlope = _PlayerPhys._groundNormal.y > _slopeEffectLimit_ && _PlayerVel._currentRunningSpeed > 10;
+		modifier *= _curvePosDecell;
+
+		float decelAmount = BuiltInDeceleration(canDecel, input, notOnSlope, _PlayerPhys._isRolling, _PlayerPhys._isGrounded, modifier, _Tools.Stats);
 
 		//Apply calculated deceleration
 		return Vector3.MoveTowards(lateralVelocity, Vector3.zero, decelAmount);
+	}
+
+	public static float BuiltInDeceleration(bool canDecel, Vector3 input, bool notOnSlope, bool isRolling, bool isGrounded, float modifier, S_O_CharacterStats Stats) {
+		float decelAmount = !isGrounded ? Stats.DecelerationStats.airConstantDecel : 0;
+
+		if (canDecel)
+		{
+			//If grounded and rolling but not on a slope, even with input, ready deceleration. 
+			if (isRolling && notOnSlope)
+			{
+				decelAmount += Stats.DecelerationStats.rollingFlatDecell;
+			}
+			//Normal deceleration
+			else if (isGrounded && input.sqrMagnitude < 0.1f)
+			{
+				decelAmount += Stats.DecelerationStats.moveDeceleration;
+			}
+			//An external stat decides if can slow down in the air.
+			else if (Stats.WhenInAir.shouldStopAirMovementWhenNoInput && input.sqrMagnitude < 0.1f)
+			{
+				decelAmount += Stats.DecelerationStats.airManualDecel;
+			}
+		}
+		return decelAmount;
 	}
 
 	private void AssignStats () {

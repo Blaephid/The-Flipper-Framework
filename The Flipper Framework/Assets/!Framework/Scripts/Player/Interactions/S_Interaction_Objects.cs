@@ -7,6 +7,7 @@ using UnityEngine.InputSystem.XInput;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Switch;
 using UnityEngine.ProBuilder;
+using UnityEditor;
 
 public class S_Interaction_Objects : MonoBehaviour
 {
@@ -460,8 +461,7 @@ public class S_Interaction_Objects : MonoBehaviour
 			DashRingScript._launchData_._force_ ;
 		Vector3 direction = DashRingScript._launchData_._directionToUse_;
 
-		ApplyLaunchEffects(DashRingScript._launchData_);
-		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col.transform, _PlayerPhys.transform, DashRingScript._launchData_._useCore);
+		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col.transform, _PlayerPhys.transform, DashRingScript._launchData_);
 
 		ObjectRotatesCamera(Col, DashRingScript._cameraEffect);
 	}
@@ -546,8 +546,6 @@ public class S_Interaction_Objects : MonoBehaviour
 
 		Vector3 direction = SpringScript._launchData_._directionToUse_;
 
-		ApplyLaunchEffects(SpringScript._launchData_);
-
 		//Calculate force
 
 		//If spring should not take complete control of player velocity, calculate direction based on movement into spring, including spring direction.
@@ -583,12 +581,12 @@ public class S_Interaction_Objects : MonoBehaviour
 				newCoreVelocity = combinedVelocityMagnitude;
 			}
 
-			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, Col.transform));
+			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, Col.transform, SpringScript._launchData_));
 		}
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else if (!SpringScript._keepHorizontal_)
 		{
-			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col.transform, _PlayerPhys.transform, SpringScript._launchData_._useCore);
+			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col.transform, _PlayerPhys.transform, SpringScript._launchData_);
 		}
 
 
@@ -624,9 +622,9 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
-	public void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, Transform Player, bool useCoreVelocity) {
-		Vector3[] split = SplitCoreAndEnvironmentalVelocities(Player,direction,launchPower,_PlayerVel._horizontalSpeedMagnitude,_PlayerPhys._PlayerMovement._currentMaxSpeed,useCoreVelocity);
-		StartCoroutine(ApplyForceAfterDelay(split[0], lockPosition, split[1], Object));
+	public void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, Transform Player, LaunchPlayerData launchData) {
+		Vector3[] split = SplitCoreAndEnvironmentalVelocities(Player,direction,launchPower,_PlayerVel._horizontalSpeedMagnitude,_PlayerPhys._PlayerMovement._currentMaxSpeed,launchData._useCore);
+		StartCoroutine(ApplyForceAfterDelay(split[0], lockPosition, split[1], Object, launchData));
 	}
 
 	public static Vector3[] SplitCoreAndEnvironmentalVelocities (Transform Player, Vector3 direction, float launchPower, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity) {
@@ -648,17 +646,18 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	public static Vector2 GetSpeedsForLaunch (Vector3 horizontalVelocity, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity = false) {
-		float horizontalSpeed = horizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
+		float newHorizontalSpeed = horizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
 
 		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
 
-		//if (currentCoreSpeed > horizontalSpeed || useCoreVelocity)
-		if (useCoreVelocity)
+		//If set to prioritise core, or core speed is more than the bounce being set to.
+		if (currentCoreSpeed > newHorizontalSpeed || useCoreVelocity)
 		{
-			currentCoreSpeed = Mathf.Min(horizontalSpeed, maxSpeed); //In this case, bounce will be entirely through core velocity, not environmental.
+			currentCoreSpeed = Mathf.Min(newHorizontalSpeed, maxSpeed); //In this case, bounce will be entirely through core velocity, not environmental.
 		}
 
-		float horizontalEnvSpeed = Mathf.Max(horizontalSpeed -  currentCoreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+		float horizontalEnvSpeed = Mathf.Max(newHorizontalSpeed -  currentCoreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
+		currentCoreSpeed = Mathf.Max(currentCoreSpeed, 1);
 
 		return new Vector2(currentCoreSpeed, horizontalEnvSpeed );
 		//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
@@ -672,42 +671,48 @@ public class S_Interaction_Objects : MonoBehaviour
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
-	private IEnumerator ApplyForceAfterDelay ( Vector3 environmentalVelocity, Vector3 offset, Vector3 coreVelocity, Transform Object, int frames = 3 ) {
+	private IEnumerator ApplyForceAfterDelay ( Vector3 enVelocity, Vector3 offset, Vector3 coreVelocity, Transform Object, LaunchPlayerData launchData, int frames = 3 ) {
 
 		_Actions._canChangeActions = false;
 		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.
 
+		Debug.DrawRay(Object.position, coreVelocity * 10, Color.magenta, 20f);
+		Debug.DrawRay(Object.position, enVelocity * 10, Color.blue, 20f);
+		Debug.DrawRay(Object.position, (enVelocity + coreVelocity) * 20, Color.cyan, 20f);
+
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "ReadyForce");
-		//_PlayerPhys._locksForCanControl.Add(false); //Prevents any input interactions changing core velocity while locked here.
 
 		//Player rotation. Will be determined by the force direction. Usually based on core, but if that isnt present, based on environment.
-		if (coreVelocity.sqrMagnitude > 1)
-		{
-			_Actions._ActionDefault.SetSkinRotationToVelocity(0, coreVelocity);
-		}
-		else
-		{
-			_Actions._ActionDefault.SetSkinRotationToVelocity(0, environmentalVelocity);
-		}
+		Vector3 lookDirection = coreVelocity.sqrMagnitude > 2 ? coreVelocity.normalized : enVelocity.normalized;
 
 		//Keep the player in position, with zero velocity, until delay is over.
 		for (int i = 0 ; i < frames ; i++)
 		{
 			_Actions._ActionDefault.StartAction(); //Ensures player cant change into another action, like a rail, while hitting a spring.
 			SnapToObject(Object, offset, false);
+			_Actions._ActionDefault.SetSkinRotationToVelocity(0, lookDirection);
+
 			_PlayerVel.SetCoreVelocity(Vector3.zero, "Overwrite");
 			_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
 		}
-
-		_Actions._canChangeActions = true;
 
 		SnapToObject(Object, offset, false); ; //Ensures player is set to inside of spring, so bounce is consistant. 
 
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "ReadyForce");
 
 		_PlayerVel.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
-		_PlayerVel.SetEnvironmentalVelocity(environmentalVelocity, true, true, S_GeneralEnums.ChangeLockState.Lock); //Apply bounce
+		_PlayerVel.SetEnvironmentalVelocity(enVelocity, true, true, S_GeneralEnums.ChangeLockState.Lock); //Apply bounce
+
+		if(launchData != default(LaunchPlayerData)) 
+			ApplyLaunchEffects(launchData);
+
+		//To ensure launch isn't interupted by entering a rail until launched a bit away.
+		for (int i = 0 ; i < 20 ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+		_Actions._canChangeActions = true;
 
 	}
 

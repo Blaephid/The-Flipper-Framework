@@ -24,7 +24,8 @@ public class S_Vis_Base : MonoBehaviour
 	public bool _viewVisualisationData;
 
 	//The above property cannot be drawn horizontally if it uses SetBoolIfOthers, so instead, bind a different boolean to it (this one), that will draw the other data, but not itself.
-	[SetBoolIfOther(false, "_viewVisualisationData", false)] [SetBoolIfOther(true, "_viewVisualisationData", true)]
+	[SetBoolIfOther(false, "_viewVisualisationData", false)]
+	[SetBoolIfOther(true, "_viewVisualisationData", true)]
 	[DrawOthersIf(false, new string[] {"_drawAtAllTimes", "_drawIfParentSelected", "_normalOutlineColour", "_selectedOutlineColour", "_selectedFillColour" }, true)]
 	[SerializeField]
 	private bool _viewVisualisationDataHidden;
@@ -51,12 +52,15 @@ public class S_Vis_Base : MonoBehaviour
 
 		if (transform.parent != null)
 		{
-			if(_drawIfParentSelected)
-				if (S_S_Editor.IsThisOrListOrChildrenSelected(transform.parent, new GameObject[] { transform.parent.gameObject })) { _isSelected = true; }
-			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject })) { _isSelected = true; }
+			if (_drawIfParentSelected)
+				if (S_S_Editor.IsThisOrListOrChildrenSelected(transform.parent, new GameObject[] { transform.parent.gameObject }))
+				{ _isSelected = true; }
+			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject }))
+			{ _isSelected = true; }
 		}
 		else
-			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, null)){ _isSelected = true; }
+			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, null))
+		{ _isSelected = true; }
 
 		if (_drawAtAllTimes || _isSelected)
 		{
@@ -69,7 +73,7 @@ public class S_Vis_Base : MonoBehaviour
 	}
 
 
-	public virtual void VisualiseWithSelectableHandle (Vector3 position ,float handleRadius) {
+	public virtual void VisualiseWithSelectableHandle ( Vector3 position, float handleRadius ) {
 		//Only draw select handle if not already selected.
 		if (gameObject == null || transform == null || S_S_Editor.IsThisOrListOrChildrenSelected(transform, null, 0))
 		{ return; }

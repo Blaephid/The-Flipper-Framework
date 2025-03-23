@@ -23,8 +23,6 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 		SetAnimatorSpeed(Player);
 		_Animator.SetTrigger("TriggerOn");
 
-		Debug.DrawRay(Player.transform.position, Vector3.up * 10, Color.black, 200f);
-
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
 

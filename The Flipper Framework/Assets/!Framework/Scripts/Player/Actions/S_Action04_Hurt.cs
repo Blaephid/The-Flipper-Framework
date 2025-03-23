@@ -14,8 +14,6 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 	//Unity
 	#region Unity Specific Properties
 	private S_Handler_HealthAndHurt	_HurtControl;
-
-	private CapsuleCollider       _CharacterCapsule;
 	#endregion
 
 
@@ -318,7 +316,6 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 	public override void AssignTools () {
 		base.AssignTools();
 		_HurtControl = GetComponentInParent<S_Handler_HealthAndHurt>();
-		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 	}
 
 	//Reponsible for assigning stats from the stats script.

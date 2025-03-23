@@ -92,7 +92,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	public void GetNewSampleOnRail ( float travelAmount ) {
 
-		//Debug.Log("Move " +travelAmount);
+		if(!_RailTransform || !_PathSpline) { return; }
 
 		//Increase/decrease the Amount of distance travelled on the Spline by DeltaTime and direction
 		_movingDirection = _isGoingBackwards ? -1 : 1;

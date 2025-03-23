@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.InputSystem;
 using UnityEditor;
 using UnityEngine.Windows;
+using System;
 
 public class S_PlayerInput : MonoBehaviour
 {
@@ -46,8 +47,7 @@ public class S_PlayerInput : MonoBehaviour
 	public bool	_isInputLocked { get; set; }
 	float               _lockedTime;
 	float               _lockedCounter = 0;
-	private bool            _lockedToCharacter;
-	[HideInInspector]
+	[NonSerialized]public bool            _lockedToCharacter;
 	public bool	_isCamLocked { get; set; }
 
 	//input
@@ -229,11 +229,11 @@ public class S_PlayerInput : MonoBehaviour
 				_lockedMoveInput = Vector3.zero; break;
 			case S_GeneralEnums.LockControlDirection.CharacterForwards:
 				_lockedControllerInput = Vector2.one;
-				Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _MainSkin.forward * 5, Color.red, 20f);
 				_lockedToCharacter = true;
 				_lockedMoveInput = _MainSkin.forward; break;
 		}
 
+		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _lockedMoveInput * 20, Color.red, 20f);
 		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.

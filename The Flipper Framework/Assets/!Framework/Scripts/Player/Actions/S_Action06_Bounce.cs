@@ -15,7 +15,6 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 	//Unity
 	#region Unity Specific Properties
 	private S_VolumeTrailRenderer _HomingTrailScript;
-	private CapsuleCollider _CharacterCapsule;
 	#endregion
 
 
@@ -299,7 +298,6 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		base.AssignTools();
 
 		_HomingTrailScript =	_Tools.HomingTrailScript;
-		_CharacterCapsule =		_Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 	}
 
 	//Reponsible for assigning stats from the stats script.

@@ -108,8 +108,8 @@ public class S_PlayerVelocity : MonoBehaviour
 			_PlayerPhys._wasInAirLastFrame = false;
 		}
 
-		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, velocityThisFrame * Time.deltaTime, Color.blue, 10f);
-		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, velocityLastFrame * Time.deltaTime, Color.green, 10f);
+		//Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, velocityThisFrame * Time.deltaTime, Color.blue, 10f);
+		//Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, velocityLastFrame * Time.deltaTime, Color.green, 10f);
 
 		//General velocities applied just for last frame (like an anti offset set when groundsticking) are removed later on in this script so should not be factored in here.
 		if (_velocityToNotCountWhenCheckingForAChange != Vector3.zero)
@@ -126,8 +126,8 @@ public class S_PlayerVelocity : MonoBehaviour
 		//Only apply the changes if physics decreased the speed.
 		if (speedThisFrameSquared < speedLastFrameSquared)
 		{
-			Debug.DrawRay(transform.position, Vector3.up * 2, Color.black, 10f);
-			Debug.DrawRay(transform.position, _coreVelocity.normalized * 8, Color.red, 10f);
+			//Debug.DrawRay(transform.position, Vector3.up * 2, Color.black, 10f);
+			//Debug.DrawRay(transform.position, _coreVelocity.normalized * 8, Color.red, 10f);
 
 			float angleChange = Vector3.Angle(velocityThisFrame, velocityLastFrame);
 			if (speedThisFrameSquared < 0.01f) { angleChange = 0; } //Because angle would still be calculated even if a one vector is zero.
@@ -306,7 +306,7 @@ public class S_PlayerVelocity : MonoBehaviour
 		_previousRunningSpeeds.Insert(0, _currentRunningSpeed);
 		_previousRunningSpeeds.RemoveAt(3);
 
-		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _totalVelocity * Time.deltaTime, Color.red, 10f);
+		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _totalVelocity * Time.deltaTime, Color.gray, 10f);
 	}
 	#endregion
 

@@ -19,6 +19,7 @@ public class S_Action_Base : MonoBehaviour, IAction
 	[HideInInspector] public GameObject            _JumpBall;
 	[HideInInspector] public Animator              _BallAnimator;
 	[HideInInspector] public Transform             _MainSkin;
+	[HideInInspector] public CapsuleCollider       _CharacterCapsule;
 
 	[HideInInspector] public int            _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 	[HideInInspector] public bool           _isActionCurrentlyValid = true;       //Controlled by Activate And Deactivate action. Can't perform actions if false.[Hide
@@ -84,6 +85,7 @@ public class S_Action_Base : MonoBehaviour, IAction
 		_MainSkin = _Tools.MainSkin;
 		_Sounds = _Tools.SoundControl;
 		_JumpBall = _Tools.JumpBall;
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 	}
 
 	public void ReactivateAction () {
