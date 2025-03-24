@@ -3,7 +3,42 @@ guid: a18710a944ac368428ae5caad4d11b1f
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7023_partswall_RC
+    second: {fileID: 2100000, guid: a8792ae9bfb669743916eb22674ac251, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7025_partswall_RC
+    second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_8007_RC
+    second: {fileID: 2100000, guid: f4e7e9eb02249b74bb7fd0895429bbda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_circle_RC
+    second: {fileID: 2100000, guid: 2f35699e9b1b16642afb6d716f864fcf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_gray_RC
+    second: {fileID: 2100000, guid: e65b5524c09a2df41b25863a42aa9f92, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_white_RC
+    second: {fileID: 2100000, guid: f5ae76b2b11c68446be1246ecb2385d5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_wood_crosa_RC
+    second: {fileID: 2100000, guid: 31400b7bcda51004ca0126a2e305050d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -29,11 +64,40 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Ob_CannonWall_RC|w02_gismo_cannonwall
+      takeName: Ob_CannonWall_RC|w02_gismo_cannonwall
+      internalID: -1090629141689520666
+      firstFrame: 0
+      lastFrame: 180
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 3
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -88,7 +152,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 3
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

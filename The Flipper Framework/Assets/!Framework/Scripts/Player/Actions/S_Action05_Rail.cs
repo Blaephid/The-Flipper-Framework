@@ -142,7 +142,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	new private void FixedUpdate () {
 		base.FixedUpdate();
-		if (!enabled || !_isGrinding) { return; }
+		if (!enabled || !_isGrinding || !_RF._RailTransform) { return; }
 
 		_PlayerPhys._timeOnGround = 0;
 
@@ -683,7 +683,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			{
 				float direction = _isHoppingRight ? 1 : -1;
 				float radius = _CharacterCapsule.radius;
-				if (Physics.BoxCast(_PlayerPhys._CharacterCenterPosition, new Vector3(radius, 2.5f, radius), _MainSkin.right * direction, 
+				if (Physics.BoxCast(_PlayerPhys._CharacterCenterPosition, new Vector3(radius, 1.5f, radius), _MainSkin.right * direction, 
 					_MainSkin.rotation, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
 				{
 					_Actions._ActionDefault.StartAction();

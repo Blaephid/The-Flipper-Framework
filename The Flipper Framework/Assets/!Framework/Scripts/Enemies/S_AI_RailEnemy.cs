@@ -40,6 +40,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	[SerializeField] bool _isBackwards;
 
 	[Header("Stats")]
+	[SerializeField] AnimationCurve _timeToFullSpeed_ = new AnimationCurve(new Keyframe[] { new Keyframe (0,0), new Keyframe(1,1) });
 	[SerializeField] AnimationCurve _FollowByDistance_;
 	[SerializeField] AnimationCurve _FollowBySpeedDif_;
 	[SerializeField] float _followSpeed_ = 0.5f;
@@ -51,6 +52,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	float _playerDistance;
 	float _playerSpeed;
+	float _timeGrinding;
 
 	Vector3 _startPosition;
 	private bool _isFirstSet = true;
@@ -95,9 +97,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		if (!_isActive) { return; }
 
-		if (_RF._grindingSpeed == 0)
-			_RF._grindingSpeed = StartSpeed;
-
+		_RF._grindingSpeed = StartSpeed * _timeToFullSpeed_.Evaluate(0);
 		_PlayerActions = Player.GetComponent<S_CharacterTools>()._ActionManager;
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
@@ -111,6 +111,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	private void SetIsActive ( bool set ) {
 		_isActive = set;
+		_timeGrinding = 0;
 
 		if (!_RF || !_RF._PathSpline) { _isActive = false; }
 	}
@@ -191,13 +192,23 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	private void HandleGrindSpeed () {
-		//Speed Changes
-		if (_followPlayer)
-		{
-			TrackPlayer();
-		}
+		_timeGrinding += Time.deltaTime;
 
-		SlopePhysics();
+		if(_timeGrinding != _timeToFullSpeed_[_timeToFullSpeed_.length-1].time)
+		{
+			_RF._grindingSpeed = StartSpeed * _timeToFullSpeed_.Evaluate(_timeGrinding);
+			_timeGrinding = Mathf.Min(_timeToFullSpeed_[_timeToFullSpeed_.length - 1].time, _timeGrinding);
+		}
+		else
+		{
+			//Speed Changes
+			if (_followPlayer)
+			{
+				TrackPlayer();
+			}
+
+			SlopePhysics();
+		}
 	}
 
 	void TrackPlayer () {

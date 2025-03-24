@@ -122,6 +122,8 @@ public class S_RailFollow_Base : MonoBehaviour
 	//Physics
 	//Gets new location on rail, changing position and rotation to match. Called in update in order to ensure the character matches the rail in real time.
 	public void PlaceOnRail ( Action<S_Interaction_Pathers.PathTypes> SetRotationOnRail, Action<Vector3> SetPosition ) {
+		if(!_RailTransform) { return; }
+
 		//Set Position and rotation on Rail
 		switch (_whatKindOfRail)
 		{

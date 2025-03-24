@@ -136,6 +136,7 @@ public class S_Trigger_External : S_Trigger_Base
 		//Go through each object to trigger on (remember, this inlcudes itself is _TriggerSelfOn, and if they have logic to read, add them to the list of scripts to read.
 		for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
 		{
+			if(!TriggerObjects._ObjectsToTriggerOn[i]) { continue; }
 			if (TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out S_Trigger_External Trigger))
 			{
 				if (Trigger.TriggerObjects._isLogicInPlayerScript)

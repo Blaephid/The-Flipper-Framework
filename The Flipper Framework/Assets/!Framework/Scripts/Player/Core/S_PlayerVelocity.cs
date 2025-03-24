@@ -93,6 +93,9 @@ public class S_PlayerVelocity : MonoBehaviour
 		Vector3 velocityThisFrame = _RB.velocity;
 		Vector3 velocityLastFrame = _previousVelocity[0];
 
+		Debug.Log("This " + velocityThisFrame);
+		Debug.Log("Last " + velocityLastFrame);
+
 		bool fromAirToGround = _PlayerPhys._isGrounded && _PlayerPhys._wasInAirLastFrame;
 
 		if (fromAirToGround)
@@ -123,11 +126,16 @@ public class S_PlayerVelocity : MonoBehaviour
 		float speedLastFrameSquared = velocityLastFrame.sqrMagnitude;
 		//Sqrmagnitude is much faster, but not the actual speed, so when needing to apply the speed later, must use a single pricey square root function.
 
+		Debug.Log("This " + Mathf.Sqrt(speedThisFrameSquared));
+		Debug.Log("Last " + Mathf.Sqrt(speedLastFrameSquared));
+
 		//Only apply the changes if physics decreased the speed.
 		if (speedThisFrameSquared < speedLastFrameSquared)
 		{
-			//Debug.DrawRay(transform.position, Vector3.up * 2, Color.black, 10f);
-			//Debug.DrawRay(transform.position, _coreVelocity.normalized * 8, Color.red, 10f);
+			Debug.Log("LOST SPEED BETWEEN FRAMES");
+
+			Debug.DrawRay(transform.position, Vector3.up * 2, Color.white, 10f);
+			Debug.DrawRay(transform.position, _coreVelocity.normalized * 8, Color.red, 10f);
 
 			float angleChange = Vector3.Angle(velocityThisFrame, velocityLastFrame);
 			if (speedThisFrameSquared < 0.01f) { angleChange = 0; } //Because angle would still be calculated even if a one vector is zero.
@@ -285,6 +293,8 @@ public class S_PlayerVelocity : MonoBehaviour
 		_previousVelocity.Insert(0, _totalVelocity);
 		_previousVelocity.RemoveAt(5);
 
+		Debug.Log("Set To " + _totalVelocity);
+
 		//Assigns the global variables for the current movement, since it's assigned at the end of a frame, changes between frames won't be counted when using this,
 		_speedMagnitudeSquared = _totalVelocity.sqrMagnitude;
 		Vector3 releVec = _PlayerPhys.GetRelevantVector(_totalVelocity, false);
@@ -306,7 +316,7 @@ public class S_PlayerVelocity : MonoBehaviour
 		_previousRunningSpeeds.Insert(0, _currentRunningSpeed);
 		_previousRunningSpeeds.RemoveAt(3);
 
-		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _totalVelocity * Time.deltaTime, Color.gray, 10f);
+		//Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _totalVelocity * Time.deltaTime, Color.gray, 10f);
 	}
 	#endregion
 

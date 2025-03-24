@@ -120,6 +120,8 @@ public class S_AddOnRail : MonoBehaviour
 			for (int i = 0 ; i < AddThis.Length ; i++)
 			{
 				S_AddOnRail rail = AddThis[i];
+				if(!rail) { continue; }
+
 				Spline thisSpline = GetComponentInParent<Spline>();
 				Spline otherSpline = rail.GetComponentInParent<Spline>();
 

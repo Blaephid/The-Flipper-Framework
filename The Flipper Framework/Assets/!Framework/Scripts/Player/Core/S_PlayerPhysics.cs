@@ -601,7 +601,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (_timeOnGround > 0.12f && _PlayerVelocity._horizontalSpeedMagnitude > 3)
 		{
 
-			Debug.DrawRay(_CharacterCenterPosition, velocity * Time.deltaTime, Color.white);
+			Debug.DrawRay(_CharacterCenterPosition, velocity * Time.deltaTime, Color.white, 10f);
 
 			Vector3 currentGroundNormal = _groundNormal;
 			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.07f);
@@ -658,7 +658,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			SetPlayerPosition(newPos);
 		}
 
-		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.red);
+		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.red, 10f);
 
 		return velocity;
 	}
@@ -688,7 +688,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
 		_PlayerVelocity.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
 
-		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.cyan);
+		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.cyan, 10f);
 
 		return velocity;
 	}
