@@ -10,6 +10,8 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 	public S_CharacterTools _Tools;
 	private S_Handler_Camera _CamHandler;
 
+	Camera MainCamera;
+
 	public ParticleSystem RunningDust;
 	public ParticleSystem SpeedLinesCharacter;
 	public VisualEffect		_SpeedLinesScreen;
@@ -41,6 +43,9 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 		_Head = _Tools.Head;
 		LeftMouth = _Tools.LeftMouth;
 		RightMouth = _Tools.RightMouth;
+
+		MainCamera = Camera.main;
+
 	}
 
 	void Update () {
@@ -63,16 +68,18 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 
 		if (_PlayerVelocity._horizontalSpeedMagnitude > 60)
 		{
-			float intensity = (_PlayerVelocity._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed) * 4;
-			float radius = Mathf.LerpUnclamped(0.2f ,1.7f , _CamHandler._HedgeCam._currentFOV / 110);
+			float intensity = (_PlayerVelocity._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed);
+			//float radius = Mathf.LerpUnclamped(0.8f ,2.5f , _CamHandler._HedgeCam._currentFOV / 110);
+			float radius = Mathf.LerpUnclamped(0f ,2.6f , MainCamera.fieldOfView / 120);
 
-			_SpeedLinesScreen.SetFloat("Intensity", intensity);
-			_SpeedLinesScreen.SetFloat("Spawn Rate", intensity * 12);
+			//_SpeedLinesScreen.SetFloat("Intensity", intensity);
+			_SpeedLinesScreen.SetFloat("Spawn Rate", intensity * 700);
 			_SpeedLinesScreen.SetFloat("Radius", radius);
 		}
 		else
 		{
-			_SpeedLinesScreen.SetFloat("Intensity", 0);
+			//_SpeedLinesScreen.SetFloat("Intensity", 0);
+			_SpeedLinesScreen.SetFloat("Spawn Rate", 0);
 		}
 
 

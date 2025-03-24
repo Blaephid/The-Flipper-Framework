@@ -194,6 +194,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private void HandleGrindSpeed () {
 		_timeGrinding += Time.deltaTime;
 
+		if (_timeToFullSpeed_.length == 0) { return; }
+
 		if(_timeGrinding != _timeToFullSpeed_[_timeToFullSpeed_.length-1].time)
 		{
 			_RF._grindingSpeed = StartSpeed * _timeToFullSpeed_.Evaluate(_timeGrinding);

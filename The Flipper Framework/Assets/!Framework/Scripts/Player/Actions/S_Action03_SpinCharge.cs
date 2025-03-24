@@ -15,8 +15,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	#region Unity Specific Properties
 	private S_Control_EffectsPlayer         _Effects;
 
-	private CapsuleCollider		_LowerCapsule;
-	private CapsuleCollider		_StandingCapsule;
 
 	private Transform			_PlayerSkinTransform;
 	private Transform                       _MainCamera;
@@ -372,8 +370,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_MainCamera = Camera.main.transform;
 
 		_PlayerSkinTransform = _Tools.CharacterModelOffset;
-		_LowerCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();
-		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();	
 	}
 	#endregion
 

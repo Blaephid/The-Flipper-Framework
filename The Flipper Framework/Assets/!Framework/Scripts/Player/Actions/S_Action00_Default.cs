@@ -20,7 +20,6 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	private Animator              _CurrentAnimator;
 	private Transform             _SkinOffset;
 
-	private CapsuleCollider                 _StandingCapsule;
 	private List<SkinnedMeshRenderer>       _PlayerSkin = new List<SkinnedMeshRenderer>();
 	private SkinnedMeshRenderer             _SpinDashBall;
 	private List<SkinnedMeshRenderer>       _CurrentSkins = new List<SkinnedMeshRenderer>();
@@ -239,7 +238,6 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	public void OverWriteCollider ( CapsuleCollider newCollider ) {
 		_CharacterCapsule.radius = newCollider.radius;
 		_CharacterCapsule.center = newCollider.center;
-		//_CharacterCapsule.transform.localPosition = newCollider.transform.position - _CharacterCapsule.transform.parent.position;
 		_CharacterCapsule.material = newCollider.material;
 		_CharacterCapsule.height = newCollider.height;
 	}
@@ -313,7 +311,6 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 		_PlayerSkin.Add(_Tools.SkinRenderer);
 		_SkinOffset =	_Tools.CharacterModelOffset;
 		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
-		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
 	}
 	#endregion
 }

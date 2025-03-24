@@ -16,8 +16,6 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 
 	//Unity
 	#region Unity Specific Properties
-	private CapsuleCollider           _StandingCapsule;
-	private CapsuleCollider            _RollingCapsule;
 
 	#endregion
 
@@ -136,7 +134,7 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 			if (value)
 			{
 				//Make shorter to slide under spaces
-				_Actions._ActionDefault.OverWriteCollider(_RollingCapsule);
+				_Actions._ActionDefault.OverWriteCollider(_LowerCapsule);
 			}
 			//Set to not rolling from was
 			else
@@ -161,8 +159,7 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 
 	public override void AssignTools () {
 		base.AssignTools();
-		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
-		_RollingCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();
+
 	}
 
 	public override void AssignStats () {

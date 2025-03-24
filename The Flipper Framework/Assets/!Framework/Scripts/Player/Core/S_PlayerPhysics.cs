@@ -941,7 +941,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		Vector3 halfPoint = Vector3.Lerp(transform.position, newPosition, 0.5f);
 		Debug.DrawLine(transform.position, halfPoint, new Color(1f, 0, 1f, 0.5f), 10f);
 		Debug.DrawRay(halfPoint, Vector3.up, new Color(1f, 0, 1f, 0.5f), 10f);
-		Debug.DrawLine(halfPoint,newPosition, new Color(0.4f,0,0.8f, 0.8f), 10f);
+		Debug.DrawLine(halfPoint, newPosition, new Color(0.4f, 0, 0.8f, 0.8f), 10f);
 
 		transform.position = newPosition;
 		UpdatePositionTrackers();

@@ -16,17 +16,11 @@ public class S_Action_Base : MonoBehaviour, IAction
 	[NonSerialized] public S_Control_SoundsPlayer _Sounds;
 	[NonSerialized] public S_PlayerMovement      _PlayerMovement;
 
-
-	[HideInInspector] public Animator              _CharacterAnimator;
-	[HideInInspector] public GameObject            _JumpBall;
-	[HideInInspector] public Animator              _BallAnimator;
-	[HideInInspector] public Transform             _MainSkin;
-	[HideInInspector] public CapsuleCollider       _CharacterCapsule;
-
 	[NonSerialized] public Animator              _CharacterAnimator;
 	[NonSerialized] public GameObject            _JumpBall;
 	[NonSerialized] public Animator              _BallAnimator;
 	[NonSerialized] public Transform             _MainSkin;
+	[NonSerialized] public CapsuleCollider       _CharacterCapsule;
 	[NonSerialized] public CapsuleCollider         _LowerCapsule;
 	[NonSerialized] public CapsuleCollider         _StandingCapsule;
 
