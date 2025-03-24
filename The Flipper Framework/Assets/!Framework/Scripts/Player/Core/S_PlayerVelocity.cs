@@ -94,7 +94,6 @@ public class S_PlayerVelocity : MonoBehaviour
 		Vector3 velocityLastFrame = _previousVelocity[0];
 
 		Debug.Log("This " + velocityThisFrame);
-		Debug.Log("Last " + velocityLastFrame);
 
 		bool fromAirToGround = _PlayerPhys._isGrounded && _PlayerPhys._wasInAirLastFrame;
 
