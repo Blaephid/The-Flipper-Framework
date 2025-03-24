@@ -126,9 +126,11 @@ public class S_PlayerVelocity : MonoBehaviour
 		//Only apply the changes if physics decreased the speed.
 		if (speedThisFrameSquared < speedLastFrameSquared)
 		{
+			Debug.Log("From " + Mathf.Sqrt(speedLastFrameSquared) + " To " + Mathf.Sqrt(speedThisFrameSquared));
+
 
 			Debug.DrawRay(transform.position, Vector3.up * 2, Color.white, 10f);
-			Debug.DrawRay(transform.position, _coreVelocity.normalized * 8, Color.red, 10f);
+			Debug.DrawRay(transform.position, velocityLastFrame.normalized * 8, Color.red, 10f);
 
 			float angleChange = Vector3.Angle(velocityThisFrame, velocityLastFrame);
 			if (speedThisFrameSquared < 0.01f) { angleChange = 0; } //Because angle would still be calculated even if a one vector is zero.

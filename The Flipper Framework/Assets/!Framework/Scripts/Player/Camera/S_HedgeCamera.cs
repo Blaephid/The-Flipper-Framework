@@ -201,6 +201,10 @@ public class S_HedgeCamera : MonoBehaviour
 
 	[HideInInspector]
 	public List<string>             _locksForCameraFallBack = new List<string>();
+	private string		_currentSourceOfFallBack;
+	private Vector3			_startPositionOfFallBack;
+	private float		 _lerpSpeedOfFallBack;
+
 	#endregion
 
 	#endregion
@@ -649,7 +653,7 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	private void ApplyCameraEffects () {
-
+		KeepFallBackCameraFollowing();
 	}
 
 
@@ -883,22 +887,24 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Called externally and temporarily creates activates the second camera at the position of the main one, before transitioning back to the primary.
 	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
-	public IEnumerator ApplyCameraFallBack ( Vector2 frames, float secondaryCameraLerpAfterPlayer, float playerSpeedBefore,float playerSpeedAfter , float minDifference = 0.5f ) {
+	public IEnumerator ApplyCameraFallBack ( Vector2 frames, float secondaryCameraLerpAfterPlayer, float playerSpeedBefore,float playerSpeedAfter , float minDifference, string source ) {
 		if(_locksForCameraFallBack.Count > 0) { yield break; }
 
-		if (_SecondaryCamera.gameObject.activeSelf) //If secondary camera is already active, don't move it, let it play out.
+		if (_currentSourceOfFallBack == source) //The same thing can't apply multiple fall backs.
 		{ 
 			yield break; 
 		}
+		_currentSourceOfFallBack = source;
 
 		//Sets the secondary camera to the position of the primary, then makes it take over display.
 		_SecondaryCamera.transform.position = transform.position;
 		_SecondaryCamera.transform.rotation = transform.rotation;
-		//_SecondaryCamera.transform.parent = _BaseTarget.parent;
 		_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0);
 		_SecondaryCamera.gameObject.SetActive(true);
 
-		StartCoroutine(KeepFallBackCameraFollowing(transform.position, secondaryCameraLerpAfterPlayer));
+		//Ensures secondary camera will loosely still follow player.
+		_lerpSpeedOfFallBack = secondaryCameraLerpAfterPlayer;
+		_startPositionOfFallBack = transform.position;
 
 		//Remain locked in place for x frames. At least 1
 		for (int i = 1 ; i <= Mathf.Max(frames.x, 2) ; i++)
@@ -921,15 +927,16 @@ public class S_HedgeCamera : MonoBehaviour
 		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
 		_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseIn, frames.y / 50f);
 		_SecondaryCamera.gameObject.SetActive(false); //Disabling the secondary camera will cause the brain to automatically transition back to primary (assuming no other virtual cameras are at play.
+
+		_currentSourceOfFallBack = "";
 	}
 
-	public IEnumerator KeepFallBackCameraFollowing (Vector3 secondaryStartPosition, float lerpSpeed = 0.6f) {
-		while (_SecondaryCamera.isActiveAndEnabled)
-		{
-			yield return new WaitForEndOfFrame();
-			_SecondaryCamera.transform.position = Vector3.Lerp(secondaryStartPosition, transform.position, lerpSpeed);
-		}
+	private void KeepFallBackCameraFollowing () {
+		if(_currentSourceOfFallBack == "") { return; }
+
+		_SecondaryCamera.transform.position = Vector3.Lerp(_startPositionOfFallBack, transform.position, _lerpSpeedOfFallBack);
 	}
+
 
 	//Called to make the camera target at a new position, attached to the secondary target, which is set to follow another transform (usually the player or the player skin).
 	public void SetCameraTargetToNewParent ( Transform TargetToMove, Transform newParent, Vector3 position, int frames ) {

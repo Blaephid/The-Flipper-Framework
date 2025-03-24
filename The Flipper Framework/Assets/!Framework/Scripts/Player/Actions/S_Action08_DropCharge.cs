@@ -181,14 +181,6 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	//Checks whether or not to launch the player, either by landing on the ground or performing a dash.
 	private void CheckGround () {
 
-		////Pressing the special button will cause a dash while still in the air, affected by charge.
-		//if (_Input._SpecialPressed && _Actions._charge > _minimunCharge_)
-		//{
-		//	AirRelease();
-		//}
-
-		//else
-		//{
 			//Check if on the ground, either by using the ground check or physics, or a different one based on fall speed with a capsule (to ensure not hitting a corner and not bouncing).
 			bool isRaycasthit = Physics.SphereCast(_FeetPoint.position, 3 , -transform.up, out _FloorHit, (_PlayerVel._coreVelocity.y * Time.deltaTime * 0.6f), _PlayerPhys._Groundmask_);
 			bool isGroundHit = _PlayerPhys._isGrounded || isRaycasthit;
@@ -200,25 +192,8 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 				_hasLanded = true;
 				Release(UseHit.normal);
 			}
-		//}
 	}
 
-	////Called when dashing before hitting the ground, disabled buttons, and decreases charge before normal release
-	//private void AirRelease () {
-
-	//	//Since activated by pressing a button, ensure none others are pressed so there aren't immediate transitions.
-	//	_Input._JumpPressed = false;
-	//	_Input._SpecialPressed = false;
-	//	_Input._HomingPressed = false;
-
-	//	_hasLanded = true;
-
-	//	_Actions._charge *= 0.8f; //Launcing in the air has less power than grounded.
-
-	//	StartCoroutine(DashThroughAir());
-
-	//	Release(transform.up);
-	//}
 
 	//Takes in a normal, aligns direction relative to it, then gets a force to apply/
 	private void Release ( Vector3 upNormal ) {
@@ -229,22 +204,11 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 
 		//Effects
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
-			_PlayerVel._horizontalSpeedMagnitude, _Actions._charge, 0.25f)); //The camera will fall back before catching up.
+			_PlayerVel._horizontalSpeedMagnitude, _Actions._charge, 0.25f, "DropCharge")); //The camera will fall back before catching up.
 
 		//Control
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"DropChargeTimed", 15));
 	}
-
-	////When releasing in the air, requires different effects to ensure not falling.
-	//private IEnumerator DashThroughAir () {
-	//	float time = 1 + Mathf.Round(_Actions._charge / 20); //Seperate in increments (0 - 30 charge = 1 second)
-	//	time = Mathf.Clamp(time / 10, 0.1f, 10); //Change seconds into 0.1 seconds.
-
-	//	//Prevent downward velocity from gravity until completed
-	//	_PlayerPhys._listOfIsGravityOn.Add(false);
-	//	yield return new WaitForSeconds(time);
-	//	_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-	//}
 
 	//Prevents force being applied until enough fixed frames have passed. This is to give some time to properly rotate to match ground.
 	private IEnumerator DelayForce ( Vector3 force, int delay ) {

@@ -257,7 +257,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _Actions._charge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(shake, (int)_releaseShakeAmmount_.w));
 
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z, _PlayerVel._horizontalSpeedMagnitude, newSpeed, 0.25f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z, _PlayerVel._horizontalSpeedMagnitude, newSpeed, 0.25f, "SpinCharge")); //The camera will fall back before catching up.
 
 	}
 

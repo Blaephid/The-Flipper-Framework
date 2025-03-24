@@ -203,7 +203,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 		//Effects
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
-			_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2, 0.5f)); //The camera will fall back before catching up.
+			_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2, 0.5f, "Boost")); //The camera will fall back before catching up.
 
 		_Sounds.BoostStartSound();
 

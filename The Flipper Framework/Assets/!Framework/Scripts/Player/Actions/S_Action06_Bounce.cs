@@ -118,7 +118,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		_BallAnimator.SetInteger("Action", 1); //Ensures it is set to jump first, because it will then transition from that to bounce.
 
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
-			-_PlayerVel._coreVelocity.y, -thisDropSpeed, 1f)); //The camera will fall back before catching up.
+			-_PlayerVel._coreVelocity.y, -thisDropSpeed, 1f, "Bounce")); //The camera will fall back before catching up.
 
 		_Sounds.BounceStartSound();
 

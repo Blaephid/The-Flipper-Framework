@@ -762,7 +762,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				_RF._isGoingBackwards = BoosterLogic._willSetBackwards_;
 
 				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(BoosterLogic._cameraFallBack, BoosterLogic._cameraFallBack.z,
-					_RF._grindingSpeed,_boostSpeedAddOn + _boostSpeedToSettle, 0.5f)); //The camera will fall back before catching up.
+					_RF._grindingSpeed,_boostSpeedAddOn + _boostSpeedToSettle, 0.5f, "RailBooster")); //The camera will fall back before catching up.
 
 				break; //Since speed has now been applied, can end checking for if on rail.
 

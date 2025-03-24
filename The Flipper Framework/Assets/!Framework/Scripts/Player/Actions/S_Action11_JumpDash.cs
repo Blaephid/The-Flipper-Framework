@@ -110,7 +110,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 					_dashSpeedBonus = Mathf.Max(10, (_Actions._charge * 0.7f) - _dashSpeed);
 					//Effects
 					StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffectFromDropCharge_, _cameraPauseEffectFromDropCharge_.z,
-						_PlayerVel._horizontalSpeedMagnitude, _Actions._charge, 0.25f)); //The camera will fall back before catching up.
+						_PlayerVel._horizontalSpeedMagnitude, _Actions._charge, 0.25f, "DropCharge")); //The camera will fall back before catching up.
 					
 					SetStartDirection(_Actions._dashAngle);
 					StartAction();
