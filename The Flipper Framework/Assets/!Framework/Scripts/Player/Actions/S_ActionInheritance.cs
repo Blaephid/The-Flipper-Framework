@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,26 +7,28 @@ using UnityEngine;
 //Base class for actions to inherit 
 public class S_Action_Base : MonoBehaviour, IAction
 {
-	[HideInInspector] public S_CharacterTools      _Tools;
-	[HideInInspector] public S_PlayerPhysics       _PlayerPhys;
-	[HideInInspector] public S_PlayerVelocity      _PlayerVel;
-	[HideInInspector] public S_PlayerInput         _Input;
-	[HideInInspector] public S_ActionManager       _Actions;
-	[HideInInspector] public S_Handler_Camera      _CamHandler;
-	[HideInInspector] public S_Control_SoundsPlayer _Sounds;
-	[HideInInspector] public S_PlayerMovement      _PlayerMovement;
+	[NonSerialized] public S_CharacterTools      _Tools;
+	[NonSerialized] public S_PlayerPhysics       _PlayerPhys;
+	[NonSerialized] public S_PlayerVelocity      _PlayerVel;
+	[NonSerialized] public S_PlayerInput         _Input;
+	[NonSerialized] public S_ActionManager       _Actions;
+	[NonSerialized] public S_Handler_Camera      _CamHandler;
+	[NonSerialized] public S_Control_SoundsPlayer _Sounds;
+	[NonSerialized] public S_PlayerMovement      _PlayerMovement;
 
-	[HideInInspector] public Animator              _CharacterAnimator;
-	[HideInInspector] public GameObject            _JumpBall;
-	[HideInInspector] public Animator              _BallAnimator;
-	[HideInInspector] public Transform             _MainSkin;
+	[NonSerialized] public Animator              _CharacterAnimator;
+	[NonSerialized] public GameObject            _JumpBall;
+	[NonSerialized] public Animator              _BallAnimator;
+	[NonSerialized] public Transform             _MainSkin;
+	[NonSerialized] public CapsuleCollider         _LowerCapsule;
+	[NonSerialized] public CapsuleCollider         _StandingCapsule;
 
-	[HideInInspector] public int            _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
-	[HideInInspector] public bool           _isActionCurrentlyValid = true;       //Controlled by Activate And Deactivate action. Can't perform actions if false.[Hide
+	[NonSerialized] public int            _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
+	[NonSerialized] public bool           _isActionCurrentlyValid = true;       //Controlled by Activate And Deactivate action. Can't perform actions if false.[Hide
 
-	[HideInInspector] public int        _framesWithoutLocalCheckActionCalled; //Increases every frame, but set to zero when AttemptAction is called, if it reaches 3, then sets the below to false.
-	[HideInInspector] public bool       _inAStateConnectedToThis;        //Used by children to check when should end a state, of if possible to enter.
-	[HideInInspector] public bool           _canEnterStateFromSelf; //Set by inherited classes (not per instance), to allow an action to call itself.
+	[NonSerialized] public int        _framesWithoutLocalCheckActionCalled; //Increases every frame, but set to zero when AttemptAction is called, if it reaches 3, then sets the below to false.
+	[NonSerialized] public bool       _inAStateConnectedToThis;        //Used by children to check when should end a state, of if possible to enter.
+	[NonSerialized] public bool           _canEnterStateFromSelf; //Set by inherited classes (not per instance), to allow an action to call itself.
 
 	public bool AttemptAction () {
 		if(!_isActionCurrentlyValid) { return false; }
@@ -84,6 +87,11 @@ public class S_Action_Base : MonoBehaviour, IAction
 		_MainSkin = _Tools.MainSkin;
 		_Sounds = _Tools.SoundControl;
 		_JumpBall = _Tools.JumpBall;
+
+		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
+		_StandingCapsule.transform.localPosition = Vector3.zero;
+		_LowerCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();
+		_LowerCapsule.transform.localPosition = Vector3.zero;
 	}
 
 	public void ReactivateAction () {
