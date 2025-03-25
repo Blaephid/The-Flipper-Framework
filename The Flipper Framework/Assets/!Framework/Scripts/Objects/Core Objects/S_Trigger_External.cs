@@ -12,23 +12,23 @@ public class S_Trigger_External : S_Trigger_Base
 		other.TryGetComponent(out _Player);
 		if (!_Player) { _Player = other.GetComponentInParent<S_PlayerPhysics>(); }
 
-		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn);
-		TriggerGivenObjects(TriggerTypes.Either, TriggerObjects._ObjectsToTriggerOn);
+		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn, _Player);
+		TriggerGivenObjects(TriggerTypes.Either, TriggerObjects._ObjectsToTriggerOn, _Player);
 	}
 
 	public void OnTriggerStay ( Collider other ) {
 		if (other.tag != "Player") { return; }
 
-		TriggerGivenObjects(TriggerTypes.Frame, TriggerObjects._ObjectsToTriggerOn);
+		TriggerGivenObjects(TriggerTypes.Frame, TriggerObjects._ObjectsToTriggerOn, _Player);
 	}
 
 	public void OnTriggerExit ( Collider other ) {
 		if (other.tag != "Player") { return; }
 
-		TriggerGivenObjects(TriggerTypes.Off, TriggerObjects._ObjectsToTriggerOff);
+		TriggerGivenObjects(TriggerTypes.Off, TriggerObjects._ObjectsToTriggerOff, _Player);
 	}
 
-	public virtual void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects ) {
+	public static void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects, S_PlayerPhysics Player ) {
 		//Go through each given gameObject and trigger if possible.
 		for (int i = 0 ; i < gameObjects.Count ; i++)
 		{
@@ -38,15 +38,15 @@ public class S_Trigger_External : S_Trigger_Base
 			{
 				switch (triggerType)
 				{
-					case TriggerTypes.On: Trigger.TriggerObjectOn(_Player); break;
+					case TriggerTypes.On: Trigger.TriggerObjectOn(Player); break;
 
-					case TriggerTypes.Off: Trigger.TriggerObjectOff(_Player); break;
+					case TriggerTypes.Off: Trigger.TriggerObjectOff(Player); break;
 
-					case TriggerTypes.Either: Trigger.TriggerObjectEither(_Player); break;
+					case TriggerTypes.Either: Trigger.TriggerObjectEither(Player); break;
 
-					case TriggerTypes.Reset: Trigger.ResetObject(_Player); break;
+					case TriggerTypes.Reset: Trigger.ResetObject(Player); break;
 
-					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(_Player); break;
+					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(Player); break;
 				}
 			}
 		}

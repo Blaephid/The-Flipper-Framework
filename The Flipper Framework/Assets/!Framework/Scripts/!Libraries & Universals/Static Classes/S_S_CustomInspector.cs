@@ -41,7 +41,7 @@ public class S_S_CustomInspector
 	public static bool IsDrawnPropertyChanged ( SerializedObject serializedObject, string property, string outputName, bool isHorizontal = false ) {
 
 		EditorGUI.BeginChangeCheck();
-		EditorGUI.BeginChangeCheck();
+		//EditorGUI.BeginChangeCheck();
 		DrawEditableProperty(serializedObject, property, outputName, isHorizontal);
 
 		if (EditorGUI.EndChangeCheck())

@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -7,18 +8,24 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 
-[CustomEditor(typeof(MonoBehaviour))]
-[CanEditMultipleObjects]
+public class S_CustomInspectorSource : MonoBehaviour
+{
+	S_O_CustomInspectorStyle _InspectorTheme;
+}
+
+
+[CustomEditor(typeof(S_CustomInspectorSource))]
+//[CanEditMultipleObjects]
 public class S_CustomInspector_Base : Editor
 {
 	[SerializeField]
 	public S_O_CustomInspectorStyle _InspectorTheme;
 
-	public GUIStyle	_HeaderStyle;
-	public GUIStyle	_BigButtonStyle;
-	public GUIStyle	_SmallButtonStyle;
-	public GUIStyle	_NormalHeaderStyle;
-	public float	_spaceSize;
+	public GUIStyle _HeaderStyle;
+	public GUIStyle _BigButtonStyle;
+	public GUIStyle _SmallButtonStyle;
+	public GUIStyle _NormalHeaderStyle;
+	public float    _spaceSize;
 
 	public override void OnInspectorGUI () {
 		DrawInspector();
@@ -39,6 +46,14 @@ public class S_CustomInspector_Base : Editor
 	}
 
 	public bool IsThemeNotSet () {
+		SerializedProperty property = serializedObject.FindProperty("_InspectorTheme");
+
+		if (property == null)
+		{
+			DrawDefaultInspector();
+			return true;
+		}
+
 		//The inspector needs a visual theme to use, this makes it available and only displays the rest after it is set.
 		if (S_S_CustomInspector.IsDrawnPropertyChanged(serializedObject, "_InspectorTheme", "Inspector Theme", false))
 		{
@@ -56,7 +71,6 @@ public class S_CustomInspector_Base : Editor
 	}
 
 	public void DrawInspector () {
-
 		if (IsThemeNotSet()) return;
 
 		serializedObject.Update();
