@@ -676,10 +676,6 @@ public class S_Interaction_Objects : MonoBehaviour
 		_Actions._canChangeActions = false;
 		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.
 
-		Debug.DrawRay(Object.position, coreVelocity * 10, Color.magenta, 20f);
-		Debug.DrawRay(Object.position, enVelocity * 10, Color.blue, 20f);
-		Debug.DrawRay(Object.position, (enVelocity + coreVelocity) * 20, Color.cyan, 20f);
-
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "ReadyForce");
 
 		//Player rotation. Will be determined by the force direction. Usually based on core, but if that isnt present, based on environment.

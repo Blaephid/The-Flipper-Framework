@@ -6,7 +6,8 @@ using static Cinemachine.AxisState;
 
 public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 {
-	private Animator _Animator;
+	[CustomReadOnly]
+	[SerializeField] Animator _Animator;
 
 	[SerializeField, Min(0.1f)]
 	private float _defaultSpeed = 1;

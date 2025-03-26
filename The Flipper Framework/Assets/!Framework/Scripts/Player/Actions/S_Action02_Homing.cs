@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using System;
 
 [RequireComponent(typeof(S_Handler_HomingAttack))]
 public class S_Action02_Homing : S_Action_Base, IMainAction
@@ -39,7 +40,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	private int         _minHomingSpeed_;
 
 	private float       _homingBouncingPower_;
-	private int         _minSpeedGainOnHit_;
+	[NonSerialized] public int         _minSpeedGainOnHit_;
 	private float       _lerpToPreviousDirection_;
 	private float       _lerpToNewInput_;
 
@@ -177,7 +178,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_speedAtStart = Mathf.Max(_speedBeforeAttack * 0.9f, _homingAttackSpeed_);
 		_speedAtStart = Mathf.Min(_speedAtStart, _maxHomingSpeed_);
 		_Actions._listOfSpeedOnPaths.Add(_speedAtStart);
-
 
 		_speedBeforeAttack = Mathf.Max(_speedBeforeAttack, _minSpeedGainOnHit_);
 	}

@@ -508,7 +508,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.85
   m_Height: 4.1
@@ -11226,7 +11226,7 @@ Transform:
   m_GameObject: {fileID: 530843165850820886}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.76, z: 0}
+  m_LocalPosition: {x: 0, y: 4.37, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23382,7 +23382,6 @@ GameObject:
   - component: {fileID: 3584611362728007358}
   - component: {fileID: 8850442033169794257}
   - component: {fileID: 9078056297818655677}
-  - component: {fileID: 1223564985100243997}
   m_Layer: 8
   m_Name: Sphere
   m_TagString: Untagged
@@ -23457,27 +23456,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &1223564985100243997
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6804416940593327597}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6848943729292315841
 GameObject:
   m_ObjectHideFlags: 0
@@ -23695,7 +23673,7 @@ Transform:
   m_GameObject: {fileID: 8264187962834017253}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.76, z: -10}
+  m_LocalPosition: {x: 0, y: 4.37, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23739,8 +23717,8 @@ MonoBehaviour:
   _isXLocked: 0
   _isMasterLocked: 0
   _lockedRotationSpeed: 0
-  _canAffectDistanceBySpeed: 1
-  _canAffectFOVBySpeed: 1
+  _canAffectDistanceBySpeedBacker: 1
+  _canAffectFOVBySpeedBacker: 1
   _distanceModifier: 1
   _FOVModifier: 1
   _invertedX: 0

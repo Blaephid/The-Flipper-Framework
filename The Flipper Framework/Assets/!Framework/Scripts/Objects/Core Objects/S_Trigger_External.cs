@@ -29,13 +29,22 @@ public class S_Trigger_External : S_Trigger_Base
 	}
 
 	public static void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects, S_PlayerPhysics Player ) {
+		if(gameObjects.Count == 0) { return; }
+
 		//Go through each given gameObject and trigger if possible.
 		for (int i = 0 ; i < gameObjects.Count ; i++)
 		{
 			GameObject thisObject = gameObjects[i];
 			if (!thisObject) { continue; }
-			if (thisObject.TryGetComponent(out ITriggerable Trigger))
+
+			//In case object has multiple triggerable components.
+			ITriggerable[] Triggers = thisObject.GetComponents<ITriggerable>();
+
+			for (int triggerable = 0 ; triggerable < Triggers.Length ; triggerable++)
 			{
+				ITriggerable Trigger = Triggers[triggerable];
+				if(Trigger == null) { continue; }
+
 				switch (triggerType)
 				{
 					case TriggerTypes.On: Trigger.TriggerObjectOn(Player); break;

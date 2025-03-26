@@ -126,9 +126,6 @@ public class S_PlayerVelocity : MonoBehaviour
 		//Only apply the changes if physics decreased the speed.
 		if (speedThisFrameSquared < speedLastFrameSquared)
 		{
-			Debug.Log("From " + Mathf.Sqrt(speedLastFrameSquared) + " To " + Mathf.Sqrt(speedThisFrameSquared));
-
-
 			Debug.DrawRay(transform.position, Vector3.up * 2, Color.white, 10f);
 			Debug.DrawRay(transform.position, velocityLastFrame.normalized * 8, Color.red, 10f);
 

@@ -658,8 +658,6 @@ public class S_PlayerPhysics : MonoBehaviour
 			SetPlayerPosition(newPos);
 		}
 
-		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.red, 10f);
-
 		return velocity;
 	}
 
@@ -687,8 +685,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
 		_PlayerVelocity.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
-
-		Debug.DrawRay(_CharacterCenterPosition, velocity * Time.fixedDeltaTime, Color.white, 10f);
 
 		return velocity;
 	}

@@ -96,6 +96,7 @@ public class S_Handler_Camera : MonoBehaviour
 	#region Camera Effects
 
 	private void ApplyAdditionalCameraEffects(S_Trigger_Camera cameraData ) {
+
 		if (cameraData._willChangeDistance)
 			StartCoroutine(LerpToNewDistance(cameraData._newDistance.y, cameraData._newDistance.x, false, cameraData._affectNewDistanceBySpeed));
 
@@ -112,10 +113,23 @@ public class S_Handler_Camera : MonoBehaviour
 
 	private void RemoveAdditonalCameraEffects(S_Trigger_Camera cameraData, bool removeAll = false ) {
 
-		if (removeAll || cameraData._willChangeDistance)
-			StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, true, cameraData ? !cameraData._affectNewDistanceBySpeed : true));
-		if (removeAll || cameraData._willChangeFOV)
-			StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, true, cameraData ? !cameraData._affectNewFOVBySpeed : true));
+		if (removeAll)
+		{
+			StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, !_HedgeCam._canAffectDistanceBySpeed, true));
+			StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, !_HedgeCam._canAffectFOVBySpeed, true));
+		}
+		else
+		{
+			if (removeAll || (cameraData && cameraData._willChangeDistance))
+				StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, true, !cameraData._affectNewDistanceBySpeed));
+			if (removeAll || (cameraData && cameraData._willChangeFOV))
+				StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, true, !cameraData._affectNewFOVBySpeed));
+		}
+		//if (removeAll || cameraData._willChangeDistance)
+		//	StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, true, cameraData && !removeAll ? !cameraData._affectNewDistanceBySpeed : true));
+		//if (removeAll || cameraData._willChangeFOV)
+		//	StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, true, cameraData && !removeAll ? !cameraData._affectNewFOVBySpeed : true));
+
 		SetLockCameras(cameraData, false, !removeAll);
 
 		if (removeAll || cameraData._lockToCharacterRotation)
@@ -130,6 +144,8 @@ public class S_Handler_Camera : MonoBehaviour
 
 	private IEnumerator LerpToNewDistance(float frames, float distance, bool goalHasModifier = false, bool setAffectedBySpeed = false) {
 		float startDistance = _HedgeCam._cameraMaxDistance_;
+
+
 		//To ensure transition on screen is smooth, if setting speed to not adjust distance, ensure lerp from the current result, as HedgeCamera will immediately stop applying the modifier.
 		if (!setAffectedBySpeed)
 		{
@@ -144,15 +160,16 @@ public class S_Handler_Camera : MonoBehaviour
 			float goalDistance = goalHasModifier ? distance * _HedgeCam._distanceModifier : distance;
 			_HedgeCam._cameraMaxDistance_ = Mathf.Lerp(startDistance, goalDistance, f / frames);
 		}
-		if(setAffectedBySpeed)
+		if(setAffectedBySpeed && !_HedgeCam._canAffectDistanceBySpeed)
 		{
 			_HedgeCam._canAffectDistanceBySpeed = true;
 			_HedgeCam._cameraMaxDistance_ = distance;
 		}
 	}
 
-	private IEnumerator LerpToNewFOV ( float frames, float newFOV, bool withModifier = false, bool setAffectedBySpeed = false ) {
+	private IEnumerator LerpToNewFOV ( float frames, float newFOV, bool goalHasModifier = false, bool setAffectedBySpeed = false ) {
 		float startFOV =  _HedgeCam._baseFOV_;
+
 		if (!setAffectedBySpeed)
 		{
 			startFOV *= _HedgeCam._canAffectFOVBySpeed ? _HedgeCam._FOVModifier : 1;
@@ -162,11 +179,11 @@ public class S_Handler_Camera : MonoBehaviour
 		for (float f = 1f; f <= frames ; f++)
 		{
 			yield return new WaitForFixedUpdate();
-
-			float goalFOV = withModifier ? newFOV * _HedgeCam._FOVModifier : newFOV;
+			float goalFOV = goalHasModifier ? newFOV * _HedgeCam._FOVModifier : newFOV;
 			_HedgeCam._baseFOV_ = Mathf.Lerp(startFOV, goalFOV, f / frames);
 		}
-		if (setAffectedBySpeed)
+
+		if (setAffectedBySpeed && !_HedgeCam._canAffectFOVBySpeed)
 		{
 			_HedgeCam._canAffectFOVBySpeed = true;
 			_HedgeCam._baseFOV_ = newFOV;

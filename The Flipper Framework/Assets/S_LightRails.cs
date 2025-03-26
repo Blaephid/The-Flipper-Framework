@@ -21,6 +21,8 @@ public class S_LightRails : MonoBehaviour, ITriggerable
 
 		SetAddonRailsIfNull(ref _BlueRailAddons, ref _RedRailAddons);
 		SetAddonRailsIfNull(ref _RedRailAddons, ref _BlueRailAddons);
+
+		SetBlueActive(true);
 	}
 
 	private void SetAddonRailsIfNull(ref S_AddOnRail[] RailsA, ref S_AddOnRail[] RailsB ) {
@@ -47,6 +49,7 @@ public class S_LightRails : MonoBehaviour, ITriggerable
 	}
 
 	private void SetBlueActive(bool active ) {
+		_blueActive = active;
 		_BlueRail.gameObject.SetActive(active);
 		_RedRail.gameObject.SetActive(!active);
 	}

@@ -233,7 +233,6 @@ public class S_PlayerInput : MonoBehaviour
 				_lockedMoveInput = _MainSkin.forward; break;
 		}
 
-		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _lockedMoveInput * 20, Color.red, 20f);
 		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.

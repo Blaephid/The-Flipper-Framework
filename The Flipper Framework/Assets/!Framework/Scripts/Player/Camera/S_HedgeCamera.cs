@@ -164,8 +164,26 @@ public class S_HedgeCamera : MonoBehaviour
 	private float                   _stickToPlayerSpeed;
 
 	[HideInInspector]
-	public bool                         _canAffectDistanceBySpeed = true;
-	public bool                         _canAffectFOVBySpeed = true;
+	public bool _canAffectDistanceBySpeed {
+		get { return _canAffectDistanceBySpeedBacker; }
+		set
+		{
+			_canAffectDistanceBySpeedBacker = value;
+			Debug.Log($"AffectDistanceBySpeed by  {_canAffectDistanceBySpeedBacker}");
+		}
+	}
+	public bool                     _canAffectDistanceBySpeedBacker = true;
+
+	public bool _canAffectFOVBySpeed {
+		get { return _canAffectFOVBySpeedBacker; }
+		set
+		{
+			_canAffectFOVBySpeedBacker = value;
+			Debug.Log($"AffectFOVBySpeed by {_canAffectDistanceBySpeedBacker}");
+		}
+	}
+
+	public bool                     _canAffectFOVBySpeedBacker = true;
 
 	private float                 _lockTimer;
 
@@ -201,9 +219,9 @@ public class S_HedgeCamera : MonoBehaviour
 
 	[HideInInspector]
 	public List<string>             _locksForCameraFallBack = new List<string>();
-	private string		_currentSourceOfFallBack;
-	private Vector3			_startPositionOfFallBack;
-	private float		 _lerpSpeedOfFallBack;
+	private string          _currentSourceOfFallBack;
+	private Vector3                 _startPositionOfFallBack;
+	private float            _lerpSpeedOfFallBack;
 
 	#endregion
 
@@ -263,7 +281,7 @@ public class S_HedgeCamera : MonoBehaviour
 		//If LookTimer is currently below zero, then direct the camera towards the point of interest
 		if (_lookTimer < 0 || _lookTimer == 1)
 		{
-			if(_lookAtLockOn) 
+			if (_lookAtLockOn)
 			{ _lookAtDirection = (_lookAtLockOn.position - _Skin.position).normalized; }
 
 			RotateDirection(_lookAtDirection, _lockedRotationSpeed, _heightToLook, _willChangeHeight);
@@ -342,7 +360,7 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 
 		//Apply, ensuring matches player rotation.
-		_TargetByInput.localPosition = _PlayerPhys.GetRelevantVector(_predictAheadPosition);
+		_TargetByInput.position =_TargetByInput.parent.position + _predictAheadPosition;
 		_TargetByAngle.localPosition = Vector3.zero;
 		_TargetByAngle.position += _AngleOffset;
 
@@ -611,8 +629,8 @@ public class S_HedgeCamera : MonoBehaviour
 		//This is set externally, and every frame will rotate towards the intended local rotation. This means rather than looking at a world space direction, the camera stays at the same point relative to the 
 		//characters rotation. Similar to rotating behind the character, but for any angle, not just directly behind.
 		void HandleSetLocalRotation () {
-			if (_isRotatingBehind || !_rotateToLocalDirection ) { return; }
-			if(_lookTimer < 0 || _lookTimer == 1) { return; } //Only take control if not being directed to look in a different direction.
+			if (_isRotatingBehind || !_rotateToLocalDirection) { return; }
+			if (_lookTimer < 0 || _lookTimer == 1) { return; } //Only take control if not being directed to look in a different direction.
 
 			Vector3 directionInWorldSpace = _Skin.transform.rotation * _localLookAtDirection;
 			float turnThisFrame = Vector3.Angle(directionInWorldSpace, _previousTranslatedLocalLookAtDirection);
@@ -887,12 +905,12 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Called externally and temporarily creates activates the second camera at the position of the main one, before transitioning back to the primary.
 	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
-	public IEnumerator ApplyCameraFallBack ( Vector2 frames, float secondaryCameraLerpAfterPlayer, float playerSpeedBefore,float playerSpeedAfter , float minDifference, string source ) {
-		if(_locksForCameraFallBack.Count > 0) { yield break; }
+	public IEnumerator ApplyCameraFallBack ( Vector2 frames, float secondaryCameraLerpAfterPlayer, float playerSpeedBefore, float playerSpeedAfter, float minDifference, string source ) {
+		if (_locksForCameraFallBack.Count > 0) { yield break; }
 
 		if (_currentSourceOfFallBack == source) //The same thing can't apply multiple fall backs.
-		{ 
-			yield break; 
+		{
+			yield break;
 		}
 		_currentSourceOfFallBack = source;
 
@@ -932,7 +950,7 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	private void KeepFallBackCameraFollowing () {
-		if(_currentSourceOfFallBack == "") { return; }
+		if (_currentSourceOfFallBack == "") { return; }
 
 		_SecondaryCamera.transform.position = Vector3.Lerp(_startPositionOfFallBack, transform.position, _lerpSpeedOfFallBack);
 	}
@@ -940,7 +958,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Called to make the camera target at a new position, attached to the secondary target, which is set to follow another transform (usually the player or the player skin).
 	public void SetCameraTargetToNewParent ( Transform TargetToMove, Transform newParent, Vector3 position, int frames ) {
-		if(!(position.sqrMagnitude >= 0)) { return; }
+		if (!(position.sqrMagnitude >= 0)) { return; }
 		if (_CurrentReparentedTarget != null) { ReturnCameraTargetsToNormal(_CurrentReparentedTarget, frames); }
 
 		_TemporaryCameraTarget.parent = newParent;
@@ -955,7 +973,7 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	private IEnumerator LerpTargetPosition ( Transform Target, Vector3 localPositionA, Vector3 localPositionB, float frames ) {
-		frames = Mathf.Max(frames, 1 );
+		frames = Mathf.Max(frames, 1);
 		for (float f = 1 ; f <= frames ; f++)
 		{
 			yield return new WaitForFixedUpdate();
@@ -965,7 +983,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Undoes the above method, returning the camera target to its normal place.
 	public void ReturnCameraTargetsToNormal ( Transform TargetToReturn, float frames ) {
-		if(!_movedTargetsPreviousParent) { return; }
+		if (!_movedTargetsPreviousParent) { return; }
 		TargetToReturn = TargetToReturn ? TargetToReturn : _CurrentReparentedTarget;
 		TargetToReturn.parent = _movedTargetsPreviousParent;
 

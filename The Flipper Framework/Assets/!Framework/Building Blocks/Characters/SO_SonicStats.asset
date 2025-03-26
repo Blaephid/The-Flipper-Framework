@@ -1801,7 +1801,7 @@ MonoBehaviour:
     timerLimit: 1.5
     turnSpeed: 7
     successDelay: 0.3
-    minimumSpeedOnHit: 60
+    minimumSpeedOnHit: 120
     lerpToNewInputOnHit: 0.292
     lerpToPreviousDirectionOnHit: 0.782
     canBeControlled: 0

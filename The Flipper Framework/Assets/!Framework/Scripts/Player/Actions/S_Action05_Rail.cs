@@ -201,17 +201,18 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			biasedPlayerDirection.Normalize();
 			biasedPlayerDirection = Vector3.Lerp(biasedPlayerDirection, _PlayerVel._worldVelocity.normalized.y * Vector3.up, 0.4f);
 
-
-			facingDot = Vector3.Dot(biasedPlayerDirection, _RF._sampleTransforms.forwards); //Use sampleTransforms because _sampleForwards is affected by previous move direction.
-
 			_RF._grindingSpeed = _PlayerVel._horizontalSpeedMagnitude;
 			//What action before this one.
 			switch (_Actions._whatCurrentAction)
 			{
 				// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
 				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
-					facingDot = Vector3.Dot(GetComponent<S_Action02_Homing>()._directionBeforeAttack.normalized, _RF._sampleForwards);
-					_RF._grindingSpeed = GetComponent<S_Action02_Homing>()._speedBeforeAttack;
+					S_Action02_Homing HomingLogic = GetComponent<S_Action02_Homing>();
+					Vector3 directionBefore = HomingLogic._directionBeforeAttack.normalized;
+					if(directionBefore.sqrMagnitude > 25*25)
+						biasedPlayerDirection = Vector3.Lerp(directionBefore, biasedPlayerDirection, 0.5f);
+					
+					_RF._grindingSpeed = HomingLogic._speedBeforeAttack;
 					break;
 				//If it was a drop charge, add speed from the charge to the grind speed.
 				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
@@ -235,6 +236,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 					}
 					break;
 			}
+
+			facingDot = Vector3.Dot(biasedPlayerDirection, _RF._sampleTransforms.forwards); //Use sampleTransforms because _sampleForwards is affected by previous move direction.
 
 			_isCrouching = false;
 			_pulleyRotate = 0f;

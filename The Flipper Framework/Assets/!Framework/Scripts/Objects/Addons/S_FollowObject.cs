@@ -18,7 +18,7 @@ public class S_FollowObject : MonoBehaviour
 	private Vector3 _positionLastFrame;
 
 	private bool _isFollowing;
-	private bool _applyFollow;
+	private bool _willApplyFollow;
 
 	[AsButton("Reset Offset", "ResetOffsetCommand", null), SerializeField]
 	bool resetOffsetButton;
@@ -38,12 +38,12 @@ public class S_FollowObject : MonoBehaviour
 		}
 
 		_RememberParent = _Parent;
-		_applyFollow = PrepareFollow();
+		_willApplyFollow = PrepareFollow();
 	}
 #endif
 
 	private void OnEnable () {
-		if((_followInPlay && Application.isPlaying ) || !Application.isPlaying) { _isFollowing = true; _applyFollow = PrepareFollow(); }
+		if((_followInPlay && Application.isPlaying ) || !Application.isPlaying) { _isFollowing = true; _willApplyFollow = PrepareFollow(); }
 
 #if UNITY_EDITOR
 		Undo.undoRedoPerformed += OnUndoRedoPerformed;
@@ -51,7 +51,7 @@ public class S_FollowObject : MonoBehaviour
 	}
 
 	private void OnDisable () {
-		if ((_followInPlay && Application.isPlaying) || !Application.isPlaying) { _isFollowing = true; _applyFollow = PrepareFollow(); }
+		if ((_followInPlay && Application.isPlaying) || !Application.isPlaying) { _isFollowing = true; _willApplyFollow = PrepareFollow(); }
 
 #if UNITY_EDITOR
 		Undo.undoRedoPerformed -= OnUndoRedoPerformed;
@@ -61,9 +61,9 @@ public class S_FollowObject : MonoBehaviour
 	[ExecuteAlways]
 	// Update is called once per frame
 	void Update () {
-		_currentOffset = _currentOffset == default(Vector3) ? Vector3.up * 0.1f : _currentOffset;
+		_currentOffset = _currentOffset == default(Vector3) ? Vector3.up * 0.1f : _currentOffset; //Ensures offset is never zero exactly.
 
-		if (_applyFollow)
+		if (_willApplyFollow)
 		{
 			ApplyFollow();
 		}
@@ -73,23 +73,24 @@ public class S_FollowObject : MonoBehaviour
 		if (S_S_Editor.IsSelected(gameObject))
 			ChangeCurrentOffset();
 #endif
-		_applyFollow = PrepareFollow();
+		_willApplyFollow = PrepareFollow();
 	}
 
 	private void OnUndoRedoPerformed () {
 		ChangeCurrentOffset();
 
-		_applyFollow = false;
+		_willApplyFollow = false;
 	}
 
+	//Move location to match the offset. This is called at the start of a frame, after being readied end of last one.
 	private void ApplyFollow () {
-		if(_offsetToTry == default(Vector3) || _positionLastFrame != transform.position) { _applyFollow = false; }
+		if(_offsetToTry == default(Vector3) || _positionLastFrame != transform.position) { _willApplyFollow = false; }
 
 #if UNITY_EDITOR
 		if (S_S_Editor.IsSelected(gameObject))
 			ChangeCurrentOffset();
 #endif
-		if(!_applyFollow) { return; }
+		if(!_willApplyFollow) { return; }
 
 		transform.position = _offsetToTry;
 	}
@@ -102,16 +103,20 @@ public class S_FollowObject : MonoBehaviour
 		return true;
 	}
 
+	//If changing the offset, rather than moving to fit the offset.
 	private void ChangeCurrentOffset () {
 		if(!_Parent) { return; }
+
+		//If this object has been moved, but its set offset hasn't been changed, then change the offset to match the new position.
 		if (transform.position - _Parent.position != _rememberOffset && _rememberOffset == _currentOffset && _rememberOffset != default(Vector3))
 		{
 			_currentOffset = transform.position - _Parent.position;
-			_offsetToTry = Vector3.zero;
-			_applyFollow = false;
+			_offsetToTry = _Parent.position + _currentOffset;
+			_willApplyFollow = true;
 		}
 	}
 
+	//Linked to the button, and sets offset to 0
 	public void ResetOffsetCommand () {
 		_currentOffset = Vector3.up * 0.1f;
 		transform.position = _Parent.position;

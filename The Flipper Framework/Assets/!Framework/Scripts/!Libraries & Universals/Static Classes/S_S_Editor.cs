@@ -257,8 +257,12 @@ public class S_S_Editor : MonoBehaviour
 			}
 		}
 
-		childObject.tag = ParentObject.tag;
-		childObject.layer = ParentObject.layer;
+		EditorApplication.delayCall += () =>
+		{
+			if (!childObject) { return; }
+			childObject.tag = ParentObject.tag;
+			childObject.layer = ParentObject.layer;
+		};
 
 		return childObject;
 
@@ -271,8 +275,11 @@ public class S_S_Editor : MonoBehaviour
 	}
 
 	public static GameObject CreateChildFromScratch ( GameObject ParentObject, string newObjectName, Type[] AddComponents ) {
-
-		GameObject childObject = UOUtility.Create(newObjectName, ParentObject, AddComponents);
+		GameObject childObject;
+		if (AddComponents != null)
+			childObject = UOUtility.Create(newObjectName, ParentObject, AddComponents);
+		else
+			childObject = UOUtility.Create(newObjectName, ParentObject);
 		childObject.isStatic = true;
 
 		return childObject;
