@@ -188,8 +188,10 @@ public class S_HedgeCamera : MonoBehaviour
 	private float                 _lockTimer;
 
 	//Effects
-	private Vector3               _lookAtDirection; //A direction in world space the camera will aim to look towards. Usually set by Camera Triggers
-	private Transform              _lookAtLockOn;  //If not null, will update the above every frame to be the direction of this object.
+	[NonSerialized]
+	public Vector3               _lookAtDirection; //A direction in world space the camera will aim to look towards. Usually set by Camera Triggers
+	[NonSerialized]
+	public Transform              _lookAtLockOn;  //If not null, will update the above every frame to be the direction of this object.
 	private bool                  _willChangeHeight;
 	private bool                  _isPlayerTransformCopyControlledExternally;
 

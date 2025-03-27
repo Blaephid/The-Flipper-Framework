@@ -58,7 +58,11 @@ public class S_Handler_Camera : MonoBehaviour
 			//Nothing changes in control, but distance and height may change.
 			case enumCameraControlType.OnlyApplyEffects:
 				if (cameraData._willChangeAltitude)
+				{
+					_HedgeCam._lookAtDirection = Vector3.zero;
+					_HedgeCam._lookAtLockOn = null;
 					_HedgeCam.SetCameraHeightOnly(cameraData._newAltitude, cameraData._faceSpeed, cameraData._duration);
+				}
 				break;
 
 			//Make camera face behind player.

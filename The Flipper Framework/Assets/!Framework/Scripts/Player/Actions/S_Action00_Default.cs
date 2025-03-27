@@ -164,6 +164,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 		if (direction == default(Vector3))
 		{
 			direction = _PlayerVel._coreVelocity;
+			if(direction.sqrMagnitude < 7*7) { return; }
 		}
 
 		if(upDirection == default(Vector3))

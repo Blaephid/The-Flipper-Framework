@@ -37,7 +37,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Standard (Camera Wont Collide)
   - Water
   - UI
   - Editor Only

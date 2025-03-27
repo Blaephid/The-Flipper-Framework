@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.Linq;
 using SplineMesh;
+using UnityEditor;
 //using Luminosity.IO;
 
 
@@ -332,17 +333,24 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		gameObject.SetActive(true);
+		EditorApplication.delayCall += () =>
+		{
+			gameObject.SetActive(true);
 
-		TriggerObjectOff();
+			TriggerObjectOff();
 
-		Debug.Log(gameObject);
-		transform.position = _startPosition;
-		SetSplineDetails();
-		PlaceOnSplineToStart();
-		ResetRigidBody();
+			Debug.Log(gameObject);
+			transform.position = _startPosition;
+			SetSplineDetails();
+			PlaceOnSplineToStart();
+			ResetRigidBody();
 
-		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+			S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+		};
+	}
+
+	private void OnDisable () {
+		Debug.Log(gameObject + " Disabled");
 	}
 
 

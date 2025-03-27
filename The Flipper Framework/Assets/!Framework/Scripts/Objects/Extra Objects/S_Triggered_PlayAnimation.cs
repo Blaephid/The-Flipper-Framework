@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using static Cinemachine.AxisState;
 
 public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 {
-	[CustomReadOnly]
 	[SerializeField] Animator _Animator;
 
 	[SerializeField, Min(0.1f)]
@@ -16,7 +16,10 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 		new Keyframe (1f,1f) });
 
 	private void Awake () {
-		if (!gameObject.TryGetComponent(out _Animator)) enabled = false;
+		if (_Animator == null)
+		{
+			if (!gameObject.TryGetComponent(out _Animator)) enabled = false;
+		}
 	}
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
 		if (!enabled) { return; }
@@ -44,10 +47,19 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 		_Animator.speed = (_defaultSpeed * speedModi);
 	}
 
-	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		_Animator.speed = 50;
-		_Animator.SetTrigger("TriggerOff");
+	private void OnDisable () {
+		Debug.Log(gameObject + " Disabled and " + _Animator);
+	}
 
-		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+	void EventReturnOnDeath ( object sender, EventArgs e ) {
+		EditorApplication.delayCall += () =>
+		{
+			if (!_Animator) { return; }
+
+			_Animator.speed = 50;
+			_Animator.SetTrigger("TriggerOff");
+
+			S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+		};
 	}
 }

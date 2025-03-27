@@ -96,7 +96,6 @@ GameObject:
   - component: {fileID: 4000013130497754}
   - component: {fileID: 65000010017290134}
   - component: {fileID: 4887761807873569939}
-  - component: {fileID: 114000010754803480}
   - component: {fileID: 4628160381923001816}
   - component: {fileID: 82000010483717982}
   - component: {fileID: 7430483167475727296}
@@ -169,7 +168,7 @@ MonoBehaviour:
   _launchData_:
     _force_: 100
     _direction_: {x: 0, y: 0, z: 1}
-    _directionToUse_: {x: 0.9546963, y: 0.28684998, z: 0.07919704}
+    _directionToUse_: {x: 0, y: 0, z: 1}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
     _useCore: 0
     _lockInputFrames_: 30
@@ -184,37 +183,6 @@ MonoBehaviour:
   _lockInputTo_: 0
   _overwriteGravity_: {x: 0, y: 0, z: 0}
   _lockAirMovesFor_: 30
---- !u!114 &114000010754803480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013037187298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isSelected: 0
-  _hasVisualisationScripted: 0
-  _viewVisualisationData: 0
-  _viewVisualisationDataHidden: 0
-  _drawAtAllTimes: 1
-  _drawIfParentSelected: 0
-  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
-  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _Path: {fileID: 0}
-  _speedToSet_: 80
-  _willCarrySpeed_: 1
-  _willSnap: 0
-  _cameraEffect:
-    _willAffectCamera_: 1
-    _CameraRotateTime_: {x: 0.15, y: 20}
-  _PositionToLockTo: {x: 0, y: 0, z: 0}
-  _lockControlFrames_: 30
-  _lockInputTo_: 1
 --- !u!114 &4628160381923001816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,8 +211,8 @@ MonoBehaviour:
   _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
     type: 2}
   _ShotCenter: {fileID: 4000013130497754}
-  _coreVelAtEnd: {x: 0, y: -159.29991, z: 0}
-  _environmentalVelAtStart: {x: 95.46963, y: 28.684998, z: 7.919704}
+  _coreVelAtEnd: {x: 0, y: -159.29991, z: 45.25}
+  _environmentalVelAtStart: {x: 0, y: 0, z: 100}
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0
@@ -382,7 +350,7 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.003125
+      value: 2.003125
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -392,7 +360,7 @@ PrefabInstance:
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.15447998
+      value: 0.15447998
       objectReference: {fileID: 0}
     - target: {fileID: 48922900129631067, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -437,22 +405,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.6859868
+      value: 0.613508
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0028230397
+      value: 0.08663891
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7276024
+      value: 0.7772099
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0029942999
+      value: -0.10975673
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

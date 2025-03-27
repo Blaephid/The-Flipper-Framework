@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -40,6 +41,7 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	[Tooltip("Put is some character stats and the gizmo will show the trajectory that character would take. Including gravity and deceleration differences.")]
 	public S_O_CharacterStats _CharacterStatsToFollow;
 	[Tooltip("Where to originate the gizmo from. Can just be the transform of this same object.")]
+	[ColourIfNull(0.7f,0,0,1)]
 	public Transform	_ShotCenter;
 
 	private Vector3	_fallGravity = new Vector3(0, -1.5f, 0);
@@ -66,7 +68,11 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	}
 
 	private void OnValidate () {
-		SetUpShot();
+		//Delay this because OnValidate is called on creation, before anything else, so scripts like PlaceOnSpline would set up shot before changing position.
+		EditorApplication.delayCall += () =>
+		{
+			SetUpShot();
+		};
 	}
 
 	[ExecuteInEditMode]
@@ -78,11 +84,13 @@ public class S_Vis_ShotDirection : S_Vis_Base
 
 	private void SetUpShot () {
 		GetValuesFromScriptableObject();
+
 		//This array will make points along a line following the path the player should take.
 		_debugTrajectoryPoints = SetUpLauncherSimulation();
 	}
 
 	private void DrawShot ( bool selected ) {
+
 		if (!_LauncherScript) { return; }
 
 		if (_debugForce && _calculations > 0) //Will only show line if there's a line to create.
@@ -107,6 +115,8 @@ public class S_Vis_ShotDirection : S_Vis_Base
 
 
 	private Vector3[] SetUpLauncherSimulation () {
+
+		if(!_ShotCenter) { return null; }
 
 		string translatedVariableName = S_S_Editor.TranslateStringToVariableName(_launcherStructName, S_EditorEnums.CasingTypes.camelCase);
 		object value = S_S_Editor.FindFieldByName(_LauncherScript, translatedVariableName, "").value;
@@ -192,10 +202,12 @@ public class S_Vis_ShotDirection : S_Vis_Base
 
 		if (debugTrajectoryPoints == null || debugTrajectoryPoints.Length == 0) { return; }
 
+		//Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
+
 		if (selected) { Gizmos.color = _selectedOutlineColour; }
 		else { Gizmos.color = _normalOutlineColour; }
 
-		//Create a series of line gizmos representing a path along the points.
+		//Create a series of line Gizmos representing a path along the points.
 		for (int i = 1 ; i < debugTrajectoryPoints.Length ; i++)
 		{
 			Gizmos.DrawLine(debugTrajectoryPoints[i - 1], debugTrajectoryPoints[i]);

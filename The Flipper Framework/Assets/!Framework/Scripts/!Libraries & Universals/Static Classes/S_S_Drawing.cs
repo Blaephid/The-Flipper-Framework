@@ -60,7 +60,7 @@ public class S_S_Drawing
 		Handles.SphereHandleCap(0, handlePosition, Quaternion.identity, size, EventType.Repaint);
 
 		// Detect if the mouse is clicked on the handle
-		if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+		if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
 		{
 			// Check if the mouse is over the handle (using HandleUtility.DistanceToCircle for a more precise check)
 			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.7f) < 0.5f)

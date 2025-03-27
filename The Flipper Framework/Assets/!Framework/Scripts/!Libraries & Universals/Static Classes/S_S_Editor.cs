@@ -329,6 +329,16 @@ public class S_S_Editor : MonoBehaviour
 		return false;
 	}
 
+	public static bool IsTooFarFromEditorCamera(Vector3 position, float distance ) {
+		if (!SceneView.lastActiveSceneView) return true;
+		Camera sceneCam = SceneView.lastActiveSceneView.camera;
+		if (sceneCam == null) return true;
+
+		if (S_S_MoreMaths.GetDistanceSqrOfVectors(position, sceneCam.transform.position) > distance * distance) { return true; };
+
+		return false;
+	}
+
 #if UNITY_EDITOR
 	public static void FindObjectAndSetActive ( string name, bool set, Transform Parent = null ) {
 		GameObject Target;

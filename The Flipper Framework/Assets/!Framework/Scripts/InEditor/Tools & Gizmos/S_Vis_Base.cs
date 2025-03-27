@@ -48,19 +48,29 @@ public class S_Vis_Base : MonoBehaviour
 	private void OnDrawGizmos () {
 		if (!enabled || !_hasVisualisationScripted) { return; }
 
-		_isSelected = false;
+		if (!SceneView.lastActiveSceneView) return;
+		Camera sceneCam = SceneView.lastActiveSceneView.camera;
+		if (sceneCam == null) return;
 
-		if (transform.parent != null)
+		if(S_S_Editor.IsTooFarFromEditorCamera(transform.position, 1000)) { return; };
+
+		_isSelected = false;
+		if (!Application.isPlaying)
 		{
-			if (_drawIfParentSelected)
-				if (S_S_Editor.IsThisOrListOrChildrenSelected(transform.parent, new GameObject[] { transform.parent.gameObject }))
+			if (transform.parent != null)
+			{
+				if (_drawIfParentSelected)
+					if (S_S_Editor.IsThisOrListOrChildrenSelected(transform.parent, new GameObject[] { transform.parent.gameObject }))
+					{ _isSelected = true; }
+				if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject }))
 				{ _isSelected = true; }
-			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, new GameObject[] { transform.parent.gameObject }))
-			{ _isSelected = true; }
+			}
+			else
+			{
+				if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, null))
+				{ _isSelected = true; }
+			}
 		}
-		else
-			if (S_S_Editor.IsThisOrListOrChildrenSelected(transform, null))
-		{ _isSelected = true; }
 
 		if (_drawAtAllTimes || _isSelected)
 		{
@@ -74,6 +84,9 @@ public class S_Vis_Base : MonoBehaviour
 
 
 	public virtual void VisualiseWithSelectableHandle ( Vector3 position, float handleRadius ) {
+
+		if (S_S_Editor.IsTooFarFromEditorCamera(transform.position, 500)) { return; };
+
 		//Only draw select handle if not already selected.
 		if (gameObject == null || transform == null || S_S_Editor.IsThisOrListOrChildrenSelected(transform, null, 0))
 		{ return; }

@@ -1426,7 +1426,7 @@ MonoBehaviour:
   FindingGround:
     GroundMask:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 9
     groundAngleDifferenceLimit: {x: 20, y: 65, z: 75}
     rayToGroundDistance: {x: 1.4, y: 1.2}
     raytoGroundSpeedRatio: 0.018
@@ -1712,7 +1712,7 @@ MonoBehaviour:
     airStepDistance: 12
     StepLayerMask:
       serializedVersion: 2
-      m_Bits: 8193
+      m_Bits: 8201
     cooldown: {x: 0.025, y: 0.2}
   StartQuickstepStats:
     stepDuration: 55
@@ -1767,7 +1767,7 @@ MonoBehaviour:
       m_Bits: 131072
     blockingLayers:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 9
     cameraDirectionPriority: 0.5
     facingAmount: 110
     currentTargetPriority: 0.3
@@ -2680,10 +2680,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   KnockbackStats:
-    whatResponse: 3
+    whatResponse: 4
     recoilFrom:
       serializedVersion: 2
-      m_Bits: 4097
+      m_Bits: 4105
     knockbackUpwardsForce: 30
     knockbackForce: 25
     hurtControlLock: {x: 10, y: 15}
@@ -2938,7 +2938,7 @@ MonoBehaviour:
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 9
     scrapeModifier: 0.5
     climbModifier: 1
     fallOffAtFallSpeed: 15
