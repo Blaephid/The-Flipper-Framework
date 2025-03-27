@@ -349,11 +349,6 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		};
 	}
 
-	private void OnDisable () {
-		Debug.Log(gameObject + " Disabled");
-	}
-
-
 	public void SetToSpline () {
 		_RF = GetComponent<S_RailFollow_Base>();
 		SetSplineDetails();

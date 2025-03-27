@@ -669,6 +669,16 @@ PrefabInstance:
       propertyPath: _offset3d_.x
       value: -12
       objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _TransformsPerPoint_.Array.data[0]._scale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _TransformsPerPoint_.Array.data[0]._offset3d.x
+      value: -12
+      objectReference: {fileID: 0}
     - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Enabled
@@ -1448,6 +1458,16 @@ PrefabInstance:
     - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: _offset3d_.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _TransformsPerPoint_.Array.data[0]._scale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _TransformsPerPoint_.Array.data[0]._offset3d.x
       value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
@@ -4134,6 +4154,11 @@ PrefabInstance:
       propertyPath: _offset3d_.x
       value: -12
       objectReference: {fileID: 0}
+    - target: {fileID: 5529238468865899203, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _TransformsPerPoint_.Array.data[0]._offset3d.x
+      value: -12
+      objectReference: {fileID: 0}
     - target: {fileID: 6030661674371324792, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: m_Enabled
@@ -4314,6 +4339,11 @@ PrefabInstance:
     - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _offset3d_.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _TransformsPerPoint_.Array.data[0]._offset3d.x
       value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7102068879407087277, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,

@@ -36,6 +36,7 @@ namespace SplineMesh
 	{
 		private GameObject generated;
 		[CustomReadOnly, SerializeField]
+		[ColourIfNull(1, 0, 0, 1)]
 		private Spline _Spline = null;
 		[HideInInspector] public bool toUpdate = true;
 
@@ -45,15 +46,19 @@ namespace SplineMesh
 		[SerializeField] bool DataResetButton;
 
 		[Header("Main Placement")]
+		//[Delayed]
 		public Vector2 _spacingRange_ = new Vector2 (20,20);
 		private Vector2 _rememberspacingRange_ = new Vector2 (20,20);
 		[Tooltip("If not negative, will not place more than this number. Use zero to prevent anything placed normally."), Min(-1)]
+		[Delayed]
 		public int      _maxNumber_ = -1;
 
 		[DrawHorizontalWithOthers(new string[]{"_spaceFromEnd_"})]
 		[Tooltip("How far along the spline until objects start being placed."), Min(-1)]
+		[Delayed]
 		public float _spaceFromStart_ = 0f;
 		[Tooltip("How far from the end of the spline when objects can no longer be placed.")]
+		[Delayed]
 		[HideInInspector]
 		public float _spaceFromEnd_ = 0f;
 
@@ -77,13 +82,23 @@ namespace SplineMesh
 		public S_Data_Base _DataForPrefabs;
 
 		[Header("Transform")]
-		public Vector3 _scale_ = new Vector3(1,1,1);
-		public Vector3 _offset3d_, _offsetRotation_;
+		[NonSerialized] public Vector3 _mainScale = new Vector3(1,1,1);
+		[NonSerialized] public Vector3 _mainOffset, _mainRotation;
+
+		public ElementTransform[] _TransformsPerPoint_ = new ElementTransform[1] { new ElementTransform() {_scale = Vector3.one }
+		};
+
+		[Serializable]
+		public struct ElementTransform {
+			public Vector3 _scale;
+			public Vector3 _offset3d, _rotation;
+		}
 
 		[Space]
 		public bool _alignWithTerrain_ = false;
 
 #if UNITY_EDITOR
+
 		private void OnEnable () {
 			if (Application.isPlaying) { return; }
 			CheckNow();
@@ -95,7 +110,10 @@ namespace SplineMesh
 			generated = generatedTranform != null ? generatedTranform.gameObject : UOUtility.Create(generatedName, gameObject);
 
 			_Spline = GetComponentInParent<Spline>();
-			if (!_Spline) return;
+			if (!_Spline) { 
+				_Spline = GetComponent<Spline>();
+				if (!_Spline) { return; }
+			}
 			_Spline.NodeListChanged += ( s, e ) =>
 			{
 				toUpdate = true;
@@ -111,6 +129,15 @@ namespace SplineMesh
 		}
 
 		private void OnValidate () {
+			if (_TransformsPerPoint_ == null || _TransformsPerPoint_.Length == 0) 
+			{
+				_TransformsPerPoint_ = new ElementTransform[1] { new ElementTransform() { _scale = Vector3.one } };
+			}
+
+			_mainScale = _TransformsPerPoint_[0]._scale;
+			_mainOffset = _TransformsPerPoint_[0]._offset3d;
+			_mainRotation = _TransformsPerPoint_[0]._rotation;
+
 			toUpdate = true; //OnValidate cant destroy anything, so tell Update to do so.
 
 			if (!_Spline) { return; }
@@ -151,11 +178,11 @@ namespace SplineMesh
 			//These placements are easier, so happen seperate from the main calculation along spline.
 			if (_addOnEnd_)
 			{
-				PlaceSingleElement(_Spline.Length - 1);
+				PlaceElementsAtPoint(_Spline.Length - 1);
 			}
 			if (_addOnStart_)
 			{
-				PlaceSingleElement(1);
+				PlaceElementsAtPoint(1);
 			}
 
 			//Place along spline from start to end.
@@ -167,12 +194,19 @@ namespace SplineMesh
 				//Ensure number of objects placed doesn't exceed the limit.
 				if (_maxNumber_ >= 0 && i > _maxNumber_) { break; }
 
-				PlaceSingleElement(distance);
+				PlaceElementsAtPoint(distance);
 				distance += UnityEngine.Random.Range(_spacingRange_.x, _spacingRange_.y); //Find next position to place on.
 			}
 		}
 
-		void PlaceSingleElement ( float atDistance ) {
+		void PlaceElementsAtPoint ( float atDistance ) {
+			for (int t = 0 ; t < _TransformsPerPoint_.Length ; t++)
+			{
+				PlaceSingleElement(atDistance, _TransformsPerPoint_[t]);
+			}
+		}
+
+		void PlaceSingleElement ( float atDistance, ElementTransform TransformStruct) {
 			CurveSample sample = _Spline.GetSampleAtDistance(atDistance);
 
 			GameObject GO;
@@ -197,13 +231,13 @@ namespace SplineMesh
 			// move orthogonaly to the spline, according to offset + random
 			Vector3 binormal = sampleTransforms.forwards;
 
-			binormal += sampleTransforms.rotation * _offset3d_;
+			binormal += sampleTransforms.rotation * TransformStruct._offset3d;
 			GO.transform.position += binormal;
 
 			// apply scale
-			GO.transform.localScale = new Vector3(_scale_.x, _scale_.y, _scale_.z);
+			GO.transform.localScale = new Vector3(TransformStruct._scale.x, TransformStruct._scale.y, TransformStruct._scale.z);
 			// rotate with random yaw
-			GO.transform.rotation = sampleTransforms.rotation * Quaternion.Euler(_offsetRotation_);
+			GO.transform.rotation = sampleTransforms.rotation * Quaternion.Euler(TransformStruct._rotation);
 
 
 			if (_alignWithTerrain_) GroundAlign(GO.transform);
@@ -219,7 +253,7 @@ namespace SplineMesh
 			{
 				obj.position = hit.point;
 				obj.rotation = Quaternion.FromToRotation(obj.up, hit.normal) * obj.rotation;
-				obj.position += _offset3d_;
+				obj.position += _mainOffset;
 			}
 
 		}
@@ -255,7 +289,6 @@ namespace SplineMesh
 			}
 
 		}
-
 		private void ApplyDataToSpawnedObject ( GameObject go ) {
 
 			_DataForPrefabs = GetComponent<S_Data_Base>();

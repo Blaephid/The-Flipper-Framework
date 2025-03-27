@@ -192,7 +192,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 				_ConnectedRails = NewRail;
 				//Change the offset to match this rail (since may go from a rail offset from a spline, straight onto rail directily on a different spline)
-				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
+				_setOffSet.Set(-_ConnectedRails.GetComponent<S_PlaceOnSpline>()._mainOffset.x, 0, 0);
 
 				//Set path and positions to follow.
 				_PathSpline = _ConnectedRails.GetComponentInParent<Spline>();

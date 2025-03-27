@@ -47,10 +47,6 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 		_Animator.speed = (_defaultSpeed * speedModi);
 	}
 
-	private void OnDisable () {
-		Debug.Log(gameObject + " Disabled and " + _Animator);
-	}
-
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
 		EditorApplication.delayCall += () =>
 		{

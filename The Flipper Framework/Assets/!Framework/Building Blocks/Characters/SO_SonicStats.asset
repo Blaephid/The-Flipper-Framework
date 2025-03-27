@@ -2455,25 +2455,25 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 0.25
-        value: 4
-        inSlope: 0
-        outSlope: 0
+        value: 3
+        inSlope: 2.884878
+        outSlope: 2.884878
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.5185185
       - serializedVersion: 3
         time: 0.7
-        value: 7
-        inSlope: 0
-        outSlope: 0
+        value: 4.5
+        inSlope: 2.7696853
+        outSlope: 2.7696853
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.4888888
       - serializedVersion: 3
         time: 1
-        value: 9
+        value: 6.5
         inSlope: 0
         outSlope: 0
         tangentMode: 0

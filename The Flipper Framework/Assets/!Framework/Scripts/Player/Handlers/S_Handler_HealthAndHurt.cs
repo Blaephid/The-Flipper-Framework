@@ -147,7 +147,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	}
 
 	public void EventCollisionEnter ( Collision collision ) {
-		
+		if(collision == null || !collision.collider) { return; }
+
 		switch (collision.collider.tag)
 		{
 			case "Hazard":

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2379685704029637477}
   m_Layer: 0
   m_Name: ObPr_ThornCylinder
-  m_TagString: Untagged
+  m_TagString: Hazard
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

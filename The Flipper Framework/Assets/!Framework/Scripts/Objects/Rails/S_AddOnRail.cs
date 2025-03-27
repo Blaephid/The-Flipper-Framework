@@ -113,7 +113,7 @@ public class S_AddOnRail : MonoBehaviour
 	}
 
 	public void Place () {
-		_selfOffset = new Vector3(GetComponent<S_PlaceOnSpline>()._offset3d_.x, 0, 0);
+		_selfOffset = new Vector3(GetComponent<S_PlaceOnSpline>()._mainOffset.x, 0, 0);
 
 		if (AddThis.Length > 0)
 		{
@@ -124,6 +124,8 @@ public class S_AddOnRail : MonoBehaviour
 
 				Spline thisSpline = GetComponentInParent<Spline>();
 				Spline otherSpline = rail.GetComponentInParent<Spline>();
+
+				if(!otherSpline) { continue; }
 
 				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
 
@@ -137,6 +139,8 @@ public class S_AddOnRail : MonoBehaviour
 				S_AddOnRail rail = AddBehindThese[i];
 				Spline thisSpline = GetComponentInParent<Spline>();
 				Spline otherSpline = rail.GetComponentInParent<Spline>();
+
+				if (!otherSpline) { continue; }
 
 				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
 
