@@ -13,7 +13,7 @@ public class S_FollowObject : MonoBehaviour
 	[SerializeAs("_currentOffsetSet")]
 	[SerializeField] private Vector3  _currentOffsetSet;
 	[SerializeAs("_currentRotationSet")]
-	[SerializeField] private Quaternion  _currentRotationSet;
+	[SerializeField] private Vector3  _currentEulerOffsetSet;
 	[SerializeField] private bool _followInPlay;
 
 	[SerializeField, HideInInspector]
@@ -25,7 +25,7 @@ public class S_FollowObject : MonoBehaviour
 	private Vector3 _rememberOffset;
 	private Vector3 _positionLastFrame;
 
-	private Quaternion _rememberRotation;
+	private Vector3 _rememberEuler;
 	private Quaternion _rotationLastFrame;
 
 	private bool _isFollowing;
@@ -56,7 +56,7 @@ public class S_FollowObject : MonoBehaviour
 		if (_RememberParent != _Parent && _Parent)
 		{
 			_currentOffsetSet = transform.position - _Parent.position;
-			_currentRotationSet = Quaternion.Inverse(_Parent.rotation) * transform.rotation;
+			_currentEulerOffsetSet = _Parent.eulerAngles + transform.eulerAngles;
 		}
 
 		_RememberParent = _Parent;
@@ -95,7 +95,7 @@ public class S_FollowObject : MonoBehaviour
 	void Update () {
 		//Ensures offset is never zero exactly. If it was, we wouldn't be able to check if anything was applied (or not) using default()
 		_currentOffsetSet = _currentOffsetSet == default(Vector3) ? Vector3.up * 0.1f : _currentOffsetSet;
-		_currentRotationSet = _currentRotationSet == Quaternion.identity ? Quaternion.Euler(0.01f, 0f, 0f) : _currentRotationSet;
+		_currentEulerOffsetSet = _currentEulerOffsetSet == Vector3.zero ? Vector3.up * 0.01f: _currentEulerOffsetSet;
 
 		if (_willApplyFollow)
 		{
@@ -107,7 +107,7 @@ public class S_FollowObject : MonoBehaviour
 		{
 			ApplyRotate();
 		}
-		_rememberRotation = _currentRotationSet;
+		_rememberEuler = _currentEulerOffsetSet;
 
 #if UNITY_EDITOR
 		if (S_S_Editor.IsSelected(gameObject))
@@ -157,7 +157,8 @@ public class S_FollowObject : MonoBehaviour
 	private bool PrepareRotate () {
 		if (!_isRotating || !_Parent) { return false; }
 
-		_rotationToTry = _Parent.rotation * _currentRotationSet;
+		//_rotationToTry = _Parent.rotation * _currentRotationSet;
+		_rotationToTry = Quaternion.Euler(_Parent.eulerAngles + _currentEulerOffsetSet);
 		_rotationLastFrame = transform.rotation;
 		return true;
 	}
@@ -175,11 +176,13 @@ public class S_FollowObject : MonoBehaviour
 		}
 
 		//If this object has been rotated, but its offset rotation hasn't changed, then it's being rotated manually. So apply.
-		if (transform.rotation != _Parent.rotation * _rememberRotation && _rememberRotation == _currentRotationSet && _rememberRotation != default(Quaternion))
+		if (transform.rotation != Quaternion.Euler(_rememberEuler + _Parent.eulerAngles) 
+			&& _rememberEuler == _currentEulerOffsetSet && _rememberEuler != default(Vector3))
 		{
-			Debug.Log("Set To" + _currentRotationSet);
-			_currentRotationSet = Quaternion.Inverse(_Parent.rotation) * transform.rotation;
-			_rotationToTry = transform.rotation;
+			Debug.Log(gameObject);
+			_currentEulerOffsetSet = transform.eulerAngles - _Parent.eulerAngles;
+			Debug.Log("Set To" + _currentEulerOffsetSet);
+			_rotationToTry = Quaternion.Euler(_Parent.eulerAngles + _currentEulerOffsetSet);
 			_willApplyRotate = true;
 		}
 	}
@@ -194,8 +197,8 @@ public class S_FollowObject : MonoBehaviour
 
 	public void ResetRotateCommand () {
 		Undo.RecordObject(transform, "Reset Rotation");
-		_currentRotationSet = Quaternion.Euler(0.01f, 0f, 0f);
+		_currentEulerOffsetSet = Vector3.up * 0.1f;
 		transform.rotation = _Parent.rotation;
-		_rotationToTry = _Parent.rotation * _currentRotationSet;
+		_rotationToTry = Quaternion.Euler(_Parent.eulerAngles + _currentEulerOffsetSet);
 	}
 }

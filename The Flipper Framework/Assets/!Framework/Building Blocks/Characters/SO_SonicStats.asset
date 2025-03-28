@@ -1092,7 +1092,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: -1
-        value: 1.2
+        value: 0.97659075
         inSlope: 0.5426819
         outSlope: 0.5426819
         tangentMode: 34
@@ -1101,7 +1101,7 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: -0.5623816
-        value: 1.4374876
+        value: 1.2140783
         inSlope: 0.3425485
         outSlope: 0.3425485
         tangentMode: 0
@@ -1110,7 +1110,7 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0
-        value: 1.5
+        value: 1.2765907
         inSlope: -0.005334998
         outSlope: -0.005334998
         tangentMode: 0
@@ -1119,7 +1119,7 @@ MonoBehaviour:
         outWeight: 0.44166666
       - serializedVersion: 3
         time: 0.148001
-        value: 1.4528819
+        value: 1.2294726
         inSlope: -1.0120953
         outSlope: -1.0120953
         tangentMode: 0
@@ -1127,23 +1127,23 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.30479956
       - serializedVersion: 3
-        time: 0.2407178
+        time: 0.2738843
         value: 0.98097605
-        inSlope: -2.107266
-        outSlope: -2.107266
+        inSlope: -0.6869711
+        outSlope: -0.6869711
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.27234745
+        outWeight: 0.9870085
       - serializedVersion: 3
         time: 0.5092479
         value: 0.79762155
-        inSlope: -0.3164844
-        outSlope: -0.3164844
+        inSlope: -0.793425
+        outSlope: -0.793425
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.9373587
+        outWeight: 0.5522988
       - serializedVersion: 3
         time: 0.8031901
         value: 0.2353742
@@ -2760,7 +2760,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     RailSlopePower: 1.4
-    RailUpHillMultiplier: {x: 0.7, y: 1.1}
+    RailUpHillMultiplier: {x: 0.6, y: 1.1}
     RailDownHillMultiplier: {x: 1, y: 1.4}
     railDecaySpeed: 0.015
     RailPlayerBrakePower: 0.975

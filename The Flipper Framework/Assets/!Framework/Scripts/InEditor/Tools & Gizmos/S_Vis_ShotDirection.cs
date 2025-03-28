@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -61,8 +62,6 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	[CustomReadOnly]
 	public Vector3 _environmentalVelAtStart;
 
-	private Vector3[] _debugTrajectoryPoints;
-
 	public override void DrawGizmosAndHandles ( bool selected ) {
 		DrawShot(selected);
 	}
@@ -95,7 +94,7 @@ public class S_Vis_ShotDirection : S_Vis_Base
 
 		if (_debugForce && _calculations > 0) //Will only show line if there's a line to create.
 		{
-			DrawGizmosFromArray(_debugTrajectoryPoints, selected);
+			DrawGizmosFromArray(selected);
 		}
 	}
 
@@ -198,30 +197,16 @@ public class S_Vis_ShotDirection : S_Vis_Base
 		return path;
 	}
 
-	private void DrawGizmosFromArray ( Vector3[] debugTrajectoryPoints, bool selected ) {
-
-		if (debugTrajectoryPoints == null || debugTrajectoryPoints.Length == 0) { return; }
-
-		//Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
-
-		if (selected) { Gizmos.color = _selectedOutlineColour; }
-		else { Gizmos.color = _normalOutlineColour; }
-
-		//Create a series of line Gizmos representing a path along the points.
-		for (int i = 1 ; i < debugTrajectoryPoints.Length ; i++)
+	public override void DrawAdditionalAtPointOnArray (bool selected, int f, Vector3 point ) {
+		if (f == _lockFrames)
 		{
-			Gizmos.DrawLine(debugTrajectoryPoints[i - 1], debugTrajectoryPoints[i]);
-
-			if (i == _lockFrames)
-			{
-				if (selected) { Gizmos.color = _selectedFillColour; }
-				else { Gizmos.color = _selectedOutlineColour; }
-				Gizmos.DrawLine(debugTrajectoryPoints[i], debugTrajectoryPoints[i] + Vector3.up * 2);
-			}
-			else
-			{
-				Gizmos.DrawLine(debugTrajectoryPoints[i], debugTrajectoryPoints[i] + Vector3.up);
-			}
+			if (selected) { Gizmos.color = _selectedFillColour; }
+			else { Gizmos.color = _selectedOutlineColour; }
+			Gizmos.DrawLine(_debugTrajectoryPoints[f], _debugTrajectoryPoints[f] + Vector3.up * 2);
+		}
+		else
+		{
+			Gizmos.DrawLine(_debugTrajectoryPoints[f], _debugTrajectoryPoints[f] + Vector3.up);
 		}
 	}
 #endif

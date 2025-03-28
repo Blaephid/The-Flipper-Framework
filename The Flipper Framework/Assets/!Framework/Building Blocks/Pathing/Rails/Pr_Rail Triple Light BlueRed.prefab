@@ -329,7 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9c8b87cf845f3c4cb854007700733aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isSelected: 0
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -693,7 +693,7 @@ PrefabInstance:
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
-      value: Pr_Rail_Base 3
+      value: Pr_Rail_Red 3
       objectReference: {fileID: 0}
     - target: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
@@ -867,7 +867,7 @@ PrefabInstance:
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
-      value: Pr_Rail_Base 1
+      value: Pr_Rail_Red 1
       objectReference: {fileID: 0}
     - target: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
@@ -1050,7 +1050,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
@@ -1060,7 +1060,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
@@ -1184,7 +1184,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Parent: {fileID: 1421389822706431993}
   _currentOffsetSet: {x: 0, y: 0.10003662, z: 0}
-  _currentRotationSet: {x: 0, y: 0, z: 0, w: 0}
+  _currentEulerOffsetSet: {x: 0, y: 0, z: 0}
   _followInPlay: 0
   _RememberParent: {fileID: 1421389822706431993}
   resetOffsetButton: 0
@@ -1484,7 +1484,7 @@ PrefabInstance:
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
-      value: Pr_Rail_Base 2
+      value: Pr_Rail_Red 2
       objectReference: {fileID: 0}
     - target: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
@@ -1746,6 +1746,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1813104729334554736, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: m_Name
+      value: Pr_Rail_Blue 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1835097205813431555, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: m_Layer
@@ -1765,6 +1770,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _DataForPrefabs
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2185692668928238514, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: m_Name
+      value: Pr_Rail_Blue 1
       objectReference: {fileID: 0}
     - target: {fileID: 3004696940732987390, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
@@ -4099,6 +4109,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 17
       objectReference: {fileID: 0}
+    - target: {fileID: 3804405268005978634, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: m_Name
+      value: Pr_Rail_Blue 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5128246033798620572, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _showSignPostLeft
@@ -4558,8 +4573,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Parent: {fileID: 0}
-  _currentOffsetSet: {x: 0, y: 0, z: 0}
-  _currentRotationSet: {x: 0, y: 0, z: 0, w: 0}
+  _currentOffsetSet: {x: 0, y: 0.1, z: 0}
+  _currentEulerOffsetSet: {x: 0, y: 0, z: 0}
   _followInPlay: 0
   _RememberParent: {fileID: 0}
   resetOffsetButton: 0
@@ -4576,6 +4591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90fd25d778984bf488bee1f9e4eb732a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _startOnBlue: 1
   _BlueRail: {fileID: 8236595248045593740}
   _RedRail: {fileID: 6545313735885767098}
 --- !u!4 &8236595248662719091 stripped
@@ -4740,7 +4756,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: a9027c3186194f44cba6285030252bc4,
         type: 3}
       propertyPath: m_Name
-      value: Ob_RailSwitchSignBlue
+      value: Ob_RailSign
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

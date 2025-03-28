@@ -216,7 +216,7 @@ public class S_Interaction_Pathers : MonoBehaviour
 				addOn = collider.gameObject.GetComponentInParent<S_AddOnRail>();
 
 				//Check there is a potential rail to go to either way, otherwise don't add it.
-				if (addOn.UseNextRail == null && addOn.UsePrevRail == null) { addOn = null; }
+				if (addOn.useNextRail == null && addOn.usePrevRail == null) { addOn = null; }
 			}
 
 			//Sets the player to the rail grind action, and sets their position and what spline to follow.

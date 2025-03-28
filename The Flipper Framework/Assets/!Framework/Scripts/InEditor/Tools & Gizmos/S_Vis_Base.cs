@@ -41,6 +41,9 @@ public class S_Vis_Base : MonoBehaviour
 	[HideInInspector]
 	public Color _selectedFillColour = new Color(1,1,1,0.1f);
 
+	[NonSerialized]
+	public Vector3[] _debugTrajectoryPoints;
+
 	private void OnEnable () {
 		_isSelected = false;
 	}
@@ -48,11 +51,7 @@ public class S_Vis_Base : MonoBehaviour
 	private void OnDrawGizmos () {
 		if (!enabled || !_hasVisualisationScripted) { return; }
 
-		if (!SceneView.lastActiveSceneView) return;
-		Camera sceneCam = SceneView.lastActiveSceneView.camera;
-		if (sceneCam == null) return;
-
-		if(S_S_Editor.IsTooFarFromEditorCamera(transform.position, 1000)) { return; };
+		if(S_S_Editor.IsTooFarFromEditorCamera(transform, 900)) { return; };
 
 		_isSelected = false;
 		if (!Application.isPlaying)
@@ -85,7 +84,7 @@ public class S_Vis_Base : MonoBehaviour
 
 	public virtual void VisualiseWithSelectableHandle ( Vector3 position, float handleRadius ) {
 
-		if (S_S_Editor.IsTooFarFromEditorCamera(transform.position, 500)) { return; };
+		if (S_S_Editor.IsTooFarFromEditorCamera(transform, 500)) { return; };
 
 		//Only draw select handle if not already selected.
 		if (gameObject == null || transform == null || S_S_Editor.IsThisOrListOrChildrenSelected(transform, null, 0))
@@ -100,5 +99,27 @@ public class S_Vis_Base : MonoBehaviour
 			S_S_Drawing.DrawSelectableHandle(position, gameObject, handleRadius);
 		}
 	}
+
+	public virtual void DrawGizmosFromArray ( bool selected ) {
+
+		if (_debugTrajectoryPoints == null || _debugTrajectoryPoints.Length == 0) { return; }
+
+		//Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
+
+		if (selected) { Gizmos.color = _selectedOutlineColour; }
+		else { Gizmos.color = _normalOutlineColour; }
+
+		//Create a series of line Gizmos representing a path along the points.
+		for (int i = 1 ; i < _debugTrajectoryPoints.Length ; i++)
+		{
+			Gizmos.DrawLine(_debugTrajectoryPoints[i - 1], _debugTrajectoryPoints[i]);
+
+			DrawAdditionalAtPointOnArray(selected, i, _debugTrajectoryPoints[i]);
+		}
+	}
+
+	public virtual void DrawAdditionalAtPointOnArray ( bool selected, int f, Vector3 point ) {
+
+	}
 #endif
-}
+	}

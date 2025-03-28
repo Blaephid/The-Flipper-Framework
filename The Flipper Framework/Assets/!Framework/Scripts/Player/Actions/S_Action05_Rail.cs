@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Windows;
 using SplineMesh;
+using System;
 
 [RequireComponent(typeof(S_RailFollow_Base))]
 public class S_Action05_Rail : S_Action_Base, IMainAction
@@ -34,9 +35,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	private float                 _offsetZip_ = -2.05f;
 
 	private float                 _minStartSpeed_ = 60f;
-	[HideInInspector]
-	public float                  _railmaxSpeed_;
-	private float                 _railTopSpeed_;
+	[NonSerialized] public float                  _railmaxSpeed_;
+	[NonSerialized] public float                 _railTopSpeed_;
 	private float                 _playerBrakePower_ = 0.95f;
 	private AnimationCurve        _accelBySpeed_;
 
@@ -48,13 +48,13 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	private float                 _generalHillModifier = 2.5f;
 	private AnimationCurve          _forceBySlopeAngle_;
-	private float                 _upHillMultiplier_ = 0.25f;
-	private float                 _downHillMultiplier_ = 0.35f;
-	private float                 _upHillMultiplierCrouching_ = 0.4f;
-	private float                 _downHillMultiplierCrouching_ = 0.6f;
+	[NonSerialized] public float                 _upHillMultiplier_ = 0.25f;
+	[NonSerialized] public float                 _downHillMultiplier_ = 0.35f;
+	[NonSerialized] public float                 _upHillMultiplierCrouching_ = 0.4f;
+	[NonSerialized] public float                 _downHillMultiplierCrouching_ = 0.6f;
 
-	private float                 _boostDecayTime_;
-	private float                 _boostDecaySpeed_;
+	[NonSerialized] public float                 _boostDecayTime_;
+	[NonSerialized] public float                 _boostDecaySpeed_;
 
 	private float                 _hopSpeed_ = 3.5f;
 	private float                 _hopDelay_;
@@ -531,7 +531,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (_PlayerVel._worldVelocity.y > 0.05f)
 		{
 			//Get main modifier and multiply by position on curve and general hill modifer used for other slope physics.
-			force *= _isCrouching ? _upHillMultiplierCrouching_ : _upHillMultiplier_;
+			force *= _isCrouching ? _upHillMultiplierCrouching_ : _upHillMultiplier_ ;
 			force *= -1;
 			onSlope = force < -Mathf.Min(0.3f, _RF._grindingSpeed / 100f);
 		}
@@ -601,7 +601,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	}
 
 	private void CheckHopping () {
-		if (_canInput && _canHop)
+		if (_canInput && _canHop && _RF._grindingSpeed > 25)
 		{
 			//Takes in quickstep and makes it relevant to the camera (e.g. if player is facing that camera, step left becomes step right)
 			Vector3 Direction = _MainSkin.position - _CamHandler._HedgeCam.transform.position;

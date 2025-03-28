@@ -5,6 +5,7 @@ using SplineMesh;
 using System;
 using System.Linq;
 using UnityEditor;
+using System.Net;
 
 [DisallowMultipleComponent]
 [ExecuteInEditMode]
@@ -26,12 +27,8 @@ public class S_AddOnRail : MonoBehaviour
 	public S_AddOnRail NextRail;
 	public S_AddOnRail PrevRail;
 
-	[HideInInspector] public S_AddOnRail UseNextRail;
-	[HideInInspector] public S_AddOnRail UsePrevRail;
-
-	[Header("Switch Rails")]
-	public S_AddOnRail AltNextRail;
-	public S_AddOnRail AltPrevRail;
+	[CustomReadOnly] public S_AddOnRail useNextRail;
+	[CustomReadOnly] public S_AddOnRail usePrevRail;
 
 	Vector3 _selfOffset, _otherOffset;
 	[SerializeField, HideInInspector]
@@ -40,8 +37,8 @@ public class S_AddOnRail : MonoBehaviour
 #if UNITY_EDITOR
 
 	private void Start () {
-		UseNextRail = NextRail;
-		UsePrevRail = PrevRail;
+		useNextRail = NextRail;
+		usePrevRail = PrevRail;
 	}
 
 	private void OnEnable () {
@@ -51,14 +48,7 @@ public class S_AddOnRail : MonoBehaviour
 #endif
 
 	public void SwitchRailsToAlternate () {
-		if (AltNextRail != null)
-		{
-			UseNextRail = UseNextRail == NextRail ? AltNextRail : NextRail;
-		}
-		if (AltPrevRail != null)
-		{
-			UsePrevRail = UsePrevRail == PrevRail ? AltPrevRail : NextRail;
-		}
+	
 	}
 
 #if UNITY_EDITOR
@@ -67,34 +57,20 @@ public class S_AddOnRail : MonoBehaviour
 	}
 
 	public void SetValueOfConnectedRails () {
-		if(!this.isActiveAndEnabled) { return; }
+		if (!this.isActiveAndEnabled) { return; }
 
 		if (PrevRail != null)
 		{
-			PrevRail.NextRail = this; 
+			PrevRail.NextRail = this;
 			PrevRail.GetPositions();
 			EditorUtility.SetDirty(PrevRail);
 		}
 
 		if (NextRail != null)
 		{
-			NextRail.PrevRail = this; 
+			NextRail.PrevRail = this;
 			NextRail.GetPositions();
 			EditorUtility.SetDirty(NextRail);
-		}
-
-		if (AltNextRail != null)
-		{
-			AltNextRail.PrevRail = this; 
-			PrevRail.GetPositions();
-			EditorUtility.SetDirty(AltNextRail);
-		}
-
-		if (AltPrevRail != null)
-		{
-			AltPrevRail.NextRail = this; 
-			NextRail.GetPositions();
-			EditorUtility.SetDirty(AltPrevRail);
 		}
 
 		GetPositions();
@@ -120,18 +96,16 @@ public class S_AddOnRail : MonoBehaviour
 			for (int i = 0 ; i < AddThis.Length ; i++)
 			{
 				S_AddOnRail rail = AddThis[i];
-				if(!rail) { continue; }
+				if (!rail) { continue; }
 
 				Spline thisSpline = GetComponentInParent<Spline>();
 				Spline otherSpline = rail.GetComponentInParent<Spline>();
 
-				if(!otherSpline) { continue; }
+				if (!otherSpline) { continue; }
 
 				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
 
-				otherSpline.gameObject.transform.position = thisSpline.gameObject.transform.parent.position;
-				otherSpline.nodes[0].Position = thisSpline.nodes[thisSpline.nodes.Count - 1].Position;
-				otherSpline.nodes[0].Direction = thisSpline.nodes[thisSpline.nodes.Count - 1].Direction;
+				SetTransforms(thisSpline, otherSpline, 0, thisSpline.nodes.Count - 1);
 			}
 
 			for (int i = 0 ; i < AddBehindThese.Length ; i++)
@@ -144,36 +118,49 @@ public class S_AddOnRail : MonoBehaviour
 
 				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
 
-				otherSpline.gameObject.transform.position = thisSpline.gameObject.transform.parent.position;
-				otherSpline.nodes[otherSpline.nodes.Count - 1].Position = thisSpline.nodes[0].Position;
-				otherSpline.nodes[otherSpline.nodes.Count - 1].Direction = thisSpline.nodes[0].Direction;
+				SetTransforms(thisSpline, otherSpline, otherSpline.nodes.Count - 1, 0);
 			}
+
 		}
 
 		GetPositions();
+
+		return;
+
+		void SetTransforms ( Spline thisSpline, Spline otherSpline, int node1, int node2 ) {
+			otherSpline.transform.parent.position = thisSpline.gameObject.transform.parent.position;
+			otherSpline.gameObject.transform.localPosition = Vector3.zero;
+
+			otherSpline.nodes[node1].Position = thisSpline.nodes[node2].Position;
+			otherSpline.nodes[node1].Direction = thisSpline.nodes[node2].Direction;
+			otherSpline.nodes[node1].Up = thisSpline.nodes[node2].Up;
+		}
 	}
 
 	public void GetPositions () {
+
+		if (Application.isPlaying) return;
+
 		Spline thisSpline = GetComponentInParent<Spline>();
-		if(!thisSpline) { return; }
+		if (!thisSpline) { return; }
 
-		_endPos = GetPositionFromSplineData(thisSpline, _selfOffset, thisSpline.Length);
-		_startPos = GetPositionFromSplineData(thisSpline, _selfOffset, 0);
+		_endPos = GetPositionFromSplineData(thisSpline, _selfOffset, thisSpline.Length - 10);
+		_startPos = GetPositionFromSplineData(thisSpline, _selfOffset, 10);
 
-		if(NextRail)
+		if (NextRail)
 		{
 			Spline otherSpline = NextRail.GetComponentInParent<Spline>();
-			_nextPos = GetPositionFromSplineData(otherSpline, _selfOffset, 0);
+			_nextPos = GetPositionFromSplineData(otherSpline, _selfOffset, 10);
 		}
 		if (PrevRail)
 		{
 			Spline otherSpline = PrevRail.GetComponentInParent<Spline>();
-			_prevPos = GetPositionFromSplineData(otherSpline, _selfOffset, otherSpline.Length);
+			_prevPos = GetPositionFromSplineData(otherSpline, _selfOffset, otherSpline.Length - 10);
 		}
 	}
 
-	private Vector3? GetPositionFromSplineData(Spline spline, Vector3 offset, float point ) {
-		if(!spline) { return null; }
+	private Vector3? GetPositionFromSplineData ( Spline spline, Vector3 offset, float point ) {
+		if (!spline) { return null; }
 
 		CurveSample sample = spline.GetSampleAtDistance(point);
 		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(spline.transform, sample);
@@ -187,18 +174,25 @@ public class S_AddOnRail : MonoBehaviour
 		if (NextRail)
 		{
 			Gizmos.color = Color.magenta;
-			if(_endPos.HasValue)
-				Gizmos.DrawWireCube(_endPos.Value + (Vector3.up * 2f), Vector3.one * 5);
-			if(_nextPos.HasValue)
-				Gizmos.DrawWireCube(_nextPos.Value + (Vector3.up * -2f), Vector3.one * 5);
+			if (_endPos.HasValue)
+				DrawBothCubesAt(_endPos);
+			if (_nextPos.HasValue)
+				DrawBothCubesAt(_nextPos);
 		}
 		if (PrevRail)
 		{
 			Gizmos.color = Color.magenta;
-			if(_startPos.HasValue)
-				Gizmos.DrawWireCube(_startPos.Value + (Vector3.up * 2f), Vector3.one * 5);
-			if(_prevPos.HasValue)
-				Gizmos.DrawWireCube(_prevPos.Value + (Vector3.up * -2f), Vector3.one * 5);
+			if (_startPos.HasValue)
+				DrawBothCubesAt(_startPos);
+			if (_prevPos.HasValue)
+				DrawBothCubesAt(_prevPos);
+		}
+
+		return;
+
+		void DrawBothCubesAt(Vector3? position ) {
+			Gizmos.DrawWireCube(position.Value, Vector3.one * 9);
+			Gizmos.DrawWireCube(position.Value, Vector3.one * 6);
 		}
 	}
 #endif

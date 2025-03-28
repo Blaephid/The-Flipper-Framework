@@ -50,7 +50,7 @@ public class S_S_Drawing
 		}
 	}
 
-
+	public static GameObject currentHover;
 
 	public static void DrawSelectableHandle ( Vector3 handlePosition, GameObject targetObject, float size = 1 ) {
 		Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual; //Ensures handles drawn wont be visible through walls.
@@ -60,14 +60,22 @@ public class S_S_Drawing
 		Handles.SphereHandleCap(0, handlePosition, Quaternion.identity, size, EventType.Repaint);
 
 		// Detect if the mouse is clicked on the handle
-		if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
+		if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
 		{
 			// Check if the mouse is over the handle (using HandleUtility.DistanceToCircle for a more precise check)
 			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.7f) < 0.5f)
 			{
+				currentHover = targetObject;
 				if (IsHandleBlocked(handlePosition, targetObject)) { return; }
 
-				// Select the object when the handle is clicked
+				currentHover = targetObject;
+			}
+		}
+		else if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
+		{
+			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.7f) < 0.5f && currentHover == targetObject)
+			{
+				// Select the object when the handle is released on the same object it was pressed down on.
 				Selection.activeObject = targetObject;
 
 				// Mark the event as handled

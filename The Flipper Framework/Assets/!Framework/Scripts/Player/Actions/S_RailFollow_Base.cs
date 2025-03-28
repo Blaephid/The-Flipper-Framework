@@ -167,20 +167,20 @@ public class S_RailFollow_Base : MonoBehaviour
 		{
 
 			//If going forwards, and the rail has a rail off the end, then go onto it.
-			if (!_isGoingBackwards && _ConnectedRails.UseNextRail != null && _ConnectedRails.UseNextRail.isActiveAndEnabled)
+			if (!_isGoingBackwards && _ConnectedRails.useNextRail != null && _ConnectedRails.useNextRail.isActiveAndEnabled)
 			{
 				//Set point on spline to be how much over this grind went over the current rail.
 				_pointOnSpline = Mathf.Max(0, _pointOnSpline - _PathSpline.Length);
 
 				//The data storing next and previous rails is changed to the one for the new rail, meaning this rail will now become UsePrevRail.
-				SetNewRail(_ConnectedRails.UseNextRail);
+				SetNewRail(_ConnectedRails.useNextRail);
 				return false;
 			}
 			//If going backwards, and the rail has a rail off the end, then go onto it.
-			else if (_isGoingBackwards && _ConnectedRails.UsePrevRail != null && _ConnectedRails.UsePrevRail.isActiveAndEnabled)
+			else if (_isGoingBackwards && _ConnectedRails.usePrevRail != null && _ConnectedRails.usePrevRail.isActiveAndEnabled)
 			{
 				//Set data first, because will need to affect point by new length.
-				SetNewRail(_ConnectedRails.UsePrevRail);
+				SetNewRail(_ConnectedRails.usePrevRail);
 
 				//Since coming onto this new rail from the end of it, must have a reference to its length. This is why the point is acquired at the end of this if flow, rather than the start.
 				_pointOnSpline = _pointOnSpline + _PathSpline.Length;
@@ -196,7 +196,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 				//Set path and positions to follow.
 				_PathSpline = _ConnectedRails.GetComponentInParent<Spline>();
-				_RailTransform = _PathSpline.transform.parent;
+				_RailTransform = _PathSpline.transform;
 			}
 		}
 		//If hasn't returned yet, then there is nothing to follow, so actually leave the rail.

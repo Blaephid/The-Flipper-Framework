@@ -14,7 +14,8 @@ using UnityEngine.InputSystem.HID;
 using System.Diagnostics;
 using System.Xml.Linq;
 
-public enum DataTypes{
+public enum DataTypes
+{
 	Float,
 	Boolean,
 	Vector3,
@@ -90,8 +91,8 @@ public class S_S_Editor : MonoBehaviour
 		for (int i = 0 ; i < input.Length ; i++)
 		{
 			//Checks for different types of brackets, (, [, {
-			if (input[i] == bracket1) 
-			{ 
+			if (input[i] == bracket1)
+			{
 				if (bracketStart != -1) { lastBracketStart = bracketStart; }
 				bracketStart = i;
 			}
@@ -105,7 +106,7 @@ public class S_S_Editor : MonoBehaviour
 				string bracketInput = input.Substring(bracketStart, bracketEnd - bracketStart + 1);
 
 				//If only removing brackets with numbers, and this doesn't, then keek going.
-				if(onlyRemoveNumberedBrackets && !bracketInput.Any(char.IsDigit))
+				if (onlyRemoveNumberedBrackets && !bracketInput.Any(char.IsDigit))
 				{
 					bracketStart = lastBracketStart; bracketEnd = 0;
 					continue;
@@ -147,7 +148,7 @@ public class S_S_Editor : MonoBehaviour
 			value = FindFieldByName(value, temp, "").value;
 		}
 
-		return new FieldAndValue() {field = field, value = value};
+		return new FieldAndValue() { field = field, value = value };
 	}
 
 #if UNITY_EDITOR
@@ -156,7 +157,7 @@ public class S_S_Editor : MonoBehaviour
 		return Array.Exists(Selection.gameObjects, obj => obj == gameObject);
 	}
 
-	public static bool IsHidden (GameObject gameObject) {
+	public static bool IsHidden ( GameObject gameObject ) {
 		return SceneVisibilityManager.instance.IsHidden(gameObject);
 	}
 
@@ -329,9 +330,22 @@ public class S_S_Editor : MonoBehaviour
 		return false;
 	}
 
-	public static bool IsTooFarFromEditorCamera(Vector3 position, float distance ) {
-		if (!SceneView.lastActiveSceneView) return true;
-		Camera sceneCam = SceneView.lastActiveSceneView.camera;
+	public static bool IsTooFarFromEditorCamera ( Transform transform, float distance ) {
+		Camera sceneCam;
+		Vector3 position = transform.position;
+
+		if(transform.TryGetComponent (out Spline spline))
+		{
+			position += transform.rotation * spline.nodes[0].Position;
+		}
+
+		if (Application.isPlaying)
+		{ sceneCam = Camera.main; }
+		else
+		{
+			if (!SceneView.lastActiveSceneView) return true;
+			sceneCam = SceneView.lastActiveSceneView.camera;
+		}
 		if (sceneCam == null) return true;
 
 		if (S_S_MoreMaths.GetDistanceSqrOfVectors(position, sceneCam.transform.position) > distance * distance) { return true; };
