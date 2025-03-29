@@ -127,7 +127,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
 	new private void FixedUpdate () {
-		base.FixedUpdate();
+		//base.FixedUpdate();
 		ApplyBoost();
 	}
 

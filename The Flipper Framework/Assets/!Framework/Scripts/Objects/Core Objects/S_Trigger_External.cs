@@ -1,11 +1,26 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
 public class S_Trigger_External : S_Trigger_Base
 {
+	[SerializeAs("_startTrigered")]
+	public bool _triggerOnStart;
 	public TriggerExternalData TriggerObjects = new TriggerExternalData();
+
+
+	private void Start () {
+		if(_triggerOnStart) { StartCoroutine(DelayBeforeTrigger()); }
+	}
+
+	IEnumerator DelayBeforeTrigger () {
+		yield return new WaitForSeconds(1);
+		if (!Application.isPlaying) { yield break; }
+		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn, null);
+	}
 
 	public void OnTriggerEnter ( Collider other ) {
 		if (other.tag != "Player") { return; }

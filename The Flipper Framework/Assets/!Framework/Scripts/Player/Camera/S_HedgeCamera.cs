@@ -169,7 +169,6 @@ public class S_HedgeCamera : MonoBehaviour
 		set
 		{
 			_canAffectDistanceBySpeedBacker = value;
-			Debug.Log($"AffectDistanceBySpeed by  {_canAffectDistanceBySpeedBacker}");
 		}
 	}
 	public bool                     _canAffectDistanceBySpeedBacker = true;
@@ -179,7 +178,6 @@ public class S_HedgeCamera : MonoBehaviour
 		set
 		{
 			_canAffectFOVBySpeedBacker = value;
-			Debug.Log($"AffectFOVBySpeed by {_canAffectDistanceBySpeedBacker}");
 		}
 	}
 

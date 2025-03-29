@@ -613,6 +613,7 @@ MonoBehaviour:
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _whatTriggerShape: 0
   _Player: {fileID: 0}
+  _triggerOnStart: 0
   TriggerObjects:
     _triggerSelfOn: 0
     _triggerSelfOff: 0

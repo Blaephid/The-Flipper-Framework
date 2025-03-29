@@ -17,7 +17,7 @@ public class S_Triggered_MaterialSwap : MonoBehaviour , ITriggerable
 		for (int i = 0 ; i < _MaterialSwapping.Length ; i++)
 		{
 			MaterialsToSwap thisSwap = _MaterialSwapping[i];
-			var materialsCopy = _Renderer.materials;
+			var materialsCopy = _Renderer.sharedMaterials;
 
 			if (thisSwap._onMaterialA)
 			{

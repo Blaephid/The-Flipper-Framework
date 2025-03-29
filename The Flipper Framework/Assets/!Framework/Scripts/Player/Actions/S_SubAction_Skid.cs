@@ -45,7 +45,7 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 	}
 
 	new private void FixedUpdate () {
-		base.FixedUpdate();
+		//base.FixedUpdate();
 		if (!_Actions) { return; }
 		if(_whatCurrentAction != _Actions._whatCurrentAction) 
 		{ 

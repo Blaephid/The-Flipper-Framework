@@ -83,6 +83,7 @@ public class S_Vis_Base : MonoBehaviour
 
 
 	public virtual void VisualiseWithSelectableHandle ( Vector3 position, float handleRadius ) {
+		if (Application.isPlaying) { return; };
 
 		if (S_S_Editor.IsTooFarFromEditorCamera(transform, 500)) { return; };
 

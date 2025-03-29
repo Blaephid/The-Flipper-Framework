@@ -82,11 +82,6 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Start () {
-
-	}
-
 
 	// Update is called once per frame
 	void Update () {
@@ -114,6 +109,8 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	new public bool AttemptAction () {
 		if (!base.AttemptAction()) return false;
 		if (enabled) return false;
+
+		//Searching for walls is done in S_Handler_WallActions, to ensure it's not done multiple times.
 
 		//Because WallCLimbing inherits from WallRunning, it will call this too, so check.
 		if (this is S_Action15_WallClimbing)
@@ -160,8 +157,6 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		//Control
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "WallRunning");
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "WallRunning");
-		//_PlayerPhys._locksForCanControl.Add(false);
-		//_PlayerPhys._locksForIsGravityOn.Add(false);
 
 		this.enabled = true;
 	}
@@ -172,7 +167,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		//Wall fields
-		_WallHandler._BannedWall = _CurrentWall;
+		//_WallHandler._BannedWall = _CurrentWall;
 		_isWall = false;
 
 		//Universal
