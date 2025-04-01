@@ -170,7 +170,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _RimPower: 1.6
-    - _Rim_Power: 2
+    - _Rim_Power: 3
     - _Rotation: 0
     - _ScatteringPower: 4
     - _Shininess: 0.556

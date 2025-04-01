@@ -442,7 +442,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	//Prevent colliding with rails until slightly after losing the current rail.
 	IEnumerator DelayCollision () {
-		yield return new WaitForSeconds(0.55f);
+		yield return new WaitForSeconds(0.25f);
 		Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
 		_canEnterRail = true;
 	}

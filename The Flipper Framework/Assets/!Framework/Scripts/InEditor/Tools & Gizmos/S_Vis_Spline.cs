@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static SplineMesh.Spline;
 
+[ExecuteInEditMode]
 public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 {
 #if UNITY_EDITOR

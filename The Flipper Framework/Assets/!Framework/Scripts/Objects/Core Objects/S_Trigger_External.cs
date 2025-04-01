@@ -11,6 +11,10 @@ public class S_Trigger_External : S_Trigger_Base
 	public bool _triggerOnStart;
 	public TriggerExternalData TriggerObjects = new TriggerExternalData();
 
+	private float _delayBetweenMultiTriggers = 0.3f;
+	private float _timeSinceTriggered = 0;
+	private bool _wastriggered;
+
 
 	private void Start () {
 		if(_triggerOnStart) { StartCoroutine(DelayBeforeTrigger()); }
@@ -27,12 +31,19 @@ public class S_Trigger_External : S_Trigger_Base
 		other.TryGetComponent(out _Player);
 		if (!_Player) { _Player = other.GetComponentInParent<S_PlayerPhysics>(); }
 
+		if (_wastriggered) { return; } //Enforces a delay between when and when not the trigger can be activated.
+
+		_wastriggered = true;
+		_timeSinceTriggered = 0;
+
 		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn, _Player);
 		TriggerGivenObjects(TriggerTypes.Either, TriggerObjects._ObjectsToTriggerOn, _Player);
 	}
 
 	public void OnTriggerStay ( Collider other ) {
 		if (other.tag != "Player") { return; }
+
+		if (_wastriggered) { return; } //Enforces a delay between when and when not the trigger can be activated.
 
 		TriggerGivenObjects(TriggerTypes.Frame, TriggerObjects._ObjectsToTriggerOn, _Player);
 	}
@@ -73,6 +84,14 @@ public class S_Trigger_External : S_Trigger_Base
 					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(Player); break;
 				}
 			}
+		}
+	}
+
+	private void Update () {
+		if (_wastriggered)
+		{
+			_timeSinceTriggered += Time.deltaTime;
+			_wastriggered = _timeSinceTriggered >= _delayBetweenMultiTriggers;
 		}
 	}
 
