@@ -25,6 +25,8 @@ public interface ITriggerable
 	public void ResetObject ( S_PlayerPhysics Player = null) {
 
 	}
+	public void StartTriggeredOn ( S_PlayerPhysics Player = null ) {
+	}
 }
 
 public enum TriggerTypes
@@ -33,5 +35,6 @@ public enum TriggerTypes
 	Off,
 	Either,
 	Reset,
-	Frame
+	Frame,
+	Start
 }

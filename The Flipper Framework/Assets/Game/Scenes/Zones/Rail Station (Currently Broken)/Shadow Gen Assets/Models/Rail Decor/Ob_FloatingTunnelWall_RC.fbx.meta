@@ -3,7 +3,37 @@ guid: 706cef7fa8e2bf94890a85225ca8fbb7
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7019_dot_RC
+    second: {fileID: 2100000, guid: d6f144a459c116b4182e3322bb3082a6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7025_partswall_RC
+    second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7027_stripe_RC
+    second: {fileID: 2100000, guid: ec8684c9f5fd42d4986c47d0fe1a2a1a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_8007_RC
+    second: {fileID: 2100000, guid: f4e7e9eb02249b74bb7fd0895429bbda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_tunnelwall_RC
+    second: {fileID: 2100000, guid: 031ca39c8d0643c42af07c33ca0f6963, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_tunnelwire_RC
+    second: {fileID: 2100000, guid: fc0b4a185c3ab134590d696e00759e17, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -33,7 +63,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 2
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -88,7 +118,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 2
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

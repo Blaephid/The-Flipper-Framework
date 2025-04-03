@@ -3,7 +3,62 @@ guid: 2a77746130b5ad34695ae850d91cfa26
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7008_redwall_RC
+    second: {fileID: 2100000, guid: 9506b02738c534742aec227846f66263, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7011_stripe_RC
+    second: {fileID: 2100000, guid: a87c513d8e8f1d84190a601241e231a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7014_warning_RC
+    second: {fileID: 2100000, guid: 5cd576aad8c51464fb3d686ef8c72768, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7023_partswall_RC
+    second: {fileID: 2100000, guid: a8792ae9bfb669743916eb22674ac251, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7025_partswall_RC
+    second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7027_stripe_RC
+    second: {fileID: 2100000, guid: ec8684c9f5fd42d4986c47d0fe1a2a1a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7032_orange_RC
+    second: {fileID: 2100000, guid: 45d457bf786dae4498b747bd59de7f54, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_8007_RC
+    second: {fileID: 2100000, guid: f4e7e9eb02249b74bb7fd0895429bbda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_darkgray_RC
+    second: {fileID: 2100000, guid: 421146ef5a38e95459b02ee0f5f32b6f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_frame_RC
+    second: {fileID: 2100000, guid: e88c372dd7d8db94581f57b4a0dd8de1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_redpainting_RC
+    second: {fileID: 2100000, guid: 29bcddc43343a344388d18633db32c51, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -33,7 +88,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 3
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -88,7 +143,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 3
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

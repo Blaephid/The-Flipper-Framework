@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.ComponentModel;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
 namespace SplineMesh
 {
 	/// <summary>
@@ -82,8 +82,8 @@ namespace SplineMesh
 		public S_Data_Base _DataForPrefabs;
 
 		[Header("Transform")]
-		[NonSerialized] public Vector3 _mainScale = new Vector3(1,1,1);
-		[NonSerialized] public Vector3 _mainOffset, _mainRotation;
+		[HideInInspector] public Vector3 _mainScale = new Vector3(1,1,1);
+		[HideInInspector] public Vector3 _mainOffset, _mainRotation;
 
 		public ElementTransform[] _TransformsPerPoint_ = new ElementTransform[1] { new ElementTransform() {_scale = Vector3.one }
 		};

@@ -187,6 +187,8 @@ public class S_FollowObject : MonoBehaviour
 		}
 	}
 
+#if UNITY_EDITOR
+
 	//Linked to the button, and sets offset to 0
 	public void ResetOffsetCommand () {
 		Undo.RecordObject(transform, "Reset Offset");
@@ -201,4 +203,5 @@ public class S_FollowObject : MonoBehaviour
 		transform.rotation = _Parent.rotation;
 		_rotationToTry = Quaternion.Euler(_Parent.eulerAngles + _currentEulerOffsetSet);
 	}
+#endif
 }

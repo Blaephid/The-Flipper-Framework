@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using SplineMesh;
-using System;
-using System.Linq;
 using UnityEditor;
-using System.Net;
+
 
 [DisallowMultipleComponent]
 [ExecuteInEditMode]
@@ -34,22 +30,20 @@ public class S_AddOnRail : MonoBehaviour
 	[SerializeField, HideInInspector]
 	Vector3? _startPos, _endPos, _nextPos, _prevPos;
 
-#if UNITY_EDITOR
+
 
 	private void Start () {
 		useNextRail = NextRail;
 		usePrevRail = PrevRail;
 	}
 
+#if UNITY_EDITOR
 	private void OnEnable () {
 		if (Application.isPlaying) return;
 		Place();
 	}
 #endif
 
-	public void SwitchRailsToAlternate () {
-	
-	}
 
 #if UNITY_EDITOR
 	private void OnValidate () {
@@ -150,11 +144,13 @@ public class S_AddOnRail : MonoBehaviour
 		if (NextRail)
 		{
 			Spline otherSpline = NextRail.GetComponentInParent<Spline>();
+			if (!otherSpline) { return; }
 			_nextPos = GetPositionFromSplineData(otherSpline, _selfOffset, 10);
 		}
 		if (PrevRail)
 		{
 			Spline otherSpline = PrevRail.GetComponentInParent<Spline>();
+			if(!otherSpline) { return; }
 			_prevPos = GetPositionFromSplineData(otherSpline, _selfOffset, otherSpline.Length - 10);
 		}
 	}

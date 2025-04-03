@@ -46,20 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84f9c6d1025f5e74e8387e08a266035a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _regularSkidAngleStartPoint_: 0
   _regularSkiddingIntensity_: 0
   _isSkidding: 0
@@ -75,20 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d900770bff08f5047b6885e331fec8f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
 --- !u!114 &3464681610144582972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,20 +73,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f41c6a689164e749972941802ec5704, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _rollCounter: 0
 --- !u!1 &2987150101943081207
 GameObject:
@@ -202,7 +160,7 @@ MonoBehaviour:
     PerformableSubStates: 
   - State: 6
     ConnectedStates: 000000000400000005000000
-    SituationalStates: 000000000100000007000000
+    SituationalStates: 00000000010000000200000003000000040000000700000008000000
     PerformableSubStates: 04000000
   - State: 7
     ConnectedStates: 000000000100000003000000
@@ -236,9 +194,10 @@ MonoBehaviour:
     ConnectedStates: 000000000100000005000000
     SituationalStates: 0000000001000000
     PerformableSubStates: 
-  _InspectorTheme: {fileID: 0}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
   _addState: 12
-  _isAirDashAvailables: 1
+  _charge: 0
+  _isAirDashAvailable: 1
   _bounceCount: 0
   _actionTimeCounter: 0
   _jumpCount: 0
@@ -680,6 +639,7 @@ MonoBehaviour:
   _HedgeCam: {fileID: 0}
   _VirtCam: {fileID: 0}
   _initialDistance: 0
+  _initialFOV: 0
 --- !u!114 &7724090433941777402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -770,6 +730,7 @@ GameObject:
   - component: {fileID: 2394129168238109761}
   - component: {fileID: 3399936635228185353}
   - component: {fileID: 18308483529194356}
+  - component: {fileID: 7549531087015490786}
   m_Layer: 0
   m_Name: Main Actions
   m_TagString: Untagged
@@ -804,20 +765,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6da8dadf30a2c64abf5847208a3b113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _skinRotationSpeed: 13
   _canDashDuringFall_: 0
   _isCoyoteInEffect: 0
@@ -837,20 +784,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1313590d96251e46aaef7e509eb58d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _skinRotationSpeed: 8
   _upwardsDirection: {x: 0, y: 0, z: 0}
   _counter: 0
@@ -883,21 +816,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1a4862d66441f4f94e9a7d171185b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _Target: {fileID: 0}
+  _CanBePerformedOnGround_: 0
   _skinRotationSpeed: 7
   _speedBeforeAttack: 0
   _directionBeforeAttack: {x: 0, y: 0, z: 0}
@@ -914,20 +834,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181222eb924ad744a9ab86e4790de666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _spinDashChargingSpeed_: 0.3
   _minimunCharge_: 10
   _maximunCharge_: 100
@@ -944,20 +850,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36193597c27d39846afd0cfd81c7331c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _knockbackUpwardsForce_: 10
   _knockbackForce_: 10
   _knockbackDirection: {x: 0, y: 0, z: 0}
@@ -974,28 +866,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b49af0d0f47fca44392a9c0940d9eb80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _Rail_int: {fileID: 0}
-  _ZipHandle: {fileID: 0}
-  _ZipBody: {fileID: 0}
+  _RF: {fileID: 0}
   _skinRotationSpeed: 20
-  _railmaxSpeed_: 0
-  _whatKindOfRail: 0
-  _pointOnSpline: 0
-  _isGoingBackwards: 0
+  _canEnterRail: 1
   _isBoosted: 0
   _boostTime: 0
   _isGrinding: 0
@@ -1011,20 +885,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ad0cea500f9334c8b1e2539e9bc2ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _BounceUpSpeeds_: []
 --- !u!114 &6052093516140985174
 MonoBehaviour:
@@ -1053,20 +913,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316796d67803e6b4f8719aa0db4b6204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _trailOffSet: {x: 0, y: -3, z: 0}
 --- !u!114 &4731894732532396599
 MonoBehaviour:
@@ -1080,20 +926,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb68ae7e176fda245b8aebfcc653b81e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _PatherStarter: {fileID: 0}
   _playerSpeed: 0
 --- !u!114 &5674882071896522453
@@ -1108,20 +940,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fadeadbb69111459e75fec9dcceb48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _skinRotationSpeed: 6
 --- !u!114 &1808404644376647470
 MonoBehaviour:
@@ -1135,20 +953,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba0d88c045e601341b6f95f1153abd98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _CurrentUpreel: {fileID: 0}
 --- !u!114 &391286721165643762
 MonoBehaviour:
@@ -1176,20 +980,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c4bcbabe54cf5449111d2ae80752cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _HomingControl: {fileID: 0}
   _WallHandler: {fileID: 0}
   _DropShadow: {fileID: 0}
@@ -1228,20 +1018,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b4131b28bfe78a40b3fee2d33ab913a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
 --- !u!114 &3399936635228185353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1254,20 +1030,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7163a1e488e3d14f9298b2b9a5aa305, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _HomingControl: {fileID: 0}
   _WallHandler: {fileID: 0}
   _DropShadow: {fileID: 0}
@@ -1306,20 +1068,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ea18ef60704e74ba507d7e1ade1a2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Tools: {fileID: 0}
-  _PlayerPhys: {fileID: 0}
-  _PlayerVel: {fileID: 0}
-  _Input: {fileID: 0}
-  _Actions: {fileID: 0}
-  _CamHandler: {fileID: 0}
-  _Sounds: {fileID: 0}
-  _PlayerMovement: {fileID: 0}
-  _CharacterAnimator: {fileID: 0}
-  _JumpBall: {fileID: 0}
-  _BallAnimator: {fileID: 0}
-  _MainSkin: {fileID: 0}
-  _positionInActionList: 0
-  _isActionCurrentlyValid: 1
   _DropEffect: {fileID: 0}
-  _charge: 0
   _releaseShakeAmmount: 3
+--- !u!114 &7549531087015490786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8040024586553236849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b97cbf795fc906440ad4f48f67910c76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _RailTransform: {fileID: 0}
+  _PathSpline: {fileID: 0}
+  _ConnectedRails: {fileID: 0}
+  _ZipHandle: {fileID: 0}
+  _ZipBody: {fileID: 0}
+  _whatKindOfRail: 0
+  _isGoingBackwards: 0
+  _movingDirection: 0
+  _pointOnSpline: 0
+  _sampleForwards: {x: 0, y: 0, z: 0}
+  _sampleRight: {x: 0, y: 0, z: 0}
+  _sampleLocation: {x: 0, y: 0, z: 0}
+  _sampleUpwards: {x: 0, y: 0, z: 0}
+  _grindingSpeed: 0
+  _setOffSet: {x: 0, y: 0, z: 0}
+  _upOffsetRail_: 2.05
+  _upOffsetZip_: -2.05
+  _isRailLost: 0

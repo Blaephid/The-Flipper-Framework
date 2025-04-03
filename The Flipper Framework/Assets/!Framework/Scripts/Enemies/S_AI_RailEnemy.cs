@@ -197,7 +197,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		if (_timeToFullSpeed_.length == 0) { return; }
 
-		if(_timeGrinding != _timeToFullSpeed_[_timeToFullSpeed_.length-1].time)
+		if (_timeGrinding != _timeToFullSpeed_[_timeToFullSpeed_.length - 1].time)
 		{
 			_RF._grindingSpeed = StartSpeed * _timeToFullSpeed_.Evaluate(_timeGrinding);
 			_timeGrinding = Mathf.Min(_timeToFullSpeed_[_timeToFullSpeed_.length - 1].time, _timeGrinding);
@@ -333,20 +333,17 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		EditorApplication.delayCall += () =>
-		{
-			gameObject.SetActive(true);
+		if(gameObject == null) { return; }
+		gameObject.SetActive(true);
 
-			TriggerObjectOff();
+		TriggerObjectOff();
 
-			Debug.Log(gameObject);
-			transform.position = _startPosition;
-			SetSplineDetails();
-			PlaceOnSplineToStart();
-			ResetRigidBody();
+		transform.position = _startPosition;
+		SetSplineDetails();
+		PlaceOnSplineToStart();
+		ResetRigidBody();
 
-			S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
-		};
+		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 
 	public void SetToSpline () {

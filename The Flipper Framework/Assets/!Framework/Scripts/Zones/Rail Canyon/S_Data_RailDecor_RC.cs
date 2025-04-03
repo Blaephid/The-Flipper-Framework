@@ -40,6 +40,22 @@ public class S_Data_RailDecor_RC : S_Data_Base
 	private string _underClamps = "Ob_WallClamps2_RC";
 	[SerializeField, HideInInspector] bool _showUnderClamps;
 
+	[SerializeField,DrawTickBoxBefore("_showGate"), Delayed]
+	private string _gate = "Ob_RailGate_RC";
+	[SerializeField, HideInInspector] bool _showGate;
+
+	[SerializeField,DrawTickBoxBefore("_showLargeGate"), Delayed]
+	private string _largeGate = "Ob_RailGateLarge_RC";
+	[SerializeField, HideInInspector] bool _showLargeGate;
+
+	[SerializeField,DrawTickBoxBefore("_showTunnelWallRight"), Delayed]
+	private string _tunnelWallRight = "Ob_FloatingTunnelWallRight_RC";
+	[SerializeField, HideInInspector] bool _showTunnelWallRight;
+
+	[SerializeField,DrawTickBoxBefore("_showTunnelWallLeft"), Delayed]
+	private string _tunnelWallLeft = "Ob_FloatingTunnelWallLeft_RC";
+	[SerializeField, HideInInspector] bool _showTunnelWallLeft;
+
 	private new void OnValidate () {
 		base.OnValidate();
 		S_S_Editor.FindObjectAndSetActive(_underPlatform, _showUnderPlatform, transform);
@@ -51,6 +67,10 @@ public class S_Data_RailDecor_RC : S_Data_Base
 		S_S_Editor.FindObjectAndSetActive(_rightRailDirector, _showRightRailDirector, transform);
 		S_S_Editor.FindObjectAndSetActive(_underClamps, _showUnderClamps, transform);
 		S_S_Editor.FindObjectAndSetActive(_railWallConnector, _showRailWallConnector, transform);
+		S_S_Editor.FindObjectAndSetActive(_largeGate, _showLargeGate, transform);
+		S_S_Editor.FindObjectAndSetActive(_gate, _showGate, transform);
+		S_S_Editor.FindObjectAndSetActive(_tunnelWallRight, _showTunnelWallRight, transform);
+		S_S_Editor.FindObjectAndSetActive(_tunnelWallLeft, _showTunnelWallLeft, transform);
 	}
 }
 #endif

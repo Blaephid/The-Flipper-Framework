@@ -59,6 +59,7 @@ MonoBehaviour:
   _selectedFillColour: {r: 0.3509434, g: 0, b: 0, a: 0.4392157}
   _whatTriggerShape: 0
   _Player: {fileID: 0}
+  _triggerOnStart: 0
   TriggerObjects:
     _triggerSelfOn: 0
     _triggerSelfOff: 0
@@ -233,22 +234,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.0117589515
+      value: 0.02984935
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.00017177592
+      value: -0.00006061443
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.99982417
+      value: 0.9995524
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.014605532
+      value: 0.0020297738
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

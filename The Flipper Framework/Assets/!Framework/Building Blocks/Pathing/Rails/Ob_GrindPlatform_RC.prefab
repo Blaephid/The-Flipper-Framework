@@ -3553,6 +3553,14 @@ MonoBehaviour:
   _showRightRailDirector: 0
   _underClamps: Ob_WallClamps2_RC
   _showUnderClamps: 0
+  _gate: Ob_RailGate_RC
+  _showGate: 0
+  _largeGate: Ob_RailGateLarge_RC
+  _showLargeGate: 0
+  _tunnelWallRight: Ob_FloatingTunnelWallRight_RC
+  _showTunnelWallRight: 0
+  _tunnelWallLeft: Ob_FloatingTunnelWallLeft_RC
+  _showTunnelWallLeft: 0
 --- !u!1 &6604609736598090688
 GameObject:
   m_ObjectHideFlags: 0
@@ -3892,6 +3900,14 @@ MonoBehaviour:
   _showRightRailDirector: 0
   _underClamps: Ob_WallClamps2_RC
   _showUnderClamps: 0
+  _gate: Ob_RailGate_RC
+  _showGate: 0
+  _largeGate: Ob_RailGateLarge_RC
+  _showLargeGate: 0
+  _tunnelWallRight: Ob_FloatingTunnelWallRight_RC
+  _showTunnelWallRight: 0
+  _tunnelWallLeft: Ob_FloatingTunnelWallLeft_RC
+  _showTunnelWallLeft: 0
 --- !u!1 &7926507465855180697
 GameObject:
   m_ObjectHideFlags: 0
@@ -4244,6 +4260,14 @@ MonoBehaviour:
   _showRightRailDirector: 0
   _underClamps: Ob_WallClamps2_RC
   _showUnderClamps: 0
+  _gate: Ob_RailGate_RC
+  _showGate: 0
+  _largeGate: Ob_RailGateLarge_RC
+  _showLargeGate: 0
+  _tunnelWallRight: Ob_FloatingTunnelWallRight_RC
+  _showTunnelWallRight: 0
+  _tunnelWallLeft: Ob_FloatingTunnelWallLeft_RC
+  _showTunnelWallLeft: 0
 --- !u!1 &8225418307649859073
 GameObject:
   m_ObjectHideFlags: 0
@@ -4323,6 +4347,14 @@ MonoBehaviour:
   _showRightRailDirector: 0
   _underClamps: Ob_WallClamps2_RC
   _showUnderClamps: 0
+  _gate: Ob_RailGate_RC
+  _showGate: 0
+  _largeGate: Ob_RailGateLarge_RC
+  _showLargeGate: 0
+  _tunnelWallRight: Ob_FloatingTunnelWallRight_RC
+  _showTunnelWallRight: 0
+  _tunnelWallLeft: Ob_FloatingTunnelWallLeft_RC
+  _showTunnelWallLeft: 0
 --- !u!1 &8382336071226239678
 GameObject:
   m_ObjectHideFlags: 0
@@ -4475,6 +4507,9 @@ MonoBehaviour:
   _placeAsPrefab_: 1
   _CurrentPrefabToSpawn: Pr_Spring
   _DataForPrefabs: {fileID: 3134668372159204265}
+  _mainScale: {x: 1, y: 1, z: 1}
+  _mainOffset: {x: 0, y: 1.12, z: -0.96}
+  _mainRotation: {x: 0, y: 0, z: 0}
   _TransformsPerPoint_:
   - _scale: {x: 1, y: 1, z: 1}
     _offset3d: {x: 0, y: 1.12, z: -0.96}
@@ -4911,6 +4946,14 @@ MonoBehaviour:
   _showRightRailDirector: 0
   _underClamps: Ob_WallClamps2_RC
   _showUnderClamps: 0
+  _gate: Ob_RailGate_RC
+  _showGate: 0
+  _largeGate: Ob_RailGateLarge_RC
+  _showLargeGate: 0
+  _tunnelWallRight: Ob_FloatingTunnelWallRight_RC
+  _showTunnelWallRight: 0
+  _tunnelWallLeft: Ob_FloatingTunnelWallLeft_RC
+  _showTunnelWallLeft: 0
 --- !u!1 &9215202632145484264
 GameObject:
   m_ObjectHideFlags: 0
@@ -5200,22 +5243,22 @@ PrefabInstance:
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7415185
+      value: 0.7036472
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.019010633
+      value: 0.013997544
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.67044276
+      value: -0.7102711
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.017188447
+      value: 0.014129325
       objectReference: {fileID: 0}
     - target: {fileID: 2086042636681044999, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
@@ -5774,22 +5817,22 @@ PrefabInstance:
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.74148875
+      value: 0.7036499
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.018992944
+      value: 0.013987067
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.67047656
+      value: -0.71026886
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.017174006
+      value: 0.01411865
       objectReference: {fileID: 0}
     - target: {fileID: 2086042636681044999, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
@@ -6422,22 +6465,22 @@ PrefabInstance:
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7414591
+      value: 0.7036526
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.018975275
+      value: 0.013976605
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.6705103
+      value: -0.71026665
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.017159581
+      value: 0.014107989
       objectReference: {fileID: 0}
     - target: {fileID: 2086042636681044999, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
@@ -7936,6 +7979,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5529238468865899203, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
+      propertyPath: _mainOffset.x
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5529238468865899203, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
       propertyPath: _TransformsPerPoint_.Array.data[0]._scale.z
       value: 1
       objectReference: {fileID: 0}
@@ -8089,6 +8137,11 @@ PrefabInstance:
     - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _offset3d_.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _mainOffset.x
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
@@ -8426,6 +8479,14 @@ MonoBehaviour:
   _showRightRailDirector: 0
   _underClamps: Ob_WallClamps2_RC
   _showUnderClamps: 0
+  _gate: Ob_RailGate_RC
+  _showGate: 0
+  _largeGate: Ob_RailGateLarge_RC
+  _showLargeGate: 0
+  _tunnelWallRight: Ob_FloatingTunnelWallRight_RC
+  _showTunnelWallRight: 0
+  _tunnelWallLeft: Ob_FloatingTunnelWallLeft_RC
+  _showTunnelWallLeft: 0
 --- !u!4 &8777689002337722902 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1790742451750014994, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,

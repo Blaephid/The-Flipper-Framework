@@ -160,8 +160,6 @@ public class S_Handler_WallActions : MonoBehaviour
 
 			float distance = Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide()) + 0.4f;
 
-			Debug.Log("Find wall " + S_PlayerPhysics._frameCount);
-
 			if (IsInputtingInCharacterAngle(_MainSkin.right) && IsRunningFastEnough(50))
 			{
 				origin -= _MainSkin.right * 0.4f; //For scanning to the right, put slightly more to the left

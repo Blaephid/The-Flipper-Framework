@@ -21,6 +21,9 @@ public class S_Handler_Camera : MonoBehaviour
 	[HideInInspector] public float _initialDistance;
 	[HideInInspector] public float _initialFOV;
 
+	private bool startedLerpingFOV;
+	private bool startedLerpingDistance;
+
 	//This is used to check what the current dominant trigger is, as multiple triggers might be working together under one effect. These will have their read values set to the same.
 	private List<S_Trigger_External> _CurrentActiveCameraTriggers = new List<S_Trigger_External>();
 
@@ -127,7 +130,9 @@ public class S_Handler_Camera : MonoBehaviour
 			if (removeAll || (cameraData && cameraData._willChangeDistance))
 				StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, true, !cameraData._affectNewDistanceBySpeed));
 			if (removeAll || (cameraData && cameraData._willChangeFOV))
+			{
 				StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, true, !cameraData._affectNewFOVBySpeed));
+			}
 		}
 		//if (removeAll || cameraData._willChangeDistance)
 		//	StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, true, cameraData && !removeAll ? !cameraData._affectNewDistanceBySpeed : true));
@@ -149,6 +154,7 @@ public class S_Handler_Camera : MonoBehaviour
 	private IEnumerator LerpToNewDistance(float frames, float distance, bool goalHasModifier = false, bool setAffectedBySpeed = false) {
 		float startDistance = _HedgeCam._cameraMaxDistance_;
 
+		startedLerpingDistance = true;
 
 		//To ensure transition on screen is smooth, if setting speed to not adjust distance, ensure lerp from the current result, as HedgeCamera will immediately stop applying the modifier.
 		if (!setAffectedBySpeed)
@@ -160,6 +166,9 @@ public class S_Handler_Camera : MonoBehaviour
 		for (float f = 1f ; f <= frames ; f++)
 		{
 			yield return new WaitForFixedUpdate();
+
+			if (startedLerpingDistance && f > 1) { yield break; } //If another instance of this coroutine was called, stop moving this one.
+			startedLerpingDistance = false;
 
 			float goalDistance = goalHasModifier ? distance * _HedgeCam._distanceModifier : distance;
 			_HedgeCam._cameraMaxDistance_ = Mathf.Lerp(startDistance, goalDistance, f / frames);
@@ -174,6 +183,8 @@ public class S_Handler_Camera : MonoBehaviour
 	private IEnumerator LerpToNewFOV ( float frames, float newFOV, bool goalHasModifier = false, bool setAffectedBySpeed = false ) {
 		float startFOV =  _HedgeCam._baseFOV_;
 
+		startedLerpingFOV = true;
+
 		if (!setAffectedBySpeed)
 		{
 			startFOV *= _HedgeCam._canAffectFOVBySpeed ? _HedgeCam._FOVModifier : 1;
@@ -183,6 +194,10 @@ public class S_Handler_Camera : MonoBehaviour
 		for (float f = 1f; f <= frames ; f++)
 		{
 			yield return new WaitForFixedUpdate();
+
+			if(startedLerpingFOV && f > 1) 	{ yield  break; } //If another instance of this coroutine was called, stop moving this one.
+			startedLerpingFOV = false;
+
 			float goalFOV = goalHasModifier ? newFOV * _HedgeCam._FOVModifier : newFOV;
 			_HedgeCam._baseFOV_ = Mathf.Lerp(startFOV, goalFOV, f / frames);
 		}
@@ -208,7 +223,6 @@ public class S_Handler_Camera : MonoBehaviour
 	public void SetLockCameras ( S_Trigger_Camera cameraData, bool setTo, bool overWriteIfFalse = true ) {
 		//For each boolean, only set if camera data is set true (meaning camera data effects this, ignore if not.
 		//If overwritting everything, then just set to false.
-
 
 		if (!overWriteIfFalse)
 		{

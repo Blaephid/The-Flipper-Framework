@@ -65,6 +65,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	// Trackers
 	#region trackers
 
+	[NonSerialized] public Vector3 _startOffset = Vector3.one;
+	[NonSerialized] public Transform _startRail;
+
 	[HideInInspector]
 	public bool         _canEnterRail = true;            //Prevents the start action method being called multiple times when on a rail. Must be set to false when leaving or starting a hop.
 	private float                 _pulleyRotate;      //Set by inputs and incorperated into position and rotation on spline when using a zipline. Decides how much to tilt the handle and player.
@@ -306,6 +309,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		_isGrinding = false;
 		_RF._RailTransform = null; //Set this to null so there's nothing to compare to on next rail.
+
+		_startOffset = Vector3.one;
+		_startRail = null;
 
 		//If left this action to perform a jump,
 		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Jump)
@@ -666,13 +672,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			//Decrease how far to move by how far has moved.
 			_distanceToHop -= Mathf.Abs(_hopThisFrame);
 			_distanceToHop = Mathf.Max(_distanceToHop, 0.1f);
-
-			//Near the end of a step, renable collision so can collide again with grind on them instead.
-			if (_distanceToHop < _hopDistance_ / 2 && !_canEnterRail)
-			{
-				Physics.IgnoreLayerCollision(this.gameObject.layer, 23, false);
-				_canEnterRail = true;
-			}
 		}
 	}
 
@@ -693,8 +692,15 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				}
 			}
 
+			//Near the end of a step, renable collision so can collide again with grind on them instead.
+			if (_distanceToHop < _hopDistance_ / 2 && !_canEnterRail)
+			{
+				Physics.IgnoreLayerCollision(gameObject.layer, 23, false);
+				_canEnterRail = true;
+			}
+
 			//Once a step is over and the player hasn't started this action through collisions, exit state.
-			if (_distanceToHop <= 0.1f)
+			else if (_distanceToHop <= 0.1f)
 			{
 				LoseRail();
 			}
@@ -724,6 +730,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	//Called by the pathers interaction script to ready important stats gained from the collision. This is seperate to startAction because startAction is inherited from an interface.
 	public void AssignForThisGrind ( float range, Transform Rail, S_Interaction_Pathers.PathTypes type, Vector3 thisOffset, S_AddOnRail AddOn ) {
 
+		_startOffset = thisOffset;
+		_startRail = Rail;
 
 		_RF._setOffSet = -thisOffset; //Offset is obtianed from the offset on the collider, and will be followed consitantly to allow folowing different rails on the same spline.
 

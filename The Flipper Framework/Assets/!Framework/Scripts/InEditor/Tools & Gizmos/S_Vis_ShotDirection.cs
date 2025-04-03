@@ -99,6 +99,7 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	}
 
 	private void GetValuesFromScriptableObject () {
+		if(!this || gameObject == null) { return; };
 		if (!_CharacterStatsToFollow) { enabled = false; return; }
 
 		//Gets values for simulation from stats object.

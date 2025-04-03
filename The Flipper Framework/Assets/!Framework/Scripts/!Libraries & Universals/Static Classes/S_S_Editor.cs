@@ -258,12 +258,15 @@ public class S_S_Editor : MonoBehaviour
 			}
 		}
 
+#if UNITY_EDITOR
 		EditorApplication.delayCall += () =>
 		{
+
 			if (!childObject) { return; }
 			childObject.tag = ParentObject.tag;
 			childObject.layer = ParentObject.layer;
 		};
+#endif
 
 		return childObject;
 
@@ -331,7 +334,7 @@ public class S_S_Editor : MonoBehaviour
 	}
 
 	public static bool IsTooFarFromEditorCamera ( Transform transform, float distance ) {
-		Camera sceneCam;
+		Camera sceneCam = null;
 		Vector3 position = transform.position;
 
 		if(transform.TryGetComponent (out Spline spline))
@@ -341,11 +344,13 @@ public class S_S_Editor : MonoBehaviour
 
 		if (Application.isPlaying)
 		{ sceneCam = Camera.main; }
+#if UNITY_EDITOR
 		else
 		{
 			if (!SceneView.lastActiveSceneView) return true;
 			sceneCam = SceneView.lastActiveSceneView.camera;
 		}
+#endif
 		if (sceneCam == null) return true;
 
 		if (S_S_MoreMaths.GetDistanceSqrOfVectors(position, sceneCam.transform.position) > distance * distance) { return true; };

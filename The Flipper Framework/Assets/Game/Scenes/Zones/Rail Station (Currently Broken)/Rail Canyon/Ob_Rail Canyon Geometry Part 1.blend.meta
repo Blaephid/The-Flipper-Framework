@@ -1,0 +1,382 @@
+fileFormatVersion: 2
+guid: d81ae2c1e713a834086eafbff291aae3
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Level Beats
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_lamp_a2_RC
+    second: {fileID: 2100000, guid: f23445f90ec36174baeff75783798a61, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_lamp_a_RC
+    second: {fileID: 2100000, guid: f23445f90ec36174baeff75783798a61, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_light_7015_RC
+    second: {fileID: 2100000, guid: 118ef599a45ea5c42a8b9ca912244259, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_light_sign_RC
+    second: {fileID: 2100000, guid: 6d7fda52f5cc11245adaccefc8c4cce8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7008_redwall_RC
+    second: {fileID: 2100000, guid: 9506b02738c534742aec227846f66263, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7011_stripe_RC
+    second: {fileID: 2100000, guid: a87c513d8e8f1d84190a601241e231a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7014_warning_RC
+    second: {fileID: 2100000, guid: 5cd576aad8c51464fb3d686ef8c72768, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7016_dot_RC
+    second: {fileID: 2100000, guid: c47e0fe62e4426b4490ee47ac527b75f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7017_reddot_RC
+    second: {fileID: 2100000, guid: 8f81deddd9065a042bc96f71ed888076, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7019_dot_RC
+    second: {fileID: 2100000, guid: d6f144a459c116b4182e3322bb3082a6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7023_partswall_RC
+    second: {fileID: 2100000, guid: a8792ae9bfb669743916eb22674ac251, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7025_partswall_RC
+    second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7027_stripe_RC
+    second: {fileID: 2100000, guid: ec8684c9f5fd42d4986c47d0fe1a2a1a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7030_mark_RC.001
+    second: {fileID: 2100000, guid: 7d00831b31837ac4e89d80889b295634, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7032_orange_RC
+    second: {fileID: 2100000, guid: 45d457bf786dae4498b747bd59de7f54, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_8005_grid_RC
+    second: {fileID: 2100000, guid: f2eec6cfd9e133141bd31a30225adc8a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_8005_grid_RC.001
+    second: {fileID: 2100000, guid: f2eec6cfd9e133141bd31a30225adc8a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_8007_RC
+    second: {fileID: 2100000, guid: f4e7e9eb02249b74bb7fd0895429bbda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_bighorn_RC
+    second: {fileID: 2100000, guid: a4320341c9de52047a54ef121b6a1bcc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_brown_RC
+    second: {fileID: 2100000, guid: 8b8283a7b3f7f0746b440e46c38e4580, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_circle_RC
+    second: {fileID: 2100000, guid: 2f35699e9b1b16642afb6d716f864fcf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_darkgray_RC
+    second: {fileID: 2100000, guid: 421146ef5a38e95459b02ee0f5f32b6f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_duct_RC
+    second: {fileID: 2100000, guid: 1ed18402e8b3b964aaaeeedd2e4ff493, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_edge_arrow_RC
+    second: {fileID: 2100000, guid: c21e24231edde97409b38ef1dcadd087, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_edge_grate_RC
+    second: {fileID: 2100000, guid: 519768c89c59c6141acf65ec70156acd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_egghorn_RC
+    second: {fileID: 2100000, guid: f917e5d018b46394fa550207122d432b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_frame_RC
+    second: {fileID: 2100000, guid: e88c372dd7d8db94581f57b4a0dd8de1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_gray_RC
+    second: {fileID: 2100000, guid: e65b5524c09a2df41b25863a42aa9f92, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_propeller01_RC
+    second: {fileID: 2100000, guid: 0665a8e215c5e9e45b6049cdf86b1249, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_redpainting_RC
+    second: {fileID: 2100000, guid: 29bcddc43343a344388d18633db32c51, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_tunnelwall_RC
+    second: {fileID: 2100000, guid: 031ca39c8d0643c42af07c33ca0f6963, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_tunnelwire_RC
+    second: {fileID: 2100000, guid: fc0b4a185c3ab134590d696e00759e17, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_yellow_RC
+    second: {fileID: 2100000, guid: 89444681a0502e74e8b2815822af3f7b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_ogre_train_a
+    second: {fileID: 2100000, guid: 758b942e14a03b248a98dd1a15789f17, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_ogre_train_c_RC
+    second: {fileID: 2100000, guid: 84fb6d88740e9c144afe32e325d5e7b6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_ogre_train_eye_glass
+    second: {fileID: 2100000, guid: d93f6f085d4f2fc4885a9f3fa5849707, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_ogre_train_thorn
+    second: {fileID: 2100000, guid: e056df3ec178b11439f2bc4b6b5bb85b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_rockcliff2_RC
+    second: {fileID: 2100000, guid: 83e09554c4109ed479d4e5beb8fe42d4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_rockcliff_RC
+    second: {fileID: 2100000, guid: 365739672bddc534585db4d00b52a6a2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_wood_7007_dirt_RC
+    second: {fileID: 2100000, guid: 5e2d1ee81352e764bbe6e6777905b1c2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_wood_7020_dirt_RC
+    second: {fileID: 2100000, guid: 280c44ddda31619448940449190f104c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_wood_7020_pale_RC
+    second: {fileID: 2100000, guid: 39b6dc76c62519747b522b5fa6f21f3b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_wood_7028_yellow_RC
+    second: {fileID: 2100000, guid: 4281c65647cff4147969dd256217410a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_wood_arrows_RC
+    second: {fileID: 2100000, guid: 6275c257aa9bf3e4e93490beb17517fe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.001
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wall
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert1
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert2
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert6
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert7
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert8.001
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert9.001
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: phong1
+    second: {fileID: 2100000, guid: cae5db971bc29094292027aaa5048278, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 1
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

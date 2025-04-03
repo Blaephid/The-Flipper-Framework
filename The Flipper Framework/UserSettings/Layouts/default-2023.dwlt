@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 780.8
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Inspector
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 542}
   m_MaxSize: {x: 10000, y: 10000}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 10496
+  controlID: 26168
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 10497
+  controlID: 26169
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 10498
+  controlID: 26170
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -251,7 +251,7 @@ MonoBehaviour:
   - {fileID: 17}
   - {fileID: 18}
   m_Selected: 1
-  m_LastSelected: 2
+  m_LastSelected: 0
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -280,7 +280,7 @@ MonoBehaviour:
   - {fileID: 21}
   - {fileID: 22}
   m_Selected: 0
-  m_LastSelected: 1
+  m_LastSelected: 0
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -303,8 +303,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 296.2
-    y: 19
+    x: 295.2
+    y: 73.6
     width: 742.8
     height: 451
   m_SerializedDataModeController:
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_TextureFilterMode: 0
   m_TextureHideFlags: 61
   m_RenderIMGUI: 1
-  m_EnterPlayModeBehavior: 1
+  m_EnterPlayModeBehavior: 0
   m_UseMipMap: 0
   m_VSyncEnabled: 0
   m_Gizmos: 0
@@ -363,7 +363,7 @@ MonoBehaviour:
       width: 742.8
       height: 430
     m_Scale: {x: 1.25, y: 1.25}
-    m_Translation: {x: 371.4, y: 215.00003}
+    m_Translation: {x: 371.4, y: 215}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
@@ -371,7 +371,7 @@ MonoBehaviour:
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
       x: -297.12
-      y: -172.00003
+      y: -172
       width: 594.24
       height: 344
     m_MinimalGUI: 1
@@ -422,9 +422,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: bcdcffff
-      m_LastClickedID: -9028
-      m_ExpandedIDs: d8bdf8ffdabdf8ff0ed8fbff10d8fbff522affff542affff484fffff504fffff8076ffff9487ffff9c87ffffa2a2ffffbea8ffffc6a8ffffccc3ffff2ae0ffff06faffffccfaffffbac1000052c5000064cd0000d0cd000030d9000018dc0000cced0000b4fc0000aeff0000cc080100740f0100ba0f01005610010054160100b21601006a1c0100
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: 1c1b35ffd81b35ff726536ff7e6536ff629636ffc61237ff381337ffb41337ffd64e3aff944f3afffc993bff089a3bffecca3bff50473cffc2473cff3e483cff48c240ff04c340ff4e0d42ff620d42ff4e3e42ffbaba42ff34bb42ffb8bb42ff6a3544ff203644ff888045ff948045ff78b145ffdc2d46ff4e2e46ffca2e46ff627b4bff667b4bffd0de4fff86df4ffff82451ff042551ffe85551ff4cd251ffbed251ff3ad351ff4e8957ff048a57ff7acf58ff8acf58ff720059ffda7c59ff507d59ffd07d59ffe2c164ff98c264fffa0a66ff0a0b66fff23b66ff5ab866ffd0b866ff50b966ffbe5068ff745168ffe69969fff69969ffdeca69ff46476affbc476aff3c486affba9170ffee0975ffac0a75ffc65376ffd65376ffbe8476ff260177ff9c0177ff1c0277fff6007dffac017dffca4a7effde4a7effca7b7eff36f87effb0f87eff34f97eff9cd188ff58d288ff4aa089ff5aa089ff92c689ff62318affd8318aff58328afff011fffff811fffffc22ffff0a3dffffea3ffffff23fffff2249ffff2a49ffffa855ffffb055ffffd663ffff1e7bffff267bffff3688ffff3e88ffffd298ffffda98ffffdc98ffff1e9cffff2eb6ffff36b6ffff46daffff4edaffff12e8ffffd8d40000a2d500007ed90000ded9000050e2000038e60000cced00000cf1000088f100000cf3000022fd0000b4fe0000e40501005a140100fa140100521701005c2801009c2801003c290100be2f0100c23501003edf4f00cc0f5000c67150001a7d5000b8cb54003ef05400d42f55007a32550048365500363e55000c65550004be550052cc55000a155600c622560050995a00eace5a0032435b009e615b0034ac5b0066eb5b0096f45b0070fa5b003a2e5c0098fc6700a4646800882b6c0010a06c001c096d0058516d0068527900c8617900367679007aa77900f2b479006ab97900dcbb7900aec379009eea790040f17900d4427a0038527a00ea747a00fa7a7a00868d7a00fe977a00d0bd7a0096c97a00e6cd7a006a688b00d89e8b0006c18b003ece8b0032b58c003eb68c00a6b98c00bcee8c00
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -987,9 +987,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: -7962.2173, y: -342.4512, z: -620.301}
+    m_Target: {x: -7238.706, y: -155.87538, z: -85.312035}
     speed: 2
-    m_Value: {x: -7962.2173, y: -342.4512, z: -620.301}
+    m_Value: {x: -7238.706, y: -155.87538, z: -85.312035}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1035,13 +1035,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.479331, y: 0.010751508, z: -0.0056852098, w: -0.8778241}
+    m_Target: {x: 0.23670061, y: -0.25568092, z: 0.06470833, w: 0.9355888}
     speed: 2
-    m_Value: {x: -0.47933096, y: 0.010751508, z: -0.0056852098, w: -0.8778241}
+    m_Value: {x: 0.23539293, y: -0.25676414, z: 0.06465407, w: 0.93513757}
   m_Size:
-    m_Target: 5.3835816
+    m_Target: 13.407942
     speed: 2
-    m_Value: 5.3835816
+    m_Value: 13.407942
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1096,7 +1096,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 545.60004
-    width: 1081.4
+    width: 1039
     height: 237.79999
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1120,8 +1120,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Scenes/Zones/Rail Station (Currently Broken)/Shadow Gen Assets/Rail
-      Canyon Asset Library
+    - Assets/!Framework/Audio/Objects
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1129,19 +1128,18 @@ MonoBehaviour:
     m_ImportLogFlags: 0
     m_FilterByTypeIntersection: 0
   m_ViewMode: 1
-  m_StartGridSize: 64
+  m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Game/Scenes/Zones/Rail Station (Currently Broken)/Shadow Gen Assets/Rail
-    Canyon Asset Library
-  m_LastFoldersGridSize: -1
+  - Assets/!Framework/Audio/Objects
+  m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\GitHub\Bumper-Engine-2\The Flipper Framework
   m_LockTracker:
     m_IsLocked: 1
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 374.2}
-    m_SelectedIDs: c4590100
-    m_LastClickedID: 88516
-    m_ExpandedIDs: 000000003051010000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 159}
+    m_SelectedIDs: 82250e00
+    m_LastClickedID: 927106
+    m_ExpandedIDs: 00000000bc570100c65801000e59010000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1170,7 +1168,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000003051010000ca9a3bffffff7f
+    m_ExpandedIDs: 00000000bc57010000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1196,10 +1194,10 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: b678faff
-    m_LastClickedInstanceID: -362314
+    m_SelectedInstanceIDs: 3a725500
+    m_LastClickedInstanceID: 5599802
     m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: c6230000def9000062f600007c010100
+    m_ExpandedInstanceIDs: c6230000def9000062f600007c010100340d0300
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1225,7 +1223,7 @@ MonoBehaviour:
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
     m_ScrollPosition: {x: 0, y: 0}
-    m_GridSize: 64
+    m_GridSize: 16
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 207
 --- !u!114 &16
@@ -1266,7 +1264,7 @@ MonoBehaviour:
     m_ContainerData: []
     m_OverlaysVisible: 1
   m_SearchFilter:
-    m_NameFilter: 
+    m_NameFilter: pp_
     m_ClassNames: []
     m_AssetLabels: []
     m_AssetBundleNames: []
@@ -1276,26 +1274,26 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/!Framework/Scripts/Objects/Core Objects
+    - Assets/!Framework/Scripts/Objects/Rails
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
-    m_OriginalText: 
+    m_OriginalText: pp_
     m_ImportLogFlags: 0
     m_FilterByTypeIntersection: 0
   m_ViewMode: 1
   m_StartGridSize: 46
   m_LastFolders:
-  - Assets/!Framework/Scripts/Objects/Core Objects
+  - Assets/!Framework/Scripts/Objects/Rails
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\GitHub\Bumper-Engine-2\The Flipper Framework
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 303}
-    m_SelectedIDs: 4c2a0300
-    m_LastClickedID: 207436
-    m_ExpandedIDs: 0000000030510100305201004e2a0300502a030000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 383}
+    m_SelectedIDs: 24590100
+    m_LastClickedID: 88356
+    m_ExpandedIDs: 00000000bc570100c6580100c8580100ce5801000a5901000c5901007020020072200200742002007c2002004e9876005098760000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1324,7 +1322,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000003051010000ca9a3bffffff7f
+    m_ExpandedIDs: 00000000bc57010000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1352,8 +1350,8 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
-    m_ExpandedInstanceIDs: c2e82600947d0300f2890300befb0000dc2501008820010012160100
+    m_HadKeyboardFocusLastEvent: 1
+    m_ExpandedInstanceIDs: c2e82600947d0300f2890300befb0000dc25010088200100121601008cd200007e7f1100f8d20000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1370,7 +1368,7 @@ MonoBehaviour:
       m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_TrimLeadingAndTrailingWhitespace: 0
-      m_ClientGUIView: {fileID: 10}
+      m_ClientGUIView: {fileID: 0}
     m_CreateAssetUtility:
       m_EndAction: {fileID: 0}
       m_InstanceID: 0
@@ -1421,7 +1419,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: -9028
+  m_LastSelectedObjectID: -11636094
 --- !u!114 &18
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1446,7 +1444,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 545.60004
-    width: 979
+    width: 1039
     height: 237.79999
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1534,7 +1532,7 @@ MonoBehaviour:
     - e00: 0.4006032
       e01: 0
       e02: 0
-      e03: 59.829315
+      e03: 59.829346
       e10: 0
       e11: 0.4006032
       e12: 0
@@ -1673,9 +1671,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Physics Debug\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1082.4
+    x: 1040
     y: 73.6
-    width: 452.59998
+    width: 495
     height: 709.8
   m_SerializedDataModeController:
     m_DataMode: 0

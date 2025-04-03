@@ -9,6 +9,16 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Mat_metal_7025_partswall_RC
     second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_darkgray_RC
+    second: {fileID: 2100000, guid: 421146ef5a38e95459b02ee0f5f32b6f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_edge_arrow_RC
+    second: {fileID: 2100000, guid: c21e24231edde97409b38ef1dcadd087, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -93,7 +103,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.035
+    globalScale: 3.5
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

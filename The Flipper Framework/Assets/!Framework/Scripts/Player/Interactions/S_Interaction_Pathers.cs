@@ -163,6 +163,9 @@ public class S_Interaction_Pathers : MonoBehaviour
 			offset = Col.GetComponentInParent<S_PlaceOnSpline>()._mainOffset;
 		}
 
+		//Cannot be set onto the rail already on. That is determined by offset and transform (because some rails share a spline).
+		if (offset == _RailAction._startOffset && Col.gameObject.GetComponentInParent<Spline>().transform == _RailAction._startRail) { return; }
+
 		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, ThisSpline, offset, 3); //Returns the closest point on the rail by position.
 
 		//At higher speeds, it should be easier to get on the rail, so get the distance between player and point, and check if close enough based on speed.
@@ -170,7 +173,8 @@ public class S_Interaction_Pathers : MonoBehaviour
 		maxDistanceNeededBasedOnSpeed /= 13;
 
 		//If rail hopping, movement is set horizontally, so ensure player can't get stuck on the same rail they just left.
-		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail) { maxDistanceNeededBasedOnSpeed = 5f; }
+		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail) { maxDistanceNeededBasedOnSpeed = 4f; }
+
 
 		maxDistanceNeededBasedOnSpeed = Mathf.Pow(Mathf.Clamp(maxDistanceNeededBasedOnSpeed, 2f, 11f), 2);
 		//Compare distance squared, to distance needed depending on speed squared.

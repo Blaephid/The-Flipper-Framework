@@ -5,13 +5,14 @@ using UnityEditor;
 using UnityEngine;
 using static Cinemachine.AxisState;
 
-public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
+public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 {
 	[SerializeField] Animator _Animator;
 
 	[SerializeField, Min(0.1f)]
 	private float _defaultSpeed = 1;
-	[SerializeField] private AnimationCurve _animSpeedByPlayerSpeed = new AnimationCurve (new Keyframe[] {
+	[SerializeField]
+	private AnimationCurve _animSpeedByPlayerSpeed = new AnimationCurve (new Keyframe[] {
 		new Keyframe (0f,1f),
 		new Keyframe (1f,1f) });
 
@@ -21,22 +22,23 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 			if (!gameObject.TryGetComponent(out _Animator)) enabled = false;
 		}
 	}
+
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
-		if (!enabled) { return; }
+		if (!CanBeTriggeredOn(Player)) { return; }
 
 		SetAnimatorSpeed(Player);
+		_isCurrentlyOn = true;
 		_Animator.SetTrigger("TriggerOn");
 
-		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
 
 	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
-		if (!enabled) { return; }
+		if (!CanBeTriggeredOff(Player)) { return; }
 
 		SetAnimatorSpeed(Player);
+		_isCurrentlyOn = false;
 		_Animator.SetTrigger("TriggerOff");
 
-		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 
 	private void SetAnimatorSpeed ( S_PlayerPhysics Player = null ) {
@@ -47,15 +49,16 @@ public class S_Triggered_PlayAnimation : MonoBehaviour, ITriggerable
 		_Animator.speed = (_defaultSpeed * speedModi);
 	}
 
-	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		EditorApplication.delayCall += () =>
-		{
-			if (!_Animator) { return; }
+	public override void ResetToOriginal () {
+		if (!_Animator) { return; }
 
-			_Animator.speed = 50;
-			_Animator.SetTrigger("TriggerOff");
+		_Animator.speed = 50;
+		_Animator.SetTrigger("TriggerOff");
+	}
 
-			S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
-		};
+	public override void EventReturnOnDeath ( object sender, EventArgs e ) {
+
+		_isCurrentlyOn = false;
+		base.EventReturnOnDeath(sender, e);
 	}
 }

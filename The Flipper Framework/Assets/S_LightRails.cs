@@ -1,13 +1,14 @@
 using SplineMesh;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class S_LightRails : MonoBehaviour, ITriggerable
+public class S_LightRails : S_Triggered_Base, ITriggerable
 {
 
-	[SerializeField]
-	private bool _startOnBlue = true;
+	//[SerializeField]
+	//private bool _startOnBlue = true;
 
 	[ColourIfNull(.7f,0,0,1)]
 	[SerializeField] private Spline _BlueRail;
@@ -23,19 +24,7 @@ public class S_LightRails : MonoBehaviour, ITriggerable
 		_BlueRailAddons = _BlueRail.gameObject.GetComponentsInChildren<S_AddOnRail>(true);
 		_RedRailAddons = _RedRail.gameObject.GetComponentsInChildren<S_AddOnRail>(true);
 
-		//SetAddonRailsIfNull(ref _BlueRailAddons, ref _RedRailAddons);
-		//SetAddonRailsIfNull(ref _RedRailAddons, ref _BlueRailAddons);
-
-		if (!_startOnBlue)
-		{
-			SetBlueActive(false);
-			SetExternalConnectedRails(ref _BlueRailAddons, ref _RedRailAddons);
-		}
-		else
-		{
-			SetBlueActive(true);
-			SetExternalConnectedRails(ref _RedRailAddons, ref _BlueRailAddons);
-		}
+		Trigger(false);
 	}
 
 	private void SetAddonRailsIfNull(ref S_AddOnRail[] RailsA, ref S_AddOnRail[] RailsB ) {
@@ -46,15 +35,31 @@ public class S_LightRails : MonoBehaviour, ITriggerable
 		}
 	}
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+		if (!CanBeTriggeredOn(Player)) { return; }
+
 		if(!_BlueRail || !_RedRail) return;
 
-		if (_blueActive)
+		if(Time.time > 4) //In case called by a trigger on start.
+			GetComponent<AudioSource>().Play();
+
+		Trigger(_blueActive);
+	}
+
+	public override void StartTriggeredOn ( S_PlayerPhysics Player = null ) {
+		base.StartTriggeredOn(Player);
+		Trigger(_blueActive );
+	}
+
+	private void Trigger (bool switchToRed) {
+		if (switchToRed)
 		{
+			_isCurrentlyOn = true;
 			SetBlueActive(false);
 			SetExternalConnectedRails(ref _BlueRailAddons, ref _RedRailAddons);
 		}
 		else
 		{
+			_isCurrentlyOn = false;
 			SetBlueActive(true);
 			SetExternalConnectedRails(ref _RedRailAddons, ref _BlueRailAddons);
 		}
@@ -64,6 +69,11 @@ public class S_LightRails : MonoBehaviour, ITriggerable
 		_blueActive = active;
 		_BlueRail.gameObject.SetActive(active);
 		_RedRail.gameObject.SetActive(!active);
+	}
+
+
+	public override void ResetToOriginal () {
+		Trigger(!_isCurrentlyOn);
 	}
 
 	//Takes two arrays of addons, and applies the first next and prev to match what's now being assigned.

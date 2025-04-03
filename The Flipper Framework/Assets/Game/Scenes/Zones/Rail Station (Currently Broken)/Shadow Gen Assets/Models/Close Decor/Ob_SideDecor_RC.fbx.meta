@@ -3,7 +3,42 @@ guid: 96051b19b8193e449976dbf2e4bc9765
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7008_redwall_RC
+    second: {fileID: 2100000, guid: 9506b02738c534742aec227846f66263, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7023_partswall_RC
+    second: {fileID: 2100000, guid: a8792ae9bfb669743916eb22674ac251, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7025_partswall_RC
+    second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7027_stripe_RC
+    second: {fileID: 2100000, guid: ec8684c9f5fd42d4986c47d0fe1a2a1a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_propeller01_RC
+    second: {fileID: 2100000, guid: 0665a8e215c5e9e45b6049cdf86b1249, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_propeller2_RC
+    second: {fileID: 2100000, guid: c793259611383114a95c354d5df08747, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_sidedeco_RC
+    second: {fileID: 2100000, guid: 4d5c3d500df728a418fd4494746cc76e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -88,7 +123,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.02
+    globalScale: 2
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

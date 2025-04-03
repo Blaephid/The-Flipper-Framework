@@ -23,7 +23,7 @@ public class S_Trigger_External : S_Trigger_Base
 	IEnumerator DelayBeforeTrigger () {
 		yield return new WaitForSeconds(1);
 		if (!Application.isPlaying) { yield break; }
-		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn, null);
+		TriggerGivenObjects(TriggerTypes.Start, TriggerObjects._ObjectsToTriggerOn, null);
 	}
 
 	public void OnTriggerEnter ( Collider other ) {
@@ -82,6 +82,8 @@ public class S_Trigger_External : S_Trigger_Base
 					case TriggerTypes.Reset: Trigger.ResetObject(Player); break;
 
 					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(Player); break;
+
+					case TriggerTypes.Start: Trigger.StartTriggeredOn(Player); break;
 				}
 			}
 		}

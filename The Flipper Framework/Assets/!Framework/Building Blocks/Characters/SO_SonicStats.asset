@@ -1446,11 +1446,11 @@ MonoBehaviour:
     fallGravity: {x: 0, y: -1.5, z: 0}
     upGravity: {x: 0, y: -1.45, z: 0}
   RollingStats:
-    rollingDownhillBoost: 1.7
+    rollingDownhillBoost: 1.8
     rollingUphillBoost: 2.4
     rollingStartSpeed: 5
     rollingTurningModifier: 0.8
-    rollingLandingBoost: 1.2
+    rollingLandingBoost: 1.4
     minRollingTime: 0.4
   StartRollingStats:
     rollingDownhillBoost: 1.9
@@ -2362,11 +2362,11 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
   DropChargeStats:
-    chargingSpeed: 110
-    minimunCharge: 40
-    maximunCharge: 150
+    chargingSpeed: 150
+    minimunCharge: 70
+    maximunCharge: 180
     minimumHeightToPerform: 3
-    cameraFallBack: {x: 15, y: 25, z: 0.4}
+    cameraFallBack: {x: 15, y: 25, z: 0.7}
   StartDropChargeStats:
     chargingSpeed: 1.2
     minimunCharge: 40
@@ -2761,7 +2761,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     RailSlopePower: 1.4
     RailUpHillMultiplier: {x: 0.6, y: 1.1}
-    RailDownHillMultiplier: {x: 1, y: 1.4}
+    RailDownHillMultiplier: {x: 1, y: 1.7}
     railDecaySpeed: 0.015
     RailPlayerBrakePower: 0.975
     railBoostDecaySpeed: 0.4

@@ -602,7 +602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67c4c3e3b5ed65641b8552bff7e2f383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isSelected: 0
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -667,7 +667,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
+      propertyPath: _mainScale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
       propertyPath: _offset3d_.x
+      value: -12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _mainOffset.x
       value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
@@ -1041,12 +1051,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.000015258789
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 0.7070451
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
@@ -1056,7 +1066,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0.7071685
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a4cdbde7a05939b48b0f219c15846b26,
         type: 3}
@@ -1128,6 +1138,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcb356fdf950c1c419214fb35209e34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _Renderer: {fileID: 4117748564712071429}
   _MaterialSwapping:
   - _materialIndex: 4
@@ -1145,6 +1164,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8831c4ec4237e9042bb3f321f65300ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _Animator: {fileID: 6971690779742092823}
   _defaultSpeed: 1
   _animSpeedByPlayerSpeed:
@@ -1185,7 +1213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Parent: {fileID: 1421389822706431993}
   _currentOffsetSet: {x: 0, y: 0.10003662, z: 0}
-  _currentEulerOffsetSet: {x: 0, y: 0, z: 0}
+  _currentEulerOffsetSet: {x: 0, y: 0.01, z: 0}
   _followInPlay: 0
   _RememberParent: {fileID: 1421389822706431993}
   resetOffsetButton: 0
@@ -1458,7 +1486,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
+      propertyPath: _mainScale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
       propertyPath: _offset3d_.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _mainOffset.x
       value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 1172236659213358101, guid: 3d641b812358c084184cd679f5898ae7,
@@ -4193,7 +4231,7 @@ PrefabInstance:
     - target: {fileID: 6064692439840920647, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _isSelected
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6064692439840920647, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
@@ -4524,6 +4562,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1198766729554888051}
+    - targetCorrespondingSourceObject: {fileID: 3451855951069640688, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6777900369378349503}
   m_SourcePrefab: {fileID: 100100000, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9, type: 3}
 --- !u!4 &5401483033074638601 stripped
 Transform:
@@ -4575,7 +4617,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Parent: {fileID: 0}
   _currentOffsetSet: {x: 0, y: 0.1, z: 0}
-  _currentEulerOffsetSet: {x: 0, y: 0, z: 0}
+  _currentEulerOffsetSet: {x: 0, y: 0.01, z: 0}
   _followInPlay: 0
   _RememberParent: {fileID: 0}
   resetOffsetButton: 0
@@ -4592,9 +4634,115 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90fd25d778984bf488bee1f9e4eb732a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startOnBlue: 1
+  _isSelected: 0
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _BlueRail: {fileID: 8236595248045593740}
   _RedRail: {fileID: 6545313735885767098}
+--- !u!82 &6777900369378349503
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8236595248662719090}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
+    type: 2}
+  m_audioClip: {fileID: 8300000, guid: 22034b09bb4c90f40afe56f242ca9dc1, type: 3}
+  m_Resource: {fileID: 8300000, guid: 22034b09bb4c90f40afe56f242ca9dc1, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 91
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 1
+  BypassEffects: 1
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!4 &8236595248662719091 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3451855951069640689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
@@ -4810,7 +4958,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1878776609ce24ba77fa9e85cbe4cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isSelected: 0
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -4819,6 +4967,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  generated: {fileID: 3235136880605986516}
   timeToLerp: 0.2
 --- !u!114 &4469959519384068169
 MonoBehaviour:
@@ -4832,6 +4981,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcb356fdf950c1c419214fb35209e34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _Renderer: {fileID: 7464640923280622379}
   _MaterialSwapping:
   - _materialIndex: 3

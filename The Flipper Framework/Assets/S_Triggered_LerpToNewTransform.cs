@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class S_Triggered_LerpToNewTransform : S_Vis_Base, ITriggerable
+public class S_Triggered_LerpToNewTransform : S_Triggered_Base, ITriggerable
 {
-	private GameObject generated;
+	[HideInInspector, SerializeField] GameObject generated;
 
 	private TransformStructData TransformA;
 	private TransformStructData TransformB;
@@ -26,9 +26,11 @@ public class S_Triggered_LerpToNewTransform : S_Vis_Base, ITriggerable
 		public Vector3 worldScale;
 	}
 
+#if UNITY_EDITOR
 	public S_Triggered_LerpToNewTransform () {
 		_hasVisualisationScripted = true;
 	}
+#endif
 
 	private void Start () {
 		if (!generated) { enabled = false; return; }
@@ -75,8 +77,11 @@ public class S_Triggered_LerpToNewTransform : S_Vis_Base, ITriggerable
 	}
 
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+		if(!CanBeTriggeredOn(Player)) return;
+
 		_isLerping = true;
 
+		_isCurrentlyOn = _currentlyTransformA;
 		GoalTransform = _currentlyTransformA ? TransformB : TransformA;
 		FromTransform = _currentlyTransformA ? TransformA : TransformB;
 
@@ -84,6 +89,12 @@ public class S_Triggered_LerpToNewTransform : S_Vis_Base, ITriggerable
 		_currentlyTransformA = !_currentlyTransformA;
 		_currentLerp = timeToLerp;
 	}
+
+	public override void ResetToOriginal () {
+		TriggerObjectOn(null);
+		_currentLerp = 0; //Makes switch instant.
+	}
+
 
 
 #if UNITY_EDITOR
