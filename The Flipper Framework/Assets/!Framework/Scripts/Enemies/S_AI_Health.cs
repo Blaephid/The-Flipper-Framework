@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class S_AI_Health : MonoBehaviour, IHealthSystem
 {
@@ -24,6 +25,11 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 			{
 				SpawnReference.RestartSpawner();
 			}
+			else
+			{
+				S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+			}
+
 			GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
 
 			if (_willDestroy)
@@ -34,6 +40,11 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 		}
 		else
 			return false;
+	}
+
+	void EventReturnOnDeath ( object sender, EventArgs e ) {
+		_currentHealth = _maxHealth;
+		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 
 }

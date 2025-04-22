@@ -27,6 +27,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	[Header("Start Rails")]
 	public Spline _StartSpline;
 	public S_AddOnRail _StartingConnectedRails;
+	public Vector3 _startOffset;
 
 	[Header("Type")]
 	[DrawHorizontalWithOthers(new string[]{"_armouredTrain"})]
@@ -66,11 +67,12 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		ResetRigidBody();
 
 		if (!_StartSpline) { return; }
-		_startPosition = transform.position;
 
 		SetSplineDetails();
 
 		PlaceOnSplineToStart();
+		_startPosition = transform.position;
+		_RF._setOffSet = -_startOffset;
 	}
 
 	private void Update () {
@@ -90,6 +92,10 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		if (_RF._isRailLost)
 			LoseRail();
+	}
+
+	private void OnDestroy () {
+		Debug.Log("Killed itself lmao");
 	}
 
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
@@ -301,7 +307,9 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		_RF._upOffsetRail_ = _railUpOffset;
 
-		transform.position = _RF._sampleLocation;
+		Vector3 thisOffset = _RF._sampleRotation * _startOffset;
+
+		transform.position = _RF._sampleLocation + thisOffset;
 		transform.rotation = Quaternion.LookRotation(_RF._sampleForwards, _RF._sampleUpwards);
 		AlignCars();
 	}
@@ -333,7 +341,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		if(gameObject == null) { return; }
+		if(!gameObject) { return; }
 		gameObject.SetActive(true);
 
 		TriggerObjectOff();

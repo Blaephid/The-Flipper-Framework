@@ -17,7 +17,7 @@ public class S_AddOnRail : MonoBehaviour
 	public bool SetValues = false;
 
 	public S_AddOnRail[] AddThis = new S_AddOnRail[0];
-	public S_AddOnRail[] AddBehindThese = new S_AddOnRail[0];
+	public S_AddOnRail[] AddThisBehind = new S_AddOnRail[0];
 
 	[Header("Main Rails")]
 	public S_AddOnRail NextRail;
@@ -83,38 +83,35 @@ public class S_AddOnRail : MonoBehaviour
 	}
 
 	public void Place () {
+
 		_selfOffset = new Vector3(GetComponent<S_PlaceOnSpline>()._mainOffset.x, 0, 0);
 
-		if (AddThis.Length > 0)
+		for (int i = 0 ; i < AddThis.Length ; i++)
 		{
-			for (int i = 0 ; i < AddThis.Length ; i++)
-			{
-				S_AddOnRail rail = AddThis[i];
-				if (!rail) { continue; }
+			S_AddOnRail rail = AddThis[i];
+			if (!rail) { continue; }
 
-				Spline thisSpline = GetComponentInParent<Spline>();
-				Spline otherSpline = rail.GetComponentInParent<Spline>();
+			Spline thisSpline = GetComponentInParent<Spline>();
+			Spline otherSpline = rail.GetComponentInParent<Spline>();
 
-				if (!otherSpline) { continue; }
+			if (!otherSpline || !thisSpline) { continue; }
 
-				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
+			CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
+			SetTransforms(thisSpline, otherSpline, 0, thisSpline.nodes.Count - 1);
+		}
 
-				SetTransforms(thisSpline, otherSpline, 0, thisSpline.nodes.Count - 1);
-			}
+		for (int i = 0 ; i < AddThisBehind.Length ; i++)
+		{
 
-			for (int i = 0 ; i < AddBehindThese.Length ; i++)
-			{
-				S_AddOnRail rail = AddBehindThese[i];
-				Spline thisSpline = GetComponentInParent<Spline>();
-				Spline otherSpline = rail.GetComponentInParent<Spline>();
+			S_AddOnRail rail = AddThisBehind[i];
+			Spline thisSpline = GetComponentInParent<Spline>();
+			Spline otherSpline = rail.GetComponentInParent<Spline>();
 
-				if (!otherSpline) { continue; }
+			if (!otherSpline || !thisSpline) { continue; }
 
-				CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
+			CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
 
-				SetTransforms(thisSpline, otherSpline, otherSpline.nodes.Count - 1, 0);
-			}
-
+			SetTransforms(thisSpline, otherSpline, otherSpline.nodes.Count - 1, 0);
 		}
 
 		GetPositions();
@@ -122,8 +119,9 @@ public class S_AddOnRail : MonoBehaviour
 		return;
 
 		void SetTransforms ( Spline thisSpline, Spline otherSpline, int node1, int node2 ) {
-			otherSpline.transform.parent.position = thisSpline.gameObject.transform.parent.position;
-			otherSpline.gameObject.transform.localPosition = Vector3.zero;
+			otherSpline.transform.position = thisSpline.transform.position;
+			otherSpline.transform.rotation = thisSpline.gameObject.transform.rotation;
+			//otherSpline.gameObject.transform.localPosition = Vector3.zero;
 
 			otherSpline.nodes[node1].Position = thisSpline.nodes[node2].Position;
 			otherSpline.nodes[node1].Direction = thisSpline.nodes[node2].Direction;
@@ -150,7 +148,7 @@ public class S_AddOnRail : MonoBehaviour
 		if (PrevRail)
 		{
 			Spline otherSpline = PrevRail.GetComponentInParent<Spline>();
-			if(!otherSpline) { return; }
+			if (!otherSpline) { return; }
 			_prevPos = GetPositionFromSplineData(otherSpline, _selfOffset, otherSpline.Length - 10);
 		}
 	}
@@ -186,7 +184,7 @@ public class S_AddOnRail : MonoBehaviour
 
 		return;
 
-		void DrawBothCubesAt(Vector3? position ) {
+		void DrawBothCubesAt ( Vector3? position ) {
 			Gizmos.DrawWireCube(position.Value, Vector3.one * 9);
 			Gizmos.DrawWireCube(position.Value, Vector3.one * 6);
 		}

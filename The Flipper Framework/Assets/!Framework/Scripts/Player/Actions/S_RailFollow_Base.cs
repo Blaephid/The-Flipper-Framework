@@ -38,6 +38,7 @@ public class S_RailFollow_Base : MonoBehaviour
 	[HideInInspector] public Vector3               _sampleRight;
 	[HideInInspector] public Vector3               _sampleLocation;
 	[HideInInspector] public Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
+	[HideInInspector] public Quaternion             _sampleRotation; 
 
 	[HideInInspector] public float       _grindingSpeed;     //Set by action pathSpeeds every frame. Used to check movement along rail.
 
@@ -117,6 +118,7 @@ public class S_RailFollow_Base : MonoBehaviour
 		_sampleUpwards = _sampleTransforms.upwards;
 		_sampleRight = _sampleTransforms.right;
 		_sampleLocation = _sampleTransforms.location;
+		_sampleRotation = _sampleTransforms.rotation;
 	}
 
 	//Physics
@@ -129,7 +131,7 @@ public class S_RailFollow_Base : MonoBehaviour
 		{
 			//Place character in world space on point in rail
 			case S_Interaction_Pathers.PathTypes.rail:
-				Vector3 relativeOffset = _RailTransform.rotation * _Sample.Rotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
+				Vector3 relativeOffset = _sampleRotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
 
 				//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
 				Vector3 newPos = _sampleLocation;
@@ -218,7 +220,7 @@ public class S_RailFollow_Base : MonoBehaviour
 			Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(thisSpline.transform, splineSample);
 
 			//Place on spline relative to object rotation and offset.
-			Vector3 checkPos = sampleTransform.location + (splineSample.Rotation * offset);
+			Vector3 checkPos = sampleTransform.location + (sampleTransform.rotation * offset);
 
 			//The distance between the point at distance n along the spline, and the current collider position.
 			float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(checkPos,colliderPosition);

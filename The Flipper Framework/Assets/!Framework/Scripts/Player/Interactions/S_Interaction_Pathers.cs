@@ -175,7 +175,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 		//If rail hopping, movement is set horizontally, so ensure player can't get stuck on the same rail they just left.
 		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail) { maxDistanceNeededBasedOnSpeed = 4f; }
 
-
 		maxDistanceNeededBasedOnSpeed = Mathf.Pow(Mathf.Clamp(maxDistanceNeededBasedOnSpeed, 2f, 11f), 2);
 		//Compare distance squared, to distance needed depending on speed squared.
 		if (rangeAndDistanceSquared.y < maxDistanceNeededBasedOnSpeed)
