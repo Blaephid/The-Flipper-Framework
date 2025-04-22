@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 using System.Linq;
 using SplineMesh;
-using UnityEditor;
+using System.Collections.Generic;
 //using Luminosity.IO;
 
 
@@ -20,6 +20,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	[HideInInspector,SerializeField]
 	private S_RailFollow_Base _RF;
 	private Rigidbody _RB;
+	[SerializeField, ColourIfNull(0.8f,0.65f,0.65f,1)] private Animator _Animator;
+
 	public GameObject[] _Models;
 	public Vector3[] _modelStartRotations;
 	public float _disanceBetweenModels = 30;
@@ -45,15 +47,20 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	[SerializeField] AnimationCurve _timeToFullSpeed_ = new AnimationCurve(new Keyframe[] { new Keyframe (0,0), new Keyframe(1,1) });
 	[SerializeField] AnimationCurve _FollowByDistance_;
 	[SerializeField] AnimationCurve _FollowBySpeedDif_;
-	[SerializeField] float _followSpeed_ = 0.5f;
+	[SerializeField] float _followLerpSpeed_ = 0.3f;
+	[SerializeField] float _distanceAheadOfPlayerToAimFor;
 	//[SerializeField] float _slopePower_ = 2.5f;
 
 	bool _isActive = false;
-	[HideInInspector] public S_Action05_Rail playerRail;
+	[HideInInspector] public S_Action05_Rail _PlayerRailAction;
+	private S_RailFollow_Base _PlayerRF;
 	[HideInInspector] public S_ActionManager _PlayerActions;
+
+	private S_PlayerVelocity _PlayerVel;
 
 	float _playerDistance;
 	float _playerSpeed;
+	List<float> _listOfPlayerSpeeds = new List<float> {20,20,20,20,20,20,20};
 	float _timeGrinding;
 
 	Vector3 _startPosition;
@@ -64,6 +71,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private void Start () {
 		_RF = GetComponent<S_RailFollow_Base>();
 		_RB = GetComponent<Rigidbody>();
+
 		ResetRigidBody();
 
 		if (!_StartSpline) { return; }
@@ -95,7 +103,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	private void OnDestroy () {
-		Debug.Log("Killed itself lmao");
+		//Debug.Log("Killed itself lmao");
 	}
 
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
@@ -105,7 +113,11 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		if (!_isActive) { return; }
 
 		_RF._grindingSpeed = StartSpeed * _timeToFullSpeed_.Evaluate(0);
+
+		_PlayerVel = Player._PlayerVelocity;
 		_PlayerActions = Player.GetComponent<S_CharacterTools>()._ActionManager;
+		_PlayerRailAction = _PlayerActions.GetComponentInChildren<S_Action05_Rail>();
+		if (_PlayerRailAction) _PlayerRF = _PlayerRailAction._RF;
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
@@ -119,6 +131,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private void SetIsActive ( bool set ) {
 		_isActive = set;
 		_timeGrinding = 0;
+
+		if (set) { SettingAnimationTrigger("Start"); }
 
 		if (!_RF || !_RF._PathSpline) { _isActive = false; }
 	}
@@ -201,21 +215,19 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private void HandleGrindSpeed () {
 		_timeGrinding += Time.deltaTime;
 
+		//If the curve has no nodes.
 		if (_timeToFullSpeed_.length == 0) { return; }
 
-		if (_timeGrinding != _timeToFullSpeed_[_timeToFullSpeed_.length - 1].time)
+		//Getting to full speed from start. Compare time grinding to last node.
+		if (_timeGrinding < _timeToFullSpeed_[_timeToFullSpeed_.length - 1].time)
 		{
 			_RF._grindingSpeed = StartSpeed * _timeToFullSpeed_.Evaluate(_timeGrinding);
 			_timeGrinding = Mathf.Min(_timeToFullSpeed_[_timeToFullSpeed_.length - 1].time, _timeGrinding);
 		}
+		//Normal speed control
 		else
 		{
-			//Speed Changes
-			if (_followPlayer)
-			{
-				TrackPlayer();
-			}
-
+			TrackPlayer();
 			SlopePhysics();
 		}
 	}
@@ -223,38 +235,70 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	void TrackPlayer () {
 		if (!_followPlayer) return;
 
-		if (playerRail._Rail_int._PathSpline == _RF._PathSpline)
+		_listOfPlayerSpeeds.Insert(0, _PlayerVel._horizontalSpeedMagnitude);
+		_listOfPlayerSpeeds.RemoveAt(_listOfPlayerSpeeds.Count - 1);
+		_playerSpeed = _listOfPlayerSpeeds[_listOfPlayerSpeeds.Count-1]; //The player speed to lerp to is delayed by x frames.
+
+		float goalSpeed = _playerSpeed;
+
+		float lerpSpeed = _followLerpSpeed_;
+
+		//If player is also grinding.
+		if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected()))
 		{
-			if (_isBackwards == playerRail._RF._isGoingBackwards)
+			float modi = _FollowByDistance_.Evaluate(_playerDistance);
+			lerpSpeed *= modi;
+			goalSpeed = _playerDistance < 0 ? goalSpeed / modi : goalSpeed * modi;
+		}
+		else
+		{
+			lerpSpeed *= _FollowBySpeedDif_.Evaluate(Mathf.Abs(_PlayerRF._grindingSpeed - _playerSpeed));
+		}
+
+		Debug.Log(lerpSpeed + " To " + goalSpeed);
+
+		_RF._grindingSpeed = Mathf.Lerp(_RF._grindingSpeed, goalSpeed, lerpSpeed);
+
+		return;
+
+		bool OnSameRailOrConnected () {
+			bool onSameRailOrConnected = _PlayerRF._PathSpline == _RF._PathSpline;
+			float thisPointOnSplines = _RF._pointOnSpline;
+			float playerPointOnSplines = _PlayerRF._pointOnSpline;
+
+			//Player on enemy's next rail
+			if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.PrevRail)
 			{
-				if (_isBackwards)
-				{
-					_playerDistance = _RF._pointOnSpline - playerRail._RF._pointOnSpline;
-
-				}
-				else
-				{
-					_playerDistance = playerRail._RF._pointOnSpline - _RF._pointOnSpline;
-				}
-
-				_playerSpeed = (_PlayerActions._listOfSpeedOnPaths[0] - _RF._grindingSpeed) / playerRail._railmaxSpeed_;
-				float changeSpeed = _followSpeed_ * _FollowBySpeedDif_.Evaluate(Mathf.Abs(_playerSpeed));
-
-
-				if (_playerDistance > 0)
-				{
-					if (_RF._grindingSpeed < _PlayerActions._listOfSpeedOnPaths[0] - 3)
-						_RF._grindingSpeed += changeSpeed;
-
-					_RF._grindingSpeed += _followSpeed_ * _FollowByDistance_.Evaluate(Mathf.Abs(_playerDistance));
-				}
-
-				else
-				{
-
-					_RF._grindingSpeed = Mathf.MoveTowards(_RF._grindingSpeed, _PlayerActions._listOfSpeedOnPaths[0] - 2, changeSpeed);
-				}
+				onSameRailOrConnected = _PlayerRF._ConnectedRails.PrevRail._Spline == _RF._PathSpline;
+				//Player spline position has enemy's spline added on, to treat them as one continue length.
+				if (onSameRailOrConnected) { playerPointOnSplines += _RF._PathSpline.Length; }
 			}
+			//Player on enemy's previous rail
+			if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.NextRail)
+			{
+				onSameRailOrConnected = _PlayerRF._ConnectedRails.NextRail._Spline == _RF._PathSpline;
+				//Player spline position treated as how far from the enemy's rail (E.G. -200)
+				if (onSameRailOrConnected) playerPointOnSplines = playerPointOnSplines = _PlayerRF._pointOnSpline - _PlayerRF._PathSpline.Length;
+			}
+			//Share next rail
+			if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.NextRail && _RF._ConnectedRails.NextRail)
+			{
+				onSameRailOrConnected = _PlayerRF._ConnectedRails.NextRail._Spline == _RF._ConnectedRails.NextRail._Spline;
+				//Both spline positions treated as how far from the upcoming rail (E.G. -100 & -150)
+				if (onSameRailOrConnected) { thisPointOnSplines = _RF._pointOnSpline - _RF._PathSpline.Length; playerPointOnSplines = _PlayerRF._pointOnSpline - _PlayerRF._PathSpline.Length; }
+			}
+			//Share Prev Rail
+			if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.PrevRail && _RF._ConnectedRails.PrevRail)
+			{
+				onSameRailOrConnected = _PlayerRF._ConnectedRails.PrevRail._Spline == _RF._ConnectedRails.PrevRail._Spline;
+			}
+
+			if (onSameRailOrConnected)
+			{
+				//How far ahead or behind the player is considering the enemy's direction.
+				_playerDistance = (thisPointOnSplines - (playerPointOnSplines + _PlayerRF._movingDirection * _distanceAheadOfPlayerToAimFor)) * -_RF._movingDirection;
+			}
+			return onSameRailOrConnected;
 		}
 	}
 
@@ -271,6 +315,15 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	///	SETTING VALUES	
 	/// 
 	#region Setting Values
+
+	private void SettingAnimationTrigger ( string trigger ) {
+		if (!_rhino || !_Animator) { return; }
+
+		_Animator.SetTrigger(trigger);
+
+		if (trigger == "Start") { _Animator.SetBool("IsActive", true); }
+		else if (trigger == "Stop") { _Animator.SetBool("IsActive", false); }
+	}
 
 	private void SetSplineDetails () {
 		if (!_StartSpline) { return; }
@@ -341,7 +394,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		if(!gameObject) { return; }
+		if (!gameObject) { return; }
 		gameObject.SetActive(true);
 
 		TriggerObjectOff();

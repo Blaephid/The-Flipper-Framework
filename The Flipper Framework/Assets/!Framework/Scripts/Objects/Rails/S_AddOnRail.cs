@@ -8,6 +8,9 @@ using UnityEditor;
 [RequireComponent(typeof(S_PlaceOnSpline))]
 public class S_AddOnRail : MonoBehaviour
 {
+	[CustomReadOnly]
+	public Spline _Spline;
+
 	[Header("Updating in Editor")]
 	[AsButton("Update", "Place", null)]
 	public bool UpdateAll = false;
@@ -29,8 +32,6 @@ public class S_AddOnRail : MonoBehaviour
 	Vector3 _selfOffset, _otherOffset;
 	[SerializeField, HideInInspector]
 	Vector3? _startPos, _endPos, _nextPos, _prevPos;
-
-
 
 	private void Start () {
 		useNextRail = NextRail;
@@ -83,6 +84,7 @@ public class S_AddOnRail : MonoBehaviour
 	}
 
 	public void Place () {
+		_Spline = GetComponentInParent<Spline>();
 
 		_selfOffset = new Vector3(GetComponent<S_PlaceOnSpline>()._mainOffset.x, 0, 0);
 
@@ -91,27 +93,25 @@ public class S_AddOnRail : MonoBehaviour
 			S_AddOnRail rail = AddThis[i];
 			if (!rail) { continue; }
 
-			Spline thisSpline = GetComponentInParent<Spline>();
 			Spline otherSpline = rail.GetComponentInParent<Spline>();
 
-			if (!otherSpline || !thisSpline) { continue; }
+			if (!otherSpline || !_Spline) { continue; }
 
-			CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
-			SetTransforms(thisSpline, otherSpline, 0, thisSpline.nodes.Count - 1);
+			CurveSample sample = _Spline.GetSampleAtDistance(_Spline.Length);
+			SetTransforms(_Spline, otherSpline, 0, _Spline.nodes.Count - 1);
 		}
 
 		for (int i = 0 ; i < AddThisBehind.Length ; i++)
 		{
 
 			S_AddOnRail rail = AddThisBehind[i];
-			Spline thisSpline = GetComponentInParent<Spline>();
 			Spline otherSpline = rail.GetComponentInParent<Spline>();
 
-			if (!otherSpline || !thisSpline) { continue; }
+			if (!otherSpline || !_Spline) { continue; }
 
-			CurveSample sample = thisSpline.GetSampleAtDistance(thisSpline.Length);
+			CurveSample sample = _Spline.GetSampleAtDistance(_Spline.Length);
 
-			SetTransforms(thisSpline, otherSpline, otherSpline.nodes.Count - 1, 0);
+			SetTransforms(_Spline, otherSpline, otherSpline.nodes.Count - 1, 0);
 		}
 
 		GetPositions();
