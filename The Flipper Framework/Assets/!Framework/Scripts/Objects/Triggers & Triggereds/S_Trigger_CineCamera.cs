@@ -1,0 +1,233 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Cinemachine;
+using System;
+using UnityEditor;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+
+public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
+{
+
+	//Stats
+	[Header("Main")]
+	[Tooltip("If true then the cinematic camera will start each scene looking towards the trigger. Helps align it, especially if using LookAtTarget.")]
+	public bool _defaultCameraToFaceTrigger = true;
+
+	[Header("Attached Elements")]
+	[Tooltip("Controls the properties of the cinemachine component, by setting it to follow or look at the player.")]
+	public CinemachineVirtualCamera         _CinematicCamComponent;
+	[Tooltip("The gameObject that will be set to active or inactive. Likely the same as the above.")]
+	public GameObject                       _CinematicCamObject;
+	private CinemachineBrain _MainCameraBrain;
+
+	[Header("Works with these actions")]
+	[Tooltip("If true, the camera will deactivate if the player enters an action not in the above list.")]
+	public bool                             _deactivateCameraIfActionChanges = false;
+	[Tooltip("Waits until the player is in one of the following actions before triggering the camera. Allow more control, as large triggers can sometimes be cumbersome.")]
+	public S_S_ActionHandling.PrimaryPlayerStates[]    _ListOfActionsThisWorksOn;
+
+	[Header ("Starting & Ending")]
+	[DrawHorizontalWithOthers(new string[] {"_startOffset"}, new float[] {0.8f, 1f })]
+	[Tooltip("If true, when activated the cinematic camera will be at the point the main camera already is")]
+	public bool         _startFromCurrentCam;
+	[HideInInspector,Tooltip("Adds this to the position of wherever the camera is on start (position resets on deactivate)")]
+	public Vector3      _startOffset;
+	[DrawHorizontalWithOthers(new string[] {"_framesOut"})]
+	[SerializeField] private int _framesIn;
+	[HideInInspector]
+	[SerializeField] private int _framesOut;
+
+	public float        _delayBeforeDeactivating = 0;
+
+	[Header("Effects on/with Player")]
+	[Tooltip("See Cinemachine Virtual Camera component. If this is true, the players transform becomes what the virtual camera looks at.")]
+	[DrawHorizontalWithOthers(new string[] {"followPlayer"})]
+	public bool lookPlayer;
+	[Tooltip("See Cinemachine Virtual Camera component. If this is true, the players transform becomes what the virtual camera follows, using its own parameters.")]
+	[HideInInspector]
+	public bool followPlayer;
+
+	[Header("On End")]
+	[Tooltip("If true, when the main camera returns to the player, it will be behind them.")]
+	public bool         _willSetCameraBehind = true;
+	public int          _lockPlayerInputFor = 5;
+	public S_GeneralEnums.LockControlDirection _LockInputTo_;
+
+	//Private
+	private Vector3 cameraOriginalPosition;
+	private Quaternion cameraOriginalRotation;
+
+	private bool _isCurrentlyActive = false;
+
+	//Player
+	private S_CharacterTools      _PlayerTools;
+	private S_ActionManager       _PlayerActions;
+	private S_Handler_Camera      _PlayerCameraHandler;
+	private S_HedgeCamera		_HedgeCamera;
+
+	// Start is called before the first frame update
+
+	void Awake () {
+		FaceCinematicCameraIn();
+
+		//Ensure cinematic camera isn't on and save its starting transform.
+		cameraOriginalPosition = _CinematicCamObject.transform.position;
+		cameraOriginalRotation = _CinematicCamObject.transform.rotation;
+		_CinematicCamObject.SetActive(false);
+	}
+
+#if UNITY_EDITOR
+	public override void OnValidate () {
+		base.OnValidate();
+	}
+
+	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
+		base.DrawAdditionalGizmos(selected, colour);
+		if (TriggerObjects._hasTrigger)
+		{
+			using (new Handles.DrawingScope(colour))
+			{
+				S_S_Drawing.DrawArrowHandle(colour, _CinematicCamObject.transform, 3f, false, Vector3.forward, _CinematicCamObject.transform.position);
+				Handles.DrawLine(transform.position, _CinematicCamObject.transform.position, 0.5f);
+			}
+		}
+
+		FaceCinematicCameraIn();
+	}
+#endif
+
+	private void FaceCinematicCameraIn () {
+		if (TriggerObjects._hasTrigger && _defaultCameraToFaceTrigger && !Application.isPlaying)
+		{
+			Vector3 direction = (transform.position - _CinematicCamObject.transform.position).normalized;
+			if(direction != Vector3.zero) _CinematicCamObject.transform.forward = direction;
+
+			if(followPlayer) { _CinematicCamComponent.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = _CinematicCamObject.transform.position - transform.position; }
+		}
+	}
+
+	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+
+		//Set this camera up to detect player. Cameras are activated in Trigger Stay so it waits for the player to be in the right actions.
+		_PlayerTools = Player.GetComponentInParent<S_CharacterTools>();
+		_MainCameraBrain = _PlayerTools.MainCamera;
+		_PlayerActions = _PlayerTools._ActionManager;
+		_PlayerCameraHandler = _PlayerTools.CamHandler;
+		_HedgeCamera = _PlayerTools.CamHandler._HedgeCam;
+	}
+
+	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
+		if (_isCurrentlyActive)
+		{
+			StartCoroutine(DeactivateCam());
+		}
+	}
+
+	public void TriggerObjectEachFrame ( S_PlayerPhysics Player = null ) {
+		//Only check if the player has already been saved to check its actions.
+		if (_PlayerActions != null)
+		{
+			//Check if players current action is one this cinematic is set to work with.
+			for (int i = 0 ; i < _ListOfActionsThisWorksOn.Length ; i++)
+			{
+				if (_PlayerActions._whatCurrentAction == _ListOfActionsThisWorksOn[i])
+					ActivateCam();
+			}
+
+			if (_deactivateCameraIfActionChanges)
+			{
+				StartCoroutine(DeactivateCam());
+			}
+		}
+	}
+
+	public void ActivateCam () {
+
+		if (_isCurrentlyActive) return;
+
+		_isCurrentlyActive = true;
+
+		_CinematicCamObject.transform.position = cameraOriginalPosition;
+		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
+
+		//If the cinematic is supposed to start from the player cameras current position.
+		if (_startFromCurrentCam)
+		{
+			_CinematicCamObject.transform.position = _PlayerCameraHandler._HedgeCam.transform.position;
+			_CinematicCamObject.transform.rotation = _PlayerCameraHandler._HedgeCam.transform.rotation;
+		}
+		
+
+		//Apply requirements onto cinemachine
+		if (lookPlayer)
+			_CinematicCamComponent.LookAt = _PlayerTools.transform;
+
+		if (followPlayer)
+			_CinematicCamComponent.Follow = _PlayerTools.transform;
+
+		_CinematicCamObject.transform.position += _startOffset;
+
+		SetBlend(_framesIn);
+
+		S_S_Logic.AddLockToList(ref _HedgeCamera._locksForCameraFallBack, gameObject.name);
+		_CinematicCamObject.SetActive(true); //Blending is handled by the blend object attached to the main camera cinemachine brain.
+
+		S_Manager_LevelProgress.OnReset += ReturnOnDeath; //Ensures camera will end if player dies when its active.
+	}
+
+	private void SetBlend(float frames ) {
+
+		if (frames != 0)
+		{
+			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, frames / 50f);
+		}
+		else
+			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0);
+	}
+
+	public void ReturnOnDeath ( object sender, EventArgs e ) {
+		SetBlend(0);
+		ResetCamera();
+	}
+
+	public void ResetCamera() {
+		//Deactivate
+		_isCurrentlyActive = false;
+		_PlayerActions = null;
+		_CinematicCamObject.SetActive(false); //Blending is handled by the blend object attached to the main camera cinemachine brain.
+
+		_CinematicCamObject.transform.position = cameraOriginalPosition;
+		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
+
+		S_Manager_LevelProgress.OnReset -= ReturnOnDeath; //Ensures camera will end if player dies when its active.
+	}
+
+	public IEnumerator DeactivateCam () {
+		if (!_isCurrentlyActive) { yield break; }
+
+		//Wait a number of frames before deactivating cinema camera.
+		for (int i = 0 ; i < _delayBeforeDeactivating ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+
+		//Player
+		if (_willSetCameraBehind)
+			_PlayerCameraHandler._HedgeCam.SetBehind(0);
+		if (_lockPlayerInputFor > 0)
+			_PlayerTools.GetComponent<S_PlayerInput>().LockInputForAWhile(_lockPlayerInputFor, true, Vector3.zero, _LockInputTo_);
+
+		SetBlend(_framesOut);
+
+		_CinematicCamObject.SetActive(false); //Blending is handled by the blend object attached to the main camera cinemachine brain.
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+		ResetCamera();
+
+		yield return new WaitForSeconds(_framesOut / 60);
+		S_S_Logic.RemoveLockFromList(ref _HedgeCamera._locksForCameraFallBack, gameObject.name);
+	}
+}
