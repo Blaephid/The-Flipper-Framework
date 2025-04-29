@@ -60,7 +60,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	float _playerDistance;
 	float _playerSpeed;
-	List<float> _listOfPlayerSpeeds = new List<float> {20,20,20,20,20,20,20};
+	List<float> _listOfPlayerSpeeds = new List<float> {20,20,20,20,20,20,20,20,20};
 	float _timeGrinding;
 
 	Vector3 _startPosition;
@@ -103,7 +103,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	private void OnDestroy () {
-		//Debug.Log("Killed itself lmao");
+		Debug.Log("Killed itself lmao");
 	}
 
 	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
@@ -240,7 +240,6 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_playerSpeed = _listOfPlayerSpeeds[_listOfPlayerSpeeds.Count-1]; //The player speed to lerp to is delayed by x frames.
 
 		float goalSpeed = _playerSpeed;
-
 		float lerpSpeed = _followLerpSpeed_;
 
 		//If player is also grinding.
@@ -248,14 +247,19 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		{
 			float modi = _FollowByDistance_.Evaluate(_playerDistance);
 			lerpSpeed *= modi;
-			goalSpeed = _playerDistance < 0 ? goalSpeed / modi : goalSpeed * modi;
+			goalSpeed = _playerDistance < 0 ? (goalSpeed -2) / modi : goalSpeed * modi; // If player is behind, decrease goal speed, if ahead, increase goal speed.
+			Debug.Log("The goal speed is  " + goalSpeed);
+			Debug.Log("The player's speed is  " + _playerSpeed);
+		}
+		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing) //If player is homing, slow down to allow the hit to be made.
+		{
+			goalSpeed = _RF._grindingSpeed * 0.9f;
+			lerpSpeed /= 2;
 		}
 		else
 		{
-			lerpSpeed *= _FollowBySpeedDif_.Evaluate(Mathf.Abs(_PlayerRF._grindingSpeed - _playerSpeed));
+			lerpSpeed *= _FollowBySpeedDif_.Evaluate(Mathf.Abs(_RF._grindingSpeed - _playerSpeed));
 		}
-
-		Debug.Log(lerpSpeed + " To " + goalSpeed);
 
 		_RF._grindingSpeed = Mathf.Lerp(_RF._grindingSpeed, goalSpeed, lerpSpeed);
 

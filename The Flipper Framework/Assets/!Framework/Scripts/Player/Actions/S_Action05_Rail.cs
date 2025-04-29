@@ -215,7 +215,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 					if(directionBefore.sqrMagnitude > 25*25)
 						biasedPlayerDirection = Vector3.Lerp(directionBefore, biasedPlayerDirection, 0.5f);
 					
-					_RF._grindingSpeed = HomingLogic._speedBeforeAttack;
+					_RF._grindingSpeed = _Actions._speedBeforeAction;
 					break;
 				//If it was a drop charge, add speed from the charge to the grind speed.
 				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:

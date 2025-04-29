@@ -6,12 +6,25 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class S_Data_HomingTarget : S_Data_Base
 {
+	S_Data_HomingTarget () {
+		_hasVisualisationScripted = true;
+		_selectedOutlineColour = Color.red;
+		_normalOutlineColour = Color.red;
+		_normalOutlineColour.a = 0.5f;
+		_distanceModifier = 1;
+	}
 
 	public Vector3 _offset = Vector3.up;
-	public Color drawColour = Color.red;
 	public TargetType type = TargetType.destroy;
+	public EffectOnHoming OnHit = EffectOnHoming.normal;
+	public EffectOnHoming OnDestroy = EffectOnHoming.normal;
+
+	[Tooltip("When checking if this is a valid target, must be within the homing actions distance * this. Used to make some homing targets more difficult.")]
+	[Range(0.1f,1)]
+	public float _distanceModifier = 1;
 
 	public enum TargetType { normal, destroy}
+	public enum EffectOnHoming { normal, shootdown}
 
 	private void Start () {
 		_offset = transform.rotation * _offset;
@@ -21,11 +34,12 @@ public class S_Data_HomingTarget : S_Data_Base
 		gameObject.layer = 17;
 	}
 
+	public override void DrawGizmosAndHandles ( bool selected ) {
+		if(selected) {Gizmos.color = _selectedFillColour; }
+		else { Gizmos.color = _normalOutlineColour; }
 
-	private void OnDrawGizmosSelected () {
-		if(!enabled) { return; }
-		Gizmos.color = drawColour;
-		Gizmos.DrawWireSphere(transform.position + (transform.rotation * _offset), 2);
+		float size = selected ? 4 : 3;
+
+		Gizmos.DrawWireSphere(transform.position + (transform.rotation * _offset), size);
 	}
-
 }

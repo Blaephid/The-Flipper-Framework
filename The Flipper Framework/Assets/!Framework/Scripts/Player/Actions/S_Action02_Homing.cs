@@ -56,8 +56,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	private bool        _isHoming;                    //If currently homing. The action has unique interactions that will turn this off, disabling actual homing in on targets.
 
 	[HideInInspector]
-	public float       _speedBeforeAttack;           //The movement speed before performing this action.
-	[HideInInspector]
 	public Vector3     _directionBeforeAttack;       //The direction the player was moving before performing this action.
 	private float       _speedAtStart;                //The speed the homing attack happens at when performed, accelerating after decelerating will not exceed this.
 
@@ -144,7 +142,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_homingCount++;
 
 		_timer = 0;
-		_speedBeforeAttack = _PlayerVel._horizontalSpeedMagnitude; //Saved so it can be called back to on hit or end of action.
+		_Actions._speedBeforeAction = _PlayerVel._horizontalSpeedMagnitude; //Saved so it can be called back to on hit or end of action.
 		_directionBeforeAttack = _PlayerPhys._RB.velocity.normalized;
 
 		//Gets the direction to move in, rotate a lot faster than normal for the first frame.
@@ -175,11 +173,11 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_HomingTrailScript.emit = true;
 
 		//Get speed of attack and speed to return to on hit.		
-		_speedAtStart = Mathf.Max(_speedBeforeAttack * 0.9f, _homingAttackSpeed_);
+		_speedAtStart = Mathf.Max(_Actions._speedBeforeAction * 0.9f, _homingAttackSpeed_);
 		_speedAtStart = Mathf.Min(_speedAtStart, _maxHomingSpeed_);
 		_Actions._listOfSpeedOnPaths.Add(_speedAtStart);
 
-		_speedBeforeAttack = Mathf.Max(_speedBeforeAttack, _minSpeedGainOnHit_);
+		_Actions._speedBeforeAction = Mathf.Max(_Actions._speedBeforeAction, _minSpeedGainOnHit_);
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -204,7 +202,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		//If something is blocking the way, bounce off it.
 		if (Physics.Linecast(transform.position, collision.contacts[0].point, out RaycastHit hit, _PlayerPhys._Groundmask_))
 		{
-			StartCoroutine(HittingObstacle(hit.normal));
+			StartCoroutine(RespondToHitObstacle(hit.normal));
 		}
 	}
 
@@ -289,8 +287,17 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_PlayerVel.SetBothVelocities(_currentDirection * _Actions._listOfSpeedOnPaths[0], new Vector2(1, 0)); //Move in direction but remove all environmental velocity.
 	}
 
+	#endregion
+
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+
+
 	//Undoes the homing movement but doesn't end the actions (as special interactions may keep happening).
-	private void StopHoming () {
+	public void StopHoming () {
 		_isHoming = false;
 
 		//Return control options that were lost.
@@ -303,26 +310,9 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 			_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 	}
 
-	#endregion
-
-	/// <summary>
-	/// Public ----------------------------------------------------------------------------------
-	/// </summary>
-	/// 
-	#region public 
-
 	//What happens to the character after they hit a target, the directions they bounce based on input, stats and target.
-	public void HittingTarget ( S_GeneralEnums.HomingHitResponses whatResponse ) {
-		_HomingHandler._TargetObject = null;
-		_HomingHandler._PreviousTarget = null;
-
-		//Effects
-		_HomingTrailScript.emitTime = 0.1f;
-
-		if (_Actions._jumpCount > 0)
-			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount - 1, 1, _Actions._jumpCount); //Allows double jumping again after a hit
-
-		_CharacterAnimator.SetInteger("Action", 1);
+	public void RespondToHitTarget ( S_GeneralEnums.HomingHitResponses whatResponse ) {
+		HitWhileHoming();
 
 		Vector3 newSpeed = Vector3.zero;
 
@@ -340,7 +330,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 				break;
 			case S_GeneralEnums.HomingHitResponses.Rebound:
-				StartCoroutine(HittingObstacle());
+				StartCoroutine(RespondToHitObstacle());
 				return;
 			case S_GeneralEnums.HomingHitResponses.bounceOff:
 				bounceUpHit();
@@ -362,7 +352,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 			//Send player in new horizontal direction by speed before attack, but vertical speed is determined by bounce power.
 			newSpeed.y = 0;
 			newSpeed.Normalize();
-			newSpeed *= Mathf.Min(_speedBeforeAttack, _Actions._listOfSpeedOnPaths[0]);
+			newSpeed *= Mathf.Min(_Actions._speedBeforeAction, _Actions._listOfSpeedOnPaths[0]);
 			newSpeed.y = _homingBouncingPower_;
 
 			StopHoming();
@@ -402,8 +392,23 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		}
 	}
 
+	//Apply management of action without affecting physics yet.
+	public void HitWhileHoming () {
+
+		_HomingHandler._TargetObject = null;
+		_HomingHandler._PreviousTarget = null;
+
+		//Effects
+		_HomingTrailScript.emitTime = 0.1f;
+
+		if (_Actions._jumpCount > 0)
+			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount - 1, 1, _Actions._jumpCount); //Allows double jumping again after a hit
+
+		_CharacterAnimator.SetInteger("Action", 1);
+	}
+
 	//Applies knockback and a temporary locked state
-	public IEnumerator HittingObstacle ( Vector3 wallNormal = default(Vector3), float force = 25 ) {
+	public IEnumerator RespondToHitObstacle ( Vector3 wallNormal = default(Vector3), float force = 25 ) {
 		_isHoming = false;
 
 		float duration = 0.6f * 50;

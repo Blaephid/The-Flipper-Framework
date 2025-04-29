@@ -74,7 +74,10 @@ public class S_ActionManager : MonoBehaviour
 	[HideInInspector]
 	public Vector3      _jumpAngle;		//Set externally, and in the jump action, may be used to choose the angle (E.G., Wall Climbing sets this, and if Jump detects that's the current state (enum), uses this.
 	[HideInInspector]
-	public Vector3      _dashAngle;		//Same as above but for the jumpDash action.
+	public Vector3      _dashAngle;         //Same as above but for the jumpDash action.
+
+	[HideInInspector]
+	public float       _speedBeforeAction; //Used by some actions like homing for previous speed to be accessible. Set to 0 on switch.
 
 	//Can perform actions
 
@@ -267,6 +270,10 @@ public class S_ActionManager : MonoBehaviour
 
 	//Call this function to change the action. Enabled should always be called when this is, but this disables all the others and sets the enum.
 	public void ChangeAction ( S_S_ActionHandling.PrimaryPlayerStates ActionToChange) {
+		//Resetting values
+		_speedBeforeAction = 0;
+
+		//Preparing change
 		_whatPreviousAction = _whatCurrentAction;
 		_whatCurrentAction = ActionToChange;
 		DeactivateAllActions();

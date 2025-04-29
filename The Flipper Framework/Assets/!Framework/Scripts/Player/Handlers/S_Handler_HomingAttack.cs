@@ -146,50 +146,23 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 		Transform closestTarget = null;
 		_currentTargetDistanceSquared = 0;
-		int checkLimit = 0;
 
 		//First, send a spherecast in direction camera is facing, this has more range than normal checks. This takes priority as it allows for precision.
 		RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, _radiusOfCameraTargetCheck_, _MainCamera.forward, _faceRange_ * radius, TargetMask);
-		if (NewTargetsInRange.Length > 0)
+		Collider[] TargetsInRange = new Collider[NewTargetsInRange.Length];
+		for (int i = 0 ; i < NewTargetsInRange.Length ; i++)
 		{
-			for (int i = 0 ; i < NewTargetsInRange.Length ; i++)
-			{
-				RaycastHit hit = NewTargetsInRange[i];
-				float distanceSquared = Mathf.Pow(hit.distance, 2);
-				//If hit has the homing target component and is far enough away, then compare to current closest.
-				if (hit.collider.gameObject.GetComponent<S_Data_HomingTarget>() && distanceSquared > _minTargetDistanceSquared_)
-				{
-					Transform newTarget = hit.collider.transform;
-					closestTarget = CheckTarget(newTarget, distanceSquared * _cameraDirectionPriority_, closestTarget, _facingAmount_);
-				}
-
-				//For efficiency, cannot check more than 3 objects
-				checkLimit++;
-				if (checkLimit > 3) { break; }
-			}
+			TargetsInRange[i] = NewTargetsInRange[i].collider;
 		}
-		checkLimit = 0;
 
-		//If nothing found yet, check fir all potential targets around the player.
-		Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, radius, TargetMask);
-		if (TargetsInRange.Length > 0)
+		CheckArrayOfTargets (ref TargetsInRange, _cameraDirectionPriority_);
+
+		if (!closestTarget)
 		{
-			for (int i = 0 ; i < TargetsInRange.Length ; i++)
-			{
-				Collider hit = TargetsInRange[i];
-				float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, hit.transform.position);
+			//If nothing found yet, check for all potential targets around the player.
+			TargetsInRange = Physics.OverlapSphere(transform.position, radius, TargetMask);
 
-				//If has the homing target component and is far enough away, then compare to current closest.
-				if (hit.gameObject.GetComponent<S_Data_HomingTarget>() && distanceSquared > _minTargetDistanceSquared_)
-				{
-					Transform newTarget = hit.gameObject.transform;
-					closestTarget = CheckTarget(newTarget, distanceSquared, closestTarget, _facingAmount_);
-				}
-
-				//For efficiency, cannot check more than 3 objects
-				checkLimit++;
-				if (checkLimit > 3) { break; }
-			}
+			CheckArrayOfTargets(ref TargetsInRange, 1);
 		}
 
 		//If there is currently already a target, compare it to the new closest, with a modification to distance that makes it seem closer, and therefore higher priority.
@@ -200,6 +173,29 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		}
 
 		return closestTarget;
+
+		void CheckArrayOfTargets ( ref Collider[] targets, float extraPriority) {
+			int checkLimit = 0;
+
+			for (int i = 0 ; i < targets.Length ; i++)
+			{
+				Collider hit = TargetsInRange[i];
+				float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, hit.transform.position);
+
+				//If has the homing target component and is far enough away, then compare to current closest.
+				if (hit.gameObject.TryGetComponent( out S_Data_HomingTarget TargetData) && distanceSquared > _minTargetDistanceSquared_)
+				{
+					Transform checkTarget = hit.gameObject.transform;
+					float distanceToUse = (distanceSquared / TargetData._distanceModifier) * extraPriority; //Some targets may need to be closer.
+					closestTarget = CheckTarget(checkTarget, distanceToUse, closestTarget, _facingAmount_);
+					//Compare 
+				}
+
+				//For efficiency, cannot check more than 4 objects
+				checkLimit++;
+				if (checkLimit == 4) { break; }
+			}
+		}
 	}
 
 	//Takes in a target and return the closer of it or the current one.
