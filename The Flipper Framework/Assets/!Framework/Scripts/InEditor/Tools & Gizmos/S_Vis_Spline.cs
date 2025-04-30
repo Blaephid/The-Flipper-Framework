@@ -86,7 +86,7 @@ public class S_Vis_Spline : S_Vis_Base, ICustomEditorLogic
 		}
 	}
 
-	public void CustomOnSceneGUI ( SceneView sceneView ) {
+	public override void CallCustomSceneGUI () {
 		VisualiseWithSelectableHandle(_middleOfSpline + (transform.rotation * _selectPointOffset), _selectHandleSize);
 	}
 #endif

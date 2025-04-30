@@ -32,6 +32,26 @@ public struct FieldAndValue
 
 public class S_S_Editor : MonoBehaviour
 {
+	public static void DestroyFromOnValidate (GameObject ObjectToDestroy) {
+		EditorApplication.delayCall += () =>
+		{
+			if (ObjectToDestroy != null)
+			{
+				DestroyImmediate(ObjectToDestroy);
+			}
+		};
+	}
+
+	public static void SetActiveFromOnValidate ( GameObject ObjectToSet, bool newActive ) {
+		EditorApplication.delayCall += () =>
+		{
+			if (ObjectToSet != null)
+			{
+				ObjectToSet.SetActive(newActive);
+			}
+		};
+	}
+
 
 	//Takes a string and converts it to align with variable naming conventions, allowing the human's input to not have to be 100%.
 	//
@@ -369,11 +389,7 @@ public class S_S_Editor : MonoBehaviour
 		else
 			Target = GameObject.Find(name);
 
-		EditorApplication.delayCall += () =>
-		{
-			if (!Target) { return; }
-			Target.SetActive(set);
-		};
+		S_S_Editor.SetActiveFromOnValidate(Target, set);
 	}
 #endif
 }

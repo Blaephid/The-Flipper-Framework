@@ -149,11 +149,8 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	}
 	#endregion
 
-	//Inherited from ICustomEditorLogic Interface. This will be attached to the DuringSceneGUI event, or called seperately when certain objects are selected.
-	public void CustomOnSceneGUI ( SceneView sceneView ) {
-		if (this == null) { return; }
-		if(S_S_Editor.IsHidden(gameObject)) { return; }	
-
+	//See ICustomEditorLogic Interface, and S_Vis_Base
+	public override void CallCustomSceneGUI () {
 		float handleRadius = 2 * Mathf.Clamp(S_S_MoreMaths.GetLargestOfVector(transform.lossyScale) / 40, 1, 20);
 		base.VisualiseWithSelectableHandle(transform.position, handleRadius);
 		AdditionalTriggerSceneGUI();

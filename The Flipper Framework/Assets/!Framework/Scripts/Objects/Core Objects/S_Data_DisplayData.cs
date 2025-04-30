@@ -266,7 +266,7 @@ public class S_Data_DisplayData : S_Data_Base, ICustomEditorLogic
 	}
 
 	//This is called by S_EditorLink, and in the OnSceneGUI in the editor class below.
-	public void CustomOnSceneGUI (SceneView sceneView = null) {
+	new public void CustomOnSceneGUI (SceneView sceneView = null) {
 		if (_updateTransform) HandleTransform();
 	}
 

@@ -7,7 +7,7 @@ using UnityEngine;
 using System;
 using static UnityEngine.Rendering.DebugUI;
 
-public class S_Vis_Base : MonoBehaviour
+public class S_Vis_Base : MonoBehaviour, ICustomEditorLogic
 {
 	[HideInInspector] public bool _isSelected;
 
@@ -51,7 +51,7 @@ public class S_Vis_Base : MonoBehaviour
 	private void OnDrawGizmos () {
 		if (!enabled || !_hasVisualisationScripted) { return; }
 
-		if(S_S_Editor.IsTooFarFromEditorCamera(transform, 900)) { return; };
+		if (S_S_Editor.IsTooFarFromEditorCamera(transform, 900)) { return; };
 
 		_isSelected = false;
 		if (!Application.isPlaying)
@@ -122,5 +122,18 @@ public class S_Vis_Base : MonoBehaviour
 	public virtual void DrawAdditionalAtPointOnArray ( bool selected, int f, Vector3 point ) {
 
 	}
-#endif
+
+
+	//Inherited from ICustomEditorLogic Interface. This will be attached to the DuringSceneGUI event, or called seperately when certain objects are selected.
+	public void CustomOnSceneGUI ( SceneView sceneView ) {
+		if (this == null) { return; }
+		if (S_S_Editor.IsHidden(gameObject)) { return; }
+
+		CallCustomSceneGUI();
 	}
+
+	public virtual void CallCustomSceneGUI () {
+
+	}
+#endif
+}

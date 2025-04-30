@@ -223,137 +223,130 @@ MonoBehaviour:
   SetToSplineButton: 0
   _RF: {fileID: 50790941557587127}
   _Animator: {fileID: 495000908047024549}
+  _Data:
+    _StartSpline_: {fileID: 0}
+    _StartingConnectedRails_: {fileID: 0}
+    _startOffset_: {x: 0, y: 0, z: 0}
+    _startDistance_: -1
+    _rhino_: 0
+    _armouredTrain_: 0
+    _startSpeed_: 120
+    _railUpOffset_: 0
+    _followPlayer_: 0
+    _isBackwards_: 0
+    _CurveToFullSpeed_:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _LerpFollowByDistance_:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -500
+        value: 1.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: -100
+        value: 1.35
+        inSlope: -0.0011363636
+        outSlope: -0.0011363636
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: -60
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: -20
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 20
+        value: 1.2
+        inSlope: 0.0009523809
+        outSlope: 0.0009523809
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 400
+        value: 1.4
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _FollowBySpeedDifference_:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 100
+        value: 1.2
+        inSlope: 0.009799331
+        outSlope: 0.009799331
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.20416671
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _followLerpSpeed_: 0.3
+    _distanceAheadOfPlayerToAimFor_: 35
   _Models: []
   _modelStartRotations: []
   _disanceBetweenModels: 0
-  _StartSpline: {fileID: 0}
-  _StartingConnectedRails: {fileID: 0}
-  _startOffset: {x: -10, y: 0, z: 0}
-  _rhino: 1
-  _armouredTrain: 0
-  StartSpeed: 100
-  _railUpOffset: 0
-  _followPlayer: 1
-  _isBackwards: 0
-  _timeToFullSpeed_:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.5
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _FollowByDistance_:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -500
-      value: 1.6
-      inSlope: 0.00013020883
-      outSlope: 0.00013020883
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.547366
-    - serializedVersion: 3
-      time: -250
-      value: 1.2
-      inSlope: -0.0004292704
-      outSlope: -0.0004292704
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 1
-    - serializedVersion: 3
-      time: -120
-      value: 1.05
-      inSlope: 0.000013254813
-      outSlope: 0.000013254813
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.21333335
-    - serializedVersion: 3
-      time: 0
-      value: 1.05
-      inSlope: 0.00018807541
-      outSlope: 0.00018807541
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 1
-    - serializedVersion: 3
-      time: 50
-      value: 1.3
-      inSlope: 0.0009313283
-      outSlope: 0.0009313283
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 500
-      value: 1.6
-      inSlope: 0.00108291
-      outSlope: 0.00108291
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.45071307
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _FollowBySpeedDif_:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.05
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 20
-      value: 0.3
-      inSlope: 0.013264579
-      outSlope: 0.013264579
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 100
-      value: 1.6
-      inSlope: 0.0110393455
-      outSlope: 0.0110393455
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.14617936
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _followLerpSpeed_: 0.3
-  _distanceAheadOfPlayerToAimFor: 30
   _PlayerRailAction: {fileID: 0}
   _PlayerActions: {fileID: 0}
 --- !u!114 &1660191052784083580

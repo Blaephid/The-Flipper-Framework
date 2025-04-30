@@ -4,7 +4,37 @@ using System;
 using System.Linq;
 using SplineMesh;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 //using Luminosity.IO;
+
+[Serializable]
+public class S_RailEnemyData
+{
+	[Header("Start Rails")]
+	public Spline _StartSpline_;
+	public S_AddOnRail _StartingConnectedRails_;
+	public Vector3 _startOffset_;
+	public float _startDistance_ = -1;
+
+	[Header("Type")]
+	[DrawHorizontalWithOthers(new string[]{"_armouredTrain_"})]
+	public bool _rhino_;
+	[HideInInspector]
+	public bool _armouredTrain_;
+
+	[Header("Control")]
+	public float _startSpeed_ = 60f;
+	public float _railUpOffset_;
+	public bool _followPlayer_;
+	public bool _isBackwards_;
+
+	[Header("Stats")]
+	public AnimationCurve _CurveToFullSpeed_ = new AnimationCurve(new Keyframe[] { new Keyframe(0, 0), new Keyframe(1, 1) });
+	public AnimationCurve _LerpFollowByDistance_;
+	public AnimationCurve _FollowBySpeedDifference_;
+	public float _followLerpSpeed_ = 0.3f;
+	public float _distanceAheadOfPlayerToAimFor_;
+}
 
 
 [RequireComponent(typeof(S_RailFollow_Base))]
@@ -22,47 +52,32 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private Rigidbody _RB;
 	[SerializeField, ColourIfNull(0.8f,0.65f,0.65f,1)] private Animator _Animator;
 
+	//See class above. Stored in a seperate class for organised editor and S_AI_RhinoMaster
+	public S_RailEnemyData _Data;
+
+	[Space]
+	//If a train with multiple cars, must be placed carefully
 	public GameObject[] _Models;
 	public Vector3[] _modelStartRotations;
 	public float _disanceBetweenModels = 30;
 
-	[Header("Start Rails")]
-	public Spline _StartSpline;
-	public S_AddOnRail _StartingConnectedRails;
-	public Vector3 _startOffset;
-
-	[Header("Type")]
-	[DrawHorizontalWithOthers(new string[]{"_armouredTrain"})]
-	public bool _rhino;
-	[HideInInspector]
-	public bool _armouredTrain;
-
-	[Header("Control")]
-	[SerializeField] float StartSpeed = 60f;
-	[SerializeField] float _railUpOffset;
-	[SerializeField] bool _followPlayer;
-	[SerializeField] bool _isBackwards;
-
-	[Header("Stats")]
-	[SerializeField] AnimationCurve _timeToFullSpeed_ = new AnimationCurve(new Keyframe[] { new Keyframe (0,0), new Keyframe(1,1) });
-	[SerializeField] AnimationCurve _FollowByDistance_;
-	[SerializeField] AnimationCurve _FollowBySpeedDif_;
-	[SerializeField] float _followLerpSpeed_ = 0.3f;
-	[SerializeField] float _distanceAheadOfPlayerToAimFor;
-	//[SerializeField] float _slopePower_ = 2.5f;
-
 	bool _isActive = false;
+
+	//Player Data
 	[HideInInspector] public S_Action05_Rail _PlayerRailAction;
 	private S_RailFollow_Base _PlayerRF;
 	[HideInInspector] public S_ActionManager _PlayerActions;
-
 	private S_PlayerVelocity _PlayerVel;
 
-	float _playerDistance;
+	//Tracking the player and reacting
+	float _playerDistanceIncludingOffset;
+	float _playerDistanceWithoutOffset;
 	float _playerSpeed;
 	List<float> _listOfPlayerSpeeds = new List<float> {20,20,20,20,20,20,20,20,20};
 	float _timeGrinding;
+	private bool _hasReachedGoalInFrontOfPlayer; //Set to true when hit goal distance ahead of player, and false when behind the player themselves. This will increase speed when catching up to position ahead, but allow player to catch up.
 
+	//At start
 	Vector3 _startPosition;
 	private bool _isFirstSet = true;
 
@@ -74,13 +89,13 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		ResetRigidBody();
 
-		if (!_StartSpline) { return; }
+		if (!_Data._StartSpline_) { return; }
 
 		SetSplineDetails();
 
-		PlaceOnSplineToStart();
+		PlaceOnSplineBeforeGame();
 		_startPosition = transform.position;
-		_RF._setOffSet = -_startOffset;
+		_RF._setOffSet = -_Data._startOffset_;
 	}
 
 	private void Update () {
@@ -112,7 +127,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		if (!_isActive) { return; }
 
-		_RF._grindingSpeed = StartSpeed * _timeToFullSpeed_.Evaluate(0);
+		_RF._grindingSpeed = _Data._startSpeed_ * _Data._CurveToFullSpeed_.Evaluate(0);
 
 		_PlayerVel = Player._PlayerVelocity;
 		_PlayerActions = Player.GetComponent<S_CharacterTools>()._ActionManager;
@@ -172,12 +187,12 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			//If this car is on a previous 
 			else if (_RF._ConnectedRails != null)
 			{
-				if (tempPointOnSpline < 0 && !_isBackwards && _RF._ConnectedRails.PrevRail != null && _RF._ConnectedRails.PrevRail.isActiveAndEnabled)
+				if (tempPointOnSpline < 0 && !_Data._isBackwards_ && _RF._ConnectedRails.PrevRail != null && _RF._ConnectedRails.PrevRail.isActiveAndEnabled)
 				{
 					thisSpline = _RF._ConnectedRails.PrevRail.GetComponentInParent<Spline>();
 					tempPointOnSpline += thisSpline.Length;
 				}
-				else if (tempPointOnSpline > thisSpline.Length && _isBackwards && _RF._ConnectedRails.NextRail != null && _RF._ConnectedRails.NextRail.isActiveAndEnabled)
+				else if (tempPointOnSpline > thisSpline.Length && _Data._isBackwards_ && _RF._ConnectedRails.NextRail != null && _RF._ConnectedRails.NextRail.isActiveAndEnabled)
 				{
 					tempPointOnSpline -= thisSpline.Length;
 					thisSpline = _RF._ConnectedRails.PrevRail.GetComponentInParent<Spline>();
@@ -196,7 +211,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		Spline.SampleTransforms ThisSampleTransform = Spline.GetSampleTransformInfo(_RF._RailTransform, ThisSample);
 
-		ThisObject.transform.position = ThisSampleTransform.location + (ThisSampleTransform.upwards * _railUpOffset);
+		ThisObject.transform.position = ThisSampleTransform.location + (ThisSampleTransform.upwards * _Data._railUpOffset_);
 		Quaternion newRotation = Quaternion.LookRotation(ThisSampleTransform.forwards, ThisSampleTransform.upwards);
 		newRotation *= Quaternion.Euler(localEuler);
 		ThisObject.transform.rotation = newRotation;
@@ -216,13 +231,13 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_timeGrinding += Time.deltaTime;
 
 		//If the curve has no nodes.
-		if (_timeToFullSpeed_.length == 0) { return; }
+		if (_Data._CurveToFullSpeed_.length == 0) { return; }
 
 		//Getting to full speed from start. Compare time grinding to last node.
-		if (_timeGrinding < _timeToFullSpeed_[_timeToFullSpeed_.length - 1].time)
+		if (_timeGrinding < _Data._CurveToFullSpeed_[_Data._CurveToFullSpeed_.length - 1].time)
 		{
-			_RF._grindingSpeed = StartSpeed * _timeToFullSpeed_.Evaluate(_timeGrinding);
-			_timeGrinding = Mathf.Min(_timeToFullSpeed_[_timeToFullSpeed_.length - 1].time, _timeGrinding);
+			_RF._grindingSpeed = _Data._startSpeed_ * _Data._CurveToFullSpeed_.Evaluate(_timeGrinding);
+			_timeGrinding = Mathf.Min(_Data._CurveToFullSpeed_[_Data._CurveToFullSpeed_.length - 1].time, _timeGrinding);
 		}
 		//Normal speed control
 		else
@@ -233,23 +248,22 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	void TrackPlayer () {
-		if (!_followPlayer) return;
+		if (!_Data._followPlayer_) return;
 
 		_listOfPlayerSpeeds.Insert(0, _PlayerVel._horizontalSpeedMagnitude);
 		_listOfPlayerSpeeds.RemoveAt(_listOfPlayerSpeeds.Count - 1);
-		_playerSpeed = _listOfPlayerSpeeds[_listOfPlayerSpeeds.Count-1]; //The player speed to lerp to is delayed by x frames.
+		_playerSpeed = _listOfPlayerSpeeds[_listOfPlayerSpeeds.Count - 1]; //The player speed to lerp to is delayed by x frames.
 
 		float goalSpeed = _playerSpeed;
-		float lerpSpeed = _followLerpSpeed_;
+		float lerpSpeed = _Data._followLerpSpeed_;
 
 		//If player is also grinding.
 		if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected()))
 		{
-			float modi = _FollowByDistance_.Evaluate(_playerDistance);
+			float modi = _Data._LerpFollowByDistance_.Evaluate(_playerDistanceIncludingOffset);
 			lerpSpeed *= modi;
-			goalSpeed = _playerDistance < 0 ? (goalSpeed -2) / modi : goalSpeed * modi; // If player is behind, decrease goal speed, if ahead, increase goal speed.
-			Debug.Log("The goal speed is  " + goalSpeed);
-			Debug.Log("The player's speed is  " + _playerSpeed);
+			goalSpeed = _playerDistanceIncludingOffset < 0 ? goalSpeed / modi : goalSpeed * modi; // If enemy is ahead of goal position, decrease goal speed. If behind, increase goal speed.
+			goalSpeed = _hasReachedGoalInFrontOfPlayer ? goalSpeed : goalSpeed - 3f; //If ahead of player not including goal position, decrease goal speed slightly so palyer can slowly catch up.
 		}
 		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing) //If player is homing, slow down to allow the hit to be made.
 		{
@@ -258,7 +272,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		}
 		else
 		{
-			lerpSpeed *= _FollowBySpeedDif_.Evaluate(Mathf.Abs(_RF._grindingSpeed - _playerSpeed));
+			lerpSpeed *= _Data._FollowBySpeedDifference_.Evaluate(Mathf.Abs(_RF._grindingSpeed - _playerSpeed));
 		}
 
 		_RF._grindingSpeed = Mathf.Lerp(_RF._grindingSpeed, goalSpeed, lerpSpeed);
@@ -300,7 +314,11 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			if (onSameRailOrConnected)
 			{
 				//How far ahead or behind the player is considering the enemy's direction.
-				_playerDistance = (thisPointOnSplines - (playerPointOnSplines + _PlayerRF._movingDirection * _distanceAheadOfPlayerToAimFor)) * -_RF._movingDirection;
+				_playerDistanceIncludingOffset = (thisPointOnSplines - (playerPointOnSplines + _PlayerRF._movingDirection * _Data._distanceAheadOfPlayerToAimFor_)) * -_RF._movingDirection;
+				_playerDistanceWithoutOffset = (thisPointOnSplines - playerPointOnSplines) * -_RF._movingDirection;
+
+				if (_playerDistanceIncludingOffset <= 0) _hasReachedGoalInFrontOfPlayer = true; //Reached point ahead of player to be.
+				else if (_playerDistanceWithoutOffset > 0) _hasReachedGoalInFrontOfPlayer = false; //Has fallen behiond the player properly.
 			}
 			return onSameRailOrConnected;
 		}
@@ -321,7 +339,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	#region Setting Values
 
 	private void SettingAnimationTrigger ( string trigger ) {
-		if (!_rhino || !_Animator) { return; }
+		if (!_Data._rhino_ || !_Animator) { return; }
 
 		_Animator.SetTrigger(trigger);
 
@@ -330,22 +348,28 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	private void SetSplineDetails () {
-		if (!_StartSpline) { return; }
-		_RF._ConnectedRails = _StartingConnectedRails;
-		_RF._PathSpline = _StartSpline;
-		_RF._RailTransform = _StartSpline.transform;
+		if (!_Data._StartSpline_) { return; }
+		_RF._ConnectedRails = _Data._StartingConnectedRails_;
+		_RF._PathSpline = _Data._StartSpline_;
+		_RF._RailTransform = _Data._StartSpline_.transform;
 
 		_RF._grindingSpeed = 0;
-		_RF._isGoingBackwards = _isBackwards;
-		_RF._upOffsetRail_ = _railUpOffset;
+		_RF._isGoingBackwards = _Data._isBackwards_;
+		_RF._upOffsetRail_ = _Data._railUpOffset_;
 	}
 
-	private void PlaceOnSplineToStart () {
-		if (!_RF || !_StartSpline) return;
+	private void PlaceOnSplineBeforeGame () {
+		if (!_RF || !_Data._StartSpline_ || _Data._StartSpline_.Length < _Models.Length * _disanceBetweenModels * 3) return;
 
-
-		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, _StartSpline, Vector3.zero);
-		_RF._pointOnSpline = rangeAndDistanceSquared.x;
+		//If set to a specific start distance, get placed there.
+		if (_Data._startDistance_ > 0 && _Data._startDistance_ < _Data._StartSpline_.Length)
+			_RF._pointOnSpline = _Data._startDistance_;
+		//If not, find the current closest space.
+		else
+		{
+			Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, _Data._StartSpline_, Vector3.zero);
+			_RF._pointOnSpline = rangeAndDistanceSquared.x;
+		}
 
 		if (_isFirstSet)
 		{
@@ -358,17 +382,18 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			if (Application.isPlaying) { _isFirstSet = false; }
 		}
 
-		float maxSpace = _Models.Length * _disanceBetweenModels;
-		_RF._pointOnSpline = Mathf.Clamp(_RF._pointOnSpline, maxSpace, _StartSpline.Length - maxSpace);
-		_RF.GetNewSampleOnRail(0);
+		float maxSpace = _Models.Length * _disanceBetweenModels; //Ensures all cars can fit on spline.
+		_RF._pointOnSpline = Mathf.Clamp(_RF._pointOnSpline, maxSpace, _Data._StartSpline_.Length - maxSpace);
+		_RF.GetNewSampleOnRail(0); //To ensure struct in _RF is up to date.
 
-		_RF._upOffsetRail_ = _railUpOffset;
+		_RF._upOffsetRail_ = _Data._railUpOffset_;
 
-		Vector3 thisOffset = _RF._sampleRotation * _startOffset;
+		Vector3 thisOffset = _RF._sampleRotation * _Data._startOffset_; //Add offset to allow multiple rails from one spline.
 
+		//Move to spline
 		transform.position = _RF._sampleLocation + thisOffset;
 		transform.rotation = Quaternion.LookRotation(_RF._sampleForwards, _RF._sampleUpwards);
-		AlignCars();
+		AlignCars(); //If armoured train, place cars along behind.
 	}
 	#endregion
 
@@ -377,12 +402,12 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	/// 
 	#region endingRail
 	public void LoseRail () {
-		if (_rhino)
+		if (_Data._rhino_)
 		{
 			_RB.freezeRotation = false;
 			_RB.useGravity = true;
 		}
-		else if (_armouredTrain)
+		else if (_Data._armouredTrain_)
 		{
 			_RF._grindingSpeed = 0;
 			_RB.velocity = Vector3.zero;
@@ -405,7 +430,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		transform.position = _startPosition;
 		SetSplineDetails();
-		PlaceOnSplineToStart();
+		PlaceOnSplineBeforeGame();
 		ResetRigidBody();
 
 		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
@@ -414,7 +439,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	public void SetToSpline () {
 		_RF = GetComponent<S_RailFollow_Base>();
 		SetSplineDetails();
-		PlaceOnSplineToStart();
+		PlaceOnSplineBeforeGame();
 	}
 
 	#endregion
