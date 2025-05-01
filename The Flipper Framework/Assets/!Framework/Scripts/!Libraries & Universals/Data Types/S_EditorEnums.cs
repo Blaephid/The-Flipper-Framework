@@ -16,4 +16,10 @@ public class S_EditorEnums
 		Sphere,
 		External,
 	}
+
+	public enum ShapeTypes
+	{
+		Box,
+		Sphere,
+	}
 }

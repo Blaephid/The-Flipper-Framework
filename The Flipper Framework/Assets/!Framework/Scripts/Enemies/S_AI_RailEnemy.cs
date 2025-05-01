@@ -50,7 +50,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	[HideInInspector,SerializeField]
 	private S_RailFollow_Base _RF;
 	private Rigidbody _RB;
-	[SerializeField, ColourIfNull(0.8f,0.65f,0.65f,1)] private Animator _Animator;
+	[ColourIfNull(0.8f,0.65f,0.65f,1)] public Animator _Animator;
 
 	//See class above. Stored in a seperate class for organised editor and S_AI_RhinoMaster
 	public S_RailEnemyData _Data;
@@ -77,6 +77,9 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	float _timeGrinding;
 	private bool _hasReachedGoalInFrontOfPlayer; //Set to true when hit goal distance ahead of player, and false when behind the player themselves. This will increase speed when catching up to position ahead, but allow player to catch up.
 
+	public event System.Action<GameObject> OnGetInFrontOfPlayer;
+	public event System.Action<GameObject> OnFallBehindPlayer;
+
 	//At start
 	Vector3 _startPosition;
 	private bool _isFirstSet = true;
@@ -96,6 +99,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		PlaceOnSplineBeforeGame();
 		_startPosition = transform.position;
 		_RF._setOffSet = -_Data._startOffset_;
+
+		SetAnimatorBool("CurrentlyOnRail", true);
 	}
 
 	private void Update () {
@@ -147,7 +152,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_isActive = set;
 		_timeGrinding = 0;
 
-		if (set) { SettingAnimationTrigger("Start"); }
+		if (set) { SetAnimatorTrigger("Start"); }
 
 		if (!_RF || !_RF._PathSpline) { _isActive = false; }
 	}
@@ -267,11 +272,15 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		}
 		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing) //If player is homing, slow down to allow the hit to be made.
 		{
-			goalSpeed = _RF._grindingSpeed * 0.9f;
+			goalSpeed = _RF._grindingSpeed * 0.95f;
 			lerpSpeed /= 2;
 		}
 		else
 		{
+			if (Vector3.Angle(_PlayerVel._worldVelocity.normalized, (transform.position - _PlayerVel.transform.position).normalized) < 90) 
+				SetHasReachedGoalInFrontOfPlayer(true); //If player's direction is taking them towards the rhinos, then the rhinos are in front.
+			else SetHasReachedGoalInFrontOfPlayer(false);
+
 			lerpSpeed *= _Data._FollowBySpeedDifference_.Evaluate(Mathf.Abs(_RF._grindingSpeed - _playerSpeed));
 		}
 
@@ -317,10 +326,19 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 				_playerDistanceIncludingOffset = (thisPointOnSplines - (playerPointOnSplines + _PlayerRF._movingDirection * _Data._distanceAheadOfPlayerToAimFor_)) * -_RF._movingDirection;
 				_playerDistanceWithoutOffset = (thisPointOnSplines - playerPointOnSplines) * -_RF._movingDirection;
 
-				if (_playerDistanceIncludingOffset <= 0) _hasReachedGoalInFrontOfPlayer = true; //Reached point ahead of player to be.
-				else if (_playerDistanceWithoutOffset > 0) _hasReachedGoalInFrontOfPlayer = false; //Has fallen behiond the player properly.
+				if (_playerDistanceIncludingOffset <= 0) SetHasReachedGoalInFrontOfPlayer(true); //Reached point ahead of player to be.
+				else if (_playerDistanceWithoutOffset > 0) SetHasReachedGoalInFrontOfPlayer(false); //Has fallen behiond the player properly.
 			}
 			return onSameRailOrConnected;
+		}
+	}
+
+	private void SetHasReachedGoalInFrontOfPlayer (bool set) {
+		if (_hasReachedGoalInFrontOfPlayer != set)
+		{
+			_hasReachedGoalInFrontOfPlayer = set;
+			if (set) { OnGetInFrontOfPlayer.Invoke(gameObject); }
+			else { OnFallBehindPlayer.Invoke(gameObject); }
 		}
 	}
 
@@ -338,13 +356,19 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	/// 
 	#region Setting Values
 
-	private void SettingAnimationTrigger ( string trigger ) {
+	public void SetAnimatorTrigger ( string trigger ) {
 		if (!_Data._rhino_ || !_Animator) { return; }
 
 		_Animator.SetTrigger(trigger);
 
 		if (trigger == "Start") { _Animator.SetBool("IsActive", true); }
 		else if (trigger == "Stop") { _Animator.SetBool("IsActive", false); }
+	}
+
+	public void SetAnimatorBool ( string boolean, bool set ) {
+		if (!_Data._rhino_ || !_Animator) { return; }
+
+		_Animator.SetBool(boolean, set);
 	}
 
 	private void SetSplineDetails () {

@@ -55,6 +55,61 @@ CapsuleCollider:
   m_Height: 9.8
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2381209978274330099
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1963389128671572279}
+  - component: {fileID: 6266931344714425100}
+  m_Layer: 13
+  m_Name: ShotOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1963389128671572279
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2381209978274330099}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.015866635, y: 0.70692873, z: -0.015866673, w: 0.7069288}
+  m_LocalPosition: {x: -0.016657872, y: 0.00026052273, z: -0.000100002435}
+  m_LocalScale: {x: 0.010000001, y: 0.01, z: 0.01}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9156032800203475430}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6266931344714425100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2381209978274330099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80da0993c55d63140b14e61c21ff0002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSelected: 0
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  size: 0.8
+  Shape: 1
 --- !u!1 &3193338111137158558
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,6 +179,7 @@ GameObject:
   - component: {fileID: 9134351238159419941}
   - component: {fileID: 1660191052784083580}
   - component: {fileID: 809170949731112593}
+  - component: {fileID: 2783308114261335309}
   m_Layer: 13
   m_Name: Pr_E_Rhinoliner
   m_TagString: Enemy
@@ -408,6 +464,21 @@ MonoBehaviour:
   CurveChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2783308114261335309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074064230608196790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9ef43fe2a2dd841bc82bb15a03a673, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Projectile_: {fileID: 0}
+  _ShootPoint_: {fileID: 0}
+  _shotSpeed_: 0
 --- !u!1001 &1860083500980358802
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -489,7 +560,11 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 2223639932434330405, guid: 759e7e43de9834c429aceb013b33ec0e, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -1819283529212901516, guid: 759e7e43de9834c429aceb013b33ec0e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1963389128671572279}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 759e7e43de9834c429aceb013b33ec0e,
         type: 3}
@@ -527,6 +602,12 @@ Animator:
 --- !u!4 &2187308421785758073 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 759e7e43de9834c429aceb013b33ec0e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1860083500980358802}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &9156032800203475430 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -1819283529212901516, guid: 759e7e43de9834c429aceb013b33ec0e,
     type: 3}
   m_PrefabInstance: {fileID: 1860083500980358802}
   m_PrefabAsset: {fileID: 0}
@@ -604,7 +685,7 @@ PrefabInstance:
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}
       propertyPath: _isSelected
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}

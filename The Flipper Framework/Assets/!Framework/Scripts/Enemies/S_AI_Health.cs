@@ -13,6 +13,8 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 
 	public bool _willDestroy = true;
 
+	public event System.Action<GameObject> OnDefeated;
+
 	void Awake () {
 		_currentHealth = _maxHealth;
 	}
@@ -21,25 +23,32 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 		_currentHealth -= Damage;
 		if (_currentHealth <= 0)
 		{
-			if (SpawnReference != null)
-			{
-				SpawnReference.RestartSpawner();
-			}
-			else
-			{
-				S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
-			}
 
-			GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
-
-			if (_willDestroy)
-				Destroy(gameObject);
-			else
-				gameObject.SetActive(false);
+			Defeated();
 			return true;
 		}
 		else
 			return false;
+	}
+
+	void Defeated () {
+		if (SpawnReference != null)
+		{
+			SpawnReference.RestartSpawner();
+		}
+		else
+		{
+			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+		}
+
+		GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
+
+		if (_willDestroy)
+			Destroy(gameObject);
+		else
+			gameObject.SetActive(false);
+
+		OnDefeated.Invoke(gameObject);
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
