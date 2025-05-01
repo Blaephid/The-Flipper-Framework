@@ -38,8 +38,8 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 	public S_AI_RhinoMaster _InheritRhinosFromThisOnActivation;
 	[SerializeField] private float _distanceBetweenRails = 10;
-	[SerializeField] private Vector2 _timeBetweenAttacks_ = new Vector2(0.5f,0.8f);
-	[SerializeField] private Vector2 _timeBetweenJumps_ = new Vector2(1.5f,2.2f);
+	[SerializeField] private Vector2 _timeBetweenAttacks_ = new Vector2(2f,3f);
+	[SerializeField] private Vector2 _timeBetweenJumps_ = new Vector2(5f,6f);
 
 	private float _timeToNextAttack;
 	private float _timeToNextJump;
@@ -143,7 +143,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		_timeSinceLastAttack = 0;
 		_timeToNextAttack = UnityEngine.Random.Range(_timeBetweenAttacks_.x, _timeBetweenAttacks_.y);
 	}
-
 
 	public void EventARhinoGotInFront ( GameObject Rhino ) {
 		_ListOfRhinosInfront.Add(Rhino);

@@ -286,7 +286,7 @@ MonoBehaviour:
     _startDistance_: -1
     _rhino_: 0
     _armouredTrain_: 0
-    _startSpeed_: 120
+    _startSpeed_: 130
     _railUpOffset_: 0
     _followPlayer_: 0
     _isBackwards_: 0
@@ -399,7 +399,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     _followLerpSpeed_: 0.3
-    _distanceAheadOfPlayerToAimFor_: 35
+    _distanceAheadOfPlayerToAimFor_: 50
   _Models: []
   _modelStartRotations: []
   _disanceBetweenModels: 0
@@ -476,9 +476,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b9ef43fe2a2dd841bc82bb15a03a673, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Projectile_: {fileID: 0}
-  _ShootPoint_: {fileID: 0}
-  _shotSpeed_: 0
+  _Projectile_: {fileID: 4532489281323299949, guid: 005e2c77ec0595046b5f2ea3d43fd4b0,
+    type: 3}
+  _ShootPoint_: {fileID: 1963389128671572279}
+  _shotSpeed_: 70
 --- !u!1001 &1860083500980358802
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -685,7 +686,7 @@ PrefabInstance:
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}
       propertyPath: _isSelected
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}

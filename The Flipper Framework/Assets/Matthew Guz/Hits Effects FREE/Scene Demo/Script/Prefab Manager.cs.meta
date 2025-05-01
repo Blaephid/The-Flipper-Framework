@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 01b30bb243622764e98b9d96ad37b33a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - impactEffect: {fileID: 6457619511094257138, guid: 8d7bc758893dada4fa244c0f9b126810,
+      type: 3}
+  - camera: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284613
+  packageName: Hit Effects FREE
+  packageVersion: 1.1
+  assetPath: Assets/Matthew Guz/Hits Effects FREE/Scene Demo/Script/Prefab Manager.cs
+  uploadId: 708501

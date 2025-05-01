@@ -44,6 +44,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	//Quaternion rot;
 	[HideInInspector] public Vector3               _setOffSet;         //Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
+	[HideInInspector] public Vector3               _currentLocalOffset;  //The above offset applied onto the current sample.
 	[HideInInspector] public float                 _upOffsetRail_ = 2.05f;
 	[HideInInspector] public float                 _upOffsetZip_ = -2.05f;
 
@@ -119,6 +120,8 @@ public class S_RailFollow_Base : MonoBehaviour
 		_sampleRight = _sampleTransforms.right;
 		_sampleLocation = _sampleTransforms.location;
 		_sampleRotation = _sampleTransforms.rotation;
+
+		_currentLocalOffset = _sampleRotation * -_setOffSet;
 	}
 
 	//Physics
@@ -131,7 +134,7 @@ public class S_RailFollow_Base : MonoBehaviour
 		{
 			//Place character in world space on point in rail
 			case S_Interaction_Pathers.PathTypes.rail:
-				Vector3 relativeOffset = _sampleRotation * -_setOffSet; //Moves player to the left or right of the spline to be on the correct rail
+				Vector3 relativeOffset = _currentLocalOffset; //Moves player to the left or right of the spline to be on the correct rail
 
 				//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
 				Vector3 newPos = _sampleLocation;
