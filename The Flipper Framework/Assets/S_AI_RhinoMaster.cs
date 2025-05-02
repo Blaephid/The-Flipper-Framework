@@ -96,7 +96,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	private void AddRhinosFromArrayToLists ( ref RhinoManaging[] Array ) {
 		foreach (RhinoManaging RhinoManager in Array)
 		{
-			if (RhinoManager._Object.activeSelf)
+			if (RhinoManager._Object.activeSelf && !_listOfAllRhinos.Contains(RhinoManager))
 			{
 				_listOfAllRhinos.Add(RhinoManager);
 				_listOfAllRhinoObjects.Add(RhinoManager._Object);
@@ -116,8 +116,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		_timeSinceLastAttack += Time.fixedDeltaTime;
 		_timeSinceLastJump += Time.fixedDeltaTime;
 
-		if(_ListOfRhinosThatHaveShot.Count >= _ListOfRhinosInfront.Count) { _ListOfRhinosThatHaveShot.Clear(); }
-
 		//Only rhinos in front will attack and jump, to prevent player being confused.
 		for (int i = 0 ; i < _ListOfRhinosInfront.Count ; i++)
 		{
@@ -125,14 +123,25 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 			{
 				if (!_ListOfRhinosThatHaveShot.Contains(_ListOfRhinosInfront[i]))
 				{
-					_ListOfRhinosThatHaveShot.Add(_ListOfRhinosInfront[i]);
-					_ListOfRhinosInfront[i].GetComponent<S_AI_RhinoActions>().ReadyShot(_Player.transform, _PlayerVel);
+					S_AI_RhinoActions Action = _ListOfRhinosInfront[i].GetComponent<S_AI_RhinoActions>();
+					Action.ReadyShot(_Player.transform, _PlayerVel);
+					StartCoroutine(AddToListOfShotAfterShotDelay(_ListOfRhinosInfront[i], Action._timeToReadyShot));
+
 					SetUpNextAttack();
 				}
 			}
 		}
+
+		//Once all rhinos in front have shot, can loop round again.
+		if (_ListOfRhinosThatHaveShot.Count >= _ListOfRhinosInfront.Count && _ListOfRhinosThatHaveShot.Count > 0)
+		{ _ListOfRhinosThatHaveShot.Clear(); }
 	}
 
+	//Since shot takes some time after being told to ready shot here, track the rhino as having shot after that time expires.
+	private IEnumerator AddToListOfShotAfterShotDelay (GameObject Rhino, float seconds) {
+		yield return new WaitForSeconds(seconds);
+		_ListOfRhinosThatHaveShot.Add(Rhino);
+	}
 
 	private void SetUpNextJump () {
 		_timeSinceLastJump = 0;
@@ -162,6 +171,10 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 			_listOfAllRhinoObjects.Remove(Rhino);
 		}
 		EventARhinoFellBehind(Rhino);
+	}
+
+	private void OnDestroy () {
+		
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {

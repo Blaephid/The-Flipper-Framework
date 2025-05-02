@@ -54,12 +54,13 @@ namespace SplineMesh
 		public int      _maxNumber_ = -1;
 
 		[DrawHorizontalWithOthers(new string[]{"_spaceFromEnd_"})]
-		[Tooltip("How far along the spline until objects start being placed."), Min(-1)]
+		[Tooltip("How far along the spline until objects start being placed."), Min(0)]
 		[Delayed]
 		public float _spaceFromStart_ = 0f;
 		[Tooltip("How far from the end of the spline when objects can no longer be placed.")]
 		[Delayed]
 		[HideInInspector]
+		[Min(0)]
 		public float _spaceFromEnd_ = 0f;
 
 		[Header("Additional Placement")]

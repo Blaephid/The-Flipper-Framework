@@ -58,7 +58,7 @@ public class S_ActionManager : MonoBehaviour
 #endif
 	public S_S_ActionHandling.PrimaryPlayerStates                _addState; //Used only by the inspector in order to add states for other states to transition into.
 
-	//Specific action trackers
+	//Specific action trackers. Mainly used for external scripts to find (like enemies).
 	[HideInInspector]
 	public float        _charge;                                //Used by SpinCharge and DropCharge.
 	[HideInInspector]
@@ -75,9 +75,10 @@ public class S_ActionManager : MonoBehaviour
 	public Vector3      _jumpAngle;		//Set externally, and in the jump action, may be used to choose the angle (E.G., Wall Climbing sets this, and if Jump detects that's the current state (enum), uses this.
 	[HideInInspector]
 	public Vector3      _dashAngle;         //Same as above but for the jumpDash action.
-
 	[HideInInspector]
 	public float       _speedBeforeAction; //Used by some actions like homing for previous speed to be accessible. Set to 0 on switch.
+	[HideInInspector]
+	public Vector3 _currentTargetPosition; //Used for actions like the Homing Attack that focus in on a specfic point. Can be used to find if an object is currently the target by comparing its own position to this.
 
 	//Can perform actions
 

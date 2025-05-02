@@ -24,6 +24,7 @@ public class S_RailEnemyData
 
 	[Header("Control")]
 	public float _startSpeed_ = 60f;
+	public float _minimumSpeed_ = 60f;
 	public float _railUpOffset_;
 	public bool _followPlayer_;
 	public bool _isBackwards_;
@@ -249,9 +250,12 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		{
 			TrackPlayer();
 			SlopePhysics();
+
+			_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _Data._minimumSpeed_);
 		}
 	}
 
+	//Adusts speed to a goal speed based on player's current state and position.
 	void TrackPlayer () {
 		if (!_Data._followPlayer_) return;
 
@@ -265,14 +269,22 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		//If player is also grinding.
 		if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected()))
 		{
-			float modi = _Data._LerpFollowByDistance_.Evaluate(_playerDistanceIncludingOffset);
+			float modi = _hasReachedGoalInFrontOfPlayer ? _Data._LerpFollowByDistance_.Evaluate(_playerDistanceWithoutOffset) : _Data._LerpFollowByDistance_.Evaluate(_playerDistanceIncludingOffset);
 			lerpSpeed *= modi;
 			goalSpeed = _playerDistanceIncludingOffset < 0 ? goalSpeed / modi : goalSpeed * modi; // If enemy is ahead of goal position, decrease goal speed. If behind, increase goal speed.
-			goalSpeed = _hasReachedGoalInFrontOfPlayer ? goalSpeed : goalSpeed - 3f; //If ahead of player not including goal position, decrease goal speed slightly so palyer can slowly catch up.
+
+			//If ahead of player not including goal position, allow player a chance to catch up.
+			if (_hasReachedGoalInFrontOfPlayer && goalSpeed > 100)
+			{
+				goalSpeed -= 10f;
+				if (goalSpeed > _RF._grindingSpeed) 
+				{ lerpSpeed *= 0.65f; }
+			}
 		}
-		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing) //If player is homing, slow down to allow the hit to be made.
+		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing 
+			&& S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10*10) //If player is homing in on this, slow down to allow the hit to be made.
 		{
-			goalSpeed = _RF._grindingSpeed * 0.95f;
+			goalSpeed = _RF._grindingSpeed * 0.98f;
 			lerpSpeed /= 2;
 		}
 		else
@@ -336,6 +348,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private void SetHasReachedGoalInFrontOfPlayer (bool set) {
 		if (_hasReachedGoalInFrontOfPlayer != set)
 		{
+			Debug.Log(OnGetInFrontOfPlayer.GetInvocationList().Length);
+			Debug.Log(OnGetInFrontOfPlayer.GetInvocationList());
 			_hasReachedGoalInFrontOfPlayer = set;
 			if (set) { OnGetInFrontOfPlayer.Invoke(gameObject); }
 			else { OnFallBehindPlayer.Invoke(gameObject); }

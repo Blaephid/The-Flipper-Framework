@@ -19,6 +19,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 	[HideInInspector]
 	public Transform              _Target;
+	private S_Data_HomingTarget     _TargetData;
 	#endregion
 
 
@@ -147,6 +148,8 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		//Gets the direction to move in, rotate a lot faster than normal for the first frame.
 		_Target = _HomingHandler._TargetObject.transform;
+		_TargetData = _Target.GetComponent<S_Data_HomingTarget>();
+
 		_targetDirection = _Target.position - _PlayerPhys._CharacterCenterPosition;
 		_currentDirection = Vector3.RotateTowards(_MainSkin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
 
@@ -173,8 +176,18 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_HomingTrailScript.emit = true;
 
 		//Get speed of attack and speed to return to on hit.		
-		_speedAtStart = Mathf.Max(_Actions._speedBeforeAction * 0.9f, _homingAttackSpeed_);
+		_speedAtStart = Mathf.Max(_Actions._speedBeforeAction * 1.1f, _homingAttackSpeed_);
 		_speedAtStart = Mathf.Min(_speedAtStart, _maxHomingSpeed_);
+
+		float targetDistanceInAFrame = S_S_MoreMaths.GetDistanceSqrOfVectors(_TargetData._positionLastFixedUpdate, _TargetData._positionThisFixedUpdate);
+		//If target has moved at a speed greater than half the player's
+		if (targetDistanceInAFrame > Mathf.Pow(_speedAtStart / 2 * Time.fixedDeltaTime, 2))
+		{
+			//Increase player speed to ensure they catch up.
+			float targetSpeed = Vector3.Distance(_TargetData._positionLastFixedUpdate, _TargetData._positionThisFixedUpdate) / Time.fixedDeltaTime;
+			_speedAtStart = Mathf.Max(_speedAtStart, targetSpeed + (_homingAttackSpeed_ * 0.6f));
+		}
+
 		_Actions._listOfSpeedOnPaths.Add(_speedAtStart);
 
 		_Actions._speedBeforeAction = Mathf.Max(_Actions._speedBeforeAction, _minSpeedGainOnHit_);
@@ -225,6 +238,8 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 			_Actions._ActionDefault.StartAction();
 			return;
 		}
+
+		_Actions._currentTargetPosition = _Target.position;
 
 		//Get direction to move in.
 		Vector3 newDirection = _Target.position - _PlayerPhys._CharacterCenterPosition;

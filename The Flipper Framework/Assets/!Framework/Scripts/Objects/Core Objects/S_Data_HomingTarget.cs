@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [AddComponentMenu("Data Components/Homing Target")]
-[ExecuteInEditMode]
 public class S_Data_HomingTarget : S_Data_Base
 {
 	S_Data_HomingTarget () {
@@ -23,6 +22,10 @@ public class S_Data_HomingTarget : S_Data_Base
 	[Range(0.1f,1)]
 	public float _distanceModifier = 1;
 
+	//These are used to track how fast the target is moving to adjust homing attack speed.
+	[HideInInspector] public Vector3 _positionLastFixedUpdate;
+	[HideInInspector] public Vector3 _positionThisFixedUpdate = Vector3.one;
+
 	public enum TargetType { normal, destroy}
 	public enum EffectOnHoming { normal, shootdown}
 
@@ -32,6 +35,11 @@ public class S_Data_HomingTarget : S_Data_Base
 
 	private void OnEnable () {
 		gameObject.layer = 17;
+	}
+
+	private void FixedUpdate () {
+		_positionLastFixedUpdate = _positionThisFixedUpdate;
+		_positionThisFixedUpdate = transform.position;
 	}
 
 	public override void DrawGizmosAndHandles ( bool selected ) {
