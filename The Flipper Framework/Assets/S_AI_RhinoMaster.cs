@@ -56,6 +56,8 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	private GameObject _Player;
 	private S_PlayerVelocity _PlayerVel;
 
+#if UNITY_EDITOR
+
 	private void OnValidate () {
 		if (!_RhinosToSpawn) { return; }
 
@@ -65,26 +67,28 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 			_rhinoArrayWasChanged = true; //Set a boolean to true so the code that needs doing is done in Update, rather than OnValidate.
 		}
 	}
+#endif
 
 	private void Start () {
+		if(!Application.isPlaying) { return; } //Ensure these aren't called when returning to edit mode.
+
 		_listOfAllRhinoObjects = new List<GameObject>();
 		_ListOfRhinosInfront = new List<GameObject>();
 		_ListOfRhinosThatHaveShot = new List<GameObject>();
 		_ListOfRhinosThatHaveJumped = new List<GameObject>();
 		_listOfAllRhinos = new List<RhinoManaging>();
 
-		AddRhinosFromArrayToLists(ref _Rhinos);
-
 		SetUpNextAttack();
 		SetUpNextJump();
 	}
 
-	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
 		_Player = Player.gameObject;
 		_PlayerVel = Player._PlayerVelocity;
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 
+		AddRhinosFromArrayToLists(ref _Rhinos);
 		if (_InheritRhinosFromThisOnActivation)
 		{
 			AddRhinosFromArrayToLists(ref _InheritRhinosFromThisOnActivation._Rhinos);
@@ -102,6 +106,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 				_listOfAllRhinoObjects.Add(RhinoManager._Object);
 				RhinoManager._RailEnemyScript.OnFallBehindPlayer += EventARhinoFellBehind;
 				RhinoManager._RailEnemyScript.OnGetInFrontOfPlayer += EventARhinoGotInFront;
+				Debug.Log("Add In Front Event from + " + RhinoManager._Object);
 				RhinoManager._Object.GetComponent<S_AI_Health>().OnDefeated += EventRhinoDefeated;
 			}
 		}
@@ -109,12 +114,16 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 	[ExecuteAlways]
 	private void Update () {
+#if UNITY_EDITOR
 		TrackingIfArrayWasChanged();
+#endif
 	}
 
 	private void FixedUpdate () {
 		_timeSinceLastAttack += Time.fixedDeltaTime;
 		_timeSinceLastJump += Time.fixedDeltaTime;
+
+		Debug.Log(_ListOfRhinosInfront.Count + "  In Front");
 
 		//Only rhinos in front will attack and jump, to prevent player being confused.
 		for (int i = 0 ; i < _ListOfRhinosInfront.Count ; i++)
@@ -156,6 +165,8 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	public void EventARhinoGotInFront ( GameObject Rhino ) {
 		_ListOfRhinosInfront.Add(Rhino);
 		_allInFrontOfPlayer = false;
+
+		Debug.Log(_ListOfRhinosInfront.Count + " Now  In Front!!!!!!!!!!!!!!!!");
 	}
 
 	public void EventARhinoFellBehind ( GameObject Rhino ) {
@@ -164,13 +175,21 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		_allInFrontOfPlayer = _ListOfRhinosInfront.Count == _listOfAllRhinoObjects.Count;
 	}
 
-	public void EventRhinoDefeated ( GameObject Rhino ) {
+	public void EventRhinoDefeated ( GameObject Rhino, S_AI_Health HealthScript ) {
 		if (_listOfAllRhinoObjects.Contains(Rhino))
 		{
+			ClearEventConnections(Rhino, HealthScript);
+
 			_listOfAllRhinos.RemoveAt(_listOfAllRhinoObjects.IndexOf(Rhino));
 			_listOfAllRhinoObjects.Remove(Rhino);
 		}
 		EventARhinoFellBehind(Rhino);
+	}
+
+	private void ClearEventConnections (GameObject Rhino, S_AI_Health HealthScript) {
+		Rhino.GetComponent<S_AI_RailEnemy>().OnFallBehindPlayer -= EventARhinoFellBehind;
+		Rhino.GetComponent<S_AI_RailEnemy>().OnGetInFrontOfPlayer -= EventARhinoGotInFront;
+		HealthScript.OnDefeated -= EventRhinoDefeated;
 	}
 
 	private void OnDestroy () {
@@ -179,6 +198,13 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
 		if (!gameObject) { return; }
+
+		for(int i = 0 ; i < _listOfAllRhinoObjects.Count ; i++)
+		{
+			GameObject Rhino = _listOfAllRhinoObjects[i];
+			EventRhinoDefeated(Rhino, Rhino.GetComponent<S_AI_Health>());
+		}
+
 		Start();
 
 		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;

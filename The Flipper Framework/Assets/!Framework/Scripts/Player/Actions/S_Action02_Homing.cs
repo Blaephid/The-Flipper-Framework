@@ -181,11 +181,11 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		float targetDistanceInAFrame = S_S_MoreMaths.GetDistanceSqrOfVectors(_TargetData._positionLastFixedUpdate, _TargetData._positionThisFixedUpdate);
 		//If target has moved at a speed greater than half the player's
-		if (targetDistanceInAFrame > Mathf.Pow(_speedAtStart / 2 * Time.fixedDeltaTime, 2))
+		if (targetDistanceInAFrame > Mathf.Pow(_speedAtStart / 2.5f * Time.fixedDeltaTime, 2))
 		{
 			//Increase player speed to ensure they catch up.
 			float targetSpeed = Vector3.Distance(_TargetData._positionLastFixedUpdate, _TargetData._positionThisFixedUpdate) / Time.fixedDeltaTime;
-			_speedAtStart = Mathf.Max(_speedAtStart, targetSpeed + (_homingAttackSpeed_ * 0.6f));
+			_speedAtStart = Mathf.Max(_speedAtStart, targetSpeed + (_homingAttackSpeed_ * 0.65f));
 		}
 
 		_Actions._listOfSpeedOnPaths.Add(_speedAtStart);

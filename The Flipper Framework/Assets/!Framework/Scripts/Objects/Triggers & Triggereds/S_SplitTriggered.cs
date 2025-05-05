@@ -10,6 +10,10 @@ public class S_SplitTriggered : MonoBehaviour, ITriggerable
 		S_Trigger_External.TriggerGivenObjects(TriggerTypes.On, _FurtherTriggerThese, Player);
 	}
 
+	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
+		S_Trigger_External.TriggerGivenObjects(TriggerTypes.Once, _FurtherTriggerThese, Player);
+	}
+
 	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
 		S_Trigger_External.TriggerGivenObjects(TriggerTypes.Off, _FurtherTriggerThese, Player);
 

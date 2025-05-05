@@ -11,6 +11,10 @@ public interface ITriggerable
 
 	}
 
+	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
+
+	}
+
 	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
 
 	}
@@ -32,6 +36,7 @@ public interface ITriggerable
 public enum TriggerTypes
 {
 	On,
+	Once,
 	Off,
 	Either,
 	Reset,

@@ -13,7 +13,7 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 
 	public bool _willDestroy = true;
 
-	public event System.Action<GameObject> OnDefeated;
+	public event System.Action<GameObject, S_AI_Health> OnDefeated;
 
 	void Awake () {
 		_currentHealth = _maxHealth;
@@ -48,7 +48,7 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 		else
 			gameObject.SetActive(false);
 
-		OnDefeated.Invoke(gameObject);
+		OnDefeated.Invoke(gameObject, this);
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {

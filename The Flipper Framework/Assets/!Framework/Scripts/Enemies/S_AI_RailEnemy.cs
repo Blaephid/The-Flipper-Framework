@@ -91,6 +91,9 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_RF = GetComponent<S_RailFollow_Base>();
 		_RB = GetComponent<Rigidbody>();
 
+		if (OnGetInFrontOfPlayer != null)
+			Debug.Log(OnGetInFrontOfPlayer.GetInvocationList().Length);
+
 		ResetRigidBody();
 
 		if (!_Data._StartSpline_) { return; }
@@ -127,7 +130,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		Debug.Log("Killed itself lmao");
 	}
 
-	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
 		SetIsActive(true);
 		_RF.StartOnRail();
 
@@ -277,19 +280,19 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			if (_hasReachedGoalInFrontOfPlayer && goalSpeed > 100)
 			{
 				goalSpeed -= 10f;
-				if (goalSpeed > _RF._grindingSpeed) 
+				if (goalSpeed > _RF._grindingSpeed)
 				{ lerpSpeed *= 0.65f; }
 			}
 		}
-		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing 
-			&& S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10*10) //If player is homing in on this, slow down to allow the hit to be made.
+		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing
+			&& S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
 		{
 			goalSpeed = _RF._grindingSpeed * 0.98f;
 			lerpSpeed /= 2;
 		}
 		else
 		{
-			if (Vector3.Angle(_PlayerVel._worldVelocity.normalized, (transform.position - _PlayerVel.transform.position).normalized) < 90) 
+			if (Vector3.Angle(_PlayerVel._worldVelocity.normalized, (transform.position - _PlayerVel.transform.position).normalized) < 90)
 				SetHasReachedGoalInFrontOfPlayer(true); //If player's direction is taking them towards the rhinos, then the rhinos are in front.
 			else SetHasReachedGoalInFrontOfPlayer(false);
 
@@ -345,14 +348,17 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		}
 	}
 
-	private void SetHasReachedGoalInFrontOfPlayer (bool set) {
+	private void SetHasReachedGoalInFrontOfPlayer ( bool set ) {
 		if (_hasReachedGoalInFrontOfPlayer != set)
 		{
-			Debug.Log(OnGetInFrontOfPlayer.GetInvocationList().Length);
-			Debug.Log(OnGetInFrontOfPlayer.GetInvocationList());
+			if (OnGetInFrontOfPlayer != null)
+			{
+				Debug.Log(OnGetInFrontOfPlayer.GetInvocationList().Length);
+			}
+
 			_hasReachedGoalInFrontOfPlayer = set;
-			if (set) { OnGetInFrontOfPlayer.Invoke(gameObject); }
-			else { OnFallBehindPlayer.Invoke(gameObject); }
+			if (set && OnGetInFrontOfPlayer != null) { OnGetInFrontOfPlayer.Invoke(gameObject); }
+			else if (OnFallBehindPlayer != null) { OnFallBehindPlayer.Invoke(gameObject); }
 		}
 	}
 
@@ -470,6 +476,14 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		SetSplineDetails();
 		PlaceOnSplineBeforeGame();
 		ResetRigidBody();
+
+		//Reset tracking values
+		_hasReachedGoalInFrontOfPlayer = false;
+		_playerDistanceIncludingOffset = 0;
+		_playerDistanceWithoutOffset = 0;
+		_playerSpeed = 0;
+		_listOfPlayerSpeeds = new List<float> { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
+		_timeGrinding = 0;
 
 		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}

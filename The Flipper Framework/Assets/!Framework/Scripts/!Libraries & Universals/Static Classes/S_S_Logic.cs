@@ -13,4 +13,5 @@ public class S_S_Logic
 		if (!list.Contains(ID)) { return; }
 		list.Remove(ID);
 	}
+
 }
