@@ -39,7 +39,9 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	public S_AI_RhinoMaster _InheritRhinosFromThisOnActivation;
 	[SerializeField] private float _distanceBetweenRails = 10;
 	[SerializeField] private Vector2 _timeBetweenAttacks_ = new Vector2(2f,3f);
-	[SerializeField] private Vector2 _timeBetweenJumps_ = new Vector2(5f,6f);
+	[SerializeField] private Vector2 _timeBetweenHops_ = new Vector2(5f,6f);
+	[SerializeField] private float  _timeBeforeFirstHop_ = 2;
+	[SerializeField] private float  _timeBeforeFirstAttack_ = 2;
 
 	private float _timeToNextAttack;
 	private float _timeToNextJump;
@@ -50,7 +52,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	private List<RhinoManaging> _listOfAllRhinos;
 	private List<GameObject> _ListOfRhinosInfront = new List<GameObject>();
 	private List<GameObject> _ListOfRhinosThatHaveShot = new List<GameObject>();
-	private List<GameObject> _ListOfRhinosThatHaveJumped = new List<GameObject>();
+	private List<GameObject> _ListOfRhinosThatHaveHopped = new List<GameObject>();
 	private bool _allInFrontOfPlayer;
 
 	private GameObject _Player;
@@ -70,16 +72,16 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 #endif
 
 	private void Start () {
-		if(!Application.isPlaying) { return; } //Ensure these aren't called when returning to edit mode.
+		if (!Application.isPlaying) { return; } //Ensure these aren't called when returning to edit mode.
 
 		_listOfAllRhinoObjects = new List<GameObject>();
 		_ListOfRhinosInfront = new List<GameObject>();
 		_ListOfRhinosThatHaveShot = new List<GameObject>();
-		_ListOfRhinosThatHaveJumped = new List<GameObject>();
+		_ListOfRhinosThatHaveHopped = new List<GameObject>();
 		_listOfAllRhinos = new List<RhinoManaging>();
 
-		SetUpNextAttack();
-		SetUpNextJump();
+		SetUpNextAttack(_timeBeforeFirstAttack_);
+		SetUpNextHop(_timeBeforeFirstHop_);
 	}
 
 	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
@@ -106,7 +108,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 				_listOfAllRhinoObjects.Add(RhinoManager._Object);
 				RhinoManager._RailEnemyScript.OnFallBehindPlayer += EventARhinoFellBehind;
 				RhinoManager._RailEnemyScript.OnGetInFrontOfPlayer += EventARhinoGotInFront;
-				Debug.Log("Add In Front Event from + " + RhinoManager._Object);
 				RhinoManager._Object.GetComponent<S_AI_Health>().OnDefeated += EventRhinoDefeated;
 			}
 		}
@@ -123,7 +124,8 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		_timeSinceLastAttack += Time.fixedDeltaTime;
 		_timeSinceLastJump += Time.fixedDeltaTime;
 
-		Debug.Log(_ListOfRhinosInfront.Count + "  In Front");
+		bool tryHop = _timeSinceLastJump >= _timeToNextJump;
+		bool haveAnyHopped = false;
 
 		//Only rhinos in front will attack and jump, to prevent player being confused.
 		for (int i = 0 ; i < _ListOfRhinosInfront.Count ; i++)
@@ -133,10 +135,25 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 				if (!_ListOfRhinosThatHaveShot.Contains(_ListOfRhinosInfront[i]))
 				{
 					S_AI_RhinoActions Action = _ListOfRhinosInfront[i].GetComponent<S_AI_RhinoActions>();
-					Action.ReadyShot(_Player.transform, _PlayerVel);
-					StartCoroutine(AddToListOfShotAfterShotDelay(_ListOfRhinosInfront[i], Action._timeToReadyShot));
+					if (Action.ReadyShot(_Player.transform, _PlayerVel))
+					{
+						StartCoroutine(AddToListOfShotAfterShotDelay(_ListOfRhinosInfront[i], Action._timeToReadyShot));
+						SetUpNextAttack();
 
-					SetUpNextAttack();
+					}
+				}
+			}
+
+			if (tryHop && !haveAnyHopped)
+			{
+				if (!_ListOfRhinosThatHaveHopped.Contains(_ListOfRhinosInfront[i]))
+				{
+					S_AI_RhinoActions Action = _ListOfRhinosInfront[i].GetComponent<S_AI_RhinoActions>();
+					if (Action.CanSwitch(_distanceBetweenRails))
+					{
+						haveAnyHopped = true;
+						SetUpNextHop();
+					}
 				}
 			}
 		}
@@ -144,29 +161,32 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		//Once all rhinos in front have shot, can loop round again.
 		if (_ListOfRhinosThatHaveShot.Count >= _ListOfRhinosInfront.Count && _ListOfRhinosThatHaveShot.Count > 0)
 		{ _ListOfRhinosThatHaveShot.Clear(); }
+
+		//If none had the safety to jump, then allow ones that have already hopped to try again.
+		if(!haveAnyHopped && tryHop)
+		{ _ListOfRhinosThatHaveHopped.Clear(); }
 	}
 
 	//Since shot takes some time after being told to ready shot here, track the rhino as having shot after that time expires.
-	private IEnumerator AddToListOfShotAfterShotDelay (GameObject Rhino, float seconds) {
+	private IEnumerator AddToListOfShotAfterShotDelay ( GameObject Rhino, float seconds ) {
 		yield return new WaitForSeconds(seconds);
 		_ListOfRhinosThatHaveShot.Add(Rhino);
 	}
 
-	private void SetUpNextJump () {
+	private void SetUpNextHop ( float priority = 0 ) {
 		_timeSinceLastJump = 0;
-		_timeToNextJump = UnityEngine.Random.Range(_timeBetweenJumps_.x, _timeBetweenJumps_.y);
+		_timeToNextJump = priority > 0 ? priority : UnityEngine.Random.Range(_timeBetweenHops_.x, _timeBetweenHops_.y);
 	}
 
-	private void SetUpNextAttack () {
+	private void SetUpNextAttack (float priority = 0) {
 		_timeSinceLastAttack = 0;
-		_timeToNextAttack = UnityEngine.Random.Range(_timeBetweenAttacks_.x, _timeBetweenAttacks_.y);
+		_timeToNextAttack = priority > 0 ? priority : UnityEngine.Random.Range(_timeBetweenAttacks_.x, _timeBetweenAttacks_.y);
 	}
 
 	public void EventARhinoGotInFront ( GameObject Rhino ) {
 		_ListOfRhinosInfront.Add(Rhino);
 		_allInFrontOfPlayer = false;
 
-		Debug.Log(_ListOfRhinosInfront.Count + " Now  In Front!!!!!!!!!!!!!!!!");
 	}
 
 	public void EventARhinoFellBehind ( GameObject Rhino ) {
@@ -186,20 +206,20 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		EventARhinoFellBehind(Rhino);
 	}
 
-	private void ClearEventConnections (GameObject Rhino, S_AI_Health HealthScript) {
+	private void ClearEventConnections ( GameObject Rhino, S_AI_Health HealthScript ) {
 		Rhino.GetComponent<S_AI_RailEnemy>().OnFallBehindPlayer -= EventARhinoFellBehind;
 		Rhino.GetComponent<S_AI_RailEnemy>().OnGetInFrontOfPlayer -= EventARhinoGotInFront;
 		HealthScript.OnDefeated -= EventRhinoDefeated;
 	}
 
 	private void OnDestroy () {
-		
+
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
 		if (!gameObject) { return; }
 
-		for(int i = 0 ; i < _listOfAllRhinoObjects.Count ; i++)
+		for (int i = 0 ; i < _listOfAllRhinoObjects.Count ; i++)
 		{
 			GameObject Rhino = _listOfAllRhinoObjects[i];
 			EventRhinoDefeated(Rhino, Rhino.GetComponent<S_AI_Health>());

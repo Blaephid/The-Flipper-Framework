@@ -504,8 +504,12 @@ MonoBehaviour:
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _offset: {x: 0, y: 0, z: 0}
-  drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
+  OnHit: 0
+  OnDestroy: 0
+  _distanceModifier: 1
+  _positionLastFixedUpdate: {x: 0, y: 0, z: 0}
+  _positionThisFixedUpdate: {x: 1, y: 1, z: 1}
 --- !u!65 &7548433237021547079
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -669,8 +673,12 @@ MonoBehaviour:
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _offset: {x: 0, y: 0, z: 0}
-  drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
+  OnHit: 0
+  OnDestroy: 0
+  _distanceModifier: 1
+  _positionLastFixedUpdate: {x: 0, y: 0, z: 0}
+  _positionThisFixedUpdate: {x: 1, y: 1, z: 1}
 --- !u!65 &3360964907994545715
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -929,8 +937,12 @@ MonoBehaviour:
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _offset: {x: 0, y: 0, z: 0}
-  drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
+  OnHit: 0
+  OnDestroy: 0
+  _distanceModifier: 1
+  _positionLastFixedUpdate: {x: 0, y: 0, z: 0}
+  _positionThisFixedUpdate: {x: 1, y: 1, z: 1}
 --- !u!65 &8362753387288448096
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1336,6 +1348,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whatAction: 2
   _delayInSeconds: 0
+  _applyOnRespawn: 0
 --- !u!64 &6335949014425144138
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1983,8 +1996,12 @@ MonoBehaviour:
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _offset: {x: 0, y: 0, z: 0}
-  drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
+  OnHit: 0
+  OnDestroy: 0
+  _distanceModifier: 1
+  _positionLastFixedUpdate: {x: 0, y: 0, z: 0}
+  _positionThisFixedUpdate: {x: 1, y: 1, z: 1}
 --- !u!65 &4446964307452431131
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2243,8 +2260,12 @@ MonoBehaviour:
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _offset: {x: 0, y: 0, z: 0}
-  drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
+  OnHit: 0
+  OnDestroy: 0
+  _distanceModifier: 1
+  _positionLastFixedUpdate: {x: 0, y: 0, z: 0}
+  _positionThisFixedUpdate: {x: 1, y: 1, z: 1}
 --- !u!65 &3572608072860729376
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3091,6 +3112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whatAction: 2
   _delayInSeconds: 0
+  _applyOnRespawn: 0
 --- !u!64 &7888403618817261200
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3798,8 +3820,12 @@ MonoBehaviour:
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _offset: {x: 0, y: 0, z: 0}
-  drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
+  OnHit: 0
+  OnDestroy: 0
+  _distanceModifier: 1
+  _positionLastFixedUpdate: {x: 0, y: 0, z: 0}
+  _positionThisFixedUpdate: {x: 1, y: 1, z: 1}
 --- !u!65 &7309941506349654987
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4667,6 +4693,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whatAction: 2
   _delayInSeconds: 0
+  _applyOnRespawn: 0
 --- !u!64 &3663515340818551411
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5243,22 +5270,22 @@ PrefabInstance:
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7422175
+      value: 0.7816421
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0490117
+      value: 0.006524696
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.666912
+      value: -0.62367135
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.04403897
+      value: 0.005206056
       objectReference: {fileID: 0}
     - target: {fileID: 2086042636681044999, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
@@ -5817,22 +5844,22 @@ PrefabInstance:
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.74213463
+      value: 0.78158283
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.048882525
+      value: 0.006518749
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.66702056
+      value: -0.6237458
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.04393496
+      value: 0.005202327
       objectReference: {fileID: 0}
     - target: {fileID: 2086042636681044999, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
@@ -6465,22 +6492,22 @@ PrefabInstance:
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.74205214
+      value: 0.7815235
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.04875402
+      value: 0.006512808
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.6671286
+      value: -0.62382007
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.043831438
+      value: 0.005198599
       objectReference: {fileID: 0}
     - target: {fileID: 2086042636681044999, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
@@ -7124,6 +7151,16 @@ PrefabInstance:
       propertyPath: translation.z
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 265472066857979305, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 5687509575024884490}
+    - target: {fileID: 347753211113655915, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 5687509575024884490}
     - target: {fileID: 495977861868455235, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: mesh
@@ -7220,6 +7257,11 @@ PrefabInstance:
       propertyPath: _DataForPrefabs
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2968418584207846417, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 5687509575024884490}
     - target: {fileID: 3205653318522840315, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: mesh

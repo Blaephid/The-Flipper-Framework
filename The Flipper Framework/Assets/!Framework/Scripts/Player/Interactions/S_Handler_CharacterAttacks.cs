@@ -107,7 +107,9 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	private void EnemyAttack ( S_GeneralEnums.PlayerAttackTypes attackType, Collider col, int damage = 1 ) {
 		bool wasDestroyed = true;
 
-		if (col.transform.parent.TryGetComponent(out S_AI_Health EnemyHealth) && _canHitAgain)
+		S_AI_Health EnemyHealth = col.GetComponentInParent<S_AI_Health>();
+
+		if (EnemyHealth && _canHitAgain)
 		{
 			wasDestroyed = EnemyHealth.DealDamage(damage);
 		}

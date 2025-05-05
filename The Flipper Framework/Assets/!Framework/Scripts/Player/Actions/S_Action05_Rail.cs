@@ -82,12 +82,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	private bool        _canInput = true;   //Set true when entering a rail, but set false when rail hopping. Must be two to perform any actions.
 	private bool        _canHop = false;    //Set false when entering a rail, but true after a moment.
 
-	private float       _hopThisFrame;
-	private float       _distanceToHop;    //Set when starting a hop and will go down by distance traveled every frame, ending action when zero.
-	private float       _timeHopping;
-	private float       _timeToCompleteHop;
-	private bool        _isHoppingRight;   //Hopping to a rail on the right or on the left.
-
 	private bool        _isFacingRight = true;        //Used by the animator, changed on push forward.
 
 	//Boosters
@@ -123,7 +117,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	// Update is called once per frame
 	void Update () {
 		if (!enabled || !_isGrinding || !_RF._RailTransform) { return; }
-		ApplyHopUpdate();
+		_RF.ApplyHopUpdate(_hopSpeed_, _HopSpeedByTime_); //As rail hopping is shared between player and rhinoliners. The fixedUpdate version is not shared as those handle physics differently.
 
 		SoundControl();
 		//Handle animations
@@ -149,7 +143,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		_PlayerPhys._timeOnGround = 0;
 
-		ApplyHopFixedUpdate();
+		HandleHopFixedUpdate(); //Unlike the Update version above, this is not shared with Rhinoliners.
 
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _RF._grindingSpeed = _Actions._listOfSpeedOnPaths[0]; }
@@ -181,7 +175,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_RF._isRailLost = false;
 		_canInput = true;
 		_pushTimer = _pushFowardDelay_;
-		_distanceToHop = 0; //Ensure not immediately stepping when called
+		_RF._distanceToHop = 0; //Ensure not immediately stepping when called
 
 		_Rail_int._canGrindOnRail = false; //Prevents calling this multiple times in one update
 
@@ -410,7 +404,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		_Input.LockInputForAWhile(5f, false, _RF._sampleForwards); //Prevent instant turning off the end of the rail
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, "RailLost", 10));
-		_distanceToHop = 0; //Stop a step that might be happening
+		_RF._distanceToHop = 0; //Stop a step that might be happening
 
 		_isGrinding = false;
 
@@ -635,10 +629,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_Sounds.FeetSource.Stop();
 		_Sounds.QuickStepSound();
 
-		_distanceToHop = _hopDistance_;
-		_isHoppingRight = _Input._RightStepPressed; //Right step has priority over left
-		_timeHopping = 0;
-		_timeToCompleteHop = _hopDistance_ / _hopSpeed_;
+		_RF.ReadyHopValues(_Input._RightStepPressed, _hopDistance_, _hopSpeed_);
 
 		//Disable inputs until the hop is over
 		_canInput = false;
@@ -648,42 +639,16 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		SwapFacingSide();
 	}
 
-	private void ApplyHopUpdate () {
-		//If this is set to over zero in checkHopping, then the player should be moved off the rail accordingly.
-		if (_distanceToHop > 0)
+
+	private void HandleHopFixedUpdate () {
+		if (_RF._distanceToHop > 0)
 		{
-			_timeHopping += Time.deltaTime;
-
-			//Get how far to move this frame and in which direction.
-			_hopThisFrame = _hopSpeed_;
-			_hopThisFrame *= _HopSpeedByTime_.Evaluate(_timeHopping / _timeToCompleteHop);
-
-			_hopThisFrame *= Time.deltaTime;
-			if (_isHoppingRight)
-				_hopThisFrame = -_hopThisFrame;
-			if (_RF._isGoingBackwards)
-				_hopThisFrame = -_hopThisFrame;
-
-			_hopThisFrame = Mathf.Clamp(_hopThisFrame, -_distanceToHop, _distanceToHop);
-
-			//To show hopping off a rail, change the offset, this means the player will still follow the rail during the hop.
-			_RF._setOffSet.Set(_RF._setOffSet.x + _hopThisFrame, _RF._setOffSet.y, _RF._setOffSet.z);
-
-			//Decrease how far to move by how far has moved.
-			_distanceToHop -= Mathf.Abs(_hopThisFrame);
-			_distanceToHop = Mathf.Max(_distanceToHop, 0.1f);
-		}
-	}
-
-	private void ApplyHopFixedUpdate () {
-		if (_distanceToHop > 0)
-		{
-			_PlayerVel.AddGeneralVelocity(_RF._sampleRight * ((_hopThisFrame * -1) / Time.deltaTime));
+			_PlayerVel.AddGeneralVelocity(_RF._sampleRight * ((_RF._hopThisFrame * -1) / Time.deltaTime));
 
 			//If moving, check for walls, and if there's a collision, end state.
-			if (_hopThisFrame > 0)
+			if (_RF._hopThisFrame > 0)
 			{
-				float direction = _isHoppingRight ? 1 : -1;
+				float direction = _RF._isHoppingRight ? 1 : -1;
 				float radius = _CharacterCapsule.radius;
 				if (Physics.BoxCast(_PlayerPhys._CharacterCenterPosition, new Vector3(radius, 1.5f, radius), _MainSkin.right * direction, 
 					_MainSkin.rotation, 4, _Tools.Stats.QuickstepStats.StepLayerMask))
@@ -693,14 +658,14 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			}
 
 			//Near the end of a step, renable collision so can collide again with grind on them instead.
-			if (_distanceToHop < _hopDistance_ / 2 && !_canEnterRail)
+			if (_RF._distanceToHop < _hopDistance_ / 2 && !_canEnterRail)
 			{
 				Physics.IgnoreLayerCollision(gameObject.layer, 23, false);
 				_canEnterRail = true;
 			}
 
 			//Once a step is over and the player hasn't started this action through collisions, exit state.
-			else if (_distanceToHop <= 0.1f)
+			else if (_RF._distanceToHop <= 0.1f)
 			{
 				LoseRail();
 			}
@@ -717,7 +682,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	//Effects
 	void SoundControl () {
-		if (_distanceToHop == 0)
+		if (_RF._distanceToHop == 0)
 			_Sounds.RailGrindSound();
 	}
 	#endregion

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Windows;
 
 public class S_RailFollow_Base : MonoBehaviour
 {
@@ -52,6 +53,13 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	private float _distanceMovedSinceLastFixedUpdate;
 	private float _timeAtLastFixedUpdate;
+
+	//Rail switching (used by player and rhinoliners)
+	[HideInInspector] public float       _hopThisFrame;
+	[HideInInspector] public float       _distanceToHop;    //Set when starting a hop and will go down by distance traveled every frame, ending action when zero.
+	[HideInInspector] public float       _timeHopping;
+	[HideInInspector] public float       _timeToCompleteHop;
+	[HideInInspector] public bool        _isHoppingRight;   //Hopping to a rail on the right or on the left.
 
 	public void CustomUpdate () {
 
@@ -208,6 +216,42 @@ public class S_RailFollow_Base : MonoBehaviour
 
 		return true;
 	}
+
+
+	public void ReadyHopValues (bool right, float distance, float speed) {
+		_distanceToHop = distance;
+		_isHoppingRight = right; //Right step has priority over left
+		_timeHopping = 0;
+		_timeToCompleteHop = distance / speed;
+	}
+
+	public void ApplyHopUpdate (float hopSpeed, AnimationCurve HopByTime) {
+		//If this is set to over zero in checkHopping, then the player should be moved off the rail accordingly.
+		if (_distanceToHop > 0)
+		{
+			_timeHopping += Time.deltaTime;
+
+			//Get how far to move this frame and in which direction.
+			_hopThisFrame = hopSpeed;
+			if(HopByTime != null) _hopThisFrame *= HopByTime.Evaluate(_timeHopping / _timeToCompleteHop);
+
+			_hopThisFrame *= Time.deltaTime;
+			if (_isHoppingRight)
+				_hopThisFrame = -_hopThisFrame;
+			if (_isGoingBackwards)
+				_hopThisFrame = -_hopThisFrame;
+
+			_hopThisFrame = Mathf.Clamp(_hopThisFrame, -_distanceToHop, _distanceToHop);
+
+			//To show hopping off a rail, change the offset, this means the player will still follow the rail during the hop.
+			_setOffSet.Set(_setOffSet.x + _hopThisFrame, _setOffSet.y, _setOffSet.z);
+
+			//Decrease how far to move by how far has moved.
+			_distanceToHop -= Mathf.Abs(_hopThisFrame);
+			_distanceToHop = Mathf.Max(_distanceToHop, 0.1f); //This ensures the hopping won't be ended by this function. Look at the ApplyHopFixedUpdate for player or rhino.
+		}
+	}
+
 
 	//Goes through whole spline and returns the point closests to the given position, along with how far it is.
 	public static Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline, Vector3 offset, float incrementsToIncrease = 5 ) {

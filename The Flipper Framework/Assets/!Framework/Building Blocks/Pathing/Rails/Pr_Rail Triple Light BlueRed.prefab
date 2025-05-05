@@ -756,6 +756,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6353494558601978045, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 6545313735885767098}
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: mesh
@@ -930,6 +935,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6353494558601978045, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 6545313735885767098}
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: mesh
@@ -1575,6 +1585,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6353494558601978045, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 6545313735885767098}
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: mesh
@@ -1729,6 +1744,16 @@ PrefabInstance:
       propertyPath: translation.z
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 265472066857979305, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 8236595248045593740}
+    - target: {fileID: 347753211113655915, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 8236595248045593740}
     - target: {fileID: 495977861868455235, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: mesh
@@ -1815,6 +1840,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pr_Rail_Blue 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2968418584207846417, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 8236595248045593740}
     - target: {fileID: 3004696940732987390, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: mesh

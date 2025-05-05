@@ -37,7 +37,7 @@ namespace SplineMesh
 		private GameObject generated;
 		[CustomReadOnly, SerializeField]
 		[ColourIfNull(1, 0, 0, 1)]
-		private Spline _Spline = null;
+		public Spline _Spline = null;
 		[HideInInspector] public bool toUpdate = true;
 
 		[AsButton("Update","UpdateCommand", null)]

@@ -122,9 +122,13 @@ MonoBehaviour:
   _placeAsPrefab_: 0
   _CurrentPrefabToSpawn: Pr_HomingTarget
   _DataForPrefabs: {fileID: -4308993741941907032}
-  _scale_: {x: 1, y: 1, z: 1}
-  _offset3d_: {x: 0, y: 0, z: 0}
-  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _mainScale: {x: 1, y: 1, z: 1}
+  _mainOffset: {x: 0, y: 0, z: 0}
+  _mainRotation: {x: 0, y: 0, z: 0}
+  _TransformsPerPoint_:
+  - _scale: {x: 1, y: 1, z: 1}
+    _offset3d: {x: 0, y: 0, z: 0}
+    _rotation: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
 --- !u!114 &-4308993741941907032
 MonoBehaviour:
@@ -138,6 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b1a46ddb4e93c48bfea5b68621b70f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
   _hasVisualisationScripted: 0
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -146,11 +151,13 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _InspectorTheme: {fileID: 0}
   _offset: {x: 0, y: 0, z: 0}
-  drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
+  OnHit: 0
+  OnDestroy: 0
+  _distanceModifier: 1
+  _positionLastFixedUpdate: {x: 0, y: 0, z: 0}
+  _positionThisFixedUpdate: {x: 1, y: 1, z: 1}
 --- !u!1 &5032248345694195366
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,6 +170,7 @@ GameObject:
   - component: {fileID: 6728679038143064151}
   - component: {fileID: 1172236659213358101}
   - component: {fileID: 2505866653347779652}
+  - component: {fileID: 6353494558601978045}
   m_Layer: 23
   m_Name: Pr_Rail_Base
   m_TagString: Untagged
@@ -246,10 +254,14 @@ MonoBehaviour:
     type: 3}
   _placeAsPrefab_: 1
   _CurrentPrefabToSpawn: Pr_RailCollider
-  _DataForPrefabs: {fileID: 0}
-  _scale_: {x: 1, y: 1, z: 1}
-  _offset3d_: {x: 0, y: 0, z: 0}
-  _offsetRotation_: {x: 0, y: 0, z: 0}
+  _DataForPrefabs: {fileID: 6353494558601978045}
+  _mainScale: {x: 1, y: 1, z: 1}
+  _mainOffset: {x: 0, y: 0, z: 0}
+  _mainRotation: {x: 0, y: 0, z: 0}
+  _TransformsPerPoint_:
+  - _scale: {x: 1, y: 1, z: 1}
+    _offset3d: {x: 0, y: 0, z: 0}
+    _rotation: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
 --- !u!114 &2505866653347779652
 MonoBehaviour:
@@ -263,14 +275,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf7678d3c3d0e343a641447758f8591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Spline: {fileID: 0}
   UpdateAll: 0
   UpdateNow: 0
   SetValues: 0
   AddThis: []
-  AddBehindThese: []
+  AddThisBehind: []
   NextRail: {fileID: 0}
   PrevRail: {fileID: 0}
-  UseNextRail: {fileID: 0}
-  UsePrevRail: {fileID: 0}
-  AltNextRail: {fileID: 0}
-  AltPrevRail: {fileID: 0}
+  useNextRail: {fileID: 0}
+  usePrevRail: {fileID: 0}
+--- !u!114 &6353494558601978045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5032248345694195366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 470862614bee5e74c9a9f41da51d0f8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSelected: 0
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _SplineParent: {fileID: 0}
+  _Placer: {fileID: 1172236659213358101}
+  _ConnectedRails: {fileID: 2505866653347779652}

@@ -49,8 +49,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	[Header("Tools")]
 	[HideInInspector,SerializeField]
-	private S_RailFollow_Base _RF;
-	private Rigidbody _RB;
+	public S_RailFollow_Base _RF;
+	[HideInInspector] public Rigidbody _RB;
 	[ColourIfNull(0.8f,0.65f,0.65f,1)] public Animator _Animator;
 
 	//See class above. Stored in a seperate class for organised editor and S_AI_RhinoMaster
@@ -98,7 +98,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		if (!_Data._StartSpline_) { return; }
 
-		SetSplineDetails();
+		ReSetSplineDetails();
 
 		PlaceOnSplineBeforeGame();
 		_startPosition = transform.position;
@@ -351,11 +351,6 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private void SetHasReachedGoalInFrontOfPlayer ( bool set ) {
 		if (_hasReachedGoalInFrontOfPlayer != set)
 		{
-			if (OnGetInFrontOfPlayer != null)
-			{
-				Debug.Log(OnGetInFrontOfPlayer.GetInvocationList().Length);
-			}
-
 			_hasReachedGoalInFrontOfPlayer = set;
 			if (set && OnGetInFrontOfPlayer != null) { OnGetInFrontOfPlayer.Invoke(gameObject); }
 			else if (OnFallBehindPlayer != null) { OnFallBehindPlayer.Invoke(gameObject); }
@@ -391,15 +386,19 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_Animator.SetBool(boolean, set);
 	}
 
-	private void SetSplineDetails () {
+	private void ReSetSplineDetails () {
 		if (!_Data._StartSpline_) { return; }
-		_RF._ConnectedRails = _Data._StartingConnectedRails_;
-		_RF._PathSpline = _Data._StartSpline_;
-		_RF._RailTransform = _Data._StartSpline_.transform;
+		SetRail(_Data._StartSpline_, _Data._StartingConnectedRails_);
 
 		_RF._grindingSpeed = 0;
 		_RF._isGoingBackwards = _Data._isBackwards_;
 		_RF._upOffsetRail_ = _Data._railUpOffset_;
+	}
+
+	public void SetRail (Spline Spline, S_AddOnRail AddOns) {
+		_RF._ConnectedRails = AddOns;
+		_RF._PathSpline = Spline;
+		_RF._RailTransform = Spline.transform;
 	}
 
 	private void PlaceOnSplineBeforeGame () {
@@ -473,7 +472,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		TriggerObjectOff();
 
 		transform.position = _startPosition;
-		SetSplineDetails();
+		ReSetSplineDetails();
 		PlaceOnSplineBeforeGame();
 		ResetRigidBody();
 
@@ -490,7 +489,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	public void SetToSpline () {
 		_RF = GetComponent<S_RailFollow_Base>();
-		SetSplineDetails();
+		ReSetSplineDetails();
 		PlaceOnSplineBeforeGame();
 	}
 
