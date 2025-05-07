@@ -193,6 +193,8 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 	//Immediately show towards the floow on hitting target, without losing speed.
 	private void ShootDownOnAttack (Collider col) {
+		if(_PlayerPhys._isGrounded) { return; }
+
 		switch (_Actions._whatCurrentAction)
 		{
 			//If was homing, ensure homing ends properly before applying physics.

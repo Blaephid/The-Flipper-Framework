@@ -107,11 +107,11 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 		_isDead = true;
 		_deadCounter = (int)_respawnAfter_.z - 1;
-		StartCoroutine(TrackDeath());
 	}
 
 	private void FixedUpdate () {
 		HandleDamaged();
+		TrackDeath();
 
 		//For debugging purposes, kill the player at any time by pressing a button.
 		if (_Input._KillBindPressed)
@@ -267,81 +267,76 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Dead"); //Does not have to be undone because on respawn, this will be cleared.
 
 			//Enter the hurt action until respawn
-			StartCoroutine(TrackDeath());
+			//StartCoroutine(TrackDeath());
 			if (!_HurtAction.enabled) _HurtAction.StartAction();
 		}
 	}
 
-	//A coroutine that updates independantly even when the player object is disabled. This handles the different events that happen when dead until respawning.
-	private IEnumerator TrackDeath () {
+	private void TrackDeath () {
+		if(!_isDead) { return; }
 
-		while (_isDead)
+		_deadCounter += 1;
+
+		//Start fading out the screen
+		if (_deadCounter > _respawnAfter_.x && _deadCounter < _respawnAfter_.y)
 		{
-			yield return new WaitForFixedUpdate();
+			_Input._move = Vector3.zero;
 
-			_deadCounter += 1;
+			//Gets the percentage value of the movement from start fade out time to end fade out time
+			float lerpTotal = _respawnAfter_.y - _respawnAfter_.x; //The difference between start and end
+			float lerpAmount = (_deadCounter - _respawnAfter_.x); //The amount after the start
+			lerpAmount = lerpAmount / lerpTotal;    //The progress as a percentage
 
-			//Start fading out the screen
-			if (_deadCounter > _respawnAfter_.x && _deadCounter < _respawnAfter_.y)
-			{
-				_Input._move = Vector3.zero;
-
-				//Gets the percentage value of the movement from start fade out time to end fade out time
-				float lerpTotal = _respawnAfter_.y - _respawnAfter_.x; //The difference between start and end
-				float lerpAmount = (_deadCounter - _respawnAfter_.x); //The amount after the start
-				lerpAmount = lerpAmount / lerpTotal;    //The progress as a percentage
-
-				//Change colour according to the larp value
-				Color imageColour = Color.black;
-				imageColour.a = 1;
-				_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
-			}
-			//When the screen is fully faded, respawn elements
-			else if (_deadCounter == _respawnAfter_.y)
-			{
-				_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
-				_LevelHandler.CallRespawnEvents();
-
-				_counter = _invincibilityTime_; //Ends the counter for flickering so the character will be fully visible on respawn.
-			}
-			//And after being dead for long enough, respawn the player.
-			else if (_deadCounter == _respawnAfter_.z)
-			{
-				ResetStatsOnRespawn();
-				_Input._move = Vector3.zero;
-
-				//Move player back to checkPoint
-				_LevelHandler.ResetToCheckPoint();
-
-				_CharacterCapsule.gameObject.SetActive(true); //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
-				_FadeOutImage.color = Color.black ;
-			}
-			//Removed screen overlay to reveal new location
-			else if (_deadCounter > _respawnAfter_.z)
-			{
-				float lerpAmount = (_deadCounter - _respawnAfter_.z); //The amount after the start
-				lerpAmount = lerpAmount / (_respawnAfter_.w - _respawnAfter_.z);    //The progress as a percentage
-
-				//Change colour according to the lerp value
-				Color imageColour = Color.black;
-				imageColour.a = 0;
-				_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
-
-				if (_deadCounter == _respawnAfter_.z + 2)
-				{
-					_LevelHandler.LaunchOnRespawn();
-				}
-
-				//End state
-				else if (_deadCounter == _respawnAfter_.w)
-				{
-					_isDead = false;
-					_deadCounter = 0;
-				}
-			}
-			else
-				_Input._move = Vector3.zero;
+			//Change colour according to the larp value
+			Color imageColour = Color.black;
+			imageColour.a = 1;
+			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
 		}
+		//When the screen is fully faded, respawn elements
+		else if (_deadCounter == _respawnAfter_.y)
+		{
+			_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
+			_LevelHandler.CallRespawnEvents();
+
+			_counter = _invincibilityTime_; //Ends the counter for flickering so the character will be fully visible on respawn.
+		}
+		//And after being dead for long enough, respawn the player.
+		else if (_deadCounter == _respawnAfter_.z)
+		{
+			ResetStatsOnRespawn();
+			_Input._move = Vector3.zero;
+
+			//Move player back to checkPoint
+			_LevelHandler.ResetToCheckPoint();
+
+			_CharacterCapsule.gameObject.SetActive(true); //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
+			_FadeOutImage.color = Color.black;
+		}
+		//Removed screen overlay to reveal new location
+		else if (_deadCounter > _respawnAfter_.z)
+		{
+			float lerpAmount = (_deadCounter - _respawnAfter_.z); //The amount after the start
+			lerpAmount = lerpAmount / (_respawnAfter_.w - _respawnAfter_.z);    //The progress as a percentage
+
+			//Change colour according to the lerp value
+			Color imageColour = Color.black;
+			imageColour.a = 0;
+			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
+
+			if (_deadCounter == _respawnAfter_.z + 2)
+			{
+				_LevelHandler.LaunchOnRespawn();
+			}
+
+			//End state
+			else if (_deadCounter == _respawnAfter_.w)
+			{
+				_isDead = false;
+				_deadCounter = 0;
+			}
+		}
+		else
+			_Input._move = Vector3.zero;
 	}
 
 	//Returns the player to the state they should be at the start.

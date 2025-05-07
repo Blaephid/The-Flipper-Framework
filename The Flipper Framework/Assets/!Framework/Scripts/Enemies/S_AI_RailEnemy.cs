@@ -55,6 +55,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	//See class above. Stored in a seperate class for organised editor and S_AI_RhinoMaster
 	public S_RailEnemyData _Data;
+	private S_AI_RhinoActions _RhinoActions; //Only set if this is a rhino, and required for unique rhino actions like jumping off at end of rail. Other actions are handled by S_AI_RhinoMaster
 
 	[Space]
 	//If a train with multiple cars, must be placed carefully
@@ -62,7 +63,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	public Vector3[] _modelStartRotations;
 	public float _disanceBetweenModels = 30;
 
-	bool _isActive = false;
+	[HideInInspector] public bool _isActive = false;
 
 	//Player Data
 	[HideInInspector] public S_Action05_Rail _PlayerRailAction;
@@ -90,9 +91,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	private void Start () {
 		_RF = GetComponent<S_RailFollow_Base>();
 		_RB = GetComponent<Rigidbody>();
-
-		if (OnGetInFrontOfPlayer != null)
-			Debug.Log(OnGetInFrontOfPlayer.GetInvocationList().Length);
+		_RhinoActions = _Data._rhino_ ? GetComponent<S_AI_RhinoActions>() : null;
 
 		ResetRigidBody();
 
@@ -100,6 +99,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		ReSetSplineDetails();
 
+		//Start Position
 		PlaceOnSplineBeforeGame();
 		_startPosition = transform.position;
 		_RF._setOffSet = -_Data._startOffset_;
@@ -126,10 +126,6 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			LoseRail();
 	}
 
-	private void OnDestroy () {
-		Debug.Log("Killed itself lmao");
-	}
-
 	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
 		SetIsActive(true);
 		_RF.StartOnRail();
@@ -144,6 +140,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		if (_PlayerRailAction) _PlayerRF = _PlayerRailAction._RF;
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+
+		if(_RhinoActions) { _RhinoActions.TriggerOn(); }
 	}
 
 	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
@@ -256,6 +254,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 			_RF._grindingSpeed = Mathf.Max(_RF._grindingSpeed, _Data._minimumSpeed_);
 		}
+
+		SetAnimatorFloat("Speed", _RF._grindingSpeed);
 	}
 
 	//Adusts speed to a goal speed based on player's current state and position.
@@ -284,11 +284,12 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 				{ lerpSpeed *= 0.65f; }
 			}
 		}
-		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing
-			&& S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
+		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing)
 		{
-			goalSpeed = _RF._grindingSpeed * 0.98f;
-			lerpSpeed /= 2;
+			if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
+				goalSpeed = _RF._grindingSpeed * 0.97f;
+			else
+				goalSpeed = _RF._grindingSpeed * 1.05f;
 		}
 		else
 		{
@@ -308,31 +309,34 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			float thisPointOnSplines = _RF._pointOnSpline;
 			float playerPointOnSplines = _PlayerRF._pointOnSpline;
 
-			//Player on enemy's next rail
-			if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.PrevRail)
+			if (_PlayerRF._ConnectedRails)
 			{
-				onSameRailOrConnected = _PlayerRF._ConnectedRails.PrevRail._Spline == _RF._PathSpline;
-				//Player spline position has enemy's spline added on, to treat them as one continue length.
-				if (onSameRailOrConnected) { playerPointOnSplines += _RF._PathSpline.Length; }
-			}
-			//Player on enemy's previous rail
-			if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.NextRail)
-			{
-				onSameRailOrConnected = _PlayerRF._ConnectedRails.NextRail._Spline == _RF._PathSpline;
-				//Player spline position treated as how far from the enemy's rail (E.G. -200)
-				if (onSameRailOrConnected) playerPointOnSplines = playerPointOnSplines = _PlayerRF._pointOnSpline - _PlayerRF._PathSpline.Length;
-			}
-			//Share next rail
-			if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.NextRail && _RF._ConnectedRails.NextRail)
-			{
-				onSameRailOrConnected = _PlayerRF._ConnectedRails.NextRail._Spline == _RF._ConnectedRails.NextRail._Spline;
-				//Both spline positions treated as how far from the upcoming rail (E.G. -100 & -150)
-				if (onSameRailOrConnected) { thisPointOnSplines = _RF._pointOnSpline - _RF._PathSpline.Length; playerPointOnSplines = _PlayerRF._pointOnSpline - _PlayerRF._PathSpline.Length; }
-			}
-			//Share Prev Rail
-			if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.PrevRail && _RF._ConnectedRails.PrevRail)
-			{
-				onSameRailOrConnected = _PlayerRF._ConnectedRails.PrevRail._Spline == _RF._ConnectedRails.PrevRail._Spline;
+				//Player on enemy's next rail
+				if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.PrevRail)
+				{
+					onSameRailOrConnected = _PlayerRF._ConnectedRails.PrevRail._Spline == _RF._PathSpline;
+					//Player spline position has enemy's spline added on, to treat them as one continue length.
+					if (onSameRailOrConnected) { playerPointOnSplines += _RF._PathSpline.Length; }
+				}
+				//Player on enemy's previous rail
+				if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.NextRail)
+				{
+					onSameRailOrConnected = _PlayerRF._ConnectedRails.NextRail._Spline == _RF._PathSpline;
+					//Player spline position treated as how far from the enemy's rail (E.G. -200)
+					if (onSameRailOrConnected) playerPointOnSplines = playerPointOnSplines = _PlayerRF._pointOnSpline - _PlayerRF._PathSpline.Length;
+				}
+				//Share next rail
+				if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.NextRail && _RF._ConnectedRails.NextRail)
+				{
+					onSameRailOrConnected = _PlayerRF._ConnectedRails.NextRail._Spline == _RF._ConnectedRails.NextRail._Spline;
+					//Both spline positions treated as how far from the upcoming rail (E.G. -100 & -150)
+					if (onSameRailOrConnected) { thisPointOnSplines = _RF._pointOnSpline - _RF._PathSpline.Length; playerPointOnSplines = _PlayerRF._pointOnSpline - _PlayerRF._PathSpline.Length; }
+				}
+				//Share Prev Rail
+				if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.PrevRail && _RF._ConnectedRails.PrevRail)
+				{
+					onSameRailOrConnected = _PlayerRF._ConnectedRails.PrevRail._Spline == _RF._ConnectedRails.PrevRail._Spline;
+				}
 			}
 
 			if (onSameRailOrConnected)
@@ -384,6 +388,12 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		if (!_Data._rhino_ || !_Animator) { return; }
 
 		_Animator.SetBool(boolean, set);
+	}
+
+	public void SetAnimatorFloat(string floatName, float set ) {
+		if (!_Data._rhino_ || !_Animator) { return; }
+
+		_Animator.SetFloat(floatName, set);
 	}
 
 	private void ReSetSplineDetails () {
@@ -449,6 +459,11 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		{
 			_RB.freezeRotation = false;
 			_RB.useGravity = true;
+			SetAnimatorTrigger("Jump");
+			SetAnimatorBool("IsActive", false);
+
+			if(_RhinoActions)
+				_RhinoActions.JumpFromRail();
 		}
 		else if (_Data._armouredTrain_)
 		{

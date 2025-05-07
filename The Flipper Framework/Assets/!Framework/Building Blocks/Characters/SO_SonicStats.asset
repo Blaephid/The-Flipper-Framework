@@ -2420,8 +2420,8 @@ MonoBehaviour:
     energyDrainedOnStart: 5
     cameraFallBack: {x: 20, y: 30, z: 0.8}
   EnemyInteraction:
-    bouncingPower: 45
-    homingBouncingPower: 40
+    bouncingPower: 80
+    homingBouncingPower: 70
     shouldStopOnHit: 0
     damageShakeAmmount: 0.5
     hitShakeAmmount: 1.2

@@ -74,6 +74,16 @@ PrefabInstance:
       propertyPath: translation.z
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 265472066857979305, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 4241719608648795590}
+    - target: {fileID: 347753211113655915, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 495977861868455235, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: mesh
@@ -130,6 +140,21 @@ PrefabInstance:
       propertyPath: translation.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1813104729334554736, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: m_Name
+      value: Pr_Rail_Base -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2185692668928238514, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: m_Name
+      value: Pr_Rail_Base 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2968418584207846417, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 3205653318522840315, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: mesh
@@ -386,6 +411,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3804405268005978634, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: m_Name
+      value: Pr_Rail_Base +1
+      objectReference: {fileID: 0}
     - target: {fileID: 5460508807502805249, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _Spline
@@ -428,13 +458,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6042552156097337576, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
+    - target: {fileID: 6042552156097337576, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6064692439840920647, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _isSelected
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
@@ -463,9 +498,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8738567271679031632, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
+    - target: {fileID: 8738567271679031632, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9095567423855000210, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 9095567423855000210, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: m_Enabled
@@ -576,13 +621,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
+    - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
-      value: Pr_Rail_Base 5
+      value: Pr_Rail_Base -2
       objectReference: {fileID: 0}
     - target: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
@@ -634,6 +684,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6353494558601978045, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: mesh
@@ -758,13 +813,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
+    - target: {fileID: 2505866653347779652, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
-      value: Pr_Rail_Base 4
+      value: Pr_Rail_Base +2
       objectReference: {fileID: 0}
     - target: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
@@ -816,6 +876,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6353494558601978045, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _SplineParent
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: mesh

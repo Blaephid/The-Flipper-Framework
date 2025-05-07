@@ -44,9 +44,9 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	[SerializeField] private float  _timeBeforeFirstAttack_ = 2;
 
 	private float _timeToNextAttack;
-	private float _timeToNextJump;
+	private float _timeToNextHop;
 	private float _timeSinceLastAttack;
-	private float _timeSinceLastJump;
+	private float _timeSinceLasHop;
 
 	private List<GameObject> _listOfAllRhinoObjects;
 	private List<RhinoManaging> _listOfAllRhinos;
@@ -122,15 +122,18 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 	private void FixedUpdate () {
 		_timeSinceLastAttack += Time.fixedDeltaTime;
-		_timeSinceLastJump += Time.fixedDeltaTime;
+		_timeSinceLasHop += Time.fixedDeltaTime;
 
-		bool tryHop = _timeSinceLastJump >= _timeToNextJump;
+		bool tryHop = _timeSinceLasHop >= _timeToNextHop;
 		bool haveAnyHopped = false;
+
+		bool tryShoot = _timeSinceLastAttack >= _timeToNextAttack;
+		bool haveAnyShot = false;
 
 		//Only rhinos in front will attack and jump, to prevent player being confused.
 		for (int i = 0 ; i < _ListOfRhinosInfront.Count ; i++)
 		{
-			if (_timeSinceLastAttack >= _timeToNextAttack)
+			if (tryShoot && !haveAnyShot)
 			{
 				if (!_ListOfRhinosThatHaveShot.Contains(_ListOfRhinosInfront[i]))
 				{
@@ -139,7 +142,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 					{
 						StartCoroutine(AddToListOfShotAfterShotDelay(_ListOfRhinosInfront[i], Action._timeToReadyShot));
 						SetUpNextAttack();
-
+						haveAnyShot = true;
 					}
 				}
 			}
@@ -158,11 +161,11 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 			}
 		}
 
-		//Once all rhinos in front have shot, can loop round again.
-		if (_ListOfRhinosThatHaveShot.Count >= _ListOfRhinosInfront.Count && _ListOfRhinosThatHaveShot.Count > 0)
+		//If all rhinos have shot, or none of the ones that haven't are able to, reset.
+		if (!haveAnyShot && tryShoot)
 		{ _ListOfRhinosThatHaveShot.Clear(); }
 
-		//If none had the safety to jump, then allow ones that have already hopped to try again.
+		//If none had the safety to hop, then allow ones that have already hopped to try again.
 		if(!haveAnyHopped && tryHop)
 		{ _ListOfRhinosThatHaveHopped.Clear(); }
 	}
@@ -174,8 +177,8 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	}
 
 	private void SetUpNextHop ( float priority = 0 ) {
-		_timeSinceLastJump = 0;
-		_timeToNextJump = priority > 0 ? priority : UnityEngine.Random.Range(_timeBetweenHops_.x, _timeBetweenHops_.y);
+		_timeSinceLasHop = 0;
+		_timeToNextHop = priority > 0 ? priority : UnityEngine.Random.Range(_timeBetweenHops_.x, _timeBetweenHops_.y);
 	}
 
 	private void SetUpNextAttack (float priority = 0) {
@@ -210,10 +213,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		Rhino.GetComponent<S_AI_RailEnemy>().OnFallBehindPlayer -= EventARhinoFellBehind;
 		Rhino.GetComponent<S_AI_RailEnemy>().OnGetInFrontOfPlayer -= EventARhinoGotInFront;
 		HealthScript.OnDefeated -= EventRhinoDefeated;
-	}
-
-	private void OnDestroy () {
-
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {

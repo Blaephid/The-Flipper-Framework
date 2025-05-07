@@ -14,11 +14,17 @@ public class S_AI_RhinoActions : MonoBehaviour
 	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] Transform _ShootPoint_;
 	[BaseColour(0.5f,0.5f,0.5f,1)]
 	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] ParticleSystem _ReadyShotParticle_;
+	[BaseColour(0.5f,0.5f,0.5f,1)]
+	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] S_Data_HomingTarget _HomingTarget;
+	[BaseColour(0.5f,0.5f,0.5f,1)]
+	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] S_CustomGravity _CustomGravity;
 
 	private S_AI_RailEnemy _RailBehaviour;
 
+	private bool _currentlyOnRail;
 	private bool _isSwitching;
 	private bool _isShooting;
+	private bool _isJumping;
 
 	private Transform _Target;
 	private S_PlayerVelocity _TargetVel;
@@ -30,10 +36,13 @@ public class S_AI_RhinoActions : MonoBehaviour
 	[SerializeField] public float  _timeToReadyShot = 0.6f;
 	[SerializeField] private Vector2 _minMaxShotSpeeds = new Vector2(60, 120);
 
-	[Header("Jumping")]
+	[Header("Hopping")]
 	[SerializeField] private LayerMask _LayersOfRailsAndBlockers;
 	[SerializeField] private float _hopSpeed_ = 8;
 	float _timeSpentReadyingShot;
+
+	int _framesSinceJump;
+	const int _framesAfterJumpToStartSearchingForNewRail = 30;
 
 	private void Start () {
 		_RailBehaviour = GetComponent<S_AI_RailEnemy>();
@@ -44,7 +53,13 @@ public class S_AI_RhinoActions : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
-		if (_isShooting)
+		if (_isJumping)
+		{
+			_framesSinceJump++;
+ 			if (_framesSinceJump >= _framesAfterJumpToStartSearchingForNewRail) 
+  			{ LookForNewRail(); }
+		}
+		else if (_isShooting)
 		{
 			_timeSpentReadyingShot += Time.fixedDeltaTime;
 
@@ -59,22 +74,51 @@ public class S_AI_RhinoActions : MonoBehaviour
 		}
 	}
 
+
+	public void TriggerOn () {
+		SetOnRail(true);
+	}
+
+	#region JumpOffRail
+	public void JumpFromRail () {
+		Vector3 JumpForce = transform.up * 50;
+		_RailBehaviour._RB.velocity += JumpForce;
+
+		_isJumping = true;
+		_isShooting = false;
+		_isSwitching = false;
+
+		_CustomGravity._isGravityOn = true;
+
+		SetOnRail(false);
+		_framesSinceJump = 0;
+	}
+
+	#endregion
+
 	#region Switching
 
-	public bool CanSwitch ( float distance ) {
-		if (_isSwitching || _isShooting) { return false; }
-		if (_RailBehaviour._RF._PathSpline.Length - _RailBehaviour._RF._pointOnSpline < 80) return false; //Cant switch if too close to ending current rail.
+	public bool CanSwitch ( float distanceBetweenRails) {
+		return false;
 
+		if (_isShooting || _isSwitching || _isJumping) { return false; }
+
+		float currentSpeed = _RailBehaviour._RF._grindingSpeed;
+		float distanceNeeded = currentSpeed * Time.fixedDeltaTime * 80;
+
+		//Cant switch if too close to ending current rail.
+		if (!_RailBehaviour._RF._isGoingBackwards && _RailBehaviour._RF._PathSpline.Length - _RailBehaviour._RF._pointOnSpline < distanceNeeded) return false;
+		else if(_RailBehaviour._RF._isGoingBackwards && _RailBehaviour._RF._pointOnSpline < distanceNeeded) { return false; }
 
 		float firstDirection =  Random.value < 0.5f ? -1 : 1;
 
-		if (IsValidRailOnSide(firstDirection, distance))
+		if (IsValidRailOnSide(firstDirection, distanceBetweenRails))
 		{
-			RailSwitch(firstDirection > 0, distance); return true;
+			RailSwitch(firstDirection > 0, distanceBetweenRails); return true;
 		}
-		if (IsValidRailOnSide(-firstDirection, distance))
+		if (IsValidRailOnSide(-firstDirection, distanceBetweenRails))
 		{
-			RailSwitch(-firstDirection > 0, distance); return true;
+			RailSwitch(-firstDirection > 0, distanceBetweenRails); return true;
 		}
 
 		return false;
@@ -83,7 +127,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 	private void RailSwitch ( bool right, float distance ) {
 		_isSwitching = true;
-		_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", false);
+		SetOnRail(false);
 		_RailBehaviour.SetAnimatorTrigger("Twirl");
 
 		_RailBehaviour._RF.ReadyHopValues(right, distance, _hopSpeed_);
@@ -99,9 +143,6 @@ public class S_AI_RhinoActions : MonoBehaviour
 		Vector3 boxHalfExtents = new Vector3 (1,1,15); //Longer than it is wide so it can check for player or other rhinos.
 		if (Physics.BoxCast(AboveRail, boxHalfExtents, -transform.up, out RaycastHit Hit, transform.rotation, 15, _LayersOfRailsAndBlockers, QueryTriggerInteraction.Collide))
 		{
-			Debug.Log(Hit.collider.tag + " After " +(side * distance));
-			Debug.DrawLine(transform.position, Hit.point, Color.cyan, 10);
-
 			//If hit something, check if a rail, or a blocker.
 			return Hit.collider.CompareTag("Rail");
 		}
@@ -133,30 +174,29 @@ public class S_AI_RhinoActions : MonoBehaviour
 		}
 	}
 
-	private bool CanLandOnNewRail ( Collider Col ) {
-		if (Col.TryGetComponent(out S_SplineInParent SplineFromCollider))
-		{
-			Debug.DrawLine(transform.position, Col.transform.position, Color.cyan, 10f);
-
-			//End hop
-			_isSwitching = false;
-			_RailBehaviour._RF._distanceToHop = 0;
-
-			//Animator
-			_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", true);
-
-			//New spline logic
-			_RailBehaviour.SetRail(SplineFromCollider._SplineParent, SplineFromCollider._ConnectedRails);
-			_RailBehaviour._RF._pointOnSpline = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, SplineFromCollider._SplineParent, Vector2.zero).x;
-			_RailBehaviour._RF._setOffSet = -SplineFromCollider._Placer._mainOffset;
-
-			return true;
-		}
-		return false;
-	}
-
 	#endregion
 
+	private void SetOnRail ( bool set ) {
+
+		if (set != _currentlyOnRail)
+		{
+			_currentlyOnRail = set;
+			if (set)
+			{
+				_RailBehaviour._isActive = true;
+				_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", true);
+ 				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.shootdown;
+ 				_HomingTarget.OnDestroy = S_Data_HomingTarget.EffectOnHoming.shootdown;
+				_CustomGravity._isGravityOn = false;
+			}
+			else
+			{
+				_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", false);
+				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.normal;
+				_HomingTarget.OnDestroy = S_Data_HomingTarget.EffectOnHoming.normal;
+			}
+		}
+	}
 
 	private bool LookForNewRail () {
 
@@ -177,12 +217,34 @@ public class S_AI_RhinoActions : MonoBehaviour
 		return false;
 	}
 
+
+	private bool CanLandOnNewRail ( Collider Col ) {
+		if (Col.TryGetComponent(out S_SplineInParent SplineFromCollider))
+		{
+			Debug.DrawLine(transform.position, Col.transform.position, Color.cyan, 10f);
+
+			//End hop
+			_isSwitching = false;
+			_isJumping = false;
+			_RailBehaviour._RF._distanceToHop = 0;
+
+			//Animator
+			SetOnRail(true);
+
+			//New spline logic
+			_RailBehaviour.SetRail(SplineFromCollider._SplineParent, SplineFromCollider._ConnectedRails);
+			_RailBehaviour._RF._pointOnSpline = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, SplineFromCollider._SplineParent, Vector2.zero).x;
+			_RailBehaviour._RF._setOffSet = -SplineFromCollider._Placer._mainOffset;
+
+			return true;
+		}
+		return false;
+	}
+
 	#region Attacking
 
 	public bool ReadyShot ( Transform Player, S_PlayerVelocity PlayerVel ) {
-		if (_isShooting || _isSwitching) { return false; }
-
-		_isShooting = true;
+		if (_isShooting || _isSwitching || _isJumping) { return false; }
 
 		if (!_Target)
 		{
@@ -191,6 +253,11 @@ public class S_AI_RhinoActions : MonoBehaviour
 			_TargetActions = PlayerVel.GetComponent<S_CharacterTools>()._ActionManager;
 		}
 
+		if(S_S_MoreMaths.GetDistanceSqrOfVectors(_Target.position, _ShootPoint_.position) < 20*20) { return false; } //Can't shoot if player is too close.
+		if(Vector3.Angle(S_S_MoreMaths.GetDirection( _ShootPoint_.position, _Target.position), transform.forward) < 90) { return false; } //Cant shoot if player is in front.
+		if(Physics.Linecast(_Target.position, _ShootPoint_.position)) { return false; } //Cant shoot if solid object or other enemy blocking the way.
+
+		_isShooting = true;
 		_ReadyShotParticle_.Play();
 		_timeSpentReadyingShot = 0;
 
