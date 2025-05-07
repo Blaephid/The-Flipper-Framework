@@ -99,7 +99,6 @@ public class S_AI_RhinoActions : MonoBehaviour
 	#region Switching
 
 	public bool CanSwitch ( float distanceBetweenRails) {
-		return false;
 
 		if (_isShooting || _isSwitching || _isJumping) { return false; }
 

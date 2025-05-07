@@ -15,19 +15,21 @@ public class S_Trigger_LoadLevelBeats : S_Trigger_Base
 	private bool	_isCurrentlyDespawning = false;
 	private bool	_isCurrentlySpawning = false;
 
+
+	private void Start () {
+		if(!Application.isPlaying) { return; }
+		_ListOfAllTriggers = FindObjectsByType<S_Trigger_LoadLevelBeats>(FindObjectsSortMode.None);
+
+		_isActive = true; //Sets this to true so GetAvailableObjects wont check every trigger more than once. Set to False after the below coroutine.
+		StartCoroutine(EnableOrDisableObjects(false, GetAvailableObjects(_ListOfSectionToControl), false));
+	}
+
 	//When player enters, start activating all required items.
 	private void OnTriggerEnter ( Collider other ) {
 		if (other.CompareTag("Player"))
 		{
 			StartCoroutine(EnableOrDisableObjects(true, GetAvailableObjects(_ListOfSectionToControl)));
 		}
-	}
-
-	private void Awake () {
-		_ListOfAllTriggers = FindObjectsByType<S_Trigger_LoadLevelBeats>(FindObjectsSortMode.None);
-		
-		_isActive = true; //Sets this to true so GetAvailableObjects wont check every trigger more than once. Set to False after the below coroutine.
-		StartCoroutine(EnableOrDisableObjects(false, GetAvailableObjects(_ListOfSectionToControl), false));
 	}
 
 	private void OnTriggerExit ( Collider other ) {
@@ -44,7 +46,7 @@ public class S_Trigger_LoadLevelBeats : S_Trigger_Base
 		{
 			GameObject SectionObject = SetObjects[i];
 
-			//Detects of this current section is part of another trigger that is currently active.
+			//Detects if this current section is part of another trigger that is currently active.
 			bool isObjectActiveByAnotherTrigger = false;
 			for (int t = 0 ; t < _ListOfAllTriggers.Length && !isObjectActiveByAnotherTrigger ; t++)
 			{
@@ -80,7 +82,8 @@ public class S_Trigger_LoadLevelBeats : S_Trigger_Base
 		//Once per frame checks a section object and enables or disables it.
 		for (int i = 0 ; i < EnableThese.Count ; i++)
 		{
-			EnableThese[i].SetActive(enable);
+			GameObject Set = EnableThese[i];
+			Set.SetActive(enable);
 			if (delay)
 			{
 				yield return new WaitForFixedUpdate();
