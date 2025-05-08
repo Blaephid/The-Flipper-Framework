@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using Unity.Android.Gradle;
+using Unity.Burst.CompilerServices;
 
 [ExecuteInEditMode]
 public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
@@ -133,25 +134,27 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		//Only rhinos in front will attack and jump, to prevent player being confused.
 		for (int i = 0 ; i < _ListOfRhinosInfront.Count ; i++)
 		{
+			GameObject Rhino = _ListOfRhinosInfront[i];
 			if (tryShoot && !haveAnyShot)
 			{
-				if (!_ListOfRhinosThatHaveShot.Contains(_ListOfRhinosInfront[i]))
+				if (!_ListOfRhinosThatHaveShot.Contains(Rhino))
 				{
-					S_AI_RhinoActions Action = _ListOfRhinosInfront[i].GetComponent<S_AI_RhinoActions>();
+					S_AI_RhinoActions Action = Rhino.GetComponent<S_AI_RhinoActions>();
 					if (Action.ReadyShot(_Player.transform, _PlayerVel))
 					{
-						StartCoroutine(AddToListOfShotAfterShotDelay(_ListOfRhinosInfront[i], Action._timeToReadyShot));
+						_ListOfRhinosThatHaveShot.Add(Rhino);
+						//StartCoroutine(AddToListOfShotAfterShotDelay(Rhino, Action._timeToReadyShot));
 						SetUpNextAttack();
-						haveAnyShot = true;
+ 						haveAnyShot = true;
 					}
 				}
 			}
 
 			if (tryHop && !haveAnyHopped)
 			{
-				if (!_ListOfRhinosThatHaveHopped.Contains(_ListOfRhinosInfront[i]))
+				if (!_ListOfRhinosThatHaveHopped.Contains(Rhino))
 				{
-					S_AI_RhinoActions Action = _ListOfRhinosInfront[i].GetComponent<S_AI_RhinoActions>();
+					S_AI_RhinoActions Action = Rhino.GetComponent<S_AI_RhinoActions>();
 					if (Action.CanSwitch(_distanceBetweenRails))
 					{
 						haveAnyHopped = true;
@@ -162,11 +165,11 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		}
 
 		//If all rhinos have shot, or none of the ones that haven't are able to, reset.
-		if (!haveAnyShot && tryShoot)
+		if (!haveAnyShot && tryShoot && _ListOfRhinosThatHaveShot.Count > 0)
 		{ _ListOfRhinosThatHaveShot.Clear(); }
 
 		//If none had the safety to hop, then allow ones that have already hopped to try again.
-		if(!haveAnyHopped && tryHop)
+		if(!haveAnyHopped && tryHop && _ListOfRhinosThatHaveHopped.Count > 0)
 		{ _ListOfRhinosThatHaveHopped.Clear(); }
 	}
 
@@ -182,7 +185,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	}
 
 	private void SetUpNextAttack (float priority = 0) {
-		_timeSinceLastAttack = 0;
+ 		_timeSinceLastAttack = 0;
 		_timeToNextAttack = priority > 0 ? priority : UnityEngine.Random.Range(_timeBetweenAttacks_.x, _timeBetweenAttacks_.y);
 	}
 
