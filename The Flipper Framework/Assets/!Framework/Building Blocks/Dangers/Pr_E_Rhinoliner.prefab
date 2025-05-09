@@ -137,8 +137,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3193338111137158558}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.039868083, y: 0.0012133018, z: 0.9992034, w: -0.0013139975}
-  m_LocalPosition: {x: -0.16397136, y: 2.2103882, z: -0.3738867}
+  m_LocalRotation: {x: 0.03986154, y: -0.0012950987, z: 0.99919707, w: -0.003822059}
+  m_LocalPosition: {x: -0.039757036, y: 2.2110868, z: -0.5312396}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -460,9 +460,9 @@ MonoBehaviour:
   _HomingTarget: {fileID: 2204583083997227089}
   _CustomGravity: {fileID: 3637900047446701877}
   _SolidCollider: {fileID: 911092949003443930}
-  _framesToInterceptPlayer_: 27
+  _framesToInterceptPlayer_: 35
   _timeToReadyShot: 0.8
-  _minMaxShotSpeeds: {x: 50, y: 120}
+  _minMaxShotSpeeds: {x: 50, y: 140}
   _BlockingShotLayers:
     serializedVersion: 2
     m_Bits: 8193

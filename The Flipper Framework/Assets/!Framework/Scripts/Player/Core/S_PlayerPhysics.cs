@@ -38,6 +38,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private CapsuleCollider       _CharacterCapsule;
 	private Transform             _FeetTransform;
 	private Transform             _MainSkin;
+	[HideInInspector]
+	public Transform             _CenterOfMass;
 	#endregion
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
@@ -130,7 +132,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public Vector3                _feetOffsetFromPivotPoint;
 	[HideInInspector]
-	public Vector3                _colliderOffsetFromCentre;
+	public Vector3                _colliderOffsetFromPivot;
 
 	private float                 _timeUpHill;        //Tracks how long a player has been running up hill. Decreases when going down hill or on flat ground.
 
@@ -345,12 +347,13 @@ public class S_PlayerPhysics : MonoBehaviour
 		_CharacterPhysicsPosition = _RB.position;
 
 		_feetOffsetFromPivotPoint = _FeetTransform.position - _CharacterPivotPosition;
-		_colliderOffsetFromCentre = (_CharacterCapsule.transform.position + (_CharacterCapsule.transform.rotation * _CharacterCapsule.center));
-		_colliderOffsetFromCentre -= _CharacterPivotPosition;
+		_colliderOffsetFromPivot = (_CharacterCapsule.transform.position + (_CharacterCapsule.transform.rotation * _CharacterCapsule.center));
+		_colliderOffsetFromPivot -= _CharacterPivotPosition;
 
-		_CharacterCenterPosition = _CharacterPivotPosition + _colliderOffsetFromCentre;
+		_CharacterCenterPosition = _CharacterPivotPosition + _colliderOffsetFromPivot;
 		_CharacterCenterPositionUpper = _CharacterCenterPosition + transform.up * _CharacterCapsule.height / 4;
 		_CharacterCenterPositionLower = _CharacterCenterPosition - transform.up * _CharacterCapsule.height / 4;
+		_CenterOfMass.position = _CharacterCenterPosition;
 	}
 
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
@@ -714,7 +717,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 				//Ensure there is space for the player to be moved here by mimicking the players collider size.
 				float capsuleHalfHeightMinusRadius = ((_CharacterCapsule.height * 0.5f) - _CharacterCapsule.radius) * _CharacterCapsule.transform.lossyScale.y;
-				Vector3 capsulePosition = newPosition + _colliderOffsetFromCentre;
+				Vector3 capsulePosition = newPosition + _colliderOffsetFromPivot;
 				
 				if (!Physics.CheckCapsule
 				(capsulePosition + (currentGroundNormal * capsuleHalfHeightMinusRadius), capsulePosition - (currentGroundNormal * capsuleHalfHeightMinusRadius), 
@@ -1068,6 +1071,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_FeetTransform = _Tools.FeetPoint;
 		_MainSkin = _Tools.MainSkin;
+		_CenterOfMass = _Tools.CenterOfMass;
 	}
 	#endregion
 }

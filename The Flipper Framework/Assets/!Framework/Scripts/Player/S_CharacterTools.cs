@@ -63,6 +63,7 @@ public class S_CharacterTools : MonoBehaviour
 	[Header("Location References")]
 	public Transform        HandGripPoint;
 	public Transform        FeetPoint;
+	public Transform        CenterOfMass;
 
 	[Header("Control")]
 	public Animator                 BallAnimator;

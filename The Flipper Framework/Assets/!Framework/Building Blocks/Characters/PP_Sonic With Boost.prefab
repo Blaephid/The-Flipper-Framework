@@ -628,6 +628,7 @@ MonoBehaviour:
     type: 3}
   HandGripPoint: {fileID: 3378693890348075912}
   FeetPoint: {fileID: 8412749811221693294}
+  CenterOfMass: {fileID: 2111524406777737456}
   BallAnimator: {fileID: 6169879762939780616}
   CharacterAnimator: {fileID: 3378010807672333325}
   SoundControl: {fileID: 8731824957011403018}
@@ -655,6 +656,7 @@ MonoBehaviour:
   _PlayerMovement: {fileID: 0}
   _PlayerVelocity: {fileID: 0}
   _RB: {fileID: 0}
+  _CenterOfMass: {fileID: 0}
   _isUsingSlopePhysics_: 1
   _maxFallingSpeed_: 0
   _gravityWhenMovingUp_: {x: 0, y: 0, z: 0}
@@ -12908,6 +12910,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3879363867517211826
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2111524406777737456}
+  m_Layer: 8
+  m_Name: Body Center
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2111524406777737456
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879363867517211826}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.26, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6281468032168078379}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4204287208691165145
 GameObject:
   m_ObjectHideFlags: 0
@@ -23369,6 +23402,7 @@ Transform:
   - {fileID: 4695150684650470}
   - {fileID: 3378693890348075912}
   - {fileID: 8412749811221693294}
+  - {fileID: 2111524406777737456}
   m_Father: {fileID: 6420733220765619769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6804416940593327597

@@ -493,7 +493,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		if (toFeet)
 			snapPosition -= _PlayerPhys._feetOffsetFromPivotPoint; //Because on ground, feet should be set to pad position.
 		else
-			snapPosition -= _PlayerPhys._colliderOffsetFromCentre;
+			snapPosition -= _PlayerPhys._colliderOffsetFromPivot;
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, mainSkinForwards, Vector2.zero, transform.up);
 

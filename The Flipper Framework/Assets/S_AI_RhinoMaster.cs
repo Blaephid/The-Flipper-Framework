@@ -57,6 +57,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	private bool _allInFrontOfPlayer;
 
 	private GameObject _Player;
+	private Transform _PlayerCenter;
 	private S_PlayerVelocity _PlayerVel;
 
 #if UNITY_EDITOR
@@ -87,6 +88,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
 		_Player = Player.gameObject;
+		_PlayerCenter = Player._CenterOfMass;
 		_PlayerVel = Player._PlayerVelocity;
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
@@ -140,7 +142,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 				if (!_ListOfRhinosThatHaveShot.Contains(Rhino))
 				{
 					S_AI_RhinoActions Action = Rhino.GetComponent<S_AI_RhinoActions>();
-					if (Action.ReadyShot(_Player.transform, _PlayerVel))
+					if (Action.ReadyShot(_PlayerCenter, _PlayerVel))
 					{
 						_ListOfRhinosThatHaveShot.Add(Rhino);
 						//StartCoroutine(AddToListOfShotAfterShotDelay(Rhino, Action._timeToReadyShot));
@@ -219,7 +221,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		if (!gameObject) { return; }
 
 		for (int i = 0 ; i < _listOfAllRhinoObjects.Count ; i++)
 		{

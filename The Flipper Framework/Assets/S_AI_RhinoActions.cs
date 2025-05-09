@@ -1,4 +1,5 @@
 using SplineMesh;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -56,12 +57,14 @@ public class S_AI_RhinoActions : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
+		//After time, start checking for new rails.
 		if (_isJumping)
 		{
 			_framesSinceJump++;
- 			if (_framesSinceJump >= _framesAfterJumpToStartSearchingForNewRail) 
-  			{ LookForNewRail(); }
+			if (_framesSinceJump >= _framesAfterJumpToStartSearchingForNewRail)
+			{ LookForNewRail(); }
 		}
+		//Increment towards making shot.
 		else if (_isShooting)
 		{
 			_timeSpentReadyingShot += Time.fixedDeltaTime;
@@ -70,7 +73,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 			{
 				Shoot();
 			}
-			else if(!CanShoot()) SetIsShooting(false); 
+			else if (!CanShoot(_Target.position)) SetIsShooting(false);
 		}
 		else if (_isSwitching)
 		{
@@ -103,7 +106,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 	#region Switching
 
-	public bool CanSwitch ( float distanceBetweenRails) {
+	public bool CanSwitch ( float distanceBetweenRails ) {
 
 		if (_isShooting || _isSwitching || _isJumping) { return false; }
 
@@ -112,9 +115,9 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 		//Cant switch if too close to ending current rail.
 		if (!_RailBehaviour._RF._isGoingBackwards && _RailBehaviour._RF._PathSpline.Length - _RailBehaviour._RF._pointOnSpline < distanceNeeded) return false;
-		else if(_RailBehaviour._RF._isGoingBackwards && _RailBehaviour._RF._pointOnSpline < distanceNeeded) { return false; }
+		else if (_RailBehaviour._RF._isGoingBackwards && _RailBehaviour._RF._pointOnSpline < distanceNeeded) { return false; }
 
-		float firstDirection =  Random.value < 0.5f ? -1 : 1;
+		float firstDirection =  UnityEngine.Random.value < 0.5f ? -1 : 1;
 
 		if (IsValidRailOnSide(firstDirection, distanceBetweenRails))
 		{
@@ -143,7 +146,6 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 		AboveRail += transform.right * side * distance;
 
-		Debug.DrawRay(AboveRail, transform.up * -15, Color.cyan, 10);
 		Vector3 boxHalfExtents = new Vector3 (1,1,15); //Longer than it is wide so it can check for player or other rhinos.
 		if (Physics.BoxCast(AboveRail, boxHalfExtents, -transform.up, out RaycastHit Hit, transform.rotation, 15, _LayersOfRailsAndBlockers, QueryTriggerInteraction.Collide))
 		{
@@ -189,8 +191,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 			{
 				_RailBehaviour._isActive = true;
 				_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", true);
- 				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.shootdown;
- 				_HomingTarget.OnDestroy = S_Data_HomingTarget.EffectOnHoming.shootdown;
+				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.shootdown;
+				_HomingTarget.OnDestroy = S_Data_HomingTarget.EffectOnHoming.shootdown;
 				_CustomGravity._isGravityOn = false;
 			}
 			else
@@ -203,12 +205,6 @@ public class S_AI_RhinoActions : MonoBehaviour
 	}
 
 	private bool LookForNewRail () {
-
-		Debug.DrawRay(transform.position, transform.right * 2, Color.magenta, 10f);
-		Debug.DrawRay(transform.position, -transform.right * 2, Color.magenta, 10f);
-		Debug.DrawRay(transform.position, transform.forward * 2, Color.magenta, 10f);
-		Debug.DrawRay(transform.position, -transform.forward * 2, Color.magenta, 10f);
-
 		Collider[] FindRailColliders = Physics.OverlapSphere(transform.position, 2, _LayersOfRailsAndBlockers, QueryTriggerInteraction.Collide);
 		if (FindRailColliders.Length > 0)
 		{
@@ -257,7 +253,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 			_TargetActions = PlayerVel.GetComponent<S_CharacterTools>()._ActionManager;
 		}
 
-		if(!CanShoot()) { return false; }
+		if (!CanShoot(_Target.position)) { return false; }
 
 		SetIsShooting(true);
 		_timeSpentReadyingShot = 0;
@@ -265,14 +261,14 @@ public class S_AI_RhinoActions : MonoBehaviour
 		return true;
 	}
 
-	private bool CanShoot () {
-		if (S_S_MoreMaths.GetDistanceSqrOfVectors(_Target.position, _ShootPoint_.position) < 20 * 20) 
+	private bool CanShoot ( Vector3 target ) {
+		if (S_S_MoreMaths.GetDistanceSqrOfVectors(target, _ShootPoint_.position) < 20 * 20)
 		{ return false; } //Can't shoot if player is too close.
-		if (Vector3.Angle(S_S_MoreMaths.GetDirection(_ShootPoint_.position, _Target.position), transform.forward) < 120) //Cant shoot if player is in front.
+		if (Vector3.Angle(S_S_MoreMaths.GetDirection(_ShootPoint_.position, target), transform.forward) < 80) //Cant shoot if player is in front.
 		{ return false; }
-		if (Physics.Linecast(_Target.position, _ShootPoint_.position, out RaycastHit Hit, _BlockingShotLayers)) //Cant shoot if solid object or other enemy blocking the way.
+		if (Physics.Linecast(target, _ShootPoint_.position, out RaycastHit Hit, _BlockingShotLayers)) //Cant shoot if solid object or other enemy blocking the way.
 		{
-			if(Hit.collider != _SolidCollider)
+			if (Hit.collider != _SolidCollider)
 			{ return false; }
 		}
 
@@ -296,58 +292,84 @@ public class S_AI_RhinoActions : MonoBehaviour
 	}
 
 	private void Shoot () {
-		//Create projectile at point
-		GameObject GO = Instantiate(_Projectile_);
-		GO.transform.position = _ShootPoint_.position;
-
-		Physics.IgnoreCollision(GO.GetComponent<Collider>(), _SolidCollider);
-
 		Vector3 velocity;
 
 		//If player is not at a speed that would reach the rhino in one second, shoot normally.
-		if (S_S_MoreMaths.GetDistanceSqrOfVectors(_ShootPoint_.position, _Target.position) > _TargetVel._worldVelocity.sqrMagnitude)
-			velocity = GetVelocityOfShot(GO, _framesToInterceptPlayer_);
-		//if player is, then lesson frames to intercept to aim hopefully at a point between, not past.
+		//if (S_S_MoreMaths.GetDistanceSqrOfVectors(_ShootPoint_.position, _Target.position) > _TargetVel._worldVelocity.sqrMagnitude * Time.fixedDeltaTime * _framesToInterceptPlayer_)
+		if (true)
+			velocity = GetVelocityOfShot( _framesToInterceptPlayer_);
+		//if player is, then the bomb is likely going to be shot forwards to intercept (it will be slower than the rhino so it won't look like its being shot the wrong direction.
 		else
- 			velocity = GetVelocityOfShot(GO, _framesToInterceptPlayer_ / 2);
+			velocity = GetVelocityOfShot(_framesToInterceptPlayer_ / 1.5f, true);
+
+		if(velocity == Vector3.zero) { SetIsShooting(false); return; }
+
+		//Create projectile at point
+		GameObject GO = Instantiate(_Projectile_);
+		GO.transform.position = _ShootPoint_.position;
+		Physics.IgnoreCollision(GO.GetComponent<Collider>(), _SolidCollider);
 
 		GO.transform.forward = velocity.normalized;
 		GO.GetComponent<Rigidbody>().velocity = velocity;
 
 		SetIsShooting(false);
-
 		_RailBehaviour.SetAnimatorTrigger("Attack");
 	}
 
-	private Vector3 GetVelocityOfShot (GameObject GO, float framesToIntercept) {
+	private Vector3 GetVelocityOfShot (float framesToIntercept, bool playerWillPassCurrentPos = false ) {
+
+		const int minFramesToIncercept = 10;
+
 		//Calculate target
+		framesToIntercept = Mathf.Round(framesToIntercept);
+		framesToIntercept = Mathf.Max(minFramesToIncercept, framesToIntercept);
 		Vector3 targetPosition = GetPlayerPositionInXFrames(framesToIntercept);
-		framesToIntercept = Mathf.Max(5, framesToIntercept);
 
 		//Calculate how fast to make projectile travel to intercept player.
 		float distanceToTravel = Vector3.Distance(targetPosition, _ShootPoint_.position);
 		float timeToTravel = Time.fixedDeltaTime * framesToIntercept;
 		float neededSpeed = distanceToTravel / timeToTravel;
-		neededSpeed = Mathf.Min(neededSpeed, _minMaxShotSpeeds.y);
 
+		////If sniping from a distance, apply the max speed. If needing max speed to aim forwards and intercept player, don't apply max.
+		//if (playerWillPassCurrentPos && IsTooFast() && !IsTooClose())
+		//{
+		//	neededSpeed = Mathf.Min(neededSpeed, _minMaxShotSpeeds.y);
+		//}
+
+		Debug.Log("Position is " + targetPosition);
 		Debug.Log("Speed is " + neededSpeed);
 		Debug.Log("Distance is " + Vector3.Distance(targetPosition, _ShootPoint_.position));
+		Debug.Log("Angle is " + Vector3.Angle(S_S_MoreMaths.GetDirection(_ShootPoint_.position, targetPosition), transform.forward));
 
-		if (framesToIntercept > 5 && (neededSpeed < _minMaxShotSpeeds.x || S_S_MoreMaths.GetDistanceSqrOfVectors(targetPosition, _ShootPoint_.position) < 40*40)) 
-		{
-			return GetVelocityOfShot(GO, framesToIntercept / 2.5f); //Try again for another angle to intercept player with
-		}
-		else
-		{
-			Debug.DrawLine(targetPosition, _ShootPoint_.position, Color.cyan, 20f);
+		Debug.Log("Frames is " + framesToIntercept);
 
-			//Get and apply velocity
-			Vector3 targetDirection = (targetPosition - _ShootPoint_.position).normalized;
-			Vector3 velocity = targetDirection * neededSpeed;
+		////If shot would either be too slow, aim too close, or aiming ahead, then
+		//if (framesToIntercept > minFramesToIncercept)
+		//{
+		//	if (CanShoot(targetPosition) || IsTooClose() || IsTooSlow() || IsShootingAhead())
+		//	{
+		//		Debug.Log("Pass To New");
+		//		return GetVelocityOfShot(framesToIntercept / 1.5f, playerWillPassCurrentPos); //Try again for another angle to intercept player with, the framesToIncercept requirement above prevents stack overflow.
+		//	}
+		//}
 
-			Debug.Log("Frames is "+framesToIntercept);
-			return velocity;
-		}
+		//if(!CanShoot(targetPosition)) { return Vector3.zero; }
+
+		Debug.DrawRay(_ShootPoint_.position, transform.forward * 100, Color.green, 10f);
+		Debug.DrawLine(targetPosition, _ShootPoint_.position, Color.cyan, 20f);
+
+		//Get and apply velocity
+		Vector3 targetDirection = (targetPosition - _ShootPoint_.position).normalized;
+		Vector3 velocity = targetDirection * neededSpeed;
+
+		Debug.Log("SHOOOOOOOOT " + framesToIntercept);
+		return velocity;
+
+
+		bool IsTooClose () { return S_S_MoreMaths.GetDistanceSqrOfVectors(targetPosition, _ShootPoint_.position) < 40 * 40; }
+		bool IsTooSlow () { return neededSpeed < _minMaxShotSpeeds.x; }
+		bool IsTooFast () { return neededSpeed > _minMaxShotSpeeds.y; }
+		bool IsShootingAhead () { return Vector3.Angle(S_S_MoreMaths.GetDirection(_ShootPoint_.position, targetPosition), transform.forward) < 80; }
 	}
 
 	private Vector3 GetPlayerPositionInXFrames ( float xFrames ) {
@@ -370,6 +392,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 					CurveSample TargetSampleOnSpline = PlayerRail._RF._PathSpline.GetSampleAtDistance(targetPointOnSpline);
 					Vector3 targetPositionOnSpline = Spline.GetSampleTransformInfo( PlayerRail._RF._RailTransform, TargetSampleOnSpline).location;
 					targetPositionOnSpline += PlayerRail._RF._currentLocalOffset;
+					targetPositionOnSpline += PlayerRail._RF._currentCenterOffset;
+					targetPositionOnSpline += PlayerRail._PlayerPhys._colliderOffsetFromPivot;
 
 					targetPosition = targetPositionOnSpline;
 
