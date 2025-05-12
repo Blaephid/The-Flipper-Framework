@@ -55,10 +55,10 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _hasDataChanged: 1
   _SplineParent: {fileID: 0}
   _Placer: {fileID: 0}
   _ConnectedRails: {fileID: 0}
-  _hideVisibility: 1
 --- !u!65 &326265635772995728
 BoxCollider:
   m_ObjectHideFlags: 0

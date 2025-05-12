@@ -153,7 +153,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		MoveOnRail();
 
 		if (_canInput) { HandleInputs(); }
-
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _RF._grindingSpeed; }//Apples all changes to grind speed.
 	}
 

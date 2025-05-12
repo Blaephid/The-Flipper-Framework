@@ -51,8 +51,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 3.6
-  m_Height: 10
+  m_Radius: 2.6
+  m_Height: 8.98
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2381209978274330099
@@ -137,8 +137,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3193338111137158558}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.03986154, y: -0.0012950987, z: 0.99919707, w: -0.003822059}
-  m_LocalPosition: {x: -0.039757036, y: 2.2110868, z: -0.5312396}
+  m_LocalRotation: {x: 0.03986173, y: -0.0013604268, z: 0.9991967, w: -0.0038874587}
+  m_LocalPosition: {x: 0.009967467, y: 2.2100067, z: -0.020153623}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -165,8 +165,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 3.3
-  m_Height: 9.56
+  m_Radius: 2.14
+  m_Height: 6.26
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8419229775985354423
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Parent: {fileID: 4125295445982249968}
-  _currentOffsetSet: {x: -0.23095703, y: 3.3155823, z: 0.024169922}
+  _currentOffsetSet: {x: -0.5332031, y: 3.3177185, z: 0.080322266}
   _currentEulerOffsetSet: {x: 359.85507, y: 454.56958, z: 270.1449}
   _followInPlay: 1
   _RememberParent: {fileID: 4125295445982249968}
@@ -256,6 +256,7 @@ MonoBehaviour:
   _grindingSpeed: 0
   _setOffSet: {x: 0, y: 0, z: 0}
   _currentLocalOffset: {x: 0, y: 0, z: 0}
+  _currentCenterOffset: {x: 0, y: 0, z: 0}
   _upOffsetRail_: 2.05
   _upOffsetZip_: -2.05
   _isRailLost: 0
@@ -462,7 +463,7 @@ MonoBehaviour:
   _SolidCollider: {fileID: 911092949003443930}
   _framesToInterceptPlayer_: 35
   _timeToReadyShot: 0.8
-  _minMaxShotSpeeds: {x: 50, y: 140}
+  _minMaxShotSpeeds: {x: 30, y: 140}
   _BlockingShotLayers:
     serializedVersion: 2
     m_Bits: 8193

@@ -140,6 +140,11 @@ PrefabInstance:
       propertyPath: translation.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1315588648596898113, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 1813104729334554736, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: m_Name
@@ -469,7 +474,7 @@ PrefabInstance:
     - target: {fileID: 6064692439840920647, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _isSelected
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
@@ -496,6 +501,11 @@ PrefabInstance:
       propertyPath: _TransformsPerPoint_.Array.data[0]._offset3d.x
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 7102068879407087277, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
+        type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 8738567271679031632, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _Spline
@@ -517,7 +527,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8163802908441194735, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9, type: 3}
+    - {fileID: 5592690504532853445, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9, type: 3}
+    - {fileID: 7423040391753638781, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9, type: 3}
+    - {fileID: 6953484344429093055, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9, type: 3}
+    - {fileID: 2685453942067006229, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 3451855950444054797, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
@@ -629,6 +644,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5010467065650553803, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
@@ -746,7 +766,9 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4359747480051043945, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
+    - {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
@@ -821,6 +843,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5010467065650553803, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: _Spline
+      value: 
+      objectReference: {fileID: 4241719608648795590}
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
@@ -938,7 +965,9 @@ PrefabInstance:
       value: -20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4359747480051043945, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
+    - {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d641b812358c084184cd679f5898ae7, type: 3}

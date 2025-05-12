@@ -13,18 +13,26 @@ public class S_SplineInParent : S_Data_Base
 	public S_AddOnRail _ConnectedRails;
 
 #if UNITY_EDITOR
-	private new void OnValidate () {
+	private new void OnEnable () {
 
-		if (TryGetComponent(out S_PlaceOnSpline TempPlacer))
+		if (!GetSplineFromObject(gameObject))
+		{
+			if(!(transform.parent != null && GetSplineFromObject(transform.parent.gameObject)))
+				if (!(transform.parent.parent != null && GetSplineFromObject(transform.parent.parent.gameObject)))
+					enabled = false;
+		}
+	}
+
+	bool GetSplineFromObject(GameObject GO ) {
+		if (GO.TryGetComponent(out S_PlaceOnSpline TempPlacer))
 		{
 			_Placer = TempPlacer;
 			_SplineParent = _Placer._Spline;
 			_ConnectedRails = _Placer.GetComponent<S_AddOnRail>();
+			return true;
 		}
 		else
-		{
-			enabled = false;
-		}
+			return false;
 	}
 #endif
 }

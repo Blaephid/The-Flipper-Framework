@@ -309,7 +309,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			float thisPointOnSplines = _RF._pointOnSpline;
 			float playerPointOnSplines = _PlayerRF._pointOnSpline;
 
-			if (_PlayerRF._ConnectedRails)
+			if (_PlayerRF._ConnectedRails && !onSameRailOrConnected)
 			{
 				//Player on enemy's next rail
 				if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.PrevRail)

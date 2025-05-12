@@ -1685,7 +1685,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _Spline
       value: 
-      objectReference: {fileID: 3475178197016876557}
+      objectReference: {fileID: 0}
     - target: {fileID: 5460508807502805249, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: toUpdate
@@ -1760,7 +1760,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _Spline
       value: 
-      objectReference: {fileID: 3475178197016876557}
+      objectReference: {fileID: 0}
     - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: toUpdate
