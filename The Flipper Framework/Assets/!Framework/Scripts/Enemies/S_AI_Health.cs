@@ -36,7 +36,7 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 		{
 			SpawnReference.RestartSpawner();
 		}
-		else
+		else if (!_willDestroy)
 		{
 			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 		}

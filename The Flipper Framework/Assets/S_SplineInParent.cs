@@ -13,7 +13,7 @@ public class S_SplineInParent : S_Data_Base
 	public S_AddOnRail _ConnectedRails;
 
 #if UNITY_EDITOR
-	private new void OnEnable () {
+	private void OnEnable () {
 
 		if (!GetSplineFromObject(gameObject))
 		{

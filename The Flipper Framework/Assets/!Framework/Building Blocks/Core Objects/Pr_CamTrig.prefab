@@ -57,6 +57,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 1, g: 0.44275087, b: 0, a: 1}
   _selectedOutlineColour: {r: 1, g: 0, b: 0, a: 1}
   _selectedFillColour: {r: 0.3509434, g: 0, b: 0, a: 0.4392157}
+  _hasDataChanged: 1
   _whatTriggerShape: 0
   _Player: {fileID: 0}
   _triggerOnStart: 0
@@ -234,22 +235,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.13926864
+      value: 0.047064245
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0032688389
+      value: 0.00007090578
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.98997664
+      value: 0.99889076
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.023236189
+      value: -0.0015049041
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

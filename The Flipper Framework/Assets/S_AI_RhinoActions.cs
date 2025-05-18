@@ -206,8 +206,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 			{
 				_RailBehaviour._isActive = true;
 				_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", true);
-				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.shootdown;
-				_HomingTarget.OnDestroy = S_Data_HomingTarget.EffectOnHoming.shootdown;
+				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.shootdownWithCarry;
+				_HomingTarget.OnDestroy = S_Data_HomingTarget.EffectOnHoming.shootdownWithCarry;
 				_CustomGravity._isGravityOn = false;
 			}
 			else

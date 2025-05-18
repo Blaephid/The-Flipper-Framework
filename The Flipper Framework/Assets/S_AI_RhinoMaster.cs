@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
-using Unity.Android.Gradle;
 using Unity.Burst.CompilerServices;
 
 [ExecuteInEditMode]

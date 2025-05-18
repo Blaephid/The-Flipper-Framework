@@ -27,7 +27,7 @@ public class S_Data_HomingTarget : S_Data_Base
 	[HideInInspector] public Vector3 _positionThisFixedUpdate = Vector3.one;
 
 	public enum TargetType { normal, destroy}
-	public enum EffectOnHoming { normal, shootdown}
+	public enum EffectOnHoming { normal, shootdownWithCarry, shootdownStraight}
 
 	private void Start () {
 		_offset = transform.rotation * _offset;

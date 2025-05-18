@@ -41,6 +41,7 @@ namespace SplineMesh
 		[HideInInspector] public bool _toUpdate = true;
 		[HideInInspector] public bool _movingCurves = false;
 		private float _timeSinceCurvedStoppedMoving = 0;
+		private bool _setDataThisUpdate;
 
 		[AsButton("Update","UpdateCommand", null)]
 		[SerializeField] bool UpdateButton;
@@ -188,8 +189,7 @@ namespace SplineMesh
 		public void PlaceAllElements () {
 			if (!_Spline) { return; }
 
-			//if (_lastAmountPlaced >= _currentAmountPlaced)
-			//	UOUtility.DestroyChildren(generated);
+			_setDataThisUpdate = false;
 
 			int currentChildCount = generated.transform.childCount;
 			while (generated.transform.childCount > _currentAmountPlaced)
@@ -340,10 +340,10 @@ namespace SplineMesh
 				_DataForPrefabs = GetComponent<S_Data_Base>();
 				if (!_DataForPrefabs) { return; }
 			}
-			if(_DataForPrefabs._hasDataChanged == false) { return; }
-
+			if(!_setDataThisUpdate && _DataForPrefabs._hasDataChanged == false) { return; }	
 			if (_PrefabToPlace_.name != _CurrentPrefabToSpawn) { return; }
 
+			_setDataThisUpdate = true; //If only _hasDataChanges was used, then the data would only be set for the first element.
 			//If the prefab to spawn inherits from the data class, add that class as a component to this, to allow full control of the spawned objects' values.
 			if (go.TryGetComponent(out S_Data_Base DataBase))
 			{
@@ -361,6 +361,9 @@ namespace SplineMesh
 			_toUpdate = true;
 			_movingCurves = false;
 			_timeSinceCurvedStoppedMoving = 3;
+
+			if(_DataForPrefabs)
+				_DataForPrefabs._hasDataChanged = true;
 		}
 #endif
 	}

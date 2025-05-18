@@ -23,7 +23,10 @@ public class S_RailEnemyData
 	public bool _armouredTrain_;
 
 	[Header("Control")]
+	[DrawHorizontalWithOthers(new string[] { "_startAtPlayerSpeed_" } )]
 	public float _startSpeed_ = 60f;
+	[HideInInspector]
+	public bool _startAtPlayerSpeed_ = false;
 	public float _minimumSpeed_ = 60f;
 	public float _railUpOffset_;
 	public bool _followPlayer_;
@@ -71,6 +74,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	[HideInInspector] public S_ActionManager _PlayerActions;
 	private S_PlayerVelocity _PlayerVel;
 
+	private float _useStartSpeed;
+
 	//Tracking the player and reacting
 	float _playerDistanceIncludingOffset;
 	float _playerDistanceWithoutOffset;
@@ -81,6 +86,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	public event System.Action<GameObject> OnGetInFrontOfPlayer;
 	public event System.Action<GameObject> OnFallBehindPlayer;
+
 
 	//At start
 	Vector3 _startPosition;
@@ -132,12 +138,13 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		if (!_isActive) { return; }
 
-		_RF._grindingSpeed = _Data._startSpeed_ * _Data._CurveToFullSpeed_.Evaluate(0);
-
 		_PlayerVel = Player._PlayerVelocity;
 		_PlayerActions = Player.GetComponent<S_CharacterTools>()._ActionManager;
 		_PlayerRailAction = _PlayerActions.GetComponentInChildren<S_Action05_Rail>();
 		if (_PlayerRailAction) _PlayerRF = _PlayerRailAction._RF;
+
+		_useStartSpeed = _Data._startAtPlayerSpeed_ ? _PlayerVel._horizontalSpeedMagnitude : _Data._startSpeed_;
+		_RF._grindingSpeed = _useStartSpeed * _Data._CurveToFullSpeed_.Evaluate(0);
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 
@@ -157,6 +164,10 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		if (set) { SetAnimatorTrigger("Start"); }
 
 		if (!_RF || !_RF._PathSpline) { _isActive = false; }
+	}
+
+	private void OnDestroy () {
+		Debug.Log(gameObject +  " Destroyed");
 	}
 
 	/// 
@@ -243,7 +254,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		//Getting to full speed from start. Compare time grinding to last node.
 		if (_timeGrinding < _Data._CurveToFullSpeed_[_Data._CurveToFullSpeed_.length - 1].time)
 		{
-			_RF._grindingSpeed = _Data._startSpeed_ * _Data._CurveToFullSpeed_.Evaluate(_timeGrinding);
+			_RF._grindingSpeed = _useStartSpeed * _Data._CurveToFullSpeed_.Evaluate(_timeGrinding);
 			_timeGrinding = Mathf.Min(_Data._CurveToFullSpeed_[_Data._CurveToFullSpeed_.length - 1].time, _timeGrinding);
 		}
 		//Normal speed control

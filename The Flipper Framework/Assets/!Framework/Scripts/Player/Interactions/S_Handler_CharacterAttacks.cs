@@ -114,7 +114,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 			wasDestroyed = EnemyHealth.DealDamage(damage);
 		}
 
-		PhysicsAfterAttack(wasDestroyed, attackType,col);
+		PhysicsAfterAttack(wasDestroyed, attackType, col);
 	}
 
 	//Calls the method that handles destroying and gaining items from a monitor.
@@ -155,8 +155,11 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 						break;
 				}
 				break;
-			case S_Data_HomingTarget.EffectOnHoming.shootdown:
-				ShootDownOnAttack(col);
+			case S_Data_HomingTarget.EffectOnHoming.shootdownWithCarry:
+				ShootDownOnAttack(col, true);
+				break;
+			case S_Data_HomingTarget.EffectOnHoming.shootdownStraight:
+				ShootDownOnAttack(col, false);
 				break;
 		}
 	}
@@ -192,8 +195,8 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	}
 
 	//Immediately show towards the floow on hitting target, without losing speed.
-	private void ShootDownOnAttack (Collider col) {
-		if(_PlayerPhys._isGrounded) { return; }
+	private void ShootDownOnAttack ( Collider Col, bool setToEnemyDirection ) {
+		if (_PlayerPhys._isGrounded) { return; }
 
 		switch (_Actions._whatCurrentAction)
 		{
@@ -206,19 +209,25 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 		Vector3 newDownDirection = Vector3.down;
 		Vector3 newForwardDirection = new Vector3(_PlayerVel._worldVelocity.x, 0, _PlayerVel._worldVelocity.z).normalized;
+
 		Vector3 newLocation = transform.position;
 		float newSpeed = _Actions._speedBeforeAction > 0 ? _Actions._speedBeforeAction : _PlayerVel._horizontalSpeedMagnitude;
 
-		//If target has a rigidbody, make new directions relative to its velocity. 
-		Rigidbody targetRB = col.GetComponent<Rigidbody>();
-		targetRB = targetRB == null ? col.transform.parent.GetComponent<Rigidbody>() : targetRB;
-
-		if (targetRB)
+		if (setToEnemyDirection)
 		{
-			newForwardDirection = targetRB.velocity.normalized;
-			newLocation = targetRB.transform.position;
-			newDownDirection = -targetRB.transform.up;
+			//If target has a rigidbody, make new directions relative to its velocity. 
+			Rigidbody targetRB = Col.GetComponent<Rigidbody>();
+			targetRB = targetRB == null ? Col.transform.parent.gameObject.GetComponent<Rigidbody>() : targetRB;
+			targetRB = targetRB == null ? Col.transform.parent.parent.gameObject.GetComponent<Rigidbody>() : targetRB;
+
+			if (targetRB)
+			{
+				newForwardDirection = targetRB.velocity.normalized;
+				newLocation = targetRB.transform.position;
+				newDownDirection = -targetRB.transform.up;
+			}
 		}
+
 
 		_PlayerPhys.SetPlayerPosition(newLocation);
 		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(newForwardDirection, -newDownDirection), true);

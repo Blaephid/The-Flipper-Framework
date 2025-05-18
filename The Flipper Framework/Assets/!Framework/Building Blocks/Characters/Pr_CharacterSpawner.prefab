@@ -101,6 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whatAction: 1
   _delayInSeconds: 0
+  _applyOnRespawn: 0
 --- !u!1 &1537504222708574
 GameObject:
   m_ObjectHideFlags: 0
@@ -241,7 +242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isSelected: 1
+  _isSelected: 0
   _hasVisualisationScripted: 1
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -547,6 +548,7 @@ GameObject:
   - component: {fileID: 4905481180013178688}
   - component: {fileID: 3756712414567191747}
   - component: {fileID: 6625669370527078817}
+  - component: {fileID: 2412348188940808024}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -563,7 +565,7 @@ Transform:
   m_GameObject: {fileID: 4410452247959996546}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.00024414062, y: 1.0461121, z: 0.91116333}
+  m_LocalPosition: {x: 0, y: 2.566101, z: 0.91119385}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -750,6 +752,24 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2412348188940808024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4410452247959996546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5581a25298e347940b3e1c9251f6414b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fileName: Screenshot
+  _folderPathFromAssets: /Assets/ScreenShots/
+  _scaleValue: 2
+  _withUI: 0
+  _fileNameWithTimeStamp: 1
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &7125000171673488568
 GameObject:
   m_ObjectHideFlags: 0
