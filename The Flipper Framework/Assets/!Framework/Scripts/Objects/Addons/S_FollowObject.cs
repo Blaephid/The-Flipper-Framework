@@ -14,7 +14,6 @@ public class S_FollowObject : MonoBehaviour
 	[SerializeField] private Vector3  _currentOffsetSet;
 	[SerializeAs("_currentRotationSet")]
 	[SerializeField] private Vector3  _currentEulerOffsetSet;
-	[SerializeField] private bool _followInPlay;
 
 	[SerializeField, HideInInspector]
 	private Transform _RememberParent;
@@ -40,10 +39,6 @@ public class S_FollowObject : MonoBehaviour
 	[AsButton("Reset Rotation", "ResetRotateCommand", null), SerializeField]
 	bool resetRotateButton;
 
-	// Start is called before the first frame update
-	void Start () {
-		_isFollowing = _followInPlay;
-	}
 
 #if UNITY_EDITOR
 	private void OnValidate () {
@@ -65,7 +60,7 @@ public class S_FollowObject : MonoBehaviour
 #endif
 
 	private void OnEnable () {
-		if ((_followInPlay && Application.isPlaying) || !Application.isPlaying)
+		if ( !Application.isPlaying)
 		{
 			_isFollowing = true;
 			_isRotating = true;
@@ -78,7 +73,7 @@ public class S_FollowObject : MonoBehaviour
 	}
 
 	private void OnDisable () {
-		if ((_followInPlay && Application.isPlaying) || !Application.isPlaying)
+		if ( !Application.isPlaying)
 		{
 			_isFollowing = true;
 			_isRotating = true;
@@ -93,6 +88,7 @@ public class S_FollowObject : MonoBehaviour
 	[ExecuteAlways]
 	// Update is called once per frame
 	void Update () {
+
 		//Ensures offset is never zero exactly. If it was, we wouldn't be able to check if anything was applied (or not) using default()
 		_currentOffsetSet = _currentOffsetSet == default(Vector3) ? Vector3.up * 0.1f : _currentOffsetSet;
 		_currentEulerOffsetSet = _currentEulerOffsetSet == Vector3.zero ? Vector3.up * 0.01f: _currentEulerOffsetSet;

@@ -127,23 +127,23 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
   DistanceStats:
-    CameraDistance: 6
+    CameraDistance: 7
     shouldAffectDistancebySpeed: 1
     cameraDistanceBySpeed:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0.016149133
-        value: 1.0013306
-        inSlope: 0.000987997
-        outSlope: 0.000987997
+        value: 1
+        inSlope: 0.30235603
+        outSlope: 0.30235603
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 1
+        outWeight: 0.7264881
       - serializedVersion: 3
         time: 0.26765656
-        value: 1.0996261
+        value: 1.15
         inSlope: -0.005327362
         outSlope: -0.005327362
         tangentMode: 0
@@ -193,7 +193,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   FOVStats:
-    baseFOV: 80
+    baseFOV: 90
     shouldAffectFOVbySpeed: 1
     cameraFOVBySpeed:
       serializedVersion: 2
@@ -218,16 +218,16 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.62809753
-        value: 1.22594
-        inSlope: 1.0064586
-        outSlope: 1.0064586
+        value: 1.17
+        inSlope: 0.7408339
+        outSlope: 0.7408339
         tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.78620625
-        value: 1.3238342
+        value: 1.25
         inSlope: 0.28386074
         outSlope: 0.28386074
         tangentMode: 0
@@ -236,7 +236,7 @@ MonoBehaviour:
         outWeight: 0.6503987
       - serializedVersion: 3
         time: 1.0125079
-        value: 1.38
+        value: 1.32
         inSlope: 0.13690157
         outSlope: 0.13690157
         tangentMode: 0
@@ -245,12 +245,12 @@ MonoBehaviour:
         outWeight: 0.76006204
       - serializedVersion: 3
         time: 1.3255699
-        value: 1.45
-        inSlope: 0.38361874
-        outSlope: 0.38361874
+        value: 1.4
+        inSlope: 0.20401795
+        outSlope: 0.20401795
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.5927885
+        inWeight: 0.7939135
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -512,7 +512,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: -1
-        value: -1
+        value: -0.8
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -539,7 +539,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 1
+        value: 0.8
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -565,10 +565,10 @@ MonoBehaviour:
     yMinLimit: -90
     yMaxLimit: 90
   ClampingStats:
-    yMinLimit: -75
+    yMinLimit: -65
     yMaxLimit: 80
   DefaultEffectsStats:
     ShakeDampen: 4
   EffectsStats:
-    ShakeDampen: 1.2
+    ShakeDampen: 0.7
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

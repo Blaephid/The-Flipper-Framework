@@ -1043,7 +1043,6 @@ MonoBehaviour:
   _Parent: {fileID: 1421389822706431993}
   _currentOffsetSet: {x: 0, y: 0.10003662, z: 0}
   _currentEulerOffsetSet: {x: 0, y: 0.01, z: 0}
-  _followInPlay: 0
   _RememberParent: {fileID: 1421389822706431993}
   resetOffsetButton: 0
   resetRotateButton: 0
@@ -4472,7 +4471,6 @@ MonoBehaviour:
   _Parent: {fileID: 0}
   _currentOffsetSet: {x: 0, y: 0.1, z: 0}
   _currentEulerOffsetSet: {x: 0, y: 0.01, z: 0}
-  _followInPlay: 0
   _RememberParent: {fileID: 0}
   resetOffsetButton: 0
   resetRotateButton: 0

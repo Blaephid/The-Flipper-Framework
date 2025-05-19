@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 
 [ExecuteInEditMode]
 public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
@@ -29,7 +30,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 	[SerializeField]
 	private RhinoManaging[] _Rhinos;
-	[SerializeField, HideInInspector]
 	private RhinoManaging[] _RhinosBackup;
 
 	private bool _rhinoArrayWasChanged;
@@ -53,22 +53,29 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	private List<GameObject> _ListOfRhinosInfront = new List<GameObject>();
 	private List<GameObject> _ListOfRhinosThatHaveShot = new List<GameObject>();
 	private List<GameObject> _ListOfRhinosThatHaveHopped = new List<GameObject>();
-	private bool _allInFrontOfPlayer;
 
-	private GameObject _Player;
 	private Transform _PlayerCenter;
 	private S_PlayerVelocity _PlayerVel;
 
 #if UNITY_EDITOR
 
 	private void OnValidate () {
-		if (!_RhinosToSpawn) { return; }
+		if (!_RhinosToSpawn || !gameObject.IsPrefabInstance()) { return; }
+
+		if (_RhinosBackup == null)
+		{ _RhinosBackup = _Rhinos; }
+
 
 		//If the user just changed the _Rhinos list (E.G added to or removed from.
 		if (_Rhinos != _RhinosBackup)
 		{
 			_rhinoArrayWasChanged = true; //Set a boolean to true so the code that needs doing is done in Update, rather than OnValidate.
 		}
+		else
+			foreach (RhinoManaging Rhino in _Rhinos)
+			{
+				Rhino._RailEnemyScript._Data = Rhino._RailEnemyData; //Takes changes on each rhino into this array
+			}
 	}
 #endif
 
@@ -86,7 +93,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	}
 
 	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
-		_Player = Player.gameObject;
 		_PlayerCenter = Player._CenterOfMass;
 		_PlayerVel = Player._PlayerVelocity;
 
@@ -146,7 +152,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 						_ListOfRhinosThatHaveShot.Add(Rhino);
 						//StartCoroutine(AddToListOfShotAfterShotDelay(Rhino, Action._timeToReadyShot));
 						SetUpNextAttack();
- 						haveAnyShot = true;
+						haveAnyShot = true;
 					}
 				}
 			}
@@ -170,36 +176,28 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		{ _ListOfRhinosThatHaveShot.Clear(); }
 
 		//If none had the safety to hop, then allow ones that have already hopped to try again.
-		if(!haveAnyHopped && tryHop && _ListOfRhinosThatHaveHopped.Count > 0)
+		if (!haveAnyHopped && tryHop && _ListOfRhinosThatHaveHopped.Count > 0)
 		{ _ListOfRhinosThatHaveHopped.Clear(); }
 	}
 
-	//Since shot takes some time after being told to ready shot here, track the rhino as having shot after that time expires.
-	private IEnumerator AddToListOfShotAfterShotDelay ( GameObject Rhino, float seconds ) {
-		yield return new WaitForSeconds(seconds);
-		_ListOfRhinosThatHaveShot.Add(Rhino);
-	}
 
 	private void SetUpNextHop ( float priority = 0 ) {
 		_timeSinceLasHop = 0;
 		_timeToNextHop = priority > 0 ? priority : UnityEngine.Random.Range(_timeBetweenHops_.x, _timeBetweenHops_.y);
 	}
 
-	private void SetUpNextAttack (float priority = 0) {
- 		_timeSinceLastAttack = 0;
+	private void SetUpNextAttack ( float priority = 0 ) {
+		_timeSinceLastAttack = 0;
 		_timeToNextAttack = priority > 0 ? priority : UnityEngine.Random.Range(_timeBetweenAttacks_.x, _timeBetweenAttacks_.y);
 	}
 
 	public void EventARhinoGotInFront ( GameObject Rhino ) {
 		_ListOfRhinosInfront.Add(Rhino);
-		_allInFrontOfPlayer = false;
 
 	}
 
 	public void EventARhinoFellBehind ( GameObject Rhino ) {
 		if (_ListOfRhinosInfront.Contains(Rhino)) { _ListOfRhinosInfront.Remove(Rhino); }
-
-		_allInFrontOfPlayer = _ListOfRhinosInfront.Count == _listOfAllRhinoObjects.Count;
 	}
 
 	public void EventRhinoDefeated ( GameObject Rhino, S_AI_Health HealthScript ) {
@@ -236,15 +234,16 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 	//Adding or removing child rhinos if the array was changed.
 	private void TrackingIfArrayWasChanged () {
-		if (_rhinoArrayWasChanged && Application.isPlaying)
+		if (_rhinoArrayWasChanged && !Application.isPlaying)
 		{
 			//If added a new one, add a new rhino child object to this object
 			if (_Rhinos.Length > _RhinosBackup.Length)
 			{
 				int index = _Rhinos.Length;
-				foreach (RhinoManaging Rhino in _Rhinos)
+				for (int i = _Rhinos.Length - 1 ; i >= 0 ; i--)
 				{
-					//If this elements doesn't haven an object yet, spawn one. Remember adding to arrays in editor duplicates values so also create a new one if object used more than once.
+					RhinoManaging Rhino = _Rhinos[i];
+					//If this element doesn't haven an object yet, spawn one. Remember adding to arrays in editor duplicates values so also create a new one if object used more than once.
 					if (Rhino._Object == null || ArrayContainsThatRhinoMoreThanX(Rhino._Object, ref _Rhinos, 1))
 					{
 						Rhino._Object = PrefabUtility.InstantiatePrefab(_RhinosToSpawn, transform) as GameObject;
@@ -254,7 +253,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 						Rhino._RailEnemyData = Rhino._RailEnemyScript._Data; //So the rhino values can be set from here.
 
 						index--;
-					};
+					}
 				}
 			}
 			//If removed a rhino from the array, find which one and delete the corresponding child object.
@@ -267,16 +266,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 						S_S_Editor.DestroyFromOnValidate(Rhino._Object);
 					}
 				}
-			}
-
-			foreach (RhinoManaging Rhino in _Rhinos)
-			{
-				Rhino._RailEnemyScript._Data = Rhino._RailEnemyData; //Takes changes on each rhino into this array
-			}
-
-			foreach (RhinoManaging Rhino in _Rhinos)
-			{
-				Rhino._RailEnemyScript._Data = Rhino._RailEnemyData; //Applies changes to rhinos in this array to that rhino.
 			}
 
 			_RhinosBackup = _Rhinos; //So changes to the array can be tracked.
@@ -315,7 +304,8 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 		for (int i = 0 ; i < _Rhinos.Length ; i++)
 		{
-			Gizmos.DrawLine(transform.position, _Rhinos[i]._Object.transform.position);
+			if (_Rhinos[i]._Object)
+				Gizmos.DrawLine(transform.position, _Rhinos[i]._Object.transform.position);
 		}
 	}
 

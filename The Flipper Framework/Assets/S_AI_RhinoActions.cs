@@ -28,7 +28,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 	RhinoStates _currentState = RhinoStates.normal;
 
-	public enum RhinoStates {
+	public enum RhinoStates
+	{
 		switching,
 		shooting,
 		jumping,
@@ -74,7 +75,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 			case RhinoStates.jumping:
 				_framesSinceJump++;
 				if (_framesSinceJump >= _framesAfterJumpToStartSearchingForNewRail)
-				{ LookForNewRail(); }
+				{ TryLandOnRail(); }
 				break;
 			case RhinoStates.switching:
 				ApplyHopFixedUpdate();
@@ -178,7 +179,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 			//Near the end of a step, renable collision so can collide again with grind on them instead.
 			if (_RailBehaviour._RF._distanceToHop < 1)
 			{
-				if (LookForNewRail()) return;
+				if (TryLandOnRail()) return;
 			}
 
 			//If no rail, fall.
@@ -219,41 +220,16 @@ public class S_AI_RhinoActions : MonoBehaviour
 		}
 	}
 
-	private bool LookForNewRail () {
-		Collider[] FindRailColliders = Physics.OverlapSphere(transform.position, 2, _LayersOfRailsAndBlockers, QueryTriggerInteraction.Collide);
-		if (FindRailColliders.Length > 0)
+	private bool TryLandOnRail () {
+		if (_RailBehaviour.LookForRail())
 		{
-			Collider Col = FindRailColliders[0];
-			if (CanLandOnNewRail(Col))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-	private bool CanLandOnNewRail ( Collider Col ) {
-		if (Col.TryGetComponent(out S_SplineInParent SplineFromCollider))
-		{
-			Debug.DrawLine(transform.position, Col.transform.position, Color.cyan, 10f);
-
 			switch (_currentState)
 			{
 				case RhinoStates.jumping: _currentState = RhinoStates.landing; break;
 				case RhinoStates.switching: _currentState = RhinoStates.normal; break;
 			}
-
-			_RailBehaviour._RF._distanceToHop = 0;
-
 			//Animator
 			SetOnRail(true);
-
-			//New spline logic
-			_RailBehaviour.SetRail(SplineFromCollider._SplineParent, SplineFromCollider._ConnectedRails);
-			_RailBehaviour._RF._pointOnSpline = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, SplineFromCollider._SplineParent, Vector2.zero).x;
-			_RailBehaviour._RF._setOffSet = -SplineFromCollider._Placer._mainOffset;
-
 			return true;
 		}
 		return false;
@@ -274,7 +250,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 		if (!CanShoot(_Target.position)) { return false; }
 
 		//Get Velocity of shot calcualtes where to aim based on predicting targets position. It is used again when making the shot, but here to ensure time isn't waisted.
-		if(GetVelocityOfShot(_framesToInterceptPlayer_) == Vector3.zero) { return false; }
+		if (GetVelocityOfShot(_framesToInterceptPlayer_) == Vector3.zero) { return false; }
 
 		SetIsShooting(true);
 		_timeSpentReadyingShot = 0;
@@ -282,7 +258,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 		return true;
 	}
 
-	private bool CanShoot ( Vector3 target, float distance = 14, float angle = 70) {
+	private bool CanShoot ( Vector3 target, float distance = 14, float angle = 70 ) {
 		if (S_S_MoreMaths.GetDistanceSqrOfVectors(target, _ShootPoint_.position) < distance * distance)
 		{ return false; } //Can't shoot if player is too close.
 		if (Vector3.Angle(S_S_MoreMaths.GetDirection(_ShootPoint_.position, target), transform.forward) < angle) //Cant shoot if player is in front.
@@ -332,7 +308,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 		_RailBehaviour.SetAnimatorTrigger("Attack");
 	}
 
-	private Vector3 GetVelocityOfShot (float framesToIntercept) {
+	private Vector3 GetVelocityOfShot ( float framesToIntercept ) {
 
 		const int minFramesToIncercept = 22;
 

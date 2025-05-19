@@ -121,7 +121,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5012932294226281104}
   - component: {fileID: 911092949003443930}
-  - component: {fileID: 8419229775985354423}
   m_Layer: 13
   m_Name: Physics Collider
   m_TagString: Enemy
@@ -137,15 +136,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3193338111137158558}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.03986173, y: -0.0013604268, z: 0.9991967, w: -0.0038874587}
-  m_LocalPosition: {x: 0.009967467, y: 2.2100067, z: -0.020153623}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.50000435, y: -0.49999568, z: -0.5000043, w: 0.4999957}
+  m_LocalPosition: {x: -0.02132799, y: -0.0005533807, z: 0.005909115}
+  m_LocalScale: {x: 0.01, y: 0.009999998, z: 0.009999999}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7526327395744361624}
   - {fileID: 2234113461987430225}
-  m_Father: {fileID: 7113550617814778674}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 4125295445982249968}
+  m_LocalEulerAnglesHint: {x: 0.001, y: 0, z: 180}
 --- !u!136 &911092949003443930
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -153,7 +152,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3193338111137158558}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 20e9f8c5f69ba2742a8dfc274f5c0368, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -169,25 +168,6 @@ CapsuleCollider:
   m_Height: 6.26
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8419229775985354423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3193338111137158558}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acc9e3e3a2932cb428e5e69a86718327, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Parent: {fileID: 4125295445982249968}
-  _currentOffsetSet: {x: -0.5332031, y: 3.3177185, z: 0.080322266}
-  _currentEulerOffsetSet: {x: 359.85507, y: 454.56958, z: 270.1449}
-  _followInPlay: 1
-  _RememberParent: {fileID: 4125295445982249968}
-  resetOffsetButton: 0
-  resetRotateButton: 0
 --- !u!1 &7074064230608196790
 GameObject:
   m_ObjectHideFlags: 0
@@ -223,7 +203,6 @@ Transform:
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5012932294226281104}
   - {fileID: 2187308421785758073}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -305,6 +284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SetToSplineButton: 0
+  SearchForSplineButton: 0
   _RF: {fileID: 50790941557587127}
   _RB: {fileID: 0}
   _Animator: {fileID: 495000908047024549}
@@ -313,9 +293,13 @@ MonoBehaviour:
     _StartingConnectedRails_: {fileID: 0}
     _startOffset_: {x: 0, y: 0, z: 0}
     _startDistance_: -1
-    _rhino_: 0
+    _rhino_: 1
     _armouredTrain_: 0
+    _RailLayer:
+      serializedVersion: 2
+      m_Bits: 8388608
     _startSpeed_: 130
+    _startAtPlayerSpeed_: 1
     _minimumSpeed_: 60
     _railUpOffset_: 0
     _followPlayer_: 0
@@ -461,9 +445,10 @@ MonoBehaviour:
   _HomingTarget: {fileID: 2204583083997227089}
   _CustomGravity: {fileID: 3637900047446701877}
   _SolidCollider: {fileID: 911092949003443930}
-  _framesToInterceptPlayer_: 35
-  _timeToReadyShot: 0.8
-  _minMaxShotSpeeds: {x: 30, y: 140}
+  _delayAfterLanding: 45
+  _framesToInterceptPlayer_: 40
+  _timeToReadyShot: 1
+  _minMaxShotSpeeds: {x: 30, y: 120}
   _BlockingShotLayers:
     serializedVersion: 2
     m_Bits: 8193
@@ -598,6 +583,10 @@ PrefabInstance:
     - {fileID: 2223639932434330405, guid: 759e7e43de9834c429aceb013b33ec0e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2373298387873221986, guid: 759e7e43de9834c429aceb013b33ec0e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5012932294226281104}
     - targetCorrespondingSourceObject: {fileID: -1819283529212901516, guid: 759e7e43de9834c429aceb013b33ec0e,
         type: 3}
       insertIndex: -1
@@ -740,7 +729,7 @@ PrefabInstance:
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}
       propertyPath: _isSelected
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}

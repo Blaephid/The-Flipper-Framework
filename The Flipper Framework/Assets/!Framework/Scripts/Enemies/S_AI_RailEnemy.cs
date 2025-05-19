@@ -11,7 +11,9 @@ using Unity.VisualScripting;
 public class S_RailEnemyData
 {
 	[Header("Start Rails")]
+	[ColourIfNull(0.8f,0.6f,0.6f,1), BaseColour(1,0.9f,0.9f,1)]
 	public Spline _StartSpline_;
+	[ColourIfNull(0.8f,0.6f,0.6f,1), BaseColour(1,0.9f,0.9f,1)]
 	public S_AddOnRail _StartingConnectedRails_;
 	public Vector3 _startOffset_;
 	public float _startDistance_ = -1;
@@ -23,6 +25,7 @@ public class S_RailEnemyData
 	public bool _armouredTrain_;
 
 	[Header("Control")]
+	public LayerMask _RailLayer;
 	[DrawHorizontalWithOthers(new string[] { "_startAtPlayerSpeed_" } )]
 	public float _startSpeed_ = 60f;
 	[HideInInspector]
@@ -49,6 +52,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	[AsButton("Set To Spline", "SetToSpline", null)]
 	[SerializeField] bool SetToSplineButton;
+	[AsButton("Search For Spline", "SetStartingRailToOverlap", null)]
+	[SerializeField] bool SearchForSplineButton;
 
 	[Header("Tools")]
 	[HideInInspector,SerializeField]
@@ -103,7 +108,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		if (!_Data._StartSpline_) { return; }
 
-		ReSetSplineDetails();
+		ResetSplineDetails();
 
 		//Start Position
 		PlaceOnSplineBeforeGame();
@@ -379,6 +384,32 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 		}
 	}
+
+
+
+	public bool LookForRail (bool affectStart = false) {
+		Collider[] FindRailColliders = Physics.OverlapSphere(transform.position, 2, _Data._RailLayer, QueryTriggerInteraction.Collide);
+		if (FindRailColliders.Length > 0)
+		{
+			Collider Col = FindRailColliders[0];
+			if (Col.TryGetComponent(out S_SplineInParent SplineFromCollider))
+			{
+				Debug.DrawLine(transform.position, Col.transform.position, Color.cyan, 10f);
+
+				_RF._distanceToHop = 0;
+
+				//New spline logic
+				if (affectStart) { SetStartRail(SplineFromCollider._SplineParent, SplineFromCollider._ConnectedRails); }
+
+				SetRail(SplineFromCollider._SplineParent, SplineFromCollider._ConnectedRails);
+				_RF._pointOnSpline = S_RailFollow_Base.GetClosestPointOfSpline(transform.position, SplineFromCollider._SplineParent, Vector2.zero).x;
+				_RF._setOffSet = -SplineFromCollider._Placer._mainOffset;
+
+				return true;
+			}
+		}
+		return false;
+	}
 	#endregion
 
 	/// 
@@ -407,7 +438,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_Animator.SetFloat(floatName, set);
 	}
 
-	private void ReSetSplineDetails () {
+	private void ResetSplineDetails () {
 		if (!_Data._StartSpline_) { return; }
 		SetRail(_Data._StartSpline_, _Data._StartingConnectedRails_);
 
@@ -420,6 +451,11 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_RF._ConnectedRails = AddOns;
 		_RF._PathSpline = Spline;
 		_RF._RailTransform = Spline.transform;
+	}
+
+	public void SetStartRail( Spline Spline, S_AddOnRail AddOns ) {
+		_Data._StartSpline_ = Spline;
+		_Data._StartingConnectedRails_ = AddOns;
 	}
 
 	private void PlaceOnSplineBeforeGame () {
@@ -492,13 +528,13 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
-		if (!gameObject) { return; }
+
 		gameObject.SetActive(true);
 
 		TriggerObjectOff();
 
 		transform.position = _startPosition;
-		ReSetSplineDetails();
+		ResetSplineDetails();
 		PlaceOnSplineBeforeGame();
 		ResetRigidBody();
 
@@ -515,8 +551,14 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	public void SetToSpline () {
 		_RF = GetComponent<S_RailFollow_Base>();
-		ReSetSplineDetails();
+
+		ResetSplineDetails();
 		PlaceOnSplineBeforeGame();
+	}
+
+	public void SetStartingRailToOverlap () {
+		_RF = GetComponent<S_RailFollow_Base>();
+		LookForRail(true);
 	}
 
 	#endregion
