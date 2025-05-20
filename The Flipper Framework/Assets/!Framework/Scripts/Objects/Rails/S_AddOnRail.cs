@@ -121,11 +121,24 @@ public class S_AddOnRail : MonoBehaviour
 		void SetTransforms ( Spline thisSpline, Spline otherSpline, int node1, int node2 ) {
 			otherSpline.transform.position = thisSpline.transform.position;
 			otherSpline.transform.rotation = thisSpline.gameObject.transform.rotation;
-			//otherSpline.gameObject.transform.localPosition = Vector3.zero;
 
-			otherSpline.nodes[node1].Position = thisSpline.nodes[node2].Position;
-			otherSpline.nodes[node1].Direction = thisSpline.nodes[node2].Direction;
-			otherSpline.nodes[node1].Up = thisSpline.nodes[node2].Up;
+			Vector3 newPosition = thisSpline.nodes[node2].Position;
+			Vector3 newDirection = thisSpline.nodes[node2].Direction;
+			Vector3 newUp = thisSpline.nodes[node2].Up;
+
+			if(TryGetComponent(out S_SplineMeshTiling MeshTiling))
+			{
+				Vector3 getDirection = (newDirection - newPosition).normalized;
+				Vector3 offset =Quaternion.LookRotation(getDirection, newUp) *  MeshTiling.translation;
+				offset = new Vector3(-offset.z, offset.y, offset.x);
+				newPosition += offset;
+				newDirection += offset;
+			}
+			
+
+			otherSpline.nodes[node1].Position = newPosition;
+			otherSpline.nodes[node1].Direction = newDirection;
+			otherSpline.nodes[node1].Up = newUp;
 		}
 	}
 

@@ -72,10 +72,11 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 			_rhinoArrayWasChanged = true; //Set a boolean to true so the code that needs doing is done in Update, rather than OnValidate.
 		}
 		else
-			foreach (RhinoManaging Rhino in _Rhinos)
+			foreach(RhinoManaging Rhino in _Rhinos)
 			{
-				Rhino._RailEnemyScript._Data = Rhino._RailEnemyData; //Takes changes on each rhino into this array
+				Rhino._RailEnemyScript = Rhino._Object.GetComponent<S_AI_RailEnemy>();
 			}
+
 	}
 #endif
 
@@ -250,7 +251,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 						Rhino._Object.name = Rhino._Object.name + (" (" + index + ")");
 
 						Rhino._RailEnemyScript = Rhino._Object.GetComponent<S_AI_RailEnemy>();
-						Rhino._RailEnemyData = Rhino._RailEnemyScript._Data; //So the rhino values can be set from here.
 
 						index--;
 					}
@@ -322,7 +322,6 @@ public class RhinoManaging
 	public int _whichRail;
 	[Tooltip("The child object which is an instance of the rhino prefab set at the top.")]
 	public GameObject _Object;
-	public S_RailEnemyData _RailEnemyData;
 
 	[HideInInspector]
 	public S_AI_RailEnemy _RailEnemyScript;

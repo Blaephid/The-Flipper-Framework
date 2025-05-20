@@ -109,6 +109,7 @@ namespace SplineMesh
 
 			if (!_Spline.enabled)
 				return;
+			if (!_Spline || !_Spline.transform || selection == null) { return; }
 
 			// draw the selection handles
 			switch (selectionType)

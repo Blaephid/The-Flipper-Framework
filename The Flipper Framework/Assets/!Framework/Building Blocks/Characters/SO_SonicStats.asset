@@ -1827,11 +1827,11 @@ MonoBehaviour:
     acceleration: 70
   SpinChargeStats:
     whatAimMethod: 0
-    chargingSpeed: 1.05
-    tappingBonus: 2.1
-    delayBeforeLaunch: 9
-    minimunCharge: 20
-    maximunCharge: 120
+    chargingSpeed: 1.1
+    tappingBonus: 2.5
+    delayBeforeLaunch: 11
+    minimunCharge: 40
+    maximunCharge: 180
     releaseShakeAmmount: {x: 4, y: 0.15, z: 18, w: 14}
     ForceGainByAngle:
       serializedVersion: 2
