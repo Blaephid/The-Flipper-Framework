@@ -91,6 +91,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	public event System.Action<GameObject> OnGetInFrontOfPlayer;
 	public event System.Action<GameObject> OnFallBehindPlayer;
+	public event System.Action OnActivate;
+	public event System.Action OnDeactivate;
 
 
 	//At start
@@ -152,8 +154,6 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_RF._grindingSpeed = _useStartSpeed * _Data._CurveToFullSpeed_.Evaluate(0);
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
-
-		if(_RhinoActions) { _RhinoActions.TriggerOn(); }
 	}
 
 	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
@@ -166,7 +166,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_isActive = set;
 		_timeGrinding = 0;
 
-		if (set) { SetAnimatorTrigger("Start"); }
+		if (set) { SetAnimatorTrigger("Start"); OnActivate.Invoke(); }
+		else { OnDeactivate.Invoke(); }
 
 		if (!_RF || !_RF._PathSpline) { _isActive = false; }
 	}
@@ -276,6 +277,16 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	//Adusts speed to a goal speed based on player's current state and position.
 	void TrackPlayer () {
+
+		//Check if enemy is in front of or behind player (as that affects what actions it can take)
+		bool OnSameRail = _PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected());
+		if (!OnSameRail)
+		{
+			if (Vector3.Angle(_PlayerVel._worldDirection, S_S_MoreMaths.GetDirection(_PlayerVel.transform.position, transform.position)) < 100)
+				SetHasReachedGoalInFrontOfPlayer(true); //If player's direction is taking them towards the rhinos, then the rhinos are in front.
+			else SetHasReachedGoalInFrontOfPlayer(false);
+		}
+
 		if (!_Data._followPlayer_) return;
 
 		_listOfPlayerSpeeds.Insert(0, _PlayerVel._horizontalSpeedMagnitude);
@@ -285,8 +296,8 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		float goalSpeed = _playerSpeed;
 		float lerpSpeed = _Data._followLerpSpeed_;
 
-		//If player is also grinding.
-		if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected()))
+		//See top of function
+		if (OnSameRail)
 		{
 			float modi = _hasReachedGoalInFrontOfPlayer ? _Data._LerpFollowByDistance_.Evaluate(_playerDistanceWithoutOffset) : _Data._LerpFollowByDistance_.Evaluate(_playerDistanceIncludingOffset);
 			lerpSpeed *= modi;
@@ -300,21 +311,20 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 				{ lerpSpeed *= 0.65f; }
 			}
 		}
-		else if (_PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing)
-		{
-			if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
-				goalSpeed = _RF._grindingSpeed * 0.97f;
-			else
-				goalSpeed = _RF._grindingSpeed * 1.05f;
-		}
-		else
-		{
-			if (Vector3.Angle(_PlayerVel._worldVelocity.normalized, (transform.position - _PlayerVel.transform.position).normalized) < 90)
-				SetHasReachedGoalInFrontOfPlayer(true); //If player's direction is taking them towards the rhinos, then the rhinos are in front.
-			else SetHasReachedGoalInFrontOfPlayer(false);
 
-			lerpSpeed *= _Data._FollowBySpeedDifference_.Evaluate(Mathf.Abs(_RF._grindingSpeed - _playerSpeed));
-		}
+		else
+			switch (_PlayerActions._whatCurrentAction)
+			{
+				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
+					if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
+						goalSpeed = _RF._grindingSpeed * 0.96f;
+					else
+						goalSpeed = _RF._grindingSpeed * 1.08f;
+					break;
+				default:
+					lerpSpeed *= _Data._FollowBySpeedDifference_.Evaluate(Mathf.Abs(_RF._grindingSpeed - _playerSpeed)); break;
+			}
+	
 
 		_RF._grindingSpeed = Mathf.Lerp(_RF._grindingSpeed, goalSpeed, lerpSpeed);
 
@@ -530,6 +540,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	void EventReturnOnDeath ( object sender, EventArgs e ) {
 
 		gameObject.SetActive(true);
+		enabled = true;
 
 		TriggerObjectOff();
 

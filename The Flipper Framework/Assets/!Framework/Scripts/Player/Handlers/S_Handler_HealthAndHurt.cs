@@ -136,6 +136,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 				if (!_Attacks.AttemptAttackOnContact(other, S_GeneralEnums.AttackTargets.Enemy))
 				{
+					if(other.TryGetComponent(out S_EnemyAttack EnemyAttack))
+						if(!EnemyAttack._isHazzard) { return; }
 					DamagePlayer();
 				}
 				return;

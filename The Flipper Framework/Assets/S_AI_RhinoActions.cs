@@ -14,13 +14,17 @@ public class S_AI_RhinoActions : MonoBehaviour
 	[BaseColour(0.5f,0.5f,0.5f,1)]
 	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] Transform _ShootPoint_;
 	[BaseColour(0.5f,0.5f,0.5f,1)]
-	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] ParticleSystem _ReadyShotParticle_;
+	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] S_VFXObjectManager _VFX;
+	[BaseColour(0.5f,0.5f,0.5f,1)]
+	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] S_AudioObjectManager _SFX;
 	[BaseColour(0.5f,0.5f,0.5f,1)]
 	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] S_Data_HomingTarget _HomingTarget;
 	[BaseColour(0.5f,0.5f,0.5f,1)]
 	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] S_CustomGravity _CustomGravity;
 	[BaseColour(0.5f,0.5f,0.5f,1)]
 	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] Collider _SolidCollider;
+	[BaseColour(0.5f,0.5f,0.5f,1)]
+	[SerializeField, ColourIfNull(1f, 0.5f, 0.5f, 1f)] S_EnemyAttack _AttackData;
 
 	private S_AI_RailEnemy _RailBehaviour;
 
@@ -34,7 +38,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 		shooting,
 		jumping,
 		landing,
-		normal
+		normal,
+		crashed
 	}
 
 
@@ -62,6 +67,9 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 	private void Start () {
 		_RailBehaviour = GetComponent<S_AI_RailEnemy>();
+
+		_RailBehaviour.OnActivate += TriggerOn;
+		_RailBehaviour.OnDeactivate += TriggerOff;
 	}
 
 	private void Update () {
@@ -69,6 +77,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
+		if(!_RailBehaviour.enabled) { return; }
 
 		switch (_currentState)
 		{
@@ -82,6 +91,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 				break;
 			case RhinoStates.shooting:
 				_timeSpentReadyingShot += Time.fixedDeltaTime;
+				Debug.DrawLine(transform.position, _Target.transform.position, Color.red);
+
 
 				if (_timeSpentReadyingShot >= _timeToReadyShot)
 				{
@@ -94,12 +105,32 @@ public class S_AI_RhinoActions : MonoBehaviour
 				if (_framesSinceLanding >= _delayAfterLanding)
 					_currentState = RhinoStates.normal;
 				break;
+			case RhinoStates.crashed:
+				_SFX.StopSource("Grinding");
+				_SFX.StopSource("Engine");
+				_AttackData._isHazzard = false;
+				_RailBehaviour.enabled = false; break;
+		}
+	}
+
+	private void OnCollisionEnter ( Collision collision ) {
+		if (!_currentlyOnRail && (collision.collider.gameObject.layer == 0 || collision.collider.gameObject.layer == 3))
+		{
+			_currentState = RhinoStates.crashed;
 		}
 	}
 
 
 	public void TriggerOn () {
+		_currentState = RhinoStates.normal;
+		_AttackData._isHazzard = true;
 		SetOnRail(true);
+		_SFX.PlaySource("Engine");
+	}
+
+	public void TriggerOff () {
+		_SFX.StopSource("Grinding");
+		_SFX.StopSource("Engine");
 	}
 
 	#region JumpOffRail
@@ -205,6 +236,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 			_currentlyOnRail = set;
 			if (set)
 			{
+				_SFX.PlaySource("Grinding");
 				_RailBehaviour._isActive = true;
 				_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", true);
 				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.shootdownWithCarry;
@@ -213,6 +245,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 			}
 			else
 			{
+				_SFX.StopSource("Grinding");
 				_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", false);
 				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.normal;
 				_HomingTarget.OnDestroy = S_Data_HomingTarget.EffectOnHoming.normal;
@@ -279,12 +312,12 @@ public class S_AI_RhinoActions : MonoBehaviour
 			if (set)
 			{
 				_currentState = RhinoStates.shooting;
-				_ReadyShotParticle_.Play();
+				_VFX.PlaySource("ReadyShot");
 			}
 			else
 			{
 				_currentState = RhinoStates.normal;
-				_ReadyShotParticle_.Stop();
+				_VFX.StopSource("ReadyShot");
 			}
 		}
 	}
@@ -305,6 +338,9 @@ public class S_AI_RhinoActions : MonoBehaviour
 		GO.GetComponent<Rigidbody>().velocity = velocity;
 
 		SetIsShooting(false);
+
+		_VFX.PlaySource("Shoot");
+		_SFX.PlaySource("Shoot");
 		_RailBehaviour.SetAnimatorTrigger("Attack");
 	}
 

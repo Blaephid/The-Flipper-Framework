@@ -10,6 +10,7 @@ public class S_PlayerVelocity : MonoBehaviour
 	private S_CharacterTools	_Tools;
 	private S_PlayerPhysics	_PlayerPhys;
 	private Rigidbody		_RB;
+	private Transform             _MainSkin;
 	#endregion
 
 	#region trackers
@@ -28,6 +29,8 @@ public class S_PlayerVelocity : MonoBehaviour
 	public Vector3                _totalVelocityLocal;          //The speed above but relative to the players rotation.
 	[HideInInspector]
 	public Vector3                _worldVelocity;               //This is set at the start of a frame as a temporary total velocity, based on the actual velocity in physics. So Total Velocity is set, then affected by collision after the FixedUpdate, then adjusted by TrackAndChangeVelocity, then set here.
+	[HideInInspector]
+	public Vector3                _worldDirection;
 	[HideInInspector]
 	public List<Vector3>          _previousVelocity = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
 
@@ -71,6 +74,7 @@ public class S_PlayerVelocity : MonoBehaviour
 		_Tools = GetComponent<S_CharacterTools>();
 		_PlayerPhys = GetComponent<S_PlayerPhysics>();
 		_RB = GetComponent<Rigidbody>();
+		_MainSkin = _Tools.MainSkin;
 	}
 
 	/// <summary>
@@ -218,6 +222,7 @@ public class S_PlayerVelocity : MonoBehaviour
 		}
 		//World velocity is the actual rigidbody velocity found at the start of the frame, edited here if needed, with some of the removed velocity reapplied.
 		_worldVelocity = velocityThisFrame + _velocityToCarryOntoNextFrame;
+		_worldDirection = _worldVelocity.sqrMagnitude > 2 ? _worldVelocity.normalized : _MainSkin.forward;
 
 		_velocityToCarryOntoNextFrame = Vector3.zero;
 		_velocityToNotCountWhenCheckingForAChange = Vector3.zero; //So this can be increased over this update, then checked again at the start of this method.
@@ -410,12 +415,4 @@ public class S_PlayerVelocity : MonoBehaviour
 	}
 	#endregion
 
-
-	#region Assigning
-	private void AssignStats () {
-		_landingConversionFactor_ = _Tools.Stats.SlopeStats.landingConversionFactor;
-		_rollingLandingBoost_ = _Tools.Stats.RollingStats.rollingLandingBoost;
-
-	}
-	#endregion
 }

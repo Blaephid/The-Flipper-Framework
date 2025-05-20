@@ -298,7 +298,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
 
 		//Effects
-		_Sounds.FeetSource.Stop();
+		_Sounds.RailGrindStop();
 
 		_isGrinding = false;
 		_RF._RailTransform = null; //Set this to null so there's nothing to compare to on next rail.
@@ -683,6 +683,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	void SoundControl () {
 		if (_RF._distanceToHop == 0)
 			_Sounds.RailGrindSound();
+		else
+			_Sounds.RailGrindStop();
 	}
 	#endregion
 

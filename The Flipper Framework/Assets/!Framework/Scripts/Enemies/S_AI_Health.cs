@@ -48,7 +48,8 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 		else
 			gameObject.SetActive(false);
 
-		OnDefeated.Invoke(gameObject, this);
+		if(OnDefeated != null)
+			OnDefeated.Invoke(gameObject, this);
 	}
 
 	void EventReturnOnDeath ( object sender, EventArgs e ) {

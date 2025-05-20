@@ -38,6 +38,9 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 	public bool AttemptAttackOnContact ( Collider other, S_GeneralEnums.AttackTargets target ) {
 		if (!_hasHitThisFrame) //Will only try once per update.
 		{
+			if(other.TryGetComponent(out S_EnemyAttack enemyAttack))
+				if(enemyAttack._isInvincible) { return false; }
+
 			//Certain actions will count as attacks, other require other states.
 			switch (_Actions._whatCurrentAction)
 			{

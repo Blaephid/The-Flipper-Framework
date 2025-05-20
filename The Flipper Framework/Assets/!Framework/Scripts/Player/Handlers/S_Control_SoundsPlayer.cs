@@ -8,12 +8,13 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	public S_PlayerPhysics Player;
 
 	[Header("Audio Sources")]
-	public AudioSource  FeetSource;
-	public AudioSource GeneralSource;
-	public AudioSource ExtraSource;
-	public AudioSource DamageSource;
-	public AudioSource VoiceSource;
-	public AudioSource BoostSource1, BoostSource2;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource  FeetSource;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource  GrindSource;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource GeneralSource;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource ExtraSource;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource DamageSource;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource VoiceSource;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource BoostSource1, BoostSource2;
 
 
 	[Header("Clips")]
@@ -77,7 +78,7 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	}
 	#endregion
 
-	#region FeetSource
+	#region Feet&GrindSource
 
 	//This is called by an Animation event in specific animations. Any walking/running animation will call this.
 	//Make sure the animator component is on the same object as this script. And that this method isn't renamed.
@@ -92,9 +93,14 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	}
 
 	public void RailGrindSound (bool overwrite = false) {
-		if (FeetSource.isPlaying && !overwrite) { return; }
-		FeetSource.clip = RailGrind;
-		FeetSource.Play();
+		if (GrindSource.isPlaying && !overwrite) { return; }
+		FeetSource.Stop();
+		GrindSource.clip = RailGrind;
+		GrindSource.Play();
+	}
+
+	public void RailGrindStop () {
+		GrindSource.Stop();
 	}
 	#endregion
 
