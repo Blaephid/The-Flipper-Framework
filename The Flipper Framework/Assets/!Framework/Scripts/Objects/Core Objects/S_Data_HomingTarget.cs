@@ -5,6 +5,7 @@ using UnityEngine;
 [AddComponentMenu("Data Components/Homing Target")]
 public class S_Data_HomingTarget : S_Data_Base
 {
+#if UNITY_EDITOR
 	S_Data_HomingTarget () {
 		_hasVisualisationScripted = true;
 		_selectedOutlineColour = Color.red;
@@ -12,6 +13,7 @@ public class S_Data_HomingTarget : S_Data_Base
 		_normalOutlineColour.a = 0.5f;
 		_distanceModifier = 1;
 	}
+#endif
 
 	public Vector3 _offset = Vector3.up;
 	public TargetType type = TargetType.destroy;
@@ -42,6 +44,8 @@ public class S_Data_HomingTarget : S_Data_Base
 		_positionThisFixedUpdate = transform.position;
 	}
 
+#if UNITY_EDITOR
+
 	public override void DrawGizmosAndHandles ( bool selected ) {
 		if(selected) {Gizmos.color = _selectedFillColour; }
 		else { Gizmos.color = _normalOutlineColour; }
@@ -50,4 +54,6 @@ public class S_Data_HomingTarget : S_Data_Base
 
 		Gizmos.DrawWireSphere(transform.position + (transform.rotation * _offset), size);
 	}
+
+#endif
 }

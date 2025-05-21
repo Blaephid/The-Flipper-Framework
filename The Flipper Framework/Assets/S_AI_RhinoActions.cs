@@ -77,7 +77,9 @@ public class S_AI_RhinoActions : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
-		if(!_RailBehaviour.enabled) { return; }
+		if(!_RailBehaviour.enabled || !_RailBehaviour._isActive) { return; }
+
+		Debug.Log(_currentState +" At " + S_PlayerPhysics._fixedFrameCount);
 
 		switch (_currentState)
 		{

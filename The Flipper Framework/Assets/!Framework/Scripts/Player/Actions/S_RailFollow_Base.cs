@@ -109,6 +109,7 @@ public class S_RailFollow_Base : MonoBehaviour
 		_movingDirection = _isGoingBackwards ? -1 : 1;
 		_pointOnSpline += travelAmount * _movingDirection;
 
+
 		_isRailLost = _pointOnSpline < 0 || _pointOnSpline > _PathSpline.Length;
 		_clampedPointOnSpline = _pointOnSpline;
 

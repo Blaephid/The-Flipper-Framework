@@ -18,7 +18,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4107715257167030
 Transform:
@@ -51,7 +51,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1543253352267630}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -60,6 +60,8 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -98,6 +100,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76aa04b38a8830f4989413856f3df268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
+  _hasVisualisationScripted: 0
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -127,3 +139,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _whatAction: 0
   _delayInSeconds: 0
+  _applyOnRespawn: 0

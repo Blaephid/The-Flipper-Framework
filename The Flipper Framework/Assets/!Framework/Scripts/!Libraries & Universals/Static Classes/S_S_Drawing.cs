@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -59,11 +60,13 @@ public class S_S_Drawing
 		EditorGUI.BeginChangeCheck();
 		Handles.SphereHandleCap(0, handlePosition, Quaternion.identity, size, EventType.Repaint);
 
+		Event currentEvent = Event.current;
+
 		// Detect if the mouse is clicked on the handle
-		if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+		if (currentEvent.type == EventType.MouseDown && currentEvent.button == 0)
 		{
 			// Check if the mouse is over the handle (using HandleUtility.DistanceToCircle for a more precise check)
-			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.7f) < 0.5f)
+			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.5f) < 0.2f)
 			{
 				currentHover = targetObject;
 				if (IsHandleBlocked(handlePosition, targetObject)) { return; }
@@ -71,13 +74,25 @@ public class S_S_Drawing
 				currentHover = targetObject;
 			}
 		}
-		else if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
+		else if (currentEvent.type == EventType.MouseUp && currentEvent.button == 0)
 		{
-			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.7f) < 0.5f && currentHover == targetObject)
+			if (HandleUtility.DistanceToCircle(handlePosition, size * 0.5f) < 0.2f && currentHover == targetObject)
 			{
-				// Select the object when the handle is released on the same object it was pressed down on.
-				Selection.activeObject = targetObject;
+				if (IsHandleBlocked(handlePosition, targetObject)) { return; }
 
+				bool additive = currentEvent.control || currentEvent.shift || currentEvent.command;
+
+				if (additive && Selection.objects.Length > 0)
+				{
+					Selection.objects = Selection.objects.Concat(new Object[] { targetObject }).ToArray();
+				}
+				else
+				{
+					// Select the object when the handle is released on the same object it was pressed down on.
+					Selection.activeObject = targetObject;
+				}
+
+				currentHover = null;
 				// Mark the event as handled
 				Event.current.Use();
 			}

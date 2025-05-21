@@ -20,7 +20,7 @@ GameObject:
   m_TagString: Spring
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 123
   m_IsActive: 1
 --- !u!4 &4000012764413882
 Transform:
@@ -109,7 +109,7 @@ MonoBehaviour:
   _launchData_:
     _force_: 100
     _direction_: {x: 0, y: 1, z: 0}
-    _directionToUse_: {x: 0.49285725, y: 0.61334103, z: -0.6171746}
+    _directionToUse_: {x: -0.20078804, y: 0.97729117, z: 0.067721166}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
     _useCore: 0
     _lockInputFrames_: 55
@@ -244,7 +244,7 @@ MonoBehaviour:
     type: 2}
   _ShotCenter: {fileID: 4000012764413882}
   _coreVelAtEnd: {x: 0, y: -199.79987, z: 0}
-  _environmentalVelAtStart: {x: 49.285725, y: 61.334103, z: -61.71746}
+  _environmentalVelAtStart: {x: -20.078804, y: 97.72912, z: 6.772117}
 --- !u!114 &2685212621995745683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -761,22 +761,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.86006
+      value: -0.860847
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.014343575
+      value: 0.008064089
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.50992036
+      value: 0.50877774
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.008504152
+      value: 0.004766037
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -962,6 +962,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HomingTarget (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1334624118752866, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 123
+      objectReference: {fileID: 0}
     - target: {fileID: 4500636743497794, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -1015,6 +1019,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _offset.z
       value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
+        type: 3}
+      propertyPath: _isSelected
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -32,7 +32,8 @@ public struct FieldAndValue
 
 public class S_S_Editor : MonoBehaviour
 {
-	public static void DestroyFromOnValidate (GameObject ObjectToDestroy) {
+#if UNITY_EDITOR
+	public static void DestroyFromOnValidate ( GameObject ObjectToDestroy ) {
 		EditorApplication.delayCall += () =>
 		{
 			if (ObjectToDestroy != null)
@@ -51,6 +52,7 @@ public class S_S_Editor : MonoBehaviour
 			}
 		};
 	}
+#endif
 
 
 	//Takes a string and converts it to align with variable naming conventions, allowing the human's input to not have to be 100%.
@@ -273,28 +275,25 @@ public class S_S_Editor : MonoBehaviour
 			else
 			{
 				GameObject.DestroyImmediate(childTransform.gameObject);
-
 				childObject = CreateChild();
 			}
 		}
-
-#if UNITY_EDITOR
-		EditorApplication.delayCall += () =>
-		{
-
-			if (!childObject) { return; }
-			childObject.tag = ParentObject.tag;
-			childObject.layer = ParentObject.layer;
-		};
-#endif
 
 		return childObject;
 
 		GameObject CreateChild () {
 
-			if (InstantiateFrom != null) { return CreateChildFromBase(ParentObject, InstantiateFrom, newObjectName, AddComponents); }
+			GameObject childObject;
 
-			else { return CreateChildFromScratch(ParentObject, newObjectName, AddComponents); }
+			if (InstantiateFrom != null) { childObject = CreateChildFromBase(ParentObject, InstantiateFrom, newObjectName, AddComponents); }
+
+			else { childObject = CreateChildFromScratch(ParentObject, newObjectName, AddComponents); }
+
+			if (!childObject) { return null; }
+			childObject.tag = ParentObject.tag;
+			childObject.layer = ParentObject.layer;
+
+			return childObject;
 		}
 	}
 
@@ -305,6 +304,7 @@ public class S_S_Editor : MonoBehaviour
 		else
 			childObject = UOUtility.Create(newObjectName, ParentObject);
 		childObject.isStatic = true;
+
 
 		return childObject;
 	}
@@ -357,7 +357,7 @@ public class S_S_Editor : MonoBehaviour
 		Camera sceneCam = null;
 		Vector3 position = transform.position;
 
-		if(transform.TryGetComponent (out Spline spline))
+		if (transform.TryGetComponent(out Spline spline))
 		{
 			position += transform.rotation * spline.nodes[0].Position;
 		}

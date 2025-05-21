@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+#if UNITY_EDITOR
 public class S_Vis_Shape : S_Vis_Base
 {
 	public S_Vis_Shape () {
@@ -25,3 +25,4 @@ public class S_Vis_Shape : S_Vis_Base
 		}
 	}
 }
+#endif

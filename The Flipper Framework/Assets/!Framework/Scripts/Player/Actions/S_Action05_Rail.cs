@@ -213,7 +213,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				//If it was a drop charge, add speed from the charge to the grind speed.
 				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
 					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
-					_RF._grindingSpeed = Mathf.Clamp(charge, _RF._grindingSpeed + (charge / 6), 160);
+					_RF._grindingSpeed = Mathf.Max(charge, _RF._grindingSpeed + (charge / 2));
 					break;
 				default:
 					//If any other action, then check if speed on rail is gained from falling onto, or being launched up into.

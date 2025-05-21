@@ -15,6 +15,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 	[SerializeField] bool SetAllToSplineButton;
 
 	#region In Editor Fields
+#if UNITY_EDITOR
 	public S_AI_RhinoMaster () {
 		_hasVisualisationScripted = true;
 		_selectedOutlineColour = Color.white;
@@ -22,6 +23,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		_normalOutlineColour = Color.white;
 		_normalOutlineColour.a = 0.3f;
 	}
+#endif
 
 	[SerializeField, BaseColour(0.8f,0.8f,0.8f,1f)]
 	private GameObject _RhinosToSpawn;
@@ -231,6 +233,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 
+#if UNITY_EDITOR
 	#region inEditor
 
 	//Adding or removing child rhinos if the array was changed.
@@ -313,6 +316,8 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		VisualiseWithSelectableHandle(transform.position, 2f);
 	}
 	#endregion
+
+#endif
 }
 
 [Serializable]

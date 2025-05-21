@@ -45,10 +45,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b1a46ddb4e93c48bfea5b68621b70f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _InspectorTheme: {fileID: 0}
+  _isSelected: 1
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 1, g: 0, b: 0, a: 0.5}
+  _selectedOutlineColour: {r: 1, g: 0, b: 0, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _hasDataChanged: 1
   _offset: {x: 0, y: 0, z: 0}
-  drawColour: {r: 1, g: 0, b: 0, a: 1}
   type: 0
+  OnHit: 0
+  OnDestroy: 0
+  _distanceModifier: 1
+  _positionLastFixedUpdate: {x: 0, y: 0, z: 0}
+  _positionThisFixedUpdate: {x: 1, y: 1, z: 1}
 --- !u!65 &3629668216035965291
 BoxCollider:
   m_ObjectHideFlags: 0
