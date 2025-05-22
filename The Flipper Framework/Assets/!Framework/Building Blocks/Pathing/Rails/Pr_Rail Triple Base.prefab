@@ -219,7 +219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9c8b87cf845f3c4cb854007700733aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isSelected: 0
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -411,7 +411,7 @@ PrefabInstance:
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
-      value: Pr_Rail_Base 1
+      value: Pr_Rail_Base 0
       objectReference: {fileID: 0}
     - target: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
@@ -524,7 +524,7 @@ PrefabInstance:
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
-      value: Pr_Rail_Base 3
+      value: Pr_Rail_Base -1
       objectReference: {fileID: 0}
     - target: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
@@ -642,7 +642,7 @@ PrefabInstance:
     - target: {fileID: 5032248345694195366, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
       propertyPath: m_Name
-      value: Pr_Rail_Base 2
+      value: Pr_Rail_Base +1
       objectReference: {fileID: 0}
     - target: {fileID: 5450350798685154397, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}

@@ -45,7 +45,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	//Quaternion rot;
 	[HideInInspector] public Vector3               _setOffSet;         //Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
-	[HideInInspector] public Vector3               _currentLocalOffset;  //The above offset applied onto the current sample.
+	[HideInInspector] public Vector3               _currentWorldOffset;  //The above offset applied onto the current sample.
 	[HideInInspector] public Vector3               _currentCenterOffset; 
 	[HideInInspector] public float                 _upOffsetRail_ = 2.05f;
 	[HideInInspector] public float                 _upOffsetZip_ = -2.05f;
@@ -132,7 +132,7 @@ public class S_RailFollow_Base : MonoBehaviour
 		_sampleRotation = _sampleTransforms.rotation;
 
 		_currentCenterOffset = (_sampleUpwards * _upOffsetRail_);
-		_currentLocalOffset = _sampleRotation * -_setOffSet;
+		_currentWorldOffset = _sampleRotation * -_setOffSet;
 	}
 
 	//Physics
@@ -145,7 +145,7 @@ public class S_RailFollow_Base : MonoBehaviour
 		{
 			//Place character in world space on point in rail
 			case S_Interaction_Pathers.PathTypes.rail:
-				Vector3 relativeOffset = _currentLocalOffset; //Moves player to the left or right of the spline to be on the correct rail
+				Vector3 relativeOffset = _currentWorldOffset; //Moves player to the left or right of the spline to be on the correct rail
 
 				//Position is set to the local location of the spline point, the location of the spline object, the player offset relative to the up position (so they're actually on the rail) and the local offset.
 				Vector3 newPos = _sampleLocation;
@@ -257,7 +257,7 @@ public class S_RailFollow_Base : MonoBehaviour
 
 
 	//Goes through whole spline and returns the point closests to the given position, along with how far it is.
-	public static Vector2 GetClosestPointOfSpline ( Vector3 colliderPosition, Spline thisSpline, Vector3 offset, float incrementsToIncrease = 5 ) {
+	public static Vector2 GetClosestPointOfSpline ( Vector3 comparePosition, Spline thisSpline, Vector3 offset, float incrementsToIncrease = 5 ) {
 		float ClosestDistanceSquared = 9999999f;
 		float closestSample = 0;
 		if (!thisSpline || !thisSpline.transform) { return Vector2.zero; }
@@ -273,7 +273,7 @@ public class S_RailFollow_Base : MonoBehaviour
 			Vector3 checkPos = sampleTransform.location + (sampleTransform.rotation * offset);
 
 			//The distance between the point at distance n along the spline, and the current collider position.
-			float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(checkPos,colliderPosition);
+			float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(checkPos,comparePosition);
 
 			//Every time the distance is lower, the closest sample is set as that, so by the end of the loop, this will be set to the closest point.
 			if (distanceSquared <= ClosestDistanceSquared)

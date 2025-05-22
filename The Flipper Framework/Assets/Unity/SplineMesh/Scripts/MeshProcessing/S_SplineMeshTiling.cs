@@ -254,6 +254,7 @@ namespace SplineMesh
 		}
 
 		public void UpdateSelfCommand () {
+			SetSpline();
 			Rebuild();
 		}
 #endif

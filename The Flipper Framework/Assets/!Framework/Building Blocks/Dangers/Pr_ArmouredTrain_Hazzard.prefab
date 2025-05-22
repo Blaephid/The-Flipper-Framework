@@ -711,11 +711,19 @@ MonoBehaviour:
   _sampleRight: {x: 0, y: 0, z: 0}
   _sampleLocation: {x: 0, y: 0, z: 0}
   _sampleUpwards: {x: 0, y: 0, z: 0}
+  _sampleRotation: {x: 0, y: 0, z: 0, w: 0}
   _grindingSpeed: 0
   _setOffSet: {x: 0, y: 0, z: 0}
+  _currentLocalOffset: {x: 0, y: 0, z: 0}
+  _currentCenterOffset: {x: 0, y: 0, z: 0}
   _upOffsetRail_: 2.05
   _upOffsetZip_: -2.05
   _isRailLost: 0
+  _hopThisFrame: 0
+  _distanceToHop: 0
+  _timeHopping: 0
+  _timeToCompleteHop: 0
+  _isHoppingRight: 0
 --- !u!114 &1199096105387939381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -729,7 +737,64 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SetToSplineButton: 0
+  SearchForSplineButton: 0
   _RF: {fileID: 5025221690079566641}
+  _RB: {fileID: 0}
+  _Animator: {fileID: 0}
+  _Data:
+    _StartSpline_: {fileID: 0}
+    _StartingConnectedRails_: {fileID: 0}
+    _startOffset_: {x: 0, y: 0, z: 0}
+    _startDistance_: -1
+    _rhino_: 0
+    _armouredTrain_: 1
+    _RailLayer:
+      serializedVersion: 2
+      m_Bits: 8388608
+    _startSpeed_: 60
+    _startAtPlayerSpeed_: 0
+    _minimumSpeed_: 60
+    _railUpOffset_: 0
+    _followPlayer_: 0
+    _isBackwards_: 0
+    _CurveToFullSpeed_:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _LerpFollowByDistance_:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _FollowBySpeedDifference_:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _followLerpSpeed_: 0.3
+    _distanceAheadOfPlayerToAimFor_: 0
   _Models:
   - {fileID: 117431874968579458}
   - {fileID: 1008789532595093246}
@@ -738,28 +803,8 @@ MonoBehaviour:
   - {fileID: 8636354947971197984}
   _modelStartRotations: []
   _disanceBetweenModels: 22
-  _StartSpline: {fileID: 0}
-  _StartingConnectedRails: {fileID: 0}
-  _rhino: 0
-  _armouredTrain: 1
-  StartSpeed: 140
-  _railUpOffset: 1
-  _followPlayer: 0
-  _isBackwards: 0
-  _FollowByDistance_:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _FollowBySpeedDif_:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _followSpeed_: 0.5
-  playerRail: {fileID: 0}
+  _isActive: 0
+  _PlayerRailAction: {fileID: 0}
   _PlayerActions: {fileID: 0}
 --- !u!114 &3509858009417978324
 MonoBehaviour:
@@ -782,6 +827,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _hasDataChanged: 1
   _updateAutomatically: 1
   _Segments:
   - _Source: {fileID: 919132149155446097, guid: 107009738aa951045b0bbf5c5a71ff13,
@@ -843,11 +889,19 @@ MonoBehaviour:
   _sampleRight: {x: 0, y: 0, z: 0}
   _sampleLocation: {x: 0, y: 0, z: 0}
   _sampleUpwards: {x: 0, y: 0, z: 0}
+  _sampleRotation: {x: 0, y: 0, z: 0, w: 0}
   _grindingSpeed: 0
   _setOffSet: {x: 0, y: 0, z: 0}
+  _currentLocalOffset: {x: 0, y: 0, z: 0}
+  _currentCenterOffset: {x: 0, y: 0, z: 0}
   _upOffsetRail_: 2.05
   _upOffsetZip_: -2.05
   _isRailLost: 0
+  _hopThisFrame: 0
+  _distanceToHop: 0
+  _timeHopping: 0
+  _timeToCompleteHop: 0
+  _isHoppingRight: 0
 --- !u!54 &997849493695707074
 Rigidbody:
   m_ObjectHideFlags: 0

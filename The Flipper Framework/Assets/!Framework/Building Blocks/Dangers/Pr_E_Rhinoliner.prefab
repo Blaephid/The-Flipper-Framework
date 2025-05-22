@@ -424,7 +424,7 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 38
+  Priority: 30
   DopplerLevel: 0
   MinDistance: 1
   MaxDistance: 2000
@@ -446,8 +446,8 @@ AudioSource:
       inWeight: 0
       outWeight: 0.5046348
     - serializedVersion: 3
-      time: 0.502368
-      value: 0.89951074
+      time: 0.5811796
+      value: 0.884992
       inSlope: -0.44794703
       outSlope: -0.44794703
       tangentMode: 0
@@ -471,7 +471,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.375
+      value: 0.262
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -579,7 +579,7 @@ MonoBehaviour:
   _sampleRotation: {x: 0, y: 0, z: 0, w: 0}
   _grindingSpeed: 0
   _setOffSet: {x: 0, y: 0, z: 0}
-  _currentLocalOffset: {x: 0, y: 0, z: 0}
+  _currentWorldOffset: {x: 0, y: 0, z: 0}
   _currentCenterOffset: {x: 0, y: 0, z: 0}
   _upOffsetRail_: 2.05
   _upOffsetZip_: -2.05
@@ -799,6 +799,8 @@ MonoBehaviour:
   _BlockingShotLayers:
     serializedVersion: 2
     m_Bits: 8193
+  _canJump: 1
+  _canHop: 1
   _LayersOfRailsAndBlockers:
     serializedVersion: 2
     m_Bits: 8404736

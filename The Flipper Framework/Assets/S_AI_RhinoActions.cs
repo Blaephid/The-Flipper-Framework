@@ -58,6 +58,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 	[SerializeField] private LayerMask _BlockingShotLayers;
 
 	[Header("Hopping")]
+	[SerializeField] private bool _canJump = true;
+	[SerializeField] private bool _canHop = true;
 	[SerializeField] private LayerMask _LayersOfRailsAndBlockers;
 	[SerializeField] private float _hopSpeed_ = 8;
 	float _timeSpentReadyingShot;
@@ -77,9 +79,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 	}
 
 	private void FixedUpdate () {
-		if(!_RailBehaviour.enabled || !_RailBehaviour._isActive) { return; }
-
-		Debug.Log(_currentState +" At " + S_PlayerPhysics._fixedFrameCount);
+		if(!_RailBehaviour.enabled) { return; }
 
 		switch (_currentState)
 		{
@@ -89,9 +89,11 @@ public class S_AI_RhinoActions : MonoBehaviour
 				{ TryLandOnRail(); }
 				break;
 			case RhinoStates.switching:
+				if (!_RailBehaviour._isActive) return;
 				ApplyHopFixedUpdate();
 				break;
 			case RhinoStates.shooting:
+				if (!_RailBehaviour._isActive) return;
 				_timeSpentReadyingShot += Time.fixedDeltaTime;
 				Debug.DrawLine(transform.position, _Target.transform.position, Color.red);
 
@@ -137,6 +139,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 	#region JumpOffRail
 	public void JumpFromRail () {
+		if(!_canJump) return;
+
 		Vector3 JumpForce = transform.up * 60;
 		_RailBehaviour._RB.velocity *= 0.95f; //Allow player to catch up if they're jumping ahead.
 		_RailBehaviour._RB.velocity += JumpForce;
@@ -157,7 +161,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 	public bool CanSwitch ( float distanceBetweenRails ) {
 
-		if (_currentState != RhinoStates.normal) { return false; }
+		if (_currentState != RhinoStates.normal || !_canHop) { return false; }
 
 		float currentSpeed = _RailBehaviour._RF._grindingSpeed;
 		float distanceNeeded = currentSpeed * Time.fixedDeltaTime * 80;
@@ -413,7 +417,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 					CurveSample TargetSampleOnSpline = PlayerRail._RF._PathSpline.GetSampleAtDistance(targetPointOnSpline);
 					Vector3 targetPositionOnSpline = Spline.GetSampleTransformInfo( PlayerRail._RF._RailTransform, TargetSampleOnSpline).location;
 
-					targetPositionOnSpline += PlayerRail._RF._currentLocalOffset;
+					targetPositionOnSpline += PlayerRail._RF._currentWorldOffset;
 					targetPositionOnSpline += PlayerRail._RF._currentCenterOffset;
 					targetPositionOnSpline += PlayerRail._PlayerPhys._colliderOffsetFromPivot;
 

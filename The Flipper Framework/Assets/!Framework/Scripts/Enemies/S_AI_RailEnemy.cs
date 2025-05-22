@@ -88,6 +88,10 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	List<float> _listOfPlayerSpeeds = new List<float> {20,20,20,20,20,20,20,20,20};
 	float _timeGrinding;
 	private bool _hasReachedGoalInFrontOfPlayer; //Set to true when hit goal distance ahead of player, and false when behind the player themselves. This will increase speed when catching up to position ahead, but allow player to catch up.
+	private int _trackPlayerCounter; //Used to only perform certain checks every x frames, for efficiency.
+	private bool _onSamePath;
+	private bool _onSameRailExactly;
+
 
 	public event System.Action<GameObject> OnGetInFrontOfPlayer;
 	public event System.Action<GameObject> OnFallBehindPlayer;
@@ -282,11 +286,12 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 	//Adusts speed to a goal speed based on player's current state and position.
 	void TrackPlayer () {
-
+		_trackPlayerCounter++;
+		if (_trackPlayerCounter == 3) { _trackPlayerCounter = 0; }
 
 		//Check if enemy is in front of or behind player (as that affects what actions it can take)
-		bool OnSameRail = _PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected());
-		if (!OnSameRail)
+		_onSamePath = _PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected());
+		if (!_onSamePath)
 		{
 			if (Vector3.Angle(_PlayerVel._worldDirection, S_S_MoreMaths.GetDirection(_PlayerVel.transform.position, transform.position)) < 100)
 				SetHasReachedGoalInFrontOfPlayer(true); //If player's direction is taking them towards the rhinos, then the rhinos are in front.
@@ -302,12 +307,66 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		float goalSpeed = _playerSpeed;
 		float lerpSpeed = _Data._followLerpSpeed_;
 
-		//See top of function
-		if (OnSameRail)
+
+		switch (_PlayerActions._whatCurrentAction)
 		{
-			float modi = _hasReachedGoalInFrontOfPlayer ? _Data._LerpFollowByDistance_.Evaluate(_playerDistanceWithoutOffset) : _Data._LerpFollowByDistance_.Evaluate(_playerDistanceIncludingOffset);
+			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
+				break; //Already handled above
+			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
+				if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
+					goalSpeed = _RF._grindingSpeed * 0.96f;
+				else
+					goalSpeed = _RF._grindingSpeed * 1.08f;
+				break;
+			default:
+				//Lerp on player speed.
+				lerpSpeed *= _Data._FollowBySpeedDifference_.Evaluate(Mathf.Abs(_RF._grindingSpeed - _playerSpeed));
+
+				if (_trackPlayerCounter != 0) { break; }
+
+				float lookAhead = 50;
+				float pointAhead = Mathf.Clamp(_RF._pointOnSpline + (lookAhead * _RF._movingDirection),0, _RF._PathSpline.Length);
+
+				CurveSample SampleAhead = _RF._PathSpline.GetSampleAtDistance(pointAhead);
+				Vector3 locationAhead = Spline.GetSampleTransformInfo(_RF._RailTransform, SampleAhead).location;
+
+				//If point on spline ahead is closer to player, that implies player is ahead.
+				if (S_S_MoreMaths.GetDistanceSqrOfVectors(locationAhead, _PlayerActions.transform.position) < S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, _PlayerActions.transform.position))
+				{
+					float playerPointOnSplines = S_RailFollow_Base.GetClosestPointOfSpline(_PlayerActions.transform.position, _RF._PathSpline, _RF._currentWorldOffset, 10).x;
+
+					GetDistanceBetweenOnSplines(_RF._pointOnSpline, playerPointOnSplines);
+					_onSamePath = true;
+					_onSameRailExactly = false;
+				}
+
+				break;
+		}
+
+		//See top of function
+		if (_onSamePath)
+		{
+			AffectByDistance();
+		}
+
+
+
+		_RF._grindingSpeed = Mathf.Lerp(_RF._grindingSpeed, goalSpeed, lerpSpeed);
+
+		return;
+
+		void AffectByDistance () {
+			float modi = _hasReachedGoalInFrontOfPlayer ? 
+				_Data._LerpFollowByDistance_.Evaluate(_playerDistanceWithoutOffset) : _Data._LerpFollowByDistance_.Evaluate(_playerDistanceIncludingOffset);
 			lerpSpeed *= modi;
-			goalSpeed = _playerDistanceIncludingOffset < 0 ? goalSpeed / modi : goalSpeed * modi; // If enemy is ahead of goal position, decrease goal speed. If behind, increase goal speed.
+			// If enemy is ahead of goal position, decrease goal speed. If behind, increase goal speed.
+			goalSpeed = _playerDistanceIncludingOffset < 0 ? goalSpeed / modi : goalSpeed * modi;
+
+			Debug.Log(_playerDistanceWithoutOffset);
+
+			//To prevent rhino smashing into Player from behind without any sign.
+			if (_onSameRailExactly && _Data._rhino_ && _playerDistanceWithoutOffset > 0 && _playerDistanceWithoutOffset < 80)
+				goalSpeed = Mathf.Min(goalSpeed, _playerSpeed);
 
 			//If ahead of player not including goal position, allow player a chance to catch up.
 			if (_hasReachedGoalInFrontOfPlayer && goalSpeed > 100)
@@ -318,25 +377,9 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			}
 		}
 
-		else
-			switch (_PlayerActions._whatCurrentAction)
-			{
-				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
-					if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
-						goalSpeed = _RF._grindingSpeed * 0.96f;
-					else
-						goalSpeed = _RF._grindingSpeed * 1.08f;
-					break;
-				default:
-					lerpSpeed *= _Data._FollowBySpeedDifference_.Evaluate(Mathf.Abs(_RF._grindingSpeed - _playerSpeed)); break;
-			}
-
-
-		_RF._grindingSpeed = Mathf.Lerp(_RF._grindingSpeed, goalSpeed, lerpSpeed);
-
-		return;
-
 		bool OnSameRailOrConnected () {
+			if (_trackPlayerCounter == 0) { return _onSamePath; }
+
 			bool onSameRailOrConnected = _PlayerRF._PathSpline == _RF._PathSpline;
 			float thisPointOnSplines = _RF._pointOnSpline;
 			float playerPointOnSplines = _PlayerRF._pointOnSpline;
@@ -357,7 +400,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 					onSameRailOrConnected = _PlayerRF._ConnectedRails.NextRail._Spline == _RF._PathSpline;
 					//Player spline position treated as how far from the enemy's rail (E.G. -200)
 					if (onSameRailOrConnected)
-						playerPointOnSplines = playerPointOnSplines = _PlayerRF._pointOnSpline - _PlayerRF._PathSpline.Length;
+						playerPointOnSplines = _PlayerRF._pointOnSpline - _PlayerRF._PathSpline.Length;
 				}
 				//Share next rail
 				if (!onSameRailOrConnected && _PlayerRF._ConnectedRails.NextRail && _RF._ConnectedRails.NextRail)
@@ -366,9 +409,9 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 					//Both spline positions treated as how far from the upcoming rail (E.G. -100 & -150)
 					if (onSameRailOrConnected)
 					{
-						thisPointOnSplines = _RF._pointOnSpline - 
+						thisPointOnSplines = _RF._pointOnSpline -
 							_RF._PathSpline.Length;
-						playerPointOnSplines = _PlayerRF._pointOnSpline - 
+						playerPointOnSplines = _PlayerRF._pointOnSpline -
 							_PlayerRF._PathSpline.Length;
 					}
 				}
@@ -381,14 +424,19 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 
 			if (onSameRailOrConnected)
 			{
-				//How far ahead or behind the player is considering the enemy's direction.
-				_playerDistanceIncludingOffset = (thisPointOnSplines - (playerPointOnSplines + _PlayerRF._movingDirection * _Data._distanceAheadOfPlayerToAimFor_)) * -_RF._movingDirection;
-				_playerDistanceWithoutOffset = (thisPointOnSplines - playerPointOnSplines) * -_RF._movingDirection;
-
-				if (_playerDistanceIncludingOffset <= 0) SetHasReachedGoalInFrontOfPlayer(true); //Reached point ahead of player to be.
-				else if (_playerDistanceWithoutOffset > 0) SetHasReachedGoalInFrontOfPlayer(false); //Has fallen behiond the player properly.
+				GetDistanceBetweenOnSplines(thisPointOnSplines, playerPointOnSplines);
+				if((_RF._setOffSet - _PlayerRF._setOffSet).sqrMagnitude < 1) { _onSameRailExactly = true; }
 			}
 			return onSameRailOrConnected;
+		}
+
+		void GetDistanceBetweenOnSplines ( float thisPointOnSplines, float playerPointOnSplines ) {
+			//How far ahead or behind the player is considering the enemy's direction.
+			_playerDistanceIncludingOffset = (thisPointOnSplines - (playerPointOnSplines + _PlayerRF._movingDirection * _Data._distanceAheadOfPlayerToAimFor_)) * -_RF._movingDirection;
+			_playerDistanceWithoutOffset = (thisPointOnSplines - playerPointOnSplines) * -_RF._movingDirection;
+
+			if (_playerDistanceIncludingOffset <= 0) SetHasReachedGoalInFrontOfPlayer(true); //Reached point ahead of player to be.
+			else if (_playerDistanceWithoutOffset > 0) SetHasReachedGoalInFrontOfPlayer(false); //Has fallen behiond the player properly.
 		}
 	}
 

@@ -128,9 +128,15 @@ public class S_AddOnRail : MonoBehaviour
 
 			if(TryGetComponent(out S_SplineMeshTiling MeshTiling))
 			{
+				Vector3 baseOffset = MeshTiling.translation;
 				Vector3 getDirection = (newDirection - newPosition).normalized;
-				Vector3 offset =Quaternion.LookRotation(getDirection, newUp) *  MeshTiling.translation;
-				offset = new Vector3(-offset.z, offset.y, offset.x);
+
+				Vector3 upOffset = newUp * baseOffset.y;
+				Vector3 forwardOffset = getDirection * baseOffset.x;
+				Vector3 rightDirection = Vector3.Cross(newUp, getDirection).normalized;
+				Vector3 rightOffset = rightDirection * -baseOffset.z;
+
+				Vector3 offset = upOffset + rightOffset + forwardOffset;
 				newPosition += offset;
 				newDirection += offset;
 			}
