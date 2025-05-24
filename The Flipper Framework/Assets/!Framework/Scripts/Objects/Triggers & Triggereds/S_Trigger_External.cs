@@ -28,19 +28,19 @@ public class S_Trigger_External : S_Trigger_Base
 
 	public void OnTriggerEnter ( Collider other ) {
 		if (other.tag != "Player") { return; }
-		other.TryGetComponent(out _Player);
-		if (!_Player) { _Player = other.GetComponentInParent<S_PlayerPhysics>(); }
+		other.TryGetComponent(out _PlayerTools);
+		if (!_PlayerTools) { _PlayerTools = other.GetComponentInParent<S_CharacterTools>(); }
 
 		if (_wastriggered) { return; } //Enforces a delay between when and when not the trigger can be activated.
 
 		_wastriggered = true;
 		_timeSinceTriggered = 0;
 
-		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn, _Player);
-		TriggerGivenObjects(TriggerTypes.Either, TriggerObjects._ObjectsToTriggerOn, _Player);
+		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
+		TriggerGivenObjects(TriggerTypes.Either, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
 		if(!_triggeredThisLife)
 		{
-			TriggerGivenObjects(TriggerTypes.Once, TriggerObjects._ObjectsToTriggerOn, _Player);
+			TriggerGivenObjects(TriggerTypes.Once, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
 			_triggeredThisLife = true;
 			S_Manager_LevelProgress.OnReset += EventResetOnDeath;
 		}
@@ -51,16 +51,16 @@ public class S_Trigger_External : S_Trigger_Base
 
 		if (_wastriggered) { return; } //Enforces a delay between when and when not the trigger can be activated.
 
-		TriggerGivenObjects(TriggerTypes.Frame, TriggerObjects._ObjectsToTriggerOn, _Player);
+		TriggerGivenObjects(TriggerTypes.Frame, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
 	}
 
 	public void OnTriggerExit ( Collider other ) {
 		if (other.tag != "Player") { return; }
 
-		TriggerGivenObjects(TriggerTypes.Off, TriggerObjects._ObjectsToTriggerOff, _Player);
+		TriggerGivenObjects(TriggerTypes.Off, TriggerObjects._ObjectsToTriggerOff, _PlayerTools);
 	}
 
-	public static void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects, S_PlayerPhysics Player ) {
+	public static void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects, S_CharacterTools Player ) {
 		if(gameObjects.Count == 0) { return; }
 
 		//Go through each given gameObject and trigger if possible.

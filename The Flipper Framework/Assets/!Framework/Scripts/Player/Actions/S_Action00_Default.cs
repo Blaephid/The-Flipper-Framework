@@ -5,7 +5,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 
-public class S_Action00_Default :  S_Action_Base, IMainAction
+public class S_Action00_Default : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -50,7 +50,8 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	public int          _animationAction = 0;
 
 	[HideInInspector]
-	public bool	_isAnimatorControlledExternally = false;
+	public bool     _isAnimatorControlledExternally = false;
+	private Vector3 _skinRotationLockedTo;
 
 	#endregion
 	#endregion
@@ -70,7 +71,12 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 		if (!_isAnimatorControlledExternally)
 		{
 			HandleAnimator(_animationAction);
-			SetSkinRotationToVelocity(_skinRotationSpeed);
+			if (_skinRotationLockedTo != Vector3.zero)
+			{
+				SetSkinRotationToVelocity(_skinRotationSpeed, _skinRotationLockedTo);
+			}
+			else
+				SetSkinRotationToVelocity(_skinRotationSpeed);
 		}
 	}
 
@@ -80,8 +86,8 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	}
 
 	//Called when the current action should be set to this.
-	new public void StartAction (bool overwrite = false ) {
-		if(enabled || (!_Actions._canChangeActions && !overwrite)) { return; } //Because this method can be called when this state is already active (object interactions), end early if so.
+	new public void StartAction ( bool overwrite = false ) {
+		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; } //Because this method can be called when this state is already active (object interactions), end early if so.
 
 		//Set private
 		_isCoyoteInEffect = _PlayerPhys._isGrounded;
@@ -89,7 +95,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 		_PlayerPhys._canStickToGround = true; //Allows following the ground when in a normal grounded state.
 
 		//Set Effects
-		if(_CharacterAnimator.GetInteger("Action") != 0)
+		if (_CharacterAnimator.GetInteger("Action") != 0)
 		{
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 			if (!_isAnimatorControlledExternally) _CharacterAnimator.SetInteger("Action", _animationAction);
@@ -100,7 +106,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	}
 
 	new public bool AttemptAction () {
-		 if (_isActionCurrentlyValid) { return false; }
+		if (_isActionCurrentlyValid) { return false; }
 		return true;
 	}
 
@@ -108,6 +114,8 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
 		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+
+		_skinRotationLockedTo = Vector3.zero;
 	}
 
 	#endregion
@@ -117,7 +125,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-	
+
 	#endregion
 
 	/// <summary>
@@ -129,7 +137,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	//Updates the animator with relevant data so it can perform the correct animations.
 	public void HandleAnimator ( int action ) {
 
-		if(_CurrentAnimator == _CharacterAnimator)
+		if (_CurrentAnimator == _CharacterAnimator)
 		{
 			//Action
 			_CharacterAnimator.SetInteger("Action", action);
@@ -147,7 +155,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 			_CharacterAnimator.SetBool("isRolling", _PlayerPhys._isRolling);
 			if (_PlayerPhys._isRolling)
 			{
-				if(_PlayerVel._currentRunningSpeed < 1) { _CharacterAnimator.speed = 0; }
+				if (_PlayerVel._currentRunningSpeed < 1) { _CharacterAnimator.speed = 0; }
 				else { _CharacterAnimator.speed = 1; }
 			}
 		}
@@ -164,10 +172,10 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 		if (direction == default(Vector3))
 		{
 			direction = _PlayerVel._coreVelocity;
-			if(direction.sqrMagnitude < 7*7) { return; }
+			if (direction.sqrMagnitude < 7 * 7) { return; }
 		}
 
-		if(upDirection == default(Vector3))
+		if (upDirection == default(Vector3))
 		{
 			upDirection = transform.up;
 		}
@@ -196,15 +204,20 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 			//Apply a local rotation to the offset object, based on input offset.
 			float xEuler = Mathf.Lerp(_SkinOffset.localEulerAngles.x + 360, offset.y + 360,  rotateSpeed * 0.5f) - 360;
 			float yEuler = _SkinOffset.localEulerAngles.y > 180 ? _SkinOffset.localEulerAngles.y - 360 : _SkinOffset.localEulerAngles.y; //Because euler angles update automaitcally to different numbers, ensure is within the range of -180 -> 180.
-			yEuler = Mathf.Lerp(yEuler, offset.x , rotateSpeed * 0.75f);
+			yEuler = Mathf.Lerp(yEuler, offset.x, rotateSpeed * 0.75f);
 
 			_SkinOffset.localEulerAngles = new Vector3(xEuler, yEuler, 0); //Lerp angles seperately, then apply, this ensures it will only change on these angles, not rotate through z.
 		}
 	}
 
+	public void LockSkinRotationToDirection ( Vector3 direction ) {
+		_skinRotationLockedTo = direction;
+
+	}
+
 	//Switches from one character model to another, typically used to switch between the spinball and the proper character. Every action should call this when started, and not when stopped.
-	public void SwitchSkin(bool setMainSkin) {
-		if(setMainSkin && !_SpinDashBall.enabled) { return; }
+	public void SwitchSkin ( bool setMainSkin ) {
+		if (setMainSkin && !_SpinDashBall.enabled) { return; }
 
 		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
 
@@ -218,18 +231,20 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 
 		_SpinDashBall.enabled = !setMainSkin;
 		//If ball enabled, disable the animator so its sounds don't overlap.
-		if(_SpinDashBall.enabled) { 
+		if (_SpinDashBall.enabled)
+		{
 			_CurrentAnimator = _BallAnimator;
 			_CharacterAnimator.speed = 0;
 			_CurrentSkins.Add(_SpinDashBall);
 		}
-		else { 
+		else
+		{
 			_CurrentAnimator = _CharacterAnimator;
 			_CharacterAnimator.speed = 1;
 		}
 	}
 
-	public void HideCurrentSkins(bool hide) {
+	public void HideCurrentSkins ( bool hide ) {
 		for (int i = 0 ; i < _CurrentSkins.Count ; i++)
 		{
 			_CurrentSkins[i].enabled = hide;
@@ -266,7 +281,8 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.
-	public void EventOnGrounded() {
+	public void EventOnGrounded () {
+		_skinRotationLockedTo = Vector3.zero;
 		if (enabled)
 		{
 			//May be in a ball even in this state (like after a homing attack), so change that on land
@@ -290,7 +306,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	}
 
 	public void EventOnGroundLost () {
-		if(enabled) { StartCoroutine(CoyoteTime()); }
+		if (enabled) { StartCoroutine(CoyoteTime()); }
 	}
 	#endregion
 
@@ -299,7 +315,7 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	/// </summary>
 	#region Assigning
 	//Assigns all external elements of the action.
-	
+
 	public override void AssignStats () {
 		_coyoteTimeBySpeed_ = _Tools.Stats.JumpStats.CoyoteTimeBySpeed;
 		_canDashDuringFall_ = _Tools.Stats.HomingStats.canDashWhenFalling;
@@ -308,10 +324,10 @@ public class S_Action00_Default :  S_Action_Base, IMainAction
 	public override void AssignTools () {
 		base.AssignTools();
 
-		_CurrentAnimator =	_CharacterAnimator;
+		_CurrentAnimator = _CharacterAnimator;
 		_PlayerSkin.Add(_Tools.SkinRenderer);
-		_SkinOffset =	_Tools.CharacterModelOffset;
-		_SpinDashBall =	_Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
+		_SkinOffset = _Tools.CharacterModelOffset;
+		_SpinDashBall = _Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
 	}
 	#endregion
 }

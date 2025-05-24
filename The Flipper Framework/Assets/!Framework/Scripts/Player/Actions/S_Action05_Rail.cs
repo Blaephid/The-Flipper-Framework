@@ -196,6 +196,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			biasedPlayerDirection.y = 0;
 			biasedPlayerDirection.Normalize();
 			biasedPlayerDirection = Vector3.Lerp(biasedPlayerDirection, _PlayerVel._worldVelocity.normalized.y * Vector3.up, 0.4f);
+			biasedPlayerDirection.Normalize();
 
 			_RF._grindingSpeed = _PlayerVel._horizontalSpeedMagnitude;
 			//What action before this one.
@@ -204,9 +205,12 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				// If it was a homing attack, the difference in facing should be by the direction moving BEFORE the attack was performed.
 				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
 					S_Action02_Homing HomingLogic = GetComponent<S_Action02_Homing>();
-					Vector3 directionBefore = HomingLogic._directionBeforeAttack.normalized;
-					if(directionBefore.sqrMagnitude > 25*25)
-						biasedPlayerDirection = Vector3.Lerp(directionBefore, biasedPlayerDirection, 0.5f);
+					Vector3 directionBefore = HomingLogic._directionBeforeAttack;
+					Debug.DrawRay(transform.position, biasedPlayerDirection * 100, Color.cyan);
+					biasedPlayerDirection = Vector3.Lerp(directionBefore, biasedPlayerDirection, 0.55f);
+
+					Debug.DrawRay(transform.position, directionBefore * 100, Color.red);
+					Debug.DrawRay(transform.position, biasedPlayerDirection * 100, Color.magenta);
 					
 					_RF._grindingSpeed = _Actions._speedBeforeAction;
 					break;

@@ -18,6 +18,12 @@ public class S_CharacterTools : MonoBehaviour
 	public S_Handler_Camera       CamHandler;
 	public S_PlayerEvents   PlayerEvents;
 
+	[Header("Components")]
+	public S_Handler_HealthAndHurt _HealthHandler;
+	public S_PlayerPhysics _PlayerPhys;
+	public S_PlayerVelocity _PlayerVel;
+	public S_PlayerMovement _PlayerMove;
+
 	[Header("Key Objects")]
 	public GameObject               Root;
 

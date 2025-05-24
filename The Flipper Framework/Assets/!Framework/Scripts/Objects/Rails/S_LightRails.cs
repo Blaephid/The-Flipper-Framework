@@ -34,7 +34,7 @@ public class S_LightRails : S_Triggered_Base, ITriggerable
 			if (!RailsA[i].PrevRail) { RailsA[i].PrevRail = RailsB[i].PrevRail; }
 		}
 	}
-	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
 		if (!CanBeTriggeredOn(Player)) { return; }
 
 		if(!_BlueRail || !_RedRail) return;
@@ -45,7 +45,7 @@ public class S_LightRails : S_Triggered_Base, ITriggerable
 		Trigger(_blueActive);
 	}
 
-	public override void StartTriggeredOn ( S_PlayerPhysics Player = null ) {
+	public override void StartTriggeredOn ( S_CharacterTools Player = null ) {
 		base.StartTriggeredOn(Player);
 		Trigger(_blueActive );
 	}

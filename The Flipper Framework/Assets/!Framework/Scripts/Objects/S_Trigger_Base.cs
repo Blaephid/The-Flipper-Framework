@@ -20,7 +20,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 
 	//Trackers
 	S_ConstantSceneGUI ConstantGUI;
-	[HideInInspector] public S_PlayerPhysics _Player;
+	[HideInInspector] public S_CharacterTools _PlayerTools;
 
 #if UNITY_EDITOR
 	/// 

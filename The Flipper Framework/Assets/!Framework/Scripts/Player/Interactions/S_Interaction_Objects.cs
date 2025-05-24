@@ -595,7 +595,9 @@ public class S_Interaction_Objects : MonoBehaviour
 		//If needed, rotate character in set direction, this will be run after the player rotation is set to velocity in ApplyForceAfterDelay, overwriting it.
 		if (SpringScript._changePlayerForwards)
 		{
+			Debug.DrawRay(transform.position, SpringScript.transform.forward * 10, Color.red, 10f);
 			_Actions._ActionDefault.SetSkinRotationToVelocity(0, SpringScript.transform.forward, Vector2.zero, transform.up);
+			_Actions._ActionDefault.LockSkinRotationToDirection(SpringScript.transform.forward);
 		}
 
 		//Effects on spring

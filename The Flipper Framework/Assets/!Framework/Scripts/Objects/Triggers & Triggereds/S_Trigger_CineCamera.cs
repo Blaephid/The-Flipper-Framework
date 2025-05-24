@@ -61,7 +61,6 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 	private bool _isCurrentlyActive = false;
 
 	//Player
-	private S_CharacterTools      _PlayerTools;
 	private S_ActionManager       _PlayerActions;
 	private S_Handler_Camera      _PlayerCameraHandler;
 	private S_HedgeCamera		_HedgeCamera;
@@ -107,7 +106,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		}
 	}
 
-	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
 
 		//Set this camera up to detect player. Cameras are activated in Trigger Stay so it waits for the player to be in the right actions.
 		_PlayerTools = Player.GetComponentInParent<S_CharacterTools>();
@@ -117,14 +116,14 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		_HedgeCamera = _PlayerTools.CamHandler._HedgeCam;
 	}
 
-	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
 		if (_isCurrentlyActive)
 		{
 			StartCoroutine(DeactivateCam());
 		}
 	}
 
-	public void TriggerObjectEachFrame ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectEachFrame ( S_CharacterTools Player = null ) {
 		//Only check if the player has already been saved to check its actions.
 		if (_PlayerActions != null)
 		{

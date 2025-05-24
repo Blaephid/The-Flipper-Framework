@@ -42,6 +42,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Mat_metal_7019_dot_RC
+    second: {fileID: 2100000, guid: d6f144a459c116b4182e3322bb3082a6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Mat_metal_7019_dot_RC.001
     second: {fileID: 2100000, guid: d6f144a459c116b4182e3322bb3082a6, type: 2}
   - first:
@@ -77,13 +82,38 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Mat_metal_bighorn_RC
+    second: {fileID: 2100000, guid: a4320341c9de52047a54ef121b6a1bcc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_brown_RC
+    second: {fileID: 2100000, guid: 8b8283a7b3f7f0746b440e46c38e4580, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_darkgray_RC
+    second: {fileID: 2100000, guid: 421146ef5a38e95459b02ee0f5f32b6f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Mat_metal_duct_RC
     second: {fileID: 2100000, guid: 1ed18402e8b3b964aaaeeedd2e4ff493, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Mat_metal_edge_arrow_RC
+    second: {fileID: 2100000, guid: c21e24231edde97409b38ef1dcadd087, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Mat_metal_edge_grate_RC
     second: {fileID: 2100000, guid: 519768c89c59c6141acf65ec70156acd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_egghorn_RC
+    second: {fileID: 2100000, guid: f917e5d018b46394fa550207122d432b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -97,6 +127,16 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Mat_metal_littlehorn_RC
+    second: {fileID: 2100000, guid: 0fa1f202b2a6e46488213ca62f743957, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_propeller01_RC
+    second: {fileID: 2100000, guid: 0665a8e215c5e9e45b6049cdf86b1249, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Mat_metal_redpainting_RC
     second: {fileID: 2100000, guid: 29bcddc43343a344388d18633db32c51, type: 2}
   - first:
@@ -104,6 +144,16 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Mat_metal_tunnelwall_RC
     second: {fileID: 2100000, guid: 031ca39c8d0643c42af07c33ca0f6963, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_tunnelwire_RC
+    second: {fileID: 2100000, guid: fc0b4a185c3ab134590d696e00759e17, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_yellow_RC
+    second: {fileID: 2100000, guid: 89444681a0502e74e8b2815822af3f7b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -129,6 +179,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Mat_wood_7020_dirt_RC
     second: {fileID: 2100000, guid: 280c44ddda31619448940449190f104c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_wood_7020_pale_RC
+    second: {fileID: 2100000, guid: 39b6dc76c62519747b522b5fa6f21f3b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

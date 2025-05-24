@@ -176,6 +176,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public bool                   _isBoosting = false;         //Set by the boost subaction. This will be used in attacks and changes calculations.
 
+
+
 	//Disabling options
 	[HideInInspector]
 	public List<string>                   _locksForIsGravityOn = new List<string>();

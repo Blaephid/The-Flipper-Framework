@@ -47,7 +47,7 @@ public class S_RailEnemyData
 [RequireComponent(typeof(S_RailFollow_Base))]
 //[RequireComponent(typeof(Spline))]
 [RequireComponent(typeof(Rigidbody))]
-public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
+public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 {
 
 	[AsButton("Set To Spline", "SetToSpline", null)]
@@ -143,24 +143,26 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			LoseRail();
 	}
 
-	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOnce ( S_CharacterTools Player = null ) {
+		if (!CanBeTriggeredOn(Player)) { return; }
 		SetIsActive(true);
 		_RF.StartOnRail();
 
 		if (!_isActive) { return; }
 
-		_PlayerVel = Player._PlayerVelocity;
-		_PlayerActions = Player.GetComponent<S_CharacterTools>()._ActionManager;
-		_PlayerRailAction = _PlayerActions.GetComponentInChildren<S_Action05_Rail>();
+		_PlayerVel = Player._PlayerVel;
+		_PlayerActions = Player._ActionManager;
+		_PlayerRailAction = _PlayerActions._ObjectForActions.GetComponent<S_Action05_Rail>();
 		if (_PlayerRailAction) _PlayerRF = _PlayerRailAction._RF;
 
 		_useStartSpeed = _Data._startAtPlayerSpeed_ ? _PlayerVel._horizontalSpeedMagnitude : _Data._startSpeed_;
 		_RF._grindingSpeed = _useStartSpeed * _Data._CurveToFullSpeed_.Evaluate(0);
 
-		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+		//S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
 
-	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
+		if (!CanBeTriggeredOff(Player)) { return; }
 		SetIsActive(false);
 		_RF._grindingSpeed = 0;
 	}
@@ -362,11 +364,9 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 			// If enemy is ahead of goal position, decrease goal speed. If behind, increase goal speed.
 			goalSpeed = _playerDistanceIncludingOffset < 0 ? goalSpeed / modi : goalSpeed * modi;
 
-			Debug.Log(_playerDistanceWithoutOffset);
-
 			//To prevent rhino smashing into Player from behind without any sign.
-			if (_onSameRailExactly && _Data._rhino_ && _playerDistanceWithoutOffset > 0 && _playerDistanceWithoutOffset < 80)
-				goalSpeed = Mathf.Min(goalSpeed, _playerSpeed);
+			if (_onSameRailExactly && _Data._rhino_ && _playerDistanceWithoutOffset > 0 && _playerDistanceWithoutOffset < 100)
+				goalSpeed = Mathf.Min(goalSpeed, _playerSpeed * 0.95f);
 
 			//If ahead of player not including goal position, allow player a chance to catch up.
 			if (_hasReachedGoalInFrontOfPlayer && goalSpeed > 100)
@@ -526,6 +526,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 	}
 
 	public void SetStartRail ( Spline Spline, S_AddOnRail AddOns ) {
+		if(!Spline) { return; }
 		_Data._StartSpline_ = Spline;
 		_Data._StartingConnectedRails_ = AddOns;
 	}
@@ -599,7 +600,7 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_RB.freezeRotation = true;
 	}
 
-	void EventReturnOnDeath ( object sender, EventArgs e ) {
+	public override void ResetToOriginal ( ) {
 
 		gameObject.SetActive(true);
 		enabled = true;
@@ -619,7 +620,6 @@ public class S_AI_RailEnemy : MonoBehaviour, ITriggerable
 		_listOfPlayerSpeeds = new List<float> { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
 		_timeGrinding = 0;
 
-		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 
 	public void SetToSpline () {

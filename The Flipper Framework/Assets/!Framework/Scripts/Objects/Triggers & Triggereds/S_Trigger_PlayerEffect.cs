@@ -26,6 +26,8 @@ public class S_Trigger_PlayerEffect : S_Trigger_External
 	public S_S_ActionHandling.SubPlayerStates[]		_SubActionsToDisable;
 
 	[Header("Effects")]
+	[Tooltip("While true, player will not be targeted or damaged by hazzards/enemies.")]
+	public bool _makePlayerInvincible;
 	[Tooltip("In case the player needs to be in a specific state. Mainly used to call on Grounded events while still in the air. E.G. Returning jump dash in scripted sections.")]
 	public S_GeneralEnums.ChangeGroundedState      _setPlayerGrounded;
 

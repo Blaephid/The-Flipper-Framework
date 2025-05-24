@@ -144,7 +144,14 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		_timer = 0;
 		_Actions._speedBeforeAction = _PlayerVel._horizontalSpeedMagnitude; //Saved so it can be called back to on hit or end of action.
-		_directionBeforeAttack = _PlayerPhys._RB.velocity.normalized;
+		if(_PlayerPhys._PlayerVelocity._horizontalSpeedMagnitude > 30)
+		{
+			_directionBeforeAttack = _PlayerPhys._PlayerVelocity._coreVelocity.normalized;
+			_directionBeforeAttack.y = 0;
+			_directionBeforeAttack.Normalize();
+		}
+		else
+			_directionBeforeAttack = _MainSkin.forward;
 
 		//Gets the direction to move in, rotate a lot faster than normal for the first frame.
 		_Target = _HomingHandler._TargetObject.transform;

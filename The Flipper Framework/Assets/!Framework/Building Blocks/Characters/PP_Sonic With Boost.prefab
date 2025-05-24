@@ -603,6 +603,10 @@ MonoBehaviour:
   PathInteraction: {fileID: 7941823437262557940}
   CamHandler: {fileID: 5736244429373450162}
   PlayerEvents: {fileID: 4777535912325801024}
+  _HealthHandler: {fileID: 5416488146372199807}
+  _PlayerPhys: {fileID: 114945863342939534}
+  _PlayerVel: {fileID: 576209267428233278}
+  _PlayerMove: {fileID: 1170264400203800284}
   Root: {fileID: 1493631986700570}
   UISpawner: {fileID: 8180601928860910201}
   CharacterCapsule: {fileID: 38880623587908062}
@@ -1175,6 +1179,7 @@ MonoBehaviour:
   _totalVelocity: {x: 0, y: 0, z: 0}
   _totalVelocityLocal: {x: 0, y: 0, z: 0}
   _worldVelocity: {x: 0, y: 0, z: 0}
+  _worldDirection: {x: 0, y: 0, z: 0}
   _previousVelocity:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}

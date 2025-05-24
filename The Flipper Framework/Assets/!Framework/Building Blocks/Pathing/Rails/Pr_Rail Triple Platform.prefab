@@ -450,7 +450,7 @@ PrefabInstance:
     - target: {fileID: 6064692439840920647, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
       propertyPath: _isSelected
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7014719662170773689, guid: cc6a716b85bbd9f4faa80f5f5bf1acb9,
         type: 3}
@@ -508,6 +508,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3075454283374175043}
     m_Modifications:
+    - target: {fileID: 535632830343574903, guid: a7f9ac1a1aba57444be5473251095e8b,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8370335970764572865, guid: a7f9ac1a1aba57444be5473251095e8b,
         type: 3}
       propertyPath: m_Name

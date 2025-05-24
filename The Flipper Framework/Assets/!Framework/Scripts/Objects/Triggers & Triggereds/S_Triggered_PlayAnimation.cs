@@ -23,7 +23,7 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 		}
 	}
 
-	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
 		if (!CanBeTriggeredOn(Player)) { return; }
 
 		SetAnimatorSpeed(Player);
@@ -32,7 +32,7 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 
 	}
 
-	public void TriggerObjectOff ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
 		if (!CanBeTriggeredOff(Player)) { return; }
 
 		SetAnimatorSpeed(Player);
@@ -41,10 +41,10 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 
 	}
 
-	private void SetAnimatorSpeed ( S_PlayerPhysics Player = null ) {
+	private void SetAnimatorSpeed ( S_CharacterTools Player = null ) {
 		float speedModi = 1;
 		if (Player)
-			speedModi = _animSpeedByPlayerSpeed.Evaluate(Player._PlayerVelocity._horizontalSpeedMagnitude / Player._PlayerMovement._currentMaxSpeed);
+			speedModi = _animSpeedByPlayerSpeed.Evaluate(Player._PlayerVel._horizontalSpeedMagnitude / Player._PlayerMove._currentMaxSpeed);
 
 		_Animator.speed = (_defaultSpeed * speedModi);
 	}

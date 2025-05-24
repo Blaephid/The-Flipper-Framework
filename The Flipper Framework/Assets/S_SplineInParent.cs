@@ -14,7 +14,9 @@ public class S_SplineInParent : S_Data_Base
 
 
 	private new void OnValidate () {
+#if UNITY_EDITOR
 		base.OnValidate();
+#endif
 		if (!gameObject) { return; }
 
 		//Check for spline on this object.

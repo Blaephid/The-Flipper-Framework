@@ -76,7 +76,7 @@ public class S_Triggered_LerpToNewTransform : S_Triggered_Base, ITriggerable
 
 	}
 
-	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
 		if(!CanBeTriggeredOn(Player)) return;
 
 		_isLerping = true;

@@ -95,9 +95,10 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		SetUpNextHop(_timeBeforeFirstHop_);
 	}
 
-	public void TriggerObjectOnce ( S_PlayerPhysics Player = null ) {
-		_PlayerCenter = Player._CenterOfMass;
-		_PlayerVel = Player._PlayerVelocity;
+	public void TriggerObjectOnce ( S_CharacterTools Player = null ) {
+		S_PlayerPhysics PlayerPhys = Player._PlayerPhys;
+		_PlayerCenter = PlayerPhys._CenterOfMass;
+		_PlayerVel = PlayerPhys._PlayerVelocity;
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 

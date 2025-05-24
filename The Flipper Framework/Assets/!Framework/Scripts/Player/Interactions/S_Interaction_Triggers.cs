@@ -125,6 +125,8 @@ public class S_Interaction_Triggers : MonoBehaviour
 				break;
 		}
 
+		if (EffectsData._makePlayerInvincible) { S_S_Logic.AddLockToList(ref _HurtAndHealth._locksForInvicibility, "Trigger" +EffectsData.gameObject.name); }
+
 		if (EffectsData._lockPlayerInputFor > 0)
 			_Input.LockInputForAWhile(EffectsData._lockPlayerInputFor, true, Vector3.zero, EffectsData._LockInputTo_);
 		else if (EffectsData._lockPlayerInputFor == -1)
@@ -146,6 +148,8 @@ public class S_Interaction_Triggers : MonoBehaviour
 	private void RemoveEffectsOnPlayer ( S_Trigger_PlayerEffect EffectsData ) {
 		if (EffectsData._lockPlayerInputFor > 0)
 			_Input.UnLockInput();
+
+		if (EffectsData._makePlayerInvincible) { S_S_Logic.RemoveLockFromList(ref _HurtAndHealth._locksForInvicibility, "Trigger" + EffectsData.gameObject.name); }
 
 		DisableOrEnableActions(EffectsData, true);
 

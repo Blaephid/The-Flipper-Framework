@@ -45,7 +45,9 @@ public class S_AI_RhinoActions : MonoBehaviour
 
 	private Transform _Target;
 	private S_PlayerVelocity _TargetVel;
+	private S_CharacterTools _TargetTools;
 	private S_ActionManager _TargetActions;
+	private S_Handler_HealthAndHurt _TargetHealth;
 
 	[SerializeField] private int _delayAfterLanding = 40;
 	private int _framesSinceLanding;
@@ -95,8 +97,6 @@ public class S_AI_RhinoActions : MonoBehaviour
 			case RhinoStates.shooting:
 				if (!_RailBehaviour._isActive) return;
 				_timeSpentReadyingShot += Time.fixedDeltaTime;
-				Debug.DrawLine(transform.position, _Target.transform.position, Color.red);
-
 
 				if (_timeSpentReadyingShot >= _timeToReadyShot)
 				{
@@ -283,7 +283,9 @@ public class S_AI_RhinoActions : MonoBehaviour
 		{
 			_Target = Player;
 			_TargetVel = PlayerVel;
-			_TargetActions = PlayerVel.GetComponent<S_CharacterTools>()._ActionManager;
+			_TargetTools = PlayerVel.GetComponent<S_CharacterTools>();
+			_TargetActions = _TargetTools._ActionManager;
+			_TargetHealth = _TargetTools._HealthHandler;
 		}
 
 		if (!CanShoot(_Target.position)) { return false; }
@@ -302,6 +304,10 @@ public class S_AI_RhinoActions : MonoBehaviour
 		{ return false; } //Can't shoot if player is too close.
 		if (Vector3.Angle(S_S_MoreMaths.GetDirection(_ShootPoint_.position, target), transform.forward) < angle) //Cant shoot if player is in front.
 		{ return false; }
+
+		//If player is currently invincible, don't bother targetting. This allows gaps for after taking damage, and triggers disabling being shot.
+		if(_TargetHealth._locksForInvicibility.Count > 0) { return false; }
+
 		if (Physics.Linecast(target, _ShootPoint_.position, out RaycastHit Hit, _BlockingShotLayers)) //Cant shoot if solid object or other enemy blocking the way.
 		{
 			if (Hit.collider != _SolidCollider)

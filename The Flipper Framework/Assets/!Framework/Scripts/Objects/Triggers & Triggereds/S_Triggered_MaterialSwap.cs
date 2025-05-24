@@ -13,7 +13,7 @@ public class S_Triggered_MaterialSwap : S_Triggered_Base, ITriggerable
 		TriggerObjectOn(null); //Call immediately to ensure from material exists and is ready.
 	}
 
-	public void TriggerObjectOn ( S_PlayerPhysics Player = null ) {
+	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
 		if (!CanBeTriggeredOn(Player)) { return; }
 
 		SwitchMaterials();

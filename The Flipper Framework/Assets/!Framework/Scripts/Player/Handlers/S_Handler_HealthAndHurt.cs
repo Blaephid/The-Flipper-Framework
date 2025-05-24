@@ -74,7 +74,8 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	[HideInInspector]
 	public bool         _isHurt;
 	[HideInInspector]
-	public bool         _isInvincible;                //Cannot take damage while this is true. Temporarily set on hit.
+	public List<string>         _locksForInvicibility = new List<string>();                //Set externally (by sequences or items), acts as above.
+
 	[HideInInspector]
 	public bool         _isDead;                      //If the player has been killed
 	[HideInInspector]
@@ -184,12 +185,11 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_counter += 1;
 		if (_counter < _invincibilityTime_)
 		{
-			_isInvincible = true;
+			S_S_Logic.AddLockToList(ref _locksForInvicibility, "Damaged");
 			SkinFlicker();
 		}
-		else if(_isInvincible)
+		else if(S_S_Logic.RemoveLockFromList(ref _locksForInvicibility, "Damaged"))
 		{
-			_isInvincible = false;
 			_Actions._ActionDefault.HideCurrentSkins(true);
 		}
 
@@ -453,7 +453,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Whenever the player has been hit, will trigger the action and deal damage to the health or shield.
 	public void DamagePlayer () {
 
-		if(_isInvincible) { return; }
+		if(_locksForInvicibility.Count > 0) { return; }
 
 		if (!_Actions._ActionHurt.enabled)
 		{

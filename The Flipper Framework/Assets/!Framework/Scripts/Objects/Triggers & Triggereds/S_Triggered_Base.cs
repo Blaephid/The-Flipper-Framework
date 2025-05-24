@@ -9,7 +9,7 @@ public class S_Triggered_Base : S_Vis_Base, ITriggerable
 	[NonSerialized] public bool _startedTriggeredOn;
 	[NonSerialized] public bool _isCurrentlyOn;
 
-	public virtual bool CanBeTriggeredOn ( S_PlayerPhysics Player ) {
+	public virtual bool CanBeTriggeredOn ( S_CharacterTools Player ) {
 		if (!enabled) { return false; }
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
@@ -17,14 +17,14 @@ public class S_Triggered_Base : S_Vis_Base, ITriggerable
 		return true;
 	}
 
-	public virtual bool CanBeTriggeredOff ( S_PlayerPhysics Player ) {
+	public virtual bool CanBeTriggeredOff ( S_CharacterTools Player ) {
 		if (!enabled) { return false; }
 
 		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 		return true;
 	}
 
-	public virtual void StartTriggeredOn ( S_PlayerPhysics Player = null ) {
+	public virtual void StartTriggeredOn ( S_CharacterTools Player = null ) {
 		_startedTriggeredOn = true;
 	}
 
