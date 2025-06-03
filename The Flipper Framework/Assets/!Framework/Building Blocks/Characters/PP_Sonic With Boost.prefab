@@ -1133,7 +1133,7 @@ MonoBehaviour:
   _FadeOutImage: {fileID: 0}
   _ringAmount: 0
   _isHurt: 0
-  _isInvincible: 0
+  _locksForInvicibility: []
   _isDead: 0
   _hasShield: 0
   _inHurtStateBeforeDamage: 0
@@ -29792,22 +29792,22 @@ PrefabInstance:
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 228ebca6adfb11f4a955b48ce562998f, type: 2}
+      objectReference: {fileID: 2100000, guid: 8fe3c0221cc5fe34a9e28703f4be870b, type: 2}
     - target: {fileID: -5783375950500681779, guid: ab3e5aa25a5fe6743b7003908eb863b1,
         type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: ca7b1675a29716444bfe8376ae012c0b, type: 2}
+      objectReference: {fileID: 2100000, guid: 316a6e18ebf493243a76b6429187eba4, type: 2}
     - target: {fileID: -5783375950500681779, guid: ab3e5aa25a5fe6743b7003908eb863b1,
         type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 9ba4779e4f3a7dc419db6e80d11417ca, type: 2}
+      objectReference: {fileID: 2100000, guid: 0a4d310a6fa0bee45992cfa2dfb1fd46, type: 2}
     - target: {fileID: -5783375950500681779, guid: ab3e5aa25a5fe6743b7003908eb863b1,
         type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: e2adb8c9c35d58b41a0475fb12adde71, type: 2}
+      objectReference: {fileID: 2100000, guid: 2585188500548dc41a2dee195a5ef03b, type: 2}
     - target: {fileID: 919132149155446097, guid: ab3e5aa25a5fe6743b7003908eb863b1,
         type: 3}
       propertyPath: m_Name
