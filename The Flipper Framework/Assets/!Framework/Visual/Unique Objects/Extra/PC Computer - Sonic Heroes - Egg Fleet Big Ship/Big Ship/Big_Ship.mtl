@@ -1,0 +1,229 @@
+#  ==========================================================================
+#  Wavefront Material file
+#  Exported by Red-i Productions' "Riptide"
+#  (a free plugin for Cinema 4D PC & Mac, R7.3 or later)
+#  
+#  Red-i Productions
+#  http://skinprops.com
+#  
+#  ==========================================================================
+
+newmtl belt
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd belt.png
+
+newmtl orangerim
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd orangerim.png
+
+newmtl beltside
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd beltside.png
+
+newmtl beltstripe
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd beltstripe.png
+
+newmtl bluemetal
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bluemetal.png
+
+newmtl redbridge
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redbridge.png
+
+newmtl bridgedec
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bridgedec.png
+
+newmtl graymetal
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd graymetal.png
+
+newmtl redmetal
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redmetal.png
+
+newmtl bridge
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bridge.png
+
+newmtl bigbridge
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bigbridge.png
+
+newmtl yellowstripe
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd yellowstripe.png
+
+newmtl shutter1
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd shutter1.png
+
+newmtl thruster
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd thruster.png
+
+newmtl cabinwall
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd cabinwall.png
+
+newmtl checktile
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd checktile.png
+
+newmtl bluepit
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bluepit.png
+
+newmtl yellow
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd yellow.png
+
+newmtl glass
+d 0.500000
+Ni 1.000000
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd glass.png
+
+newmtl path
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd path.png
+
+newmtl deckwall
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd deckwall.png
+
+newmtl redrim
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redrim.png
+
+newmtl cannonspot
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd cannonspot.png
+
+newmtl plate
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd plate.png
+
+newmtl redgunstand
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redgunstand.png
+
+newmtl tubered
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd tubered.png
+
+newmtl stripebar
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd stripebar.png
+
+newmtl darkside
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd darkside.png
+
+newmtl light
+d 0.000000
+Ni 1.000000
+illum 2
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+map_Ka light5.png
+
+newmtl black
+illum 2
+Kd 0.800000 0.800000 0.800000
+
+newmtl discemblem
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd discemblem.png
+
+newmtl steeltube
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd steeltube.png
+
+newmtl bluerim
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bluerim.png
+
+newmtl bigbridgeside
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bigbridgeside.png
+
+newmtl bigwindow
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bigwindow.png
+
+newmtl redstripe
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redstripe.png
+
+newmtl bigbridgebars
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bigbridgebars.png
+
+newmtl bigbridgefront
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bigbridgefront.png
+
+newmtl innermech
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd innermech.png
+
+newmtl bluedec
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bluedec.png
+
+newmtl fin
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd fin.png
+
+newmtl eye
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd eye.png
+
+newmtl emblem
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd emblem.png
+map_d emblem.png

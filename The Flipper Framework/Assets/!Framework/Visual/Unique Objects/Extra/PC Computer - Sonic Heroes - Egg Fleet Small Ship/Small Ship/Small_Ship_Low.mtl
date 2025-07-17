@@ -1,0 +1,113 @@
+#  ==========================================================================
+#  Wavefront Material file
+#  Exported by Red-i Productions' "Riptide"
+#  (a free plugin for Cinema 4D PC & Mac, R7.3 or later)
+#  
+#  Red-i Productions
+#  http://skinprops.com
+#  
+#  ==========================================================================
+
+newmtl default_Mat
+illum 2
+Kd 0.800000 0.800000 0.800000
+
+newmtl shiplow
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd shiplow.png
+
+newmtl yellow
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd yellow.png
+
+newmtl redgunstand
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redgunstand.png
+
+newmtl plate
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd plate.png
+
+newmtl cannonspot
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd cannonspot.png
+
+newmtl bridge
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd bridge.png
+
+newmtl redrim
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redrim.png
+
+newmtl redstripe
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redstripe.png
+
+newmtl shutter1
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd shutter1.png
+
+newmtl cabinwall
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd cabinwall.png
+
+newmtl deckwall
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd deckwall.png
+
+newmtl path
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd path.png
+
+newmtl fin
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd fin.png
+
+newmtl checktile
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd checktile.png
+
+newmtl orangerim
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd orangerim.png
+
+newmtl eye
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd eye.png
+
+newmtl redmetal
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd redmetal.png
+
+newmtl graymetal
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd graymetal.png
+
+newmtl cannonmetal
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd cannonmetal.png
+
+newmtl cannonbarrel
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd cannonbarrel.png
