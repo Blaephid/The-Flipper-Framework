@@ -708,7 +708,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Measurers: {fileID: 1611128991}
   _delayBeforeMeasurersEnter: 5
-  _sceneToGoToOnStart: Sc_FlipperStageSelect
+  _sceneToGoToOnStart: {fileID: 11400000, guid: 4834d45cb38ca6d418b1cbf2262372e3,
+    type: 2}
   _framesBeforeLoading: 30
   _AudioOnStart: {fileID: 0}
   _BlackFade: {fileID: 1417137427}

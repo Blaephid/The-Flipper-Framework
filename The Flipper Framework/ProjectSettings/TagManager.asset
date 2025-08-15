@@ -33,6 +33,7 @@ TagManager:
   - EffectTrigger
   - NormalTrigger
   - RailBooster
+  - Music
   layers:
   - Default
   - TransparentFX

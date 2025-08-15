@@ -20,4 +20,40 @@ public class S_S_Objects
 			,averageScale / parentScale.z);
 		return newLocalScale;
 	}
+
+
+	//Takes an animator and the name of a trigger, then after x frames, sends that trigger to than animator.
+	public static IEnumerator TriggerAnimatorAfterDelay ( Animator Animator, string trigger, int frames = 0 ) {
+		for (int i = 0 ; i < frames ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+		Animator.SetTrigger(trigger);
+	}
+
+	//Sames as above but with a specific animation component rather than an animator.
+	public static IEnumerator TriggerAnimationAfterDelay ( Animation Clip, int frames ) {
+		for (int i = 0 ; i < frames ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+		Clip.Play();
+	}
+
+
+	public static IEnumerator LerpAudioSourceVolume(AudioSource Source, float duration, float targetVolume ) {
+		if(!Source) { yield break; }
+		float initialVolume = Source.volume;
+		float time = 0;
+
+		float lerpProgress = 0;
+
+		while (Source.volume != targetVolume)
+		{
+			yield return null;
+			time += Time.deltaTime;
+			lerpProgress = time / duration;
+			Source.volume = Mathf.Lerp(initialVolume, targetVolume, lerpProgress);
+		}
+	}
 }

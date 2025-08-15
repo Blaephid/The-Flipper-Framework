@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
-#if UNITY_EDITOR
+
 using UnityEditor;
 
 
@@ -17,6 +17,8 @@ public class S_O_CustomInspectorStyle : ScriptableObject
 	public GUIStyle _ReplaceNormalHeaders;
 
 }
+
+#if UNITY_EDITOR
 
 [CustomEditor(typeof(S_O_CustomInspectorStyle))]
 public class CustomInpsectorEditor : Editor
