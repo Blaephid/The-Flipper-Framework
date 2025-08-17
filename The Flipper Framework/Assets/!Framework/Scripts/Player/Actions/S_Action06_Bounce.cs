@@ -122,8 +122,8 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 
 		_Sounds.BounceStartSound();
 
-		_HomingTrailScript.emitTime = -1f; //Makes the trail follow along behind the player
-		_HomingTrailScript.emit = true;
+		//Makes the trail follow along behind the player
+		_HomingTrailScript.StartEmit(-1f);
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -223,8 +223,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		_currentBounceForce = Mathf.Clamp(_currentBounceForce, _BounceUpSpeeds_[_Actions._bounceCount], _currentBounceForce);
 
 		//Effects
-		_HomingTrailScript.emitTime = _currentBounceForce / 60f;
-		_HomingTrailScript.emit = true;
+		_HomingTrailScript.StartEmit(_currentBounceForce / 60f);
 		_Sounds.BounceImpactSound();
 
 		//Set animations back to jump shape, ensuring the player is still in a ball since they'd be set to normal when grounded.

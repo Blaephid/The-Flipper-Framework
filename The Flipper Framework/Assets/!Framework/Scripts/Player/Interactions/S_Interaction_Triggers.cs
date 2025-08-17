@@ -14,7 +14,7 @@ using System;
 using static UnityEngine.Rendering.DebugUI;
 using System.Reflection;
 
-public class S_Interaction_Triggers : MonoBehaviour
+public class S_Interaction_Triggers : S_Player_Base
 {
 
 	/// <summary>
@@ -28,21 +28,13 @@ public class S_Interaction_Triggers : MonoBehaviour
 
 	[Header("Scripts")]
 	//Player
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_ActionManager       _Actions;
-	private S_PlayerInput         _Input;
-	private S_PlayerEvents        _Events;
 
 	private S_Handler_CharacterAttacks      _AttackHandler;
 	private S_Handler_HealthAndHurt         _HurtAndHealth;
-	private S_Handler_Camera            _CamHandler;
 
 	//This is used to check what the current dominant trigger is, as multiple triggers might be working together under one effect. These will have their read values set to the same.
 	private List<S_Trigger_External> _CurrentActiveEffectTriggers = new List<S_Trigger_External>();
 
-	private S_Spawn_UI.StrucCoreUIElements _CoreUIElements;
 	#endregion
 
 
@@ -53,12 +45,6 @@ public class S_Interaction_Triggers : MonoBehaviour
 	/// </summary>
 	/// 
 	#region Inherited
-	private void Start () {
-		if (_PlayerPhys == null)
-		{
-			AssignTools(); //Called during start instead of awake because it gives time for tools to be acquired (such as the UI needing to be spawned).
-		}
-	}
 
 	private void OnEnable () {
 		S_Manager_LevelProgress.OnDeath += EventOnDeath;
@@ -372,19 +358,11 @@ public class S_Interaction_Triggers : MonoBehaviour
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Assigning
-	private void AssignTools () {
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-
-		_Actions = _Tools._ActionManager;
-		_Events = _Tools.PlayerEvents;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
+	public override void AssignTools () {
+		base.AssignTools();
 		_AttackHandler = GetComponent<S_Handler_CharacterAttacks>();
 		_HurtAndHealth = _Tools.GetComponent<S_Handler_HealthAndHurt>();
 		_CamHandler = _Tools.CamHandler;
-
-		_CoreUIElements = _Tools.UISpawner._BaseUIElements;
 	}
 
 	public void EventOnDeath ( object sender, EventArgs e ) {

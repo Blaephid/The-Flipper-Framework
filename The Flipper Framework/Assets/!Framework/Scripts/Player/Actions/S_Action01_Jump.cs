@@ -165,8 +165,6 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
 
-		//Prevent doing Air Action immediately.
-		_Actions.LockAirMovesForFrames(6);
 
 		//Effects
 		_CharacterAnimator.SetInteger("Action", 1);
@@ -178,9 +176,13 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 		//Snap off of ground to make sure player jumps
 		_PlayerPhys.SetPlayerPosition(_PlayerVel.transform.position + (_upwardsDirection * 0.3f));
 
+		//Prevent doing Air Action immediately.
+		_Actions.LockAirMovesForFrames(6, true);
+
 		//If performing a grounded jump. JumpCount may be changed externally to allow for this.
 		if (_isJumpingFromGround)
 		{
+
 			//Sets jump stats for this specific jump.
 			_thisJumpSpeed = _startJumpSpeed_ * _jumpSpeedModifier;
 			_thisMinDuration = _minJumpTime_ * _jumpDurationModifier;

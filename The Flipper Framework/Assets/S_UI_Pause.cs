@@ -30,12 +30,16 @@ public class S_UI_Pause : MonoBehaviour
 		{
 			_PauseAnimator.SetTrigger("Exit");
 			Time.timeScale = 1;
+			Cursor.visible = false;
+			Cursor.lockState = CursorLockMode.Locked;
 		}
 		else
 		{
 			SetPanelActive(true);
 			_PauseAnimator.SetTrigger("Enter");
 			Time.timeScale = 0;
+			Cursor.visible = true;
+			Cursor.lockState = CursorLockMode.None;
 		}
 
 	}

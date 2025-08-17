@@ -147,8 +147,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 
 		//Effects
 		_Sounds.JumpDashSound();
-		_HomingTrailScript.emitTime = _maxDuration_ + 0.5f;
-		_HomingTrailScript.emit = true;
+		_HomingTrailScript.StartEmit(_maxDuration_ + 0.5f);
 
 		_JumpBall.SetActive(false);
 		_Effects.AirDashParticle();

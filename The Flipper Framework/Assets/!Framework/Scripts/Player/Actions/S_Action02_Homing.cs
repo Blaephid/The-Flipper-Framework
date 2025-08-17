@@ -46,6 +46,11 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	private float       _lerpToNewInput_;
 
 	private int         _homingCountLimit_;
+
+	private Vector2         _timesForPerfectHomingAttack_;
+	private float           _speedMultiplierFromPerfect_;
+	private float           _energyFromPerfect_;
+	private float           _powerFromPerfect_;
 	#endregion
 
 	// Trackers
@@ -107,26 +112,26 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	new public bool AttemptAction () {
 		if (!base.AttemptAction()) return false;
 
+		if (!_HomingHandler._TargetObject) return false;
+		if (!_HomingHandler._isHomingAvailable) return false;           //Must have a valid target when pressed
+		if (!_Actions._areAirActionsAvailable || !_Actions._areAirActionsActive) return false;
 
-		//Must have a valid target when pressed
-		if (_HomingHandler._TargetObject && _Input._HomingPressed && _HomingHandler._isHomingAvailable)
-		{
-			StartAction();
-			return true;
-		}
+		if (!_Input._HomingPressed) return false;
 
-		return false;
+		StartAction();
+		return true;
 	}
 
 	public override void ActionEveryFixedUpdate () {
 		base.ActionEveryFixedUpdate();
 
-		//Must current be allowed
-		_HomingHandler._isHomingAvailable = _Actions._isAirDashAvailable && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount);
-		//Depending on stats, this can only be performed when grounded.
-		_HomingHandler._isHomingAvailable = _HomingHandler._isHomingAvailable && !_PlayerPhys._isGrounded || _CanBePerformedOnGround_;
+		//Must currently be allowed
+		bool check1 = _Actions._isAirDashAvailable && (_homingCountLimit_ == 0 || _homingCountLimit_ > _homingCount);
+		//Depending on stats, this can only be performed when grounded, or with availalbe Air Actions
+		bool check2 = !_PlayerPhys._isGrounded || _CanBePerformedOnGround_;
+		bool check3 = _Actions._areAirActionsAvailable || _Actions._areAirActionsActive;
 
-		_HomingHandler._isHomingAvailable = _HomingHandler._isHomingAvailable && _Actions._areAirActionsAvailable;
+		_HomingHandler._isHomingAvailable = check1 && check2 && check3;
 	}
 
 	new public void StartAction ( bool overwrite = false ) {
@@ -135,7 +140,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Homing);
 		enabled = true;
 
-
 		//Setting private
 		_isHoming = true;
 		_inputAngle = 0; //The difference between movement direction and input
@@ -143,7 +147,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		_timer = 0;
 		_Actions._speedBeforeAction = _PlayerVel._horizontalSpeedMagnitude; //Saved so it can be called back to on hit or end of action.
-		if(_PlayerPhys._PlayerVelocity._horizontalSpeedMagnitude > 30)
+		if (_PlayerPhys._PlayerVelocity._horizontalSpeedMagnitude > 30)
 		{
 			_directionBeforeAttack = _PlayerPhys._PlayerVelocity._coreVelocity.normalized;
 			_directionBeforeAttack.y = 0;
@@ -161,11 +165,9 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		//Setting public
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Homing");
-		//_PlayerPhys._locksForIsGravityOn.Add(false);
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys._canChangeGrounded = false;
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Homing");
-		//_PlayerPhys._locksForCanControl.Add(false);
 
 		_PlayerPhys.SetIsGrounded(false);
 		_Input._JumpPressed = false;
@@ -178,12 +180,10 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_CharacterAnimator.SetInteger("Action", 1);
 		_CharacterAnimator.SetTrigger("ChangedState");
 
-		_HomingTrailScript.emitTime = _homingTimerLimit_ + 0.06f;
-		_HomingTrailScript.emit = true;
-
 		//Get speed of attack and speed to return to on hit.		
 		_speedAtStart = Mathf.Max(_Actions._speedBeforeAction * 1.1f, _homingAttackSpeed_);
-		_speedAtStart = Mathf.Min(_speedAtStart, _maxHomingSpeed_);
+		float modifierFromPerfect = CheckPerfectHomingTarget();
+		_speedAtStart = Mathf.Min(_speedAtStart * modifierFromPerfect, _maxHomingSpeed_ * modifierFromPerfect);
 
 		float targetDistanceInAFrame = S_S_MoreMaths.GetDistanceSqrOfVectors(_TargetData._positionLastFixedUpdate, _TargetData._positionThisFixedUpdate);
 		//If target has moved at a speed greater than half the player's
@@ -197,6 +197,21 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_Actions._listOfSpeedOnPaths.Add(_speedAtStart);
 
 		_Actions._speedBeforeAction = Mathf.Max(_Actions._speedBeforeAction, _minSpeedGainOnHit_);
+
+		return;
+
+		float CheckPerfectHomingTarget () {
+			if(_HomingHandler._timeOnThisTarget > _timesForPerfectHomingAttack_.x && _HomingHandler._timeOnThisTarget < _timesForPerfectHomingAttack_.y)
+			{	
+				Debug.Log("PERFECT");
+				_HomingTrailScript.StartEmit(_homingTimerLimit_ + 0.06f, true);
+				return _speedMultiplierFromPerfect_;
+			}
+			_HomingTrailScript.StartEmit(_homingTimerLimit_ + 0.06f);
+			return 1;
+		}
+
+
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -527,6 +542,10 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_homingAcceleration_ = _Tools.Stats.HomingStats.acceleration;
 		_minHomingSpeed_ = _Tools.Stats.HomingStats.minimumSpeed;
 		_homingCountLimit_ = _Tools.Stats.HomingStats.homingCountLimit;
+		_energyFromPerfect_ = _Tools.Stats.HomingStats.energyGained;
+		_powerFromPerfect_ = _Tools.Stats.HomingStats.powerGained;
+		_speedMultiplierFromPerfect_ = _Tools.Stats.HomingStats.speedMultiplier;
+		_timesForPerfectHomingAttack_ = _Tools.Stats.HomingStats.perfectTimings;
 	}
 	#endregion
 

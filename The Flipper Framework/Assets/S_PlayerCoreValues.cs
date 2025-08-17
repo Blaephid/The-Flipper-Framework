@@ -5,8 +5,6 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class S_PlayerCoreValues : S_Player_Base
 {
-	private S_Spawn_UI.StrucCoreUIElements _CoreUIElements;
-
 
 	//Energy
 	[HideInInspector] public float _energy;
@@ -32,9 +30,6 @@ public class S_PlayerCoreValues : S_Player_Base
 	[HideInInspector] public float _milliseconds;
 	
 
-	private void Start () {
-		_CoreUIElements = _Tools.UISpawner._BaseUIElements;
-	}
 
 	private void LateUpdate () {
 		UpdateTime();

@@ -21,15 +21,22 @@ public class S_Spawn_UI : MonoBehaviour
 	[Serializable]
 	public struct StrucCoreUIElements
 	{
+		[Header("Gauge")]
 		public TextMeshProUGUI  RingsCounter;
-		public TextMeshProUGUI  MinutesText;
-		public TextMeshProUGUI  SecondsText;
-		public TextMeshProUGUI  MillisecondsText;
-		public S_HintBox                HintBox;
-		public Image                  FadeOutBox;
 		public Image                    EnergyBar;
 		public Image                    LevelBar;
 		public Image                    SpeedBar;
+		[Header("Time")]
+		public TextMeshProUGUI  MinutesText;
+		public TextMeshProUGUI  SecondsText;
+		public TextMeshProUGUI  MillisecondsText;
+
+		[Header("Effects")]
+		public GameObject               _HomingIcon;
+		public S_HintBox                HintBox;
+		public Image                  FadeOutBox;
+
+		[Header("Menus")]
 		public S_UI_Pause     PauseMenu;
 
 	}

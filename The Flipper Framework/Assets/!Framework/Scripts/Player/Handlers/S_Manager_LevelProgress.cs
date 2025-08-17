@@ -196,8 +196,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_Actions._ActionDefault.StartAction();
 
 		//Ensure efffects are disabled.
-		_Tools.HomingTrailScript.emitTime = 0;
-		_Tools.HomingTrailScript.emit = false;
+		_Tools.HomingTrailScript.StartEmit(0);
 
 		//In case was killed by something that bypassed shield.
 		_HealthAndHurt.SetShield(false);

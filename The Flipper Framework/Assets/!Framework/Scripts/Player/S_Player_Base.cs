@@ -18,6 +18,7 @@ public class S_Player_Base : MonoBehaviour
 
 	[NonSerialized] public Transform             _MainSkin;
 	[NonSerialized] public Animator              _CharacterAnimator;
+	[NonSerialized] public S_Spawn_UI.StrucCoreUIElements _CoreUIElements;
 
 	public virtual void Awake () {
 		if (_Tools == null)
@@ -43,6 +44,7 @@ public class S_Player_Base : MonoBehaviour
 
 		_MainSkin = _Tools.MainSkin;
 		_CharacterAnimator = _Tools.CharacterAnimator;
+		_CoreUIElements = _Tools.UISpawner._BaseUIElements;
 	}
 
 	public virtual void AssignStats () {

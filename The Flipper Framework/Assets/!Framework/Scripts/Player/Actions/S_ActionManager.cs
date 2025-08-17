@@ -83,7 +83,9 @@ public class S_ActionManager : MonoBehaviour
 
 	//The bellow are all temporarily locked under certain situations, like using a spring.
 	[HideInInspector]
-	public bool         _areAirActionsAvailable = true;
+	public bool         _areAirActionsAvailable = true; //Prevents actions being used
+	[HideInInspector]
+	public bool         _areAirActionsActive = true; //Prevents actions being used, but can still be prepared, such as homing attack still looking for targets and displaying the reticle.
 	private int             _framesAirActionsLockedFor;
 
 	[HideInInspector]
@@ -171,7 +173,7 @@ public class S_ActionManager : MonoBehaviour
 		if(!_areAirActionsAvailable && _framesAirActionsLockedFor > 0)
 		{
 			_framesAirActionsLockedFor--;
-			if(_framesAirActionsLockedFor == 0) { _areAirActionsAvailable = true; }
+			if(_framesAirActionsLockedFor == 0) { _areAirActionsAvailable = true; _areAirActionsActive = true; }
 		}
 
 		//For actions that continue calculations even when no active, use ActionEveryFrame
@@ -279,8 +281,9 @@ public class S_ActionManager : MonoBehaviour
 	}
 
 	//Called externally to prevent certain actions from being performed until time is up.
-	public void LockAirMovesForFrames(int frames ) {
+	public void LockAirMovesForFrames(int frames, bool activeInBackground = false ) {
 		_areAirActionsAvailable = false;
+		_areAirActionsActive = activeInBackground;
 		if(frames > _framesAirActionsLockedFor)
 			_framesAirActionsLockedFor = frames;
 	}
