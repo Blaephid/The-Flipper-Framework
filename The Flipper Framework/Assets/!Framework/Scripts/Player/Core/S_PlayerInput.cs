@@ -413,6 +413,13 @@ public class S_PlayerInput : MonoBehaviour
 			_CamResetPressed = !_CamResetPressed;
 		}
 	}
+
+	public void PauseButton ( InputAction.CallbackContext ctx ) {
+		if (ctx.performed)
+		{
+			_Tools.UISpawner._BaseUIElements.PauseMenu.PauseToggle();
+		}
+	}
 	#endregion
 
 

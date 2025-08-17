@@ -40,10 +40,6 @@ public class S_SubAction_Skid : S_Action_Base, ISubAction
 	/// 
 	#region Inherited
 
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	new private void FixedUpdate () {
 		//base.FixedUpdate();
 		if (!_Actions) { return; }

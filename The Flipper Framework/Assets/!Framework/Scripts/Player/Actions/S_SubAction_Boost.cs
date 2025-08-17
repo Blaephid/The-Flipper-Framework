@@ -90,8 +90,8 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Awake () {
-		ReadyAction();
+	public override void Awake () {
+		base.Awake();
 
 		// Get all renderer components representing sub boost cones.
 		_ListOfSubCones = _BoostCone.GetComponentsInChildren<MeshRenderer>();

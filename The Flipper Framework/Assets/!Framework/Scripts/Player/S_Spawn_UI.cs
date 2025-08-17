@@ -8,22 +8,30 @@ using UnityEngine.UI;
 public class S_Spawn_UI : MonoBehaviour
 {
 	[Header("Interfaces")]
-	public GameObject		_BaseUI;
-	public GameObject[]		_AdditionalUI;
+	public GameObject               _BaseUI;
+	public GameObject[]             _AdditionalUI;
 
 	[Header("Transfer To UI")]
-	public S_HedgeCamera	_HedgeCamera;
+	public S_HedgeCamera    _HedgeCamera;
 
 	[Header("Transfered from UIs")]
-	public StrucCoreUIElements	_BaseUIElements;
-	public S_UI_Boost		_BoostUI;
+	public StrucCoreUIElements      _BaseUIElements;
+	public S_UI_Boost               _BoostUI;
 
 	[Serializable]
-	public struct StrucCoreUIElements {
-		public TextMeshProUGUI	RingsCounter;
-		public TextMeshProUGUI	SpeedCounter;
-		public S_HintBox		HintBox;
+	public struct StrucCoreUIElements
+	{
+		public TextMeshProUGUI  RingsCounter;
+		public TextMeshProUGUI  MinutesText;
+		public TextMeshProUGUI  SecondsText;
+		public TextMeshProUGUI  MillisecondsText;
+		public S_HintBox                HintBox;
 		public Image                  FadeOutBox;
+		public Image                    EnergyBar;
+		public Image                    LevelBar;
+		public Image                    SpeedBar;
+		public S_UI_Pause     PauseMenu;
+
 	}
 
 
@@ -37,10 +45,10 @@ public class S_Spawn_UI : MonoBehaviour
 
 		//Spawn main UI and send and receive important variable so interactions between prefabs are possible.
 		_SpawnedUI = Instantiate(_BaseUI, transform);
-		_SpawnedUI.GetComponentInChildren<S_UI_PauseControl>().Cam = _HedgeCamera;
-		_BaseUIElements = _SpawnedUI.GetComponentInChildren<S_UI_PauseControl>().PassOnToSpawner;
+		_SpawnedUI.GetComponentInChildren<S_UI_IngameInterface>().Cam = _HedgeCamera;
+		_BaseUIElements = _SpawnedUI.GetComponentInChildren<S_UI_IngameInterface>().PassOnToSpawner;
 
-		foreach(GameObject UI in _AdditionalUI)
+		foreach (GameObject UI in _AdditionalUI)
 		{
 			Instantiate(UI, _SpawnedUI.transform);
 		}

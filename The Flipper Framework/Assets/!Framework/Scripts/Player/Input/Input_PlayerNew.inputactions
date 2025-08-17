@@ -159,7 +159,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "RestartBind",
+                    "name": "PauseButton",
                     "type": "Button",
                     "id": "be8dd1f9-3572-4198-8416-b6ab8d6578af",
                     "expectedControlType": "Button",
@@ -869,7 +869,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RestartBind",
+                    "action": "PauseButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fe36e643-de65-4608-bdc7-8ca2e0605ffd",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PauseButton",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

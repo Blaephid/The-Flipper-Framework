@@ -164,7 +164,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		//Wall fields
 		//_WallHandler._BannedWall = _CurrentWall;

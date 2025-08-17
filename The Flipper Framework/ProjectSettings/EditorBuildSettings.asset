@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/!Framework/Sc_Testing Grounds.unity
     guid: b8e9635bc70746f40a8b47ccfe43ead6
   - enabled: 1
-    path: Assets/Sc_Showroom.unity
+    path: Assets/Game/Scenes/Zones/Sc_Showroom.unity
     guid: f1427bd62c373394c9bcbc9478219ba9
   - enabled: 1
     path: Assets/Game/Scenes/Menus/Sc_StageCompleteScreen.unity

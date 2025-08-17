@@ -118,7 +118,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		_PlayerPhys._arePhysicsOn = true;
 		_PlayerPhys._rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;

@@ -9,9 +9,8 @@ using UnityEngine.InputSystem.Switch;
 using UnityEngine.ProBuilder;
 using UnityEditor;
 
-public class S_Interaction_Objects : MonoBehaviour
-{
-
+public class S_Interaction_Objects : S_Player_Base
+{ 
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
@@ -23,28 +22,14 @@ public class S_Interaction_Objects : MonoBehaviour
 
 	[Header("Scripts")]
 	//Player
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_ActionManager       _Actions;
-	private S_PlayerInput         _Input;
-	private S_PlayerEvents        _Events;
 
 	private S_Handler_CharacterAttacks      _AttackHandler;
 	private S_Handler_HealthAndHurt         _HurtAndHealth;
 	private S_Interaction_Triggers  _TriggerInteraction;
 
-	private S_Handler_Camera      _CamHandler;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Transform             _FeetPoint;
-	private Transform               _MainSkin;
-
 	//External
 	private GameObject                       _PlatformAnchor;
 
-	[Header("Unity Objects")]
-	private Animator    _CharacterAnimator;
 
 	[Header("For Rings, Springs and so on")]
 	public GameObject RingCollectParticle;
@@ -53,7 +38,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	public Material NormalShieldMaterial;
 	public Color DashRingLightsColor;
 
-	private S_Spawn_UI.StrucCoreUIElements _CoreUIElements;
 	#endregion
 
 	//Stats
@@ -87,23 +71,7 @@ public class S_Interaction_Objects : MonoBehaviour
 	/// </summary>
 	/// 
 	#region Inherited
-	private void Start () {
-		if (_PlayerPhys == null)
-		{
-			AssignTools(); //Called during start instead of awake because it gives time for tools to be acquired (such as the UI needing to be spawned).
-		}
-	}
 
-	//Displays rings and speed on UI
-	private void LateUpdate () {
-		UpdateSpeed();
-
-		_CoreUIElements.RingsCounter.text = "" + (int)_HurtAndHealth._ringAmount;
-	}
-
-	private void Update () {
-		//FollowPlatform();
-	}
 
 	private void FixedUpdate () {
 
@@ -246,14 +214,6 @@ public class S_Interaction_Objects : MonoBehaviour
 	/// </summary>
 	/// 
 	#region private
-	//Called every frame
-	private void UpdateSpeed () {
-		//If a text element of the UI has been set for speed, update it to show current running speed.
-		if (_CoreUIElements.SpeedCounter != null && _PlayerVel._speedMagnitudeSquared > 100f)
-			_CoreUIElements.SpeedCounter.text = _PlayerVel._currentRunningSpeed.ToString("F0");
-		else if (_CoreUIElements.SpeedCounter != null && _displaySpeed < 10f)
-			_CoreUIElements.SpeedCounter.text = "0";
-	}
 
 	//
 	//Wind Interactions
@@ -751,7 +711,7 @@ public class S_Interaction_Objects : MonoBehaviour
 		//Monitors data
 		if (MonitorData.Type == MonitorType.Ring) //Increases player ring count.
 		{
-			_HurtAndHealth._ringAmount = (int)GetComponent<S_Handler_HealthAndHurt>()._ringAmount + col.GetComponent<S_Data_Monitor>().RingAmount;
+			_CoreValues._ringCount = (int)_CoreValues._ringCount + col.GetComponent<S_Data_Monitor>().RingAmount;
 		}
 		else if (MonitorData.Type == MonitorType.Shield) //Activates shield
 		{
@@ -766,23 +726,15 @@ public class S_Interaction_Objects : MonoBehaviour
 	/// Assigning ----------------------------------------------------------------------------------
 	/// </summary>
 	#region Assigning
-	private void AssignTools () {
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_CamHandler = _Tools.CamHandler;
-		_Actions = _Tools._ActionManager;
-		_Events = _Tools.PlayerEvents;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
+	public override void AssignTools () {
+		base.AssignTools();
+
 		_AttackHandler = GetComponent<S_Handler_CharacterAttacks>();
 		_HurtAndHealth = _Tools.GetComponent<S_Handler_HealthAndHurt>();
 		_TriggerInteraction = GetComponent<S_Interaction_Triggers>();
 
 		_MainSkin = _Tools.MainSkin;
 		_CharacterAnimator = _Tools.CharacterAnimator;
-		_Sounds = _Tools.SoundControl;
-		_CoreUIElements = _Tools.UISpawner._BaseUIElements;
-		_FeetPoint = _Tools.FeetPoint;
 	}
 	#endregion
 }

@@ -531,6 +531,7 @@ GameObject:
   - component: {fileID: 5416488146372199807}
   - component: {fileID: 1170264400203800284}
   - component: {fileID: 576209267428233278}
+  - component: {fileID: 988999376291291605}
   m_Layer: 8
   m_Name: Player_Sonic
   m_TagString: Player
@@ -607,6 +608,7 @@ MonoBehaviour:
   _PlayerPhys: {fileID: 114945863342939534}
   _PlayerVel: {fileID: 576209267428233278}
   _PlayerMove: {fileID: 1170264400203800284}
+  _CoreValues: {fileID: 988999376291291605}
   Root: {fileID: 1493631986700570}
   UISpawner: {fileID: 8180601928860910201}
   CharacterCapsule: {fileID: 38880623587908062}
@@ -1098,10 +1100,10 @@ MonoBehaviour:
     m_ActionName: Quick Time Event/New action
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 904315995234001590}
-        m_TargetAssemblyTypeName: S_Manager_LevelProgress, Assembly-CSharp
-        m_MethodName: ReturnToTitleScreenImmediately
-        m_Mode: 1
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
+        m_MethodName: PauseButton
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1131,7 +1133,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Objects: {fileID: 0}
   _FadeOutImage: {fileID: 0}
-  _ringAmount: 0
   _isHurt: 0
   _locksForInvicibility: []
   _isDead: 0
@@ -1201,6 +1202,107 @@ MonoBehaviour:
   - 3
   _resetEnvironmentalOnGrounded: 0
   _resetEnvironmentalOnAirAction: 0
+--- !u!114 &988999376291291605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979695856965714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c4d40105d718a140bab0ae9597fe86a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _energy: 0
+  _barFillByEnergy:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _barFillBySpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.72160494
+      value: 0.905514
+      inSlope: 1.0948169
+      outSlope: 1.0948169
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.346071
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.119165726
+      outSlope: 0.119165726
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.5522068
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _ringCount: 0
+  _powerCount: 0
+  _currentLevel: 0
+  _barFillByPowerCount:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _trueTime: 0
+  _minutes: 0
+  _seconds: 0
+  _milliseconds: 0
 --- !u!1 &38880623587908062
 GameObject:
   m_ObjectHideFlags: 0
@@ -12519,9 +12621,15 @@ MonoBehaviour:
   _HedgeCamera: {fileID: 276827108226429178}
   _BaseUIElements:
     RingsCounter: {fileID: 0}
-    SpeedCounter: {fileID: 0}
+    MinutesText: {fileID: 0}
+    SecondsText: {fileID: 0}
+    MillisecondsText: {fileID: 0}
     HintBox: {fileID: 0}
     FadeOutBox: {fileID: 0}
+    EnergyBar: {fileID: 0}
+    LevelBar: {fileID: 0}
+    SpeedBar: {fileID: 0}
+    GameInterface: {fileID: 0}
   _BoostUI: {fileID: 0}
 --- !u!1 &3354318201683342359
 GameObject:
@@ -30323,18 +30431,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8ee23dc6d27d4e40ae051cbf4c71f1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &904315995234001590 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8974006341597823348, guid: 0e8f736d2dd9706438972762531b3f8f,
-    type: 3}
-  m_PrefabInstance: {fileID: 8072374280709137346}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da02b53e7cffa2549856b2800d6d0816, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1891784863422079515 stripped

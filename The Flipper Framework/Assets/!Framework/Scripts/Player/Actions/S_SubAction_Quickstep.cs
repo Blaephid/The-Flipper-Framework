@@ -41,10 +41,6 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 	/// 
 	#region Inherited
 
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
 	new private void FixedUpdate () {
 		base.FixedUpdate();

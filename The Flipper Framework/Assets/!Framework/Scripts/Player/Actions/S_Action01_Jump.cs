@@ -150,8 +150,6 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
 
-		ReadyAction();
-
 		//Setting private
 		_isJumping = true;
 		_counter = 0;
@@ -225,7 +223,7 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 	public void StopAction (bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		_Actions._ActionDefault._animationAction = 0; //Ensures player will land properly in the correct animation when entering default action.
 		_PlayerPhys._canChangeGrounded = true;

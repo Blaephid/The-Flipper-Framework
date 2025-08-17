@@ -37,7 +37,8 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Awake () {
+	public override void Awake () {
+		base.Awake();
 		StartCoroutine(DisableCanHoverEveryFixedUpdate ());
 	}
 
@@ -89,7 +90,7 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.	
+		if (isFirstTime) { SetUpAction(); return; }
 
 		_SkinOffset.localEulerAngles = Vector3.zero;
 	}

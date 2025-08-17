@@ -17,7 +17,6 @@ public class S_ActionManager : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Properties
-	private S_PlayerPhysics		_PlayerPhys;
 	private S_CharacterTools		_Tools;
 	private S_Handler_HealthAndHurt	_HealthAndHurt;
 
@@ -108,7 +107,6 @@ public class S_ActionManager : MonoBehaviour
 		_Tools =		GetComponentInParent<S_CharacterTools>();
 		_ActionDefault =	GetComponentInChildren<S_Action00_Default>();
 		_ActionHurt =	GetComponentInChildren<S_Action04_Hurt>();
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
 		_HealthAndHurt =	_Tools.GetComponent<S_Handler_HealthAndHurt>();
 
 		_AllActions.Clear();

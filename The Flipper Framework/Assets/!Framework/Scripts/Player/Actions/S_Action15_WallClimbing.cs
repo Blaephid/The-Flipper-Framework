@@ -30,10 +30,6 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 	}
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
 
 	new private void FixedUpdate () {
 		base.FixedUpdate();

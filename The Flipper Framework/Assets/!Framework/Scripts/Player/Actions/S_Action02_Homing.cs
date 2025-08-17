@@ -135,7 +135,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Homing);
 		enabled = true;
 
-		ReadyAction();
 
 		//Setting private
 		_isHoming = true;
@@ -203,7 +202,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		_timer = 0;
 

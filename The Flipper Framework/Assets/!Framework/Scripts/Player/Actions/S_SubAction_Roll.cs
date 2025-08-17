@@ -42,12 +42,6 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	new private void FixedUpdate () {
 		//base.FixedUpdate();
 

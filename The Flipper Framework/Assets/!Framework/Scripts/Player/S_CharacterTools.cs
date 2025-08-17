@@ -23,6 +23,7 @@ public class S_CharacterTools : MonoBehaviour
 	public S_PlayerPhysics _PlayerPhys;
 	public S_PlayerVelocity _PlayerVel;
 	public S_PlayerMovement _PlayerMove;
+	public S_PlayerCoreValues _CoreValues;
 
 	[Header("Key Objects")]
 	public GameObject               Root;

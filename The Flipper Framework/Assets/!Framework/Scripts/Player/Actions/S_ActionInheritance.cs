@@ -5,21 +5,11 @@ using UnityEngine;
 
 
 //Base class for actions to inherit 
-public class S_Action_Base : MonoBehaviour, IAction
+public class S_Action_Base : S_Player_Base, IAction
 {
-	[NonSerialized] public S_CharacterTools      _Tools;
-	[NonSerialized] public S_PlayerPhysics       _PlayerPhys;
-	[NonSerialized] public S_PlayerVelocity      _PlayerVel;
-	[NonSerialized] public S_PlayerInput         _Input;
-	[NonSerialized] public S_ActionManager       _Actions;
-	[NonSerialized] public S_Handler_Camera      _CamHandler;
-	[NonSerialized] public S_Control_SoundsPlayer _Sounds;
-	[NonSerialized] public S_PlayerMovement      _PlayerMovement;
 
-	[NonSerialized] public Animator              _CharacterAnimator;
 	[NonSerialized] public GameObject            _JumpBall;
 	[NonSerialized] public Animator              _BallAnimator;
-	[NonSerialized] public Transform             _MainSkin;
 	[NonSerialized] public CapsuleCollider       _CharacterCapsule;
 	[NonSerialized] public CapsuleCollider         _LowerCapsule;
 	[NonSerialized] public CapsuleCollider         _StandingCapsule;
@@ -31,6 +21,11 @@ public class S_Action_Base : MonoBehaviour, IAction
 	[NonSerialized] public int        _framesWithoutLocalCheckActionCalled; //Increases every frame, but set to zero when AttemptAction is called, if it reaches 3, then sets the below to false.
 	[NonSerialized] public bool       _inAStateConnectedToThis;        //Used by children to check when should end a state, of if possible to enter.
 	[NonSerialized] public bool           _canEnterStateFromSelf; //Set by inherited classes (not per instance), to allow an action to call itself.
+
+	public override void Awake () {
+		SetUpAction();
+		base.Awake();
+	}
 
 	public bool AttemptAction () {
 		if(!_isActionCurrentlyValid) { return false; }
@@ -49,8 +44,8 @@ public class S_Action_Base : MonoBehaviour, IAction
 		_Actions.CheckConnectedActions(_positionInActionList);
 	}
 
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
+	public void SetUpAction () {
+		if (_Tools == null)
 		{
 			//Assign all external values needed for gameplay.
 			_Tools = GetComponentInParent<S_CharacterTools>();
@@ -72,22 +67,10 @@ public class S_Action_Base : MonoBehaviour, IAction
 		}
 	}
 
-	public virtual void AssignStats () {
+	public override void AssignTools () {
+		base.AssignTools();
 
-	}
-
-	public virtual void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
-
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_CharacterAnimator = _Tools.CharacterAnimator;
 		_BallAnimator = _Tools.BallAnimator;
-		_MainSkin = _Tools.MainSkin;
-		_Sounds = _Tools.SoundControl;
 		_JumpBall = _Tools.JumpBall;
 
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();

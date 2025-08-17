@@ -129,7 +129,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		//Apply a cooldown so this can't be performed again immediately.
 		float coolDown = _bounceCoolDown_;

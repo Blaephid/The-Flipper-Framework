@@ -124,7 +124,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	public void StopAction(bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		//Return to normal skin and collider size
 		_Actions._ActionDefault.OverWriteCollider(_StandingCapsule);

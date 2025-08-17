@@ -46,11 +46,6 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		enabled = false;
 	}
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
-
 	// Update is called once per frame
 	void Update () {
 	}
@@ -95,7 +90,7 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction();  return; } //If first time, then return after setting to disabled.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Upreel");
 		_PlayerPhys._canChangeGrounded = true;
