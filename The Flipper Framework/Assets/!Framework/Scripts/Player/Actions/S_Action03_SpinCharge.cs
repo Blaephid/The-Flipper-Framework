@@ -18,10 +18,9 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	private Transform			_PlayerSkinTransform;
 	private Transform                       _MainCamera;
-	#endregion
 
-	//General
-	#region General Properties
+	private S_VolumeTrailRenderer  _HomingTrailScript;
+	#endregion
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
@@ -49,8 +48,10 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	// Trackers
 	#region trackers
-	
 
+	private bool _trailInEffect;
+
+	private bool _isActive; //Used to detect how the action was exited.
 	private bool                  _isPressedCurrently = true;		//Involed in mashing. Reflects whether the button is pressed, if false, start exiting, if false when button is true, reset exiting.	
 
 	private float		_spinDashChargedEffectAmm = 1;		//How active the spin dash particle effect should be
@@ -60,7 +61,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	private Quaternion		_characterRotation;		//This has unique rotation properties different to most actions, so this tracks what rotation the character should have
 
-	#endregion
 	#endregion
 	#endregion
 
@@ -80,6 +80,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		ChargeSpin();
 		AffectMovement();
 		HandleInputs();
+		CheckEffect();
 	}
 
 	//Checks if this action can currently be performed, based on the input and environmental factors.
@@ -106,6 +107,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_Actions._charge = 20;
 		_counter = 0;
 		_isPressedCurrently = true;
+		_isActive = true;
 
 		//Change collider to be smaller
 		_Actions._ActionDefault.OverWriteCollider(_LowerCapsule);
@@ -131,6 +133,9 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_Actions._ActionDefault.SwitchSkin(true);
 
 		_PlayerPhys._isRolling = false;
+		_Effects.EndSpinDash();
+
+		if (_isActive) { StopEffect(0.1f); }
 	}
 
 	#endregion
@@ -188,6 +193,23 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		}
 	}
 
+	private void CheckEffect () {
+		if(_trailInEffect && _PlayerVel._horizontalSpeedMagnitude < 60) //Deactivate
+			StopEffect(0f);
+		else if(!_trailInEffect && _PlayerVel._horizontalSpeedMagnitude > 60) //Activate
+			StartEffect();
+	}
+
+	private void StartEffect () {
+		_trailInEffect = true;
+		_HomingTrailScript.StartEmit(100, false);
+	}
+
+	private void StopEffect (float delay) {
+		_trailInEffect = false;
+		_HomingTrailScript.StartEmit(delay, false);
+	}
+
 	//Once button is release, wait for a bit before launching, checking each frame for if the button is pressed again.
 	private IEnumerator DelayRelease () {
 		//Get time to delay, if only just started the action then delay will be shorter
@@ -210,17 +232,20 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	private void Release () {
 
 		float newSpeed = 0;
+		_isActive = false;
 
 		//Only launches forwards if charged long enough.
 		if (_Actions._charge < _minimunCharge_)
 		{
 			_Sounds.GeneralSource.Stop();
+			StopEffect(0);
 			_Actions._ActionDefault.StartAction();
 		}
 		else
 		{
 			//Effects
 			_Sounds.SpinDashReleaseSound();
+			StopEffect(1);
 
 			//New speed to gain is determined by charge but affected by -
 			Vector3 addForce = _PlayerSkinTransform.forward;
@@ -250,9 +275,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 			_Actions._ActionDefault.StartAction();
 		}
-
-		//Effects
-		_Effects.EndSpinDash();
 
 		float shake = Mathf.Clamp(_releaseShakeAmmount_.x * _Actions._charge, _releaseShakeAmmount_.y, _releaseShakeAmmount_.z);
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(shake, (int)_releaseShakeAmmount_.w));
@@ -346,6 +368,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	#region Assigning
 
 	public override void AssignStats () {
+		base.AssignStats();
 		_spinDashChargingSpeed_ =	_Tools.Stats.SpinChargeStats.chargingSpeed;
 		_minimunCharge_ =		_Tools.Stats.SpinChargeStats.minimunCharge;
 		_maximunCharge_ =		_Tools.Stats.SpinChargeStats.maximunCharge;
@@ -368,6 +391,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		base.AssignTools();
 		_Effects = _Tools.EffectsControl;
 		_MainCamera = Camera.main.transform;
+		_HomingTrailScript = _Tools.HomingTrailScript;
 
 		_PlayerSkinTransform = _Tools.CharacterModelOffset;
 	}
