@@ -43,29 +43,7 @@ public class S_Trigger_Base : S_Data_Base, ICustomEditorLogic
 	private void Update () {
 		if (!S_S_Editor.IsSelected(gameObject)) { return; }
 
-		switch (_whatTriggerShape)
-		{
-			case S_EditorEnums.ColliderTypes.Box:
-				S_S_Editor.AddComponentIfMissing(gameObject, typeof(BoxCollider));
-				S_S_Editor.FindAndRemoveComponent(gameObject, typeof(SphereCollider));
-
-				BoxCollider Box = GetComponent<BoxCollider>();
-				Box.isTrigger = true;
-				Box.size = Vector3.one;
-				break;
-			case S_EditorEnums.ColliderTypes.Sphere:
-				S_S_Editor.AddComponentIfMissing(gameObject, typeof(SphereCollider));
-				S_S_Editor.FindAndRemoveComponent(gameObject, typeof(BoxCollider));
-
-				SphereCollider Sphere = GetComponent<SphereCollider>();
-				Sphere.isTrigger = true;
-				Sphere.radius = 0.5f;
-				break;
-			case S_EditorEnums.ColliderTypes.External:
-				S_S_Editor.FindAndRemoveComponent(gameObject, typeof(BoxCollider));
-				S_S_Editor.FindAndRemoveComponent(gameObject, typeof(SphereCollider));
-				break;
-		}
+		S_S_Editor.HandleColliderComponentsByEnum(gameObject, _whatTriggerShape);
 
 	}
 

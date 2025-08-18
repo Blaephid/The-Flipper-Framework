@@ -10,6 +10,7 @@ public class S_CharacterTools : MonoBehaviour
 
 	[Header("Stats")]
 	public S_O_CharacterStats       Stats;
+	public S_O_CharacterLevelUpStats       LevelUpStats;
 	public S_O_CameraStats  CameraStats;
 
 	[Header("Attach from Action Manager")]
@@ -52,11 +53,6 @@ public class S_CharacterTools : MonoBehaviour
 	[Header("External Objects")]
 	public GameObject       Shield;
 	public GameObject       DropShadow;
-
-	[Header("Homing")]
-	public GameObject       homingIcons;
-	public GameObject       NormalIcon;
-	public GameObject       DamageIcon;
 
 	[Header("Camera Related")]
 	public Transform                CameraTarget;

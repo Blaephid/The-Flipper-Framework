@@ -233,8 +233,8 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	}
 
 	//Checkpoints simply retain transform data, as the level will always reset to its base.
-	public void SetCheckPoint ( Transform checkPointTransform, S_SpawnCharacter Spawner = null ) {
-		_Spawner = Spawner;
+	public void SetCheckPoint ( Transform checkPointTransform, S_SpawnCharacter SpawnerAtStartOfLevel = null ) {
+		_Spawner = SpawnerAtStartOfLevel;
 		_respawnTransform = checkPointTransform;
 		_respawnPosition = checkPointTransform.position;
 		_respawnForwards = checkPointTransform.forward;

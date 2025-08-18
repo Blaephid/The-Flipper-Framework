@@ -34,6 +34,7 @@ TagManager:
   - NormalTrigger
   - RailBooster
   - Music
+  - Sphere
   layers:
   - Default
   - TransparentFX
@@ -54,7 +55,7 @@ TagManager:
   - PostProcessGlobal
   - Homing Target
   - Ring Road Target
-  - Rings
+  - Pickups
   - ItemPull
   - Attack
   - 

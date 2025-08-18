@@ -13,6 +13,30 @@ MonoBehaviour:
   m_Name: SO_SonicStats
   m_EditorClassIdentifier: 
   Title: Sonic
+  StartCoreValuesStats:
+    dieAtDamageFromRingCount: 0
+    minRingLoss: {x: 0.8, y: 40}
+    maxRingLoss: 100
+    startMaxRingCount: 100
+    ringsOnPlayerStart: {x: 0, y: 1}
+    gainEnergyFromRings: 1
+    gainEnergyOverTime: 0
+    energyGainPerRing: 4
+    energyGainPerSecond: 10
+    startMaxEnergy: 100
+    energyOnPlayerStart: {x: 1, y: 0.5}
+  CoreValuesStats:
+    dieAtDamageFromRingCount: 5
+    minRingLoss: {x: 0.8, y: 40}
+    maxRingLoss: 100
+    startMaxRingCount: 100
+    ringsOnPlayerStart: {x: 0, y: 5}
+    gainEnergyFromRings: 1
+    gainEnergyOverTime: 1
+    energyGainPerRing: 5
+    energyGainPerSecond: 1
+    startMaxEnergy: 100
+    energyOnPlayerStart: {x: 1, y: 0.5}
   StartAccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4
@@ -1811,8 +1835,8 @@ MonoBehaviour:
     acceleration: 70
     perfectTimings: {x: 0.45, y: 0.6}
     speedMultiplier: 2
-    energyGained: 1
-    powerGained: 1
+    energyGained: 15
+    powerGained: 5
   StartHomingStats:
     canBePerformedOnGround: 0
     canDashWhenFalling: 1
@@ -2383,26 +2407,22 @@ MonoBehaviour:
     cameraFallBack: {x: 15, y: 25, z: 0.4}
   BoostStats:
     startBoostSpeed: 70
-    framesToReachBoostSpeed: 7
+    framesToReachBoostSpeed: 10
     boostSpeed: 140
     maxSpeedWhileBoosting: 170
     regainBoostSpeed: 3
     turnCharacterThreshold: 55
     boostTurnSpeed: 2
     faceTurnSpeed: 12
-    speedLostOnEndBoost: 20
+    speedLostOnEndBoost: 40
     framesToLoseSpeed: 30
-    cooldown: 0.5
+    cooldown: 0.6
+    minTimeBoosting: 0.6
     hasAirBoost: 0
-    boostFramesInAir: 45
-    AngleOfAligningToEndBoost: 70
-    gainEnergyFromRings: 1
-    gainEnergyOverTime: 0
-    energyGainPerRing: 4
-    energyGainPerSecond: 10
-    maxBoostEnergy: 100
-    energyDrainedPerSecond: 0
-    energyDrainedOnStart: 0
+    boostFramesInAir: 55
+    AngleOfAligningToEndBoost: 60
+    energyDrainedPerSecond: 12
+    energyDrainedOnStart: 5
     cameraFallBack: {x: 10, y: 15, z: 0.85}
   StartBoostStats:
     startBoostSpeed: 70
@@ -2416,14 +2436,10 @@ MonoBehaviour:
     speedLostOnEndBoost: 20
     framesToLoseSpeed: 30
     cooldown: 0.5
+    minTimeBoosting: 0
     hasAirBoost: 1
     boostFramesInAir: 40
     AngleOfAligningToEndBoost: 80
-    gainEnergyFromRings: 1
-    gainEnergyOverTime: 0
-    energyGainPerRing: 4
-    energyGainPerSecond: 10
-    maxBoostEnergy: 100
     energyDrainedPerSecond: 5
     energyDrainedOnStart: 5
     cameraFallBack: {x: 20, y: 30, z: 0.8}
@@ -2575,7 +2591,6 @@ MonoBehaviour:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
     respawnAfter: {x: 30, y: 70, z: 100, w: 108}
-    maxRingLoss: 20
     ringReleaseSpeed: 550
     ringArcSpeed: 250
     RingsLostInSpawnByAmount:
@@ -2633,7 +2648,6 @@ MonoBehaviour:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
     respawnAfter: {x: 90, y: 120, z: 170, w: 108}
-    maxRingLoss: 20
     ringReleaseSpeed: 550
     ringArcSpeed: 250
     RingsLostInSpawnByAmount:

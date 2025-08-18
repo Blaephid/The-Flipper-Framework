@@ -10,7 +10,7 @@ using UnityEngine.ProBuilder;
 using UnityEditor;
 
 public class S_Interaction_Objects : S_Player_Base
-{ 
+{
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
@@ -33,6 +33,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 	[Header("For Rings, Springs and so on")]
 	public GameObject RingCollectParticle;
+	public GameObject SphereCollectParticle;
 	public Material SpeedPadTrack;
 	public Material DashRingMaterial;
 	public Material NormalShieldMaterial;
@@ -42,6 +43,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 	//Stats
 	#region Stats
+	private float _powerFromSpheres_ = 1f; //How much power is gained from collecting a sphere
 	#endregion
 
 	// Trackers
@@ -125,6 +127,10 @@ public class S_Interaction_Objects : S_Player_Base
 
 			case "Ring Road":
 				StartCoroutine(_HurtAndHealth.GainRing(0.5f, Col, RingCollectParticle));
+				break;
+
+			case "Sphere":
+				StartCoroutine(GainSphere(Col));
 				break;
 
 			case "MovingRing":
@@ -214,6 +220,22 @@ public class S_Interaction_Objects : S_Player_Base
 	/// </summary>
 	/// 
 	#region private
+
+	private IEnumerator GainSphere ( Collider col ) {
+
+		Instantiate(SphereCollectParticle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity);
+		Destroy(col.gameObject);
+
+		float ThisFramesPowerCount = _CoreValues._powerCount;
+		yield return new WaitForEndOfFrame();
+
+		//Prevents multiple spheres being gained in the same frame.
+		if (_CoreValues._powerCount != ThisFramesPowerCount + _powerFromSpheres_)
+		{
+			_CoreValues.AdjustPower(_powerFromSpheres_);
+		}
+	}
+
 
 	//
 	//Wind Interactions
@@ -584,12 +606,12 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
-	public void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, Transform Player, LaunchPlayerData launchData) {
+	public void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, Transform Player, LaunchPlayerData launchData ) {
 		Vector3[] split = SplitCoreAndEnvironmentalVelocities(Player,direction,launchPower,_PlayerVel._horizontalSpeedMagnitude,_PlayerPhys._PlayerMovement._currentMaxSpeed,launchData._useCore);
 		StartCoroutine(ApplyForceAfterDelay(split[0], lockPosition, split[1], Object, launchData));
 	}
 
-	public static Vector3[] SplitCoreAndEnvironmentalVelocities (Transform Player, Vector3 direction, float launchPower, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity) {
+	public static Vector3[] SplitCoreAndEnvironmentalVelocities ( Transform Player, Vector3 direction, float launchPower, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity ) {
 		//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
 		//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
 		//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
@@ -602,12 +624,12 @@ public class S_Interaction_Objects : S_Player_Base
 		float horizontalEnvSpeed = speeds.y;
 
 		Vector3 totalEnvironment = GetEnvironmentalVelocityForLaunch(launchHorizontalVelocity, horizontalEnvSpeed, direction, launchPower);
-		launchHorizontalVelocity = Player ? Player.TransformDirection(launchHorizontalVelocity) : launchHorizontalVelocity ;
+		launchHorizontalVelocity = Player ? Player.TransformDirection(launchHorizontalVelocity) : launchHorizontalVelocity;
 
 		return new Vector3[2] { totalEnvironment, launchHorizontalVelocity.normalized * coreSpeed };
 	}
 
-	public static Vector2 GetSpeedsForLaunch (Vector3 horizontalVelocity, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity = false) {
+	public static Vector2 GetSpeedsForLaunch ( Vector3 horizontalVelocity, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity = false ) {
 		float newHorizontalSpeed = horizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
 
 		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
@@ -621,11 +643,11 @@ public class S_Interaction_Objects : S_Player_Base
 		float horizontalEnvSpeed = Mathf.Max(newHorizontalSpeed -  currentCoreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
 		currentCoreSpeed = Mathf.Max(currentCoreSpeed, 1);
 
-		return new Vector2(currentCoreSpeed, horizontalEnvSpeed );
+		return new Vector2(currentCoreSpeed, horizontalEnvSpeed);
 		//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
 	}
 
-	public static Vector3 GetEnvironmentalVelocityForLaunch (Vector3 launchHorizontalVelocity, float horizontalEnvSpeed, Vector3 direction, float launchPower) {
+	public static Vector3 GetEnvironmentalVelocityForLaunch ( Vector3 launchHorizontalVelocity, float horizontalEnvSpeed, Vector3 direction, float launchPower ) {
 		Vector3 envHorizontal = (launchHorizontalVelocity.normalized * horizontalEnvSpeed);
 		Vector3 envVertical = new Vector3(0, (direction * launchPower).y,0);
 		Vector3 totalEnvironment = envHorizontal + envVertical;
@@ -662,7 +684,7 @@ public class S_Interaction_Objects : S_Player_Base
 		_PlayerVel.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
 		_PlayerVel.SetEnvironmentalVelocity(enVelocity, true, true, S_GeneralEnums.ChangeLockState.Lock); //Apply bounce
 
-		if(launchData != default(LaunchPlayerData)) 
+		if (launchData != default(LaunchPlayerData))
 			ApplyLaunchEffects(launchData);
 
 		//To ensure launch isn't interupted by entering a rail until launched a bit away.
@@ -711,7 +733,7 @@ public class S_Interaction_Objects : S_Player_Base
 		//Monitors data
 		if (MonitorData.Type == MonitorType.Ring) //Increases player ring count.
 		{
-			_CoreValues._ringCount = (int)_CoreValues._ringCount + col.GetComponent<S_Data_Monitor>().RingAmount;
+			_CoreValues.AdjustRings(col.GetComponent<S_Data_Monitor>().RingAmount);
 		}
 		else if (MonitorData.Type == MonitorType.Shield) //Activates shield
 		{
@@ -735,6 +757,11 @@ public class S_Interaction_Objects : S_Player_Base
 
 		_MainSkin = _Tools.MainSkin;
 		_CharacterAnimator = _Tools.CharacterAnimator;
+	}
+
+	public override void AssignStats () {
+		base.AssignStats();
+		_powerFromSpheres_ = _Tools.LevelUpStats.powerFromSpheres; 
 	}
 	#endregion
 }

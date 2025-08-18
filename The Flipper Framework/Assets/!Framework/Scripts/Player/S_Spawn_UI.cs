@@ -16,13 +16,13 @@ public class S_Spawn_UI : MonoBehaviour
 
 	[Header("Transfered from UIs")]
 	public StrucCoreUIElements      _BaseUIElements;
-	public S_UI_Boost               _BoostUI;
 
 	[Serializable]
 	public struct StrucCoreUIElements
 	{
 		[Header("Gauge")]
-		public TextMeshProUGUI  RingsCounter;
+		public TextMeshProUGUI  HealthyRingsCounter;
+		public TextMeshProUGUI  DangerousRingsCounter;
 		public Image                    EnergyBar;
 		public Image                    LevelBar;
 		public Image                    SpeedBar;

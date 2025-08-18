@@ -198,10 +198,10 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//COLLISION TRACKERS
-	private List<Collider> _ListOfTriggersEnteredThisFrame = new List<Collider>();
-	private List<Collider> _ListOfTriggersExitedThisFrame= new List<Collider>();
-	private List<Collision> _ListOfCollisionsStartedThisFrame= new List<Collision>();
-	private List<Collider> _ListOfTriggersStayedinThisFrame= new List<Collider>();
+	[NonSerialized] public List<Collider> _ListOfTriggersEnteredThisFrame = new List<Collider>();
+	[NonSerialized] public List<Collider> _ListOfTriggersExitedThisFrame= new List<Collider>();
+	[NonSerialized] public List<Collision> _ListOfCollisionsStartedThisFrame= new List<Collision>();
+	[NonSerialized] public List<Collider> _ListOfTriggersStayedinThisFrame= new List<Collider>();
 
 	#endregion
 	#endregion
@@ -294,6 +294,8 @@ public class S_PlayerPhysics : MonoBehaviour
 		{
 			_Events._OnCollisionEnter.Invoke(_ListOfCollisionsStartedThisFrame[i]);
 		}
+
+		ClearListsOfCollisions();
 	}
 
 	//This must happen every fixedUpdate, no matter the options, so is called in S_PlayerVelocity because it is always the last class called.

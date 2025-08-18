@@ -10,6 +10,63 @@ public class S_O_CharacterStats : ScriptableObject
 {
 	[HideInInspector] public string Title = "Title";
 
+	#region Core Values
+	//-------------------------------------------------------------------------------------------------
+
+	public StrucCoreValues StartCoreValuesStats = SetStrucCoreValues();
+	public StrucCoreValues CoreValuesStats = SetStrucCoreValues();
+
+	static StrucCoreValues SetStrucCoreValues () {
+		return new StrucCoreValues
+		{
+			dieAtDamageFromRingCount = 0,
+			minRingLoss = new Vector2(0.8f, 40),
+			maxRingLoss = 100,
+			startMaxRingCount = 100,
+			ringsOnPlayerStart = new Vector2(0, 1f),
+
+			gainEnergyFromRings = true,
+			gainEnergyOverTime = false,
+			energyGainPerRing = 4,
+			energyGainPerSecond = 10,
+			startMaxEnergy = 100,
+			energyOnPlayerStart = new Vector2(1, 0.5f),
+		};
+	}
+
+	[System.Serializable]
+	public struct StrucCoreValues
+	{
+		[Header("Ring Health")]
+		[Tooltip("Surface: If damaged with fewer rings than this, the player dies.")]
+		public int           dieAtDamageFromRingCount;
+		[Tooltip("Surface: When damaged, lose this many rings. X is a decimal value that represents the percentage of current rings, and y is a flat value to ensure some rings are still lost at low health.")]
+		public Vector2            minRingLoss;
+		[Tooltip("Surface: Will never lose more rings than this from one attack. If 0, there is no limit.")]
+		public int              maxRingLoss;
+		[Tooltip("Surface: When damaged, will never lose more rings than this.")]
+		public int              startMaxRingCount;
+		[Tooltip("Surface: X = How many rings at the start of a level. Y = How many rings when respawning at a checkpoint.")]
+		public Vector2              ringsOnPlayerStart;
+
+		[Header("Ring Energy")]
+		[Tooltip("If true, boost energy will increase when a ring is picked up.")]
+		public bool        gainEnergyFromRings;
+		[Tooltip("If true, boost energy will increase every fixed frame (55 a second).")]
+		public bool        gainEnergyOverTime;
+		[Tooltip("How much energy is gained whenever a ring is picked up.")]
+		public float       energyGainPerRing;
+		[Tooltip("How much energy is gained each fixed frame.")]
+		public float       energyGainPerSecond;
+		[Tooltip("Cannot gain more boost energy than this. This will be increased by levelling up, which is detailed in S_O_CharacterLevelUpStats scriptable objects.")]
+		public float    startMaxEnergy;
+		[Tooltip("Surface: X = How much percentage of energy at start of level. Y = How much when respawning at a checkpoint.")]
+		public Vector2              energyOnPlayerStart;
+
+	}
+	#endregion
+
+
 	#region acceleration
 	//-------------------------------------------------------------------------------------------------
 
@@ -1073,14 +1130,10 @@ public class S_O_CharacterStats : ScriptableObject
 			hasAirBoost = true,
 			boostFramesInAir = 40,
 			AngleOfAligningToEndBoost = 80,
-			gainEnergyFromRings = true,
-			gainEnergyOverTime = false,
-			energyGainPerRing = 4,
-			energyGainPerSecond = 10,
-			maxBoostEnergy = 100,
 			energyDrainedOnStart = 5,
 			energyDrainedPerSecond = 5,
 			cameraFallBack = new Vector3(20,30, 0.8f),
+			minTimeBoosting = 0.7f,
 		};
 	}
 
@@ -1113,6 +1166,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public int         framesToLoseSpeed;
 		[Tooltip("How many seconds until another boost can start after one ended.")]
 		public float        cooldown;
+		[Tooltip("How many seconds until a boost can end (including when out of energy). If no air boost, this will not apply in the air.")]
+		public float        minTimeBoosting;
 		[Header("Air Boost")]
 		[Tooltip("If true, boost will act as normal in the air. If false, boost will end in the air.")]
 		public bool        hasAirBoost;
@@ -1121,16 +1176,6 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("If character rotates more than this many degrees when in the air (from automatic alignign to face up), then end boost.")]
 		public float       AngleOfAligningToEndBoost;
 		[Header("Energy")]
-		[Tooltip("If true, boost energy will increase when a ring is picked up.")]
-		public bool        gainEnergyFromRings;
-		[Tooltip("If true, boost energy will increase every fixed frame (55 a second).")]
-		public bool        gainEnergyOverTime;
-		[Tooltip("How much energy is gained whenever a ring is picked up.")]
-		public float       energyGainPerRing;
-		[Tooltip("How much energy is gained each fixed frame.")]
-		public float       energyGainPerSecond;
-		[Tooltip("Cannot gain more boost energy than this.")]
-		public float	maxBoostEnergy;
 		[Tooltip("How much boost energy is lost every second while boosting.")]
 		public float       energyDrainedPerSecond;
 		[Tooltip("How much energy is consumed when a boost starts.")]
@@ -1261,7 +1306,6 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucHurt
 		{
 			invincibilityTime = 90,
-			maxRingLoss = 20,
 			ringReleaseSpeed = 550f,
 			respawnAfter = new Vector4(30, 80, 100, 108),
 			ringArcSpeed = 250f,
@@ -1289,8 +1333,6 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: How long in frames the three stages of respawning will take in total. X = when to start fading out. Y = when to end fading out (this is when the level will be reset). Z = When to respawn and fade back in.")]
 		public Vector4                respawnAfter;
 		[Header("Ring Loss")]
-		[Tooltip("Surface: When damage, will never lose more rings than this.")]
-		public int              maxRingLoss;
 		[Tooltip("Core: The force to apply on rings to move them away from the player when lost.")]
 		public float            ringReleaseSpeed;
 		[Tooltip("Core: Rings won't all be shot out in the same direction. Each frame the next ring will be shot out at this much of an angle from the last.")]
@@ -1555,6 +1597,7 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 
 		//Order of Drawing
 		EditorGUILayout.Space();
+		DrawCoreValues();
 		EditorGUILayout.LabelField("Core Movement", _HeaderStyle);
 		DrawSpeed();
 		DrawAccel();
@@ -1601,6 +1644,22 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		DrawWhenBonked();
 		DrawWhenHurt();
 		DrawKnockback();
+
+		//Acceleration
+		#region CoreValues
+		void DrawCoreValues () {
+			EditorGUILayout.Space();
+			S_S_CustomInspector.DrawEditableProperty(serializedObject, "CoreValuesStats", "CoreValues", true, true);
+
+
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
+			{
+				_OwnerScript.CoreValuesStats = _OwnerScript.StartCoreValuesStats;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
+		}
+		#endregion
 
 		//Speeds
 		#region Speeds

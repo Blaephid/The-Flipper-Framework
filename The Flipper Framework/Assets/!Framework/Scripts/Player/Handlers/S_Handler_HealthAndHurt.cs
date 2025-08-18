@@ -43,6 +43,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 	#region Stats
 	private S_GeneralEnums.HurtResponses _whatResponse_;
 	private int             _maxRingLoss_;
+	private Vector2            _minRingLoss_;
 	private float           _ringReleaseSpeed_;
 	private float           _ringArcSpeed_;
 	private int             _invincibilityTime_;
@@ -256,11 +257,14 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			_isDead = true;
 
 			//Set public
-			_CoreValues._ringCount = 0;
+			if(!_LevelHandler._Spawner)
+				_CoreValues.SetValuesOnRespawn();
+			else
+				_CoreValues.SetValuesOnLevelStart();
+
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Dead"); //Does not have to be undone because on respawn, this will be cleared.
 
 			//Enter the hurt action until respawn
-			//StartCoroutine(TrackDeath());
 			if (!_HurtAction.enabled) _HurtAction.StartAction();
 		}
 	}
@@ -534,12 +538,17 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 	//Sets values when hurt, and readies rings to be fired out.
 	public void LoseRings ( float damage = 0 ) {
-		//Gets how many rings to lose. This will typically me the max ring loss, but if that's set to zero, it will be all rings instead.
-		damage = damage <= 0 ? _maxRingLoss_ : damage;
-		damage = damage <= 0 ? _CoreValues._ringCount : damage;
-		damage = Mathf.Clamp(damage, 0, _CoreValues._ringCount);
 
-		_CoreValues._ringCount = (int)_CoreValues._ringCount - damage; //Ensures it will be decreased to a whole number, not a decimal.
+		//Ensure damage is minimum
+		damage = Mathf.Max(damage, _CoreValues._ringCount * _minRingLoss_.x); //Proportional to current rings
+		damage = Mathf.Max(damage, _minRingLoss_.y);
+
+		damage = Mathf.Min(damage, _maxRingLoss_);
+
+
+		damage = Mathf.Clamp(damage, 0, _CoreValues._ringCount); //Prevent going into negative rings
+
+		_CoreValues.AdjustRings(-(int)damage); //Ensures it will be decreased to a whole number, not a decimal.
 
 		//Set time to be in hurt state
 		_counter = 0;
@@ -561,14 +570,15 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		Instantiate(Particle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity);
 		Destroy(col.gameObject);
 
-		float ThisFramesRingCount = _CoreValues._ringCount;
+		int ThisFramesRingCount = _CoreValues._ringCount;
 		yield return new WaitForEndOfFrame();
 
 		//Prevents multiple rings being gained in the same frame.
 		if (_CoreValues._ringCount != ThisFramesRingCount + 1)
 		{
-			if (onRingGet != null && _CoreValues._ringCount != ThisFramesRingCount) { onRingGet.Invoke(null, amount); }
-			_CoreValues._ringCount = ThisFramesRingCount + 1;
+			_CoreValues.AdjustRings(1);
+			if (onRingGet != null)
+				{ onRingGet.Invoke(null, amount); }
 		}
 	}
 
@@ -613,7 +623,8 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		_invincibilityTime_ = _Tools.Stats.WhenHurt.invincibilityTime;
 		_flickerTime_ = _Tools.Stats.WhenHurt.flickerTimes;
 
-		_maxRingLoss_ = _Tools.Stats.WhenHurt.maxRingLoss;
+		_minRingLoss_ = _Tools.Stats.CoreValuesStats.minRingLoss;
+		_maxRingLoss_ = _Tools.Stats.CoreValuesStats.maxRingLoss;
 		_ringReleaseSpeed_ = _Tools.Stats.WhenHurt.ringReleaseSpeed;
 		_ringArcSpeed_ = _Tools.Stats.WhenHurt.ringArcSpeed;
 		_RingsLostInSpawnByAmount_ = _Tools.Stats.WhenHurt.RingsLostInSpawnByAmount;

@@ -42,6 +42,15 @@ public class S_S_Editor : MonoBehaviour
 			}
 		};
 	}
+	public static void DestroyFromOnValidate ( UnityEngine.Component ComponentToDestroy ) {
+		EditorApplication.delayCall += () =>
+		{
+			if (ComponentToDestroy != null)
+			{
+				DestroyImmediate(ComponentToDestroy);
+			}
+		};
+	}
 
 	public static void SetActiveFromOnValidate ( GameObject ObjectToSet, bool newActive ) {
 		EditorApplication.delayCall += () =>
@@ -327,15 +336,42 @@ public class S_S_Editor : MonoBehaviour
 		return childObject;
 	}
 
-
-	public static void AddComponentIfMissing ( GameObject Target, Type Component ) {
-		if (!Target.GetComponent(Component)) { Target.AddComponent(Component); }
+	public static Collider HandleColliderComponentsByEnum(GameObject gameObject, S_EditorEnums.ColliderTypes colliderType) {
+		switch (colliderType)
+		{
+			case S_EditorEnums.ColliderTypes.Box:
+				Collider Col = AddComponentIfMissing(gameObject, typeof(BoxCollider)) as Collider;
+				FindAndRemoveComponent(gameObject, typeof(SphereCollider), false);
+				BoxCollider Box = gameObject.GetComponent<BoxCollider>();
+				Box.isTrigger = true;
+				Box.size = Vector3.one;
+				return Col;
+			case S_EditorEnums.ColliderTypes.Sphere:
+				Collider Col2 = AddComponentIfMissing(gameObject, typeof(SphereCollider)) as Collider;
+				FindAndRemoveComponent(gameObject, typeof(BoxCollider), false);
+				SphereCollider Sphere = gameObject.GetComponent < SphereCollider >();
+				Sphere.isTrigger = true;
+				Sphere.radius = 0.5f;
+				return Col2;
+			case S_EditorEnums.ColliderTypes.External:
+				FindAndRemoveComponent(gameObject, typeof(BoxCollider), false);
+				FindAndRemoveComponent(gameObject, typeof(SphereCollider), false);
+				return null;
+			default:
+				return null;
+		}
 	}
 
-	public static void FindAndRemoveComponent ( GameObject Target, Type Component ) {
+	public static UnityEngine.Component AddComponentIfMissing ( GameObject Target, Type Component ) {
+		UnityEngine.Component Comp = Target.GetComponent(Component);
+		if (!Comp) { return Target.AddComponent(Component); }
+		return Comp;
+	}
+
+	public static void FindAndRemoveComponent ( GameObject Target, Type Component, bool immediate ) {
 		if (!Target.GetComponent(Component)) { return; }
 
-		DestroyImmediate(Target.GetComponent(Component));
+		DestroyFromOnValidate(Target.GetComponent(Component));
 
 	}
 

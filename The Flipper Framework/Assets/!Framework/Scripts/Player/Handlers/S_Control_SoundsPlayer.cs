@@ -23,6 +23,7 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	[Header("Air")]
 	public AudioClip Jumping;
 	public AudioClip HomingAttack;
+	public AudioClip PerfectHomingAttack;
 	public AudioClip JumpDash;
 	public AudioClip BounceStart;
 	public AudioClip BounceImpact;
@@ -118,8 +119,8 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		GeneralSource.clip = Skidding;
 		GeneralSource.Play();
 	}
-	public void HomingAttackSound () {
-		GeneralSource.clip = HomingAttack;
+	public void HomingAttackSound (bool perfect) {
+		GeneralSource.clip = perfect ? PerfectHomingAttack : HomingAttack;
 		GeneralSource.Play();
 		if (CombatVoiceClips.Length > 0)
 		{

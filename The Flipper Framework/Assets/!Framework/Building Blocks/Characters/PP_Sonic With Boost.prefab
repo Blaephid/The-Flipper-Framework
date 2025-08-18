@@ -510,6 +510,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Stats: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee, type: 2}
+  LevelUpStats: {fileID: 11400000, guid: b89b0719782320f429ec95455dd1fc07, type: 2}
   CameraStats: {fileID: 11400000, guid: ba202d2693251114c953112101121bfc, type: 2}
   _ActionManager: {fileID: 5590984561777244973}
   PathInteraction: {fileID: 7941823437262557940}
@@ -535,9 +536,6 @@ MonoBehaviour:
   SpinDashBall: {fileID: 8820683988619853210}
   Shield: {fileID: 1118500399814704}
   DropShadow: {fileID: 3378173244698497168}
-  homingIcons: {fileID: 0}
-  NormalIcon: {fileID: 0}
-  DamageIcon: {fileID: 0}
   CameraTarget: {fileID: 6355604061925188031}
   ConstantTarget: {fileID: 5864465826205128439}
   MainCamera: {fileID: 0}
@@ -1125,31 +1123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c4d40105d718a140bab0ae9597fe86a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _energy: 0
-  _barFillByEnergy:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  _dieAtRingCount_: 0
   _barFillBySpeed:
     serializedVersion: 2
     m_Curve:
@@ -1183,10 +1157,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _ringCount: 0
-  _powerCount: 0
-  _currentLevel: 0
-  _barFillByPowerCount:
+  _currentMaxEnergy: 0
+  _startMaxEnergy_: 0
+  _barFillByEnergy:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -1199,13 +1172,64 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.025163442
+      value: 0.025342934
+      inSlope: 0.5542676
+      outSlope: 0.5542676
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.17441474
+    - serializedVersion: 3
+      time: 0.85729283
+      value: 0.87441975
+      inSlope: 1.2253181
+      outSlope: 1.2253181
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.09791368
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2
-      outSlope: 2
+      inSlope: 0.28904063
+      outSlope: 0.28904063
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _barFillByPowerCount:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.8588159
+      outSlope: 0.8588159
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
+      outWeight: 0.12083333
+    - serializedVersion: 3
+      time: 0.9443246
+      value: 0.9854891
+      inSlope: 0.76445776
+      outSlope: 0.76445776
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.3072776
+      outSlope: 0.3072776
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.14583331
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -1246,6 +1270,7 @@ Transform:
   m_Children:
   - {fileID: 4089204406196930}
   - {fileID: 7248462808577213558}
+  - {fileID: 401577043522655606}
   m_Father: {fileID: 4242608932995106}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &2095760245212675213
@@ -6153,7 +6178,7 @@ Transform:
   m_GameObject: {fileID: 444625359303833389}
   serializedVersion: 2
   m_LocalRotation: {x: 0.383358, y: 0.59416896, z: 0.3833579, w: 0.59416896}
-  m_LocalPosition: {x: 0, y: -0.34000003, z: -0.27199972}
+  m_LocalPosition: {x: 0, y: 0.35999995, z: -0.39899972}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11797,6 +11822,78 @@ Transform:
   - {fileID: 8534188991469463573}
   m_Father: {fileID: 2990453842665127441}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!1 &2811597966665505643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 401577043522655606}
+  - component: {fileID: 1205674468773895995}
+  - component: {fileID: 8523265508690685458}
+  m_Layer: 8
+  m_Name: PickupCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &401577043522655606
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2811597966665505643}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5227808175180613460}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1205674468773895995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2811597966665505643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a930090652ca80143abc4ab7bcf40e35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _PlayerPhys: {fileID: 114945863342939534}
+  Collider: {fileID: 8523265508690685458}
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 524288
+  _whatTriggerShape: 0
+--- !u!65 &8523265508690685458
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2811597966665505643}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &2839846267306348526
 GameObject:
   m_ObjectHideFlags: 0
@@ -12135,11 +12232,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _BaseUI: {fileID: 5984858131545758309, guid: a1e920ba75312474486f98bb86c24c49, type: 3}
-  _AdditionalUI:
-  - {fileID: 4955813865315456764, guid: e293cd55e2c20ed4baa2ba5ecd8bee5b, type: 3}
+  _AdditionalUI: []
   _HedgeCamera: {fileID: 276827108226429178}
   _BaseUIElements:
-    RingsCounter: {fileID: 0}
+    HealthyRingsCounter: {fileID: 0}
+    DangerousRingsCounter: {fileID: 0}
     EnergyBar: {fileID: 0}
     LevelBar: {fileID: 0}
     SpeedBar: {fileID: 0}
@@ -12150,7 +12247,6 @@ MonoBehaviour:
     HintBox: {fileID: 0}
     FadeOutBox: {fileID: 0}
     PauseMenu: {fileID: 0}
-  _BoostUI: {fileID: 0}
 --- !u!1 &3354318201683342359
 GameObject:
   m_ObjectHideFlags: 0
@@ -12550,6 +12646,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f013f48ec182aae418cd879906581612, type: 3}
   Jumping: {fileID: 8300000, guid: 05f66e6fae6f6034db6c5b7c6e030b8e, type: 3}
   HomingAttack: {fileID: 8300000, guid: b5adfb1bc96b1d949ab1e5d4e487421c, type: 3}
+  PerfectHomingAttack: {fileID: 8300000, guid: 3a3cbfd64b0af9d4fafe28d7c0ec5e9b, type: 3}
   JumpDash: {fileID: 8300000, guid: 8cc1dda703c71814dadc4ea61a52649b, type: 3}
   BounceStart: {fileID: 0}
   BounceImpact: {fileID: 8300000, guid: 31d1e3fe64ecaec489b1328f0c36ccce, type: 3}
@@ -18134,7 +18231,7 @@ Transform:
   m_GameObject: {fileID: 6466641387993368814}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.67, z: 0.01}
+  m_LocalPosition: {x: 0, y: 1.37, z: -0.117}
   m_LocalScale: {x: 4.483911, y: 4.2543664, z: 4.2297945}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -29676,6 +29773,12 @@ PrefabInstance:
       propertyPath: '_MainActions.Array.data[9].PerformableSubStates.Array.data[0]'
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4559098073210278401, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: SphereCollectParticle
+      value: 
+      objectReference: {fileID: 1000011339303976, guid: 8d0783263d7e4524b9fe14c3feacdcd6,
+        type: 3}
     - target: {fileID: 4584081993875375216, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
       propertyPath: _VirtCam

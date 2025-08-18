@@ -175,7 +175,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		//Effects
 		_JumpBall.SetActive(false);
 		_Actions._ActionDefault.SwitchSkin(false);
-		_Sounds.HomingAttackSound();
 
 		_CharacterAnimator.SetInteger("Action", 1);
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -203,11 +202,14 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		float CheckPerfectHomingTarget () {
 			if(_HomingHandler._timeOnThisTarget > _timesForPerfectHomingAttack_.x && _HomingHandler._timeOnThisTarget < _timesForPerfectHomingAttack_.y)
 			{	
-				Debug.Log("PERFECT");
+				_Sounds.HomingAttackSound(true);
 				_HomingTrailScript.StartEmit(_homingTimerLimit_ + 0.06f, true);
+				_CoreValues.AdjustEnergy(_energyFromPerfect_);
+				_CoreValues.AdjustPower(_powerFromPerfect_);
 				return _speedMultiplierFromPerfect_;
 			}
 			_HomingTrailScript.StartEmit(_homingTimerLimit_ + 0.06f);
+			_Sounds.HomingAttackSound(false);
 			return 1;
 		}
 

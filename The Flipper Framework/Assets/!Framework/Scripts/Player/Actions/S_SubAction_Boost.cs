@@ -22,8 +22,6 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	private GameObject                      _BoostCone;
 	private MeshRenderer[]                  _ListOfSubCones;
 
-	//Used to display boost energy to player.
-	private S_UI_Boost            _BoostUI;
 	#endregion
 
 	//Stats - See CharacterStats for tooltips.
@@ -32,12 +30,6 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	private float       _boostFramesInAir_ = 60;
 	private float       _angleOfAligningToEndBoost_ = 85f;
 
-	private bool        _gainEnergyFromRings_ = true;
-	private bool        _gainEnergyOverTime_ = false;
-	private float       _energyGainPerSecond_ = 5;
-	private float       _energyGainPerRing_ = 5;
-
-	private float       _maxBoostEnergy_ = 100;
 	private float       _energyDrainedPerSecond_ = 0;
 	private float       _energyDrainedOnStart_ = 0;
 
@@ -56,13 +48,15 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	private float        _faceTurnSpeed_ = 6;
 
 	private float       _boostCooldown_ = 0.5f;
+	private float       _minTimeBoosting_ = 0.8f;
 
 	private Vector3 _cameraPauseEffect_ = new Vector3(3, 40);
 	#endregion
 
 	// Trackers
 	#region trackers
-	private float                 _currentBoostEnergy = 10;
+
+	private float                   _timeBoosting;
 
 	//Running speed to apply / reach
 	private float                 _currentSpeed;                //Sets movement speed to this every frame, and when boost started will lerp towards goal speed.
@@ -101,7 +95,6 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 	// Update is called once per frame
 	void Update () {
-		_BoostUI.EnergyTracker.text = _currentBoostEnergy.ToString();
 
 		//If currently enabled, then apply rotation and animations to character.
 		if (_PlayerPhys._isBoosting)
@@ -141,7 +134,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 			_Input._RollPressed = false;
 			if (!_PlayerPhys._isBoosting)//Will only trigger start action if not already boosting.
 			{
-				if (_canStartBoost && _currentBoostEnergy > _energyDrainedOnStart_ && _canBoostBecauseHasntBoostedInAir)
+				if (_canStartBoost && _CoreValues._energy > _energyDrainedOnStart_ && _canBoostBecauseHasntBoostedInAir)
 				{
 					//Can always be performed on the ground, but if in the air, air actions must be available.
 					if (_PlayerPhys._isGrounded || _Actions._areAirActionsAvailable)
@@ -160,9 +153,10 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		//Flow Control
 		_PlayerPhys._isBoosting = true;
 		_canStartBoost = false;
+		_timeBoosting = 0;
 
 		//Energy management
-		_currentBoostEnergy -= _energyDrainedOnStart_;
+		_CoreValues.AdjustEnergy(-_energyDrainedOnStart_);
 
 		//Get speeds to start boost at and reach after some time.
 		_currentSpeed = _Actions._listOfSpeedOnPaths.Count > 0 ? _Actions._listOfSpeedOnPaths[0] : _PlayerVel._horizontalSpeedMagnitude; //The boost speed will be set to and increase from either the running speed, or path speed if currently in use.
@@ -223,14 +217,20 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	private void ApplyBoost () {
 		if (_PlayerPhys._isBoosting)
 		{
+			_timeBoosting += Time.deltaTime;
+			_CoreValues._currentlyDrainingEnergy = true;
+
 			//Energy management.
-			_currentBoostEnergy = Mathf.Max(_currentBoostEnergy - (_energyDrainedPerSecond_ * Time.fixedDeltaTime), 0);
+			_CoreValues.AdjustEnergy(-_energyDrainedPerSecond_ * Time.fixedDeltaTime);
 
 			Vector3 currentRunningPhysics = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity, false); //Get the running velocity in physics (seperate from script calculations) as this will factor in collision.
 
 			// Will end boost if released button , entered a state where without boost attached,  ran out of energy , or movement speed was decreased externally (like from a collision)
-			if (!_Input._BoostPressed || !_inAStateConnectedToThis || _currentBoostEnergy <= 0 
-				|| (currentRunningPhysics.sqrMagnitude < Mathf.Pow(40,2) && _currentSpeedLerpingTowardsGoal == _goalSpeed)) //Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
+			bool endBoost1 = !_Input._BoostPressed && _timeBoosting > _minTimeBoosting_;
+			bool endBoost2 = !_inAStateConnectedToThis;
+			bool endBoost3 = _CoreValues._energy <= 0 && _timeBoosting > _minTimeBoosting_;
+			bool endBoost4 = (currentRunningPhysics.sqrMagnitude < Mathf.Pow(40, 2) && _currentSpeedLerpingTowardsGoal == _goalSpeed);//Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
+			if (endBoost1 || endBoost2 || endBoost3 || endBoost4)
 			{
 				EndBoost();
 			}
@@ -238,7 +238,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 			if (_Actions._listOfSpeedOnPaths.Count == 0)
 			{
 				_currentSpeed = Mathf.Max(_currentSpeed, _PlayerVel._currentRunningSpeed); //If running speed has been increased beyond boost speed (such as through slope physics) then factor that in so it isn't set over.
-				
+
 				//If running speed has been decreased by an external force AFTER boost speed was set last frame (such as by slope physics), then apply the difference to the boost speed.
 				if (_PlayerVel._currentRunningSpeed < _PlayerVel._previousRunningSpeeds[1])
 				{
@@ -264,8 +264,8 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 			_Input._RollPressed = false; //This will ensure the player won't crouch or roll and instead stay boosting.
 		}
-		//If not currently boosting, then check if should gain energy each frame.
-		else if (_gainEnergyOverTime_) { GainEnergyFromTime(); }
+		else
+			_CoreValues._currentlyDrainingEnergy = false;
 	}
 
 	//Called when a boost should come to an end. Applies trackers to tell the script the boost is over, and applie ending effects.
@@ -506,18 +506,6 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		}
 	}
 
-	//These functions will handle increasing boost energy from various sources. Some are events that will be attached to event Handlers.
-	void EventGainEnergyFromRings ( object sender, float source ) {
-		source *= _energyGainPerRing_; //The source is how many rings, so gain energy for each multiplied by amount per ring.
-		_currentBoostEnergy = Mathf.Min(_currentBoostEnergy + source, _maxBoostEnergy_);
-	}
-
-	//Not an event, but depending on stats will be called every frame to increase energy.
-	void GainEnergyFromTime () {
-		float source = Time.fixedDeltaTime * _energyGainPerSecond_;
-		_currentBoostEnergy = Mathf.Min(_currentBoostEnergy + source, _maxBoostEnergy_);
-	}
-
 	//These events must be set in the PlayerPhysics component, and will happen when the player goes from grounded to airborne, or vice versa.
 	public void EventOnGrounded () {
 		if (_PlayerPhys._isBoosting)
@@ -558,8 +546,6 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	//Assigns all external elements of the action.
 
 	public override void AssignStats () {
-		if (_gainEnergyFromRings_)
-			_Tools.GetComponent<S_Handler_HealthAndHurt>().onRingGet += EventGainEnergyFromRings;
 
 		_cameraPauseEffect_ = _Tools.Stats.BoostStats.cameraFallBack;
 
@@ -567,12 +553,6 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		_boostFramesInAir_ = _Tools.Stats.BoostStats.boostFramesInAir;
 		_angleOfAligningToEndBoost_ = _Tools.Stats.BoostStats.AngleOfAligningToEndBoost;
 
-		_gainEnergyFromRings_ = _Tools.Stats.BoostStats.gainEnergyFromRings;
-		_gainEnergyOverTime_ = _Tools.Stats.BoostStats.gainEnergyOverTime;
-		_energyGainPerSecond_ = _Tools.Stats.BoostStats.energyGainPerSecond;
-		_energyGainPerRing_ = _Tools.Stats.BoostStats.energyGainPerRing;
-
-		_maxBoostEnergy_ = _Tools.Stats.BoostStats.maxBoostEnergy;
 		_energyDrainedPerSecond_ = _Tools.Stats.BoostStats.energyDrainedPerSecond;
 		_energyDrainedOnStart_ = _Tools.Stats.BoostStats.energyDrainedOnStart;
 
@@ -591,6 +571,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		_faceTurnSpeed_ = _Tools.Stats.BoostStats.faceTurnSpeed;
 
 		_boostCooldown_ = _Tools.Stats.BoostStats.cooldown;
+		_minTimeBoosting_ = _Tools.Stats.BoostStats.minTimeBoosting;
 
 	}
 
@@ -599,8 +580,6 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 		_BoostCone = _Tools.BoostCone;
 		_BoostCone.SetActive(false);
-
-		_BoostUI = _Tools.UISpawner._BoostUI;
 	}
 	#endregion
 }
