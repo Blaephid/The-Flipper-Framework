@@ -128,11 +128,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Blinking_Rate: 0.05
     - _BumpPower: 0
     - _BumpScale: 1
     - _Bump_Power: 0.82
     - _CenterPower: 15.8
-    - _Center_Power: 6
+    - _Center_Power: 3.09
     - _Cull: 2
     - _CullShadowPass: 3
     - _Cutoff: 0.5
@@ -146,6 +147,7 @@ Material:
     - _DstBlend: 0
     - _Emission: 0.89
     - _Exposure: 1
+    - _Fresnel_Power: 3.16
     - _GlossMapScale: 1
     - _Glossiness: 0.594
     - _Glossiness2: 0.5
@@ -170,7 +172,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _RimPower: 1.6
-    - _Rim_Power: 3
+    - _Rim_Power: 5.11
     - _Rotation: 0
     - _ScatteringPower: 4
     - _Shininess: 0.556
@@ -195,6 +197,7 @@ Material:
     - _ZWrite: 1
     - _emission: 1.7
     m_Colors:
+    - _Blinking_Range: {r: 0.2, g: 0.6, b: 0, a: 0}
     - _CenterColor: {r: 1, g: 0.768, b: 0, a: 0}
     - _Center_Color: {r: 1, g: 0.5520116, b: 0, a: 0}
     - _Center_Modifier: {r: 1, g: 1, b: 1, a: 1}
@@ -205,6 +208,7 @@ Material:
     - _DiffuseScatteringCol2: {r: 0, g: 0, b: 0, a: 0}
     - _DifuseColor: {r: 0.3339998, g: 0.09418789, b: 0, a: 0}
     - _EmissionColor: {r: 0.625, g: 0.47844827, b: 0, a: 1}
+    - _Fresnel_Colour: {r: 2.1673048, g: 0.9911027, b: 0.03066935, a: 0.28235295}
     - _ReflectColor: {r: 1, g: 0.93103445, b: 0, a: 0.5}
     - _RimColor: {r: 1, g: 0.6827587, b: 0, a: 0}
     - _Rim_Color: {r: 0.70980394, g: 0.4536287, b: 0.02352942, a: 0}

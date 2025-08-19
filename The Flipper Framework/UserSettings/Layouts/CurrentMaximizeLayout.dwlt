@@ -25,7 +25,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 1059
+  controlID: 631
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -105,23 +105,23 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
-      width: 900
-      height: 897
-    m_Scale: {x: 0.46875, y: 0.46875}
-    m_Translation: {x: 450, y: 448.5}
+      width: 1920
+      height: 899
+    m_Scale: {x: 0.8324075, y: 0.8324074}
+    m_Translation: {x: 960.00006, y: 449.5}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -960
-      y: -956.8
-      width: 1920
-      height: 1913.6
+      x: -1153.2814
+      y: -540
+      width: 2306.5627
+      height: 1080
     m_MinimalGUI: 1
-  m_defaultScale: 0.46875
-  m_LastWindowPixelSize: {x: 900, y: 918}
+  m_defaultScale: 0.8324074
+  m_LastWindowPixelSize: {x: 1920, y: 920}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000000000000
@@ -193,7 +193,7 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 3e880000
+      m_SelectedIDs: 0cc60000
       m_LastClickedID: 0
       m_ExpandedIDs: a0faffff
       m_RenameOverlay:
@@ -873,9 +873,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 875.3643, y: -301.85773, z: 501.12958}
+    m_Target: {x: 1010.24927, y: -154.38351, z: -218.7509}
     speed: 2
-    m_Value: {x: 875.3643, y: -301.85773, z: 501.12958}
+    m_Value: {x: 1010.24927, y: -154.38351, z: -218.7509}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -921,9 +921,9 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.09890534, y: 0.7183989, z: -0.104396075, w: 0.6806115}
+    m_Target: {x: 0.100777246, y: 0.8108479, z: -0.14655106, w: 0.5575861}
     speed: 2
-    m_Value: {x: 0.098904856, y: 0.7183954, z: -0.10439557, w: 0.68060815}
+    m_Value: {x: 0.100777246, y: 0.8108479, z: -0.14655106, w: 0.557586}
   m_Size:
     m_Target: 232.94836
     speed: 2
