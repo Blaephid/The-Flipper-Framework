@@ -17,13 +17,14 @@ public class S_PlayerCoreValues : S_Player_Base
 	[HideInInspector] public int _dieAtRingCount_;
 
 	//Levels
-	private int _level;
+	private int _level = 0;
 
 	//Velocity & Speed
+	private float _startSpeedMultiplier_ = 1;
+	[NonSerialized] public float _currentSpeedMultiplier = 1;
 	private float _displaySpeed;
 	private float _prevDisplaySpeed;
 	public AnimationCurve _barFillBySpeed;
-	[NonSerialized] public float _currentSpeedMultiplier = 1f;
 
 	//Energy
 	public float _energy { get; private set; }
@@ -41,7 +42,6 @@ public class S_PlayerCoreValues : S_Player_Base
 
 	//Power
 	private float _currentPowerNeedForNextLevel;
-	private float _startPowerNeedForNextLevel;
 	public float _powerCount { get; private set; }
 	public AnimationCurve _barFillByPowerCount;
 
@@ -62,7 +62,7 @@ public class S_PlayerCoreValues : S_Player_Base
 		UpdateEnergy();
 		UpdatePower();
 
-		if(!_currentlyDrainingEnergy) { GainEnergyFromTime(); }
+		if (!_currentlyDrainingEnergy) { GainEnergyFromTime(); }
 	}
 
 	/// <summary>
@@ -74,9 +74,9 @@ public class S_PlayerCoreValues : S_Player_Base
 		_trueTime += Time.deltaTime;
 		_seconds += Time.deltaTime;
 
-		if(_seconds >= 60)
+		if (_seconds >= 60)
 		{
-			_minutes = Mathf.Min(_minutes+1,99);
+			_minutes = Mathf.Min(_minutes + 1, 99);
 			_seconds -= 60;
 		}
 
@@ -92,7 +92,7 @@ public class S_PlayerCoreValues : S_Player_Base
 		_CoreUIElements.MinutesText.text = displayMinutes;
 
 		return;
-		string DisplayIn2Digits(int value) {
+		string DisplayIn2Digits ( int value ) {
 			return value >= 10 ? value.ToString() : "0" + value.ToString();
 		}
 	}
@@ -154,19 +154,41 @@ public class S_PlayerCoreValues : S_Player_Base
 		_energy = _currentMaxEnergy * _energyOnStartAndDeath_.y;
 	}
 
-	public void AdjustEnergy (float change) {
+	public void AdjustEnergy ( float change ) {
 		_energy += change;
 		_energy = Mathf.Clamp(_energy, 0, _currentMaxEnergy);
 	}
 
-	public void AdjustRings (int change) {
+	public void AdjustRings ( int change ) {
 		_ringCount += change;
 		_ringCount = Mathf.Clamp(_ringCount, 0, _currentMaxRings);
 	}
 
-	public void AdjustPower (float change) {
+	public void AdjustPower ( float change ) {
 		_powerCount += change;
 		_powerCount = Mathf.Clamp(_powerCount, 0, _currentPowerNeedForNextLevel);
+
+		CheckLevels();
+	}
+
+	private void CheckLevels () {
+		if (_powerCount < _currentPowerNeedForNextLevel) { return; }
+		if(_level == _Tools.LevelUpStats._Levels.Count + 1 ) { return; }
+
+		LevelUp();
+	}
+
+	private void LevelUp () {
+		_level++;
+		int index = _level - 1;
+
+		_powerCount = 0;
+
+		_currentPowerNeedForNextLevel = _Tools.LevelUpStats._Levels[index].requiredPower;
+		_currentMaxEnergy = _startMaxEnergy_ * _Tools.LevelUpStats._Levels[index].energyMaxMultiplier;
+		_currentMaxRings = (int)(_startMaxRings_ * _Tools.LevelUpStats._Levels[index].ringsMaxMultiplier);
+		_currentSpeedMultiplier = _startSpeedMultiplier_ * _Tools.LevelUpStats._Levels[index].speedMaxMultiplier;
+
 	}
 
 
@@ -178,7 +200,7 @@ public class S_PlayerCoreValues : S_Player_Base
 
 	//Not an event, but depending on stats will be called every frame to increase energy.
 	void GainEnergyFromTime () {
-		if(!_gainEnergyOverTime_) { return; }
+		if (!_gainEnergyOverTime_) { return; }
 		float source = Time.fixedDeltaTime * _energyGainPerSecond_;
 		_CoreValues.AdjustEnergy(source);
 	}
@@ -187,12 +209,13 @@ public class S_PlayerCoreValues : S_Player_Base
 
 	public override void AssignStats () {
 		base.AssignStats();
-		_level = 1;
 
 		_dieAtRingCount_ = _Tools.Stats.CoreValuesStats.dieAtDamageFromRingCount;
 		_startMaxRings_ = _Tools.Stats.CoreValuesStats.startMaxRingCount;
 		_currentMaxRings = _startMaxRings_;
 		_ringsOnStartAndDeath_ = _Tools.Stats.CoreValuesStats.ringsOnPlayerStart;
+
+		_startSpeedMultiplier_ = 1;
 
 		_startMaxEnergy_ = _Tools.Stats.CoreValuesStats.startMaxEnergy;
 		_currentMaxEnergy = _startMaxEnergy_;
@@ -204,6 +227,6 @@ public class S_PlayerCoreValues : S_Player_Base
 		if (_gainEnergyFromRings_)
 			_Tools.GetComponent<S_Handler_HealthAndHurt>().onRingGet += EventGainEnergyFromRings;
 
-		_currentPowerNeedForNextLevel = _Tools.LevelUpStats._Levels[_level-1].requiredPower;
+		LevelUp();
 	}
 }

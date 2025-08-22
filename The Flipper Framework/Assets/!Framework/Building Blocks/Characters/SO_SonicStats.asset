@@ -2408,7 +2408,7 @@ MonoBehaviour:
   BoostStats:
     startBoostSpeed: 70
     framesToReachBoostSpeed: 10
-    boostSpeed: 140
+    boostSpeed: 130
     maxSpeedWhileBoosting: 170
     regainBoostSpeed: 3
     turnCharacterThreshold: 55

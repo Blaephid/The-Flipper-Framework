@@ -35,8 +35,13 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	private float                 _offsetZip_ = -2.05f;
 
 	private float                 _minStartSpeed_ = 60f;
-	[NonSerialized] public float                  _railmaxSpeed_;
-	[NonSerialized] public float                 _railTopSpeed_;
+	private float currentMaxSpeedBackingField;
+	[HideInInspector] public float                  _railmaxSpeed_
+			{ get { return currentMaxSpeedBackingField * _CoreValues._currentSpeedMultiplier; } set { currentMaxSpeedBackingField = value; } }
+	private float currentTopSpeedBackingField;
+	[HideInInspector] public float                 _railTopSpeed_
+			{ get { return currentMaxSpeedBackingField * _CoreValues._currentSpeedMultiplier; } set { currentMaxSpeedBackingField = value; } }
+
 	private float                 _playerBrakePower_ = 0.95f;
 	private AnimationCurve        _accelBySpeed_;
 

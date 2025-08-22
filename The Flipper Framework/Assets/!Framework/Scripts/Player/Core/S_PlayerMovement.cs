@@ -5,25 +5,13 @@ using UnityEngine;
 using UnityEngine.Windows;
 
 [RequireComponent(typeof(S_PlayerPhysics))]
-public class S_PlayerMovement : MonoBehaviour
+public class S_PlayerMovement : S_Player_Base
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
 	#region properties
-
-	//Unity
-	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Transform   _MainSkin;
-	#endregion
 
 	//Stats
 	#region Stats
@@ -68,7 +56,7 @@ public class S_PlayerMovement : MonoBehaviour
 	public delegate Vector3 DelegateAccelerationAndTurning ( Vector3 vector, Vector3 input, Vector2 modifier );        //A delegate for deciding methods to calculate acceleration and turning 
 	public DelegateAccelerationAndTurning   CallAccelerationAndTurning; //This delegate will be called in controlled velocity to return changes to acceleration and turning. This will usually be the base one in this script, but may be changed externally depending on the action.
 	[HideInInspector] public bool _lockAccelerationAndTurningToDefault; //If true, the delegate above will not be called, and instead the default one will be, preventing any overwriting while locked.	
-	
+
 
 	[HideInInspector]
 	public Vector3                _moveInput;         //Assigned by the input script, the direction the player is trying to go.
@@ -82,10 +70,15 @@ public class S_PlayerMovement : MonoBehaviour
 	[HideInInspector]
 	public float _useFlatTurnRate = 0;
 
+	private float currentTopSpeedBackingField;
 	[HideInInspector]
-	public float                  _currentTopSpeed;   //Player cannot exceed this speed by just running on flat ground. May be changed across gameplay.
+	public float _currentTopSpeed   //Player cannot exceed this speed by just running on flat ground. May be changed across gameplay.
+		{ get { return currentTopSpeedBackingField * _CoreValues._currentSpeedMultiplier; } set { currentTopSpeedBackingField = value; } }
+
+	private float currentMaxSpeedBackingField;
 	[HideInInspector]
-	public float                  _currentMaxSpeed;   //Player's core velocity can not exceed this by any means.
+	public float _currentMaxSpeed //Player's core horizontal velocity can not exceed this by any means.
+		{ get { return currentMaxSpeedBackingField * _CoreValues._currentSpeedMultiplier; } set { currentMaxSpeedBackingField = value; } }
 	[HideInInspector]
 	public float                  _currentMinSpeed;   //Player's running velocity can not go below this. Should be 0, and only temporarily set for certain actions.
 
@@ -106,17 +99,16 @@ public class S_PlayerMovement : MonoBehaviour
 	#endregion
 
 	//On start, assigns stats.
-	private void Awake () {
-		_Tools = GetComponent<S_CharacterTools>();
-		AssignTools();
-		AssignStats();
-
+	public override void Awake () {
+		base.Awake();
 		//Set delegates
 		CallAccelerationAndTurning = DefaultAccelerateAndTurn; //Whenever this delegate is called, it will call the default acceleration and turning present in this script, but the delegate may be changed by actions.
 
 	}
 
 	private void FixedUpdate () {
+		if (_CoreValues == null) return;
+
 		//Get curve positions, which will be used in calculations for this frame.
 		_curvePosAcell = _AccelBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _currentTopSpeed);
 		_curvePosDecell = _DecelBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _currentMaxSpeed);
@@ -147,7 +139,7 @@ public class S_PlayerMovement : MonoBehaviour
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		//Apply changes to the lateral velocity based on input.
-		if(!_lockAccelerationAndTurningToDefault)
+		if (!_lockAccelerationAndTurningToDefault)
 		{
 			//Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
 			lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier);
@@ -285,7 +277,7 @@ public class S_PlayerMovement : MonoBehaviour
 		return lateralVelocity;
 	}
 
-	public static float BuiltInAcceleration (float startAccel, bool lockedToBase, bool inputtingEnough, float baseOrRollAccell, float inputMagnitude, float accelerationFromCurves) {
+	public static float BuiltInAcceleration ( float startAccel, bool lockedToBase, bool inputtingEnough, float baseOrRollAccell, float inputMagnitude, float accelerationFromCurves ) {
 		float accelRate = startAccel;
 
 		if (lockedToBase)
@@ -306,7 +298,7 @@ public class S_PlayerMovement : MonoBehaviour
 	//Handles decreasing the magnitude of the player's controlled velocity, usually only if there is no input, but other circumstances may decrease speed as well.
 	//Deceleration is calculated, then applied at the end of the method.
 	//is static so it can be called by simulations.
-	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier = 1) {
+	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier = 1 ) {
 
 		bool canDecel = _PlayerPhys._locksForCanDecelerate.Count == 0;
 		bool notOnSlope = _PlayerPhys._groundNormal.y > _slopeEffectLimit_ && _PlayerVel._currentRunningSpeed > 10;
@@ -318,7 +310,7 @@ public class S_PlayerMovement : MonoBehaviour
 		return Vector3.MoveTowards(lateralVelocity, Vector3.zero, decelAmount);
 	}
 
-	public static float BuiltInDeceleration(bool canDecel, Vector3 input, bool notOnSlope, bool isRolling, bool isGrounded, float modifier, S_O_CharacterStats Stats) {
+	public static float BuiltInDeceleration ( bool canDecel, Vector3 input, bool notOnSlope, bool isRolling, bool isGrounded, float modifier, S_O_CharacterStats Stats ) {
 		float decelAmount = !isGrounded ? Stats.DecelerationStats.airConstantDecel : 0;
 
 		if (canDecel)
@@ -342,7 +334,9 @@ public class S_PlayerMovement : MonoBehaviour
 		return decelAmount;
 	}
 
-	private void AssignStats () {
+	public override void AssignStats () {
+		base.AssignStats();
+
 		_startAcceleration_ = _Tools.Stats.AccelerationStats.runAcceleration;
 		_startRollAcceleration_ = _Tools.Stats.AccelerationStats.rollAccel;
 		_AccelBySpeed_ = _Tools.Stats.AccelerationStats.AccelBySpeed;
@@ -377,14 +371,5 @@ public class S_PlayerMovement : MonoBehaviour
 		_currentRollAccell = _startRollAcceleration_;
 		_currentTopSpeed = _startTopSpeed_;
 		_currentMaxSpeed = _startMaxSpeed_;
-	}
-
-	private void AssignTools () {
-		_Actions = _Tools._ActionManager;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_PlayerVel = GetComponent<S_PlayerVelocity>();
-
-		_MainSkin = _Tools.MainSkin;
 	}
 }

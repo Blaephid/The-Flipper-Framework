@@ -3,24 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(S_PlayerPhysics))]
-public class S_PlayerVelocity : MonoBehaviour
+public class S_PlayerVelocity : S_Player_Base
 {
 	#region properties
-	#region Unity
-	private S_CharacterTools	_Tools;
-	private S_PlayerPhysics	_PlayerPhys;
-	private Rigidbody		_RB;
-	private Transform             _MainSkin;
-	#endregion
 
-	#region trackers
+	private Rigidbody		_RB;
+
+
 	//Stats
 	private float                 _landingConversionFactor_ = 2;
 	private float                 _rollingLandingBoost_;
 
 	//Velocities in use
 	[HideInInspector]
-	public Vector3                _coreVelocity;                //Core velocity is the velocity under the player's control. Whether it be through movement, actions or more. It cannot exceed maximum speed. Most calculations are based on this
+	public Vector3                _coreVelocity;                //Core velocity is the velocity under the player's control. Whether it be through movement, actions or more. It cannot exceed maximum speed on horizontal. Most calculations are based on this
 	[HideInInspector]
 	public Vector3                _environmentalVelocity;       //Environmental velocity is the velocity applied by external forces, such as springs, fans and more.
 	[HideInInspector]
@@ -65,7 +61,6 @@ public class S_PlayerVelocity : MonoBehaviour
 	public bool                  _resetEnvironmentalOnGrounded;
 	[HideInInspector]
 	public bool                  _resetEnvironmentalOnAirAction;
-	#endregion
 	#endregion
 
 	#region Inherited

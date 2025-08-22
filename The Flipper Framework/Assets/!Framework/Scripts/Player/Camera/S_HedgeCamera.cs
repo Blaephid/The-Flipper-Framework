@@ -219,7 +219,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	[HideInInspector]
 	public List<string>             _locksForCameraFallBack = new List<string>();
-	private string          _currentSourceOfFallBack;
+	private string          _currentSourceOfFallBack = "";
 	private Vector3                 _startPositionOfFallBack;
 	private float            _lerpSpeedOfFallBack;
 
