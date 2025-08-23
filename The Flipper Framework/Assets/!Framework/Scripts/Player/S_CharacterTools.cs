@@ -76,7 +76,6 @@ public class S_CharacterTools : MonoBehaviour
 
 	[Header("Particles")]
 	public ParticleSystem   DropEffect;
-	public GameObject               JumpDashParticle;
 
 	[Header("Effects")]
 	public S_VolumeTrailRenderer            HomingTrailScript;

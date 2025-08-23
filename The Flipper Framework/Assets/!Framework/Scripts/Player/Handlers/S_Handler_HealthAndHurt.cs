@@ -567,7 +567,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 	//Called when a ring is picked up. Doesn't apply it until the end of the frame to ensure that only one ring is gained per frame, ignoring potential multiple collisions.
 	public IEnumerator GainRing ( float amount, Collider col, GameObject Particle ) {
-		Instantiate(Particle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity);
+		Instantiate(Particle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity, transform);
 		Destroy(col.gameObject);
 
 		int ThisFramesRingCount = _CoreValues._ringCount;

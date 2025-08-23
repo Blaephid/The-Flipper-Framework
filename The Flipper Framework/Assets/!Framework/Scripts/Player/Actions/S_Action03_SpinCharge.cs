@@ -13,7 +13,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_Control_EffectsPlayer         _Effects;
 
 
 	private Transform			_PlayerSkinTransform;
@@ -133,7 +132,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_Actions._ActionDefault.SwitchSkin(true);
 
 		_PlayerPhys._isRolling = false;
-		_Effects.EndSpinDash();
+		_Effects.EndSpinDashEffect();
 
 		if (_isActive) { StopEffect(0.1f); }
 	}
@@ -152,8 +151,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_counter += Time.deltaTime;
 
 		//Effects
-		_Effects.DoSpindash(1, _spinDashChargedEffectAmm * _Actions._charge, _Actions._charge,
-		_Effects.GetSpinDashDust(), _maximunCharge_);
+		_Effects.HandleSpinDashEffect(1, _spinDashChargedEffectAmm * _Actions._charge, _Actions._charge, _maximunCharge_);
 
 		//If not pressed, sets the player as exiting
 		if (!_Input._SpinChargePressed)
@@ -346,7 +344,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player leaves or loses the ground
 	public void EventOnGroundLost () {
 		_Input._SpecialPressed = false; // Ensures an action like a jump dash won't be performed immediately.
-		_Effects.EndSpinDash();
+		_Effects.EndSpinDashEffect();
 
 		StartCoroutine(DelayOnFall());
 	}
@@ -389,7 +387,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	}
 	public override void AssignTools () {
 		base.AssignTools();
-		_Effects = _Tools.EffectsControl;
 		_MainCamera = Camera.main.transform;
 		_HomingTrailScript = _Tools.HomingTrailScript;
 

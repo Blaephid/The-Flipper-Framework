@@ -266,9 +266,7 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 		_PlayerVel.SetCoreVelocity(newVel, "Overwrite");
 
 		//Add particle effect during jump
-		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
-		JumpDashParticleClone.transform.position = _Tools.FeetPoint.position;
-		JumpDashParticleClone.transform.rotation = Quaternion.LookRotation(Vector3.up);
+		_Effects.AirDashParticle(_Tools.FeetPoint);
 
 	}
 

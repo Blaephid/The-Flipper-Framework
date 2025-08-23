@@ -124,6 +124,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		if (!enabled || !_isGrinding || !_RF._RailTransform) { return; }
 		_RF.ApplyHopUpdate(_hopSpeed_, _HopSpeedByTime_); //As rail hopping is shared between player and rhinoliners. The fixedUpdate version is not shared as those handle physics differently.
 
+		EffectsControl();
 		SoundControl();
 		//Handle animations
 		switch (_RF._whatKindOfRail)
@@ -308,6 +309,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//Effects
 		_Sounds.RailGrindStop();
+		_Effects.HandleGrindSparks(0);
 
 		_isGrinding = false;
 		_RF._RailTransform = null; //Set this to null so there's nothing to compare to on next rail.
@@ -694,6 +696,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			_Sounds.RailGrindSound();
 		else
 			_Sounds.RailGrindStop();
+	}
+
+	void EffectsControl () {
+		if (_isGrinding) { _Effects.HandleGrindSparks(_RF._grindingSpeed); }
 	}
 	#endregion
 

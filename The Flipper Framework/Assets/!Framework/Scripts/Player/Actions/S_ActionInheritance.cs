@@ -14,6 +14,7 @@ public class S_Action_Base : S_Player_Base, IAction
 	[NonSerialized] public CapsuleCollider         _LowerCapsule;
 	[NonSerialized] public CapsuleCollider         _StandingCapsule;
 
+	[NonSerialized] public S_Control_EffectsPlayer _Effects;
 
 	[NonSerialized] public int            _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 	[NonSerialized] public bool           _isActionCurrentlyValid = true;       //Controlled by Activate And Deactivate action. Can't perform actions if false.[Hide
@@ -72,6 +73,7 @@ public class S_Action_Base : S_Player_Base, IAction
 
 		_BallAnimator = _Tools.BallAnimator;
 		_JumpBall = _Tools.JumpBall;
+		_Effects = _Tools.EffectsControl;
 
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();

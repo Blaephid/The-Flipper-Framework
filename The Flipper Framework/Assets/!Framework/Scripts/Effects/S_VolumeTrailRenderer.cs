@@ -73,11 +73,14 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 	}
 
 	public void StartEmit(float time, bool special = false ) {
-		if (special) { meshRenderer.material = specialMaterial; inUseColorOverLifeTime = specialColorOverLifeTime; }
-		else { meshRenderer.material = defaultMaterial; inUseColorOverLifeTime = baseColorOverLifeTime; }
+		if(time > 0)
+		{
+			if (special) { meshRenderer.material = specialMaterial; inUseColorOverLifeTime = specialColorOverLifeTime; }
+			else { meshRenderer.material = defaultMaterial; inUseColorOverLifeTime = baseColorOverLifeTime; }
+		}
 
 		emitTime = time;
-		emit = true;
+		emit = time != 0;
 
 	}
 

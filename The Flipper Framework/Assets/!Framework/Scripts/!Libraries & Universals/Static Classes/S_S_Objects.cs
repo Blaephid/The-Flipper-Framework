@@ -41,6 +41,23 @@ public class S_S_Objects
 	}
 
 
+	//Takes an object and finds the scale needed for its bounds to fit neatly with the camera field of view, so it fills the camera edges
+	public static Vector2 GetScaleToFitCameraBounds(Camera Cam, float zOffset, Transform transform, bool setTo ) {
+
+		float height = 2f * zOffset * Mathf.Tan(Cam.fieldOfView * 0.5f * Mathf.Deg2Rad);
+		float width = height * Cam.aspect;
+
+		if(setTo)
+		{
+			transform.parent = Cam.transform;
+			transform.localPosition = new Vector3(0, 0, zOffset);
+			transform.localScale = new Vector3(width, height, 1f);
+		}
+
+		return new Vector2(width, height);
+	}
+
+	//Used for fading audio in or out.
 	public static IEnumerator LerpAudioSourceVolume(AudioSource Source, float duration, float targetVolume ) {
 		if(!Source) { yield break; }
 		float initialVolume = Source.volume;

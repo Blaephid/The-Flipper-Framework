@@ -59,6 +59,9 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 
 	public float pitchBendingRate = 1;
 
+	[Header("Additional SFX")]
+	public GameObject _LevelUpSound;
+
 
 	#region VoiceSource
 
@@ -213,6 +216,14 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 			BoostSource2.clip = Spin;
 			BoostSource2.Play();
 		}
+	}
+
+	#endregion
+
+	#region AdditionalSFX
+
+	public void PlayLevelUpSound () {
+		Instantiate(_LevelUpSound, transform.position, transform.rotation);
 	}
 
 	#endregion

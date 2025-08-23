@@ -45,11 +45,11 @@ public class S_PullItems : MonoBehaviour
 	//Generates a sh=phere with size based on current speed, and any ring caught in it is added to be pulled towards the character for the next frames.
 	public void SearchForRingsNearby () {
 
-		Collider[] rings = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerVel._horizontalSpeedMagnitude / _PlayerPhys._PlayerMovement._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
-		for (int i = 0 ; i < rings.Length ; i++)
+		Collider[] pickups = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerVel._horizontalSpeedMagnitude / _PlayerPhys._PlayerMovement._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
+		for (int i = 0 ; i < pickups.Length ; i++)
 		{
 			//The Pullcol should be a child of the object, not its main collider, so get the parent.
-			Transform ring = rings[i].transform.parent;
+			Transform ring = pickups[i].transform.parent;
 
 			if (ring.TryGetComponent(out Rigidbody rb))
 			{
@@ -71,7 +71,7 @@ public class S_PullItems : MonoBehaviour
 
 			void AddToList () {
 				ring.parent = null;//This is to ensure they will remain being pulled even if their parents become inactive.
-				Destroy(rings[i]);
+				Destroy(pickups[i]);
 			}
 		}
 	}

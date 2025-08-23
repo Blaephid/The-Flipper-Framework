@@ -65,11 +65,9 @@ public class S_PlayerVelocity : S_Player_Base
 
 	#region Inherited
 
-	private void Awake () {
-		_Tools = GetComponent<S_CharacterTools>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+	public override void Awake () {
+		base.Awake();
 		_RB = GetComponent<Rigidbody>();
-		_MainSkin = _Tools.MainSkin;
 	}
 
 	/// <summary>

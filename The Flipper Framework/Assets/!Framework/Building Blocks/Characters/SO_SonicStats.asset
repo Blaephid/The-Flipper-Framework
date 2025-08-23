@@ -935,8 +935,8 @@ MonoBehaviour:
     topSpeed: 90
     maxSpeed: 160
   SpeedStats:
-    topSpeed: 100
-    maxSpeed: 160
+    topSpeed: 110
+    maxSpeed: 180
   StartSlopeStats:
     isUsingSlopePhysics: 1
     slopeEffectLimit: 0.92
@@ -1142,26 +1142,17 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.44166666
       - serializedVersion: 3
-        time: 0.148001
+        time: 0.21433401
         value: 1.2294726
-        inSlope: -1.0120953
-        outSlope: -1.0120953
+        inSlope: -0.47046843
+        outSlope: -0.47046843
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.30479956
+        outWeight: 0.6345046
       - serializedVersion: 3
-        time: 0.2738843
-        value: 0.98097605
-        inSlope: -0.6869711
-        outSlope: -0.6869711
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.9870085
-      - serializedVersion: 3
-        time: 0.5092479
-        value: 0.79762155
+        time: 0.68336594
+        value: 0.99638253
         inSlope: -0.793425
         outSlope: -0.793425
         tangentMode: 0
@@ -1169,14 +1160,14 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.5522988
       - serializedVersion: 3
-        time: 0.8031901
-        value: 0.2353742
-        inSlope: -3.2258272
-        outSlope: -3.2258272
+        time: 0.89439183
+        value: 0.07879499
+        inSlope: -1.2392635
+        outSlope: -1.2392635
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.18938246
-        outWeight: 0.20397285
+        outWeight: 0.93117476
       - serializedVersion: 3
         time: 0.98999023
         value: 0
@@ -1191,7 +1182,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     generalHillMultiplier: 0.8
     uphillMultiplier: 0.36
-    downhillMultiplier: 0.27
+    downhillMultiplier: 0.35
     SlopePowerByCurrentSpeed:
       serializedVersion: 2
       m_Curve:
@@ -1216,15 +1207,15 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0.25
         value: 3
-        inSlope: -38.067356
-        outSlope: -38.067356
+        inSlope: -12.735115
+        outSlope: -12.735115
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.060297847
-        outWeight: 0.07583907
+        outWeight: 0.28733775
       - serializedVersion: 3
-        time: 0.4384415
-        value: 1.0150815
+        time: 0.45109102
+        value: 1.1848813
         inSlope: -0.04856667
         outSlope: -0.04856667
         tangentMode: 0
@@ -1265,7 +1256,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.08
+        time: 0.05899246
         value: 0
         inSlope: 0.33930302
         outSlope: 0.33930302
@@ -1470,11 +1461,11 @@ MonoBehaviour:
     fallGravity: {x: 0, y: -1.5, z: 0}
     upGravity: {x: 0, y: -1.45, z: 0}
   RollingStats:
-    rollingDownhillBoost: 1.8
+    rollingDownhillBoost: 2
     rollingUphillBoost: 2.4
-    rollingStartSpeed: 5
-    rollingTurningModifier: 0.8
-    rollingLandingBoost: 1.4
+    rollingStartSpeed: 10
+    rollingTurningModifier: 0.7
+    rollingLandingBoost: 1.5
     minRollingTime: 0.4
   StartRollingStats:
     rollingDownhillBoost: 1.9

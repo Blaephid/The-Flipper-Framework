@@ -233,12 +233,14 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		//If ball enabled, disable the animator so its sounds don't overlap.
 		if (_SpinDashBall.enabled)
 		{
+			_Effects.EnableLesserTrails(false, true);
 			_CurrentAnimator = _BallAnimator;
 			_CharacterAnimator.speed = 0;
 			_CurrentSkins.Add(_SpinDashBall);
 		}
 		else
 		{
+			_Effects.EnableLesserTrails(false, false);
 			_CurrentAnimator = _CharacterAnimator;
 			_CharacterAnimator.speed = 1;
 		}

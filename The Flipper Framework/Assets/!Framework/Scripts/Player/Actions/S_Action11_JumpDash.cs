@@ -13,7 +13,6 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 	//Unity
 	#region Unity Specific Properties
 	private S_VolumeTrailRenderer _HomingTrailScript;
-	private S_Control_EffectsPlayer         _Effects;
 
 	#endregion
 
@@ -150,7 +149,7 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 		_HomingTrailScript.StartEmit(_maxDuration_ + 0.5f);
 
 		_JumpBall.SetActive(false);
-		_Effects.AirDashParticle();
+		_Effects.AirDashParticle(_Tools.transform);
 
 		_CharacterAnimator.SetInteger("Action", 11);
 		_CharacterAnimator.SetTrigger("ChangedState");
@@ -336,7 +335,6 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 	//Responsible for assigning objects and components from the tools script.
 	public override void AssignTools () {
 		base.AssignTools();
-		_Effects = _Tools.EffectsControl;
 		_HomingTrailScript = _Tools.HomingTrailScript;
 	}
 

@@ -910,22 +910,22 @@ PrefabInstance:
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.1518655
+      value: 0.40662584
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.21332045
+      value: 0.20332822
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.96446544
+      value: 0.88422024
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.03517933
+      value: -0.10708727
       objectReference: {fileID: 0}
     - target: {fileID: 2086042636681044999, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
@@ -1453,12 +1453,12 @@ PrefabInstance:
     - target: {fileID: 6625669370527078817, guid: e1180a0a56256ef48bde3844e985b3e8,
         type: 3}
       propertyPath: m_DefaultBlend.m_Time
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6625669370527078817, guid: e1180a0a56256ef48bde3844e985b3e8,
         type: 3}
       propertyPath: m_DefaultBlend.m_Style
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6625669370527078817, guid: e1180a0a56256ef48bde3844e985b3e8,
         type: 3}

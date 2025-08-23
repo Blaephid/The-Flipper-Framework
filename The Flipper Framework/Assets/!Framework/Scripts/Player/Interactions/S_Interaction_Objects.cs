@@ -223,7 +223,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 	private IEnumerator GainSphere ( Collider col ) {
 
-		Instantiate(SphereCollectParticle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity);
+		Instantiate(SphereCollectParticle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity, transform);
 		Destroy(col.gameObject);
 
 		float ThisFramesPowerCount = _CoreValues._powerCount;

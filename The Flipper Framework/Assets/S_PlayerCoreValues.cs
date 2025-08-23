@@ -192,7 +192,11 @@ public class S_PlayerCoreValues : S_Player_Base
 		_currentSpeedMultiplier = _startSpeedMultiplier_ * _Tools.LevelUpStats._Levels[index].speedMaxMultiplier;
 
 		_CoreUIElements.GaugeAnimator.SetInteger("Level", _level);
-		if(_level > 1) _CoreUIElements.GaugeAnimator.SetTrigger("LevelUp");
+		if (_level > 1)
+		{
+			_CoreUIElements.GaugeAnimator.SetTrigger("LevelUp");
+			_Sounds.PlayLevelUpSound();
+		}
 	}
 
 
