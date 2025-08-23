@@ -23,7 +23,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 436.125
+        value: 559
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -33,50 +33,8 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_SizeDelta.x
-    path: Underlay/Level Fill
-    classID: 224
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 561
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_SizeDelta.x
-    path: Underlay/Energy Fill
-    classID: 224
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 714.375
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_SizeDelta.x
-    path: Underlay/Speed Fill
+    attribute: m_AnchoredPosition.x
+    path: End Measure Anchor
     classID: 224
     script: {fileID: 0}
     flags: 0
@@ -84,18 +42,18 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 21300000, guid: aa136bce07dfb254fbfb19cd74607d89, type: 3}
+      value: {fileID: 21300000, guid: 19f3a2a88c4afa649bffb12c6b784c6d, type: 3}
     attribute: m_Sprite
-    path: Underlay/Level Fill
+    path: Shadow LX
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
     flags: 2
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 21300000, guid: 4cdcecf580d59fc4f91cfeceb5c487f6, type: 3}
+      value: {fileID: 21300000, guid: b26c2f28a4a9efb4d9cb6db216422ba2, type: 3}
     attribute: m_Sprite
-    path: Underlay/Energy Fill
+    path: Underlay LX
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
     flags: 2
@@ -104,7 +62,34 @@ AnimationClip:
     - time: 0
       value: {fileID: 21300000, guid: 3592e1ed3b1af2b40a697011d203c6b0, type: 3}
     attribute: m_Sprite
-    path: Underlay/Speed Fill
+    path: Underlay LX/Speed Fill LX
+    classID: 114
+    script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+    flags: 2
+  - serializedVersion: 2
+    curve:
+    - time: 0
+      value: {fileID: 21300000, guid: 4cdcecf580d59fc4f91cfeceb5c487f6, type: 3}
+    attribute: m_Sprite
+    path: Underlay LX/Energy Fill LX
+    classID: 114
+    script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+    flags: 2
+  - serializedVersion: 2
+    curve:
+    - time: 0
+      value: {fileID: 21300000, guid: aa136bce07dfb254fbfb19cd74607d89, type: 3}
+    attribute: m_Sprite
+    path: Underlay LX/Level Fill LX
+    classID: 114
+    script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+    flags: 2
+  - serializedVersion: 2
+    curve:
+    - time: 0
+      value: {fileID: 21300000, guid: e09556bb34ae2694697db25f6ba42b9c, type: 3}
+    attribute: m_Sprite
+    path: Overlay LX
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
     flags: 2
@@ -116,7 +101,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2613713355
+      path: 4240916376
       attribute: 2015549526
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
@@ -125,7 +110,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1004233344
+      path: 2203167449
       attribute: 2015549526
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
@@ -134,7 +119,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 3042930741
+      path: 2054090013
       attribute: 2015549526
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
@@ -143,26 +128,35 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 2613713355
-      attribute: 1967290853
-      script: {fileID: 0}
-      typeID: 224
-      customType: 28
-      isPPtrCurve: 0
+      path: 2001274823
+      attribute: 2015549526
+      script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+      typeID: 114
+      customType: 0
+      isPPtrCurve: 1
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1004233344
-      attribute: 1967290853
-      script: {fileID: 0}
-      typeID: 224
-      customType: 28
-      isPPtrCurve: 0
+      path: 4050519244
+      attribute: 2015549526
+      script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+      typeID: 114
+      customType: 0
+      isPPtrCurve: 1
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 3042930741
-      attribute: 1967290853
+      path: 538705980
+      attribute: 2015549526
+      script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+      typeID: 114
+      customType: 0
+      isPPtrCurve: 1
+      isIntCurve: 0
+      isSerializeReferenceCurve: 0
+    - serializedVersion: 2
+      path: 386724762
+      attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
@@ -170,9 +164,12 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 21300000, guid: aa136bce07dfb254fbfb19cd74607d89, type: 3}
-    - {fileID: 21300000, guid: 4cdcecf580d59fc4f91cfeceb5c487f6, type: 3}
+    - {fileID: 21300000, guid: 19f3a2a88c4afa649bffb12c6b784c6d, type: 3}
+    - {fileID: 21300000, guid: b26c2f28a4a9efb4d9cb6db216422ba2, type: 3}
     - {fileID: 21300000, guid: 3592e1ed3b1af2b40a697011d203c6b0, type: 3}
+    - {fileID: 21300000, guid: 4cdcecf580d59fc4f91cfeceb5c487f6, type: 3}
+    - {fileID: 21300000, guid: aa136bce07dfb254fbfb19cd74607d89, type: 3}
+    - {fileID: 21300000, guid: e09556bb34ae2694697db25f6ba42b9c, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -200,7 +197,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 436.125
+        value: 559
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -210,50 +207,8 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_SizeDelta.x
-    path: Underlay/Level Fill
-    classID: 224
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 561
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_SizeDelta.x
-    path: Underlay/Energy Fill
-    classID: 224
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 714.375
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_SizeDelta.x
-    path: Underlay/Speed Fill
+    attribute: m_AnchoredPosition.x
+    path: End Measure Anchor
     classID: 224
     script: {fileID: 0}
     flags: 0

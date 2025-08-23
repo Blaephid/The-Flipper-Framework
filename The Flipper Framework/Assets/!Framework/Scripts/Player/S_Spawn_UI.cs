@@ -21,6 +21,7 @@ public class S_Spawn_UI : MonoBehaviour
 	public struct StrucCoreUIElements
 	{
 		[Header("Gauge")]
+		public Animator         GaugeAnimator;
 		public TextMeshProUGUI  HealthyRingsCounter;
 		public TextMeshProUGUI  DangerousRingsCounter;
 		public Image                    EnergyBar;

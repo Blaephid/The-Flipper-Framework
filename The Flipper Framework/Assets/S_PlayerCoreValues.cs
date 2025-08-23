@@ -162,6 +162,8 @@ public class S_PlayerCoreValues : S_Player_Base
 	public void AdjustRings ( int change ) {
 		_ringCount += change;
 		_ringCount = Mathf.Clamp(_ringCount, 0, _currentMaxRings);
+
+		if(change > 0) _CoreUIElements.GaugeAnimator.SetTrigger("GetRing");
 	}
 
 	public void AdjustPower ( float change ) {
@@ -172,7 +174,7 @@ public class S_PlayerCoreValues : S_Player_Base
 	}
 
 	private void CheckLevels () {
-		if (_powerCount < _currentPowerNeedForNextLevel) { return; }
+		if (_powerCount < _currentPowerNeedForNextLevel && _currentPowerNeedForNextLevel != 0) { return; }
 		if(_level == _Tools.LevelUpStats._Levels.Count + 1 ) { return; }
 
 		LevelUp();
@@ -189,6 +191,8 @@ public class S_PlayerCoreValues : S_Player_Base
 		_currentMaxRings = (int)(_startMaxRings_ * _Tools.LevelUpStats._Levels[index].ringsMaxMultiplier);
 		_currentSpeedMultiplier = _startSpeedMultiplier_ * _Tools.LevelUpStats._Levels[index].speedMaxMultiplier;
 
+		_CoreUIElements.GaugeAnimator.SetInteger("Level", _level);
+		if(_level > 1) _CoreUIElements.GaugeAnimator.SetTrigger("LevelUp");
 	}
 
 

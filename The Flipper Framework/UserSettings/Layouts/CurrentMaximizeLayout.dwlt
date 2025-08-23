@@ -25,7 +25,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 24072
+  controlID: 107266
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -193,9 +193,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 0ac50000
+      m_SelectedIDs: 0cc40000
       m_LastClickedID: 0
-      m_ExpandedIDs: 2e03f5ffbc85f8ff30da02003cda020044da02008eda020094da0200deda0200e2da020018db02001cdb020052dc020056dc020058dc020060dc020062dc020068dc020074dc020078dc02007edc020084dc02008cdc02008edc020092dc02009cdc0200a0dc0200a2dc0200a4dc0200aadc0200acdc020012dd020024dd02002cdd020050dd0200
+      m_ExpandedIDs: ee5df0ff2471f0ff36caf4ff567805006a78050072780500b8780500ba780500e0780500047905000a7905000e790500487905007e7a0500827a0500847a05008c7a05008e7a0500947a0500a07a0500a47a0500aa7a0500b07a0500b87a0500ba7a0500be7a0500c87a0500cc7a0500ce7a0500d07a0500d67a0500d87a0500407b0500587b0500827b0500
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -300,7 +300,7 @@ MonoBehaviour:
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
     m_Text: Inspector
-    m_Image: {fileID: -440750813802333266, guid: 0000000000000000d000000000000000,
+    m_Image: {fileID: -2667387946076563598, guid: 0000000000000000d000000000000000,
       type: 0}
     m_Tooltip: 
     m_TextWithWhitespace: "Inspector\u200B"
@@ -873,9 +873,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 291.91336, y: 1070.7964, z: 2.193313}
+    m_Target: {x: 764.1864, y: 1031.2231, z: 0.7019612}
     speed: 2
-    m_Value: {x: 291.91336, y: 1070.7964, z: 2.193313}
+    m_Value: {x: 764.1864, y: 1031.2231, z: 0.7019612}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -908,7 +908,7 @@ MonoBehaviour:
         m_Value: 0
       m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
       m_Pivot: {x: 0, y: 0, z: 0}
-      m_Size: {x: 20, y: 20}
+      m_Size: {x: 28, y: 28}
     zGrid:
       m_Fade:
         m_Target: 1
@@ -925,9 +925,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 253.38582
+    m_Target: 283.63046
     speed: 2
-    m_Value: 253.38582
+    m_Value: 283.63046
   m_Ortho:
     m_Target: 1
     speed: 2
