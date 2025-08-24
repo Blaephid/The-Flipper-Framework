@@ -411,7 +411,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
 			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
 			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
-				TriggerBonk(-_PlayerVel._previousVelocity[1].normalized, point, normal);
+				PerformBonk(-_PlayerVel._previousVelocity[1].normalized, point, normal);
 				break;
 			default:
 				//Trigger the 3 frame delay, ensuring player can't move or rotate until it is over.
@@ -429,7 +429,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 				//If still not in a wallrunning state or been hurt, then rebound off the wall.
 				if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Hurt)
 				{
-					TriggerBonk(-_PlayerVel._previousVelocity[3].normalized, point, normal);
+					PerformBonk(-_PlayerVel._previousVelocity[3].normalized, point, normal);
 				}
 				break;
 		}
@@ -437,11 +437,12 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 	#endregion
 
-	private void TriggerBonk(Vector3 backwardsDirection, Vector3 point, Vector3 normal ) {
+	private void PerformBonk(Vector3 backwardsDirection, Vector3 point, Vector3 normal ) {
 		_HurtAction._knockbackDirection = backwardsDirection;
 		_HurtAction._wasHit = false;
 
 		_Effects.SpawnBonkParticle(point, normal);
+		_Effects.EnableLargeTrail(0);
 
 		_Actions._ActionHurt.StartAction();
 	}

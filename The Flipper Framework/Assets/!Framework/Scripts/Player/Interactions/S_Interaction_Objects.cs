@@ -25,7 +25,8 @@ public class S_Interaction_Objects : S_Player_Base
 
 	private S_Handler_CharacterAttacks      _AttackHandler;
 	private S_Handler_HealthAndHurt         _HurtAndHealth;
-	private S_Interaction_Triggers  _TriggerInteraction;
+	private S_Interaction_Triggers		_TriggerInteraction;
+	private S_Control_EffectsPlayer		_Effects;
 
 	//External
 	private GameObject                       _PlatformAnchor;
@@ -76,7 +77,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 
 	private void FixedUpdate () {
-
+		
 		//For tracking wind forces
 		_currentWindDirection = Vector3.zero;
 		_windCounter = 0;
@@ -410,6 +411,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 		//Effects
 		ObjectRotatesCamera(Col, SpeedPadScript._cameraEffect);
+		if(speed > 100) { _Effects.TriggerBlurBurstScreen(); }
 
 		//Player visual
 		_CharacterAnimator.SetBool("Grounded", true);
@@ -757,6 +759,8 @@ public class S_Interaction_Objects : S_Player_Base
 
 		_MainSkin = _Tools.MainSkin;
 		_CharacterAnimator = _Tools.CharacterAnimator;
+
+		_Effects = _Tools.EffectsControl;
 	}
 
 	public override void AssignStats () {

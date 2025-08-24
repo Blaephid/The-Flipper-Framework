@@ -242,6 +242,8 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 			//Effects
 			_Sounds.SpinDashReleaseSound();
 			StopEffect(1);
+			
+			if(_Actions._charge > 100 || (_Actions._charge > 50 && _PlayerVel._horizontalSpeedMagnitude > 80)) _Effects.TriggerBlurBurstScreen();
 
 			//New speed to gain is determined by charge but affected by -
 			Vector3 addForce = _PlayerSkinTransform.forward;
