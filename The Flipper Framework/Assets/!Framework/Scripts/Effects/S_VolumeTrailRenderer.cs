@@ -32,7 +32,7 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 	}
 
 	private bool emit = true;
-	public float emitTime = 0.00f;
+	public float _trailEmitTime = 0.00f;
 	public bool autoDestruct = false;
 	public Material defaultMaterial;
 	public Material specialMaterial;
@@ -57,6 +57,8 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 	internal bool fadeOut;
 	internal float fadeBias;
 
+
+	Action _OnDisable;
 	void Reset () {
 		GetComponent<MeshFilter>().hideFlags = HideFlags.HideInInspector;
 		meshRenderer.hideFlags = HideFlags.HideInInspector;
@@ -72,15 +74,17 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 		meshRenderer.material = defaultMaterial;
 	}
 
-	public void StartEmit(float time, bool special = false ) {
+	public void StartEmit(float time, Action OnDisable, bool special = false ) {
+		_OnDisable = OnDisable;
+
 		if(time > 0)
 		{
 			if (special) { meshRenderer.material = specialMaterial; inUseColorOverLifeTime = specialColorOverLifeTime; }
 			else { meshRenderer.material = defaultMaterial; inUseColorOverLifeTime = baseColorOverLifeTime; }
 		}
 
-		emitTime = time;
-		emit = time != 0;
+		_trailEmitTime = time;
+		emit = true;
 
 	}
 
@@ -96,16 +100,17 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 
 		GetComponent<Renderer>().enabled = vertices.Count <= 2 ? false : true;
 
-		if (emit && emitTime >= 0)
+		if (emit && _trailEmitTime >= 0)
 		{
-			emitTime -= Time.deltaTime;
-			if (emitTime <= 0)
+			_trailEmitTime -= Time.deltaTime;
+			if (_trailEmitTime <= 0)
 			{
-				emitTime = -1;
+				_trailEmitTime = -1;
 			}
-			if (emitTime < 0)
+			if (_trailEmitTime < 0)
 			{
 				emit = false;
+				if(_OnDisable != null) _OnDisable.Invoke();
 			}
 		}
 

@@ -74,14 +74,11 @@ public class S_CharacterTools : MonoBehaviour
 	public S_Control_SoundsPlayer           SoundControl;
 	public S_Control_EffectsPlayer  EffectsControl;
 
-	[Header("Particles")]
-	public ParticleSystem   DropEffect;
-
 	[Header("Effects")]
-	public S_VolumeTrailRenderer            HomingTrailScript;
 	public GameObject               HomingTrailContainer;
 	public GameObject               HomingTrail;
 	public GameObject             BoostCone;
+	public ParticleSystem   DropEffect;
 
 	//Sets missing or hidden tools when spawned by SpawnCharacter
 	private void Awake () {

@@ -17,8 +17,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	private Transform			_PlayerSkinTransform;
 	private Transform                       _MainCamera;
-
-	private S_VolumeTrailRenderer  _HomingTrailScript;
 	#endregion
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
@@ -200,12 +198,12 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	private void StartEffect () {
 		_trailInEffect = true;
-		_HomingTrailScript.StartEmit(100, false);
+		_Effects.EnableLargeTrail(100, false);
 	}
 
 	private void StopEffect (float delay) {
 		_trailInEffect = false;
-		_HomingTrailScript.StartEmit(delay, false);
+		_Effects.EnableLargeTrail(delay, false);
 	}
 
 	//Once button is release, wait for a bit before launching, checking each frame for if the button is pressed again.
@@ -388,7 +386,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	public override void AssignTools () {
 		base.AssignTools();
 		_MainCamera = Camera.main.transform;
-		_HomingTrailScript = _Tools.HomingTrailScript;
 
 		_PlayerSkinTransform = _Tools.CharacterModelOffset;
 	}

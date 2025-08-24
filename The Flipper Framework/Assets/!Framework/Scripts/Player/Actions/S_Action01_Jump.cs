@@ -266,7 +266,7 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 		_PlayerVel.SetCoreVelocity(newVel, "Overwrite");
 
 		//Add particle effect during jump
-		_Effects.AirDashParticle(_Tools.FeetPoint);
+		_Effects.SpawnAirDashParticle(_Tools.FeetPoint);
 
 	}
 

@@ -3,7 +3,7 @@ using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class S_Manager_LevelProgress : MonoBehaviour
+public class S_Manager_LevelProgress : S_Player_Base
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -17,17 +17,8 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	public static event EventHandler OnReset;
 	public static event EventHandler OnDeath;
 
-
-	private S_CharacterTools                _Tools;
+	private S_Control_EffectsPlayer _Effects;
 	private S_Handler_HealthAndHurt _HealthAndHurt;
-
-	private S_ActionManager         _Actions;
-	private S_PlayerPhysics _PlayerPhys;
-	private S_PlayerVelocity        _PlayerVel;
-	private S_Handler_Camera        _CamHandler;
-	private S_PlayerInput   _Input;
-
-	private Transform               _MainSkin;
 
 	public AudioClip                _GoalRingTouchingSound;
 
@@ -63,22 +54,17 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Awake () {
+	public override void Awake () {
+		base.Awake();
 
-
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_CamHandler = _Tools.CamHandler;
-		_Actions = _Tools._ActionManager;
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_HealthAndHurt = _Tools.GetComponent<S_Handler_HealthAndHurt>();
+		_Effects = _Tools.EffectsControl;
 
 		_MainSkin = _Tools.MainSkin;
 
 		SetCheckPoint(_Spawner.transform, _Spawner);
 
-		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
+		//_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 	}
 
 
@@ -196,7 +182,7 @@ public class S_Manager_LevelProgress : MonoBehaviour
 		_Actions._ActionDefault.StartAction();
 
 		//Ensure efffects are disabled.
-		_Tools.HomingTrailScript.StartEmit(0);
+		_Effects.EnableLargeTrail(0);
 
 		//In case was killed by something that bypassed shield.
 		_HealthAndHurt.SetShield(false);

@@ -14,7 +14,6 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_VolumeTrailRenderer _HomingTrailScript;
 	#endregion
 
 
@@ -123,7 +122,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		_Sounds.BounceStartSound();
 
 		//Makes the trail follow along behind the player
-		_HomingTrailScript.StartEmit(-1f);
+		_Effects.EnableLargeTrail(-1f);
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
@@ -140,7 +139,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		if(!_hasBounced)
 			S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
 
-		_HomingTrailScript.emitTime = 0.2f;
+		_Effects._largeTrailEmitTime = 0.2f;
 	}
 
 	#endregion
@@ -223,7 +222,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		_currentBounceForce = Mathf.Clamp(_currentBounceForce, _BounceUpSpeeds_[_Actions._bounceCount], _currentBounceForce);
 
 		//Effects
-		_HomingTrailScript.StartEmit(_currentBounceForce / 60f);
+		_Effects.EnableLargeTrail(_currentBounceForce / 60f);
 		_Sounds.BounceImpactSound();
 
 		//Set animations back to jump shape, ensuring the player is still in a ball since they'd be set to normal when grounded.
@@ -295,8 +294,6 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 	//Responsible for assigning objects and components from the tools script.
 	public override void AssignTools () {
 		base.AssignTools();
-
-		_HomingTrailScript =	_Tools.HomingTrailScript;
 	}
 
 	//Reponsible for assigning stats from the stats script.

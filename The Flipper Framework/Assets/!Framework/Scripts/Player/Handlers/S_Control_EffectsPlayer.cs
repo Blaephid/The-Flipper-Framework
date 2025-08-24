@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.VFX;
+using System;
 
 public class S_Control_EffectsPlayer : S_Player_Base
 {
@@ -8,14 +9,26 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	Camera MainCamera;
 
-	[Header("VFX")]
-	[SerializeField] GameObject  _JumpDashParticle;
-	[SerializeField] GameObject  _LesserTrails;
+	[Header("VFX to Trigger")]
+
 	[SerializeField] ParticleSystem RunningDust;
 	[SerializeField] ParticleSystem SpeedLinesCharacter;
-	[SerializeField] VisualEffect             _SpeedLinesScreen;
+
 	[SerializeField] ParticleSystem SpinDashEnergy;
 	[SerializeField] ParticleSystem RailsSparks1;
+
+	[Header("Screen VFX To Trigger")]
+	[SerializeField] VisualEffect             _SpeedLinesScreen;
+	[SerializeField] VisualEffect             _BlurBurst;
+
+	[Header("Trails")]
+	[SerializeField] GameObject  _LesserTrails;
+	[SerializeField] TrailRenderer   _DefaultSpeedTrail;
+	[SerializeField] S_VolumeTrailRenderer  _LargeSpeedTrail;
+
+	[Header("VFX to Spawn")]
+	[SerializeField] GameObject  _JumpDashParticle;
+	[SerializeField] GameObject  _BonkParticle;
 
 	[Header("Mouth Sides")]
 	Transform _Head;
@@ -26,21 +39,19 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	public float SpeedLinesThreshold;
 
 	//Trackers
-	private bool _canShowLesserTrails;
+	private bool _canShowLesserTrails = true;
+	private bool _canShowDefaultTrail = true;
+	[NonSerialized] public float _largeTrailEmitTime;
 
 	private void Start () {
 		SpinDashEnergy.Stop();
 		RailsSparks1.Stop();
+		_BlurBurst.gameObject.SetActive(false);
 	}
 
 	void Update () {
 
 		HandleMouths();
-
-		if (_PlayerVel._currentRunningSpeed > RunningDustThreshold && _PlayerPhys._isGrounded && RunningDust != null)
-		{
-			RunningDust.Emit(Random.Range(0, 20));
-		}
 
 		HandleSpeedLinesOnCharacter();
 		HandleSpeedLinesOnScreen();
@@ -65,19 +76,13 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	}
 
-	private void HandleTrailsOnCharacter () {
-
-		if(!_canShowLesserTrails) { return; }
-			EnableLesserTrails(_PlayerVel._speedMagnitudeSquared > 40 * 40 && _PlayerVel._horizontalSpeedMagnitude > 10, false);
-	}
-
 	//Controls and activates the anime style speedlines on the screen edges based on speed.
 	private void HandleSpeedLinesOnScreen () {
 		if (_PlayerVel._horizontalSpeedMagnitude > 50)
 		{
 			//Sets the scale of the effect to fit the camera fov
-			float zOffset = (MainCamera.transform.InverseTransformPoint(_SpeedLinesScreen.transform.position)).z;
-			Vector2 newScale = S_S_Objects.GetScaleToFitCameraBounds(MainCamera, zOffset, _SpeedLinesScreen.transform, true);
+			//float zOffset = (MainCamera.transform.InverseTransformPoint(_SpeedLinesScreen.transform.position)).z;
+			//Vector2 newScale = S_S_Objects.GetScaleToFitCameraBounds(MainCamera, zOffset, _SpeedLinesScreen.transform, true);
 
 			float intensity = Mathf.Min(_PlayerVel._horizontalSpeedMagnitude / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
 			intensity = Mathf.Max(Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)) - intensity, intensity - Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)));
@@ -89,7 +94,29 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		}
 	}
 
+	private void HandleTrailsOnCharacter () {
 
+		DefaultTrail();
+		LesserTrails();
+		return;
+
+		void DefaultTrail () {
+			if (_canShowDefaultTrail)
+			{
+				if (_PlayerVel._horizontalSpeedMagnitude > 60)
+				{
+					_DefaultSpeedTrail.emitting = true;
+					return;
+				}
+			}
+			_DefaultSpeedTrail.emitting = false;
+		}
+
+		void LesserTrails () {
+			if (!_canShowLesserTrails) { return; }
+			EnableLesserTrails(_PlayerVel._speedMagnitudeSquared > 40 * 40 && _PlayerVel._horizontalSpeedMagnitude > 10, false);
+		}
+	}
 
 
 	//Public
@@ -98,6 +125,17 @@ public class S_Control_EffectsPlayer : S_Player_Base
 			_LesserTrails.SetActive(enable);
 
 		_canShowLesserTrails = !locked;
+	}
+
+	public void EnableLargeTrail ( float time, bool special = false ) {
+		_LargeSpeedTrail.StartEmit(time, DisableLargeTrail, special);
+
+		_DefaultSpeedTrail.emitting = false;
+		_canShowDefaultTrail = false;
+	}
+
+	public void DisableLargeTrail () {
+		_canShowDefaultTrail = true;
 	}
 
 	public void HandleSpinDashEffect ( int amm, float speed, float currentCharge, float maxCharge ) {
@@ -132,21 +170,6 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		SpinDashEnergy.gameObject.SetActive(false);
 	}
 
-	//Spawn an instance of the air dash particle, which is not locked onto the character.
-	public void AirDashParticle ( Transform characterReferencePoint ) {
-		GameObject JumpDashParticleClone = Instantiate(_JumpDashParticle, characterReferencePoint.position, Quaternion.identity) as GameObject;
-
-		//Affect by player speed.
-		if (_PlayerVel._speedMagnitudeSquared > Mathf.Pow(100, 2))
-		{
-			float scale = _PlayerVel._speedMagnitudeSquared / Mathf.Pow(100,2);
-			JumpDashParticleClone.transform.localScale = Vector3.one * scale;
-		}
-
-		JumpDashParticleClone.transform.position = characterReferencePoint.position;
-		JumpDashParticleClone.transform.rotation = characterReferencePoint.rotation;
-	}
-
 	public void HandleGrindSparks ( float speed ) {
 
 		//Activate or deactivate effect
@@ -162,6 +185,37 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 		Main.startSpeed = Mathf.Clamp(speed * 0.3f, 20, 60);
 
+	}
+
+
+	//Spawn
+
+	//Spawn an instance of the air dash particle, which is not locked onto the character.
+	public void SpawnAirDashParticle ( Transform characterReferencePoint ) {
+		GameObject JumpDashParticleClone = Instantiate(_JumpDashParticle, characterReferencePoint.position, characterReferencePoint.rotation);
+
+		//Affect by player speed.
+		if (_PlayerVel._speedMagnitudeSquared > Mathf.Pow(100, 2))
+		{
+			float scale = _PlayerVel._speedMagnitudeSquared / Mathf.Pow(100,2);
+			JumpDashParticleClone.transform.localScale = Vector3.one * scale;
+		}
+	}
+
+	public void SpawnBonkParticle ( Vector3 position, Vector3 normal ) {
+		GameObject BonkParticleClone = Instantiate(_BonkParticle, position, Quaternion.LookRotation(normal)) ;
+	}
+
+
+	//Trigger Screen
+
+	public void TriggerBlurBurstScreen () {
+		Vector2 screenPosition = MainCamera.WorldToViewportPoint(_PlayerPhys._CharacterCenterPosition);
+		Debug.Log(screenPosition);
+
+		_BlurBurst.gameObject.SetActive(false);
+		_BlurBurst.gameObject.SetActive(true);
+		_BlurBurst.SetVector3("Screen Position", screenPosition);
 	}
 
 	#endregion

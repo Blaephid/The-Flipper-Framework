@@ -21,6 +21,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	//Represent the effect
 	private GameObject                      _BoostCone;
 	private MeshRenderer[]                  _ListOfSubCones;
+	private Animator                        _BoostConeAnimator;
 
 	#endregion
 
@@ -177,7 +178,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 			_canBoostBecauseHasntBoostedInAir = false; //This will prevent the boost being used again until grounded.
 			_CharacterAnimator.SetInteger("Action", 11);
 			_CharacterAnimator.SetTrigger("ChangedState");
-			
+
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_)); //Starts air boost parameters rather than normal boost.
 			_PlayerVel.SetBothVelocities(_faceDirection * _currentSpeed, new Vector2(1, 0));
 		}
@@ -199,11 +200,12 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
 			_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2, 0.5f, "Boost")); //The camera will fall back before catching up.
 
+		_Effects.TriggerBlurBurstScreen();
 		_Sounds.BoostStartSound();
 
 		//Make the boost effects fade in rather than appear instantly.
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
-		StartCoroutine(SetBoostEffectVisibility(0, 1, 8));
+		StartCoroutine(SetBoostEffectVisibility(0, 1, 20));
 	}
 	#endregion
 
@@ -289,7 +291,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 		//Effects
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
-		StartCoroutine(SetBoostEffectVisibility(1, 0.1f, 12));
+		StartCoroutine(SetBoostEffectVisibility(1, 0.1f, 30));
 		_Sounds.BoostSource2.Stop();
 	}
 
@@ -324,7 +326,12 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 	//Called when starting or ending a boost, and will over time cause the boost effect to fade in. 
 	private IEnumerator SetBoostEffectVisibility ( float startAlpha, float setAlpha, float frames ) {
-		if (setAlpha > 0.5f) { _BoostCone.SetActive(true); } //If fading in, the effect should become active, enabling visibility, before increasing alpha.
+		if (setAlpha > 0.5f)
+		{
+			//If fading in, the effect should become active, enabling visibility, before increasing alpha.
+			_BoostCone.SetActive(true);
+			_BoostConeAnimator.SetTrigger("BoostEnter");
+		}
 
 		float segments = 1 / frames;
 		float lerpValue = startAlpha;
@@ -403,10 +410,10 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 	}
 
 	//Ensures there will always be an input forwards if nothing else.
-	private Vector3 EnforceForwards (Vector3 input = default(Vector3)) {
+	private Vector3 EnforceForwards ( Vector3 input = default(Vector3) ) {
 		Vector3 localFaceDirection = _PlayerPhys.GetRelevantVector(_faceDirection, true);
 		if (_PlayerMovement._moveInput.sqrMagnitude < 0.1f) { _PlayerMovement._moveInput = localFaceDirection; }
-		
+
 		if (input.sqrMagnitude < 0.1f) { input = localFaceDirection; }
 		return input;
 	}
@@ -580,6 +587,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 		_BoostCone = _Tools.BoostCone;
 		_BoostCone.SetActive(false);
+		_BoostConeAnimator = _BoostCone.GetComponent<Animator>();
 	}
 	#endregion
 }

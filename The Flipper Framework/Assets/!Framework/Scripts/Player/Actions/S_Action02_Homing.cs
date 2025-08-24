@@ -14,7 +14,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_VolumeTrailRenderer  _HomingTrailScript;
 	private S_Handler_HomingAttack _HomingHandler;
 
 	[HideInInspector]
@@ -203,12 +202,12 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 			if(_HomingHandler._timeOnThisTarget > _timesForPerfectHomingAttack_.x && _HomingHandler._timeOnThisTarget < _timesForPerfectHomingAttack_.y)
 			{	
 				_Sounds.HomingAttackSound(true);
-				_HomingTrailScript.StartEmit(_homingTimerLimit_ + 0.06f, true);
+				_Effects.EnableLargeTrail(_homingTimerLimit_ + 0.06f, true);
 				_CoreValues.AdjustEnergy(_energyFromPerfect_);
 				_CoreValues.AdjustPower(_powerFromPerfect_);
 				return _speedMultiplierFromPerfect_;
 			}
-			_HomingTrailScript.StartEmit(_homingTimerLimit_ + 0.06f);
+			_Effects.EnableLargeTrail(_homingTimerLimit_ + 0.06f);
 			_Sounds.HomingAttackSound(false);
 			return 1;
 		}
@@ -437,7 +436,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_HomingHandler._PreviousTarget = null;
 
 		//Effects
-		_HomingTrailScript.emitTime = 0.1f;
+		_Effects._largeTrailEmitTime = 0.1f;
 
 		if (_Actions._jumpCount > 0)
 			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount - 1, 1, _Actions._jumpCount); //Allows double jumping again after a hit
@@ -524,7 +523,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 	public override void AssignTools () {
 		base.AssignTools();
 		_HomingHandler = GetComponent<S_Handler_HomingAttack>();
-		_HomingTrailScript = _Tools.HomingTrailScript;
 	}
 
 	//Reponsible for assigning stats from the stats script.

@@ -29,6 +29,8 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 	private CapsuleCollider _CharacterCapsule;
 	private GameObject            _ShieldObject;
 
+	private S_Control_EffectsPlayer _Effects;
+
 	[HideInInspector]
 	public Image        _FadeOutImage;
 
@@ -395,12 +397,12 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			float intoAngle = Vector3.Angle(movingDirection, wallHit.normal); //Difference between the player movement direction and wall they're going into. 180 means running straight into a wall facing directily flat on.
 			float surfaceAngle = Vector3.Angle(transform.up, wallHit.normal); //Difference between character upwards direction and surface upwards direction
 			if (directionAngle < 80 && surfaceAngle > 60 && intoAngle > 165)
-				StartCoroutine(DelayBonk());
+				StartCoroutine(DelayBonk(wallHit.point, wallHit.normal));
 		}
 	}
 
 	//Since wall climbing and running are based on running into walls, this gives those a chance before bonking.
-	IEnumerator DelayBonk () {
+	IEnumerator DelayBonk (Vector3 point, Vector3 normal) {
 		Vector3 rememberDirection = _MainSkin.forward; //Saves the direction so the player can't rotate from it until bonk is over
 		float rememberSpeed = _PlayerVel._horizontalSpeedMagnitude;
 
@@ -409,9 +411,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
 			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
 			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
-				_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
-				_HurtAction._wasHit = false;
-				_Actions._ActionHurt.StartAction();
+				TriggerBonk(-_PlayerVel._previousVelocity[1].normalized, point, normal);
 				break;
 			default:
 				//Trigger the 3 frame delay, ensuring player can't move or rotate until it is over.
@@ -429,15 +429,22 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 				//If still not in a wallrunning state or been hurt, then rebound off the wall.
 				if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Hurt)
 				{
-					_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[3].normalized;
-					_HurtAction._wasHit = false;
-					_Actions._ActionHurt.StartAction();
+					TriggerBonk(-_PlayerVel._previousVelocity[3].normalized, point, normal);
 				}
 				break;
 		}
 	}
 
 	#endregion
+
+	private void TriggerBonk(Vector3 backwardsDirection, Vector3 point, Vector3 normal ) {
+		_HurtAction._knockbackDirection = backwardsDirection;
+		_HurtAction._wasHit = false;
+
+		_Effects.SpawnBonkParticle(point, normal);
+
+		_Actions._ActionHurt.StartAction();
+	}
 
 	/// <summary>
 	/// Public ----------------------------------------------------------------------------------
@@ -603,6 +610,8 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 		_Attacks = _Actions._ObjectForInteractions.GetComponent<S_Handler_CharacterAttacks>();
 		_HurtAction = _Actions._ObjectForActions.GetComponent<S_Action04_Hurt>();
+
+		_Effects = _Tools.EffectsControl;
 
 		_FadeOutImage = _Tools.UISpawner._BaseUIElements.FadeOutBox;
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
