@@ -12,7 +12,9 @@ public class S_CustomPlayerTriggers : MonoBehaviour
 
 	private void OnValidate () {
 		//Update components based on the enum
+#if UNITY_EDITOR
 		Collider = S_S_Editor.HandleColliderComponentsByEnum(gameObject, _whatTriggerShape);
+#endif
 		Collider.enabled = false;
 	}
 	private void FixedUpdate () {

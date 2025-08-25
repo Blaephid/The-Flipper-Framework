@@ -336,6 +336,8 @@ public class S_S_Editor : MonoBehaviour
 		return childObject;
 	}
 
+#if UNITY_EDITOR
+
 	public static Collider HandleColliderComponentsByEnum(GameObject gameObject, S_EditorEnums.ColliderTypes colliderType) {
 		switch (colliderType)
 		{
@@ -362,18 +364,22 @@ public class S_S_Editor : MonoBehaviour
 		}
 	}
 
+#endif
+
 	public static UnityEngine.Component AddComponentIfMissing ( GameObject Target, Type Component ) {
 		UnityEngine.Component Comp = Target.GetComponent(Component);
 		if (!Comp) { return Target.AddComponent(Component); }
 		return Comp;
 	}
 
+#if UNITY_EDITOR
 	public static void FindAndRemoveComponent ( GameObject Target, Type Component, bool immediate ) {
 		if (!Target.GetComponent(Component)) { return; }
 
 		DestroyFromOnValidate(Target.GetComponent(Component));
 
 	}
+#endif
 
 	public static bool CheckCallerMethodsFor ( string callerMethodName ) {
 
