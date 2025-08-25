@@ -74,14 +74,13 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 		meshRenderer.material = defaultMaterial;
 	}
 
-	public void StartEmit(float time, Action OnDisable, bool special = false ) {
+	public void StartEmit ( float time, Action OnDisable, bool special = false ) {
 		_OnDisable = OnDisable;
 
-		if(time > 0)
-		{
-			if (special) { meshRenderer.material = specialMaterial; inUseColorOverLifeTime = specialColorOverLifeTime; }
-			else { meshRenderer.material = defaultMaterial; inUseColorOverLifeTime = baseColorOverLifeTime; }
-		}
+
+		if (special) { meshRenderer.material = specialMaterial; inUseColorOverLifeTime = specialColorOverLifeTime; }
+		else { meshRenderer.material = defaultMaterial; inUseColorOverLifeTime = baseColorOverLifeTime; }
+
 
 		_trailEmitTime = time;
 		emit = true;
@@ -110,7 +109,7 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 			if (_trailEmitTime < 0)
 			{
 				emit = false;
-				if(_OnDisable != null) _OnDisable.Invoke();
+				if (_OnDisable != null) _OnDisable.Invoke();
 			}
 		}
 
@@ -225,12 +224,6 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 			mesh.RecalculateNormals();
 			mesh.uv = uvs;
 		}
-	}
-
-	public void Emit ( float lifetime = 0.5f ) {
-		emit = true;
-		lifeTime = lifetime;
-		fadeBias = 1.0f;
 	}
 
 	void CalculateVertexColors () {

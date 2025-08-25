@@ -1476,7 +1476,7 @@ MonoBehaviour:
     minRollingTime: 0.4
   SkiddingStats:
     angleToPerformSkid: 130
-    angleToPerformSpinSkid: 140
+    angleToPerformSpinSkid: 180
     angleToPerformHomingSkid: 130
     canSkidInAir: 1
     shouldSkiddingDisableTurning: 1
@@ -1850,9 +1850,11 @@ MonoBehaviour:
     powerGained: 1
   SpinChargeStats:
     whatAimMethod: 0
+    forceTowardsGround: {x: 2, y: 0}
+    stickingLerps: {x: 0, y: 0}
     chargingSpeed: 1.1
-    tappingBonus: 2.5
-    delayBeforeLaunch: 11
+    tappingBonus: 3
+    delayBeforeLaunch: 10
     minimunCharge: 40
     maximunCharge: 180
     releaseShakeAmmount: {x: 4, y: 0.15, z: 18, w: 14}
@@ -2055,8 +2057,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     cameraFallBack: {x: 15, y: 25, z: 0.5}
-    shouldSetRolling: 0
-    forceAgainstMovement: 1.2
+    shouldSetRolling: 1
+    forceAgainstMovement: -0.05
     SpeedLossByTime:
       serializedVersion: 2
       m_Curve:
@@ -2094,6 +2096,8 @@ MonoBehaviour:
     maximumSlopePerformedAt: -0.5
   StartSpinChargeStat:
     whatAimMethod: 0
+    forceTowardsGround: {x: 2, y: 2}
+    stickingLerps: {x: 0, y: 0}
     chargingSpeed: 1.05
     tappingBonus: 2.1
     delayBeforeLaunch: 12
@@ -2398,16 +2402,16 @@ MonoBehaviour:
     cameraFallBack: {x: 15, y: 25, z: 0.4}
   BoostStats:
     startBoostSpeed: 70
-    framesToReachBoostSpeed: 10
-    boostSpeed: 130
-    maxSpeedWhileBoosting: 170
+    framesToReachBoostSpeed: 11
+    boostSpeed: 140
+    maxSpeedWhileBoosting: 180
     regainBoostSpeed: 3
     turnCharacterThreshold: 55
     boostTurnSpeed: 2
     faceTurnSpeed: 12
-    speedLostOnEndBoost: 40
-    framesToLoseSpeed: 30
-    cooldown: 0.6
+    speedLostOnEndBoost: 25
+    framesToLoseSpeed: 25
+    cooldown: 0.8
     minTimeBoosting: 0.6
     hasAirBoost: 0
     boostFramesInAir: 55

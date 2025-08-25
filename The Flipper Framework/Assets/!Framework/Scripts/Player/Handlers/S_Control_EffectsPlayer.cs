@@ -211,7 +211,6 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	public void TriggerBlurBurstScreen () {
 		Vector2 screenPosition = MainCamera.WorldToViewportPoint(_PlayerPhys._CharacterCenterPosition);
-		Debug.Log(screenPosition);
 
 		_BlurBurst.gameObject.SetActive(false);
 		_BlurBurst.gameObject.SetActive(true);

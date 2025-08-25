@@ -358,7 +358,7 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("The magnitude of the force pushing the player into the ground while grounded. X is on flat ground, y is when ground is sloping down. This is not called with upwards slopes.")]
 		public Vector2       forceTowardsGround;
-		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (loops), and Y is positive Slopes (imagine running on the outside of a loop). ")]
+		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (starting to face up), and Y is positive Slopes (starting to face more down). ")]
 		public Vector2      stickingLerps;
 		[Range(0, 1)]
 		[Tooltip("Core: The maximum difference betwen current ground angle and movement direction that allows the player to stick. 0 means the player can't stick to the ground, 1 is everything bellow 180° difference, and 0.5 is 90° angles")]
@@ -887,6 +887,8 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucSpinCharge SetStrucSpinCharge () {
 		return new StrucSpinCharge
 		{
+			forceTowardsGround = new Vector2 (2, 0),
+			stickingLerps = new Vector2(1, 0.5f),
 			chargingSpeed = 1.05f,
 			tappingBonus = 2.1f,
 			delayBeforeLaunch = 12,
@@ -941,6 +943,10 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("Core: The means in which the spin charge will be aimed. By input means it will follow player input and velocity. Camera means it will always point in camera direction (unless camera is locked by something)")]
 		public S_GeneralEnums.SpinChargeAimingTypes whatAimMethod;
+		[Tooltip("Core: See Sticking To Ground for more info. This overwrites the value used there, allowing players to be more or less stuck to the ground in this state.")]
+		public Vector2 forceTowardsGround;
+		[Tooltip("Core: See Sticking To Ground for more info. This overwrites how much the player follows the curve of the ground. X is up, Y is down.")]
+		public Vector2 stickingLerps;
 		[Header ("Charge")]
 		[Tooltip("Surface: How much charge to gain every frame this is being performed.")]
 		public float                  chargingSpeed;

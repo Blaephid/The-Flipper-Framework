@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class S_Player_Base : MonoBehaviour
 {
-	[NonSerialized] public S_CharacterTools      _Tools;
+	public S_CharacterTools      _Tools;
 	[NonSerialized] public S_PlayerPhysics       _PlayerPhys;
 	[NonSerialized] public S_PlayerVelocity      _PlayerVel;
 	[NonSerialized] public S_ActionManager       _Actions;
@@ -21,15 +21,16 @@ public class S_Player_Base : MonoBehaviour
 	[NonSerialized] public S_Spawn_UI.StrucCoreUIElements _CoreUIElements;
 
 	public virtual void Awake () {
-		if (_Tools == null)
+		if (_PlayerPhys == null)
 		{
-			AssignTools(); //Called during start instead of awake because it gives time for tools to be acquired (such as the UI needing to be spawned).
+			AssignTools();
 			AssignStats();
 		}
 	}
 
 	public virtual void AssignTools () {
-		_Tools = GetComponentInParent<S_CharacterTools>();
+
+		if(!_Tools) _Tools = GetComponentInParent<S_CharacterTools>();
 		if (!_Tools) _Tools = GetComponent<S_CharacterTools>();
 
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();

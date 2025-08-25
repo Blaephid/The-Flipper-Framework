@@ -195,7 +195,7 @@ public class S_PlayerCoreValues : S_Player_Base
 		if (_level > 1)
 		{
 			_CoreUIElements.GaugeAnimator.SetTrigger("LevelUp");
-			_Sounds.PlayLevelUpSound();
+			_Sounds.LevelUpSound();
 		}
 	}
 

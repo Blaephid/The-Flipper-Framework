@@ -41,6 +41,8 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	private float                 _tappingBonus_;
 	private int                   _delayBeforeLaunch_;
 	private bool                  _shouldSetRolling_;
+
+	private Vector2                 _forceTowardsGroundWhileCharging_;
 	#endregion
 
 	// Trackers
@@ -114,9 +116,12 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		//Visuals & Effects
 		_Actions._ActionDefault.SwitchSkin(false);
 		_Sounds.SpinDashSound();
+		_Sounds.SpinDashRev();
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.SpinCharge);
 		enabled = true;
+
+		_PlayerPhys._forceTowardsGround_ = _forceTowardsGroundWhileCharging_;
 	}
 
 	//Called by the action manager whenever action is changing. Will only perform if enabled right now. Similar to OnDisable.
@@ -132,7 +137,9 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_PlayerPhys._isRolling = false;
 		_Effects.EndSpinDashEffect();
 
-		if (_isActive) { StopEffect(0.1f); }
+		_PlayerPhys._forceTowardsGround_ = _Tools.Stats.GreedysStickToGround.forceTowardsGround;
+
+		if (_isActive) { StopTrailEffect(0.1f); _Sounds.SpinDashSource.Stop(); }
 	}
 
 	#endregion
@@ -164,6 +171,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		{
 			if (!_isPressedCurrently)
 			{
+				_Sounds.SpinDashRev();
 				_Actions._charge += (_spinDashChargingSpeed_ * _tappingBonus_);
 			}
 
@@ -191,7 +199,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	private void CheckEffect () {
 		if(_trailInEffect && _PlayerVel._horizontalSpeedMagnitude < 60) //Deactivate
-			StopEffect(0f);
+			StopTrailEffect(0f);
 		else if(!_trailInEffect && _PlayerVel._horizontalSpeedMagnitude > 60) //Activate
 			StartEffect();
 	}
@@ -201,7 +209,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_Effects.EnableLargeTrail(100, false);
 	}
 
-	private void StopEffect (float delay) {
+	private void StopTrailEffect (float delay) {
 		_trailInEffect = false;
 		_Effects.EnableLargeTrail(delay, false);
 	}
@@ -233,15 +241,14 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		//Only launches forwards if charged long enough.
 		if (_Actions._charge < _minimunCharge_)
 		{
-			_Sounds.GeneralSource.Stop();
-			StopEffect(0);
+			StopTrailEffect(0);
 			_Actions._ActionDefault.StartAction();
 		}
 		else
 		{
 			//Effects
 			_Sounds.SpinDashReleaseSound();
-			StopEffect(1);
+			StopTrailEffect(1);
 			
 			if(_Actions._charge > 100 || (_Actions._charge > 50 && _PlayerVel._horizontalSpeedMagnitude > 80)) _Effects.TriggerBlurBurstScreen();
 
@@ -382,8 +389,10 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_tappingBonus_ =		_Tools.Stats.SpinChargeStats.tappingBonus;
 		_delayBeforeLaunch_ =	_Tools.Stats.SpinChargeStats.delayBeforeLaunch;
 		_shouldSetRolling_ =	_Tools.Stats.SpinChargeStats.shouldSetRolling;
+		_forceTowardsGroundWhileCharging_ = _Tools.Stats.SpinChargeStats.forceTowardsGround;
 
 		_cameraPauseEffect_ =	_Tools.Stats.SpinChargeStats.cameraFallBack;
+
 	}
 	public override void AssignTools () {
 		base.AssignTools();

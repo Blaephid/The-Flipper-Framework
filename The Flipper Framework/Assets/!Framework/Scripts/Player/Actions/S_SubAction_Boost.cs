@@ -201,7 +201,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 			_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2, 0.5f, "Boost")); //The camera will fall back before catching up.
 
 		_Effects.TriggerBlurBurstScreen();
-		_Sounds.BoostStartSound();
+		_Sounds.BoostSound();
 
 		//Make the boost effects fade in rather than appear instantly.
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
@@ -292,7 +292,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		//Effects
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
 		StartCoroutine(SetBoostEffectVisibility(1, 0.1f, 30));
-		_Sounds.BoostSource2.Stop();
+		_Sounds.EndBoostSound();
 	}
 
 	//Lerps towards boost speed rather than change speed instantly. maxFrames is how many frames it will take to reach this from a speed less than the startBoostSpees stat.

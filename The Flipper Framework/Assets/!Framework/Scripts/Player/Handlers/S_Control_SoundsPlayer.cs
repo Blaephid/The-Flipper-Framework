@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class S_Control_SoundsPlayer : MonoBehaviour
+public class S_Control_SoundsPlayer : S_Player_Base
 {
-	[Header("Tools")]
-	public S_PlayerPhysics Player;
 
 	[Header("Audio Sources")]
 	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource  FeetSource;
@@ -14,43 +12,51 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource ExtraSource;
 	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource DamageSource;
 	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource VoiceSource;
-	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource BoostSource1, BoostSource2;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource BoostSource1;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource SpinDashSource;
+	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource WindSource;
+	private float _startWindSourceVolume;
+	private bool _windActive;
 
 
 	[Header("Clips")]
 	public AudioClip[] FootSteps;
 	[Header("Actions")]
 	[Header("Air")]
-	public AudioClip Jumping;
-	public AudioClip HomingAttack;
-	public AudioClip PerfectHomingAttack;
-	public AudioClip JumpDash;
-	public AudioClip BounceStart;
-	public AudioClip BounceImpact;
-	public AudioClip StompImpact;
+	public AudioClip Clip_Jump;
+	public AudioClip Clip_HomingAttack;
+	public AudioClip Clip_PerfectHomingAttack;
+	public AudioClip Clip_JumpDash;
+	public GameObject Ob_BounceStart;
+	public AudioClip Clip_BounceImpact;
+	public AudioClip Clip_StompImpact;
 
 	[Header("Grounded")]
-	public AudioClip SpinDash;
-	public AudioClip SpinDashRelease;
+	public AudioClip Clip_SpinDashLoop;
+	public AudioClip Clip_SpinDashRelease;
+	public GameObject Ob_SpinDashStart;
 
 	[Header("Sub Actions")]
-	public AudioClip Skidding;
-	public AudioClip Spin;
-	public AudioClip QuickStep;
-	public AudioClip BoostStart;
-	public AudioClip BoostRepeat;
+	public AudioClip Clip_Skid;
+	public AudioClip Clip_Roll;
+	public AudioClip Clip_Quickstep;
+	public GameObject Ob_BoostStart;
+	public AudioClip Clip_BoostLoop;
 
 	[Header("Other Actions")]
-	public AudioClip LightSpeedDash;
-	public AudioClip RailLand;
-	public AudioClip RailGrind;
+	public AudioClip Clip_RingDash;
+	public GameObject Ob_RailLand;
+	public AudioClip Clip_RailGrind;
 
 	[Header("Damage")]
-	public AudioClip RingLoss;
-	public AudioClip Die;
-	public AudioClip Spiked;
-	public AudioClip Bonk;
-	public AudioClip HitByDanger;
+	public AudioClip Clip_RingLoss;
+	public AudioClip Clip_DIe;
+	public AudioClip Clip_Spiked;
+	public AudioClip Clip_Bonk;
+	public AudioClip Clip_HitByDanger;
+
+	[Header("Additional SFX")]
+	public GameObject _LevelUpSound;
 
 	[Header("Voice")]
 	public AudioClip[] CombatVoiceClips;
@@ -59,8 +65,38 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 
 	public float pitchBendingRate = 1;
 
-	[Header("Additional SFX")]
-	public GameObject _LevelUpSound;
+
+	public override void Awake () {
+		base.Awake();
+		_startWindSourceVolume = WindSource.volume;
+		_windActive = _PlayerVel._speedMagnitudeSquared > 70 * 70;
+
+		if (!_windActive)
+		{
+			WindSource.volume = 0;
+		}
+
+	}
+
+	private void Update () {
+		if (_PlayerVel._speedMagnitudeSquared > 70 * 70)
+		{
+			if (_windActive) { return; }
+			_windActive = true;
+			StopCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, 0));
+			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, _startWindSourceVolume));
+
+			if (!WindSource.isPlaying) 
+				WindSource.Play();
+		}
+		else
+		{
+			if (!_windActive) { return; }
+			_windActive = false;
+			StopCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, _startWindSourceVolume));
+			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 1, 0));
+		}
+	}
 
 
 	#region VoiceSource
@@ -88,7 +124,7 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	//Make sure the animator component is on the same object as this script. And that this method isn't renamed.
 	public void FootStepSoundPlay () {
 		//if (FootSteps.Length > 0 && !FeetSource.isPlaying)
-		if (FootSteps.Length > 0 )
+		if (FootSteps.Length > 0)
 		{
 			int rand = Random.Range (0, FootSteps.Length);
 			FeetSource.clip = FootSteps[rand];
@@ -96,10 +132,10 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		}
 	}
 
-	public void RailGrindSound (bool overwrite = false) {
+	public void RailGrindSound ( bool overwrite = false ) {
 		if (GrindSource.isPlaying && !overwrite) { return; }
 		FeetSource.Stop();
-		GrindSource.clip = RailGrind;
+		GrindSource.clip = Clip_RailGrind;
 		GrindSource.Play();
 	}
 
@@ -115,15 +151,15 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		{
 			JumpingVoicePlay();
 		}
-		GeneralSource.clip = Jumping;
+		GeneralSource.clip = Clip_Jump;
 		GeneralSource.Play();
 	}
 	public void SkiddingSound () {
-		GeneralSource.clip = Skidding;
+		GeneralSource.clip = Clip_Skid;
 		GeneralSource.Play();
 	}
-	public void HomingAttackSound (bool perfect) {
-		GeneralSource.clip = perfect ? PerfectHomingAttack : HomingAttack;
+	public void HomingAttackSound ( bool perfect ) {
+		GeneralSource.clip = perfect ? Clip_PerfectHomingAttack : Clip_HomingAttack;
 		GeneralSource.Play();
 		if (CombatVoiceClips.Length > 0)
 		{
@@ -132,55 +168,49 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 	}
 
 	public void JumpDashSound () {
-		GeneralSource.clip = JumpDash;
+		GeneralSource.clip = Clip_JumpDash;
+		GeneralSource.loop = false;
 		GeneralSource.Play();
 	}
 	public void LightSpeedDashSound () {
-		GeneralSource.clip = LightSpeedDash;
+		GeneralSource.clip = Clip_RingDash;
+		GeneralSource.loop = false;
 		GeneralSource.Play();
 	}
 
-	public void SpinDashSound () {
-		GeneralSource.clip = SpinDash;
-		GeneralSource.Play();
-	}
-	public void BounceStartSound () {
-		GeneralSource.clip = BounceStart;
-		GeneralSource.Play();
-	}
 	public void BounceImpactSound () {
-		GeneralSource.clip = BounceImpact;
+		GeneralSource.clip = Clip_BounceImpact;
+		GeneralSource.loop = false;
 		GeneralSource.Play();
 	}
 	public void StompImpactSound () {
-		GeneralSource.clip = StompImpact;
+		GeneralSource.clip = Clip_StompImpact;
+		GeneralSource.loop = false;
 		GeneralSource.Play();
 	}
-	public void SpinDashReleaseSound () {
-		GeneralSource.clip = SpinDashRelease;
-		GeneralSource.Play();
-	}
+
 	public void QuickStepSound () {
-		GeneralSource.clip = QuickStep;
+		GeneralSource.clip = Clip_Quickstep;
+		GeneralSource.loop = false;
 		GeneralSource.Play();
 	}
 	#endregion
 
 	#region DamageSource
 	public void RingLossSound () {
-		DamageSource.clip = RingLoss;
+		DamageSource.clip = Clip_RingLoss;
 		DamageSource.Play();
 	}
 	public void HitSound () {
-		DamageSource.clip = HitByDanger;
-		DamageSource.Play ();
+		DamageSource.clip = Clip_HitByDanger;
+		DamageSource.Play();
 	}
 	public void BonkSound () {
-		DamageSource.clip = Bonk;
+		DamageSource.clip = Clip_Bonk;
 		DamageSource.Play();
 	}
 	public void DieSound () {
-		DamageSource.clip = Die;
+		DamageSource.clip = Clip_DIe;
 		if (PainVoiceClips.Length > 0)
 		{
 			PainVoicePlay();
@@ -188,42 +218,73 @@ public class S_Control_SoundsPlayer : MonoBehaviour
 		DamageSource.Play();
 	}
 	public void SpikedSound () {
-		DamageSource.clip = Spiked;
+		DamageSource.clip = Clip_Spiked;
 		DamageSource.Play();
 	}
 	#endregion
 
 	#region extraSource
-	public void RailLandSound () {
-		ExtraSource.clip = RailLand;
-		ExtraSource.Play();
-	}
+
 	#endregion
 
 	#region specificSources
 
-	public void BoostStartSound () {
-		BoostSource1.clip = BoostStart;
-		BoostSource2.clip = BoostRepeat;
-		BoostSource2.Play();
+	public void BoostSound () {
+		BoostSource1.clip = Clip_BoostLoop;
+		BoostSource1.loop = true;
 		BoostSource1.Play();
+
+		StartBoostSound();
+
+	}
+	public void EndBoostSound () {
+		BoostSource1.Stop();
 	}
 
 	public void StartRollingSound () {
 		//Wont play the sound if spin charge release is currently audible, as they conflict.
-		if (!(GeneralSource.clip == SpinDashRelease && GeneralSource.isPlaying))
+		if (!(GeneralSource.clip == Clip_SpinDashRelease && GeneralSource.isPlaying))
 		{
-			BoostSource2.clip = Spin;
-			BoostSource2.Play();
+			BoostSource1.clip = Clip_Roll;
+			BoostSource1.loop = false;
+			BoostSource1.Play();
 		}
+	}
+
+	public void SpinDashSound () {
+		SpinDashSource.clip = Clip_SpinDashLoop;
+		SpinDashSource.loop = true;
+		SpinDashSource.Play();
+	}
+
+	public void SpinDashReleaseSound () {
+		SpinDashSource.clip = Clip_SpinDashRelease;
+		SpinDashSource.loop = false;
+		SpinDashSource.Play();
 	}
 
 	#endregion
 
-	#region AdditionalSFX
+	#region SpawningSFXObjects
 
-	public void PlayLevelUpSound () {
+	public void LevelUpSound () {
 		Instantiate(_LevelUpSound, transform.position, transform.rotation);
+	}
+
+	public void SpinDashRev () {
+		Instantiate(Ob_SpinDashStart, transform.position, transform.rotation);
+	}
+
+	public void StartBoostSound () {
+		Instantiate(Ob_BoostStart, transform.position, Quaternion.identity);
+	}
+
+	public void BounceStartSound () {
+		Instantiate(Ob_BounceStart, transform.position, transform.rotation);
+	}
+
+	public void RailLandSound () {
+		Instantiate(Ob_RailLand, transform.position, transform.rotation);
 	}
 
 	#endregion
