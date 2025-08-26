@@ -78,7 +78,30 @@ public class S_Control_SoundsPlayer : S_Player_Base
 
 	}
 
+	#region update
+
 	private void Update () {
+		HandleWindSound();
+	}
+
+	private void HandleWindSound () {
+		if(_PlayerVel._speedMagnitudeSquared > 50 * 50)
+		{
+			if (!WindSource.isPlaying)
+				WindSource.Play();
+
+			//Lerp to max wind volume based on how close to maximum speed laterally or vertically.
+			float lerpAmount = (_PlayerVel._horizontalSpeedMagnitude) / _PlayerMovement._currentMaxSpeed;
+			lerpAmount = Mathf.Max(lerpAmount, (Mathf.Abs(_PlayerPhys._RB.velocity.y) + 50) / _PlayerPhys._maxFallingSpeed_);
+
+			WindSource.volume = Mathf.Lerp(0, _startWindSourceVolume, lerpAmount);
+			Debug.Log(lerpAmount + " For volume of " + WindSource.volume);
+		}
+		else
+			WindSource.volume = Mathf.Lerp(WindSource.volume, 0, 0.2f);
+	}
+
+	private void HandleWindSoundOld () {
 		if (_PlayerVel._speedMagnitudeSquared > 70 * 70)
 		{
 			if (_windActive) { return; }
@@ -86,7 +109,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 			StopCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, 0));
 			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, _startWindSourceVolume));
 
-			if (!WindSource.isPlaying) 
+			if (!WindSource.isPlaying)
 				WindSource.Play();
 		}
 		else
@@ -97,6 +120,8 @@ public class S_Control_SoundsPlayer : S_Player_Base
 			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 1, 0));
 		}
 	}
+
+	#endregion
 
 
 	#region VoiceSource

@@ -13,6 +13,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	[SerializeField] ParticleSystem RunningDust;
 	[SerializeField] ParticleSystem SpeedLinesCharacter;
+	[SerializeField] VisualEffect _SpeedLinesCharacterNew;
 
 	[SerializeField] ParticleSystem SpinDashEnergy;
 	[SerializeField] ParticleSystem RailsSparks1;
@@ -67,11 +68,26 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 		if (_PlayerVel._currentRunningSpeed > SpeedLinesThreshold && SpeedLinesCharacter != null && SpeedLinesCharacter.isPlaying == false)
 		{
-			SpeedLinesCharacter.Play();
+			//SpeedLinesCharacter.Play();
+
+			_SpeedLinesCharacterNew.Play();
+
+			Vector3 backwardsDirection = _PlayerVel._speedMagnitudeSquared > 10*10 ? -_PlayerPhys._RB.velocity.normalized : -_MainSkin.forward;
+			Vector3 eulerAngles = Quaternion.LookRotation(-backwardsDirection, transform.up).eulerAngles;
+
+			Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, backwardsDirection * 20f, Color.green);
+			Debug.Log(backwardsDirection + "For a " + eulerAngles);
+
+			//_SpeedLinesCharacterNew.SetVector3("Direction", backwardsDirection);
+			//_SpeedLinesCharacterNew.SetVector3("Up Direction", transform.up);
+			//_SpeedLinesCharacterNew.SetVector3("Euler Angles From Direction", eulerAngles);
+			float intensity = (_PlayerVel._horizontalSpeedMagnitude - (SpeedLinesThreshold *0.3f)) / _PlayerMovement._currentMaxSpeed;
+			_SpeedLinesCharacterNew.SetFloat("Intensity", intensity);
 		}
 		else if ((_PlayerVel._currentRunningSpeed < SpeedLinesThreshold - 5 && SpeedLinesCharacter.isPlaying == true) || Mathf.Abs(_PlayerVel._coreVelocity.y) > _PlayerVel._currentRunningSpeed)
 		{
 			SpeedLinesCharacter.Stop();
+			_SpeedLinesCharacterNew.Stop();
 		}
 
 	}
@@ -80,10 +96,6 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	private void HandleSpeedLinesOnScreen () {
 		if (_PlayerVel._horizontalSpeedMagnitude > 50)
 		{
-			//Sets the scale of the effect to fit the camera fov
-			//float zOffset = (MainCamera.transform.InverseTransformPoint(_SpeedLinesScreen.transform.position)).z;
-			//Vector2 newScale = S_S_Objects.GetScaleToFitCameraBounds(MainCamera, zOffset, _SpeedLinesScreen.transform, true);
-
 			float intensity = Mathf.Min(_PlayerVel._horizontalSpeedMagnitude / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
 			intensity = Mathf.Max(Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)) - intensity, intensity - Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)));
 			_SpeedLinesScreen.SetFloat("Intensity", intensity);
