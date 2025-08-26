@@ -1182,7 +1182,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     generalHillMultiplier: 0.8
     uphillMultiplier: 0.36
-    downhillMultiplier: 0.35
+    downhillMultiplier: 0.4
     SlopePowerByCurrentSpeed:
       serializedVersion: 2
       m_Curve:
@@ -1223,8 +1223,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.8312718
-        value: 1.0055498
+        time: 0.6514928
+        value: 1.0479997
         inSlope: -0.18180363
         outSlope: -0.18180363
         tangentMode: 0
@@ -1232,8 +1232,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.91554785
       - serializedVersion: 3
-        time: 1.00346
-        value: 1.2831091
+        time: 1.0118219
+        value: 2.528379
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1283,8 +1283,8 @@ MonoBehaviour:
         inWeight: 0.4257487
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.8287472
-        value: 0.82606214
+        time: 0.8120083
+        value: 0.9303178
         inSlope: -1.1196592
         outSlope: -1.1196592
         tangentMode: 0
@@ -1292,8 +1292,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.9124593
-        value: 0.51901853
+        time: 0.91664624
+        value: 0.8223022
         inSlope: -0.03771157
         outSlope: -0.03771157
         tangentMode: 0
@@ -1301,8 +1301,8 @@ MonoBehaviour:
         inWeight: 1
         outWeight: 0
       - serializedVersion: 3
-        time: 1.0041378
-        value: 0.4901306
+        time: 0.99995685
+        value: 0.7934143
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1317,7 +1317,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: -0.0008468628
-        value: 0.40056765
+        value: 0.5025574
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1325,16 +1325,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.20093316
-        value: 0.49763983
-        inSlope: 0.8240505
-        outSlope: 0.8240505
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.4441452
+        time: 0.2110138
         value: 1.006813
         inSlope: 0
         outSlope: 0
@@ -1461,7 +1452,7 @@ MonoBehaviour:
     fallGravity: {x: 0, y: -1.5, z: 0}
     upGravity: {x: 0, y: -1.45, z: 0}
   RollingStats:
-    rollingDownhillBoost: 2
+    rollingDownhillBoost: 2.4
     rollingUphillBoost: 2.4
     rollingStartSpeed: 10
     rollingTurningModifier: 0.7

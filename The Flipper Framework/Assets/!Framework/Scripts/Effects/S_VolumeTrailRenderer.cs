@@ -77,10 +77,10 @@ public class S_VolumeTrailRenderer : MonoBehaviour
 	public void StartEmit ( float time, Action OnDisable, bool special = false ) {
 		_OnDisable = OnDisable;
 
+		if(!meshRenderer) return;
 
 		if (special) { meshRenderer.material = specialMaterial; inUseColorOverLifeTime = specialColorOverLifeTime; }
 		else { meshRenderer.material = defaultMaterial; inUseColorOverLifeTime = baseColorOverLifeTime; }
-
 
 		_trailEmitTime = time;
 		emit = true;

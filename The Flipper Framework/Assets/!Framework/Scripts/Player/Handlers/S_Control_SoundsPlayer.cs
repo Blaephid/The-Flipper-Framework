@@ -95,7 +95,6 @@ public class S_Control_SoundsPlayer : S_Player_Base
 			lerpAmount = Mathf.Max(lerpAmount, (Mathf.Abs(_PlayerPhys._RB.velocity.y) + 50) / _PlayerPhys._maxFallingSpeed_);
 
 			WindSource.volume = Mathf.Lerp(0, _startWindSourceVolume, lerpAmount);
-			Debug.Log(lerpAmount + " For volume of " + WindSource.volume);
 		}
 		else
 			WindSource.volume = Mathf.Lerp(WindSource.volume, 0, 0.2f);

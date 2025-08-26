@@ -1453,12 +1453,12 @@ PrefabInstance:
     - target: {fileID: 6625669370527078817, guid: e1180a0a56256ef48bde3844e985b3e8,
         type: 3}
       propertyPath: m_DefaultBlend.m_Time
-      value: 0
+      value: 0.2647059
       objectReference: {fileID: 0}
     - target: {fileID: 6625669370527078817, guid: e1180a0a56256ef48bde3844e985b3e8,
         type: 3}
       propertyPath: m_DefaultBlend.m_Style
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6625669370527078817, guid: e1180a0a56256ef48bde3844e985b3e8,
         type: 3}

@@ -12,8 +12,8 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	[Header("VFX to Trigger")]
 
 	[SerializeField] ParticleSystem RunningDust;
-	[SerializeField] ParticleSystem SpeedLinesCharacter;
-	[SerializeField] VisualEffect _SpeedLinesCharacterNew;
+	[SerializeField] VisualEffect _SpeedLinesWind;
+	[SerializeField] VisualEffect _SpeedLinesCharacter;
 
 	[SerializeField] ParticleSystem SpinDashEnergy;
 	[SerializeField] ParticleSystem RailsSparks1;
@@ -37,7 +37,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	[Header("Values")]
 	public float RunningDustThreshold;
-	public float SpeedLinesThreshold;
+	public Vector2 _speedLinesThreshold;
 
 	//Trackers
 	private bool _canShowLesserTrails = true;
@@ -48,6 +48,8 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		SpinDashEnergy.Stop();
 		RailsSparks1.Stop();
 		_BlurBurst.gameObject.SetActive(false);
+		_SpeedLinesWind.Stop();
+		_SpeedLinesCharacter.Stop();
 	}
 
 	void Update () {
@@ -66,28 +68,22 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	private void HandleSpeedLinesOnCharacter () {
 
-		if (_PlayerVel._currentRunningSpeed > SpeedLinesThreshold && SpeedLinesCharacter != null && SpeedLinesCharacter.isPlaying == false)
-		{
-			//SpeedLinesCharacter.Play();
+		CheckIntensity(_SpeedLinesWind, _speedLinesThreshold.x);
+		CheckIntensity(_SpeedLinesCharacter, _speedLinesThreshold.y);
+		return;
 
-			_SpeedLinesCharacterNew.Play();
+		void CheckIntensity (VisualEffect lines, float threshold) {
+			if (_PlayerVel._currentRunningSpeed > threshold)
+			{
+				lines.Play();
 
-			Vector3 backwardsDirection = _PlayerVel._speedMagnitudeSquared > 10*10 ? -_PlayerPhys._RB.velocity.normalized : -_MainSkin.forward;
-			Vector3 eulerAngles = Quaternion.LookRotation(-backwardsDirection, transform.up).eulerAngles;
-
-			Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, backwardsDirection * 20f, Color.green);
-			Debug.Log(backwardsDirection + "For a " + eulerAngles);
-
-			//_SpeedLinesCharacterNew.SetVector3("Direction", backwardsDirection);
-			//_SpeedLinesCharacterNew.SetVector3("Up Direction", transform.up);
-			//_SpeedLinesCharacterNew.SetVector3("Euler Angles From Direction", eulerAngles);
-			float intensity = (_PlayerVel._horizontalSpeedMagnitude - (SpeedLinesThreshold *0.3f)) / _PlayerMovement._currentMaxSpeed;
-			_SpeedLinesCharacterNew.SetFloat("Intensity", intensity);
-		}
-		else if ((_PlayerVel._currentRunningSpeed < SpeedLinesThreshold - 5 && SpeedLinesCharacter.isPlaying == true) || Mathf.Abs(_PlayerVel._coreVelocity.y) > _PlayerVel._currentRunningSpeed)
-		{
-			SpeedLinesCharacter.Stop();
-			_SpeedLinesCharacterNew.Stop();
+				float intensity = (_PlayerVel._horizontalSpeedMagnitude - (threshold *0.3f)) / _PlayerMovement._currentMaxSpeed;
+				lines.SetFloat("Intensity", intensity);
+			}
+			else if (_PlayerVel._currentRunningSpeed < threshold - 5)
+			{
+				lines.Stop();
+			}
 		}
 
 	}

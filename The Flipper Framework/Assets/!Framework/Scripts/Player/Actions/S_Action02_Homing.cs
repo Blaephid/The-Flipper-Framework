@@ -226,6 +226,8 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		if (_isHoming)
 		{
 			_Actions.AddDashDelay(_HomingHandler._homingDelay_);
+			if (_Actions._jumpCount > 0)
+				_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount - 1, 1, _Actions._jumpCount); //Allows double jumping again after a hit
 
 			StopHoming();
 		}
