@@ -18,7 +18,9 @@ public class S_Spawn_Pickup : S_Spawners_Base
 
 		Vector3 spawnLocation =  _ringSpawnerData._TransformToFollow ? _ringSpawnerData._TransformToFollow.transform.position + _ringSpawnerData._followOffset : transform.position;
 
-		Instantiate(_SpawnerData._TeleportSparkle, spawnLocation, transform.rotation); //Effect
+		if(_SpawnerData._TeleportSparkle != null)
+			Instantiate(_SpawnerData._TeleportSparkle, spawnLocation, transform.rotation); //Effect
+
 		_ObjectClone = (GameObject)Instantiate(_SpawnerData._ObjectToSpawn, spawnLocation, transform.rotation); //Object
 
 		//Bind the spawned pickup either to a set object to follow, or to this so it is more organised in editor.

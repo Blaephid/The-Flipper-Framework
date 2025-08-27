@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder.Shapes;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
 using static Unity.VisualScripting.Member;
@@ -181,6 +182,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_)); //Starts air boost parameters rather than normal boost.
 			_PlayerVel.SetBothVelocities(_faceDirection * _currentSpeed, new Vector2(1, 0));
+
 		}
 		else
 		{
@@ -206,6 +208,9 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		//Make the boost effects fade in rather than appear instantly.
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
 		StartCoroutine(SetBoostEffectVisibility(0, 1, 20));
+
+
+		_ActionChain.AddToChain("Boost", 1, 10);
 	}
 	#endregion
 

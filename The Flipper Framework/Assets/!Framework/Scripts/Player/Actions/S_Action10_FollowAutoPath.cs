@@ -110,6 +110,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		if (_CharacterAnimator.GetInteger("Action") != 0)
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
+		_ActionChain.SetCountdownSpeed(0.1f);
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Path);
 		enabled = true;
@@ -132,6 +133,8 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		_PlayerMovement._currentMinSpeed = 0;
 		_PlayerMovement._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
 		_PlayerMovement._useFlatTurnRate = 0;
+
+		_ActionChain.SetCountdownSpeed(1f);
 	}
 
 	#endregion
@@ -256,6 +259,8 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		else
 		{
 			//Doesnt call handle air velocity because it creates its own modifiers to turn speed.
+			_PlayerPhys._timeInAir += Time.deltaTime;
+
 			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity, new Vector2(3, 0.8f));
 			_physicsCoreVelocity = _PlayerPhys.CheckGravity(_physicsCoreVelocity);
 		}

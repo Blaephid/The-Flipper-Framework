@@ -15,6 +15,7 @@ public class S_Player_Base : MonoBehaviour
 	[NonSerialized] public S_Control_SoundsPlayer _Sounds;
 	[NonSerialized] public S_PlayerCoreValues	_CoreValues;
 	[NonSerialized] public S_PlayerMovement      _PlayerMovement;
+	[NonSerialized] public S_ActionChain		_ActionChain;
 
 	[NonSerialized] public Transform             _MainSkin;
 	[NonSerialized] public Animator              _CharacterAnimator;
@@ -42,6 +43,7 @@ public class S_Player_Base : MonoBehaviour
 		_CoreValues = _Tools._CoreValues;
 		_PlayerMovement = _Tools._PlayerMove;
 		_Sounds = _Tools.SoundControl;
+		_ActionChain = _Tools.GetComponent<S_ActionChain>();
 
 		_MainSkin = _Tools.MainSkin;
 		_CharacterAnimator = _Tools.CharacterAnimator;

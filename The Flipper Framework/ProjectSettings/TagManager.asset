@@ -35,6 +35,7 @@ TagManager:
   - RailBooster
   - Music
   - Sphere
+  - Special
   layers:
   - Default
   - TransparentFX

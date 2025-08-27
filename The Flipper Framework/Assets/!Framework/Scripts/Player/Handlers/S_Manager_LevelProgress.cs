@@ -225,6 +225,8 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_respawnPosition = checkPointTransform.position;
 		_respawnForwards = checkPointTransform.forward;
 		_respawnLaunch = _Spawner && _Spawner._launch ? _Spawner._launchOnSpawnData_ :  new LaunchPlayerData();
+
+		_CoreValues.SaveValuesOnCheckpoint();
 	}
 	#endregion
 

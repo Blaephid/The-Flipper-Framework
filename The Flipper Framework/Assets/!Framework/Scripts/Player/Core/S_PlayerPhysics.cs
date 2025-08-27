@@ -155,6 +155,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	private float                 _groundingDelay;    //Set when ground is lost and can't enter grounded state again until it's over.
 	[HideInInspector]
 	public float                  _timeOnGround;
+	[HideInInspector]
+	public float                  _timeInAir;
 
 	//Rotating in air
 	private float                 _amountToRotate;
@@ -473,6 +475,8 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Calls methods relevant to general control and gravity, while applying the turn and accelleration modifiers depending on a number of factors while in the air.
 	public Vector3 HandleAirMovement ( Vector3 coreVelocity ) {
+
+		_timeInAir += Time.deltaTime;
 
 		//In order to change horizontal movement in the air, the player must not be inputting into a wall.
 		//Because moving into a slanted wall can lead to the player sliding up it while still not being grounded.
@@ -908,22 +912,24 @@ public class S_PlayerPhysics : MonoBehaviour
 		{
 			_isGrounded = value;
 
+			_timeOnGround = 0;
+			_timeInAir = 0;
+			_timeUpHill = 0;
+
+
 			//If changed to be in the air when was on the ground
 			if (!_isGrounded)
-			{
+			{				
 				_groundNormal = Vector3.up;
 				_wasInAirLastFrame = true;
 				_groundingDelay = timer;
-				_timeOnGround = 0;
+
 
 				if(_Actions) _Events._OnLoseGround.Invoke();
 			}
 			//If changed to be on the ground when was in the air
 			else if (_isGrounded)
 			{
-				_timeOnGround = 0;
-				_timeUpHill = 0;
-
 				//If hasn't completed aligning to face upwards when was upside down, then end that prematurely and retern turning.
 				if (_isUpsideDown)
 				{

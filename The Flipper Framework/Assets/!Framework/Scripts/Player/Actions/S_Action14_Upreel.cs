@@ -83,6 +83,8 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		_PlayerPhys.SetIsGrounded(false);
 		_PlayerPhys._canChangeGrounded = false;
 
+		_ActionChain.AddToChain("Upreel", 1, 1);
+
 		_CurrentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
 
 	}
@@ -109,14 +111,6 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 
 	#endregion
 
-	/// <summary>
-	/// Private ----------------------------------------------------------------------------------
-	/// </summary>
-	/// 
-	#region private
-
-
-	#endregion
 
 	/// <summary>
 	/// Public ----------------------------------------------------------------------------------

@@ -442,6 +442,8 @@ GameObject:
   - component: {fileID: 1170264400203800284}
   - component: {fileID: 576209267428233278}
   - component: {fileID: 988999376291291605}
+  - component: {fileID: 3477363618170899277}
+  - component: {fileID: 1498204179040974315}
   m_Layer: 8
   m_Name: Player_Sonic
   m_TagString: Player
@@ -593,6 +595,7 @@ MonoBehaviour:
   _canStickToGround: 1
   _groundNormal: {x: 0, y: 0, z: 0}
   _timeOnGround: 0
+  _timeInAir: 0
   _wasInAirLastFrame: 0
   _currentFallGravity: {x: 0, y: 0, z: 0}
   _currentUpwardsFallGravity: {x: 0, y: 0, z: 0}
@@ -1234,10 +1237,71 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3477363618170899277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979695856965714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1269eba7fa9b5de4d9f23c5b1d8f22f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
+  _savedRingScore: 0
   _trueTime: 0
   _minutes: 0
   _seconds: 0
   _milliseconds: 0
+--- !u!114 &1498204179040974315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979695856965714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65c1fd9b0691e334fac314e1db1dea84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
+  _isActionChainEnabled: 1
+  _ChainCountdownByLevel:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 5
+      inSlope: -0
+      outSlope: -0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 9.951334
+      value: 4.511654
+      inSlope: -0.15765403
+      outSlope: -0.15765403
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.3562656
+    - serializedVersion: 3
+      time: 15
+      value: 1.5
+      inSlope: -0.18056478
+      outSlope: -0.18056478
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.06333326
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &38880623587908062
 GameObject:
   m_ObjectHideFlags: 0
@@ -8369,6 +8433,10 @@ MonoBehaviour:
     MinutesText: {fileID: 0}
     SecondsText: {fileID: 0}
     MillisecondsText: {fileID: 0}
+    AChainObject: {fileID: 0}
+    AChainAnimator: {fileID: 0}
+    AChainUIScript: {fileID: 0}
+    AChainLevelText: {fileID: 0}
     _HomingIcon: {fileID: 0}
     HintBox: {fileID: 0}
     FadeOutBox: {fileID: 0}
@@ -26142,7 +26210,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1764732933454054073
 Transform:
   m_ObjectHideFlags: 0

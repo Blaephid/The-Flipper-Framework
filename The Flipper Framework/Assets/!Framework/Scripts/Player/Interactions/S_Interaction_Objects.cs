@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Switch;
 using UnityEngine.ProBuilder;
 using UnityEditor;
+using Unity.VisualScripting;
 
 public class S_Interaction_Objects : S_Player_Base
 {
@@ -98,7 +99,6 @@ public class S_Interaction_Objects : S_Player_Base
 			case "Spring":
 				LaunchFromSpring(Col);
 				break;
-
 			case "Bumper":
 				break;
 			case "Wind":
@@ -115,7 +115,6 @@ public class S_Interaction_Objects : S_Player_Base
 					}
 				}
 				break;
-
 
 			case "Monitor":
 				Col.GetComponentInChildren<BoxCollider>().enabled = false;
@@ -162,6 +161,9 @@ public class S_Interaction_Objects : S_Player_Base
 
 			case "EffectTrigger":
 				_TriggerInteraction.CheckEffectsTriggerEnter(Col); break;
+
+			case "Special":
+				ObjectWithNoSpecificTag(Col); break;
 		}
 	}
 
@@ -432,6 +434,8 @@ public class S_Interaction_Objects : S_Player_Base
 		{
 			_Input.LockInputForAWhile(SpeedPadScript._lockControlFrames_, false, Col.transform.forward, SpeedPadScript._lockInputTo_);
 		}
+
+		_ActionChain.AddToChain("Speed Pad", 2, 1, Col.gameObject.GetInstanceID().ToString());
 	}
 
 	private void LaunchFromDashRing ( Collider Col ) {
@@ -448,6 +452,8 @@ public class S_Interaction_Objects : S_Player_Base
 		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col.transform, _PlayerPhys.transform, DashRingScript._launchData_);
 
 		ObjectRotatesCamera(Col, DashRingScript._cameraEffect);
+
+		_ActionChain.AddToChain("Dash Ring", 2, 1, Col.gameObject.GetInstanceID().ToString());
 	}
 
 	private void BoostOnRail ( Collider Col ) {
@@ -461,6 +467,7 @@ public class S_Interaction_Objects : S_Player_Base
 		}
 		if (_Actions._ObjectForActions.TryGetComponent(out S_Action05_Rail RailAction))
 		{
+			_ActionChain.AddToChain("Rail Booster", 2, 1, Col.gameObject.GetInstanceID().ToString());
 			StartCoroutine(RailAction.ApplyBoosters(RailBoosterScript));
 		}
 
@@ -588,6 +595,8 @@ public class S_Interaction_Objects : S_Player_Base
 		if (Col.GetComponent<AudioSource>()) { Col.GetComponent<AudioSource>().Play(); }
 		if (SpringScript._Animator != null)
 			SpringScript._Animator.SetTrigger("Hit");
+
+		_ActionChain.AddToChain("Spring", 2, 1, Col.gameObject.GetInstanceID().ToString());
 	}
 
 	public void ApplyLaunchEffects ( LaunchPlayerData launchData ) {
@@ -721,6 +730,29 @@ public class S_Interaction_Objects : S_Player_Base
 		_PlayerPhys._currentFallGravity = _PlayerPhys._startFallGravity_;
 		_PlayerPhys._currentUpwardsFallGravity = _PlayerPhys._gravityWhenMovingUp_;
 	}
+
+
+
+	private void ObjectWithNoSpecificTag (Collider Col ) {
+		if ( Col == null ) return;
+
+		if(!Col.TryGetComponent(out S_Data_Base Data)) { return; }
+
+		Data.OnGet(transform);
+
+		switch (Data)
+		{
+			case S_Data_RedStarRing:
+				S_Data_RedStarRing DataRSR = (S_Data_RedStarRing)Data;
+				_CoreValues.AdjustRings(DataRSR._ringsGained, false);
+				_CoreValues.AdjustEnergy(DataRSR._energyGained);
+				_CoreValues.AdjustPower(DataRSR._powerGained);
+
+				_ActionChain.AddToChain("Red Star Ring", 2, 1, Col.gameObject.GetInstanceID().ToString());
+				break;
+		}
+	}
+
 	#endregion
 
 	/// <summary>
@@ -735,7 +767,7 @@ public class S_Interaction_Objects : S_Player_Base
 		//Monitors data
 		if (MonitorData.Type == MonitorType.Ring) //Increases player ring count.
 		{
-			_CoreValues.AdjustRings(col.GetComponent<S_Data_Monitor>().RingAmount);
+			_CoreValues.AdjustRings(col.GetComponent<S_Data_Monitor>().RingAmount, true);
 		}
 		else if (MonitorData.Type == MonitorType.Shield) //Activates shield
 		{
@@ -743,6 +775,8 @@ public class S_Interaction_Objects : S_Player_Base
 		}
 
 		MonitorData.DestroyMonitor();
+
+		_ActionChain.AddToChain("Monitor", 2, 0, MonitorData.gameObject.GetInstanceID().ToString());
 	}
 	#endregion
 

@@ -31,7 +31,11 @@ public class S_Spawn_UI : MonoBehaviour
 		public TextMeshProUGUI  MinutesText;
 		public TextMeshProUGUI  SecondsText;
 		public TextMeshProUGUI  MillisecondsText;
-
+		[Header("Action Chain")]
+		public GameObject AChainObject;
+		public Animator AChainAnimator;
+		public S_ActionChainUI AChainUIScript;
+		public TextMeshProUGUI AChainLevelText;
 		[Header("Effects")]
 		public GameObject               _HomingIcon;
 		public S_HintBox                HintBox;

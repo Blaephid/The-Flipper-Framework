@@ -278,6 +278,10 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 			_CharacterAnimator.SetFloat("GroundSpeed", newSpeed);
 
+			float chainValue = Mathf.Lerp(0, 3, _Actions._charge / _maximunCharge_);
+			chainValue = Mathf.Round(chainValue);
+			_ActionChain.AddToChain("Spin Dash", (int)chainValue, 10);
+
 			_Actions._ActionDefault.StartAction();
 		}
 

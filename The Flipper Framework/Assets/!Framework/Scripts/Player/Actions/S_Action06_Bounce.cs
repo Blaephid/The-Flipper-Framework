@@ -81,7 +81,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		if (!base.AttemptAction()) return false;
 
 		//Can only bounce if it isn't locked in the actionManager, and not moving too fast up.
-		if (_Input._BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)
+		if (_Input._BouncePressed && _PlayerPhys._timeInAir > 0.3f && _Actions._areAirActionsAvailable && _isBounceAvailable)
 		{
 			StartAction();
 			return true;
@@ -269,6 +269,8 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		{
 			_Actions._bounceCount++;
 		}
+
+		_ActionChain.AddToChain("Bounce", 1, 5);
 	}
 
 	#endregion

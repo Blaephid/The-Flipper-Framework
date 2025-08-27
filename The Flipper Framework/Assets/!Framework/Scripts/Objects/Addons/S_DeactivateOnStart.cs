@@ -13,7 +13,7 @@ public class S_DeactivateOnStart : MonoBehaviour
 	{
 		stopRendering,
 		Destroy,
-		Deactivate
+		Deactivate,
 	}
 
 	void Start () {

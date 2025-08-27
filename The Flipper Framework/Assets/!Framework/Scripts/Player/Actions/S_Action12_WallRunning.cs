@@ -98,6 +98,8 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 
 			CheckCanceling();
 			HandleInputs();
+
+			if(_counter > 0.5f) { _ActionChain.AddToChain("Wall Run", 1, 1); }
 		}
 		else
 		{

@@ -37,7 +37,6 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 	private GameObject  _MovingRing;
 	private GameObject  _ReleaseDirection;
 
-	public event    EventHandler<float> onRingGet;
 	#endregion
 
 
@@ -556,7 +555,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 		damage = Mathf.Clamp(damage, 0, _CoreValues._ringCount); //Prevent going into negative rings
 
-		_CoreValues.AdjustRings(-(int)damage); //Ensures it will be decreased to a whole number, not a decimal.
+		_CoreValues.AdjustRings(-(int)damage, false); //Ensures it will be decreased to a whole number, not a decimal.
 
 		//Set time to be in hurt state
 		_counter = 0;
@@ -584,9 +583,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		//Prevents multiple rings being gained in the same frame.
 		if (_CoreValues._ringCount != ThisFramesRingCount + 1)
 		{
-			_CoreValues.AdjustRings(1);
-			if (onRingGet != null)
-				{ onRingGet.Invoke(null, amount); }
+			_CoreValues.AdjustRings(1, true);
 		}
 	}
 

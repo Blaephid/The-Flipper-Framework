@@ -24,13 +24,13 @@
      inkscape:deskcolor="#222222"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="0.12393837"
-     inkscape:cx="3517.8775"
-     inkscape:cy="2101.8511"
+     inkscape:zoom="0.24787674"
+     inkscape:cx="942.00045"
+     inkscape:cy="651.5335"
      inkscape:window-width="1920"
      inkscape:window-height="1001"
-     inkscape:window-x="1572"
-     inkscape:window-y="1341"
+     inkscape:window-x="2391"
+     inkscape:window-y="-9"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
     <inkscape:grid
@@ -65,11 +65,58 @@
          stdDeviation="2.4950386"
          id="feGaussianBlur2" />
     </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4"
+       x="-0.083710995"
+       y="-0.083710995"
+       width="1.167422"
+       height="1.167422">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="8.3710997"
+         id="feGaussianBlur4" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter5"
+       x="-0.0079502434"
+       y="-0.0079502434"
+       width="1.0159005"
+       height="1.0159005">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.79502434"
+         id="feGaussianBlur5" />
+    </filter>
   </defs>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <path
+       sodipodi:type="star"
+       style="opacity:0.539867;mix-blend-mode:normal;fill:#ffffff;stroke:none;stroke-width:7.50001;stroke-miterlimit:2000;filter:url(#filter4)"
+       id="path4"
+       inkscape:flatsided="false"
+       sodipodi:sides="4"
+       sodipodi:cx="240"
+       sodipodi:cy="219.99998"
+       sodipodi:r1="120"
+       sodipodi:r2="30"
+       sodipodi:arg1="-1.5707963"
+       sodipodi:arg2="-0.78539802"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="M 240,99.999985 261.21321,198.78678 360,219.99999 261.2132,241.21319 240,339.99998 218.78679,241.21319 120,219.99998 l 98.7868,-21.2132 z"
+       inkscape:transform-center-x="4.0236221e-06"
+       inkscape:transform-center-y="-13.807326"
+       transform="matrix(1.2049347,0,0,1.2049347,-51.637315,-48.000048)"
+       inkscape:export-filename="..\The Flipper Framework\Assets\!Framework\Visual\Effects\Player\Interactions\Tex_SparkleNew.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        id="path1"
        style="fill:#ffffff;stroke:none;stroke-width:34.4373;stroke-miterlimit:2000"
@@ -84,5 +131,23 @@
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"
        transform="matrix(3.6535189,0,0,3.6535189,-15.826193,20.75508)" />
+    <path
+       sodipodi:type="star"
+       style="fill:#ffffff;stroke:none;stroke-width:7.50001;stroke-miterlimit:2000;filter:url(#filter5)"
+       id="path3"
+       inkscape:flatsided="false"
+       sodipodi:sides="4"
+       sodipodi:cx="240"
+       sodipodi:cy="219.99998"
+       sodipodi:r1="120"
+       sodipodi:r2="30"
+       sodipodi:arg1="-1.5707963"
+       sodipodi:arg2="-0.78539802"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="M 240,99.999985 261.21321,198.78678 360,219.99999 261.2132,241.21319 240,339.99998 218.78679,241.21319 120,219.99998 l 98.7868,-21.2132 z"
+       inkscape:transform-center-x="3.1534571e-06"
+       inkscape:transform-center-y="-9.3985015"
+       transform="matrix(0.82029031,0,0,0.82018621,41.540279,39.866122)" />
   </g>
 </svg>

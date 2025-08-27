@@ -7,9 +7,11 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class S_PlayerCoreValues : S_Player_Base
 {
-
+	private S_PlayerScore _Score;
 
 	//Health
+	public event    EventHandler<float> OnRingGet;
+
 	public int _ringCount { get; private set; }
 	private int _currentMaxRings;
 	private int _startMaxRings_;
@@ -45,18 +47,12 @@ public class S_PlayerCoreValues : S_Player_Base
 	public float _powerCount { get; private set; }
 	public AnimationCurve _barFillByPowerCount;
 
-	//Time
-	[HideInInspector] public float _trueTime;
-	[HideInInspector] public int _minutes;
-	[HideInInspector] public float _seconds;
-	[HideInInspector] public float _milliseconds;
-
 	private void Start () {
+		_Score = GetComponent<S_PlayerScore>();
 		SetValuesOnLevelStart();
 	}
 
 	private void LateUpdate () {
-		UpdateTime();
 		UpdateSpeed();
 		UpdateRingDisplay();
 		UpdateEnergy();
@@ -70,33 +66,6 @@ public class S_PlayerCoreValues : S_Player_Base
 	/// </summary>
 	#region display Values On hud
 
-	private void UpdateTime () {
-		_trueTime += Time.deltaTime;
-		_seconds += Time.deltaTime;
-
-		if (_seconds >= 60)
-		{
-			_minutes = Mathf.Min(_minutes + 1, 99);
-			_seconds -= 60;
-		}
-
-		_milliseconds = _seconds - (int)_seconds;
-		_milliseconds = (int)(_milliseconds * 100);
-
-		string displayMinutes = DisplayIn2Digits(_minutes);
-		string displaySeconds = DisplayIn2Digits((int)_seconds);
-		string displayMilli = DisplayIn2Digits((int)_milliseconds);
-
-		_CoreUIElements.MillisecondsText.text = displayMilli;
-		_CoreUIElements.SecondsText.text = displaySeconds;
-		_CoreUIElements.MinutesText.text = displayMinutes;
-
-		return;
-		string DisplayIn2Digits ( int value ) {
-			return value >= 10 ? value.ToString() : "0" + value.ToString();
-		}
-	}
-
 	//Ensure hud text is up to date with ring count.
 	private void UpdateRingDisplay () {
 		_CoreUIElements.HealthyRingsCounter.text = "" + (int)_ringCount;
@@ -105,7 +74,6 @@ public class S_PlayerCoreValues : S_Player_Base
 		bool canDieFromDamage = _ringCount <= _dieAtRingCount_;
 		_CoreUIElements.HealthyRingsCounter.gameObject.SetActive(!canDieFromDamage);
 		_CoreUIElements.DangerousRingsCounter.gameObject.SetActive(canDieFromDamage);
-
 
 	}
 
@@ -150,7 +118,10 @@ public class S_PlayerCoreValues : S_Player_Base
 	}
 
 	public void SetValuesOnRespawn () {
-		_ringCount = (int)_ringsOnStartAndDeath_.y;
+		int change = (int)_ringsOnStartAndDeath_.y - _ringCount;
+		AdjustRings(change, false);
+
+		_Score._redRings = _Score._savedRedRings;
 		_energy = _currentMaxEnergy * _energyOnStartAndDeath_.y;
 	}
 
@@ -159,11 +130,18 @@ public class S_PlayerCoreValues : S_Player_Base
 		_energy = Mathf.Clamp(_energy, 0, _currentMaxEnergy);
 	}
 
-	public void AdjustRings ( int change ) {
+	public void AdjustRings ( int change, bool forEnergy ) {
 		_ringCount += change;
+
+		if (_ringCount < _currentMaxRings)
+			_Score.AdjustRingScore(change);
+
 		_ringCount = Mathf.Clamp(_ringCount, 0, _currentMaxRings);
 
-		if(change > 0) _CoreUIElements.GaugeAnimator.SetTrigger("GetRing");
+		if (change > 0) _CoreUIElements.GaugeAnimator.SetTrigger("GetRing");
+
+		if (OnRingGet != null && change > 0)
+			{ OnRingGet.Invoke(null, change); }
 	}
 
 	public void AdjustPower ( float change ) {
@@ -186,11 +164,14 @@ public class S_PlayerCoreValues : S_Player_Base
 
 		_powerCount = 0;
 
+		//Increase values to new level
 		_currentPowerNeedForNextLevel = _Tools.LevelUpStats._Levels[index].requiredPower;
 		_currentMaxEnergy = _startMaxEnergy_ * _Tools.LevelUpStats._Levels[index].energyMaxMultiplier;
 		_currentMaxRings = (int)(_startMaxRings_ * _Tools.LevelUpStats._Levels[index].ringsMaxMultiplier);
 		_currentSpeedMultiplier = _startSpeedMultiplier_ * _Tools.LevelUpStats._Levels[index].speedMaxMultiplier;
 
+
+		//Effects
 		_CoreUIElements.GaugeAnimator.SetInteger("Level", _level);
 		if (_level > 1)
 		{
@@ -199,6 +180,9 @@ public class S_PlayerCoreValues : S_Player_Base
 		}
 	}
 
+	public void SaveValuesOnCheckpoint () {
+
+	}
 
 	//These functions will handle increasing boost energy from various sources. Some are events that will be attached to event Handlers.
 	void EventGainEnergyFromRings ( object sender, float source ) {
@@ -233,7 +217,7 @@ public class S_PlayerCoreValues : S_Player_Base
 		_energyGainPerSecond_ = _Tools.Stats.CoreValuesStats.energyGainPerSecond;
 		_energyOnStartAndDeath_ = _Tools.Stats.CoreValuesStats.energyOnPlayerStart;
 		if (_gainEnergyFromRings_)
-			_Tools.GetComponent<S_Handler_HealthAndHurt>().onRingGet += EventGainEnergyFromRings;
+			OnRingGet += EventGainEnergyFromRings;
 
 		LevelUp();
 	}

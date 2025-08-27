@@ -189,6 +189,8 @@ public class S_Action11_JumpDash : S_Action_Base, IMainAction
 		_PlayerVel.SetCoreVelocity(newVec, "Overwrite"); //Move in dash direction
 		_PlayerVel.RemoveEnvironmentalVelocityAirAction(); //If environmental action set to be removed on air action, then remove.
 
+		_ActionChain.AddToChain("Jump Dash", 1, 10);
+
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.JumpDash);
 		this.enabled = true;
 	}

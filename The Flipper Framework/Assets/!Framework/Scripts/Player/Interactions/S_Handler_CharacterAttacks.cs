@@ -4,13 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class S_Handler_CharacterAttacks : MonoBehaviour
+public class S_Handler_CharacterAttacks : S_Player_Base
 {
-	private S_PlayerPhysics _PlayerPhys;
-	private S_PlayerVelocity        _PlayerVel;
 	private S_Interaction_Objects _ObjectInteraction;
-	private S_ActionManager _Actions;
-	private S_CharacterTools        _Tools;
 
 	//Stats - See Character stats for functions
 	[HideInInspector]
@@ -22,12 +18,6 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 
 	private bool    _canHitAgain = true;
 	private bool    _hasHitThisFrame = false; //Prevents multiple attacks from being calculated in one frame
-
-	private void Start () {
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		AssignTools();
-		AssignStats();
-	}
 
 	//Set every frame to ensure only one attack will be calculated per update.
 	private void FixedUpdate () {
@@ -117,6 +107,7 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 			wasDestroyed = EnemyHealth.DealDamage(damage);
 		}
 
+		_ActionChain.AddToChain("Enemy", 2, 0);
 		PhysicsAfterAttack(wasDestroyed, attackType, col);
 	}
 
@@ -248,17 +239,16 @@ public class S_Handler_CharacterAttacks : MonoBehaviour
 		_canHitAgain = true;
 	}
 
-	private void AssignStats () {
+	public override void AssignStats () {
+		base.AssignStats();
 		_bouncingPower_ = _Tools.Stats.EnemyInteraction.bouncingPower;
 		_homingBouncingPower_ = _Tools.Stats.EnemyInteraction.homingBouncingPower;
 		_shouldStopOnHit_ = _Tools.Stats.EnemyInteraction.shouldStopOnHit;
 	}
 
-	private void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
+	public override void AssignTools () {
+		base.AssignTools();
 		_ObjectInteraction = GetComponent<S_Interaction_Objects>();
-		_Actions = _Tools._ActionManager;
 	}
 }
 

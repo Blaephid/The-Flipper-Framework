@@ -205,8 +205,13 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 				_Effects.EnableLargeTrail(_homingTimerLimit_ + 0.06f, true);
 				_CoreValues.AdjustEnergy(_energyFromPerfect_);
 				_CoreValues.AdjustPower(_powerFromPerfect_);
+
+				_ActionChain.AddToChain("Perfect Homing Attack", 1, 0);
+
 				return _speedMultiplierFromPerfect_;
 			}
+			_ActionChain.AddToChain("Homing Attack", 1, 2);
+
 			_Effects.EnableLargeTrail(_homingTimerLimit_ + 0.06f);
 			_Sounds.HomingAttackSound(false);
 			return 1;

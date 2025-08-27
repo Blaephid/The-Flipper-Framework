@@ -32,6 +32,8 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 	private bool       _isRollingFromThis;
 	[HideInInspector]
 	public float        _rollCounter;
+
+	private float _speedBeforeRoll;
 	#endregion
 
 	#endregion
@@ -56,6 +58,8 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 			//While isRolling is set externally, the counter tracks when it is.
 			else if (_isRollingFromThis)
 				_rollCounter += Time.deltaTime;
+
+			if(_rollCounter > 0.5f && _PlayerVel._horizontalSpeedMagnitude > _speedBeforeRoll + 50) { _ActionChain.AddToChain("Roll", 2, 1); }
 		}
 	}
 
@@ -107,6 +111,8 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 		{
 			_Sounds.StartRollingSound();
 			SetIsRolling(true);
+
+			_speedBeforeRoll = _PlayerVel._horizontalSpeedMagnitude;
 		}
 	}
 

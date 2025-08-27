@@ -22,4 +22,8 @@ public class S_Data_Base : S_Vis_Base
 		_hasDataChanged = true;
 	}
 #endif
+
+	public virtual void OnGet (Transform Player) {
+
+	}
 }

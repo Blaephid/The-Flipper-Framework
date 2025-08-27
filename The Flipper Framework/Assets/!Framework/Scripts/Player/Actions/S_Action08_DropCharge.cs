@@ -245,6 +245,10 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 			_CamHandler._HedgeCam.ChangeHeight(20, 15f); //Ensures camera will go behind the player as they launch forwards from falling.
 		}
 
+		float chainValue = Mathf.Lerp(0, 3, _Actions._charge / _maximunCharge_);
+		chainValue = Mathf.Round(chainValue);
+		_ActionChain.AddToChain("Spin Dash", (int)chainValue, 4);
+
 		_Actions._ActionDefault.SwitchSkin(true);
 		_Actions._ActionDefault.StartAction();
 	}
