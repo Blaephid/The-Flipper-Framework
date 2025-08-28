@@ -106,13 +106,15 @@ public class S_PlayerPhysics : MonoBehaviour
 	// Trackers
 	#region trackers
 
+
 	private bool        _isPositiveUpdate;  //Alternates between on and off every update, so can be used universally for anything that should only happen every other frame.
 
 	[HideInInspector]       public static int         _frameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
 	[HideInInspector]	public static int         _fixedFrameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
 
-	[HideInInspector]
-	public bool                   _arePhysicsOn = true;         //If false, no changes to velocity will be calculated or applied. This script will be inactive.
+	
+	[NonSerialized]public bool      _areSpeedChangesEnabled = true;         //If false, no changes to velocity will be calculated or applied. This script will be inactive.
+	[NonSerialized] public bool	_arePhysicsEnabled = true;		//If false, fixedUpdate will not be called here, disabling movement.
 
 	//Updated each frame to get current place on animation curves relevant to movement.
 	private float                  _curvePosSlopePowerUphill;
@@ -319,6 +321,8 @@ public class S_PlayerPhysics : MonoBehaviour
 	//IMPORTANT. Due to the order and the Script Execution Order project settings, this will always be the first Method called every FixedUpdate, before any other script in the game.
 	private void HandleGeneralPhysics () {
 
+		if(!_arePhysicsEnabled) { return; } //Physics won't be calculated if locked.
+
 		Profiler.BeginSample("PlayerPhysics");
 		UpdatePositionTrackers();
 
@@ -460,7 +464,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		_timeOnGround += Time.deltaTime;
 
-		if (!_arePhysicsOn) { return; }
+		if (!_areSpeedChangesEnabled) { return; }
 
 		//To avoid jittering against a wall if going to and from 0 to even some speed, only call this if there isn't a wall SUPER close in the input direction.
 		if (!(_PlayerVelocity._horizontalSpeedMagnitude < 10 && Physics.SphereCast(_CharacterCenterPosition, _CharacterCapsule.radius * 0.99f,

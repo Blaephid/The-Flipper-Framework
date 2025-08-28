@@ -229,13 +229,13 @@ public class S_Interaction_Objects : S_Player_Base
 		Instantiate(SphereCollectParticle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity, transform);
 		Destroy(col.gameObject);
 
-		float ThisFramesPowerCount = _CoreValues._powerCount;
+		float ThisFramesPowerCount = _CoreValues._pointsCount;
 		yield return new WaitForEndOfFrame();
 
 		//Prevents multiple spheres being gained in the same frame.
-		if (_CoreValues._powerCount != ThisFramesPowerCount + _powerFromSpheres_)
+		if (_CoreValues._pointsCount != ThisFramesPowerCount + _powerFromSpheres_)
 		{
-			_CoreValues.AdjustPower(_powerFromSpheres_);
+			_CoreValues.AdjustPoints(_powerFromSpheres_);
 		}
 	}
 
@@ -746,7 +746,7 @@ public class S_Interaction_Objects : S_Player_Base
 				S_Data_RedStarRing DataRSR = (S_Data_RedStarRing)Data;
 				_CoreValues.AdjustRings(DataRSR._ringsGained, false);
 				_CoreValues.AdjustEnergy(DataRSR._energyGained);
-				_CoreValues.AdjustPower(DataRSR._powerGained);
+				_CoreValues.AdjustPoints(DataRSR._powerGained);
 
 				_ActionChain.AddToChain("Red Star Ring", 2, 1, Col.gameObject.GetInstanceID().ToString());
 				break;
@@ -799,7 +799,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 	public override void AssignStats () {
 		base.AssignStats();
-		_powerFromSpheres_ = _Tools.LevelUpStats.powerFromSpheres; 
+		_powerFromSpheres_ = _Tools.LevelUpStats.pointsFromSpheres; 
 	}
 	#endregion
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,6 +9,8 @@ public class S_ActionChainUI : MonoBehaviour
 	public Transform parent;
 	public GameObject ListObjectToSpawn;
 	private List<Animator> ListAnimators = new List<Animator>();
+
+	Action _OnExitAnimFinished;
 
 	public void SpawnNewText (string source, int value) {
 
@@ -43,7 +46,10 @@ public class S_ActionChainUI : MonoBehaviour
 			Text.text = source;
 	}
 
-	public void EndChain () {
+	public void EndChain (Action OnAnimFinished) {
+		if(!isActiveAndEnabled) { return; }
+		_OnExitAnimFinished = OnAnimFinished;
+
 		//Clear list
 		foreach (Animator animator in ListAnimators)
 		{
@@ -65,5 +71,9 @@ public class S_ActionChainUI : MonoBehaviour
 
 		ListAnimators.Remove(anim);
 		GameObject.Destroy(anim.gameObject);
+	}
+
+	public void AnimExitFinished () {
+		_OnExitAnimFinished.Invoke();
 	}
 }

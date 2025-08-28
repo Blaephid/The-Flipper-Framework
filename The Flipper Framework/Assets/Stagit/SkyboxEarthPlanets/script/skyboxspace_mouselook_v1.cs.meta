@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f6566d24c9a84674c96faaf118d0c6c0
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53752
+  packageName: Earth & Planets skyboxes
+  packageVersion: 1.1
+  assetPath: Assets/Stagit/SkyboxEarthPlanets/script/skyboxspace_mouselook_v1.cs
+  uploadId: 200576

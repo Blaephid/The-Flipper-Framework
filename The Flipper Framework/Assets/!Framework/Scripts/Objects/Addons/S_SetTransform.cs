@@ -11,8 +11,13 @@ public class S_SetTransform : MonoBehaviour
 
 	[Header("Manual")]
 	[SerializeField] Space _whatSpaceForPosition;
+	[HideInInspector, SerializeField] bool _applyPosition = true; 
+	[DrawTickBoxBefore("_applyPosition")]
 	[SerializeField] Vector3 _manPosition;
+
 	[SerializeField] Space _whatSpaceForRotation;
+	[HideInInspector, SerializeField] bool _applyRotation = true;
+	[DrawTickBoxBefore("_applyRotation")]
 	[SerializeField] Vector3 _manEulerAngles;
 
 	[AsButton("Apply", "LateUpdate", null)]
@@ -29,6 +34,8 @@ public class S_SetTransform : MonoBehaviour
 		if (_TransformForPosition != null)
 		{ transform.position = _TransformForPosition.position + _TransformForPosition.rotation * _localOffset; return; }
 
+		if (!_applyPosition) return;
+
 		switch (_whatSpaceForPosition)
 		{
 			case Space.World:
@@ -41,6 +48,8 @@ public class S_SetTransform : MonoBehaviour
 	void SetRotation () {
 		if (_TransformForRotation != null)
 		{ transform.rotation = _TransformForRotation.rotation; return; }
+
+		if (!_applyRotation) return;
 
 		switch (_whatSpaceForRotation)
 		{

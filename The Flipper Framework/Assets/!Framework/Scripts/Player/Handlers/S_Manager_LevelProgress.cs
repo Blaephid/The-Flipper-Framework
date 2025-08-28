@@ -19,8 +19,10 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 	private S_Control_EffectsPlayer _Effects;
 	private S_Handler_HealthAndHurt _HealthAndHurt;
+	private S_PlayerScore _Score;
 
-	public AudioClip                _GoalRingTouchingSound;
+	[Header("On Level End")]
+	public SceneField               _StageCompleteScene;
 
 	private Collider              _GoalRingObject;
 	#endregion
@@ -37,13 +39,6 @@ public class S_Manager_LevelProgress : S_Player_Base
 	private Vector3         _respawnForwards;
 	public LaunchPlayerData _respawnLaunch { get; set; }
 
-	//
-	public string           _nextLevelNameLeft;
-	public string           _nextLevelNameRight;
-
-	//Tracking ending levels.
-	private bool            _readyForNextStage = false;
-	private float           _readyCount = 0;
 	#endregion
 	#endregion
 
@@ -59,6 +54,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 		_HealthAndHurt = _Tools.GetComponent<S_Handler_HealthAndHurt>();
 		_Effects = _Tools.EffectsControl;
+		_Score = _Tools.GetComponent<S_PlayerScore>();
 
 		_MainSkin = _Tools.MainSkin;
 
@@ -67,11 +63,6 @@ public class S_Manager_LevelProgress : S_Player_Base
 		//_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 	}
 
-
-	// Update is called once per frame
-	void Update () {
-		TransitionToNextStage();
-	}
 
 	//Since certain objects relate to progressing through on ending a level, they are handled here.
 	public void EventTriggerEnter ( Collider Col ) {
@@ -99,9 +90,14 @@ public class S_Manager_LevelProgress : S_Player_Base
 				}
 				break;
 
-			case "GoalRing":
-				_readyForNextStage = true; //Sets this to true to the relevant calculations can happen due to the update script in a below method.
-				_GoalRingObject = Col;
+			case "Special":
+				if (Col.TryGetComponent(out S_Data_GoalRing GoalRingData))
+				{
+					GoalRingData.OnGet(transform);
+					_GoalRingObject = Col;
+
+					StartCoroutine(TransitionToStageComplete(GoalRingData));
+				}
 				break;
 		}
 	}
@@ -114,40 +110,42 @@ public class S_Manager_LevelProgress : S_Player_Base
 	/// 
 	#region private
 
-	private void TransitionToNextStage () {
-		if (_readyForNextStage) //Set when touching a goal ring.
+	private IEnumerator TransitionToStageComplete ( S_Data_GoalRing GoalRingData, float totalTime = 2.5f, float timeToSlow = 2f) {
+
+		_Score._paused = true;
+
+		//Disables on control of character.
+		_Input._move = Vector3.zero;
+		_Input._completeControlLock = true;
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "NextStage");
+
+		_Input._completeControlLock = true;
+
+		yield return new WaitForSeconds(0.2f);
+
+		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(_CoreValues._Music, totalTime, 0));
+
+		float timeCount = 0;
+		while(timeCount <= totalTime && totalTime > 0)
 		{
-			//Disables on control of character.
-			_Input._move = Vector3.zero;
-			//_PlayerPhys._locksForCanControl.Add(false);
-			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "NextStage");
+			yield return new WaitForEndOfFrame();
 
+			timeCount += Time.unscaledDeltaTime;
 
-			_readyCount += Time.deltaTime;
-
-			//Fade to black.
-			if (_readyCount > 0.1f)
-			{
-				Color alpha = Color.black;
-				_HealthAndHurt._FadeOutImage.color = Color.Lerp(_HealthAndHurt._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
-			}
-
-			//Activates the stage complete screen.
-			if (_readyCount > 0.6f)
-			{
-				PlayStageCompleteScene(_GoalRingObject);
-			}
+			Time.timeScale = Mathf.Lerp(1, 0.05f, timeCount / timeToSlow);
+			_HealthAndHurt._FadeOutImage.color = Color.Lerp(_HealthAndHurt._FadeOutImage.color, Color.black, timeCount / totalTime);
 		}
-	}
+		Time.timeScale = 1;
 
-	private void PlayStageCompleteScene ( Collider col ) {
+		//Activates the stage complete screen.
+		_CoreUIElements._Root.SetActive(false);
+		_MainSkin.gameObject.SetActive(false);
+		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
+		_PlayerPhys._arePhysicsEnabled = false;
 
-		SceneManager.LoadScene("Sc_StageCompleteScreen"); //Switch to scene
+		GoalRingData.OnStageEnd(_Score);
 
-		//Play appropriate music.
-		col.GetComponent<AudioSource>().clip = _GoalRingTouchingSound;
-		col.GetComponent<AudioSource>().loop = false;
-		col.GetComponent<AudioSource>().Play();
+		//SceneManager.LoadScene(_StageCompleteScene); //Switch to scene
 	}
 
 	#endregion
@@ -164,7 +162,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		{
 			OnReset.Invoke(this, EventArgs.Empty);
 		}
-		if(OnDeath != null)
+		if (OnDeath != null)
 		{
 			OnDeath.Invoke(this, EventArgs.Empty);
 		}
@@ -224,7 +222,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_respawnTransform = checkPointTransform;
 		_respawnPosition = checkPointTransform.position;
 		_respawnForwards = checkPointTransform.forward;
-		_respawnLaunch = _Spawner && _Spawner._launch ? _Spawner._launchOnSpawnData_ :  new LaunchPlayerData();
+		_respawnLaunch = _Spawner && _Spawner._launch ? _Spawner._launchOnSpawnData_ : new LaunchPlayerData();
 
 		_CoreValues.SaveValuesOnCheckpoint();
 	}

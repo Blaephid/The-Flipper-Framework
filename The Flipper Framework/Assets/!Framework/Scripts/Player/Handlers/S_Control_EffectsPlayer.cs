@@ -11,25 +11,28 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	[Header("VFX to Trigger")]
 
-	[SerializeField] ParticleSystem RunningDust;
-	[SerializeField] VisualEffect _SpeedLinesWind;
-	[SerializeField] VisualEffect _SpeedLinesCharacter;
+	[SerializeField, ColourIfNull(0.8f,0,0,1)] ParticleSystem RunningDust;
+	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect _SpeedLinesWind;
+	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect _SpeedLinesCharacter;
 
-	[SerializeField] ParticleSystem SpinDashEnergy;
-	[SerializeField] ParticleSystem RailsSparks1;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _ActionChainEffect;
+
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem SpinDashEnergy;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem RailsSparks1;
 
 	[Header("Screen VFX To Trigger")]
-	[SerializeField] VisualEffect             _SpeedLinesScreen;
-	[SerializeField] VisualEffect             _BlurBurst;
+	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect             _SpeedLinesScreen;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect             _BlurBurst;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect             _PointsGain;
 
 	[Header("Trails")]
-	[SerializeField] GameObject  _LesserTrails;
-	[SerializeField] TrailRenderer   _DefaultSpeedTrail;
-	[SerializeField] S_VolumeTrailRenderer  _LargeSpeedTrail;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] GameObject  _LesserTrails;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] TrailRenderer   _DefaultSpeedTrail;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] S_VolumeTrailRenderer  _LargeSpeedTrail;
 
 	[Header("VFX to Spawn")]
-	[SerializeField] GameObject  _JumpDashParticle;
-	[SerializeField] GameObject  _BonkParticle;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] GameObject  _JumpDashParticle;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] GameObject  _BonkParticle;
 
 	[Header("Mouth Sides")]
 	Transform _Head;
@@ -50,6 +53,8 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		_BlurBurst.gameObject.SetActive(false);
 		_SpeedLinesWind.Stop();
 		_SpeedLinesCharacter.Stop();
+		_ActionChainEffect.Stop();
+		_PointsGain.Stop();
 	}
 
 	void Update () {
@@ -193,6 +198,20 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 		Main.startSpeed = Mathf.Clamp(speed * 0.3f, 20, 60);
 
+	}
+
+	public void ActionChainAdd () {
+		_ActionChainEffect.Stop();
+		_ActionChainEffect.Play();
+	}
+
+	public void PointsGain(float amount ) {
+
+		amount /= 15;
+		amount += 1;
+		amount = Mathf.Min(amount, 2);
+		_PointsGain.SetFloat("Intensity", amount);
+		_PointsGain.Play();
 	}
 
 

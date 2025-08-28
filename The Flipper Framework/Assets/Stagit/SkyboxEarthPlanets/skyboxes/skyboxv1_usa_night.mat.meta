@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 579e145d6a6cd4247985ca7a6f1c9c7f
+timeCreated: 1451833572
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53752
+  packageName: Earth & Planets skyboxes
+  packageVersion: 1.1
+  assetPath: Assets/Stagit/SkyboxEarthPlanets/skyboxes/skyboxv1_usa_night.mat
+  uploadId: 200576

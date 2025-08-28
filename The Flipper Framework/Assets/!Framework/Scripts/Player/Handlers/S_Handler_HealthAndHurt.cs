@@ -346,7 +346,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		_PlayerPhys._locksForCanControl.Clear();
 		_PlayerPhys._locksForCanTurn.Clear();
 		_PlayerPhys._canChangeGrounded = true;
-		_PlayerPhys._arePhysicsOn = true;
+		_PlayerPhys._areSpeedChangesEnabled = true;
 
 		_Input.UnLockInput();
 

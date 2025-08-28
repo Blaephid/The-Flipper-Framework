@@ -12,7 +12,7 @@ public class S_PullItems : MonoBehaviour
 	S_PlayerVelocity _PlayerVel;
 
 	AnimationCurve _RadiusBySpeed_;
-	LayerMask _RingMask_;
+	LayerMask _PickupMask_;
 	float _basePullSpeed_;
 
 	GameObject currentMonitor;
@@ -29,7 +29,7 @@ public class S_PullItems : MonoBehaviour
 
 		//Stats
 		_RadiusBySpeed_ = _Tools.Stats.ItemPulling.RadiusBySpeed;
-		_RingMask_ = _Tools.Stats.ItemPulling.RingMask;
+		_PickupMask_ = _Tools.Stats.ItemPulling.PickupMask;
 		_basePullSpeed_ = _Tools.Stats.ItemPulling.basePullSpeed;
 	}
 
@@ -45,13 +45,15 @@ public class S_PullItems : MonoBehaviour
 	//Generates a sh=phere with size based on current speed, and any ring caught in it is added to be pulled towards the character for the next frames.
 	public void SearchForRingsNearby () {
 
-		Collider[] pickups = Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerVel._horizontalSpeedMagnitude / _PlayerPhys._PlayerMovement._currentMaxSpeed), _RingMask_, QueryTriggerInteraction.Collide);
+		Collider[] pickups = 
+			Physics.OverlapSphere(transform.position, _RadiusBySpeed_.Evaluate(_PlayerVel._horizontalSpeedMagnitude), 
+			_PickupMask_, QueryTriggerInteraction.Collide);
 		for (int i = 0 ; i < pickups.Length ; i++)
 		{
 			//The Pullcol should be a child of the object, not its main collider, so get the parent.
-			Transform ring = pickups[i].transform.parent;
+			Transform pickup = pickups[i].transform.parent;
 
-			if (ring.TryGetComponent(out Rigidbody rb))
+			if (pickup.TryGetComponent(out Rigidbody rb))
 			{
 				if (!_itemsWithRB.Contains(rb))
 				{
@@ -61,16 +63,16 @@ public class S_PullItems : MonoBehaviour
 			}
 			else
 			{
-				if (!_itemsWithout.Contains(ring.transform))
+				if (!_itemsWithout.Contains(pickup.transform))
 				{
 					AddToList();
-					_itemsWithout.Add(ring.transform);
+					_itemsWithout.Add(pickup.transform);
 				}
 			}
 			continue;
 
 			void AddToList () {
-				ring.parent = null;//This is to ensure they will remain being pulled even if their parents become inactive.
+				pickup.parent = null;//This is to ensure they will remain being pulled even if their parents become inactive.
 				Destroy(pickups[i]);
 			}
 		}

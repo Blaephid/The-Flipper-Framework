@@ -46,7 +46,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 	private int         _homingCountLimit_;
 
-	private Vector2         _timesForPerfectHomingAttack_;
 	private float           _speedMultiplierFromPerfect_;
 	private float           _energyFromPerfect_;
 	private float           _powerFromPerfect_;
@@ -199,14 +198,14 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		return;
 
 		float CheckPerfectHomingTarget () {
-			if(_HomingHandler._timeOnThisTarget > _timesForPerfectHomingAttack_.x && _HomingHandler._timeOnThisTarget < _timesForPerfectHomingAttack_.y)
+			if(_CoreUIElements._HomingIconScript._inPerfectTiming)
 			{	
 				_Sounds.HomingAttackSound(true);
 				_Effects.EnableLargeTrail(_homingTimerLimit_ + 0.06f, true);
 				_CoreValues.AdjustEnergy(_energyFromPerfect_);
-				_CoreValues.AdjustPower(_powerFromPerfect_);
+				_CoreValues.AdjustPoints(_powerFromPerfect_);
 
-				_ActionChain.AddToChain("Perfect Homing Attack", 1, 0);
+				_ActionChain.AddToChain("Perfect Homing Attack", 1, 1);
 
 				return _speedMultiplierFromPerfect_;
 			}
@@ -552,7 +551,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_energyFromPerfect_ = _Tools.Stats.HomingStats.energyGained;
 		_powerFromPerfect_ = _Tools.Stats.HomingStats.powerGained;
 		_speedMultiplierFromPerfect_ = _Tools.Stats.HomingStats.speedMultiplier;
-		_timesForPerfectHomingAttack_ = _Tools.Stats.HomingStats.perfectTimings;
 	}
 	#endregion
 

@@ -157,6 +157,8 @@ public class S_State_CameraMode : MonoBehaviour
 	//New input system
 	#region InputSystem
 	public void InputEnterMode ( InputAction.CallbackContext ctx ) {
+		if (_InputScript._completeControlLock) { return; }
+
 		if (ctx.performed)
 		{
 			SetModeOn(!enabled);

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d6ee7bd7b98e3e541a4f5561d7198072
+timeCreated: 1452537981
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53752
+  packageName: Earth & Planets skyboxes
+  packageVersion: 1.1
+  assetPath: Assets/Stagit/SkyboxEarthPlanets/skyboxes/skyboxv1_earthfar.mat
+  uploadId: 200576

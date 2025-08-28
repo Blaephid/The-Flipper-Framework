@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 03a88ece3c8d8dc44a549fd6327b6ad3
+timeCreated: 1452538756
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53752
+  packageName: Earth & Planets skyboxes
+  packageVersion: 1.1
+  assetPath: Assets/Stagit/SkyboxEarthPlanets/skyboxes/skyboxv1_inbetween_moonearth.mat
+  uploadId: 200576

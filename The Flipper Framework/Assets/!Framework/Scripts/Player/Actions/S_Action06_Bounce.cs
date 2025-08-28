@@ -158,12 +158,13 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		bool isGroundHit = _PlayerPhys._isGrounded || isRaycasthit;
 
 		RaycastHit UseHit = isRaycasthit ? _HitGround : _PlayerPhys._HitGround; //Get which one to use
+		_counter += Time.deltaTime;
+
 
 		//If no longer hitting the ground but did earlier, then has bounced and won't be grounded immediately, so end action after a delay.
 		if (!isGroundHit && _hasBounced)
 		{
-			_counter += Time.deltaTime;
-			if(_counter > 0.12f)
+			if(_counter > 0.15f)
 			{
 				_Actions._ActionDefault.StartAction();
 			}

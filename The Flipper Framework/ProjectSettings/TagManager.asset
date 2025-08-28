@@ -20,9 +20,7 @@ TagManager:
   - Switch
   - SpeedPad
   - Checkpoint
-  - GoalRing
   - PathTrigger
-  - Bumper
   - Pit
   - MovingPlatform
   - Upreel

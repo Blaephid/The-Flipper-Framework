@@ -78,7 +78,6 @@ public class S_PlayerVelocity : S_Player_Base
 	/// On the other end, PlayerPhysics FixedUpdate happens BEFORE every other fixedUpdate.
 	private void FixedUpdate () {
 		SetTotalVelocity();
-		//_PlayerPhys.ClearListsOfCollisions();
 	}
 	#endregion
 

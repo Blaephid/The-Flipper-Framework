@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 4b10d730b3896e9458dd8aca903debb8
+timeCreated: 1505161924
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53752
+  packageName: Earth & Planets skyboxes
+  packageVersion: 1.1
+  assetPath: Assets/Stagit/SkyboxEarthPlanets/skyboxes/skyboxEarthProDemo.mat
+  uploadId: 200576

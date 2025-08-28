@@ -50,6 +50,8 @@ public class S_PlayerInput : MonoBehaviour
 	[NonSerialized]public bool            _lockedToCharacter;
 	public bool	_isCamLocked { get; set; }
 
+	[NonSerialized] public bool _completeControlLock;
+
 	//input
 	//NewInput system
 	public PlayerNewInput		newInput;
@@ -284,6 +286,8 @@ public class S_PlayerInput : MonoBehaviour
 
 	#region inputSystem
 	public void MoveInput ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		moveVec = ctx.ReadValue<Vector2>();
 		_isUsingMouse = false;
 		moveX = moveVec.x;
@@ -291,6 +295,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void MoveInputKeyboard ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		moveVec = ctx.ReadValue<Vector2>();
 		moveX = moveVec.x;
 		moveY = moveVec.y;
@@ -298,6 +304,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void CamInput ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		_isUsingMouse = false;
 		CurrentCamMovement = ctx.ReadValue<Vector2>();
 		moveCamX = CurrentCamMovement.x * camSensi;
@@ -305,6 +313,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void CamMouseInput ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		_isUsingMouse = true;
 		CurrentCamMovement = ctx.ReadValue<Vector2>();
 		moveCamX = CurrentCamMovement.x * mouseSensi;
@@ -312,6 +322,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void Jump ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed || ctx.canceled)
 		{
 			_JumpPressed = ctx.ReadValueAsButton();
@@ -319,6 +331,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void Roll ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed || ctx.canceled)
 		{
 			_RollPressed = ctx.ReadValueAsButton();
@@ -326,6 +340,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void LeftStep ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed || ctx.canceled)
 		{
 			_LeftStepPressed = ctx.ReadValueAsButton();
@@ -333,6 +349,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void RightStep ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed || ctx.canceled)
 		{
 			_RightStepPressed = ctx.ReadValueAsButton();
@@ -340,6 +358,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void Special ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed || ctx.canceled)
 		{
 			_SpecialPressed = ctx.ReadValueAsButton();
@@ -347,6 +367,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void Boost ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed || ctx.canceled)
 		{
 			_BoostPressed = ctx.ReadValueAsButton();
@@ -354,6 +376,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void Homing ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed || ctx.canceled)
 		{
 			_HomingPressed = ctx.ReadValueAsButton();
@@ -361,6 +385,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void Interact ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed || ctx.canceled)
 		{
 			_InteractPressed = ctx.ReadValueAsButton();
@@ -368,6 +394,7 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void Power ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
 
 		if (ctx.performed)
 		{
@@ -383,6 +410,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void SpinCharge ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed)
 		{
 			if (_PlayerPhys._isGrounded)
@@ -396,6 +425,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void KillBind ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed)
 		{
 			_KillBindPressed = ctx.ReadValueAsButton();
@@ -408,6 +439,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void CamReset ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed)
 		{
 			_CamResetPressed = !_CamResetPressed;
@@ -415,6 +448,8 @@ public class S_PlayerInput : MonoBehaviour
 	}
 
 	public void PauseButton ( InputAction.CallbackContext ctx ) {
+		if (_completeControlLock) { return; }
+
 		if (ctx.performed)
 		{
 			_Tools.UISpawner._BaseUIElements.PauseMenu.PauseToggle();

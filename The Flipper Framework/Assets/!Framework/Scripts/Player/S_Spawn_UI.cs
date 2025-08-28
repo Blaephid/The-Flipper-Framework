@@ -20,26 +20,30 @@ public class S_Spawn_UI : MonoBehaviour
 	[Serializable]
 	public struct StrucCoreUIElements
 	{
+		[Header("General")]
+		[ColourIfNullAttribute(.8f, 0,0, 1)]    public GameObject       _Root;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]    public S_HomingIcon	_HomingIconScript;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]    public GameObject       _HomingIconObject;
 		[Header("Gauge")]
-		public Animator         GaugeAnimator;
-		public TextMeshProUGUI  HealthyRingsCounter;
-		public TextMeshProUGUI  DangerousRingsCounter;
-		public Image                    EnergyBar;
-		public Image                    LevelBar;
-		public Image                    SpeedBar;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public Animator         GaugeAnimator;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public TextMeshProUGUI  HealthyRingsCounter;
+		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public TextMeshProUGUI  DangerousRingsCounter;
+		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public Image                    EnergyBar;
+		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public Image                    LevelBar;
+		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public Image                    SpeedBar;
 		[Header("Time")]
-		public TextMeshProUGUI  MinutesText;
-		public TextMeshProUGUI  SecondsText;
-		public TextMeshProUGUI  MillisecondsText;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public TextMeshProUGUI  MinutesText;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public TextMeshProUGUI  SecondsText;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public TextMeshProUGUI  MillisecondsText;
 		[Header("Action Chain")]
-		public GameObject AChainObject;
-		public Animator AChainAnimator;
-		public S_ActionChainUI AChainUIScript;
-		public TextMeshProUGUI AChainLevelText;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public GameObject AChainObject;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public Animator AChainAnimator;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public S_ActionChainUI AChainUIScript;
+		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public TextMeshProUGUI AChainLevelText;
+		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public TextMeshProUGUI AChainResultText;
 		[Header("Effects")]
-		public GameObject               _HomingIcon;
-		public S_HintBox                HintBox;
-		public Image                  FadeOutBox;
+		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public S_HintBox                HintBox;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]	public Image                  FadeOutBox;
 
 		[Header("Menus")]
 		public S_UI_Pause     PauseMenu;

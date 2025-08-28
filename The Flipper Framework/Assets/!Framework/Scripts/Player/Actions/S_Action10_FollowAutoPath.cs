@@ -97,7 +97,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Physics
-		_PlayerPhys._arePhysicsOn = false;
+		_PlayerPhys._areSpeedChangesEnabled = false;
 		_PlayerPhys._canStickToGround = true;
 		_PlayerPhys._rayToGroundDistance_ *= 2;
 
@@ -121,7 +121,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		enabled = false;
 		if (isFirstTime) { SetUpAction(); return; }
 
-		_PlayerPhys._arePhysicsOn = true;
+		_PlayerPhys._areSpeedChangesEnabled = true;
 		_PlayerPhys._rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;
 
 		_PlayerPhys._PlayerMovement._lockAccelerationAndTurningToDefault = false;

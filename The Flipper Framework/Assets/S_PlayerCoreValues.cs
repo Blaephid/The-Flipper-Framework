@@ -7,7 +7,10 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class S_PlayerCoreValues : S_Player_Base
 {
+	[NonSerialized] public AudioSource _Music;
+
 	private S_PlayerScore _Score;
+	private S_Control_EffectsPlayer _Effects;
 
 	//Health
 	public event    EventHandler<float> OnRingGet;
@@ -24,12 +27,18 @@ public class S_PlayerCoreValues : S_Player_Base
 	//Velocity & Speed
 	private float _startSpeedMultiplier_ = 1;
 	[NonSerialized] public float _currentSpeedMultiplier = 1;
+
 	private float _displaySpeed;
 	private float _prevDisplaySpeed;
+
 	public AnimationCurve _barFillBySpeed;
 
 	//Energy
 	public float _energy { get; private set; }
+
+	private float _displayEnergy;
+	private float _prevDisplayEnergy;
+
 	[HideInInspector] public float _currentMaxEnergy;
 	[HideInInspector] public float _startMaxEnergy_;
 	public AnimationCurve _barFillByEnergy;
@@ -42,10 +51,18 @@ public class S_PlayerCoreValues : S_Player_Base
 	private Vector2 _energyOnStartAndDeath_;
 
 
-	//Power
-	private float _currentPowerNeedForNextLevel;
-	public float _powerCount { get; private set; }
-	public AnimationCurve _barFillByPowerCount;
+	//Points
+	private float _currentPointsNeedForNextLevel;
+	public float _pointsCount { get; private set; }
+	public AnimationCurve _barFillByPointsCount;
+
+	private float _pointsInQuickSuccession;
+	private bool _hasPointsHitThreshold;
+	private float _countdownForPointsQuickSuccession;
+	private float _setCountdownTo = 0.5f;
+
+	private float _displayPoints;
+	private float _prevDisplayPoints;
 
 	private void Start () {
 		_Score = GetComponent<S_PlayerScore>();
@@ -56,9 +73,36 @@ public class S_PlayerCoreValues : S_Player_Base
 		UpdateSpeed();
 		UpdateRingDisplay();
 		UpdateEnergy();
-		UpdatePower();
+		UpdatePoints();
 
 		if (!_currentlyDrainingEnergy) { GainEnergyFromTime(); }
+
+
+		CheckPointsInQuickSuccession();
+	}
+
+	//In case getting a lot of small points in quick succession, add them up to an amount, and apply effects if they pass a threshold.
+	private void CheckPointsInQuickSuccession () {
+
+		//If got points recently, do countdown.
+		if (_countdownForPointsQuickSuccession >= 0)
+		{
+
+			_countdownForPointsQuickSuccession -= Time.deltaTime;
+			//Remove in quick succesion.
+			if (_countdownForPointsQuickSuccession <= 0)
+			{
+				_pointsInQuickSuccession = 0;
+				_hasPointsHitThreshold = false;
+			}
+
+			if (!_hasPointsHitThreshold && _pointsInQuickSuccession >= 4)
+			{
+				CheckPointsEffects(_pointsInQuickSuccession);
+				_hasPointsHitThreshold = true;
+				_pointsInQuickSuccession = 0;
+			}
+		}
 	}
 
 	/// <summary>
@@ -82,27 +126,39 @@ public class S_PlayerCoreValues : S_Player_Base
 	private void UpdateSpeed () {
 
 		//Get a value proportional to max speed.
-		_displaySpeed = _PlayerVel._horizontalSpeedMagnitude / (_PlayerMovement._currentMaxSpeed * 1.1f);
-		_displaySpeed = Mathf.Clamp(_displaySpeed, 0, 1);
-		_displaySpeed = _barFillBySpeed.Evaluate(_displaySpeed);
+		float proportionalSpeed = _PlayerVel._horizontalSpeedMagnitude / (_PlayerMovement._currentMaxSpeed * 1.1f);
+		proportionalSpeed = Mathf.Clamp(proportionalSpeed, 0, 1);
+		proportionalSpeed = _barFillBySpeed.Evaluate(proportionalSpeed);
 
-		//Smooth bar movement.
-		float lerpSpeed = Mathf.Abs(_prevDisplaySpeed - _displaySpeed) < 0.2f ? 0.1f : 0.3f;
-		_displaySpeed = Mathf.Lerp(_prevDisplaySpeed, _displaySpeed, lerpSpeed);
 
-		//Update
-		_prevDisplaySpeed = _displaySpeed;
+		_displaySpeed = LerpDisplayValue(proportionalSpeed, ref _prevDisplaySpeed);
 		_CoreUIElements.SpeedBar.fillAmount = _displaySpeed;
 	}
 
 	private void UpdateEnergy () {
 		float proportionalEnergy = _energy / _currentMaxEnergy;
-		_CoreUIElements.EnergyBar.fillAmount = _barFillByEnergy.Evaluate(proportionalEnergy);
+		_displayEnergy = _barFillByEnergy.Evaluate(proportionalEnergy);
+
+		_displayEnergy = LerpDisplayValue(proportionalEnergy, ref _prevDisplayEnergy);
+		_CoreUIElements.EnergyBar.fillAmount = _displayEnergy;
 	}
 
-	private void UpdatePower () {
-		float proportionalPower = _powerCount / _currentPowerNeedForNextLevel;
-		_CoreUIElements.LevelBar.fillAmount = _barFillByPowerCount.Evaluate(proportionalPower);
+	private void UpdatePoints () {
+		float proportionalPoints = _pointsCount / _currentPointsNeedForNextLevel;
+
+		_displayPoints = LerpDisplayValue(proportionalPoints, ref _prevDisplayPoints);
+		_CoreUIElements.LevelBar.fillAmount = _displayPoints;
+	}
+
+	private float LerpDisplayValue ( float current, ref float previous ) {
+		//Smooth bar movement.
+		float lerpSpeed = Mathf.Abs(previous - current) < 0.2f ? 0.1f : 0.3f;
+		lerpSpeed += previous > current ? 0.1f : 0;
+		current = Mathf.Lerp(previous, current, lerpSpeed);
+
+		//Update
+		previous = current;
+		return current;
 	}
 	#endregion
 
@@ -115,6 +171,8 @@ public class S_PlayerCoreValues : S_Player_Base
 	public void SetValuesOnLevelStart () {
 		_ringCount = (int)_ringsOnStartAndDeath_.x;
 		_energy = _currentMaxEnergy * _energyOnStartAndDeath_.x;
+
+		_Score.SetValuesOnRespawn();
 	}
 
 	public void SetValuesOnRespawn () {
@@ -125,11 +183,15 @@ public class S_PlayerCoreValues : S_Player_Base
 		_energy = _currentMaxEnergy * _energyOnStartAndDeath_.y;
 	}
 
+	//Gain or lose energy
 	public void AdjustEnergy ( float change ) {
+		if (change > 4 && _energy < _currentMaxEnergy) _CoreUIElements.GaugeAnimator.SetTrigger("GetEnergy");
+
 		_energy += change;
 		_energy = Mathf.Clamp(_energy, 0, _currentMaxEnergy);
 	}
 
+	//Gain or lose rings
 	public void AdjustRings ( int change, bool forEnergy ) {
 		_ringCount += change;
 
@@ -138,22 +200,38 @@ public class S_PlayerCoreValues : S_Player_Base
 
 		_ringCount = Mathf.Clamp(_ringCount, 0, _currentMaxRings);
 
+		//UI
 		if (change > 0) _CoreUIElements.GaugeAnimator.SetTrigger("GetRing");
 
+		//Used for energy
 		if (OnRingGet != null && change > 0)
-			{ OnRingGet.Invoke(null, change); }
+		{ OnRingGet.Invoke(null, change); }
 	}
 
-	public void AdjustPower ( float change ) {
-		_powerCount += change;
-		_powerCount = Mathf.Clamp(_powerCount, 0, _currentPowerNeedForNextLevel);
+	public void AdjustPoints ( float change ) {
+		_pointsCount += change;
+		_pointsCount = Mathf.Clamp(_pointsCount, 0, _currentPointsNeedForNextLevel);
 
-		CheckLevels();
+		_pointsInQuickSuccession += change;
+		_countdownForPointsQuickSuccession = _setCountdownTo;
+
+		CheckPointsEffects(change);
+		CheckLevelUp();
 	}
 
-	private void CheckLevels () {
-		if (_powerCount < _currentPowerNeedForNextLevel && _currentPowerNeedForNextLevel != 0) { return; }
-		if(_level == _Tools.LevelUpStats._Levels.Count + 1 ) { return; }
+	private void CheckPointsEffects ( float value ) {
+		if (value > 3)
+		{
+			_CoreUIElements.GaugeAnimator.SetTrigger("GetPoints");
+
+			if (value > 4)
+				_Effects.PointsGain(value);
+		}
+	}
+
+	private void CheckLevelUp () {
+		if (_pointsCount < _currentPointsNeedForNextLevel && _currentPointsNeedForNextLevel != 0) { return; }
+		if (_level == _Tools.LevelUpStats._Levels.Count + 1) { return; }
 
 		LevelUp();
 	}
@@ -162,10 +240,10 @@ public class S_PlayerCoreValues : S_Player_Base
 		_level++;
 		int index = _level - 1;
 
-		_powerCount = 0;
+		_pointsCount = 0;
 
 		//Increase values to new level
-		_currentPowerNeedForNextLevel = _Tools.LevelUpStats._Levels[index].requiredPower;
+		_currentPointsNeedForNextLevel = _Tools.LevelUpStats._Levels[index].requiredPoints;
 		_currentMaxEnergy = _startMaxEnergy_ * _Tools.LevelUpStats._Levels[index].energyMaxMultiplier;
 		_currentMaxRings = (int)(_startMaxRings_ * _Tools.LevelUpStats._Levels[index].ringsMaxMultiplier);
 		_currentSpeedMultiplier = _startSpeedMultiplier_ * _Tools.LevelUpStats._Levels[index].speedMaxMultiplier;
@@ -181,7 +259,7 @@ public class S_PlayerCoreValues : S_Player_Base
 	}
 
 	public void SaveValuesOnCheckpoint () {
-
+		_Score.SaveValuesOnCheckpoint();
 	}
 
 	//These functions will handle increasing boost energy from various sources. Some are events that will be attached to event Handlers.
@@ -198,6 +276,13 @@ public class S_PlayerCoreValues : S_Player_Base
 	}
 
 	#endregion
+
+	public override void AssignTools () {
+		base.AssignTools();
+
+		_Score = GetComponent<S_PlayerScore>();
+		_Effects = _Tools.EffectsControl;
+	}
 
 	public override void AssignStats () {
 		base.AssignStats();

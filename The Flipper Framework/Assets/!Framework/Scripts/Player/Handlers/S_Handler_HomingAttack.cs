@@ -332,7 +332,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 
 		_MainCamera = Camera.main.transform;
 
-		_IconHUDObject = _CoreUIElements._HomingIcon;
+		_IconHUDObject = _CoreUIElements._HomingIconObject;
 		_IconSound = _IconHUDObject.GetComponent<AudioSource>();
 		_IconHUDAnimator = _IconHUDObject.GetComponent<Animator>();
 		_IconRectTransform = _IconHUDObject.GetComponent<RectTransform>();

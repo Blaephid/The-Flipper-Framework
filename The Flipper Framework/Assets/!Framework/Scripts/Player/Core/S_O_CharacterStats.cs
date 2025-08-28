@@ -819,7 +819,6 @@ public class S_O_CharacterStats : ScriptableObject
 			deceleration = 55f,
 			acceleration = 70,
 			homingCountLimit = 0,
-			perfectTimings = new Vector2(0.45f, 0.6f),
 			speedMultiplier = 1.3f,
 			energyGained = 1,
 			powerGained = 1,
@@ -865,8 +864,6 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Surface: How must speed to gain per frame when inputing with homing direction. This cannot accelerate past the speed the attack started at.")]
 		public float         acceleration;
 		[Header("Perfect Homing Attack")]
-		[Tooltip("Core: When in seconds a player has to perform a homing attack for it to be perfect, x is min time, y is max. NOTE - The reticle timing for perfect is based on the animation. If you change this, make sure you change the animations too. ")]
-		public Vector2         perfectTimings;
 		[Tooltip("Surface: How must faster a perfect homing attack is than a normal one")]
 		public float         speedMultiplier;
 		[Tooltip("Surface: How much energy is gained (see energy)")]
@@ -1238,13 +1235,13 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			RadiusBySpeed = new AnimationCurve(new Keyframe[]
 			{
-				new Keyframe(0, 1.3f),
-				new Keyframe(0.15f, 1.3f),
-				new Keyframe(0.25f, 4f),
-				new Keyframe(0.7f, 7f),
-				new Keyframe(1f, 9f),
+				new Keyframe(0, 0),
+				new Keyframe(20, 0),
+				new Keyframe(60, 2),
+				new Keyframe(120, 5),
+				new Keyframe(200, 7f),
 			}),
-			RingMask = new LayerMask(),
+			PickupMask = new LayerMask(),
 			basePullSpeed = 1.2f
 		};
 	}
@@ -1253,10 +1250,10 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucItemPull
 	{
-		[Tooltip("Core: How close rings need to be to get pulled towards the player, by current running speed.")]
+		[Tooltip("Core: How close rings need to be to get pulled towards the player. NOT BASED ON PROPORTIONAL SPEED")]
 		public AnimationCurve RadiusBySpeed;
 		[Tooltip("Core: To be pulled in, objects must be on this layer")]
-		public LayerMask RingMask;
+		public LayerMask PickupMask;
 		[Tooltip("Core: How quickly to pull rings in, this will scale with player's running speed.")]
 		public float basePullSpeed;
 	}

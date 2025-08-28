@@ -9,7 +9,7 @@ using UnityEditor;
 public class S_O_CharacterLevelUpStats : ScriptableObject
 {
 	[HideInInspector] public string Title = "Title";
-	public float powerFromSpheres = 5;
+	public float pointsFromSpheres = 5;
 
 	public List<LevelUpStats> _Levels = new List<LevelUpStats>();
 
@@ -21,7 +21,7 @@ public class S_O_CharacterLevelUpStats : ScriptableObject
 				_Levels[i] = new LevelUpStats()
 				{
 					level = i + 1,
-					requiredPower = _Levels[i].requiredPower,
+					requiredPoints = _Levels[i].requiredPoints,
 					ringsMaxMultiplier = _Levels[i].ringsMaxMultiplier,
 					energyMaxMultiplier = _Levels[i].energyMaxMultiplier,
 					speedMaxMultiplier = _Levels[i].speedMaxMultiplier
@@ -34,13 +34,13 @@ public class S_O_CharacterLevelUpStats : ScriptableObject
 	public struct LevelUpStats
 	{
 		public int level;
-		public int requiredPower;
+		public int requiredPoints;
 		public float ringsMaxMultiplier;
 		public float energyMaxMultiplier;
 		public float speedMaxMultiplier;
 		public LevelUpStats ( int lvl, int xp ) {
 			level = lvl;
-			requiredPower = xp;
+			requiredPoints = xp;
 			ringsMaxMultiplier = 1;
 			energyMaxMultiplier = 1;
 			speedMaxMultiplier = 1;

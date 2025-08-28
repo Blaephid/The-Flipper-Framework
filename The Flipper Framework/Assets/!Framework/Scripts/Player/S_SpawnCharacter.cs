@@ -23,10 +23,14 @@ public class S_SpawnCharacter : S_Vis_Base
 	[DrawHorizontalWithOthers(new string[] { "_DefaultCharacter" }, new float[] {1f, 2.5f })]
 	private bool        _isActive;
 	[SerializeField]
-	[HideInInspector]
-	private GameObject      _DefaultCharacter;
 
+	[Header("Stage Info")]
+	public GameObject      _DefaultCharacter;
 	public CinemachineBrain _CameraBrain;
+	public S_O_StageScenes _StageInfo;
+	public AudioSource _MusicPlayer;
+	public GameObject _PostProcessing;
+
 
 	[Header("On Spawn")]
 	public int      _spawnDelay = 5;
@@ -113,6 +117,8 @@ public class S_SpawnCharacter : S_Vis_Base
 			}
 
 			GameObject Player = Instantiate(_CharacterToSpawn, transform.position, Quaternion.identity, transform);
+
+			SetPlayerValuesOnStart(Player);
 			//Check S_CharacterTools Awake For assigning references to this. It's there because the Awakes of Player happen before any more code in this method.
 		}
 		yield return new WaitForFixedUpdate();
@@ -122,6 +128,11 @@ public class S_SpawnCharacter : S_Vis_Base
 		yield return null;
 	}
 
+	private void SetPlayerValuesOnStart (GameObject Player) {
+		Player.GetComponentInChildren<S_PlayerScore>()._StageInfo = _StageInfo;
+		Player.GetComponentInChildren<S_PlayerCoreValues>()._Music = _MusicPlayer;
+	}
+
 	private void CheckReplace () {
 		if (_ReplaceReferenceForSpawners._shouldReplacePlayerSourceOfSpawn)
 		{
@@ -129,6 +140,11 @@ public class S_SpawnCharacter : S_Vis_Base
 			_spawnCheckModifier = _ReplaceReferenceForSpawners._spawnDistanceModifier;
 		}
 	}
+
+	public void OnStageEnd () {
+		_PostProcessing.SetActive(false);
+	}
+
 
 #if UNITY_EDITOR
 	public override void DrawGizmosAndHandles ( bool selected ) {

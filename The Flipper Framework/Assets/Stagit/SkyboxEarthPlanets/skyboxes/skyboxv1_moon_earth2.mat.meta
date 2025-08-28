@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cd0c44682a420a34fb0588e942f201e8
+timeCreated: 1451856488
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53752
+  packageName: Earth & Planets skyboxes
+  packageVersion: 1.1
+  assetPath: Assets/Stagit/SkyboxEarthPlanets/skyboxes/skyboxv1_moon_earth2.mat
+  uploadId: 200576

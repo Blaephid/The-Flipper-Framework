@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9af527704df03ae4794562070544c949
+timeCreated: 1452632310
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53752
+  packageName: Earth & Planets skyboxes
+  packageVersion: 1.1
+  assetPath: Assets/Stagit/SkyboxEarthPlanets/skyboxes/skyboxv1_jupiter1.mat
+  uploadId: 200576
