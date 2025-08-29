@@ -117,8 +117,6 @@ public class S_PlayerScore : S_Player_Base
 
 		if (_timeRankText == "X") { _totalRankText = "X"; }
 		else { _totalRankText = _timeRankText + _ringsRankText; }
-
-		Debug.Log("Final rank is " + _totalRankText);
 	}
 
 	//Add a time rank point for each level.

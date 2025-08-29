@@ -2,11 +2,14 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using TMPro;
+using UnityEditor.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class S_StageCompleteControl : MonoBehaviour
 {
 	[Header("External")]
 	[ColourIfNull(1,0,0,1)]public S_SpawnCharacter _Spawner;
+	//[ColourIfNull(1,0,0,1)]public SceneField _StageCompleteScene;
 	[Header("Internal")]
 	[ColourIfNull(1,0,0,1)]public Animator _Animator;
 	[ColourIfNull(1,0,0,1)]public GameObject _Camera;
@@ -26,7 +29,13 @@ public class S_StageCompleteControl : MonoBehaviour
 	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _RingsGainedText;
 	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _RingsLostText;
 
+	[Header("Audio")]
+	[ColourIfNull(1,0,0,1)]public AudioSource _ResultsMusic;
+	[ColourIfNull(1,0,0,1)]public AudioSource _PostResultsMusic;
+	[ColourIfNull(1,0,0,1)]public AudioSource _MinorRankSound;
+	[ColourIfNull(1,0,0,1)]public AudioSource _MajorRankSound;
 
+	private bool _canContinue = false;
 
 	public void OnStageEnd ( S_PlayerScore Score ) {
 		gameObject.SetActive(true); //Ensure active
@@ -35,6 +44,8 @@ public class S_StageCompleteControl : MonoBehaviour
 
 		_Camera.SetActive(true);
 		_PostProcessing.SetActive(true);
+
+		_ResultsMusic.Play();
 
 		_Animator.SetTrigger("Enter");
 		_StageName.text = Score._StageInfo._StageName;
@@ -53,7 +64,7 @@ public class S_StageCompleteControl : MonoBehaviour
 	private IEnumerator BuildUpScoreDisplays ( S_PlayerScore Score ) {
 		float count = 0;
 
-		float[] secondsForLockInOfElement = new float[] {4f, 5f, 6f, 7f, 8f, 8.5f };
+		float[] secondsForLockInOfElement = new float[] {2.5f, 3f, 3.5f, 4f, 4.5f, 5.5f };
 
 		while (count <= secondsForLockInOfElement[5])
 		{
@@ -91,6 +102,32 @@ public class S_StageCompleteControl : MonoBehaviour
 		}
 
 		_Animator.SetTrigger("Calculated");
+
+		yield return new WaitForSeconds(1.5f);
+
+		_canContinue = true;
+	}
+
+	public void AnimPostResultsMusic () {
+		_PostResultsMusic.Play();
+	}
+
+	public void AnimMinorSound () {
+		_MinorRankSound.Play();
+	}
+
+	public void AnimMajorSound () {
+		_MajorRankSound.Play();
+	}
+
+	//Because the control map is still attached to the character, this is searched for and called by the S_PlayerInput Script. See the player prefab.
+	public void InputContinue ( InputAction.CallbackContext ctx ) {
+
+		if (ctx.performed && _canContinue)
+		{
+			S_Manager_LevelProgress.ReturnToTitleScreen();
+			//SceneManager.LoadScene(_StageCompleteScene);
+		}
 	}
 
 }

@@ -2,6 +2,7 @@
 using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class S_Manager_LevelProgress : S_Player_Base
 {
@@ -123,7 +124,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 		yield return new WaitForSeconds(0.2f);
 
-		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(_CoreValues._Music, totalTime, 0));
+		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(_CoreValues._Music, 2, 0));
 
 		float timeCount = 0;
 		while(timeCount <= totalTime && totalTime > 0)
@@ -137,6 +138,8 @@ public class S_Manager_LevelProgress : S_Player_Base
 		}
 		Time.timeScale = 1;
 
+		_Tools.GetComponent<PlayerInput>().SwitchCurrentActionMap("Stage Complete");
+
 		//Activates the stage complete screen.
 		_CoreUIElements._Root.SetActive(false);
 		_MainSkin.gameObject.SetActive(false);
@@ -144,8 +147,6 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_PlayerPhys._arePhysicsEnabled = false;
 
 		GoalRingData.OnStageEnd(_Score);
-
-		//SceneManager.LoadScene(_StageCompleteScene); //Switch to scene
 	}
 
 	#endregion

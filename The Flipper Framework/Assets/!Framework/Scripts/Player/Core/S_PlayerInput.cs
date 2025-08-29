@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine.Windows;
 using System;
 
-public class S_PlayerInput : MonoBehaviour
+public class S_PlayerInput : S_Player_Base
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -16,14 +16,8 @@ public class S_PlayerInput : MonoBehaviour
 	//Unity
 	#region Unity Specific
 
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerMovement	_PlayerMovement;
-	private S_Handler_Camera      _CamHandler;
-	private S_CharacterTools      _Tools;
-
+	private PlayerInput _PlayerInputComponent;
 	private Transform             _Camera; // A reference to the main camera in the scene's transform
-
-	private Transform             _MainSkin;
 
 	#endregion
 
@@ -44,45 +38,45 @@ public class S_PlayerInput : MonoBehaviour
 
 	private Vector3     _inputCheckedLastFrame;
 
-	public bool	_isInputLocked { get; set; }
+	public bool _isInputLocked { get; set; }
 	float               _lockedTime;
 	float               _lockedCounter = 0;
 	[NonSerialized]public bool            _lockedToCharacter;
-	public bool	_isCamLocked { get; set; }
+	public bool _isCamLocked { get; set; }
 
 	[NonSerialized] public bool _completeControlLock;
 
 	//input
 	//NewInput system
-	public PlayerNewInput		newInput;
+	public PlayerNewInput           newInput;
 
 	//NewInput inputs stored
-	[HideInInspector] public float	moveX;
-	[HideInInspector] public float	moveY;
-	[HideInInspector] public Vector2	moveVec;
+	[HideInInspector] public float  moveX;
+	[HideInInspector] public float  moveY;
+	[HideInInspector] public Vector2        moveVec;
 
 	Vector2 CurrentCamMovement;
-	[HideInInspector] public float	moveCamX;
-	[HideInInspector] public float	moveCamY;
-	private float			camSensi;
+	[HideInInspector] public float  moveCamX;
+	[HideInInspector] public float  moveCamY;
+	private float                   camSensi;
 	[HideInInspector]
-	public float			mouseSensi;
+	public float                    mouseSensi;
 
-	[HideInInspector] public bool		_JumpPressed;
-	[HideInInspector] public bool		_RollPressed;
-	[HideInInspector] public bool		_SpecialPressed;
-	[HideInInspector] public bool		_BoostPressed;
-	[HideInInspector] public bool		_LeftStepPressed;
-	[HideInInspector] public bool		_RightStepPressed;
-	[HideInInspector] public bool		_BouncePressed;
-	[HideInInspector] public bool		_PowerPressed;
-	[HideInInspector] public bool		_InteractPressed;
-	[HideInInspector] public bool		_CamResetPressed;
-	[HideInInspector] public bool		_HomingPressed;
-	[HideInInspector] public bool		_SpinChargePressed;
-	[HideInInspector] public bool		_KillBindPressed;
+	[HideInInspector] public bool           _JumpPressed;
+	[HideInInspector] public bool           _RollPressed;
+	[HideInInspector] public bool           _SpecialPressed;
+	[HideInInspector] public bool           _BoostPressed;
+	[HideInInspector] public bool           _LeftStepPressed;
+	[HideInInspector] public bool           _RightStepPressed;
+	[HideInInspector] public bool           _BouncePressed;
+	[HideInInspector] public bool           _PowerPressed;
+	[HideInInspector] public bool           _InteractPressed;
+	[HideInInspector] public bool           _CamResetPressed;
+	[HideInInspector] public bool           _HomingPressed;
+	[HideInInspector] public bool           _SpinChargePressed;
+	[HideInInspector] public bool           _KillBindPressed;
 
-	[HideInInspector] public bool		_isUsingMouse = false;
+	[HideInInspector] public bool           _isUsingMouse = false;
 
 	#endregion
 	#endregion
@@ -94,13 +88,8 @@ public class S_PlayerInput : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Awake () {
-		// Set up the reference.
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
-		_CamHandler = _Tools.CamHandler;
-		_MainSkin = _Tools.MainSkin;
+	public override void Awake () {
+		base.Awake();
 
 		// get the transform of the main camera
 		if (Camera.main != null)
@@ -111,6 +100,9 @@ public class S_PlayerInput : MonoBehaviour
 		//Managing Inputs
 		mouseSensi = _Tools.CameraStats.InputStats.InputMouseSensi;
 		camSensi = _Tools.CameraStats.InputStats.InputSensi;
+
+		_PlayerInputComponent = GetComponent<PlayerInput>();
+		_PlayerInputComponent.SwitchCurrentActionMap("Character Controls"); //Changes inputs to ones relevant to controlling the camera
 	}
 
 	// Update is called once per frame
@@ -213,9 +205,9 @@ public class S_PlayerInput : MonoBehaviour
 	/// 
 	#region public 
 	//Called by other scripts to set the input to a specific thing, unable to change for a period of time.
-	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change, bool overwrite = false) {
+	public void LockInputForAWhile ( float frames, bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change, bool overwrite = false ) {
 
-		if(_isInputLocked && frames < _lockedTime - _lockedCounter && !overwrite) { return; } //If this new lock has less frames than the amount left of the current one, then ignore it.
+		if (_isInputLocked && frames < _lockedTime - _lockedCounter && !overwrite) { return; } //If this new lock has less frames than the amount left of the current one, then ignore it.
 
 		_lockedToCharacter = false;
 
@@ -263,11 +255,11 @@ public class S_PlayerInput : MonoBehaviour
 	public void UnLockInput () {
 		_lockedTime = 0;
 		_isInputLocked = false;
-		_isCamLocked = false; 
+		_isCamLocked = false;
 	}
 
 	//Called externally once per frame to check if the input is different to last frame despite the actual controller input not being changed.
-	public bool IsTurningBecauseOfCamera (Vector3 inputDirection, float threshold = 1) {
+	public bool IsTurningBecauseOfCamera ( Vector3 inputDirection, float threshold = 1 ) {
 		bool isCamera = false;
 		if (Vector3.Angle(_inputCheckedLastFrame, inputDirection) > threshold)                      //If move input is noticeably different to how it was last frame.
 		{
@@ -285,6 +277,8 @@ public class S_PlayerInput : MonoBehaviour
 
 
 	#region inputSystem
+
+	//Character Controls Map
 	public void MoveInput ( InputAction.CallbackContext ctx ) {
 		if (_completeControlLock) { return; }
 
@@ -455,7 +449,18 @@ public class S_PlayerInput : MonoBehaviour
 			_Tools.UISpawner._BaseUIElements.PauseMenu.PauseToggle();
 		}
 	}
-	#endregion
 
+
+	//Other maps
+
+	public void InputFindStageCompleteAndConfirm ( InputAction.CallbackContext ctx ) {
+
+
+		S_StageCompleteControl Control = FindFirstObjectByType<S_StageCompleteControl>();
+		if(Control) { Control.InputContinue(ctx); }
+
+	}
+
+#endregion
 
 }

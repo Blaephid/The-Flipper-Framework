@@ -1100,6 +1100,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Stage Complete",
+            "id": "79af2707-e553-40f6-92c5-67fb082d08b1",
+            "actions": [
+                {
+                    "name": "Continue",
+                    "type": "Button",
+                    "id": "55630bbb-1783-4378-a7db-499c061405ad",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1c4ac385-c21c-4d34-9133-8350783a29b1",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Continue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

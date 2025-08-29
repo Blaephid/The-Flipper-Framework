@@ -581,7 +581,6 @@ MonoBehaviour:
   _Groundmask_:
     serializedVersion: 2
     m_Bits: 0
-  _arePhysicsOn: 1
   _CharacterCenterPosition: {x: 0, y: 0, z: 0}
   _CharacterPivotPosition: {x: 0, y: 0, z: 0}
   _CharacterPhysicsPosition: {x: 0, y: 0, z: 0}
@@ -617,6 +616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514900622d8654843bb4ebdbc2468f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _move: {x: 0, y: 0, z: 0}
   _inputOnController: {x: 0, y: 0, z: 0}
   _prevInputWithoutCamera: {x: 0, y: 0, z: 0}
@@ -1024,6 +1024,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: be8dd1f9-3572-4198-8416-b6ab8d6578af
     m_ActionName: 'Character Controls/RestartBind[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114421511878716788}
+        m_TargetAssemblyTypeName: S_PlayerInput, Assembly-CSharp
+        m_MethodName: InputFindStageCompleteAndConfirm
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 55630bbb-1783-4378-a7db-499c061405ad
+    m_ActionName: 'Stage Complete/Continue[/Keyboard/space]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Character Controls
@@ -1250,6 +1266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Tools: {fileID: 0}
+  _paused: 0
   _trueTime: 0
   _minutes: 0
   _seconds: 0
@@ -8665,6 +8682,7 @@ MonoBehaviour:
   _AdditionalUI: []
   _HedgeCamera: {fileID: 276827108226429178}
   _BaseUIElements:
+    _Root: {fileID: 0}
     _HomingIconScript: {fileID: 0}
     _HomingIconObject: {fileID: 0}
     GaugeAnimator: {fileID: 0}
