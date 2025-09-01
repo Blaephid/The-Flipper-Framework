@@ -35,6 +35,7 @@ public class S_PlayerCoreValues : S_Player_Base
 
 	//Energy
 	public float _energy { get; private set; }
+	public float _multiplierFromEnergy { get; private set; }
 
 	private float _displayEnergy;
 	private float _prevDisplayEnergy;
@@ -189,6 +190,11 @@ public class S_PlayerCoreValues : S_Player_Base
 
 		_energy += change;
 		_energy = Mathf.Clamp(_energy, 0, _currentMaxEnergy);
+	}
+
+	//This multiplier is a general float used in a variety of calculation to improve or weaken certain actions. For instance, the roll action uses energy to increase this, which affects downhill boost.
+	public void SetMultiplierFromEnergy(float set ) {
+		_multiplierFromEnergy = set;
 	}
 
 	//Gain or lose rings

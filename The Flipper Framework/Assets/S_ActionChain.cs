@@ -16,10 +16,10 @@ public class S_ActionChain : S_Player_Base
 	[NonSerialized] public List<string> _ChainList = new List<string>();
 
 	private float _chainLevel = 0;
-	private float _powerGained = 0;
+	private float _pointsGained = 0;
 
-	[SerializeField] AnimationCurve _ChainCountdownByLevel;
-	[SerializeField] AnimationCurve _PowerGainedByLevel;
+	[SerializeField] AnimationCurve _ChainCountdownByLevel_;
+	[SerializeField] AnimationCurve _PointsGainedByLevel_;
 	private float _currentCountdown;
 	private float _currentTime;
 	private float _countdownSpeed;
@@ -57,10 +57,10 @@ public class S_ActionChain : S_Player_Base
 	private void ClearChain () {
 		_chainActive = false;
 
-		_powerGained = _PowerGainedByLevel.Evaluate(_chainLevel);
-		_powerGained = Mathf.Round(_powerGained);
+		_pointsGained = _PointsGainedByLevel_.Evaluate(_chainLevel);
+		_pointsGained = Mathf.Round(_pointsGained);
 
-		_CoreUIElements.AChainResultText.text = _powerGained.ToString() ;
+		_CoreUIElements.AChainResultText.text = _pointsGained.ToString() ;
 		_CoreUIElements.AChainUIScript.EndChain(ExitAnimationFinished);
 
 		_chainLevel = 0;
@@ -105,7 +105,7 @@ public class S_ActionChain : S_Player_Base
 			_chainLevel += value;
 
 			//Set countdown
-			_currentCountdown = _ChainCountdownByLevel.Evaluate(_chainLevel);
+			_currentCountdown = _ChainCountdownByLevel_.Evaluate(_chainLevel);
 			_currentTime = _currentCountdown;
 
 			//UI Countdown
@@ -124,7 +124,14 @@ public class S_ActionChain : S_Player_Base
 	public void SetCountdownSpeedTemp ( float value, float time ) { _countdownSpeed = value; _countdownSpeedSetFor = time; }
 
 	public void ExitAnimationFinished () {
-		_CoreValues.AdjustPoints(_powerGained);
+		_CoreValues.AdjustPoints(_pointsGained);
+	}
+
+	public override void AssignStats () {
+		base.AssignStats();
+
+		_PointsGainedByLevel_ = _Tools.LevelUpStats.pointsPerActionChainLevel;
+		_ChainCountdownByLevel_ = _Tools.LevelUpStats.chainCountDownPerLevel;
 	}
 
 }

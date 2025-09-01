@@ -48,7 +48,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 	private float           _speedMultiplierFromPerfect_;
 	private float           _energyFromPerfect_;
-	private float           _powerFromPerfect_;
+	private float           _pointsFromPerfect_;
 	#endregion
 
 	// Trackers
@@ -145,9 +145,9 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 
 		_timer = 0;
 		_Actions._speedBeforeAction = _PlayerVel._horizontalSpeedMagnitude; //Saved so it can be called back to on hit or end of action.
-		if (_PlayerPhys._PlayerVelocity._horizontalSpeedMagnitude > 30)
+		if (_PlayerPhys._PlayerVel._horizontalSpeedMagnitude > 30)
 		{
-			_directionBeforeAttack = _PlayerPhys._PlayerVelocity._coreVelocity.normalized;
+			_directionBeforeAttack = _PlayerPhys._PlayerVel._coreVelocity.normalized;
 			_directionBeforeAttack.y = 0;
 			_directionBeforeAttack.Normalize();
 		}
@@ -203,7 +203,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 				_Sounds.HomingAttackSound(true);
 				_Effects.EnableLargeTrail(_homingTimerLimit_ + 0.06f, true);
 				_CoreValues.AdjustEnergy(_energyFromPerfect_);
-				_CoreValues.AdjustPoints(_powerFromPerfect_);
+				_CoreValues.AdjustPoints(_pointsFromPerfect_);
 
 				_ActionChain.AddToChain("Perfect Homing Attack", 1, 1);
 
@@ -549,7 +549,7 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_minHomingSpeed_ = _Tools.Stats.HomingStats.minimumSpeed;
 		_homingCountLimit_ = _Tools.Stats.HomingStats.homingCountLimit;
 		_energyFromPerfect_ = _Tools.Stats.HomingStats.energyGained;
-		_powerFromPerfect_ = _Tools.Stats.HomingStats.powerGained;
+		_pointsFromPerfect_ = _Tools.LevelUpStats.pointsFromPerfectHomingAttack;
 		_speedMultiplierFromPerfect_ = _Tools.Stats.HomingStats.speedMultiplier;
 	}
 	#endregion

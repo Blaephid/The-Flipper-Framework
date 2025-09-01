@@ -9,7 +9,7 @@ using System;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(S_PlayerMovement))]
 [RequireComponent(typeof(S_PlayerVelocity))]
-public class S_PlayerPhysics : MonoBehaviour
+public class S_PlayerPhysics : S_Player_Base
 {
 
 	/// <summary>
@@ -20,16 +20,6 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Members
-	private S_ActionManager       _Actions;
-	[HideInInspector]
-	public S_PlayerMovement       _PlayerMovement;
-	[HideInInspector]
-	public S_PlayerVelocity       _PlayerVelocity;
-	private S_CharacterTools      _Tools;
-	private S_PlayerInput         _Input;
-	private S_PlayerEvents        _Events;
-
-	private S_Handler_Camera      _CamHandler;
 
 	static public S_PlayerPhysics s_MasterPlayer;
 
@@ -37,7 +27,6 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Rigidbody              _RB;
 	private CapsuleCollider       _CharacterCapsule;
 	private Transform             _FeetTransform;
-	private Transform             _MainSkin;
 	[HideInInspector]
 	public Transform             _CenterOfMass;
 	#endregion
@@ -79,7 +68,10 @@ public class S_PlayerPhysics : MonoBehaviour
 	[NonSerialized] public Vector2               _bounceAirControl_;
 
 	[Header("Rolling Values")]
-	[NonSerialized] public float                 _rollingDownhillBoost_;
+	public float _rollingDownhillBoost_ 
+		{ get { return _rollingDownhillBoostBackingField * _CoreValues._multiplierFromEnergy; } set { _rollingDownhillBoostBackingField = value; } }
+	private float                 _rollingDownhillBoostBackingField;
+
 	[NonSerialized] public float                 _rollingUphillBoost_;
 
 	[Header("Stick To Ground")]
@@ -110,11 +102,11 @@ public class S_PlayerPhysics : MonoBehaviour
 	private bool        _isPositiveUpdate;  //Alternates between on and off every update, so can be used universally for anything that should only happen every other frame.
 
 	[HideInInspector]       public static int         _frameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
-	[HideInInspector]	public static int         _fixedFrameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
+	[HideInInspector]       public static int         _fixedFrameCount;         //Used for Debugging, can be set to increase here every frame, and referenced in other scripts.
 
-	
+
 	[NonSerialized]public bool      _areSpeedChangesEnabled = true;         //If false, no changes to velocity will be calculated or applied. This script will be inactive.
-	[NonSerialized] public bool	_arePhysicsEnabled = true;		//If false, fixedUpdate will not be called here, disabling movement.
+	[NonSerialized] public bool     _arePhysicsEnabled = true;              //If false, fixedUpdate will not be called here, disabling movement.
 
 	//Updated each frame to get current place on animation curves relevant to movement.
 	private float                  _curvePosSlopePowerUphill;
@@ -126,7 +118,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	[HideInInspector]
 	public Vector3          _CharacterPivotPosition;
 	[HideInInspector]
-	public Vector3		_CharacterPhysicsPosition;
+	public Vector3          _CharacterPhysicsPosition;
 	[HideInInspector]
 	public Vector3          _CharacterCenterPositionUpper;
 	[HideInInspector]
@@ -217,14 +209,14 @@ public class S_PlayerPhysics : MonoBehaviour
 	#region Inherited
 
 	//On start, assigns stats.
-	private void Awake () {
+	public override void Awake () {
+		base.Awake();
+	}
+
+	private void Start () {
 		//Set grounded to true then not to ensure all default values are set.
 		SetIsGrounded(true);
 		SetIsGrounded(false);
-
-		_Tools = GetComponent<S_CharacterTools>();
-		AssignTools();
-		AssignStats();
 
 		_fixedFrameCount = 0;
 		_frameCount = 0;
@@ -277,7 +269,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	//So we have to check what has happened since they were set and factor in those changes.
 	//This must be done first, even before any ontrigger or on collision events, because those can lead to action or velocity changes that mess up the controller.
 	public void RespondToCollisions () {
-		_PlayerVelocity.CheckAndApplyVelocityChanges();
+		_PlayerVel.CheckAndApplyVelocityChanges();
 
 		for (int i = 0 ; i < _ListOfTriggersEnteredThisFrame.Count ; i++)
 		{
@@ -321,14 +313,14 @@ public class S_PlayerPhysics : MonoBehaviour
 	//IMPORTANT. Due to the order and the Script Execution Order project settings, this will always be the first Method called every FixedUpdate, before any other script in the game.
 	private void HandleGeneralPhysics () {
 
-		if(!_arePhysicsEnabled) { return; } //Physics won't be calculated if locked.
+		if (!_arePhysicsEnabled) { return; } //Physics won't be calculated if locked.
 
 		Profiler.BeginSample("PlayerPhysics");
 		UpdatePositionTrackers();
 
 		//Get curve positions, which will be used in calculations for this frame.
-		_curvePosSlopePowerUphill = _slopePowerUpBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
-		_curvePosSlopePowerDownhill = _slopePowerDownBySpeed_.Evaluate(_PlayerVelocity._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
+		_curvePosSlopePowerUphill = _slopePowerUpBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
+		_curvePosSlopePowerDownhill = _slopePowerDownBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed);
 
 		RespondToCollisions();
 
@@ -344,7 +336,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (_isGrounded)
 			GroundMovement();
 		else
-			_PlayerVelocity._coreVelocity = HandleAirMovement(_PlayerVelocity._coreVelocity);
+			_PlayerVel._coreVelocity = HandleAirMovement(_PlayerVel._coreVelocity);
 
 		//After all other calculations are made across the scripts, the new velocities are applied to the rigidbody in the PlayerVelocity Script.
 		//That is called there because it should only be called at the end of a fixed update, after everything else has been applied.
@@ -381,7 +373,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		float groundCheckerDistance = _rayToGroundDistance_.y;
 		if (_isGrounded && _canStickToGround)
 		{
-			groundCheckerDistance = _rayToGroundDistance_.x + (_PlayerVelocity._horizontalSpeedMagnitude * _raytoGroundSpeedRatio_);
+			groundCheckerDistance = _rayToGroundDistance_.x + (_PlayerVel._horizontalSpeedMagnitude * _raytoGroundSpeedRatio_);
 			groundCheckerDistance = Mathf.Min(groundCheckerDistance, _raytoGroundSpeedMax_);
 		}
 
@@ -401,7 +393,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				//Because terrain can be bumpy, find an average normal between multiple around the same area.
 				float[] checksAtRotations = new float[]{0,20,20,20,40,40,40,40,40,40,20,20 }; //Each element is a check, and the value is how much to rotate (relative to player up), before checking.
 				float[] distances = new float[] {0.5f, 1f};
-				Vector3 offSetForCheck = _PlayerVelocity._horizontalSpeedMagnitude > 30 ? _PlayerVelocity._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.8f; //The offset from the main check that will rotate
+				Vector3 offSetForCheck = _PlayerVel._horizontalSpeedMagnitude > 30 ? _PlayerVel._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.8f; //The offset from the main check that will rotate
 
 				for (int i = 0 ; i < checksAtRotations.Length * distances.Length ; i++)
 				{
@@ -435,7 +427,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			{
 				//If the directions without vertical lead to the normal facing away from move direction.
 				//useGroundDifferentLimit = Vector3.Angle(lateralDirection, lateralTempNormal) > 85f ? _groundDifferenceLimit_.z : useGroundDifferentLimit;
-				if (Vector3.Angle(tempNormal, -_PlayerVelocity._worldVelocity) < Vector3.Angle(_HitGround.normal, -_PlayerVelocity._worldVelocity))
+				if (Vector3.Angle(tempNormal, -_PlayerVel._worldVelocity) < Vector3.Angle(_HitGround.normal, -_PlayerVel._worldVelocity))
 				{
 					useGroundDifferentLimit = _groundDifferenceLimit_.z;
 				}
@@ -467,14 +459,14 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (!_areSpeedChangesEnabled) { return; }
 
 		//To avoid jittering against a wall if going to and from 0 to even some speed, only call this if there isn't a wall SUPER close in the input direction.
-		if (!(_PlayerVelocity._horizontalSpeedMagnitude < 10 && Physics.SphereCast(_CharacterCenterPosition, _CharacterCapsule.radius * 0.99f,
+		if (!(_PlayerVel._horizontalSpeedMagnitude < 10 && Physics.SphereCast(_CharacterCenterPosition, _CharacterCapsule.radius * 0.99f,
 			_Input._constantInputRelevantToCharacter, out RaycastHit hit, 0.02f + (_CharacterCapsule.radius * 0.01f), _Groundmask_)))
 		{
-			_PlayerVelocity._coreVelocity = _PlayerMovement.HandleControlledVelocity(_PlayerVelocity._coreVelocity, new Vector2(1, 1));
+			_PlayerVel._coreVelocity = _PlayerMovement.HandleControlledVelocity(_PlayerVel._coreVelocity, new Vector2(1, 1));
 		}
 
-		_PlayerVelocity._coreVelocity = HandleSlopePhysics(_PlayerVelocity._coreVelocity);
-		_PlayerVelocity._coreVelocity = StickToGround(_PlayerVelocity._coreVelocity);
+		_PlayerVel._coreVelocity = HandleSlopePhysics(_PlayerVel._coreVelocity);
+		_PlayerVel._coreVelocity = StickToGround(_PlayerVel._coreVelocity);
 	}
 
 	//Calls methods relevant to general control and gravity, while applying the turn and accelleration modifiers depending on a number of factors while in the air.
@@ -506,13 +498,13 @@ public class S_PlayerPhysics : MonoBehaviour
 					airTurnMod = _bounceAirControl_.x;
 					break;
 			}
-			if (_PlayerVelocity._horizontalSpeedMagnitude < 20)
+			if (_PlayerVel._horizontalSpeedMagnitude < 20)
 			{
 				airAccelMod += 0.5f;
 			}
 
 			//Handles lateral velocity.
-			coreVelocity = _PlayerMovement.HandleControlledVelocity(_PlayerVelocity._coreVelocity, new Vector2(airTurnMod, airAccelMod));
+			coreVelocity = _PlayerMovement.HandleControlledVelocity(_PlayerVel._coreVelocity, new Vector2(airTurnMod, airAccelMod));
 		}
 		coreVelocity = CheckGravity(coreVelocity);
 
@@ -523,7 +515,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	public Vector3 CheckGravity ( Vector3 coreVelocity, bool overwrite = false ) {
 		//Apply Gravity (vertical velocity)
 		if (_locksForIsGravityOn.Count == 0 || overwrite)
-			coreVelocity = ApplyGravityToIncreaseFallSpeed(coreVelocity, _currentFallGravity, _currentUpwardsFallGravity, _maxFallingSpeed_, _PlayerVelocity._worldVelocity);
+			coreVelocity = ApplyGravityToIncreaseFallSpeed(coreVelocity, _currentFallGravity, _currentUpwardsFallGravity, _maxFallingSpeed_, _PlayerVel._worldVelocity);
 		return coreVelocity;
 	}
 
@@ -538,7 +530,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		if (canFallOff && IsTooSlowOnSlope(_groundNormal))
 		{
 			//Then fall off and away from the slope.
-			_PlayerVelocity.AddGeneralVelocity(Vector3.Lerp(_groundNormal, Vector3.down, 0.2f) * 15f, true, true);
+			_PlayerVel.AddGeneralVelocity(Vector3.Lerp(_groundNormal, Vector3.down, 0.2f) * 15f, true, true);
 			SetIsGrounded(false, 0.3f); //Wont be able to find ground again for x seconds.
 
 			_keepNormalCounter = _keepNormalForThis_ - 0.03f; //Ensures will immediately start to rotate to ground being down.
@@ -547,7 +539,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Slope power
 		//If slope angle is less than limit, meaning on a slope
-		if (_groundNormal.y < _slopeEffectLimit_ && _PlayerVelocity._horizontalSpeedMagnitude > 3)
+		if (_groundNormal.y < _slopeEffectLimit_ && _PlayerVel._horizontalSpeedMagnitude > 3)
 		{
 			_isCurrentlyOnSlope = true;
 
@@ -574,7 +566,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			{
 				//Decrease timeUpHill.
 				float decreaseTimeUpHillBy = Time.fixedDeltaTime * 0.5f; //not as quickly as how it increases so zigzagging down and up won't work.
-				decreaseTimeUpHillBy *= 1 + (_PlayerVelocity._totalVelocity.normalized.y); //Decrease more depending on how downwards is moving. If going straight downwards, then this becomes x2, making it equal to any uphill.
+				decreaseTimeUpHillBy *= 1 + (_PlayerVel._totalVelocity.normalized.y); //Decrease more depending on how downwards is moving. If going straight downwards, then this becomes x2, making it equal to any uphill.
 				_timeUpHill -= Mathf.Clamp(_timeUpHill - decreaseTimeUpHillBy, 0, _timeUpHill); //Apply, but can't go under 0
 
 				force *= _curvePosSlopePowerDownhill;
@@ -602,7 +594,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	private bool IsTooSlowOnSlope ( Vector3 normal ) {
 		//If moving too slow compared to the limit
 		float speedRequirement = _SlopeSpeedLimitByAngle_.Evaluate(normal.y);
-		return (_PlayerVelocity._horizontalSpeedMagnitude < speedRequirement);
+		return (_PlayerVel._horizontalSpeedMagnitude < speedRequirement);
 	}
 
 	//Handles the player's velocity following the path of the ground. This does not set the rotation to match it, but does prevent them from flying off or colliding with slopes.
@@ -613,18 +605,18 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//If moving and has been grounded for long enough. The time on ground is to prevent gravity force before landing being carried over to shoot player forwards on landing.
 		//Then ready a raycast to check for slopes.
-		if (_timeOnGround > 0.12f && _PlayerVelocity._horizontalSpeedMagnitude > 3)
+		if (_timeOnGround > 0.12f && _PlayerVel._horizontalSpeedMagnitude > 3)
 		{
 
 			Debug.DrawRay(_CharacterCenterPosition, velocity * Time.deltaTime, Color.gray, 10f);
 
 			Vector3 currentGroundNormal = _groundNormal;
 			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.07f);
-			Vector3 rayCastDirection = AlignWithNormal(_PlayerVelocity._worldVelocity.normalized, _groundNormal, 1);
+			Vector3 rayCastDirection = AlignWithNormal(_PlayerVel._worldVelocity.normalized, _groundNormal, 1);
 
 			//If the Raycast Hits something, then there is a wall in front, that could be a negative slope (ground is higher and will tilt backwards to go up).
 			if (Physics.SphereCast(raycastStartPosition, 0.05f, rayCastDirection, out RaycastHit hitSticking,
-					_PlayerVelocity._horizontalSpeedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, _Groundmask_))
+					_PlayerVel._horizontalSpeedMagnitude * _stickCastAhead_ * Time.fixedDeltaTime, _Groundmask_))
 			{
 				float upwardsDirectionDifference =  Vector3.Angle(currentGroundNormal, hitSticking.normal);
 
@@ -653,7 +645,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				velocity.y = 0;
 				velocity = transform.TransformDirection(velocity);
 			}
-			_PlayerVelocity.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false);
+			_PlayerVel.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false);
 		}
 		return velocity;
 	}
@@ -683,7 +675,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		//Shoots a raycast under the ground where the player would be next frame, meaning it will only be true if the ground next frame will be lower than this frame.
 		raycastStartPosition = _HitGround.point - (_groundNormal * 0.02f);
-		raycastStartPosition += (rayCastDirection * (_PlayerVelocity._horizontalSpeedMagnitude * Time.deltaTime));
+		raycastStartPosition += (rayCastDirection * (_PlayerVel._horizontalSpeedMagnitude * Time.deltaTime));
 		if (Physics.Raycast(raycastStartPosition, -_groundNormal, out RaycastHit hitSticking, 1f, _Groundmask_))
 		{
 			//Check if this ground isn't too different to warrent lerping to it.
@@ -699,7 +691,7 @@ public class S_PlayerPhysics : MonoBehaviour
 		velocity = Vector3.LerpUnclamped(velocity, Dir, lerpAmount);
 
 		// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
-		_PlayerVelocity.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
+		_PlayerVel.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
 
 		return velocity;
 	}
@@ -719,7 +711,7 @@ public class S_PlayerPhysics : MonoBehaviour
 			float stepHeight = 1.5f - (hitLip.distance);
 			float floorToStepDot = Vector3.Dot(hitLip.normal, currentGroundNormal);
 
-			if (stepHeight < _stepHeight_ && _PlayerVelocity._horizontalSpeedMagnitude > 5f && floorToStepDot > 0.93f)
+			if (stepHeight < _stepHeight_ && _PlayerVel._horizontalSpeedMagnitude > 5f && floorToStepDot > 0.93f)
 			{
 				//Gets a position to place the player ontop of the step, then performs a box cast to check if there is enough empty space for the player to fit. 
 				//Then move them to that position.
@@ -730,9 +722,9 @@ public class S_PlayerPhysics : MonoBehaviour
 				//Ensure there is space for the player to be moved here by mimicking the players collider size.
 				float capsuleHalfHeightMinusRadius = ((_CharacterCapsule.height * 0.5f) - _CharacterCapsule.radius) * _CharacterCapsule.transform.lossyScale.y;
 				Vector3 capsulePosition = newPosition + _colliderOffsetFromPivot;
-				
+
 				if (!Physics.CheckCapsule
-				(capsulePosition + (currentGroundNormal * capsuleHalfHeightMinusRadius), capsulePosition - (currentGroundNormal * capsuleHalfHeightMinusRadius), 
+				(capsulePosition + (currentGroundNormal * capsuleHalfHeightMinusRadius), capsulePosition - (currentGroundNormal * capsuleHalfHeightMinusRadius),
 				_CharacterCapsule.radius * 0.8f, _Groundmask_, QueryTriggerInteraction.Ignore))
 				{
 					SetPlayerPosition(newPosition);
@@ -923,13 +915,13 @@ public class S_PlayerPhysics : MonoBehaviour
 
 			//If changed to be in the air when was on the ground
 			if (!_isGrounded)
-			{				
+			{
 				_groundNormal = Vector3.up;
 				_wasInAirLastFrame = true;
 				_groundingDelay = timer;
 
 
-				if(_Actions) _Events._OnLoseGround.Invoke();
+				if (_Actions) _Events._OnLoseGround.Invoke();
 			}
 			//If changed to be on the ground when was in the air
 			else if (_isGrounded)
@@ -943,7 +935,7 @@ public class S_PlayerPhysics : MonoBehaviour
 				}
 				_keepNormalCounter = 0;
 
-				if(_Actions) _Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
+				if (_Actions) _Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
 			}
 		}
 	}
@@ -958,7 +950,7 @@ public class S_PlayerPhysics : MonoBehaviour
 
 		transform.position = newPosition;
 		UpdatePositionTrackers();
-		if (shouldPrintLocation) Debug.Log("Change Position to  " +newPosition+ " On frame " +_fixedFrameCount);
+		if (shouldPrintLocation) Debug.Log("Change Position to  " + newPosition + " On frame " + _fixedFrameCount);
 	}
 
 	public void SetPlayerRotation ( Quaternion newRotation, bool immediately = false, bool shouldPrintRotation = false ) {
@@ -974,7 +966,7 @@ public class S_PlayerPhysics : MonoBehaviour
 	}
 
 	//Called at any point when one wants to lock one of the basic functions like turning or controlling for a set ammount of time. Must input the function first though.
-	public IEnumerator LockFunctionForTime ( EnumControlLimitations whatToLimit, float seconds, string source, int frames = 0) {
+	public IEnumerator LockFunctionForTime ( EnumControlLimitations whatToLimit, float seconds, string source, int frames = 0 ) {
 		//Add lock to a list based on enum input
 		switch (whatToLimit)
 		{
@@ -1024,7 +1016,9 @@ public class S_PlayerPhysics : MonoBehaviour
 	/// </summary>
 	#region Assigning
 	//Matches all changeable stats to how they are set in the character stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
+		base.AssignStats();
+
 		_isUsingSlopePhysics_ = _Tools.Stats.SlopeStats.isUsingSlopePhysics;
 		_slopeEffectLimit_ = _Tools.Stats.SlopeStats.slopeEffectLimit;
 		_SlopeSpeedLimitByAngle_ = _Tools.Stats.SlopeStats.SpeedLimitBySlopeAngle;
@@ -1072,19 +1066,18 @@ public class S_PlayerPhysics : MonoBehaviour
 
 	}
 
-	private void AssignTools () {
+	public override void AssignTools () {
+		base.AssignTools();
 		s_MasterPlayer = this;
 		_RB = GetComponent<Rigidbody>();
-		_Actions = _Tools._ActionManager;
 		_PlayerMovement = GetComponent<S_PlayerMovement>();
-		_PlayerVelocity = GetComponent<S_PlayerVelocity>();
+		_PlayerVel = GetComponent<S_PlayerVelocity>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_Events = _Tools.PlayerEvents;
-		_CamHandler = _Tools.CamHandler;
 
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_FeetTransform = _Tools.FeetPoint;
-		_MainSkin = _Tools.MainSkin;
+
 		_CenterOfMass = _Tools.CenterOfMass;
 	}
 	#endregion

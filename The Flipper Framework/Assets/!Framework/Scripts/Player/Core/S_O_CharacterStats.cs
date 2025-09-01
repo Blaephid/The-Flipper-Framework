@@ -461,6 +461,13 @@ public class S_O_CharacterStats : ScriptableObject
 			rollingUphillBoost = 1.2f,
 			rollingStartSpeed = 5f,
 			rollingTurningModifier = 0.6f,
+			modifierFromEnergy = 1.5f,
+			EnergyByAngle = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(-1, 0f),
+				new Keyframe(0f, 15f),
+				new Keyframe(1f, 0f),
+			}),
 		};
 	}
 
@@ -483,6 +490,11 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    rollingLandingBoost;
 		[Tooltip("Core: Can only exit a role after benn rolling for this many seconds.")]
 		public float    minRollingTime;
+		[Header("Interaction With Energy")]
+		[Tooltip("Core: How much energy is used per second when rolling on this angle. Set to 0 to disable this feature.")]
+		public AnimationCurve EnergyByAngle;
+		[Tooltip("Surface: Increases downhillBoost by this ammoung when using energy.")]
+		public float modifierFromEnergy;
 	}
 
 	#endregion
@@ -821,7 +833,6 @@ public class S_O_CharacterStats : ScriptableObject
 			homingCountLimit = 0,
 			speedMultiplier = 1.3f,
 			energyGained = 1,
-			powerGained = 1,
 
 		};
 	}
@@ -868,8 +879,6 @@ public class S_O_CharacterStats : ScriptableObject
 		public float         speedMultiplier;
 		[Tooltip("Surface: How much energy is gained (see energy)")]
 		public float         energyGained;
-		[Tooltip("Surface: How much power is gained (see levelling)")]
-		public float         powerGained;
 	}
 	#endregion
 

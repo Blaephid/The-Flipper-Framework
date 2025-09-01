@@ -9,7 +9,27 @@ using UnityEditor;
 public class S_O_CharacterLevelUpStats : ScriptableObject
 {
 	[HideInInspector] public string Title = "Title";
+
+	[Header("Gaining Points")]
 	public float pointsFromSpheres = 5;
+	public AnimationCurve pointsPerActionChainLevel = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0.1f),
+				new Keyframe(5, 0),
+				new Keyframe(6f, 10f),
+				new Keyframe(15f, 300f),
+			});
+	public AnimationCurve chainCountDownPerLevel = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 5),
+				new Keyframe(10, 3),
+				new Keyframe(15, 2f),
+			});
+
+	[Tooltip("How many points to gain per second of rolling with energy.")]
+	public float pointsFromRolling = 200;
+	[Tooltip("")]
+	public float pointsFromPerfectHomingAttack = 25;
 
 	public List<LevelUpStats> _Levels = new List<LevelUpStats>();
 

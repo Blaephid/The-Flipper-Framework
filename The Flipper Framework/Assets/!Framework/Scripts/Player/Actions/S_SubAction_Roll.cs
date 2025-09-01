@@ -23,6 +23,11 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 	#region Stats
 	private float       _rollingStartSpeed_;
 	private float       _minRollTime_ = 0.3f;
+
+	//Energy
+	private AnimationCurve _EnergyUseByAngle_;
+	private float _pointsFromEnergyRoll_;
+	private float _modifierFromEnergy_;
 	#endregion
 
 	// Trackers
@@ -60,6 +65,17 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 				_rollCounter += Time.deltaTime;
 
 			if(_rollCounter > 0.5f && _PlayerVel._horizontalSpeedMagnitude > _speedBeforeRoll + 50) { _ActionChain.AddToChain("Roll", 2, 1); }
+
+			//Rolling downhill boost will be improved at the cost of energy, but also generate points.
+			float energyUse = _EnergyUseByAngle_.Evaluate(_PlayerPhys._groundNormal.y) / 55;
+			if (_CoreValues._energy >= energyUse)
+			{
+				_CoreValues.AdjustEnergy(-energyUse);
+				_CoreValues.SetMultiplierFromEnergy(_modifierFromEnergy_);
+				_CoreValues.AdjustPoints(_pointsFromEnergyRoll_ / 55);
+			}
+			else
+				_CoreValues.SetMultiplierFromEnergy(1);
 		}
 	}
 
@@ -165,6 +181,10 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 	public override void AssignStats () {
 		_minRollTime_ = _Tools.Stats.RollingStats.minRollingTime;
 		_rollingStartSpeed_ = _Tools.Stats.RollingStats.rollingStartSpeed;
+
+		_modifierFromEnergy_ = _Tools.Stats.RollingStats.modifierFromEnergy;
+		_EnergyUseByAngle_ = _Tools.Stats.RollingStats.EnergyByAngle;
+		_pointsFromEnergyRoll_ = _Tools.LevelUpStats.pointsFromRolling;
 	}
 	#endregion
 }

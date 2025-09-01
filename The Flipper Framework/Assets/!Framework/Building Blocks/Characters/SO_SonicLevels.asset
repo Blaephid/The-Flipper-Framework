@@ -13,30 +13,107 @@ MonoBehaviour:
   m_Name: SO_SonicLevels
   m_EditorClassIdentifier: 
   Title: Title
-  pointsFromSpheres: 5
+  pointsFromSpheres: 20
+  pointsPerActionChainLevel:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 5
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 6
+      value: 10
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 15
+      value: 300
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  chainCountDownPerLevel:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 10
+      value: 3
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 15
+      value: 2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  pointsFromRolling: 200
+  pointsFromPerfectHomingAttack: 25
   _Levels:
   - level: 1
-    requiredPoints: 100
+    requiredPoints: 1000
     ringsMaxMultiplier: 1
     energyMaxMultiplier: 1
     speedMaxMultiplier: 1
   - level: 2
-    requiredPoints: 120
+    requiredPoints: 1200
     ringsMaxMultiplier: 2
     energyMaxMultiplier: 1.2
     speedMaxMultiplier: 1.15
   - level: 3
-    requiredPoints: 140
+    requiredPoints: 1400
     ringsMaxMultiplier: 3
     energyMaxMultiplier: 1.4
     speedMaxMultiplier: 1.3
   - level: 4
-    requiredPoints: 150
+    requiredPoints: 1500
     ringsMaxMultiplier: 4
     energyMaxMultiplier: 1.55
     speedMaxMultiplier: 1.4
   - level: 5
-    requiredPoints: 160
+    requiredPoints: 1600
     ringsMaxMultiplier: 5
     energyMaxMultiplier: 1.7
     speedMaxMultiplier: 1.5

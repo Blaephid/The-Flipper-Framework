@@ -113,6 +113,9 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 		_Sounds.QuickStepSound();
 
 		SetSpeedAndDistance();
+
+		//Effects
+		_Effects.QuickStepBlur(_isSteppingRight);
 	}
 
 	#endregion

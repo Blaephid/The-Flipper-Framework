@@ -18,7 +18,11 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _ActionChainEffect;
 
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem SpinDashEnergy;
-	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem RailsSparks1;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem RailsSparksLeft;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem RailsSparksRight;
+
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _Quickstep;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _Roll;
 
 	[Header("Screen VFX To Trigger")]
 	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect             _SpeedLinesScreen;
@@ -33,6 +37,10 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	[Header("VFX to Spawn")]
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] GameObject  _JumpDashParticle;
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] GameObject  _BonkParticle;
+
+	[Header("Skin Sockets")]
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] Transform _LeftFoot;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] Transform _RightFoot;
 
 	[Header("Mouth Sides")]
 	Transform _Head;
@@ -49,12 +57,18 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	private void Start () {
 		SpinDashEnergy.Stop();
-		RailsSparks1.Stop();
+
+		if (RailsSparksLeft)
+			RailsSparksLeft.Stop();
+		if (RailsSparksRight)
+			RailsSparksRight.Stop();
+
 		_BlurBurst.gameObject.SetActive(false);
 		_SpeedLinesWind.Stop();
 		_SpeedLinesCharacter.Stop();
 		_ActionChainEffect.Stop();
 		_PointsGain.Stop();
+		_Quickstep.Stop();
 	}
 
 	void Update () {
@@ -186,32 +200,51 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	public void HandleGrindSparks ( float speed ) {
 
 		//Activate or deactivate effect
-		if (speed > 30 && !RailsSparks1.isPlaying)
-			RailsSparks1.Play();
-
-		else if (speed <= 30 && RailsSparks1.isPlaying)
+		if (RailsSparksLeft && speed > 30 && !RailsSparksLeft.isPlaying)
 		{
-			RailsSparks1.Stop(); return;
+			RailsSparksLeft.Play();
+			RailsSparksRight.Play();
 		}
 
-		ParticleSystem.MainModule Main = RailsSparks1.main;
+		else if (RailsSparksLeft && speed <= 30 && RailsSparksLeft.isPlaying)
+		{
+			RailsSparksLeft.Stop();
+			RailsSparksRight.Stop();
+		}
 
-		Main.startSpeed = Mathf.Clamp(speed * 0.3f, 20, 60);
+
+		ParticleSystem.MainModule Main = RailsSparksLeft.main;
+		ParticleSystem.EmissionModule Emmis = RailsSparksLeft.emission;
+		Main.startSpeed = Mathf.Clamp(speed * 0.2f, 30, 60);
+		Emmis.rateOverTime = Mathf.Clamp(speed * 0.25f, 20, 70);
+
+		Main = RailsSparksRight.main;
+		Emmis = RailsSparksRight.emission;
+		Main.startSpeed = Mathf.Clamp(speed * 0.2f, 30, 60);
+		Emmis.rateOverTime = Mathf.Clamp(speed * 0.25f, 20, 70);
 
 	}
+
+
+	//Trigger
 
 	public void ActionChainAdd () {
 		_ActionChainEffect.Stop();
 		_ActionChainEffect.Play();
 	}
 
-	public void PointsGain(float amount ) {
+	public void PointsGain ( float amount ) {
 
 		amount /= 15;
 		amount += 1;
 		amount = Mathf.Min(amount, 2);
 		_PointsGain.SetFloat("Intensity", amount);
 		_PointsGain.Play();
+	}
+
+	public void QuickStepBlur (bool right) {
+		_Quickstep.Play();
+		_Quickstep.SetBool("Right", !right);
 	}
 
 

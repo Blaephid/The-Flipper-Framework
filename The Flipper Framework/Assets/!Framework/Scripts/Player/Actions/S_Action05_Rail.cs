@@ -637,6 +637,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	private void StartHop () {
 		_Sounds.FeetSource.Stop();
+		_Effects.QuickStepBlur(_Input._RightStepPressed);
 		_Sounds.QuickStepSound();
 
 		_RF.ReadyHopValues(_Input._RightStepPressed, _hopDistance_, _hopSpeed_);
