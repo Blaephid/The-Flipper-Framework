@@ -139,7 +139,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 		_PlayerPhys._forceTowardsGround_ = _Tools.Stats.GreedysStickToGround.forceTowardsGround;
 
-		if (_isActive) { StopTrailEffect(0.1f); _Sounds.SpinDashSource.Stop(); }
+		if (_isActive) { StopTrailEffect(0.1f); _Sounds.StopSpinDashSound(); }
 	}
 
 	#endregion
@@ -236,16 +236,15 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	private void Release () {
 
 		float newSpeed = 0;
-		_isActive = false;
 
 		//Only launches forwards if charged long enough.
 		if (_Actions._charge < _minimunCharge_)
 		{
-			StopTrailEffect(0);
 			_Actions._ActionDefault.StartAction();
 		}
 		else
 		{
+			_isActive = false;
 			//Effects
 			_Sounds.SpinDashReleaseSound();
 			StopTrailEffect(1);

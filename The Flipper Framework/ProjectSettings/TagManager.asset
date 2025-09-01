@@ -27,13 +27,13 @@ TagManager:
   - CancelHoming
   - Enable Objects Physics
   - Recorder
-  - DashRing
   - EffectTrigger
   - NormalTrigger
   - RailBooster
   - Music
   - Sphere
   - Special
+  - Dash Launcher
   layers:
   - Default
   - TransparentFX

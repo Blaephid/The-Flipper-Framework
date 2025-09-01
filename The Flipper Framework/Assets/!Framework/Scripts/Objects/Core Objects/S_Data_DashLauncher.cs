@@ -4,8 +4,10 @@ using SplineMesh;
 
 [ExecuteInEditMode]
 [AddComponentMenu("Data Components/Dash Ring")]
-public class S_Data_DashRing : S_Data_Base
+public class S_Data_DashLauncher : S_Data_Base
 {
+
+	public string source = "Dash Ring";
 
 	[Header("Force")]
 	public LaunchPlayerData _launchData_ = new LaunchPlayerData();

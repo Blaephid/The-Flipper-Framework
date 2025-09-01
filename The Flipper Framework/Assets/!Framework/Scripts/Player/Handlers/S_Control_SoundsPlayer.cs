@@ -281,6 +281,10 @@ public class S_Control_SoundsPlayer : S_Player_Base
 		SpinDashSource.Play();
 	}
 
+
+	public void StopSpinDashSound () {
+		SpinDashSource.Stop();
+	}
 	public void SpinDashReleaseSound () {
 		SpinDashSource.clip = Clip_SpinDashRelease;
 		SpinDashSource.loop = false;

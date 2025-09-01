@@ -90,8 +90,8 @@ public class S_Interaction_Objects : S_Player_Base
 			case "SpeedPad":
 				DashOffPad(Col);
 				break;
-			case "DashRing":
-				LaunchFromDashRing(Col);
+			case "Dash Launcher":
+				LaunchFromDashLauncher(Col);
 				break;
 			case "RailBooster":
 				BoostOnRail(Col);
@@ -397,8 +397,9 @@ public class S_Interaction_Objects : S_Player_Base
 	//Called on triggers
 
 	private void DashOffPad ( Collider Col ) {
-		if (!Col.TryGetComponent(out S_Data_SpeedPad SpeedPadScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
-		Col.GetComponent<AudioSource>().Play();
+		GameObject GO = GetObjectWithData(Col);
+		if (!GO.TryGetComponent(out S_Data_SpeedPad SpeedPadScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
+		GO.GetComponent<AudioSource>().Play();
 
 		if (SpeedPadScript._Path) { return; }
 
@@ -409,38 +410,39 @@ public class S_Interaction_Objects : S_Player_Base
 			speed = Mathf.Max(speed, _PlayerVel._currentRunningSpeed);
 		}
 
-		SnapToObject(Col.transform, SpeedPadScript._PositionToLockTo);
+		SnapToObject(GO.transform, SpeedPadScript._PositionToLockTo);
 
 		//Effects
-		ObjectRotatesCamera(Col, SpeedPadScript._cameraEffect);
+		ObjectRotatesCamera(GO, SpeedPadScript._cameraEffect);
 		if(speed > 100) { _Effects.TriggerBlurBurstScreen(); }
 
 		//Player visual
 		_CharacterAnimator.SetBool("Grounded", true);
-		_Actions._ActionDefault.SetSkinRotationToVelocity(0, Col.transform.forward);
+		_Actions._ActionDefault.SetSkinRotationToVelocity(0, GO.transform.forward);
 
 		//Ground interactions
 		_PlayerPhys.SetIsGrounded(true);
-		_PlayerPhys._groundNormal = Col.transform.up;
-		_PlayerPhys.AlignToGround(Col.transform.up, true);
+		_PlayerPhys._groundNormal = GO.transform.up;
+		_PlayerPhys.AlignToGround(GO.transform.up, true);
 
 		//Pushes player in direction
-		_PlayerVel.SetCoreVelocity(Col.transform.forward * speed, "Overwrite");
+		_PlayerVel.SetCoreVelocity(GO.transform.forward * speed, "Overwrite");
 
 		if (_Actions._listOfSpeedOnPaths.Count > 0)
 		{ _Actions._listOfSpeedOnPaths[0] = speed; }
 
 		if (SpeedPadScript._lockControlFrames_ > 0)
 		{
-			_Input.LockInputForAWhile(SpeedPadScript._lockControlFrames_, false, Col.transform.forward, SpeedPadScript._lockInputTo_);
+			_Input.LockInputForAWhile(SpeedPadScript._lockControlFrames_, false, GO.transform.forward, SpeedPadScript._lockInputTo_);
 		}
 
-		_ActionChain.AddToChain("Speed Pad", 2, 1, Col.gameObject.GetInstanceID().ToString());
+		_ActionChain.AddToChain("Speed Pad", 2, 1, GO.GetInstanceID().ToString());
 	}
 
-	private void LaunchFromDashRing ( Collider Col ) {
-		if (!Col.TryGetComponent(out S_Data_DashRing DashRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
-		Col.GetComponent<AudioSource>().Play();
+	private void LaunchFromDashLauncher ( Collider Col ) {
+		GameObject GO = GetObjectWithData(Col);
+		if (!GO.TryGetComponent(out S_Data_DashLauncher DashRingScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
+		GO.GetComponent<AudioSource>().Play();
 
 		HitAirLauncher();
 
@@ -449,29 +451,38 @@ public class S_Interaction_Objects : S_Player_Base
 			DashRingScript._launchData_._force_ ;
 		Vector3 direction = DashRingScript._launchData_._directionToUse_;
 
-		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, Col.transform, _PlayerPhys.transform, DashRingScript._launchData_);
+		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, GO.transform, _PlayerPhys.transform, DashRingScript._launchData_);
 
-		ObjectRotatesCamera(Col, DashRingScript._cameraEffect);
+		ObjectRotatesCamera(GO, DashRingScript._cameraEffect);
 
-		_ActionChain.AddToChain("Dash Ring", 2, 1, Col.gameObject.GetInstanceID().ToString());
+		_ActionChain.AddToChain(DashRingScript.source, 2, 1, GO.GetInstanceID().ToString());
 	}
 
 	private void BoostOnRail ( Collider Col ) {
-		if (!Col.TryGetComponent(out S_Data_RailBooster RailBoosterScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
-		Col.GetComponent<AudioSource>().Play();
+		GameObject GO = GetObjectWithData(Col);
+		if (!GO.TryGetComponent(out S_Data_RailBooster RailBoosterScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
+		GO.GetComponent<AudioSource>().Play();
 
 		//Attaches the player to the rail this rail booster is on.
 		if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Rail)
 		{
-			SnapToObject(Col.transform, RailBoosterScript._PositionToLockTo);
+			SnapToObject(GO.transform, RailBoosterScript._PositionToLockTo);
 		}
 		if (_Actions._ObjectForActions.TryGetComponent(out S_Action05_Rail RailAction))
 		{
-			_ActionChain.AddToChain("Rail Booster", 2, 1, Col.gameObject.GetInstanceID().ToString());
+			_ActionChain.AddToChain("Rail Booster", 2, 1, GO.GetInstanceID().ToString());
 			StartCoroutine(RailAction.ApplyBoosters(RailBoosterScript));
 		}
 
-		ObjectRotatesCamera(Col, RailBoosterScript._cameraEffect);
+		ObjectRotatesCamera(GO, RailBoosterScript._cameraEffect);
+	}
+
+	private GameObject GetObjectWithData (Collider Col) {
+		if (Col.TryGetComponent(out S_Data_Redirect Redirect))
+		{
+			return Redirect._ObjectWithMainScript;
+		}
+		return Col.gameObject;
 	}
 
 	private Vector3 SnapToObject ( Transform Object, Vector3 Offset, bool toFeet = true ) {
@@ -493,12 +504,12 @@ public class S_Interaction_Objects : S_Player_Base
 		return snapPosition;
 	}
 
-	private void ObjectRotatesCamera ( Collider Col, S_Structs.ObjectCameraEffect strucCamEffect ) {
+	private void ObjectRotatesCamera ( GameObject GO, S_Structs.ObjectCameraEffect strucCamEffect ) {
 
 		//If pad is set to, rotate camera horizontally towards dash direction.
 		if (strucCamEffect._willAffectCamera_)
 		{
-			_CamHandler._HedgeCam.SetCameraNoSeperateHeight(Col.transform.forward, strucCamEffect._CameraRotateTime_.x, strucCamEffect._CameraRotateTime_.y, Vector3.zero, false);
+			_CamHandler._HedgeCam.SetCameraNoSeperateHeight(GO.transform.forward, strucCamEffect._CameraRotateTime_.x, strucCamEffect._CameraRotateTime_.y, Vector3.zero, false);
 		}
 	}
 
@@ -529,7 +540,8 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 	private void LaunchFromSpring ( Collider Col ) {
-		if (!Col.TryGetComponent(out S_Data_Spring SpringScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
+		GameObject GO = GetObjectWithData(Col);
+		if (!GO.TryGetComponent(out S_Data_Spring SpringScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 
 		HitAirLauncher();
 
@@ -572,12 +584,12 @@ public class S_Interaction_Objects : S_Player_Base
 				newCoreVelocity = combinedVelocityMagnitude;
 			}
 
-			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, Col.transform, SpringScript._launchData_));
+			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, GO.transform, SpringScript._launchData_));
 		}
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else if (!SpringScript._keepHorizontal_)
 		{
-			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, Col.transform, _PlayerPhys.transform, SpringScript._launchData_);
+			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, GO.transform, _PlayerPhys.transform, SpringScript._launchData_);
 		}
 
 
@@ -592,11 +604,11 @@ public class S_Interaction_Objects : S_Player_Base
 		}
 
 		//Effects on spring
-		if (Col.GetComponent<AudioSource>()) { Col.GetComponent<AudioSource>().Play(); }
+		if (GO.GetComponent<AudioSource>()) { GO.GetComponent<AudioSource>().Play(); }
 		if (SpringScript._Animator != null)
 			SpringScript._Animator.SetTrigger("Hit");
 
-		_ActionChain.AddToChain("Spring", 2, 1, Col.gameObject.GetInstanceID().ToString());
+		_ActionChain.AddToChain("Spring", 2, 1, GO.GetInstanceID().ToString());
 	}
 
 	public void ApplyLaunchEffects ( LaunchPlayerData launchData ) {
