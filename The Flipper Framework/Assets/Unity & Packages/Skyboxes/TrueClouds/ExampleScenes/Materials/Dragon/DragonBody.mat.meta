@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e027e10034158204fb35f2da6fdb5c7f
+timeCreated: 1430238888
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Materials/Dragon/DragonBody.mat
+  uploadId: 243278

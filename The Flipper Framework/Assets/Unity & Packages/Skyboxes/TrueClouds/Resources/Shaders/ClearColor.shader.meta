@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: e8f3ce2cbe4971147b1b7f04b791e52a
+timeCreated: 1512853618
+licenseType: Store
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/ClearColor.shader
+  uploadId: 243278

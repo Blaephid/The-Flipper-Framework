@@ -117,9 +117,9 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 	}
 
 	//Any collisions involved in losing health are here, rather than in the object interaction script.
-	public void EventTriggerEnter ( Collider other ) {
+	public void EventTriggerEnter ( Collider Col ) {
 
-		switch (other.tag)
+		switch (Col.tag)
 		{
 			case "Hazard":
 				DamagePlayer();
@@ -128,15 +128,16 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			case "Enemy":
 				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(_enemyHitShakeAmmount_, 12));
 
-				if (!_Attacks.AttemptAttackOnContact(other, S_GeneralEnums.AttackTargets.Enemy))
+				if (!_Attacks.AttemptAttackOnContact(Col, S_GeneralEnums.AttackTargets.Enemy))
 				{
-					if (other.TryGetComponent(out S_EnemyAttack EnemyAttack))
+					if (Col.TryGetComponent(out S_EnemyAttack EnemyAttack))
 						if (!EnemyAttack._isHazzard) { return; }
 					DamagePlayer();
 				}
 				return;
 			case "Pit":
 				_Sounds.DieSound();
+				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(new Vector2 (90,0), 0, 0, 0, 0.25f, "Pit")); //The camera will fall back before catching up.
 				Die();
 				return;
 		}

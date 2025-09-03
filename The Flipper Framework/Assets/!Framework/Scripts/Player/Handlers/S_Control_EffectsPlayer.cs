@@ -96,10 +96,11 @@ public class S_Control_EffectsPlayer : S_Player_Base
 			{
 				lines.Play();
 
-				float intensity = (_PlayerVel._horizontalSpeedMagnitude - (threshold *0.3f)) / _PlayerMovement._currentMaxSpeed;
+				float intensity = _PlayerVel._horizontalSpeedMagnitude / _PlayerMovement._currentMaxSpeed;
 				lines.SetFloat("Intensity", intensity);
+				lines.SetFloat("Player Speed", _PlayerVel._horizontalSpeedMagnitude);
 			}
-			else if (_PlayerVel._currentRunningSpeed < threshold - 5)
+			else if (_PlayerVel._currentRunningSpeed < threshold - 2)
 			{
 				lines.Stop();
 			}

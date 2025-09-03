@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 62f54a17d4afe4341afeab1b33571412
+timeCreated: 1512082056
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Scripts/CloudsReadonlyAttribute.cs
+  uploadId: 243278

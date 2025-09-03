@@ -12,9 +12,10 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _EMISSION
   - _SPECGLOSSMAP
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -136,6 +137,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -164,7 +166,7 @@ Material:
     - _Lux_FlowRefraction: 0.02
     - _Lux_FlowSpeed: 0.05
     - _MatCapAccurate: 0
-    - _Metallic: 0.893
+    - _Metallic: 0.955
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -172,7 +174,7 @@ Material:
     - _ReceiveShadows: 1
     - _Rotation: 0
     - _Shininess: 0.066
-    - _Smoothness: 1
+    - _Smoothness: 0.688
     - _SmoothnessTextureChannel: 0
     - _SnowDetailStrength: 0.5
     - _SnowNormalStrength: 1
@@ -194,7 +196,7 @@ Material:
     - _BaseTangentDir: {r: 0, g: 1, b: 0, a: 0}
     - _Color: {r: 0.69117635, g: 0.69117635, b: 0.69117635, a: 1}
     - _DiffuseScatteringCol: {r: 0, g: 0, b: 0, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0.0078125, g: 0.0078125, b: 0.0078125, a: 1}
     - _ReflectColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _SnowAccumulation: {r: 0, g: 1, b: 0, a: 0}
     - _SnowDetailTiling: {r: 4, g: 4, b: 0, a: 0}

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 009f6c8cf8d3c144792d6321909e830c
+timeCreated: 1429778285
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/Depth.shader
+  uploadId: 243278

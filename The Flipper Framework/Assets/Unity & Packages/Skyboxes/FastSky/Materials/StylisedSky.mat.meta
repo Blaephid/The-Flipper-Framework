@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4bd76b0a3809d594692f5c6c077984fc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 209857
+  packageName: FastSky - Procedural Sky and Clouds URP
+  packageVersion: 2.0
+  assetPath: Assets/FastSky/Materials/StylisedSky.mat
+  uploadId: 576994

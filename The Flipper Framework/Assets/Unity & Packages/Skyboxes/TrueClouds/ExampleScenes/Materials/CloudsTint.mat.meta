@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 9561a7d9b2e7bea4ba26b84053629b51
+timeCreated: 1524869211
+licenseType: Store
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Materials/CloudsTint.mat
+  uploadId: 243278

@@ -1,0 +1,152 @@
+[Version 2.1.4]
+
+· Inlcuded a temp solution for Unity bug #1373388 that can affect users who build for Android.
+
+[Version 2.1.3]
+
+Fixes:
+· [Fix] A bug was causing null reference exceptions with some terrain neighbour setups that have missing tiles.
+
+[Version 2.1.2]
+
+Enhancements:
+· Completely reworked one of the painting mechanisms. The new solution could be more optimal for most scenarios and may only become disadvantageous in extreme circumstances+usage. The old mechanism could also possibly trigger some odd GC behaviour causing a build up of graphics memory usage by Unity as reported by two users. Could not yet conclude what part the old mechanism may have been playing in this but initial studies suggest that the new mechanism largely avoids the buildup. Also the pooling of the old mechanism could have caused some delays of paint readiness on some tiles in environments with hundreds of terrain tiles.
+· Unity 2018.3 & 2018.4 still supports deprecated .NET 3.5 Equivalent runtime scripting. Support for this was dropped earlier but Path Painter II now supports it once again in those Unity versions.
+· Path Painter will now use a lean, build optimised structure. This means that by default no part of Path Painter will be included in your builds.
+· Resources are now in the Editor folder as part of the lean, build optimised structure.
+· Removed the Runtime Demos from the package as part of the lean, build optimised structure. These are now downloadable separately. Use the option in the menu.
+· [New] Build settings available in the menu. Use it to include/exclude Path Painter from your builds. You will want to include only if you use the API in runtime.
+· Now you have options to go directly to the Documentation from the main Help, the more tab and from the menu.
+
+Fixes:
+· [Fix] Terrain square check had a bug for 4 years.
+· [Fix] Painting with Texturing off painted textures in some circumstances if textures were otherwise selected.
+· [Fix] Fixed a GUI styling bug that may have caused minor problems that were not detected by users.
+· [Fix] Path Painter now expects that detail resolution can be zero.
+
+[Version 2.1.1]
+
+Fixes:
+· [Fix] Fixed bug related to brush visualisation that in some circumstances threw null ref errors, but had no effect on functionality.
+· [Fix] Fixed bug in tree clearing that in some circumstances threw null ref errors when vegetation clearing was off, but had no effect on functionality.
+· [Fix] Fixed alphamap bounds bug that appeared in some circumstances when texturing was off, but had no known effect on functionality.
+· [Fix] Fixed bug that in some cases threw null ref errors when turning on texturing on a non-texture painted path.
+· [Fix] Shaping artefacts were appearing if some fairly specific conditions were met due to a conservative limit value. PP "thought" it didn't need to do some calculations for those areas and this produced artefacts.
+
+[Version 2.1.0b4]
+
+Enhancements:
+· Removed the need to reference .Net libraries
+
+Fixes:
+· [Fix] Removed dev leftover hard coded min resolution that could brake things on very low res terrains.
+· [Fix] Path Painter sometimes didn't detect right away if some terrain parameters changed between two brush strokes.
+· [Fix] Over optimisation could cause spotty painting in some circumstances.
+· [Fix] Terrain Trees are detected as terrain in runtime by Unity. Now Path Painter accounts for that.
+
+[Version 2.1.0b3]
+
+Enhancements:
+· [New] Auto Ramp feature. You just do the painting and Path Painter will automatically create ramps as needed. This way of painting has been in the plans for about 5 years, from the very beginning, but got lost in the noise until now, when one of you reminded me of it (thank you!). Use the slope limit option to tame it to your needs.
+· Done some clarification on some of the API XML documentation.
+· Renamed runtime folders, so they can be easily moved into Editor (without colliding with folders there), so you can avoid them ending up in your builds.
+· Added more tips/info that appears on the GUI.
+· Fixed some typos and improved some information in the Documentation.
+
+Fixes:
+· [Fix] Turning off texturing didn't remove textures from (already painted) active paths.
+· [Fix] After some terrain changes the brush could have been rendered slightly off.
+· [Fix] Various small fixes.
+
+[Version 2.1.0b2]
+
+Enhancements:
+· [New] Painting on GPU Instanced terrains. This primarily has an effect in large environments, where Unity struggles when terrains are not GPU Instanced.
+· [New] Demo now includes API usage examples that can be customised for users' projects. Two hand paint and one spline/point based example.
+· [New] API undo callback for a better option for undo mechanisms (examples provided)
+· [New] API Line Paint mode that allows lines to be painted point by point (e.g. for hand painting).
+· Improved/optimised paint performance on several fronts when painting in large environments. These provide a significant performance improvement in huge environments.
+· Optimised Unity Undo operations, so Unity Undo is much more reliable in large environments.
+· Simplified API Bulk Paint usage: 1. StartBulkPaint();  2. Do any number of Paint()/Paint3D();  3. EndBulkPaifnt();
+· API now provides warnings when used incorrectly and attempts to guess and do what the user intended to do.
+· Path Painter II (v2) no longer imports on top of Path Painter (v1), so both of them can be used in a project (Avoid using the hotkeys if both versions are open, since both uses the same hotkeys for consistency.)
+· Cut legacy Unity support for a leaner package (A single package supporting more than 17 Unity versions was becoming messy). The package now only supports Unity 2018.3 or newer.
+· Numerous versioning changes, so major versions don't collide.
+· Numerous small improvements.
+· Better namespacing for the API.
+
+Fixes:
+· [Fix] Some terrain locations were miscalculated due to floating point errors and this could cause out of range exceptions in large environments.
+· [Fix] GUI now gracefully handles broken layer references of terrains.
+· [Fix] Path Painter API was getting into a disagreement with itself when only road texture was being painted and this caused an error.
+· [Fix] Fixed an API bug in Bulk Painting that could cause some de-syncing in some circumstances that could affect GUI painting that immediately followed it.
+· [Fix] Fixed a minor API bug that could sometime throw errors during some extreme painting, without an effect on the painting itself.
+
+
+[Version 2.1.0b1]
+Work started on Path Painter under Unity 5.6. This was almost 3 years before neighbour terrain tiles appeared, and supporting such thing didn't even cross the author, Frank's mind, who was new to Unity at the time.
+Version 2 is pretty much a complete rewrite to add that feature. All these features are available in all supported Unity versions (Unity 5.6 and onwards).
+
+Enhancements:
+· Improved texturing and straight line performance and a number of other performance optimisations (needed for the more taxing new functionalities).
+· Thanks to these performance improvements, the max brush sizes were greatly increased.
+· [New] Paint across several terrain tiles.
+· [New] Auto Terrain Layer (SplatPrototype in older Unity) propagation.
+· Removed the camera from the Demo Scene, because new Unity versions didn't like a camera that was also compatible with older versions.
+· [New] Improved GUI.
+· [New] Shaping, Texturing and Vegetation Clearing can all be toggled separately.
+· [New] Help System with better information.
+· Improved tooltips
+· The API Painter is no longer static, so one can use several instances of it with different settings.
+· The API also supports multi tile painting.
+· [New] API 3D Painting - The paths height sticks to the spline, or other points provided. (See documentation for more info)
+· [New] API Bulk Painting. Use for the best performance when painting several paths at once. (See documentation for more info)
+· The API now takes both a List or an Array of points. Use the overload that best suits your data for best performance.
+· [New] Path Painter now remembers your settings for each of your projects, so you can pick up where you left off.
+· Improved import and compilation.
+· Some improvements to avoid unnecessary value boxing in stroke calculations.
+· The demo scene now contains 6 tiles of the demo terrain to provide a multi-tile playground.
+
+Fixes:
+· [Fix] Toggle buttons' toggled state was not visible in new Unity (2019.3+) due to Unity's new GUI system.
+· [Fix] Path Painter could not be saved in Editor Window Layout.
+· [Fix] Unused field warning that affected older Unity.
+· [Fix] Occasionally might have unintentionally affected the 'Draw Instanced' setting of terrains in new Unity versions.
+
+
+[Version 1.2.1]
+Enhancements:
+· Improved and optimised import & compilation, that result in better performance and reliability during play mode switches, Unity version upgrades, building and other events that involve import and compilation.
+
+
+[Version 1.2.0]
+Enhancements:
+· Path Painter now uses the 3D Haven folders.
+· Path Painter now uses the 3D Haven menu.
+· Improved import and compilation.
+· Added the first version of an API that for example can be used to paint paths along Pegasus splines (example in documentation).
+
+Fixes:
+· Fixed a glitch with the import package.
+
+
+[Version 1.1.1]
+Fixes:
+· Fix for import issue on 2019.1
+
+
+[Version 1.1]
+Enhancements:
+· The paint button is now bigger.
+· Changed the size hotkeys to CTRL+Q/E. 
+· Updated for 2018.3 to use the new terrain API.
+· Path Painter can now be placed into any directory.
+· Single active terrain is now automatically selected on open.
+· Made the status bar hotkey tips adapting to OSX (CTRL/CMD).
+· Added visualization to show the active line (editable) and display when straight painting.
+· Added a workaround for the Unity bug that causes things not to not render over the terrain in 2018.3.
+· Updated warning message for non-square terrains to make it more clear that only square terrains are supported.
+ 
+Fixes:
+· Stop null pointer exceptions when the environment changes. Path Painter should now do a much better job recovering from these situations.
+· Avoided cursor pointer exceptions on OSX.

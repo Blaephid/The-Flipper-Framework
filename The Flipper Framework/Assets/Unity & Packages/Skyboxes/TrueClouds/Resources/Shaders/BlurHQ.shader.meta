@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 22d75b161fbf2d14b9cd656fde6d05bd
+timeCreated: 1430156629
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/BlurHQ.shader
+  uploadId: 243278

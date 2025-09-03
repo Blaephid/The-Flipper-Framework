@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: c9eb87ded0ef1704d88efb0f552c851b
+timeCreated: 1517436512
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/Light/CloudsTintAdditiveTwosided.shader
+  uploadId: 243278

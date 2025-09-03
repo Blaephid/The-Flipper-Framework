@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 0113d89ab6b0a3b4f88b76bba24cf7d6
+timeCreated: 1431589996
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Scenes/Sky/CloudsGenerator.cs
+  uploadId: 243278

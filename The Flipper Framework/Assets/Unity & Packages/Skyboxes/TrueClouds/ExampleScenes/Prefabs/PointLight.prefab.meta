@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0423bbee91aaa304d95380207ff1455a
+timeCreated: 1517703849
+licenseType: Store
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Prefabs/PointLight.prefab
+  uploadId: 243278

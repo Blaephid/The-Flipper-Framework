@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ddd68a53b8f487941ac09b4480974963
+timeCreated: 1429778285
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/Clouds.shader
+  uploadId: 243278

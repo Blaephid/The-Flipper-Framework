@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: b18428cc9340da84e87566b93d5a7bc8
+timeCreated: 1512081189
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Scripts/Editor/NoiseGenerator.cs
+  uploadId: 243278

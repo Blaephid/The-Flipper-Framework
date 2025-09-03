@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: aa94df88901c6ac428cb70ef3065b4b0
+timeCreated: 1525125275
+licenseType: Store
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Scenes/Fireball/Fireball (works only
+    starting from Unity 2017).unity
+  uploadId: 243278

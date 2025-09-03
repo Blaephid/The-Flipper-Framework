@@ -568,8 +568,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf837daebff4b9748af103d6635b5e0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _PlayerMovement: {fileID: 0}
-  _PlayerVelocity: {fileID: 0}
+  _Tools: {fileID: 0}
   _RB: {fileID: 0}
   _CenterOfMass: {fileID: 0}
   _isUsingSlopePhysics_: 1
@@ -1285,78 +1284,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Tools: {fileID: 0}
   _isActionChainEnabled: 1
-  _ChainCountdownByLevel:
+  _ChainCountdownByLevel_:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 5
-      inSlope: -0
-      outSlope: -0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 9.951334
-      value: 4.511654
-      inSlope: -0.15765403
-      outSlope: -0.15765403
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.3562656
-    - serializedVersion: 3
-      time: 15
-      value: 1.5
-      inSlope: -0.18056478
-      outSlope: -0.18056478
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.06333326
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _PowerGainedByLevel:
+  _PointsGainedByLevel_:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 69
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 5
-      value: 0
-      inSlope: -0
-      outSlope: 0.043956257
-      tangentMode: 5
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.42626342
-    - serializedVersion: 3
-      time: 6
-      value: 6
-      inSlope: 1.5796783
-      outSlope: 3.2983818
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.12768422
-    - serializedVersion: 3
-      time: 15
-      value: 30
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -8977,6 +8913,91 @@ MonoBehaviour:
     HintBox: {fileID: 0}
     FadeOutBox: {fileID: 0}
     PauseMenu: {fileID: 0}
+--- !u!1 &3245122072688749771
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3877566912512856446}
+  - component: {fileID: 7434228931481404873}
+  - component: {fileID: 7309405723976105206}
+  m_Layer: 8
+  m_Name: Sphere (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3877566912512856446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3245122072688749771}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.4050633}
+  m_LocalScale: {x: 0.45198995, y: 0.45198995, z: 1.4880414}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5484463822845258541}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &7434228931481404873
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3245122072688749771}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &7309405723976105206
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3245122072688749771}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3354318201683342359
 GameObject:
   m_ObjectHideFlags: 0
@@ -9463,7 +9484,7 @@ MonoBehaviour:
   _LeftFoot: {fileID: 8923081405532112648}
   _RightFoot: {fileID: 3131463190018331882}
   RunningDustThreshold: 30
-  _speedLinesThreshold: {x: 60, y: 90}
+  _speedLinesThreshold: {x: 80, y: 90}
 --- !u!1 &3603429337301228306
 GameObject:
   m_ObjectHideFlags: 0
@@ -11056,19 +11077,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5913071704611314935}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e4bee09844b639a4cbadc12b321acfc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _TransformForPosition: {fileID: 2111524406777737456}
-  _TransformForRotation: {fileID: 2111524406777737456}
+  _TransformForRotation: {fileID: 0}
   _localOffset: {x: 0, y: 0, z: 1}
   _whatSpaceForPosition: 1
-  _applyPosition: 1
+  _applyPosition: 0
   _manPosition: {x: 0, y: 1.94, z: 3.22}
   _whatSpaceForRotation: 0
-  _applyRotation: 1
+  _applyRotation: 0
   _manEulerAngles: {x: 0, y: 0, z: 0}
   _button: 0
 --- !u!1 &6113078743564466259
@@ -21319,7 +21340,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2.37, y: 2.37, z: 2.37}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3877566912512856446}
   m_Father: {fileID: 6792044592947426947}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &682941292766454128
@@ -21617,7 +21639,7 @@ MonoBehaviour:
     FieldOfView: 90
     OrthographicSize: 5
     NearClipPlane: 0.01
-    FarClipPlane: 5000
+    FarClipPlane: 20000
     Dutch: 0
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
@@ -21655,11 +21677,11 @@ MonoBehaviour:
   m_AvoidObstacles: 1
   m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.1
-  m_Strategy: 1
+  m_CameraRadius: 0.4
+  m_Strategy: 0
   m_MaximumEffort: 4
   m_SmoothingTime: 0
-  m_Damping: 0
+  m_Damping: 2.37
   m_DampingWhenOccluded: 0
   m_OptimalTargetDistance: 0
 --- !u!1 &8445641117067853052

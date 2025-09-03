@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: b18921b8dcc5fc347916611e596e068a
+timeCreated: 1512915711
+licenseType: Store
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Scenes/CloudMobile(Open Me!)/CloudMobile.Skybox.mat
+  uploadId: 243278

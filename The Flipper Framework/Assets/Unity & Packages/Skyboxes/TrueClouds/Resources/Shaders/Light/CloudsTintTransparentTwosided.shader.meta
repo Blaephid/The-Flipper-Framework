@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: c87b0f24aa33dc14f97727ee0a8ed514
+timeCreated: 1517436512
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/Light/CloudsTintTransparentTwosided.shader
+  uploadId: 243278
