@@ -121,7 +121,7 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 			!Physics.BoxCast(_PlayerPhys._CharacterCenterPosition, boxSize, checkDirection, transform.rotation, checkDistance, _RecoilFrom_))
 		{
 			//Apply slight force against and upwards.
-			_PlayerVel.AddCoreVelocity(-_PlayerPhys._RB.velocity.normalized * _knockbackForce_ * 0.2f);
+			_PlayerVel.AddCoreVelocity(-_PlayerPhys._RB.linearVelocity.normalized * _knockbackForce_ * 0.2f);
 			_PlayerVel.AddCoreVelocity(transform.up * _knockbackUpwardsForce_);
 
 			lockControlFor = _PlayerPhys._isGrounded ? _controlLockGround_.x : _controlLockAir_.x;

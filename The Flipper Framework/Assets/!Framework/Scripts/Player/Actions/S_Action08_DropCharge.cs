@@ -77,7 +77,7 @@ public class S_Action08_DropCharge : S_Action_Base, IMainAction
 	new public bool AttemptAction () {
 		if (!base.AttemptAction()) return false;
 
-		if (!_PlayerPhys._isGrounded && _Input._RollPressed && _PlayerPhys._RB.velocity.y < 40f)
+		if (!_PlayerPhys._isGrounded && _Input._RollPressed && _PlayerPhys._RB.linearVelocity.y < 40f)
 		{
 			if (!Physics.Raycast(_FeetPoint.position, -transform.up, _minimumHeightToDropCharge_, _PlayerPhys._Groundmask_))
 			{

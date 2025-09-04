@@ -166,7 +166,7 @@ namespace SplineMesh {
         }
         public Mesh mesh;
         public Material material;
-        public PhysicMaterial physicMaterial;
+        public PhysicsMaterial physicMaterial;
         public Vector3 translation;
         public Vector3 rotation;
         public Vector3 scale = Vector3.one;

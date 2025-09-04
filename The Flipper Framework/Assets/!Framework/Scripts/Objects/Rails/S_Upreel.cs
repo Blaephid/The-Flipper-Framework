@@ -84,7 +84,7 @@ public class S_Upreel : MonoBehaviour
 		if (_isMoving) //Because this will also be called the frame the player leaves the upreel.
 		{
 			_velocity = _direction * _worldSpeed * transform.up;
-			_HandleRB.velocity = _velocity;
+			_HandleRB.linearVelocity = _velocity;
 		}
 
 		//Send the location back to the player.
@@ -129,7 +129,7 @@ public class S_Upreel : MonoBehaviour
 		}
 
 		PlaceHandleOnLength(); //Called again here (not just in Update) to ensure at the right point before a player launches off.
-		_HandleRB.velocity = Vector3.zero;
+		_HandleRB.linearVelocity = Vector3.zero;
 		_AudioSource.Stop();
 		_isMoving = false;
 		_direction = 0;

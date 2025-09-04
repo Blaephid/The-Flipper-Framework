@@ -92,7 +92,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 
 			//Lerp to max wind volume based on how close to maximum speed laterally or vertically.
 			float lerpAmount = (_PlayerVel._horizontalSpeedMagnitude) / _PlayerMovement._currentMaxSpeed;
-			lerpAmount = Mathf.Max(lerpAmount, (Mathf.Abs(_PlayerPhys._RB.velocity.y) + 50) / _PlayerPhys._maxFallingSpeed_);
+			lerpAmount = Mathf.Max(lerpAmount, (Mathf.Abs(_PlayerPhys._RB.linearVelocity.y) + 50) / _PlayerPhys._maxFallingSpeed_);
 
 			WindSource.volume = Mathf.Lerp(0, _startWindSourceVolume, lerpAmount);
 		}

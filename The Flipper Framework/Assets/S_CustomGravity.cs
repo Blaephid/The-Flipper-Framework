@@ -38,16 +38,16 @@ public class S_CustomGravity : MonoBehaviour
 			float thisFrame = _StartingDragAndGravity.Evaluate((float)_framesInAir * Time.fixedDeltaTime);
 
 
-			_currentFallSpeed = Mathf.Abs(_RB.velocity.y);
+			_currentFallSpeed = Mathf.Abs(_RB.linearVelocity.y);
 			if (Physics.Raycast(transform.position, Vector3.down, _currentFallSpeed * Time.fixedDeltaTime, _GroundMask)) _isGravityOn = false;
 
 			if(_currentFallSpeed <= _maxNaturalFallSpeed) 
-				_RB.velocity += Vector3.down * _gravity *thisFrame;
+				_RB.linearVelocity += Vector3.down * _gravity *thisFrame;
 
-			Vector3 horizVelocity = new Vector3(_RB.velocity.x,0, _RB.velocity.z);
+			Vector3 horizVelocity = new Vector3(_RB.linearVelocity.x,0, _RB.linearVelocity.z);
 			horizVelocity = Vector3.MoveTowards(horizVelocity, Vector3.zero, _horizontalDrag * thisFrame);
 
- 			_RB.velocity.Set(horizVelocity.x, Mathf.Max(_RB.velocity.y, -_maxFallSpeed), horizVelocity.z);
+ 			_RB.linearVelocity.Set(horizVelocity.x, Mathf.Max(_RB.linearVelocity.y, -_maxFallSpeed), horizVelocity.z);
 		}
 	}
 

@@ -228,7 +228,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			//Spawn a ring based on the moving ring prefab and shoot it out away from the player
 			GameObject movingRing = Instantiate(_MovingRing, pos, Quaternion.identity);
 			movingRing.transform.parent = null;
-			movingRing.GetComponent<Rigidbody>().velocity = Vector3.zero;
+			movingRing.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 
 			Vector3 launchDirection = _ReleaseDirection.transform.forward * _ringReleaseSpeed_;
 			launchDirection += new Vector3(_HurtAction._knockbackDirection.x, 0, _HurtAction._knockbackDirection.z) * 850;// Apply additional force towards where player is beng sent

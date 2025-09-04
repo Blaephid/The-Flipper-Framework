@@ -828,12 +828,12 @@ public class S_PlayerPhysics : S_Player_Base
 						if (localRight.y >= 0)
 						{
 							_isRotatingLeft = false;
-							_rotateSidewaysTowards = new Vector3(_RB.velocity.x, 0, _RB.velocity.z).normalized * -1;
+							_rotateSidewaysTowards = new Vector3(_RB.linearVelocity.x, 0, _RB.linearVelocity.z).normalized * -1;
 						}
 						else
 						{
 							_isRotatingLeft = true;
-							_rotateSidewaysTowards = new Vector3(_RB.velocity.x, 0, _RB.velocity.z).normalized;
+							_rotateSidewaysTowards = new Vector3(_RB.linearVelocity.x, 0, _RB.linearVelocity.z).normalized;
 						}
 					}
 				}

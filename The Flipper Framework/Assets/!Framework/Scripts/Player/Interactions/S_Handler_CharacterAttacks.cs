@@ -216,7 +216,7 @@ public class S_Handler_CharacterAttacks : S_Player_Base
 
 			if (targetRB)
 			{
-				newForwardDirection = targetRB.velocity.normalized;
+				newForwardDirection = targetRB.linearVelocity.normalized;
 				newLocation = targetRB.transform.position;
 				newDownDirection = -targetRB.transform.up;
 			}

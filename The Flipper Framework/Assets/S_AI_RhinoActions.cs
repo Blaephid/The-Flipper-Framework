@@ -142,8 +142,8 @@ public class S_AI_RhinoActions : MonoBehaviour
 		if(!_canJump) return;
 
 		Vector3 JumpForce = transform.up * 60;
-		_RailBehaviour._RB.velocity *= 0.95f; //Allow player to catch up if they're jumping ahead.
-		_RailBehaviour._RB.velocity += JumpForce;
+		_RailBehaviour._RB.linearVelocity *= 0.95f; //Allow player to catch up if they're jumping ahead.
+		_RailBehaviour._RB.linearVelocity += JumpForce;
 
 		SetIsShooting(false);
 		_currentState = RhinoStates.jumping;
@@ -222,13 +222,13 @@ public class S_AI_RhinoActions : MonoBehaviour
 			//If no rail, fall.
 			if (_RailBehaviour._RF._distanceToHop <= 0.1f)
 			{
-				_RailBehaviour._RB.velocity += -transform.up * 2;
+				_RailBehaviour._RB.linearVelocity += -transform.up * 2;
 				_RailBehaviour._RF._distanceToHop = 0;
 				_RailBehaviour.LoseRail();
 			}
 			else
 			{
-				_RailBehaviour._RB.velocity += (_RailBehaviour._RF._sampleRight * ((_RailBehaviour._RF._hopThisFrame * -1) / Time.deltaTime));
+				_RailBehaviour._RB.linearVelocity += (_RailBehaviour._RF._sampleRight * ((_RailBehaviour._RF._hopThisFrame * -1) / Time.deltaTime));
 			}
 		}
 	}
@@ -347,7 +347,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 		Physics.IgnoreCollision(GO.GetComponent<Collider>(), _SolidCollider);
 
 		GO.transform.forward = velocity.normalized;
-		GO.GetComponent<Rigidbody>().velocity = velocity;
+		GO.GetComponent<Rigidbody>().linearVelocity = velocity;
 
 		SetIsShooting(false);
 

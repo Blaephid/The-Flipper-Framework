@@ -86,7 +86,7 @@ public class S_PlayerVelocity : S_Player_Base
 	//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 	public void CheckAndApplyVelocityChanges () {
 
-		Vector3 velocityThisFrame = _RB.velocity;
+		Vector3 velocityThisFrame = _RB.linearVelocity;
 		Vector3 velocityLastFrame = _previousVelocity[0];
 
 		bool fromAirToGround = _PlayerPhys._isGrounded && _PlayerPhys._wasInAirLastFrame;
@@ -276,7 +276,7 @@ public class S_PlayerVelocity : S_Player_Base
 		_isOverwritingCoreVelocity = false;
 
 		//Sets rigidbody velocity, this should be the only line in the player scripts to do so.
-		_RB.velocity = _totalVelocity;
+		_RB.linearVelocity = _totalVelocity;
 
 		//Adds this new velocity to a list of 2, tracking the last 2 frames.
 		_previousVelocity.Insert(0, _totalVelocity);

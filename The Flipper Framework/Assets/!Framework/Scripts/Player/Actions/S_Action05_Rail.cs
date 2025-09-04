@@ -402,7 +402,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//Set Player Speed correctly so that it becomes smooth grinding
 		_PlayerVel.SetBothVelocities(_RF._sampleForwards * _RF._grindingSpeed, new Vector2(1, 0));
-		if (_RF._ZipBody) { _RF._ZipBody.velocity = _RF._sampleForwards * _RF._grindingSpeed; }
+		if (_RF._ZipBody) { _RF._ZipBody.linearVelocity = _RF._sampleForwards * _RF._grindingSpeed; }
 
 		if (_RF._isRailLost)
 			LoseRail();

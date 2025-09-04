@@ -101,7 +101,7 @@ public class S_Handler_WallActions : MonoBehaviour
 			if (IsEnoughAboveGround())
 			{
 				_currentSpeed = _PlayerVel._horizontalSpeedMagnitude;
-				_saveVelocity = _PlayerPhys._RB.velocity;
+				_saveVelocity = _PlayerPhys._RB.linearVelocity;
 
 				//Has to be inputting at all, check if inputting towards a wall later.
 				if (_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.8f)
@@ -123,7 +123,7 @@ public class S_Handler_WallActions : MonoBehaviour
 		if (IsEnoughAboveGround())
 		{
 			_currentSpeed = _PlayerVel._horizontalSpeedMagnitude;
-			_saveVelocity = _PlayerPhys._RB.velocity;
+			_saveVelocity = _PlayerPhys._RB.linearVelocity;
 
 			//Has to be inputting at all, check if inputting towards a wall later.
 			if (_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.8f)

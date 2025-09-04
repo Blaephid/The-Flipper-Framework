@@ -55,7 +55,7 @@ public class S_Control_Zipline : MonoBehaviour
 		_CapsuleCollider.enabled = true;
 		_HomingTarget.SetActive(true);
 		_RB.isKinematic = true;
-		_RB.velocity = Vector3.zero;
+		_RB.linearVelocity = Vector3.zero;
 
 
 		PlaceOnRope();

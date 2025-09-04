@@ -21,7 +21,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: WaterfallMist
-  m_Shader: {fileID: -6465566751694194690, guid: 64ad4a4657d614f4eb137f75a818f5ba, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 64ad4a4657d614f4eb137f75a818f5ba,
+    type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
@@ -182,4 +183,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 9
+  version: 10

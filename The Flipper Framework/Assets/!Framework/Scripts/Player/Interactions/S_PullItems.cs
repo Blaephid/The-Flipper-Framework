@@ -92,7 +92,7 @@ public class S_PullItems : MonoBehaviour
 				continue;
 			}
 
-			ring.velocity = (S_S_MoreMaths.GetDirection(ring.transform.position, destination)) * pullSpeed;
+			ring.linearVelocity = (S_S_MoreMaths.GetDirection(ring.transform.position, destination)) * pullSpeed;
 		}
 	}
 

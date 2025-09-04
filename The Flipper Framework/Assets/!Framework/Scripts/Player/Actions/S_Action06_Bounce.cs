@@ -106,7 +106,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 		//Physics
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
 		//_PlayerPhys._locksForIsGravityOn.Add(false); //Moving down will be handled here rather than through the premade gravity in physics script.
-		_PlayerVel.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
+		_PlayerVel.SetCoreVelocity(new Vector3(_PlayerPhys._RB.linearVelocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.linearVelocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
 		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerVel._coreVelocity.y - 20);
 		_PlayerVel.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0)); // Apply downward force, this is instant rather than  ramp up like gravity.
 
@@ -190,7 +190,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 			_BallAnimator.SetFloat("VerticalSpeed", _trackedVerticalSpeed);
 			_BallAnimator.SetInteger("Action", 6); //Causes a transition through the jump animation
 
-			float vertSpeed = _PlayerPhys._RB.velocity.y;
+			float vertSpeed = _PlayerPhys._RB.linearVelocity.y;
 			//If fall speed has been decreased this much, then something must be in the way so end the action.
 			 if (vertSpeed > 1)
 			{

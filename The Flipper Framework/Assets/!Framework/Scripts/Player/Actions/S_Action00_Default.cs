@@ -142,7 +142,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 			//Action
 			_CharacterAnimator.SetInteger("Action", action);
 			//Vertical speed
-			_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.velocity.y);
+			_CharacterAnimator.SetFloat("YSpeed", _PlayerPhys._RB.linearVelocity.y);
 			//Horizontal speed
 			_CharacterAnimator.SetFloat("GroundSpeed", _PlayerVel._currentRunningSpeed);
 			//How much greater running speed is then air speed. This affects what animation to perform in the air. Verti velocity is to the power of x, to make it less exponentially take more priority.
@@ -269,7 +269,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 
 		//Remember upwards direction and angle downwards of floor before it was lost;
 		_coyoteRememberDirection = transform.up;
-		_coyoteRememberSpeed = _PlayerPhys._RB.velocity.y;
+		_coyoteRememberSpeed = _PlayerPhys._RB.linearVelocity.y;
 
 		//Length of coyote time dependant on speed.
 		float waitFor = _coyoteTimeBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / 100);

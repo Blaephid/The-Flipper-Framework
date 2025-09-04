@@ -259,7 +259,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 	/// 
 	#region Physics
 	public void MoveOnRail () {
-		_RB.velocity = _RF._sampleForwards * _RF._grindingSpeed;
+		_RB.linearVelocity = _RF._sampleForwards * _RF._grindingSpeed;
 	}
 
 	private void HandleGrindSpeed () {
@@ -588,14 +588,14 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		else if (_Data._armouredTrain_)
 		{
 			_RF._grindingSpeed = 0;
-			_RB.velocity = Vector3.zero;
+			_RB.linearVelocity = Vector3.zero;
 		}
 		_RF._grindingSpeed = 0;
 		_isActive = false;
 	}
 
 	private void ResetRigidBody () {
-		_RB.velocity = Vector3.zero;
+		_RB.linearVelocity = Vector3.zero;
 		_RB.useGravity = false;
 		_RB.freezeRotation = true;
 	}

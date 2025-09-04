@@ -97,7 +97,7 @@ public class S_Control_MovingPlatform : S_Data_Base
 
 			if (_canCarryPlayer)
 			{
-				_RB.velocity = Vector3.zero;
+				_RB.linearVelocity = Vector3.zero;
 				_RB.position = destination;
 			}
 			else
@@ -113,7 +113,7 @@ public class S_Control_MovingPlatform : S_Data_Base
 
 			//Instead of going straight to a new location, apply velocity that will take it there in one frame. 
 			Vector3 direction = destination - _RB.position;
-			_RB.velocity = direction / Time.deltaTime;
+			_RB.linearVelocity = direction / Time.deltaTime;
 			return;
 		}
 	}

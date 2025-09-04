@@ -272,7 +272,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 			newSpeed = _Actions._charge;
 
 			//The angle between movement direction and this new force (typically higher with bigger angles)
-			float dif = Vector3.Dot(addForce.normalized, _PlayerPhys._RB.velocity.normalized);
+			float dif = Vector3.Dot(addForce.normalized, _PlayerPhys._RB.linearVelocity.normalized);
 			if (_PlayerVel._currentRunningSpeed > 20)
 				newSpeed *= _forceGainByAngle_.Evaluate(dif);
 
@@ -283,7 +283,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 			_PlayerVel.AddCoreVelocity(addForce);
 
 			//Adding velocity is more natural/realistic, but for accuracy in aiming, there is also a rotation towards the new direction.
-			Vector3 newDir = _PlayerPhys._RB.velocity;
+			Vector3 newDir = _PlayerPhys._RB.linearVelocity;
 			newDir.Normalize();
 			dif = Vector3.Angle(_MainSkin.forward, newDir);
 			dif *= _turnAmountByAngle_.Evaluate(dif);
@@ -341,7 +341,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 		//Follows movement with a slight lerp towards input (since turning is not instant)
 		void FaceByInput () {
-			Vector3 faceDirection = _PlayerPhys._RB.velocity.sqrMagnitude > 1 ? _PlayerVel._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
+			Vector3 faceDirection = _PlayerPhys._RB.linearVelocity.sqrMagnitude > 1 ? _PlayerVel._coreVelocity.normalized : _MainSkin.forward; //If not moving, the direction is based on character
 
 			//Rotate slightly to player input
 			if (_PlayerMovement._moveInput.sqrMagnitude > 0.2)

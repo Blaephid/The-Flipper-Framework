@@ -544,7 +544,7 @@ public class S_HedgeCamera : MonoBehaviour
 		if (_isLocked) { return; }
 
 		//Changing camera height
-		float verticalSpeed = _PlayerTransformReal.InverseTransformDirection(_PlayerPhys._RB.velocity).y;
+		float verticalSpeed = _PlayerTransformReal.InverseTransformDirection(_PlayerPhys._RB.linearVelocity).y;
 
 		//Making the camera face down when in the air for long enough.
 		bool isRightAction = _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Jump || _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Default || _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.DropCharge;
