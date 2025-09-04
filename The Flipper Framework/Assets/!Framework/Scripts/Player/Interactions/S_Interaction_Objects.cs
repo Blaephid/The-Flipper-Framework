@@ -221,7 +221,6 @@ public class S_Interaction_Objects : S_Player_Base
 		if (UpdraftScript == null) { return; }
 
 		_numberOfWindForces += 1;
-		Debug.Log("Enter Wind for " + _numberOfWindForces);
 
 		if (Col.transform.up.y > 0.7f && _numberOfWindForces == 1)
 		{
@@ -238,11 +237,10 @@ public class S_Interaction_Objects : S_Player_Base
 		if (UpdraftScript == null) { return; }
 
 		_numberOfWindForces -= 1;
-		Debug.Log("Exited wind force for " + _numberOfWindForces);
+
 		//Col.transform.up.y > 0.7f && 
 		if (_numberOfWindForces == 0)
 		{
-			Debug.Log("Enable Gravity");
 			S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "InUpDraft");
 
 			StartCoroutine(LerpFromWindAffectedToNormalSpeed(_finalWindVector));
@@ -386,8 +384,6 @@ public class S_Interaction_Objects : S_Player_Base
 				//So only add the amount specifically in the wind direction, using project.
 				Vector3 nextSpeedInFanDirection = Vector3.Project(nextVelocity, lateralWind);
 				Vector3 increase = nextSpeedInFanDirection - relevantCoreVelocity;
-
-				Debug.Log("increase = " + increase + "  after project is " + nextSpeedInFanDirection);
 
 				if (relevantCoreVelocity.sqrMagnitude > increase.sqrMagnitude * Time.fixedDeltaTime + 1)
 					_PlayerVel.AddCoreVelocity(increase * Time.fixedDeltaTime * 0.5f);
