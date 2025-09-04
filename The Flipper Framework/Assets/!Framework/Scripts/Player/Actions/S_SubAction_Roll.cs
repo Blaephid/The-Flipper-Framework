@@ -61,21 +61,27 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 			}
 
 			//While isRolling is set externally, the counter tracks when it is.
-			else if (_isRollingFromThis)
-				_rollCounter += Time.deltaTime;
+			if (!_isRollingFromThis) { return; }
 
-			if(_rollCounter > 0.5f && _PlayerVel._horizontalSpeedMagnitude > _speedBeforeRoll + 50) { _ActionChain.AddToChain("Roll", 2, 1); }
+			_rollCounter += Time.deltaTime;
 
-			//Rolling downhill boost will be improved at the cost of energy, but also generate points.
-			float energyUse = _EnergyUseByAngle_.Evaluate(_PlayerPhys._groundNormal.y) / 55;
-			if (_CoreValues._energy >= energyUse)
+			if (_rollCounter > 0.5f && _PlayerVel._horizontalSpeedMagnitude > _speedBeforeRoll + 30) { _ActionChain.AddToChain("Roll", 2, 1); }
+
+
+			//If gaining speed from roll. Use energy for greater effect and gain points
+			if (_PlayerVel._previousHorizontalSpeeds[2] < _PlayerVel._previousHorizontalSpeeds[0])
+
 			{
-				_CoreValues.AdjustEnergy(-energyUse);
-				_CoreValues.SetMultiplierFromEnergy(_modifierFromEnergy_);
-				_CoreValues.AdjustPoints(_pointsFromEnergyRoll_ / 55);
+				float energyUse = _EnergyUseByAngle_.Evaluate(_PlayerPhys._groundNormal.y) / 55;
+				if (_CoreValues._energy >= energyUse)
+				{
+					_CoreValues.AdjustEnergy(-energyUse);
+					_CoreValues.SetMultiplierFromEnergy(_modifierFromEnergy_);
+					_CoreValues.AdjustPoints(_pointsFromEnergyRoll_ / 55);
+					return;
+				}
 			}
-			else
-				_CoreValues.SetMultiplierFromEnergy(1);
+			_CoreValues.SetMultiplierFromEnergy(1);
 		}
 	}
 
@@ -83,7 +89,7 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 	new public bool AttemptAction () {
 		if (!base.AttemptAction()) return false;
 
-		switch(_Actions._whatCurrentAction)
+		switch (_Actions._whatCurrentAction)
 		{
 			//Any action with this on
 			default:
@@ -95,7 +101,7 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 					{
 						_whatCurrentAction = _Actions._whatCurrentAction; //If the current action stops matching this, then the player has switched actions while rolling
 						_Actions._whatSubAction = S_S_ActionHandling.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
-						
+
 						Curl();
 						return true;
 					}
@@ -134,7 +140,7 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 
 	//When the player wants to stop rolling while on the ground, check if there's enough room to stand up.
 	public void UnCurl () {
-		if (_PlayerPhys._isRolling && !Physics.BoxCast(_StandingCapsule.transform.position, 
+		if (_PlayerPhys._isRolling && !Physics.BoxCast(_StandingCapsule.transform.position,
 			new Vector3(_StandingCapsule.radius, _StandingCapsule.height / 2.1f, _StandingCapsule.radius), Vector3.zero, transform.rotation, 0))
 		{
 			SetIsRolling(false);

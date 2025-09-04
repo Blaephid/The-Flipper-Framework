@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: eaa398f20ef8ed5429b6b93cb3b07a6c
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 278758
+  packageName: Wind Particles for Fan
+  packageVersion: 1.0.0
+  assetPath: Assets/Solodream/WindParticles/Prefabs/TableFan_withParticles.prefab
+  uploadId: 648146

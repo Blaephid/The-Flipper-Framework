@@ -893,13 +893,14 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucSpinCharge SetStrucSpinCharge () {
 		return new StrucSpinCharge
 		{
+			energyUse = 15,
 			forceTowardsGround = new Vector2 (2, 0),
 			stickingLerps = new Vector2(1, 0.5f),
-			chargingSpeed = 1.05f,
-			tappingBonus = 2.1f,
+			chargingSpeed = new Vector2 (0.9f, 1.2f),
+			tappingBonus = new Vector2 (2.5f, 4.5f),
 			delayBeforeLaunch = 12,
 			minimunCharge = 20f,
-			maximunCharge = 120f,
+			maximunCharge = new Vector2 (150, 190),
 			forceAgainstMovement = 1.2f,
 			shouldSetRolling = true,
 			maximumSpeedPerformedAt = 200f,
@@ -954,16 +955,18 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: See Sticking To Ground for more info. This overwrites how much the player follows the curve of the ground. X is up, Y is down.")]
 		public Vector2 stickingLerps;
 		[Header ("Charge")]
-		[Tooltip("Surface: How much charge to gain every frame this is being performed.")]
-		public float                  chargingSpeed;
-		[Tooltip("Surface: How much charge to gain when pressing down on the charge button (after temporarily releasing)")]
-		public float                  tappingBonus;
+		[Tooltip("Surface: How much energy is used per second when charging to increase charge time.")]
+		public float energyUse;
+		[Tooltip("Surface: How much charge to gain every frame. X is normal charge, Y is charge when consuming energy.")]
+		public Vector2                 chargingSpeed;
+		[Tooltip("Surface: How much charge to gain when pressing down on the charge button (after temporarily releasing). X is normal, Y is with energy.")]
+		public Vector2                 tappingBonus;
 		[Tooltip("Core: How many frames to wait after the button is released before launching. (Can allow time for tapping).")]
 		public int                    delayBeforeLaunch;
 		[Tooltip("Surface: The minimum value the charge must hit to actually launch forwards.")]
 		public float                  minimunCharge;
-		[Tooltip("Surface: The maximum charge to be used when launching.")]
-		public float                  maximunCharge;
+		[Tooltip("Surface: The maximum charge to be used when launching. X is normal, Y is with energy.")]
+		public Vector2                  maximunCharge;
 		[Header("Release")]
 		[Tooltip("How much to shake the camera when launching. X is applied and multipled by charge, Y is minimum including this multiplication, Z is maximum. W is how long it lasts.")]
 		public Vector4                  releaseShakeAmmount;

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 00b7aa54fd7b5674e84e61a9b5cd6028
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 278758
+  packageName: Wind Particles for Fan
+  packageVersion: 1.0.0
+  assetPath: Assets/Solodream/WindParticles/Shaders/WindDistortion.shadergraph
+  uploadId: 648146

@@ -22,11 +22,11 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	[HideInInspector] 
-	public float		_spinDashChargingSpeed_ = 0.3f;
+	public Vector2		_spinDashChargingSpeed_;
 	[HideInInspector] 
 	public float		_minimunCharge_ = 10;
 	[HideInInspector] 
-	public float		_maximunCharge_ = 100;
+	public Vector2		_maximunCharge_;
 	[HideInInspector] 
 	public float		_spinDashStillForce_ = 20f;
 	private float		_MaximumSpeedForSpinDash_;
@@ -38,11 +38,13 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 	private Vector4                 _releaseShakeAmmount_;
 	private Vector3               _cameraPauseEffect_ = new Vector3(3, 40, 0.6f);
 	private S_GeneralEnums.SpinChargeAimingTypes _whatControl_;
-	private float                 _tappingBonus_;
+	private Vector2                _tappingBonus_;
 	private int                   _delayBeforeLaunch_;
 	private bool                  _shouldSetRolling_;
 
 	private Vector2                 _forceTowardsGroundWhileCharging_;
+
+	private float                   _energyWhenCharging_ = 1;
 	#endregion
 
 	// Trackers
@@ -152,11 +154,25 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 	//Increases power in the spin for release
 	private void ChargeSpin () {
-		_Actions._charge += _spinDashChargingSpeed_;
+
+		float useCharge = _spinDashChargingSpeed_.x;
+		float useTappingBonus = _tappingBonus_.x;
+		float useMaxCharge = _maximunCharge_.x;
+
+		float energyUse = _energyWhenCharging_ / 55;
+		if (_CoreValues._energy >= energyUse)
+		{
+			_CoreValues.AdjustEnergy(-energyUse);
+			useCharge = _spinDashChargingSpeed_.y;
+			useTappingBonus = _tappingBonus_.y;
+			useMaxCharge = _maximunCharge_.y;
+		}
+
+		_Actions._charge += useCharge;
 		_counter += Time.deltaTime;
 
 		//Effects
-		_Effects.HandleSpinDashEffect(1, _spinDashChargedEffectAmm * _Actions._charge, _Actions._charge, _maximunCharge_);
+		_Effects.HandleSpinDashEffect(1, _spinDashChargedEffectAmm * _Actions._charge, _Actions._charge, useMaxCharge);
 
 		//If not pressed, sets the player as exiting
 		if (!_Input._SpinChargePressed)
@@ -172,14 +188,14 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 			if (!_isPressedCurrently)
 			{
 				_Sounds.SpinDashRev();
-				_Actions._charge += (_spinDashChargingSpeed_ * _tappingBonus_);
+				_Actions._charge +=  useTappingBonus;
 			}
 
 			_isPressedCurrently = true;
 		}
 
 		//Prevents going over the maximum
-		_Actions._charge = Mathf.Min(_Actions._charge, _maximunCharge_);
+		_Actions._charge = Mathf.Min(_Actions._charge, useMaxCharge);
 	}
 
 	//Changes how the player moves when in this state.
@@ -277,7 +293,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 			_CharacterAnimator.SetFloat("GroundSpeed", newSpeed);
 
-			float chainValue = Mathf.Lerp(0, 3, _Actions._charge / _maximunCharge_);
+			float chainValue = Mathf.Lerp(0, 3, (_Actions._charge / 1.5f) / _maximunCharge_.x);
 			chainValue = Mathf.Round(chainValue);
 			_ActionChain.AddToChain("Spin Dash", (int)chainValue, 10);
 
@@ -393,6 +409,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_delayBeforeLaunch_ =	_Tools.Stats.SpinChargeStats.delayBeforeLaunch;
 		_shouldSetRolling_ =	_Tools.Stats.SpinChargeStats.shouldSetRolling;
 		_forceTowardsGroundWhileCharging_ = _Tools.Stats.SpinChargeStats.forceTowardsGround;
+		_energyWhenCharging_ = _Tools.Stats.SpinChargeStats.energyUse;
 
 		_cameraPauseEffect_ =	_Tools.Stats.SpinChargeStats.cameraFallBack;
 
