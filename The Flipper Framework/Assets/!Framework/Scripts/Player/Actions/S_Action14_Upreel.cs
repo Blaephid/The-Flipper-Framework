@@ -30,7 +30,7 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	#region trackers
 	
 
-	private float       _speedBeforeUpreel;
+	private float       _speedOnEndOfUpreel;
 
 	#endregion
 	#endregion
@@ -41,14 +41,6 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Start () {
-		enabled = false;
-	}
-
-	// Update is called once per frame
-	void Update () {
-	}
 
 	new private void FixedUpdate () {
 		base.FixedUpdate();
@@ -64,6 +56,8 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
+		_speedOnEndOfUpreel = _Actions._speedBeforeAction != 0 ? _Actions._speedBeforeAction :  _PlayerVel._currentRunningSpeed;
+
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Upreel);
 		enabled = true;
 
@@ -74,25 +68,25 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		_Actions._ActionDefault.SwitchSkin(true);
 		_Actions._ActionDefault._isAnimatorControlledExternally = true;
 
-		_speedBeforeUpreel = _PlayerVel._previousHorizontalSpeeds[1];
-
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Upreel");
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Upreel");
-		//_PlayerPhys._locksForCanControl.Add(false); //Removes ability to control velocity until empty
-		//_PlayerPhys._locksForIsGravityOn.Add(false);
+
 		_PlayerPhys.SetIsGrounded(false);
 		_PlayerPhys._canChangeGrounded = false;
+		_Actions._ActionDefault.SetColliderActive(false);
 
-		_ActionChain.AddToChain("Upreel", 1, 1);
+		_ActionChain.AddToChain("Upreel", 2, 1);
 
 		_CurrentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
-
+		MoveOnUpreel();
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
 		if (isFirstTime) { SetUpAction(); return; }
+
+		_Actions._ActionDefault.SetColliderActive(true);
 
 		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Upreel");
 		_PlayerPhys._canChangeGrounded = true;
@@ -105,8 +99,6 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 
 		//Ends updates on this until a new upreel is set.
 		_CurrentUpreel = null;
-
-		_Actions._ActionDefault.StartAction();
 	}
 
 	#endregion
@@ -122,7 +114,6 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	public void StartUpreel ( Collider col ) {
 		//If not already on an upreel
 		if (_CurrentUpreel != null) { return; }
-
 
 		//Activates the upreel to start retracting. See PulleyActor class for more.
 		//Sets currentUpreel. See FixedUpdate() above for more.
@@ -140,6 +131,8 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		//Updates if the player is currently on an Upreel
 		if (_CurrentUpreel != null)
 		{
+			_speedOnEndOfUpreel = Mathf.Lerp(_speedOnEndOfUpreel, _minimumSpeedCarried_, 0.015f);
+
 			//If the upreel is moving
 			if (_CurrentUpreel._isMoving)
 			{
@@ -164,8 +157,8 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 	private void PlaceOnHandle () {
 
 		Vector3 handlePosition = _CurrentUpreel.MoveHandleToLength();
-		Vector3 HandPos = _PlayerPhys._CharacterPivotPosition - _HandGripTransform.position;
-		_PlayerPhys.SetPlayerPosition(handlePosition + HandPos);
+		Vector3 handOffset = _HandGripTransform.position - _PlayerPhys._CharacterPivotPosition;
+		_PlayerPhys.SetPlayerPosition(handlePosition - handOffset);
 	}
 
 	//When leaving pulley, player is bounced up and forwards after a momment, allowing them to clear the wall without issue.
@@ -179,15 +172,20 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		_PlayerVel.SetCoreVelocity(Vector3.zero);
 		_PlayerVel.SetEnvironmentalVelocity(new Vector3(0, Upreel.up.y * _CurrentUpreel._launchUpwardsForce, 0), true, true); //Launch straight upwards over any wall without affecting core velocity.
 
-		StopAction();
+		_Actions._ActionDefault.StartAction();
 
-		yield return new WaitForSeconds(0.12f);
+		yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
 
 		//Apply new force once past the wall to keep movement going.
 		Vector3 forwardDirection = -Upreel.forward;
 		forwardDirection.y = 0;
 
-		float newSpeed = Mathf.Max(_upreelSpeedKeptAfter_ * _speedBeforeUpreel, _minimumSpeedCarried_);
+		float newSpeed = Mathf.Max(_upreelSpeedKeptAfter_ * _speedOnEndOfUpreel, _minimumSpeedCarried_);
 
 		_PlayerVel.SetCoreVelocity(forwardDirection * newSpeed, "Overwrite");
 	}

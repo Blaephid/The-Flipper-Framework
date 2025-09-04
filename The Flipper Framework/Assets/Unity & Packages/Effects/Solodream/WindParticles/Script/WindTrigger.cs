@@ -34,7 +34,6 @@ namespace WindTriggerSystem
         [Header("Wind Dust")]
         [SerializeField] private VisualEffect _windDust;
         [SerializeField] private float _attractionSpeed;
-        [SerializeField] private float _attractionAcceleration = 0.00001f;
         [SerializeField] private float _minAttractionSpeed = 0.0f;
         [SerializeField] private float _maxAttractionSpeed = 0.015f;
 

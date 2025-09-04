@@ -7,9 +7,17 @@ public class S_S_MoreMaths
 
 	//	VECTORS
 
-	//A faster versopm of Vector3.Distance because it doesn't calculate the actual magnitude. Therefore, remember that anything you compare this to MUST be squared, as this wont give the square root.
+	//A faster version of Vector3.Distance because it doesn't calculate the actual magnitude. Therefore, remember that anything you compare this to MUST be squared, as this wont give the square root.
 	public static float GetDistanceSqrOfVectors ( Vector3 Vector1, Vector3 Vector2 ) {
 		return (Vector1 - Vector2).sqrMagnitude;
+	}
+
+	public static Vector3 TreatAxisAsZeroForVector(Vector3 vector, float clamp ) {
+		if (Mathf.Abs(vector.x) < clamp) vector.x = 0;
+		if (Mathf.Abs(vector.y) < clamp) vector.y = 0;
+		if (Mathf.Abs(vector.z) < clamp) vector.z = 0;
+
+		return vector;
 	}
 
 	//Because normal Clamp Magnitude uses Square roots, call this instead to just limit the vector1 magnitude through simple comparisons.

@@ -26,8 +26,8 @@ public class S_Interaction_Objects : S_Player_Base
 
 	private S_Handler_CharacterAttacks      _AttackHandler;
 	private S_Handler_HealthAndHurt         _HurtAndHealth;
-	private S_Interaction_Triggers		_TriggerInteraction;
-	private S_Control_EffectsPlayer		_Effects;
+	private S_Interaction_Triggers          _TriggerInteraction;
+	private S_Control_EffectsPlayer         _Effects;
 
 	//External
 	private GameObject                       _PlatformAnchor;
@@ -58,11 +58,9 @@ public class S_Interaction_Objects : S_Player_Base
 	private Vector3     _previousPlatformPointPosition;
 
 	[Header("Wind Force")]
+	private Vector3      _currentWindVector;
 	[HideInInspector]
-	public bool         _canHover; //Only true if Hovering AttemptAction is called, and decides if can enter said action.
-	private Vector3      _currentWindDirection;
-	[HideInInspector]
-	public Vector3      _totalWindDirection;
+	public Vector3      _finalWindVector;
 	private int         _numberOfWindForces; //How many winds are currently operating on the player. Up when entering one, down when exiting one.
 	private int         _windCounter; //0 At the start of every frame, and goes up for each wind calculaton, when equal to number of wind forces, it's at the last one.
 
@@ -78,9 +76,9 @@ public class S_Interaction_Objects : S_Player_Base
 
 
 	private void FixedUpdate () {
-		
+
 		//For tracking wind forces
-		_currentWindDirection = Vector3.zero;
+		_currentWindVector = Vector3.zero;
 		_windCounter = 0;
 	}
 
@@ -102,18 +100,7 @@ public class S_Interaction_Objects : S_Player_Base
 			case "Bumper":
 				break;
 			case "Wind":
-				_numberOfWindForces += 1;
-				S_Data_Updraft UpdraftScript = Col.GetComponentInParent<S_Data_Updraft>();
-				if (UpdraftScript != null)
-				{
-					if (Col.transform.up.y > 0.7f)
-					{
-						StartCoroutine(RemoveAdditionalVerticalVelocity(_PlayerVel._coreVelocity.y));
-						S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "InUpdraft");
-						//_PlayerPhys._locksForIsGravityOn.Add(false);
-						_PlayerPhys.SetIsGrounded(false);
-					}
-				}
+				EnterWind(Col);
 				break;
 
 			case "Monitor":
@@ -180,11 +167,7 @@ public class S_Interaction_Objects : S_Player_Base
 				break;
 
 			case "Wind":
-				_numberOfWindForces -= 1;
-				if (Col.transform.up.y > 0.7f)
-					S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "InUpDraft");
-				if (_numberOfWindForces == 0)
-					_totalWindDirection = Vector3.zero;
+				ExitWind(Col);
 				break;
 			case "EffectTrigger":
 				_TriggerInteraction.CheckEffectsTriggerExit(Col); break;
@@ -200,18 +183,7 @@ public class S_Interaction_Objects : S_Player_Base
 				break;
 
 			case "Wind":
-				S_Data_Updraft UpdraftScript = Col.GetComponentInParent<S_Data_Updraft>();
-				if (UpdraftScript != null)
-				{
-					if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing
-						|| _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
-
-					Vector3 thisForce = GetForceOfWind(UpdraftScript);
-					_currentWindDirection += thisForce;
-
-					_windCounter++;
-					ApplyWind();
-				}
+				StayinWindPerForce(Col);
 				break;
 		}
 	}
@@ -244,6 +216,81 @@ public class S_Interaction_Objects : S_Player_Base
 	//Wind Interactions
 	//
 
+	private void EnterWind ( Collider Col ) {
+		S_Data_Updraft UpdraftScript = Col.GetComponentInParent<S_Data_Updraft>();
+		if (UpdraftScript == null) { return; }
+
+		_numberOfWindForces += 1;
+		Debug.Log("Enter Wind for " + _numberOfWindForces);
+
+		if (Col.transform.up.y > 0.7f && _numberOfWindForces == 1)
+		{
+			StartCoroutine(RemoveAdditionalVerticalVelocity(_PlayerVel._coreVelocity.y));
+			Debug.Log("Disable Gravity");
+			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "InUpDraft");
+			_PlayerPhys.SetIsGrounded(false);
+		}
+
+	}
+
+	private void ExitWind(Collider Col ) {
+		S_Data_Updraft UpdraftScript = Col.GetComponentInParent<S_Data_Updraft>();
+		if (UpdraftScript == null) { return; }
+
+		_numberOfWindForces -= 1;
+		Debug.Log("Exited wind force for " + _numberOfWindForces);
+		//Col.transform.up.y > 0.7f && 
+		if (_numberOfWindForces == 0)
+		{
+			Debug.Log("Enable Gravity");
+			S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "InUpDraft");
+
+			StartCoroutine(LerpFromWindAffectedToNormalSpeed(_finalWindVector));
+
+			_finalWindVector = Vector3.zero;
+		}
+	}
+
+	//To prevent player blasting off as soon wind stops slowing them down, lerp from the speed the wind limited to, to their actual speed.
+	private IEnumerator LerpFromWindAffectedToNormalSpeed(Vector3 windVector ) {
+		windVector.y = 0;
+
+		float localSpeed = _PlayerVel._currentRunningSpeed;
+		float startWorldSpeed = _PlayerVel._horizontalSpeedMagnitude;
+		float frames = 25;
+
+		if(startWorldSpeed > localSpeed) { yield break; }
+
+		for (int i = 0 ; i <frames ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+
+			if (_PlayerVel._currentRunningSpeed < localSpeed) localSpeed = _PlayerVel._currentRunningSpeed;
+			if(_PlayerVel._horizontalSpeedMagnitude < startWorldSpeed - 2) { yield break; }
+
+			//Add a single frame push against the player, being lighter each frame until its gone.
+			float thisPush = localSpeed - startWorldSpeed;
+			thisPush = Mathf.Lerp(thisPush, 0, i / frames);
+			_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * -thisPush);
+		}
+	}
+
+	private void StayinWindPerForce ( Collider Col ) {
+		S_Data_Updraft UpdraftScript = Col.GetComponentInParent<S_Data_Updraft>();
+		if (UpdraftScript == null) { return; }
+
+		if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Homing
+			|| _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.RingRoad
+			|| _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Upreel) { return; } //Homing attack is immune to wind as it goes to targets on its own.
+
+		Vector3 thisForce = GetForceOfWindSource(UpdraftScript);
+		_currentWindVector += thisForce;
+
+		_windCounter++;
+		ApplyWindAfterAllForces();
+
+	}
+
 	//If entering wind with force upwards already (like from a jump), this would carry the whole way, so only use gravity to remove this, but not go against the wind.
 	private IEnumerator RemoveAdditionalVerticalVelocity ( float coreVelocityUpwards ) {
 		yield return new WaitForFixedUpdate();
@@ -261,7 +308,7 @@ public class S_Interaction_Objects : S_Player_Base
 				//Calculate how much gravity would have an affect on this velocity, then apply it seperately, so only this is being counteracted.
 				//(Allowing the player speed up to slow but not counteract the wind).
 				Vector3 forceDownwards = Vector3.up;
-				forceDownwards = _PlayerPhys.CheckGravity(forceDownwards * coreVelocityUpwards, true);
+				forceDownwards = _PlayerPhys.TryGravity(forceDownwards * coreVelocityUpwards, true);
 				float change = forceDownwards.y - coreVelocityUpwards;
 				coreVelocityUpwards = change;
 
@@ -271,14 +318,17 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 	//Takes an origin of wind and gets how much force to apply onto the player from it, based on its power and distance in the wind direction
-	private Vector3 GetForceOfWind ( S_Data_Updraft UpdraftScript ) {
+	private Vector3 GetForceOfWindSource ( S_Data_Updraft UpdraftScript ) {
 		Vector3 direction = UpdraftScript._Direction.up;
+		direction = S_S_MoreMaths.TreatAxisAsZeroForVector(direction, 0.005f);
 
 		// Create a temporary game object and place it at player position in the local space of the wind
 		GameObject newGameObject = new GameObject("TEMP");
 		Transform newTransform = newGameObject.transform;
-		newTransform.position = _PlayerPhys._CharacterPivotPosition;
+		newTransform.position = _PlayerPhys._CharacterCenterPosition;
 		newTransform.parent = UpdraftScript._Direction;
+
+		float distanceAlongWindDirection = newTransform.localPosition.y / newTransform.lossyScale.y;
 
 		//Remove the vertical component, ensuring this temp object is only along the base, at any rotation. InverseTrasformDirection does not work because it does not account for rotation.
 		newTransform.localPosition = new Vector3(newTransform.localPosition.x, 0, newTransform.localPosition.z);
@@ -290,33 +340,38 @@ public class S_Interaction_Objects : S_Player_Base
 		//Get the difference between current position and this affected position, and this will be how far along the direction the player is.
 		float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(relativePlayerPosition, _PlayerPhys._CharacterPivotPosition);
 
+
 		float power = 0;
-		if (distanceSquared < 9)
+		//if (distanceSquared < 9)
+		if (distanceAlongWindDirection < 3)
 		{
 			//If under 3 units away and moving towards the wind, apply force against equal to the player's speed in that direction, ensuring they can't fall beyond it.
 			Vector3 WindProjectedAgainstVelocity = Vector3.Project(_PlayerVel._coreVelocity, -direction);
-			if (WindProjectedAgainstVelocity.sqrMagnitude > 1) { power = WindProjectedAgainstVelocity.magnitude; }
+			if (WindProjectedAgainstVelocity.sqrMagnitude > 1)
+			{ power = WindProjectedAgainstVelocity.magnitude; }
 		}
 		else
 			//Affect power by distance along in this direction
 			//power = Mathf.Max(power, UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared));
-			power = UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._getRangeSquared);
+			//power = UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceSquared / UpdraftScript._totalRangeSquare);
+			power = UpdraftScript._power * UpdraftScript._FallOfByPercentageDistance.Evaluate(distanceAlongWindDirection / UpdraftScript._setRange);
 
+		power = Mathf.Max(power, 0);
 		return power * direction;
 	}
 
 	//After going over each wind force, apply all at once, either as general or core velocity, split vertical and lateral.
-	private void ApplyWind () {
+	private void ApplyWindAfterAllForces () {
 		//To prevent up and down differences being extremely sudden, apply to CoreVelocity is this will increase it, but if it will decrease it, apply temporary.
 		if (_windCounter == _numberOfWindForces)
 		{
-			_totalWindDirection = _currentWindDirection; //Saves the total wind force so other scripts can access it before current is set to zero again next frame.
+
+			_finalWindVector = _currentWindVector; //Saves the total wind force so other scripts can access it before current is set to zero again next frame.
 
 			//Split wind between vertical and lateral, because these should operate differently due to gravity interactions.
-			Vector3 lateralWind = _currentWindDirection;
+			Vector3 lateralWind = _currentWindVector;
 			lateralWind.y = 0;
-			Vector3 verticalWind = new Vector3(0, _currentWindDirection.y, 0);
-
+			Vector3 verticalWind = new Vector3(0, _currentWindVector.y, 0);
 
 			//Apply lateral
 			Vector3 relevantCoreVelocity = new Vector3 (_PlayerVel._coreVelocity.x, 0, _PlayerVel._coreVelocity.z);
@@ -332,25 +387,38 @@ public class S_Interaction_Objects : S_Player_Base
 				Vector3 nextSpeedInFanDirection = Vector3.Project(nextVelocity, lateralWind);
 				Vector3 increase = nextSpeedInFanDirection - relevantCoreVelocity;
 
+				Debug.Log("increase = " + increase + "  after project is " + nextSpeedInFanDirection);
+
 				if (relevantCoreVelocity.sqrMagnitude > increase.sqrMagnitude * Time.fixedDeltaTime + 1)
 					_PlayerVel.AddCoreVelocity(increase * Time.fixedDeltaTime * 0.5f);
 			}
 
 			_PlayerVel.AddGeneralVelocity(lateralWind, false, true); //Using general velocity so the player believably is still running at speed, even if going nowhere in the world.
 
-
-			//Apply vertical, decreasing core velocity if going towards wind, to combat gravity.
-			float x = 0;
-			if (_PlayerVel._coreVelocity.y >= x)//If already being pushed up by wind
-				_PlayerVel.AddGeneralVelocity(verticalWind, false, true);
-			else //Fallspeed wont increase while in wind, so apply velocity until upwards force is x, overcoming gravity
-				_PlayerVel.AddCoreVelocity(verticalWind * Mathf.Min(verticalWind.y * Time.fixedDeltaTime, Mathf.Abs(_PlayerVel._coreVelocity.y - x)));
-
-			//If being blown upwards, enter the hovering state to change actions and animation.
-			//canHover can only be set to true by the Hovering AttemptAction, so GetComponent is safe, and Hovering being enabled shouldn't enable canhover.
-			if (_canHover && _totalWindDirection.normalized.y > 0.72f && _totalWindDirection.y > 5)
+			if(_PlayerPhys._locksForIsGravityOn.Count > 0)
 			{
-				_Actions._ObjectForActions.GetComponent<S_Action13_Hovering>().StartAction(); //Not placed in enterTrigger incase was already in the trigger, but not in a state that could enter the hover action.
+
+				//Apply vertical, decreasing core velocity if going towards wind, to combat gravity.
+				float x = 0;
+				if (_PlayerVel._coreVelocity.y >= x)//If already being pushed up by wind
+					_PlayerVel.AddGeneralVelocity(verticalWind, false, true);
+
+				else //Fallspeed wont increase while in wind, so apply velocity until upwards force is x, overcoming gravity
+					_PlayerVel.AddCoreVelocity(verticalWind * Mathf.Min(Time.fixedDeltaTime, Mathf.Abs(_PlayerVel._coreVelocity.y - x)));
+			}
+			else
+				_PlayerVel.AddCoreVelocity(verticalWind * Time.fixedDeltaTime);
+
+
+			//Action
+			if (_Actions._ObjectForActions.TryGetComponent(out S_Action13_Hovering Hovering))
+			{
+				//If being blown upwards, enter the hovering state to change actions and animation.
+				//canHover can only be set to true by the Hovering AttemptAction, so GetComponent is safe, and Hovering being enabled shouldn't enable canhover.
+				if (Hovering._inAStateConnectedToThis && _finalWindVector.normalized.y > 0.72f && _finalWindVector.y > 3)
+				{
+					Hovering.StartAction(); //Not placed in enterTrigger incase was already in the trigger, but not in a state that could enter the hover action.
+				}
 			}
 		}
 	}
@@ -414,7 +482,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 		//Effects
 		ObjectRotatesCamera(GO, SpeedPadScript._cameraEffect);
-		if(speed > 100) { _Effects.TriggerBlurBurstScreen(); }
+		if (speed > 100) { _Effects.TriggerBlurBurstScreen(); }
 
 		//Player visual
 		_CharacterAnimator.SetBool("Grounded", true);
@@ -477,7 +545,7 @@ public class S_Interaction_Objects : S_Player_Base
 		ObjectRotatesCamera(GO, RailBoosterScript._cameraEffect);
 	}
 
-	private GameObject GetObjectWithData (Collider Col) {
+	private GameObject GetObjectWithData ( Collider Col ) {
 		if (Col.TryGetComponent(out S_Data_Redirect Redirect))
 		{
 			return Redirect._ObjectWithMainScript;
@@ -745,10 +813,10 @@ public class S_Interaction_Objects : S_Player_Base
 
 
 
-	private void ObjectWithNoSpecificTag (Collider Col ) {
-		if ( Col == null ) return;
+	private void ObjectWithNoSpecificTag ( Collider Col ) {
+		if (Col == null) return;
 
-		if(!Col.TryGetComponent(out S_Data_Base Data)) { return; }
+		if (!Col.TryGetComponent(out S_Data_Base Data)) { return; }
 
 		Data.OnGet(transform);
 
@@ -811,7 +879,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 	public override void AssignStats () {
 		base.AssignStats();
-		_powerFromSpheres_ = _Tools.LevelUpStats.pointsFromSpheres; 
+		_powerFromSpheres_ = _Tools.LevelUpStats.pointsFromSpheres;
 	}
 	#endregion
 }

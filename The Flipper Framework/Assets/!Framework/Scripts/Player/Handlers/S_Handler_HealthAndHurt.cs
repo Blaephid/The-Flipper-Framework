@@ -138,7 +138,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			case "Pit":
 				_Sounds.DieSound();
 				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(new Vector2 (90,0), 0, 0, 0, 0.25f, "Pit")); //The camera will fall back before catching up.
-				Die();
+				Die(false);
 				return;
 		}
 	}
@@ -246,7 +246,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 	}
 
 	//Called when the player has to die, activating trackers for the death state, and disables control, while still entering the hurt state.
-	private void Die () {
+	private void Die (bool applyResponse = true) {
 		//If not dead already.
 		if (!_isDead)
 		{
@@ -267,7 +267,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Dead"); //Does not have to be undone because on respawn, this will be cleared.
 
 			//Enter the hurt action until respawn
-			if (!_HurtAction.enabled) _HurtAction.StartAction();
+			if (!_HurtAction.enabled && applyResponse) _HurtAction.StartAction();
 		}
 	}
 

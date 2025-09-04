@@ -20,7 +20,7 @@ public class S_Action_Base : S_Player_Base, IAction
 	[NonSerialized] public bool           _isActionCurrentlyValid = true;       //Controlled by Activate And Deactivate action. Can't perform actions if false.[Hide
 
 	[NonSerialized] public int        _framesWithoutLocalCheckActionCalled; //Increases every frame, but set to zero when AttemptAction is called, if it reaches 3, then sets the below to false.
-	[NonSerialized] public bool       _inAStateConnectedToThis;        //Used by children to check when should end a state, of if possible to enter.
+	[NonSerialized] public bool       _inAStateConnectedToThis;        //Used by children to check when should end a state, or if possible to enter.
 	[NonSerialized] public bool           _canEnterStateFromSelf; //Set by inherited classes (not per instance), to allow an action to call itself.
 
 	public override void Awake () {
@@ -95,6 +95,7 @@ public class S_Action_Base : S_Player_Base, IAction
 		if(enabled && this is IMainAction) { _Actions._ActionDefault.StartAction(); }
 	}
 
+
 	//Responsible for taking in inputs the player performs to switch or activate other actions, or other effects.
 	public virtual void HandleInputs () {
 		//Moving camera behind
@@ -104,6 +105,7 @@ public class S_Action_Base : S_Player_Base, IAction
 		_Actions.HandleInputs(_positionInActionList);
 	}
 
+	//For any action that is activated externally, use _inAStateConnectedToThis, as it's true if it's been less than 3 frames since action was checked.
 	public virtual void ActionEveryFixedUpdate () {
 		string debugThisAction = this.ToString();
 		_inAStateConnectedToThis = _framesWithoutLocalCheckActionCalled < 3;

@@ -60,6 +60,9 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -81,6 +84,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -243,6 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5626e6442bcc31848b513053d594ce12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
   _hasVisualisationScripted: 0
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -251,15 +256,15 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _InspectorTheme: {fileID: 0}
+  _hasDataChanged: 1
   _launchData_:
-    _force_: 40
+    _force_: 55
     _direction_: {x: 0, y: 1, z: 0}
     _directionToUse_: {x: 0, y: 1, z: 0}
+    _overwriteGravity_: {x: 0, y: 0, z: 0}
+    _useCore: 0
     _lockInputFrames_: 0
     _lockAirMovesFrames_: 0
-    _overwriteGravity_: {x: 0, y: 0, z: 0}
     _lockInputTo_: 0
   _keepHorizontal_: 0
   _changePlayerForwards: 0
@@ -274,7 +279,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 27af634c0d5663a42887a47fb5ed8534, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 27af634c0d5663a42887a47fb5ed8534, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -388,6 +393,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9d02b444549974b946d5f306e77118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
   _hasVisualisationScripted: 0
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -396,8 +402,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _InspectorTheme: {fileID: 0}
+  _hasDataChanged: 1
   _projectPath: 0
   _calculations: 0
   _isActive: 1
@@ -527,6 +532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -535,7 +541,6 @@ MonoBehaviour:
   _normalOutlineColour: {r: 1, g: 0, b: 0, a: 0.5}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 0.5, g: 0, b: 0, a: 1}
-  _isSelected: 0
   _debugForce: 1
   _calculations: 50
   _LauncherScript: {fileID: 3180474081878667623}
@@ -544,7 +549,7 @@ MonoBehaviour:
     type: 2}
   _ShotCenter: {fileID: 3294779520160681149}
   _coreVelAtEnd: {x: 0, y: -132.29994, z: 0}
-  _environmentalVelAtStart: {x: 0, y: 40, z: 0}
+  _environmentalVelAtStart: {x: 0, y: 5, z: 0}
 --- !u!1001 &5434402128590000877
 PrefabInstance:
   m_ObjectHideFlags: 0

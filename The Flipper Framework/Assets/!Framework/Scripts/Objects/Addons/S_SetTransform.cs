@@ -7,11 +7,12 @@ public class S_SetTransform : MonoBehaviour
 	[Header("Via a parent")]
 	public Transform _TransformForPosition;
 	public Transform _TransformForRotation;
+	[SerializeField] Space _whatSpaceForOffset = Space.Self;
 	[SerializeField] Vector3 _localOffset;
 
 	[Header("Manual")]
 	[SerializeField] Space _whatSpaceForPosition;
-	[HideInInspector, SerializeField] bool _applyPosition = true; 
+	[HideInInspector, SerializeField] bool _applyPosition = true;
 	[DrawTickBoxBefore("_applyPosition")]
 	[SerializeField] Vector3 _manPosition;
 
@@ -31,8 +32,20 @@ public class S_SetTransform : MonoBehaviour
 	}
 
 	void SetPosition () {
+		//If a parent is set, place at position with offset
 		if (_TransformForPosition != null)
-		{ transform.position = _TransformForPosition.position + _TransformForPosition.rotation * _localOffset; return; }
+		{
+			transform.position = _TransformForPosition.position;
+			switch (_whatSpaceForOffset)
+			{
+				case Space.Self:
+					transform.position += _TransformForPosition.rotation * _localOffset;
+					return;
+				case Space.World:
+					transform.position += _localOffset;
+					return;
+			}
+		}
 
 		if (!_applyPosition) return;
 

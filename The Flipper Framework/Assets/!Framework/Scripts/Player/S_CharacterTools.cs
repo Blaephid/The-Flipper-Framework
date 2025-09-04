@@ -36,11 +36,13 @@ public class S_CharacterTools : MonoBehaviour
 	public GameObject               CharacterCapsule;
 	public GameObject             StandingCapsule;
 	public GameObject               CrouchCapsule;
+	public GameObject               DisabledCapsule;
 
 	[Header("Model / Skin")]
 	public SkinnedMeshRenderer      SkinRenderer;
 	public Transform                MainSkin;
 	public Transform                CharacterModelOffset;
+	public SkinnedMeshRenderer      CurledBall;
 
 	[Header("Mouth Sides")]
 	public Transform              Head;
@@ -48,7 +50,6 @@ public class S_CharacterTools : MonoBehaviour
 
 	[Header("Balls")]
 	public GameObject       JumpBall;
-	public GameObject       SpinDashBall;
 
 	[Header("External Objects")]
 	public GameObject       Shield;

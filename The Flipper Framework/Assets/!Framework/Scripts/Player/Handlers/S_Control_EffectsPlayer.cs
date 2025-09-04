@@ -53,7 +53,6 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	//Trackers
 	private bool _canShowLesserTrails = true;
 	private bool _canShowDefaultTrail = true;
-	[NonSerialized] public float _largeTrailEmitTime;
 
 	private void Start () {
 		SpinDashEnergy.Stop();
@@ -96,9 +95,9 @@ public class S_Control_EffectsPlayer : S_Player_Base
 			{
 				lines.Play();
 
-				float intensity = _PlayerVel._horizontalSpeedMagnitude / _PlayerMovement._currentMaxSpeed;
+				float intensity = _PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed;
 				lines.SetFloat("Intensity", intensity);
-				lines.SetFloat("Player Speed", _PlayerVel._horizontalSpeedMagnitude);
+				lines.SetFloat("Player Speed", _PlayerVel._currentRunningSpeed);
 			}
 			else if (_PlayerVel._currentRunningSpeed < threshold - 2)
 			{
@@ -110,9 +109,9 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	//Controls and activates the anime style speedlines on the screen edges based on speed.
 	private void HandleSpeedLinesOnScreen () {
-		if (_PlayerVel._horizontalSpeedMagnitude > 50)
+		if (_PlayerVel._currentRunningSpeed > 50)
 		{
-			float intensity = Mathf.Min(_PlayerVel._horizontalSpeedMagnitude / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
+			float intensity = Mathf.Min(_PlayerVel._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
 			intensity = Mathf.Max(Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)) - intensity, intensity - Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)));
 			_SpeedLinesScreen.SetFloat("Intensity", intensity);
 		}
@@ -142,7 +141,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 		void LesserTrails () {
 			if (!_canShowLesserTrails) { return; }
-			EnableLesserTrails(_PlayerVel._speedMagnitudeSquared > 40 * 40 && _PlayerVel._horizontalSpeedMagnitude > 10, false);
+			EnableLesserTrails(_PlayerVel._speedMagnitudeSquared > 40 * 40 && _PlayerVel._currentRunningSpeed > 10, false);
 		}
 	}
 

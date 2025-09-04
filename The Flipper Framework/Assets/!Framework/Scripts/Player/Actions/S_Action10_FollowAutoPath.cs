@@ -262,7 +262,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 			_PlayerPhys._timeInAir += Time.deltaTime;
 
 			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity, new Vector2(3, 0.8f));
-			_physicsCoreVelocity = _PlayerPhys.CheckGravity(_physicsCoreVelocity);
+			_physicsCoreVelocity = _PlayerPhys.TryGravity(_physicsCoreVelocity);
 		}
 	}
 

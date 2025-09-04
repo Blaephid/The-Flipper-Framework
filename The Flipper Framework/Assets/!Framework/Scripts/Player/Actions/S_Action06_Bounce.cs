@@ -137,9 +137,10 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 
 		//Incase this was disabled by changing action, rather than a bounce.
 		if(!_hasBounced)
+		{
 			S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
-
-		_Effects._largeTrailEmitTime = 0.2f;
+			_Effects.EnableLargeTrail(0);
+		}
 	}
 
 	#endregion

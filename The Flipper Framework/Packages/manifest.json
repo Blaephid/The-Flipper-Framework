@@ -1,7 +1,11 @@
 {
   "dependencies": {
     "com.coffee.ui-effect": "https://github.com/mob-sakai/UIEffect.git?path=Packages/src",
+    "com.unity.2d.enhancers": "1.0.0",
     "com.unity.2d.sprite": "1.0.0",
+    "com.unity.ai.assistant": "1.0.0-pre.12",
+    "com.unity.ai.generators": "1.0.0-pre.20",
+    "com.unity.ai.inference": "2.3.0",
     "com.unity.ai.navigation": "2.0.8",
     "com.unity.cinemachine": "2.10.4",
     "com.unity.collab-proxy": "2.8.2",

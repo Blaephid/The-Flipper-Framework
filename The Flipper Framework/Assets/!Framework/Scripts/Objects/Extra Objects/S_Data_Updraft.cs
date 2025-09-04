@@ -13,13 +13,13 @@ public class S_Data_Updraft : S_Data_Base
 				new Keyframe(1f, 0.7f),
 			});
 
-	public float	_setRange;
+	public float    _setRange;
 	[HideInInspector]
-	public float        _getRangeSquared;
+	public float        _totalRangeSquare;
 	[Min(10)]
-	public float	_power = 100;
+	public float    _power = 100;
 
-	public Transform	_Trigger;
+	public Transform        _Trigger;
 
 
 	private void Awake () {
@@ -31,12 +31,25 @@ public class S_Data_Updraft : S_Data_Base
 	private void Update () {
 		PlaceTrigger();
 	}
+
+	public override void OnValidate () {
+		base.OnValidate();
+
+		Keyframe lastKey = _FallOfByPercentageDistance[_FallOfByPercentageDistance.length - 1];
+
+		// Only update if it's not already at (1,0)
+		if (lastKey.value == 0 && lastKey.time == 1) { return; }
+
+		lastKey.time = 1f;
+		lastKey.value = 0f;
+		_FallOfByPercentageDistance.MoveKey(_FallOfByPercentageDistance.length - 1, lastKey);
+	}
 #endif
 
 	private void PlaceTrigger () {
-		_getRangeSquared = _setRange * transform.parent.localScale.y;
-		_Trigger.position = transform.position + _Direction.up * (_getRangeSquared / 2); //Because the collider is centred to the object, move this halfway, then change size to match range in total.
+		_totalRangeSquare = _setRange * transform.parent.localScale.y;
+		_Trigger.position = transform.position + _Direction.up * (_totalRangeSquare / 2); //Because the collider is centred to the object, move this halfway, then change size to match range in total.
 		_Trigger.localScale = new Vector3(_Trigger.localScale.x, _setRange, _Trigger.localScale.z);
-		_getRangeSquared = Mathf.Pow(_getRangeSquared, 2);
+		_totalRangeSquare = Mathf.Pow(_totalRangeSquare, 2);
 	}
 }

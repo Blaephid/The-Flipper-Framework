@@ -36,12 +36,6 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	public override void Awake () {
-		base.Awake();
-		StartCoroutine(DisableCanHoverEveryFixedUpdate ());
-	}
-
 	// Update is called once per frame
 	void Update () {
 		_Actions._ActionDefault.SetSkinRotationToVelocity(10);
@@ -57,7 +51,7 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 		_counter += Time.fixedDeltaTime;
 		
 		//As soon as there stopes being wind force upwards, end action.
-		if (_Objects._totalWindDirection.normalized.y < 0.7f && _counter > 0.2f)
+		if (_Objects._finalWindVector.normalized.y < 0.7f && _counter > 0.2f)
 		{
 			_Actions._ActionDefault.StartAction();
 		}	
@@ -65,7 +59,7 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 
 	new public bool AttemptAction () {
 		if (!base.AttemptAction()) return false;
-		_Objects._canHover = true;
+		//See S_Interaction_Objects
 		return false;
 	}
 
@@ -83,6 +77,8 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 		_counter = 0;
 		_startForwardDirection = _MainSkin.forward;
 
+		Debug.Log("Start Hovering Action");
+
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Hovering);
 		enabled = true;
 	}
@@ -92,6 +88,7 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 		enabled = false;
 		if (isFirstTime) { SetUpAction(); return; }
 
+		Debug.Log("Stop Hovering Action");
 		_SkinOffset.localEulerAngles = Vector3.zero;
 	}
 	#endregion
@@ -101,14 +98,8 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 	/// </summary>
 	/// 
 	#region private
-	//Ensures canHover is false at the start of the frame, then set to true if AttemptAction() is called. In a coroutine rather than fixed update so it goes even if this script is disabled
-	private IEnumerator DisableCanHoverEveryFixedUpdate () {
-		while (true)
-		{
-			yield return new WaitForFixedUpdate();
-			_Objects._canHover = false;
-		}
-	}
+
+
 	#endregion
 
 	/// <summary>

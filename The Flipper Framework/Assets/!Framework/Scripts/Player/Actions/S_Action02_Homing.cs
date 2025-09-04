@@ -441,9 +441,6 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_HomingHandler._TargetObject = null;
 		_HomingHandler._PreviousTarget = null;
 
-		//Effects
-		_Effects._largeTrailEmitTime = 0.1f;
-
 		if (_Actions._jumpCount > 0)
 			_Actions._jumpCount = Mathf.Clamp(_Actions._jumpCount - 1, 1, _Actions._jumpCount); //Allows double jumping again after a hit
 

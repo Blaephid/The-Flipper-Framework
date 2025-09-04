@@ -17,6 +17,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 	//Unity
 	#region Unity Specific Properties
 
+	private CapsuleCollider _DisableCapsule;
 	private Animator              _CurrentAnimator;
 	private Transform             _SkinOffset;
 
@@ -255,6 +256,13 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		}
 	}
 
+	public void SetColliderActive (bool set) {
+		//Because actualy deactivating the collider would mess up all triggers as exit isn't called, just shrink it grealy instead.
+		if (!set) OverWriteCollider(_DisableCapsule);
+
+		else OverWriteCollider(_StandingCapsule);
+	}
+
 	public void OverWriteCollider ( CapsuleCollider newCollider ) {
 		_CharacterCapsule.radius = newCollider.radius;
 		_CharacterCapsule.center = newCollider.center;
@@ -328,10 +336,12 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 	public override void AssignTools () {
 		base.AssignTools();
 
+		_DisableCapsule = _Tools.DisabledCapsule.GetComponent<CapsuleCollider>();
 		_CurrentAnimator = _CharacterAnimator;
 		_PlayerSkin.Add(_Tools.SkinRenderer);
 		_SkinOffset = _Tools.CharacterModelOffset;
-		_SpinDashBall = _Tools.SpinDashBall.GetComponent<SkinnedMeshRenderer>();
+		_SpinDashBall = _Tools.CurledBall;
+		_SpinDashBall.gameObject.SetActive(true);
 	}
 	#endregion
 }

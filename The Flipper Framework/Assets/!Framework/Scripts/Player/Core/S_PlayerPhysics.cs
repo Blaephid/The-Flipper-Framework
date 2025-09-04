@@ -383,40 +383,59 @@ public class S_PlayerPhysics : S_Player_Base
 		Vector3 castStartPosition = _CharacterCenterPosition;
 		Vector3 castEndPosition = _CharacterPivotPosition + (_groundCheckDirection * groundCheckerDistance);
 
-		if (Physics.Linecast(castStartPosition, castEndPosition, out RaycastHit hitGroundTemp, _Groundmask_))
+		if (Physics.Linecast(castStartPosition, castEndPosition, out RaycastHit firstGroundHit, _Groundmask_))
 		{
-			Vector3 tempNormal = hitGroundTemp.normal;
-			castEndPosition = hitGroundTemp.point;
+			Vector3 tempNormal = firstGroundHit.normal;
+			castEndPosition = firstGroundHit.point;
 
 			if (_isGrounded)
 			{
 				//Because terrain can be bumpy, find an average normal between multiple around the same area.
 				float[] checksAtRotations = new float[]{0,20,20,20,40,40,40,40,40,40,20,20 }; //Each element is a check, and the value is how much to rotate (relative to player up), before checking.
-				float[] distances = new float[] {0.5f, 1f};
-				Vector3 offSetForCheck = _PlayerVel._horizontalSpeedMagnitude > 30 ? _PlayerVel._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.8f; //The offset from the main check that will rotate
+				float[] distances = new float[] {0.5f, 1f}; //Do each angle twice at each distance
+
+				Vector3 offsetFromCenterForCheck = _PlayerVel._horizontalSpeedMagnitude > 30 ? _PlayerVel._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.8f; //The offset from the main check that will rotate
+				Vector3 startForward = offsetFromCenterForCheck;
 
 				for (int i = 0 ; i < checksAtRotations.Length * distances.Length ; i++)
 				{
-					int distancesLevel = i / (checksAtRotations.Length);
+					int distancesLevel = i / (checksAtRotations.Length); //First round is at first index, second round is at second index.
 
 					//Gets a new position for this check instance, by rotating to the right from the last.
 					Quaternion thisRotation = Quaternion.AngleAxis(checksAtRotations[i / (distancesLevel + 1)], transform.up);
-					offSetForCheck = thisRotation * offSetForCheck;
 
-					Vector3 thisEndPosition = Vector3.Lerp(castEndPosition ,castEndPosition + offSetForCheck, distances[distancesLevel]);
-					Vector3 thisDirection = (thisEndPosition - castStartPosition).normalized;
-					thisEndPosition += thisDirection;
+					offsetFromCenterForCheck = thisRotation * offsetFromCenterForCheck;
+
+					Vector3 thisEndPosition = Vector3.Lerp(castEndPosition ,castEndPosition + offsetFromCenterForCheck, distances[distancesLevel]);
+
+					//Push the end position further to ensure it goes through ground.
+					Vector3 fromCenterToOuter = (thisEndPosition - castStartPosition).normalized;
+					thisEndPosition += fromCenterToOuter;
 
 					Debug.DrawLine(castStartPosition, thisEndPosition, Color.gray);
 
+					//Find floor
 					if (Physics.Linecast(castStartPosition, thisEndPosition, out RaycastHit hitSecondTemp, _Groundmask_))
 					{
+						Vector3 thisNormal = hitSecondTemp.normal;
+
 						//If this instance is too much of an outlier, ignore it because it is probably a wall.
-						if (Mathf.Abs(tempNormal.normalized.y - hitSecondTemp.normal.y) < 0.75f)
-							tempNormal += hitSecondTemp.normal;
+						//A slope behind or infront should be of higher priority than a slope on the side.
+						float boundary = 0.75f; float importance = 1;
+
+						//if on side
+						if (Vector3.Angle(startForward, offsetFromCenterForCheck) > 40 && Vector3.Angle(startForward, offsetFromCenterForCheck) < 140)
+						{
+							boundary = 0.45f; importance = 0.7f;
+						}
+
+						if (Mathf.Abs(firstGroundHit.normal.y - thisNormal.y) < boundary)
+							tempNormal += (thisNormal * importance);
 					}
 				}
 				tempNormal = tempNormal.normalized; //Gets the average upwards direction by adding them all together then normalizing.
+
+				Debug.DrawRay(firstGroundHit.point, tempNormal * 5, Color.green, 10f);
 			}
 
 			//Depending on situation, can allow for greater difference in floor, like if in the air should be easier to find ground as normal to compare is always straight up
@@ -439,7 +458,7 @@ public class S_PlayerPhysics : S_Player_Base
 				//If looknig for ground from the air, ensuring not latching onto ground would be forced off imeddiately. 
 				if (_isGrounded || !IsTooSlowOnSlope(tempNormal))
 				{
-					_HitGround = hitGroundTemp;
+					_HitGround = firstGroundHit;
 					SetIsGrounded(true);
 					_groundNormal = tempNormal;
 					return;
@@ -506,13 +525,13 @@ public class S_PlayerPhysics : S_Player_Base
 			//Handles lateral velocity.
 			coreVelocity = _PlayerMovement.HandleControlledVelocity(_PlayerVel._coreVelocity, new Vector2(airTurnMod, airAccelMod));
 		}
-		coreVelocity = CheckGravity(coreVelocity);
+		coreVelocity = TryGravity(coreVelocity);
 
 		return coreVelocity;
 	}
 
 	//A seperate public method so it can be called without HandleAirMovement or needing to call all of its used fields.
-	public Vector3 CheckGravity ( Vector3 coreVelocity, bool overwrite = false ) {
+	public Vector3 TryGravity ( Vector3 coreVelocity, bool overwrite = false ) {
 		//Apply Gravity (vertical velocity)
 		if (_locksForIsGravityOn.Count == 0 || overwrite)
 			coreVelocity = ApplyGravityToIncreaseFallSpeed(coreVelocity, _currentFallGravity, _currentUpwardsFallGravity, _maxFallingSpeed_, _PlayerVel._worldVelocity);
