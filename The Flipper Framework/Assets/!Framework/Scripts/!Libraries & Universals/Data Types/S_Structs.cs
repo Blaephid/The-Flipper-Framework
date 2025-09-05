@@ -11,12 +11,13 @@ public class LaunchPlayerData {
 	public float	_force_;
 	[Tooltip("The direction for the player to be launched in. Affected By Transform")]
 	public Vector3 _direction_;
-	[HideInInspector]
+	[CustomReadOnly]
 	public Vector3 _directionToUse_;
 
 	[Tooltip("Since characters can have different gravities. If this is not zero, the player gravity will be this until they hit the ground.")]
 	public Vector3 _overwriteGravity_;
 	public bool _useCore;
+	public int _frameDelay;
 
 	[Header("Effects")]
 	[Tooltip("How many frames until the player regains control.")]
@@ -39,6 +40,7 @@ public class LaunchPlayerData {
 			_overwriteGravity_ = _launchData_._overwriteGravity_,
 			_lockInputTo_ = _launchData_._lockInputTo_,
 			_useCore = _launchData_._useCore,
+			_frameDelay = _launchData_._frameDelay,
 		};
 
 	}

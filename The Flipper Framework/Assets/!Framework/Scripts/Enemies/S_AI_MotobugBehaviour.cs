@@ -1,155 +1,154 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S_AI_MotobugBehaviour : MonoBehaviour {
+public class S_AI_MotobugBehaviour : MonoBehaviour
+{
 
-    S_AI_EnemyPhysics Physics;
-    public Animator Anim;
-    public ParticleSystem DustParticles;
+	S_AI_EnemyPhysics Physics;
+	public Animator Anim;
+	public ParticleSystem DustParticles;
 
-    public int Action { get; set; }
-    
-    public Vector3 Target { get; set; }
-    Vector3 InitialPosition;
+	public int Action { get; set; }
 
-    [Header("Wander Variables")]
+	public Vector3 Target { get; set; }
+	Vector3 InitialPosition;
 
-    public float WanderDistance;
-    public float WanterStillAmmount;
-    public float WanderMoveAmmount;
-    public float WanderCalmness;
-    float MoveTime;
-    float RandomTime;
-    float distanceToPlayer;
+	[Header("Wander Variables")]
 
-    [Header("Attack Variables")]
+	public float WanderDistance;
+	public float WanterStillAmmount;
+	public float WanderMoveAmmount;
+	public float WanderCalmness;
+	float MoveTime;
+	float RandomTime;
+	float distanceToPlayer;
 
-    public float PlayerNoticeDistance;
-    public float PlayerLoseDistance;
-    public float NoticeReactionTime;
-    public float skinRotationSpeed;
+	[Header("Attack Variables")]
 
-    void Awake () {
+	public float PlayerNoticeDistance;
+	public float PlayerLoseDistance;
+	public float NoticeReactionTime;
+	public float skinRotationSpeed;
 
-        Physics = GetComponent<S_AI_EnemyPhysics>();
-        InitialPosition = transform.position;
-        //Physics.rigidbody.velocity = Vector3.zero;
-        Target = InitialPosition;
+	void Awake () {
 
-    }
-	
+		Physics = GetComponent<S_AI_EnemyPhysics>();
+		InitialPosition = transform.position;
+		//Physics.rigidbody.velocity = Vector3.zero;
+		Target = InitialPosition;
+
+	}
+
 	void FixedUpdate () {
 
 
 
-        switch (Action)
-        {
-            case 0:
-                Action_00_Wander();
-                break;
-            case 1:
-                Action_01_Notice();
-                break;
-            case 2:
-                Action_02_Run();
-                break;
-            default:
-                break;
+		switch (Action)
+		{
+			case 0:
+				Action_00_Wander();
+				break;
+			case 1:
+				Action_01_Notice();
+				break;
+			case 2:
+				Action_02_Run();
+				break;
+			default:
+				break;
 
-        }
+		}
 	}
 
-    void Action_00_Wander()
-    {
-        MoveTime += 1;
-        RandomTime += 1;
+	void Action_00_Wander () {
+		MoveTime += 1;
+		RandomTime += 1;
 
-        //ANIME
-        //Anim.SetFloat("GroundSpeed", Physics.b_normalSpeed);
+		//ANIME
+		//Anim.SetFloat("GroundSpeed", Physics.b_normalSpeed);
 
-        if (MoveTime > 0)
-        {
-            var dir = Target - transform.position;
-            Physics.HandleGroundControl(1, dir.normalized);
-            dir.y = 0;
-			if (dir != Vector3.zero) {
+		if (MoveTime > 0)
+		{
+			var dir = Target - transform.position;
+			Physics.HandleGroundControl(1, dir.normalized);
+			dir.y = 0;
+			if (dir != Vector3.zero)
+			{
 				Quaternion CharRot = Quaternion.LookRotation (dir, transform.up);
-				Anim.transform.rotation = Quaternion.Lerp (Anim.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+				Anim.transform.rotation = Quaternion.Lerp(Anim.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
 			}
-        }
-        if (MoveTime > WanderMoveAmmount)
-        {
-            MoveTime = -WanterStillAmmount;
-        }
+		}
+		if (MoveTime > WanderMoveAmmount)
+		{
+			MoveTime = -WanterStillAmmount;
+		}
 
-        //ChangeTgt
-        if (RandomTime > WanderCalmness)
-        {
-            Vector3 wander = new Vector3(Random.Range(-WanderDistance, WanderDistance), transform.position.y, Random.Range(-WanderDistance, WanderDistance));
-            wander = Vector3.ClampMagnitude(wander, WanderDistance);
-            Target = InitialPosition + wander;
-            RandomTime = 0;
-        }
+		//ChangeTgt
+		if (RandomTime > WanderCalmness)
+		{
+			Vector3 wander = new Vector3(Random.Range(-WanderDistance, WanderDistance), transform.position.y, Random.Range(-WanderDistance, WanderDistance));
+			wander = Vector3.ClampMagnitude(wander, WanderDistance);
+			Target = InitialPosition + wander;
+			RandomTime = 0;
+		}
 
-        //Look for player
-        distanceToPlayer = S_S_MoreMaths.GetDistanceSqrOfVectors(S_SpawnCharacter._SpawnedPlayer.transform.position, transform.position);
-        if (distanceToPlayer < Mathf.Pow(PlayerNoticeDistance, 2))
-        {
-            ChangeAction(1);
-            Anim.SetInteger("Action", 1);
-        }
-    }
+		//Look for player
+		distanceToPlayer = S_S_MoreMaths.GetDistanceSqrOfVectors(S_SpawnCharacter._SpawnedPlayer.transform.position, transform.position);
+		if (distanceToPlayer < Mathf.Pow(PlayerNoticeDistance, 2))
+		{
+			ChangeAction(1);
+			Anim.SetInteger("Action", 1);
+		}
+	}
 
-    void Action_01_Notice()
-    {
-        MoveTime += 1;
+	void Action_01_Notice () {
+		MoveTime += 1;
 
-        Target = S_SpawnCharacter._SpawnedPlayer.transform.position;
-        var dir = Target - transform.position;
-        dir.y = 0;
-        Quaternion CharRot = Quaternion.LookRotation(dir, transform.up);
-        Anim.transform.rotation = Quaternion.Lerp(Anim.transform.rotation, CharRot, Time.deltaTime * 10);
-
-
-        if (MoveTime > NoticeReactionTime)
-        {
-            ChangeAction(2);
-            Anim.SetInteger("Action", 0);
-        }
-    }
-
-    void Action_02_Run()
-    {
-        Anim.SetFloat("GroundSpeed", Physics.b_normalSpeed);
-
-        DustParticles.Emit(1);
-        Target = S_SpawnCharacter._SpawnedPlayer.transform.position;
-        var dir = (Target - transform.position);
-        Physics.HandleGroundControl(1, dir.normalized);
-        dir.y = 0;
-        Quaternion CharRot = Quaternion.LookRotation(dir, transform.up);
-        Anim.transform.rotation = Quaternion.Lerp(Anim.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
-
-        if (MoveTime > NoticeReactionTime)
-        {
-            ChangeAction(2);
-            Anim.SetInteger("Action", 0);
-        }
-
-        //Check if too far away
-        distanceToPlayer = S_S_MoreMaths.GetDistanceSqrOfVectors(S_SpawnCharacter._SpawnedPlayer.transform.position, transform.position);
-        if (distanceToPlayer > Mathf.Pow( PlayerLoseDistance, 2))
-        {
-            ChangeAction(0);
-        }
-    }
+		Target = S_SpawnCharacter._SpawnedPlayer.transform.position;
+		var dir = Target - transform.position;
+		dir.y = 0;
+		Quaternion CharRot = Quaternion.LookRotation(dir, transform.up);
+		Anim.transform.rotation = Quaternion.Lerp(Anim.transform.rotation, CharRot, Time.deltaTime * 10);
 
 
-    public void ChangeAction(int action)
-    {
-        //Deactivate all nescesarry variables here
-        MoveTime = 0;
-        RandomTime = 0;
-        Action = action;
-    }
+		if (MoveTime > NoticeReactionTime)
+		{
+			ChangeAction(2);
+			Anim.SetInteger("Action", 0);
+		}
+	}
+
+	void Action_02_Run () {
+		Anim.SetFloat("GroundSpeed", Physics.b_normalSpeed);
+
+		if (DustParticles != null)
+			DustParticles.Emit(1);
+		Target = S_SpawnCharacter._SpawnedPlayer.transform.position;
+		var dir = (Target - transform.position);
+		Physics.HandleGroundControl(1, dir.normalized);
+		dir.y = 0;
+		Quaternion CharRot = Quaternion.LookRotation(dir, transform.up);
+		Anim.transform.rotation = Quaternion.Lerp(Anim.transform.rotation, CharRot, Time.deltaTime * skinRotationSpeed);
+
+		if (MoveTime > NoticeReactionTime)
+		{
+			ChangeAction(2);
+			Anim.SetInteger("Action", 0);
+		}
+
+		//Check if too far away
+		distanceToPlayer = S_S_MoreMaths.GetDistanceSqrOfVectors(S_SpawnCharacter._SpawnedPlayer.transform.position, transform.position);
+		if (distanceToPlayer > Mathf.Pow(PlayerLoseDistance, 2))
+		{
+			ChangeAction(0);
+		}
+	}
+
+
+	public void ChangeAction ( int action ) {
+		//Deactivate all nescesarry variables here
+		MoveTime = 0;
+		RandomTime = 0;
+		Action = action;
+	}
 }

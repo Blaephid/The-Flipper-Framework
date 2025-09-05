@@ -86,17 +86,17 @@ MonoBehaviour:
   _duration: 1
   _setCameraReferenceWorldRotation: 0
   _willRotateVertically: 0
-  _affectNewDistanceBySpeed: 0
-  _affectNewFOVBySpeed: 0
+  _affectNewDistanceBySpeed: 1
+  _affectNewFOVBySpeed: 1
   _willChangeAltitude: 0
   _newAltitude: 0
   _willChangeDistance: 0
   _newDistance: {x: 0, y: 0}
   _willChangeFOV: 0
   _newFOV: {x: 100, y: 5}
-  _willOffsetTarget: 1
+  _willOffsetTarget: 0
   _newOffset: {x: 0, y: 0, z: 0}
-  _willOffsetTargetHidden: 1
+  _willOffsetTargetHidden: 0
   _framesToOffset: 0
   _asLocalOffset: 0
   _overWriteAllOffsets: 0
@@ -235,22 +235,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.583557
+      value: 0.9514173
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.056480832
+      value: -0.054793745
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.8063377
+      value: 0.30248848
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.078043155
+      value: 0.017420826
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -330,7 +330,7 @@ PrefabInstance:
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _DataToDisplay.Array.data[4].value
-      value: True
+      value: False
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -404,7 +404,7 @@ PrefabInstance:
 
         Distance = False
 
-        Offset = True
+        Offset = False
 
 '
       objectReference: {fileID: 0}

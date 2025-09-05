@@ -38,7 +38,8 @@ public class S_Manager_LevelProgress : S_Player_Base
 	public Vector3 _respawnPosition { get; set; }
 	public Quaternion _respawnRotation { get; set; }
 	private Vector3         _respawnForwards;
-	public LaunchPlayerData _respawnLaunch { get; set; }
+	public LaunchPlayerData _RespawnLaunch { get; set; }
+	public Animator _RespawnAnimator;
 
 	#endregion
 	#endregion
@@ -111,7 +112,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 	/// 
 	#region private
 
-	private IEnumerator TransitionToStageComplete ( S_Data_GoalRing GoalRingData, float totalTime = 2.5f, float timeToSlow = 2f) {
+	private IEnumerator TransitionToStageComplete ( S_Data_GoalRing GoalRingData, float totalTime = 2.5f, float timeToSlow = 2f ) {
 
 		_Score._paused = true;
 
@@ -127,7 +128,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(_CoreValues._Music, 2, 0));
 
 		float timeCount = 0;
-		while(timeCount <= totalTime && totalTime > 0)
+		while (timeCount <= totalTime && totalTime > 0)
 		{
 			yield return new WaitForEndOfFrame();
 
@@ -199,31 +200,40 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_CamHandler._HedgeCam.SetBehind(0); //Sets camera back to behind player.
 	}
 
+	public void TriggerAnimatorOnRespawn () {
+		if (!_RespawnAnimator) { return; }
+
+		_RespawnAnimator.enabled = true;
+		_RespawnAnimator.SetTrigger("Start");
+	}
+
 	public void LaunchOnRespawn () {
-		LaunchFromCheckpoint(true, _respawnLaunch, _respawnTransform);
+		LaunchFromCheckpoint(true, _RespawnLaunch, _respawnTransform);
 	}
 
 	public void LaunchFromCheckpoint ( bool launch, LaunchPlayerData launchData, Transform transform ) {
 
+		if (!launch || !_Actions._ObjectForInteractions.TryGetComponent(out S_Interaction_Objects Objects)) { return; }
+
 		//Applying launch
-		if (launch && _Actions._ObjectForInteractions.TryGetComponent(out S_Interaction_Objects Objects))
-		{
-			if (launchData._force_ <= 0 && launchData._directionToUse_.sqrMagnitude <= 1) { return; }
+		if (launchData._force_ <= 0 && launchData._directionToUse_.sqrMagnitude <= 1) { return; }
 
-			_respawnLaunch = launchData;
-			_respawnTransform = transform;
+		_RespawnLaunch = launchData;
+		_respawnTransform = transform;
 
-			Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, Vector3.zero, transform, Objects.transform, launchData);
-		}
+		StartCoroutine
+			(Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, Vector3.zero, transform, Objects.transform, launchData));
+
 	}
 
 	//Checkpoints simply retain transform data, as the level will always reset to its base.
-	public void SetCheckPoint ( Transform checkPointTransform, S_SpawnCharacter SpawnerAtStartOfLevel = null ) {
+	public void SetCheckPoint ( Transform checkPointTransform, S_SpawnCharacter SpawnerAtStartOfLevel = null, Animator RespawnAnimator = null ) {
 		_Spawner = SpawnerAtStartOfLevel;
 		_respawnTransform = checkPointTransform;
 		_respawnPosition = checkPointTransform.position;
 		_respawnForwards = checkPointTransform.forward;
-		_respawnLaunch = _Spawner && _Spawner._launch ? _Spawner._launchOnSpawnData_ : new LaunchPlayerData();
+		_RespawnLaunch = _Spawner && _Spawner._launch ? _Spawner._launchOnSpawnData_ : new LaunchPlayerData();
+		_RespawnAnimator = _Spawner ? _Spawner._AnimatorOnSpawn : RespawnAnimator;
 
 		_CoreValues.SaveValuesOnCheckpoint();
 	}

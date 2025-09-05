@@ -81,8 +81,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodes:
-  - position: {x: 0, y: 0.0000038146973, z: 0.00002670288}
-    direction: {x: 5.000183, y: 0.0000038146973, z: 0.0000019073486}
+  - position: {x: 0, y: 0.0000038146973, z: 0}
+    direction: {x: 5.000183, y: 0.0000038146973, z: -0.000024795532}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
@@ -93,8 +93,8 @@ MonoBehaviour:
     roll: 0
   curves:
   - n1:
-      position: {x: 0, y: 0.0000038146973, z: 0.00002670288}
-      direction: {x: 5.000183, y: 0.0000038146973, z: 0.0000019073486}
+      position: {x: 0, y: 0.0000038146973, z: 0}
+      direction: {x: 5.000183, y: 0.0000038146973, z: -0.000024795532}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
@@ -125,10 +125,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Spline: {fileID: 0}
-  toUpdate: 1
+  _toUpdate: 1
+  _movingCurves: 0
   UpdateButton: 0
   DataResetButton: 0
-  _spacingRange_: {x: 6, y: 6}
+  _spacingRange_: {x: 12, y: 6}
   _maxNumber_: -1
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -139,10 +140,14 @@ MonoBehaviour:
   _placeAsPrefab_: 1
   _CurrentPrefabToSpawn: Pr_RingSpawner - Eternal
   _DataForPrefabs: {fileID: -7617823600552549043}
-  _scale_: {x: 1, y: 1, z: 1}
-  _offset3d_: {x: 0, y: 0, z: 0}
-  _offsetRotation_: {x: 0, y: 0, z: 0}
-  _alignWithTerrain_: 0
+  _mainScale: {x: 1, y: 1, z: 1}
+  _mainOffset: {x: 0, y: 0, z: 0}
+  _mainRotation: {x: 0, y: 0, z: 0}
+  _TransformsPerPoint_:
+  - _scale: {x: 1, y: 1, z: 1}
+    _offset3d: {x: 0, y: 2, z: 0}
+    _rotation: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 1
 --- !u!114 &-7617823600552549043
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,6 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76aa04b38a8830f4989413856f3df268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 0
   _hasVisualisationScripted: 0
   _viewVisualisationData: 0
   _viewVisualisationDataHidden: 0
@@ -163,8 +169,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
-  _InspectorTheme: {fileID: 0}
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -192,6 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9c8b87cf845f3c4cb854007700733aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 1
   _viewVisualisationDataHidden: 1
@@ -200,7 +206,6 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.6792453, g: 0.6120927, b: 0.40690637, a: 1}
   _selectedOutlineColour: {r: 0.6981132, g: 0.52600914, b: 0, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _isSelected: 0
   _distancePerCalculation: 20
   _selectPointOffset: {x: 0, y: 0, z: 0}
   _selectHandleSize: 2

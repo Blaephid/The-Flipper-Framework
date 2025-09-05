@@ -21,7 +21,6 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			dieAtDamageFromRingCount = 0,
 			minRingLoss = new Vector2(0.8f, 40),
-			maxRingLoss = 100,
 			startMaxRingCount = 100,
 			ringsOnPlayerStart = new Vector2(0, 1f),
 

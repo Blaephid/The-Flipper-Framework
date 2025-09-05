@@ -20,7 +20,6 @@ public class S_SpawnCharacter : S_Vis_Base
 	[Space]
 	[SerializeField]
 	[Tooltip("If false, won't spawn player, but will stick check custom spawn reference.")]
-	[DrawHorizontalWithOthers(new string[] { "_DefaultCharacter" }, new float[] {1f, 2.5f })]
 	private bool        _isActive;
 	[SerializeField]
 
@@ -34,6 +33,7 @@ public class S_SpawnCharacter : S_Vis_Base
 
 	[Header("On Spawn")]
 	public int      _spawnDelay = 5;
+	public Animator _AnimatorOnSpawn;
 	public bool	_launch;
 	[Tooltip("If data is provided, player will start with a velocity, rather than just dropping. This is applied in S_CharacterTools.")]
 	public LaunchPlayerData _launchOnSpawnData_;
@@ -69,12 +69,13 @@ public class S_SpawnCharacter : S_Vis_Base
 #if UNITY_EDITOR
 	//[ExecuteInEditMode]
 	//[ExecuteAlways]
-	private void Update () {
-		if(Application.isPlaying) { return; }
-		_hasVisualisationScripted = true;
-		UpdateLaunchDataToDirection();
-	}
+	//private void Update () {
+	//	if(Application.isPlaying) { return; }
+	//	_hasVisualisationScripted = true;
+	//	UpdateLaunchDataToDirection();
+	//}
 
+	[ExecuteAlways]
 	private void OnEnable () {
 		if (Application.isPlaying) { return; }
 		UpdateLaunchDataToDirection();

@@ -515,7 +515,8 @@ public class S_Interaction_Objects : S_Player_Base
 			DashRingScript._launchData_._force_ ;
 		Vector3 direction = DashRingScript._launchData_._directionToUse_;
 
-		LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, GO.transform, _PlayerPhys.transform, DashRingScript._launchData_);
+		StartCoroutine(
+			LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, GO.transform, _PlayerPhys.transform, DashRingScript._launchData_));
 
 		ObjectRotatesCamera(GO, DashRingScript._cameraEffect);
 
@@ -653,7 +654,8 @@ public class S_Interaction_Objects : S_Player_Base
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else if (!SpringScript._keepHorizontal_)
 		{
-			LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, GO.transform, _PlayerPhys.transform, SpringScript._launchData_);
+			StartCoroutine(
+				LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, GO.transform, _PlayerPhys.transform, SpringScript._launchData_));
 		}
 
 
@@ -693,7 +695,12 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
-	public void LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, Transform Player, LaunchPlayerData launchData ) {
+	public IEnumerator LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, Transform Player, LaunchPlayerData launchData ) {
+		for (int i = 0 ; i < launchData._frameDelay ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+
 		Vector3[] split = SplitCoreAndEnvironmentalVelocities(Player,direction,launchPower,_PlayerVel._horizontalSpeedMagnitude,_PlayerPhys._PlayerMovement._currentMaxSpeed,launchData._useCore);
 		StartCoroutine(ApplyForceAfterDelay(split[0], lockPosition, split[1], Object, launchData));
 	}
@@ -742,7 +749,9 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
-	private IEnumerator ApplyForceAfterDelay ( Vector3 enVelocity, Vector3 offset, Vector3 coreVelocity, Transform Object, LaunchPlayerData launchData, int frames = 3 ) {
+	private IEnumerator ApplyForceAfterDelay ( Vector3 enVelocity, Vector3 offset, Vector3 coreVelocity, Transform Object, LaunchPlayerData launchData ) {
+
+		int frames = 2;
 
 		_Actions._canChangeActions = false;
 		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.

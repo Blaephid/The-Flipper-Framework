@@ -159,6 +159,7 @@ public class S_Vis_ShotDirection : S_Vis_Base
 		Vector3[] path = new Vector3[iterations];
 		Vector3 pos = position;
 		Vector3 vel =  _coreVelAtEnd + _environmentalVelAtStart; //The total velocity each frame
+		if (path.Length == 0) { return path; }
 		path[0] = pos;
 
 		for (int i = 1 ; i < iterations ; i++)

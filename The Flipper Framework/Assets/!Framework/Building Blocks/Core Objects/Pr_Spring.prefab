@@ -109,9 +109,10 @@ MonoBehaviour:
   _launchData_:
     _force_: 100
     _direction_: {x: 0, y: 1, z: 0}
-    _directionToUse_: {x: -0.20078804, y: 0.97729117, z: 0.067721166}
+    _directionToUse_: {x: 0, y: 1, z: 0}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
     _useCore: 0
+    _frameDelay: 0
     _lockInputFrames_: 55
     _lockAirMovesFrames_: 30
     _lockInputTo_: 1
@@ -231,8 +232,8 @@ MonoBehaviour:
   _hasVisualisationScripted: 1
   _viewVisualisationData: 1
   _viewVisualisationDataHidden: 1
-  _drawAtAllTimes: 1
-  _drawIfParentSelected: 0
+  _drawAtAllTimes: 0
+  _drawIfParentSelected: 1
   _normalOutlineColour: {r: 0.7735849, g: 0.71096766, b: 0.02773218, a: 0.39215687}
   _selectedOutlineColour: {r: 0.7877833, g: 0.8392157, b: 0.04313724, a: 0.5882353}
   _selectedFillColour: {r: 0.1509434, g: 0.013527942, b: 0.013527942, a: 0.7490196}
@@ -244,7 +245,7 @@ MonoBehaviour:
     type: 2}
   _ShotCenter: {fileID: 4000012764413882}
   _coreVelAtEnd: {x: 0, y: -199.79987, z: 0}
-  _environmentalVelAtStart: {x: -20.078804, y: 97.72912, z: 6.772117}
+  _environmentalVelAtStart: {x: 0, y: 100, z: 0}
 --- !u!114 &2685212621995745683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -777,27 +778,32 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.9884089
+      value: -0.88976765
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.002207886
+      value: -0.03386227
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.15179852
+      value: 0.45482665
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.00033908413
+      value: -0.017309532
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_Name
       value: DisplayData
+      objectReference: {fileID: 0}
+    - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3440219142795585223, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

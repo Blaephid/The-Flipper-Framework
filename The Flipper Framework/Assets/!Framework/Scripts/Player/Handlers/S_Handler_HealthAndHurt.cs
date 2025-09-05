@@ -136,6 +136,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 				}
 				return;
 			case "Pit":
+				if(_isDead) { return; }
 				_Sounds.DieSound();
 				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(new Vector2 (90,0), 0, 0, 0, 0.25f, "Pit")); //The camera will fall back before catching up.
 				Die(false);
@@ -322,9 +323,10 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			imageColour.a = 0;
 			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
 
-			if (_deadCounter == _respawnAfter_.z + 2)
+			if (_deadCounter == _respawnAfter_.w - 5)
 			{
 				_LevelHandler.LaunchOnRespawn();
+				_LevelHandler.TriggerAnimatorOnRespawn() ;
 			}
 
 			//End state

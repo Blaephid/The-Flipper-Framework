@@ -132,12 +132,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 025dd8a9986532a48a5fea4a4fd2b824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::S_Vis_Directions
-  _isSelected: 0
+  _isSelected: 1
   _hasVisualisationScripted: 1
-  _viewVisualisationData: 0
-  _viewVisualisationDataHidden: 0
-  _drawAtAllTimes: 1
-  _drawIfParentSelected: 0
+  _viewVisualisationData: 1
+  _viewVisualisationDataHidden: 1
+  _drawAtAllTimes: 0
+  _drawIfParentSelected: 1
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
@@ -263,7 +263,7 @@ Transform:
   m_GameObject: {fileID: 4393313708204645249}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 25.000017, z: 0}
+  m_LocalPosition: {x: 0, y: 25, z: 0}
   m_LocalScale: {x: 1, y: 50, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -852,27 +852,27 @@ PrefabInstance:
     - target: {fileID: 92208886072114591, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.5997376
+      value: 0.6067425
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.00042988727
+      value: 0.031124359
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.8001964
+      value: 0.79324585
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0005735746
+      value: -0.040691517
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -882,7 +882,7 @@ PrefabInstance:
     - target: {fileID: 3440219142795585223, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
@@ -892,7 +892,7 @@ PrefabInstance:
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: _isSelected
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3595523292069757358, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

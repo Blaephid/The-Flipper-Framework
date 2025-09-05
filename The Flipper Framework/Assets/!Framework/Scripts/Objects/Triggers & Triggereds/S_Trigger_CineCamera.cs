@@ -23,7 +23,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 
 	[Header("Works with these actions")]
 	[Tooltip("If true, the camera will deactivate if the player enters an action not in the above list.")]
-	public bool                             _deactivateCameraIfActionChanges = false;
+	public bool                             _endCameraIfExitsValidAction = false;
 	[Tooltip("Waits until the player is in one of the following actions before triggering the camera. Allow more control, as large triggers can sometimes be cumbersome.")]
 	public S_S_ActionHandling.PrimaryPlayerStates[]    _ListOfActionsThisWorksOn;
 
@@ -127,14 +127,19 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		//Only check if the player has already been saved to check its actions.
 		if (_PlayerActions != null)
 		{
+			bool inValidAction = false;
 			//Check if players current action is one this cinematic is set to work with.
 			for (int i = 0 ; i < _ListOfActionsThisWorksOn.Length ; i++)
 			{
 				if (_PlayerActions._whatCurrentAction == _ListOfActionsThisWorksOn[i])
+				{
+					inValidAction = true;
 					ActivateCam();
+					break;
+				}
 			}
 
-			if (_deactivateCameraIfActionChanges)
+			if(!inValidAction && _endCameraIfExitsValidAction)
 			{
 				StartCoroutine(DeactivateCam());
 			}

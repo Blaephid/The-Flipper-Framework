@@ -26,17 +26,17 @@ MonoBehaviour:
     startMaxEnergy: 100
     energyOnPlayerStart: {x: 1, y: 0.5}
   CoreValuesStats:
-    dieAtDamageFromRingCount: 5
-    minRingLoss: {x: 0.8, y: 40}
-    maxRingLoss: 100
+    dieAtDamageFromRingCount: 15
+    minRingLoss: {x: 0.8, y: 60}
+    maxRingLoss: 80
     startMaxRingCount: 100
     ringsOnPlayerStart: {x: 0, y: 5}
     gainEnergyFromRings: 1
     gainEnergyOverTime: 1
-    energyGainPerRing: 2
-    energyGainPerSecond: 1
+    energyGainPerRing: 1.5
+    energyGainPerSecond: 8
     startMaxEnergy: 100
-    energyOnPlayerStart: {x: 1, y: 0.5}
+    energyOnPlayerStart: {x: 0.8, y: 0.5}
   StartAccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4

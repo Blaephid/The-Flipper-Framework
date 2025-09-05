@@ -125,11 +125,11 @@ MonoBehaviour:
   _CurrentPrefabToSpawn: Pr_HomingTarget
   _DataForPrefabs: {fileID: -4308993741941907032}
   _mainScale: {x: 1, y: 1, z: 1}
-  _mainOffset: {x: 0, y: 0, z: 0}
+  _mainOffset: {x: 0, y: 1.2, z: 0}
   _mainRotation: {x: 0, y: 0, z: 0}
   _TransformsPerPoint_:
   - _scale: {x: 1, y: 1, z: 1}
-    _offset3d: {x: 0, y: 0, z: 0}
+    _offset3d: {x: 0, y: 1.2, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
   _alignWithTerrain_: 0
 --- !u!114 &-4308993741941907032
@@ -309,7 +309,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SplineParent: {fileID: 0}
   _Placer: {fileID: 1172236659213358101}
   _ConnectedRails: {fileID: 2505866653347779652}
