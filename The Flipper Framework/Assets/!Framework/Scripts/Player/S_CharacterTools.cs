@@ -76,8 +76,6 @@ public class S_CharacterTools : MonoBehaviour
 	public S_Control_EffectsPlayer  EffectsControl;
 
 	[Header("Effects")]
-	public GameObject               HomingTrailContainer;
-	public GameObject               HomingTrail;
 	public GameObject             BoostCone;
 	public ParticleSystem   DropEffect;
 

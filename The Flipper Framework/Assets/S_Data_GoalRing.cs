@@ -16,6 +16,7 @@ public class S_Data_GoalRing : S_Data_Base
 	}
 
 	public void OnStageEnd (S_PlayerScore Score) {
+		_StageEndController.gameObject.SetActive(true);
 		gameObject.SetActive(true);
 		_StageEndController.OnStageEnd(Score);
 	}

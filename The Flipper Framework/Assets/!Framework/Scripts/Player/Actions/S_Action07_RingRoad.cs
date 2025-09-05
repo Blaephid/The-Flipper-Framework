@@ -19,9 +19,6 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 	#region Unity Specific Properties
 	private S_Handler_RingRoad    _RoadHandler;
 
-	private GameObject  _HomingTrailContainer;
-	private GameObject  _HomingTrail;
-
 	private Spline      _CreatedSpline;
 	#endregion
 
@@ -111,14 +108,8 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_JumpBall.SetActive(false);
 		_Sounds.LightSpeedDashSound();
+		_Effects.EnableLargeTrail(1000, false);
 
-		//Trail that follows behind player.
-		if (_HomingTrailContainer.transform.childCount < 1)
-		{
-			GameObject HomingTrailClone = Instantiate (_HomingTrail, _HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
-			HomingTrailClone.transform.parent = _HomingTrailContainer.transform;
-			HomingTrailClone.transform.localPosition = _trailOffSet;
-		}
 
 		//Ready path. The way this action works is it creates a spline going through each ring target. This created an object with the component to store this data in.
 		GameObject GO = new GameObject("TEMPORARY SPLINE");
@@ -163,8 +154,7 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f, "RingRoadTimed"));
 
 		//End effects
-		for (int i = _HomingTrailContainer.transform.childCount - 1 ; i >= 0 ; i--)
-			Destroy(_HomingTrailContainer.transform.GetChild(i).gameObject);
+		_Effects.EnableLargeTrail(0.4f, false);
 	}
 	#endregion
 
@@ -244,10 +234,10 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 		if (!_willCarrySpeed_) endingSpeedResult = _minimumEndingSpeed_; //Speed unaffected by how it was before the action.
 
 		//Sends the player in the direction of the end of the spline.
-		CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length);
+		CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length - 1);
 		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_CreatedSpline.transform, Sample);
 
-		_directionToGo = sampleTransform.forwards;
+		_directionToGo = sampleTransform.forwards != Vector3.zero ? sampleTransform.forwards : _MainSkin.forward;
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _directionToGo);
 
@@ -284,8 +274,6 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 	public override void AssignTools () {
 		base.AssignTools();
 		_RoadHandler = GetComponent<S_Handler_RingRoad>();
-		_HomingTrailContainer = _Tools.HomingTrailContainer;
-		_HomingTrail = _Tools.HomingTrail;
 	}
 
 	//Reponsible for assigning stats from the stats script.

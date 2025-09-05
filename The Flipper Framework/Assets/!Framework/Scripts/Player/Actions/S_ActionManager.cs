@@ -303,6 +303,8 @@ public class S_ActionManager : MonoBehaviour
 			{
 				if (enable) Action.ReactivateAction();
 				else Action.DeactivateAction();
+
+				return;
 			}
 		}
 	}
@@ -316,6 +318,8 @@ public class S_ActionManager : MonoBehaviour
 			{
 				if (enable) Action.ReactivateAction();
 				else Action.DeactivateAction();
+
+				return;
 			}
 		}
 	}

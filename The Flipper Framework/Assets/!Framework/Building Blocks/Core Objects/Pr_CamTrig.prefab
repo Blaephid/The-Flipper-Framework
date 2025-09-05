@@ -69,7 +69,8 @@ MonoBehaviour:
     _hasTrigger: 0
     _ObjectsThatTriggerThis: []
     _isLogicInPlayerScript: 1
-    _TriggersForPlayerToRead: []
+    _TriggersForPlayerToReadActivate: []
+    _TriggersForPlayerToReadDeactivate: []
   _whatType: 2
   _willReleaseOnExit: 0
   _Direction: {fileID: 4000014063325986}
@@ -235,22 +236,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9514173
+      value: 0.020402282
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.054793745
+      value: 0.00017145602
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.30248848
+      value: 0.9997566
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.017420826
+      value: -0.008401725
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

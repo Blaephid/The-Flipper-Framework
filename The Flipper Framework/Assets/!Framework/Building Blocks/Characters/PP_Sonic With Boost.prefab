@@ -556,9 +556,6 @@ MonoBehaviour:
   CharacterAnimator: {fileID: 3378010807672333325}
   SoundControl: {fileID: 8731824957011403018}
   EffectsControl: {fileID: 7562303702986520860}
-  HomingTrailContainer: {fileID: 9143549132673583679}
-  HomingTrail: {fileID: 1638298306650436, guid: 6dc834f9492c95545b5a07e7fc167429,
-    type: 3}
   BoostCone: {fileID: 668953569134828898}
   DropEffect: {fileID: 339764373253515146}
 --- !u!114 &114945863342939534
@@ -8518,7 +8515,7 @@ MonoBehaviour:
   Collider: {fileID: 8523265508690685458}
   LayerMask:
     serializedVersion: 2
-    m_Bits: 524288
+    m_Bits: 786432
   _whatTriggerShape: 0
 --- !u!65 &8523265508690685458
 BoxCollider:

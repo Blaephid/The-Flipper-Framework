@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
-using TMPro;
 using System.Collections.Generic;
-
+using TMPro;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.Profiling;
-using System;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(S_PlayerMovement))]

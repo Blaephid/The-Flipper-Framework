@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using TMPro;
-using UnityEditor.SceneManagement;
+
 using UnityEngine.InputSystem;
 
 public class S_StageCompleteControl : MonoBehaviour
@@ -38,7 +38,6 @@ public class S_StageCompleteControl : MonoBehaviour
 	private bool _canContinue = false;
 
 	public void OnStageEnd ( S_PlayerScore Score ) {
-		gameObject.SetActive(true); //Ensure active
 
 		_Spawner.OnStageEnd(); //To disable post processing and replace
 

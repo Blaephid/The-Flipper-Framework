@@ -51,7 +51,7 @@ namespace SplineMesh
 		[Header("Main Placement")]
 		//[Delayed]
 		public Vector2 _spacingRange_ = new Vector2 (20,20);
-		private Vector2 _rememberspacingRange_ = new Vector2 (20,20);
+		[HideInInspector, SerializeField]Vector2 _rememberspacingRange_ = new Vector2 (20,20);
 		[Tooltip("If not negative, will not place more than this number. Use zero to prevent anything placed normally."), Min(-1)]
 		[Delayed]
 		public int      _maxNumber_ = -1;
@@ -143,6 +143,8 @@ namespace SplineMesh
 		}
 
 		private void OnValidate () {
+			if(Application.isPlaying) { return; }
+
 			EditorApplication.delayCall += () =>
 			{
 				if (_TransformsPerPoint_ == null || _TransformsPerPoint_.Length == 0)
@@ -191,10 +193,12 @@ namespace SplineMesh
 			}
 		}
 
-		public void PlaceAllElements () {
+		public void PlaceAllElements (bool canRestart = true) {
 			if (!_Spline) { return; }
 
 			_setDataThisUpdate = false;
+
+			if(!generated) { return; }
 
 			int currentChildCount = generated.transform.childCount;
 			while (generated.transform.childCount > _currentAmountPlaced)
@@ -234,8 +238,11 @@ namespace SplineMesh
 			}
 
 			//If it couldnt accurately remove the extra elements, then remove all, and restart.
-			if (generated.transform.childCount > _currentAmountPlaced)
+			if (canRestart && generated.transform.childCount > _currentAmountPlaced)
+			{
 				UOUtility.DestroyChildren(generated);
+				PlaceAllElements(false);
+			}
 		}
 
 		void PlaceElementsAtPoint ( float atDistance, string addToName = "" ) {

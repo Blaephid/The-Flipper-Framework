@@ -225,7 +225,6 @@ public class S_Interaction_Objects : S_Player_Base
 		if (Col.transform.up.y > 0.7f && _numberOfWindForces == 1)
 		{
 			StartCoroutine(RemoveAdditionalVerticalVelocity(_PlayerVel._coreVelocity.y));
-			Debug.Log("Disable Gravity");
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "InUpDraft");
 			_PlayerPhys.SetIsGrounded(false);
 		}
@@ -622,6 +621,11 @@ public class S_Interaction_Objects : S_Player_Base
 		{
 			//Since vertical will be taken over by environment, get horizontal core velocity.
 			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity, false);
+
+			if(_Actions._speedBeforeAction != 0) { newCoreVelocity = newCoreVelocity.normalized * _Actions._speedBeforeAction; }
+
+			newCoreVelocity *= 0.85f;
+
 			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * SpringScript._launchData_._force_, false); //Combined the spring direction with force to get the only the force horizontally.
 
 			Vector3 combinedVelocityMagnitude = (launchHorizontalVelocity + newCoreVelocity); //The two put together normally so the magnitude is accurate.
@@ -649,7 +653,8 @@ public class S_Interaction_Objects : S_Player_Base
 				newCoreVelocity = combinedVelocityMagnitude;
 			}
 
-			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, SpringScript.transform.position, newCoreVelocity, GO.transform, SpringScript._launchData_));
+			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, 
+				Vector3.zero, newCoreVelocity, GO.transform, SpringScript._launchData_));
 		}
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else if (!SpringScript._keepHorizontal_)

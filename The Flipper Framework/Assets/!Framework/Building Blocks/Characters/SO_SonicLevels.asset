@@ -69,8 +69,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 10
-      value: 3
+      time: 8
+      value: 4
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -78,13 +78,13 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 15
-      value: 2
-      inSlope: 0
-      outSlope: 0
+      time: 20
+      value: 2.5
+      inSlope: -0.34870285
+      outSlope: -0.34870285
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.120977305
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -93,27 +93,27 @@ MonoBehaviour:
   pointsFromPerfectHomingAttack: 25
   _Levels:
   - level: 1
-    requiredPoints: 1000
+    requiredPoints: 800
     ringsMaxMultiplier: 1
     energyMaxMultiplier: 1
     speedMaxMultiplier: 1
   - level: 2
-    requiredPoints: 1200
+    requiredPoints: 1000
     ringsMaxMultiplier: 2
     energyMaxMultiplier: 1.2
     speedMaxMultiplier: 1.15
   - level: 3
-    requiredPoints: 1400
+    requiredPoints: 1200
     ringsMaxMultiplier: 3
     energyMaxMultiplier: 1.4
     speedMaxMultiplier: 1.3
   - level: 4
-    requiredPoints: 1500
+    requiredPoints: 1350
     ringsMaxMultiplier: 4
     energyMaxMultiplier: 1.55
     speedMaxMultiplier: 1.4
   - level: 5
-    requiredPoints: 1600
+    requiredPoints: 1500
     ringsMaxMultiplier: 5
     energyMaxMultiplier: 1.7
     speedMaxMultiplier: 1.5

@@ -347,7 +347,10 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 		//Reset trackers
 		_PlayerPhys._locksForCanControl.Clear();
+		_PlayerPhys._locksForIsGravityOn.Clear();
+		_PlayerPhys._locksForCanDecelerate.Clear();
 		_PlayerPhys._locksForCanTurn.Clear();
+
 		_PlayerPhys._canChangeGrounded = true;
 		_PlayerPhys._areSpeedChangesEnabled = true;
 

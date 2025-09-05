@@ -91,8 +91,9 @@ public class S_PlayerScore : S_Player_Base
 		}
 		else
 		{
-			_ringScore -= (int)(change * 0.5f);
-			_ringScoreLost += Mathf.Abs(change);
+			float lossPriority = 0.85f;
+			_ringScore -= (int)(change * lossPriority);
+			_ringScoreLost += Mathf.Abs(change * lossPriority);
 		}
 	}
 
@@ -114,6 +115,8 @@ public class S_PlayerScore : S_Player_Base
 		_timeRankText = S_PlayerScore.RankValueToLetter[_timeRank];
 		_ringsRankText = S_PlayerScore.RankValueToLetter[_ringsRank];
 
+		Debug.Log(_trueTime);
+		Debug.Log(_ringScore);
 
 		if (_timeRankText == "X") { _totalRankText = "X"; }
 		else { _totalRankText = _timeRankText + _ringsRankText; }

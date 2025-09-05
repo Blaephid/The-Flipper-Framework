@@ -121,7 +121,7 @@ public class S_AI_MotobugBehaviour : MonoBehaviour
 	void Action_02_Run () {
 		Anim.SetFloat("GroundSpeed", Physics.b_normalSpeed);
 
-		if (DustParticles != null)
+		if (DustParticles != null && DustParticles.isPlaying)
 			DustParticles.Emit(1);
 		Target = S_SpawnCharacter._SpawnedPlayer.transform.position;
 		var dir = (Target - transform.position);

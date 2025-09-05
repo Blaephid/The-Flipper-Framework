@@ -77,7 +77,6 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 		_counter = 0;
 		_startForwardDirection = _MainSkin.forward;
 
-		Debug.Log("Start Hovering Action");
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Hovering);
 		enabled = true;
@@ -88,7 +87,6 @@ public class S_Action13_Hovering : S_Action_Base, IMainAction
 		enabled = false;
 		if (isFirstTime) { SetUpAction(); return; }
 
-		Debug.Log("Stop Hovering Action");
 		_SkinOffset.localEulerAngles = Vector3.zero;
 	}
 	#endregion

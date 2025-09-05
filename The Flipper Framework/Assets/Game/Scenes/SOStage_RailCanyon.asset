@@ -24,4 +24,16 @@ MonoBehaviour:
     m_SceneName: Sc_Rail Canyon PART 1
   - m_SceneAsset: {fileID: 102900000, guid: e5010835dc3ff0c4ea1488067942c330, type: 3}
     m_SceneName: Sc_Rail Canyon PART 2
+  _Ranks:
+    Time_XRank: 100
+    Time_SRank: 140
+    Time_ARank: 160
+    Time_BRank: 200
+    Time_CRank: 240
+    Time_DRank: 6001
+    Rings_SRank: 201
+    Rings_ARank: 150
+    Rings_BRank: 100
+    Rings_CRank: 60
+    Rings_DRank: 0
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

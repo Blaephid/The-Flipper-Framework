@@ -302,11 +302,11 @@ public class S_Interaction_Triggers : S_Player_Base
 		if (!Col.TryGetComponent(out S_Trigger_External HostTriggerData)) { return null; };
 
 		//If no logic is found, ignore.
-		if (HostTriggerData == null || HostTriggerData.TriggerObjects._TriggersForPlayerToRead.Count == 0) return null;
+		if (HostTriggerData == null || HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate.Count == 0) return null;
 
-		for (int i = 0 ; i < HostTriggerData.TriggerObjects._TriggersForPlayerToRead.Count ; i++)
+		for (int i = 0 ; i < HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate.Count ; i++)
 		{
-			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects._TriggersForPlayerToRead[i].GetComponent<S_Trigger_External>();
+			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate[i].GetComponent<S_Trigger_External>();
 
 			//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
 			if (list.Count == 0) { list = new List<S_Trigger_External>(); }
@@ -315,6 +315,10 @@ public class S_Interaction_Triggers : S_Player_Base
 			if (!list.Contains(ReferencedTriggerData))
 			{
 				ReferencedTriggerData._isSelected = true;
+				//Prevent triggers from always turning themselves on on enter.
+				if (ReferencedTriggerData.GetInstanceID() == HostTriggerData.GetInstanceID() 
+					&& !HostTriggerData.TriggerObjects._triggerSelfOn) { continue; }
+
 				TriggersToActivate.Add(ReferencedTriggerData);
 			}
 
@@ -331,11 +335,11 @@ public class S_Interaction_Triggers : S_Player_Base
 		if (!Col.TryGetComponent(out S_Trigger_External HostTriggerData)) { return null; }
 
 		//If no logic is found, ignore.
-		if (HostTriggerData == null || HostTriggerData.TriggerObjects._TriggersForPlayerToRead == null) return null;
+		if (HostTriggerData == null || HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate == null) return null;
 
-		for (int i = 0 ; i < HostTriggerData.TriggerObjects._TriggersForPlayerToRead.Count ; i++)
+		for (int i = 0 ; i < HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate.Count ; i++)
 		{
-			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects._TriggersForPlayerToRead[i].GetComponent<S_Trigger_External>();
+			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate[i].GetComponent<S_Trigger_External>();
 
 			//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
 			if (list.Count > 0 && !list.Contains(ReferencedTriggerData)) { continue; }
@@ -346,6 +350,11 @@ public class S_Interaction_Triggers : S_Player_Base
 			if (!list.Contains(ReferencedTriggerData)) //Only perform exit logic when out of all triggers using that logic.
 			{
 				ReferencedTriggerData._isSelected = false;
+
+				//Prevent triggers from always turning themselves off on exit.
+				if(ReferencedTriggerData.GetInstanceID() == HostTriggerData.GetInstanceID() &&
+					!HostTriggerData.TriggerObjects._triggerSelfOff) { continue; }
+
 				TriggersToDeactivate.Add(ReferencedTriggerData);
 			}
 		}

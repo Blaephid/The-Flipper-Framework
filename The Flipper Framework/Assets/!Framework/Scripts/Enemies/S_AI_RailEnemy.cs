@@ -214,9 +214,9 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		{
 			GameObject ModelObject = _Models[i];
 			//Crossing models over the loop
-			if (_RF._PathSpline.IsLoop && (tempPointOnSpline < 0 || tempPointOnSpline > thisSpline.Length))
+			if (_RF._PathSpline.IsLoop && (tempPointOnSpline <= 0 || tempPointOnSpline > thisSpline.Length))
 			{
-				tempPointOnSpline += thisSpline.Length * -_RF._movingDirection;
+				tempPointOnSpline += thisSpline.Length * _RF._movingDirection;
 
 			}
 			//If this car is on a previous 

@@ -112,7 +112,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 	/// 
 	#region private
 
-	private IEnumerator TransitionToStageComplete ( S_Data_GoalRing GoalRingData, float totalTime = 2.5f, float timeToSlow = 2f ) {
+	private IEnumerator TransitionToStageComplete ( S_Data_GoalRing GoalRingData, float totalTime = 2.5f, float timeToSlow = 1.5f ) {
 
 		_Score._paused = true;
 
@@ -134,7 +134,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 			timeCount += Time.unscaledDeltaTime;
 
-			Time.timeScale = Mathf.Lerp(1, 0.05f, timeCount / timeToSlow);
+			Time.timeScale = Mathf.Lerp(1, 0.03f, timeCount / timeToSlow);
 			_HealthAndHurt._FadeOutImage.color = Color.Lerp(_HealthAndHurt._FadeOutImage.color, Color.black, timeCount / totalTime);
 		}
 		Time.timeScale = 1;

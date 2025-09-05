@@ -34,7 +34,7 @@ MonoBehaviour:
     gainEnergyFromRings: 1
     gainEnergyOverTime: 1
     energyGainPerRing: 1.5
-    energyGainPerSecond: 8
+    energyGainPerSecond: 3
     startMaxEnergy: 100
     energyOnPlayerStart: {x: 0.8, y: 0.5}
   StartAccelerationStats:
@@ -2776,12 +2776,12 @@ MonoBehaviour:
     stateLengthWithKnockback: 130
     stateLengthWithoutKnockback: 90
   RailStats:
-    railMaxSpeed: 170
-    railTopSpeed: 90
+    railMaxSpeed: 190
+    railTopSpeed: 100
     minimumStartSpeed: 20
     RailPushFowardmaxSpeed: 120
-    RailPushFowardIncrements: 7
-    RailPushFowardDelay: 0.2
+    RailPushFowardIncrements: 20
+    RailPushFowardDelay: 0.4
     PushBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -2833,9 +2833,9 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    RailSlopePower: 1.4
-    RailUpHillMultiplier: {x: 0.6, y: 1.1}
-    RailDownHillMultiplier: {x: 1, y: 1.7}
+    RailSlopePower: 1.3
+    RailUpHillMultiplier: {x: 0.3, y: 0.7}
+    RailDownHillMultiplier: {x: 1, y: 1.8}
     railDecaySpeed: 0.015
     RailPlayerBrakePower: 0.975
     railBoostDecaySpeed: 0.4

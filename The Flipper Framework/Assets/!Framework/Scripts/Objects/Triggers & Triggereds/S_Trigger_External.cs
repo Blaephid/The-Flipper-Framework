@@ -180,26 +180,31 @@ public class S_Trigger_External : S_Trigger_Base
 
 	private void CheckTriggerForPlayerToRead () {
 
+		HandleListsOfTriggerDataOnOrOff(ref TriggerObjects._TriggersForPlayerToReadActivate, TriggerObjects._ObjectsToTriggerOn);
+		HandleListsOfTriggerDataOnOrOff(ref TriggerObjects._TriggersForPlayerToReadDeactivate, TriggerObjects._ObjectsToTriggerOff);
+	}
+
+	private void HandleListsOfTriggerDataOnOrOff (ref List<GameObject> ReadTriggersOnOrOff, List<GameObject> TriggersSetOnOrOff ) {
 		//First, clear the triggers to read, and their references to this, so they can be readded if necessary
-		for (int trig = 0 ; trig < TriggerObjects._TriggersForPlayerToRead.Count ; trig++)
+		for (int trig = 0 ; trig < ReadTriggersOnOrOff.Count ; trig++)
 		{
 			//Remove each reading trigger's reference to what needs to be read now, as it may no longer have that reference soon.
-			if (TriggerObjects._TriggersForPlayerToRead[trig] && TriggerObjects._TriggersForPlayerToRead[trig].TryGetComponent(out S_Trigger_External TriggerData))
+			if (ReadTriggersOnOrOff[trig] && ReadTriggersOnOrOff[trig].TryGetComponent(out S_Trigger_External TriggerData))
 			{
 				CheckExternalTriggerDataHasTrigger(true, TriggerData);
 			}
 		}
-		TriggerObjects._TriggersForPlayerToRead.Clear();
+		ReadTriggersOnOrOff.Clear();
 
 		//Go through each object to trigger on (remember, this inlcudes itself is _TriggerSelfOn, and if they have logic to read, add them to the list of scripts to read.
-		for (int i = 0 ; i < TriggerObjects._ObjectsToTriggerOn.Count ; i++)
+		for (int i = 0 ; i < TriggersSetOnOrOff.Count ; i++)
 		{
-			if(!TriggerObjects._ObjectsToTriggerOn[i]) { continue; }
-			if (TriggerObjects._ObjectsToTriggerOn[i].TryGetComponent(out S_Trigger_External Trigger))
+			if (!TriggersSetOnOrOff[i]) { continue; }
+			if (TriggersSetOnOrOff[i].TryGetComponent(out S_Trigger_External Trigger))
 			{
 				if (Trigger.TriggerObjects._isLogicInPlayerScript)
 				{
-					TriggerObjects._TriggersForPlayerToRead.Add(Trigger.gameObject);
+					ReadTriggersOnOrOff.Add(Trigger.gameObject);
 					CheckExternalTriggerDataHasTrigger(false, Trigger);
 				}
 			}
@@ -270,8 +275,10 @@ public class TriggerExternalData
 	[CustomReadOnly]
 	[Tooltip("Set true in code for triggers where their effects are scripted in a player script. _TriggerForPlayerToRead provides the data for said script.")]
 	public bool         _isLogicInPlayerScript;
-	[OnlyDrawIf("_isLogicInPlayerScript", true)]
+	//[OnlyDrawIf("_isLogicInPlayerScript", true)]
 	[CustomReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
-	public List<GameObject> _TriggersForPlayerToRead = new List<GameObject>();
+	public List<GameObject> _TriggersForPlayerToReadActivate = new List<GameObject>();
+	[CustomReadOnly, Tooltip("When the player exits this trigger, this will be the effect thats disabled, if currently active")]
+	public List<GameObject> _TriggersForPlayerToReadDeactivate = new List<GameObject>();
 }
 
