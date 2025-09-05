@@ -135,11 +135,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844009c30537c504db97325675436425, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoadNewLevel:
-    m_PersistentCalls:
-      m_Calls: []
   ID: MeasureLines
   willReplaceOldInstancesWithThis: 1
+  CarryAcrossMenuScenes: 1
+  CarryAcrossCharacterScenes: 0
 --- !u!223 &8139089217478251516
 Canvas:
   m_ObjectHideFlags: 0
@@ -280,23 +279,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844009c30537c504db97325675436425, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoadNewLevel:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1929142814657030967}
-        m_TargetAssemblyTypeName: S_UpdateUIToNewCamera, Assembly-CSharp
-        m_MethodName: EventAssignNewCamera
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   ID: MenuBackground
   willReplaceOldInstancesWithThis: 0
+  CarryAcrossMenuScenes: 1
+  CarryAcrossCharacterScenes: 0
 --- !u!223 &4260636616732007236
 Canvas:
   m_ObjectHideFlags: 0

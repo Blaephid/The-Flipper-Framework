@@ -30,12 +30,9 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 	}
 
-	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyAction();
-	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		if (_isWall)
 		{
 			ClimbingInteraction();
@@ -66,7 +63,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
-		_raycastOrigin = transform.position + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
+		_raycastOrigin = _PlayerPhys._CharacterCenterPosition + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
 		_isWall = Physics.Raycast(_raycastOrigin, _MainSkin.forward, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
 
 		//First x seconds are too attach to the wall from starting point, so decrease check range after.
@@ -177,7 +174,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 			_Actions._ActionDefault._isAnimatorControlledExternally = true;
 			_Actions._ActionDefault._animationAction = 1;
 
-			_Input.LockInputForAWhile(0, false, Vector3.zero, S_Enums.LockControlDirection.CharacterForwards);
+			_Input.LockInputForAWhile(0, false, Vector3.zero, S_GeneralEnums.LockControlDirection.CharacterForwards);
 		}
 
 		_Actions._ActionDefault._isAnimatorControlledExternally = false;
@@ -204,14 +201,13 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		_goalClimbingSpeed = Mathf.Max(_PlayerVel._horizontalSpeedMagnitude * _climbModi_, _currentClimbingSpeed);
 
 		//Sets min and max climbing speed while ensuring climbing is in increments of x
-		_goalClimbingSpeed = 10f * (int)(_goalClimbingSpeed / 10);
-		_goalClimbingSpeed = Mathf.Clamp(_goalClimbingSpeed, 50, 160);
+		_goalClimbingSpeed = Mathf.Clamp(S_S_MoreMaths.GetNumberAsIncrement(_goalClimbingSpeed, 10f), 50, 160);
 
 		_checkDistance = wallHit.distance + 1; //Ensures first checks for x seconds will find the wall.
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, -_wallHit.normal, Vector2.zero, GetUpDirectionOfWall(wallHit.normal));
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallClimbing); //Not part of startAction because that is inherited from action12, and other stopActions should be triggered before this (E.G. so CanChangeGrounded is accurate).
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.WallClimbing); //Not part of startAction because that is inherited from action12, and other stopActions should be triggered before this (E.G. so CanChangeGrounded is accurate).
 		StartAction();
 	}
 }

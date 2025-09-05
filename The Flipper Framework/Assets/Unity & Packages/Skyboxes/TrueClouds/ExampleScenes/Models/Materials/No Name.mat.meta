@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 5c6412180db71624ba8d7fe4bbc7d916
+timeCreated: 1513545276
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Models/Materials/No Name.mat
+  uploadId: 243278

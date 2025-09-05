@@ -3,7 +3,7 @@ using System.Collections;
 using SplineMesh;
 using UnityEngine.Windows;
 
-public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
+public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -14,23 +14,13 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerMovement	_PlayerMovement;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Control_SoundsPlayer _Sounds;
 	private S_Interaction_Pathers _Pathers;
-	private S_HedgeCamera	_CamHandler;
 
 	private Transform   _PathTransform;
 	private CurveSample _Sample;
 
-	private Animator	_CharacterAnimator;
 	[HideInInspector]
 	public Collider	_PatherStarter;
-	private Transform	_MainSkin;
 	#endregion
 
 
@@ -41,8 +31,6 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;
-
 
 	// Values of spline
 	private float	_pointOnSpline = 0f;
@@ -77,54 +65,66 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 	// Start is called before the first frame update
 	void Start () {
-
 	}
 
 	// Update is called once per frame
 	void Update () {
 		_Actions._ActionDefault.SetSkinRotationToVelocity(10);
 		_Actions._ActionDefault.HandleAnimator(0);
+
+		GetNewPointOnSpline();
+		GetSampleOfSpline();
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 
 		//This is to make the code easier to read, as a single variable name is easier than an element in a public list.
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _playerSpeed = _Actions._listOfSpeedOnPaths[0]; } 
 		MoveAlongPath();
 		if (_Actions._listOfSpeedOnPaths.Count > 0) { _Actions._listOfSpeedOnPaths[0] = _playerSpeed; }//Apples all changes to grind speed.
+
+		HandleInputs();
 	}
 
-	public bool AttemptAction () {		
-		_Pathers._canEnterAutoPath = true;
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
+		if (!base.AttemptAction()) return;
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Physics
-		_PlayerPhys._arePhysicsOn = false;
+		_PlayerPhys._areSpeedChangesEnabled = false;
 		_PlayerPhys._canStickToGround = true;
 		_PlayerPhys._rayToGroundDistance_ *= 2;
 
 		_Pathers._canExitAutoPath = true; //Will no longer cancel action when hitting a trigger.
 		_Actions._listOfSpeedOnPaths.Add(_playerSpeed);
 
+		//This ensures that no matter what, turning will act as normal (The boost subaction changes turning, this ensures that won't happen
+		_PlayerPhys._PlayerMovement._lockAccelerationAndTurningToDefault = true;
+
 		if (_CharacterAnimator.GetInteger("Action") != 0)
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
 
+		_ActionChain.SetCountdownSpeed(0.1f);
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Path);
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Path);
 		enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
-		_PlayerPhys._arePhysicsOn = true;
+		_PlayerPhys._areSpeedChangesEnabled = true;
 		_PlayerPhys._rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;
+
+		_PlayerPhys._PlayerMovement._lockAccelerationAndTurningToDefault = false;
 
 		_Pathers._canExitAutoPath = false; //Will no longer cancel action when hitting a trigger.
 
@@ -132,6 +132,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		_PlayerMovement._currentMinSpeed = 0;
 		_PlayerMovement._currentMaxSpeed = _Tools.Stats.SpeedStats.maxSpeed;
+		_PlayerMovement._useFlatTurnRate = 0;
+
+		_ActionChain.SetCountdownSpeed(1f);
 	}
 
 	#endregion
@@ -143,10 +146,10 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	#region private
 	private void MoveAlongPath () {
 
-		GetNewPointOnSpline();
-		GetSampleOfSpline();
+		//GetNewPointOnSpline();
+		//GetSampleOfSpline();
 
-		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(transform.forward, _sampleUpwards));
+		//_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(transform.forward, _sampleUpwards));
 		_PlayerPhys.CheckForGround();
 
 		SetVelocityAlongSpline(); 
@@ -181,15 +184,16 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 
 		//Get Sample of the Path to put player
 		_Sample = _Pathers._PathSpline.GetSampleAtDistance(_pointOnSpline);
-		_sampleForwards = _PathTransform.rotation * _Sample.tangent * _moveDirection;
+		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_Pathers._PathSpline.transform, _Sample);
 
-		_sampleUpwards = _PathTransform.rotation * _Sample.up;
-		_sampleLocation = (_PathTransform.rotation * _Sample.location) + _PathTransform.position;
+		_sampleForwards = sampleTransform.forwards * _moveDirection;
+		_sampleUpwards = sampleTransform.upwards;
+		_sampleLocation = sampleTransform.location ;
 	}
 
 	private void PlaceOnSpline () {
 		//Place at position so feet are on the spline.
-		Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
+		Vector3 FootPos = _PlayerPhys._CharacterPivotPosition - _Pathers._FeetTransform.position;
 		_PlayerPhys.SetPlayerPosition(_sampleLocation + FootPos);
 		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(transform.forward, _sampleUpwards));
 	}
@@ -237,9 +241,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			decelerationValue = 0;
 		}
 	
-		//Ensure player is either inputting alon or against the path, translated to current rotation.
+		//Ensure player is either inputting along or against the path, translated to current rotation.
 		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction);
-		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_Enums.LockControlDirection.Change);
+		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_GeneralEnums.LockControlDirection.Change);
 
 		//Call methods after input is changed, acting as if mvoing normally just in the desired direction
 		if (_PlayerPhys._isGrounded)
@@ -249,19 +253,22 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity,new Vector2 (3, 1), decelerationValue);
 			_physicsCoreVelocity = _PlayerPhys.HandleSlopePhysics(_physicsCoreVelocity, false);
 			_physicsCoreVelocity = _PlayerPhys.StickToGround(_physicsCoreVelocity);
+
+			_Actions._ActionDefault.SwitchSkin(true);
 		}
 		else
 		{
 			//Doesnt call handle air velocity because it creates its own modifiers to turn speed.
+			_PlayerPhys._timeInAir += Time.deltaTime;
+
 			_physicsCoreVelocity = _PlayerMovement.HandleControlledVelocity(_physicsCoreVelocity, new Vector2(3, 0.8f));
-			_physicsCoreVelocity = _PlayerPhys.CheckGravity(_physicsCoreVelocity);
+			_physicsCoreVelocity = _PlayerPhys.TryGravity(_physicsCoreVelocity);
 		}
 	}
 
 	private void ApplyVelocity () {
 
 		_PlayerVel.SetBothVelocities(_physicsCoreVelocity, Vector2.right);
-		//_PlayerVel.SetTotalVelocity();
 		//Set total velocity in PlayerVelocity fixedUpdate is still called after every other script.
 
 		_playerSpeed = _PlayerVel._currentRunningSpeed;
@@ -271,8 +278,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	private void MoveTowardsPathMiddle () {
 		if (_PlayerPhys._isGrounded && _playerSpeed > 20)
 		{
-			Vector3 FootPos = transform.position - _Pathers._FeetTransform.position;
-			Vector3 direction = _sampleLocation - _Pathers._FeetTransform.position;
+			Vector3 footPos = _Pathers._FeetTransform.position;
+			Vector3 direction = _sampleLocation - footPos;
+			direction.Normalize();
 
 			//Don't apply any velocity upwards, so take relevant to player, remove veritcal, then return.
 			direction = _PlayerPhys.GetRelevantVector(direction, false);
@@ -283,13 +291,9 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	}
 
 	private void ExitPath () {
-		_Input.LockInputForAWhile(_willLockFor, false, _sampleForwards, S_Enums.LockControlDirection.Change);
+		_Input.LockInputForAWhile(_willLockFor, false, _sampleForwards, S_GeneralEnums.LockControlDirection.Change);
 
 		_Actions._ActionDefault.StartAction();
-	}
-
-	public void HandleInputs () {
-
 	}
 
 	#endregion
@@ -299,25 +303,29 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region public 
-	public void AssignForThisAutoPath ( float range, Transform PathTransform, bool isGoingBack, float startSpeed, S_Trigger_Path Path, bool willLockToStart ) {
+	public void AssignForThisAutoPath ( float range, Transform PathTransform, bool isGoingBack, float startSpeed, S_Trigger_Path.StrucAutoPathData PathData, bool willLockToStart ) {
 
 		//Setting up the path to follow
 		_pointOnSpline = range;
 		_PathTransform = PathTransform;
 
 		//Speed and direction to move this action
-		_pathMinSpeed = Path._speedLimits.x;
+		_pathMinSpeed = PathData._speedLimits_.x;
 		_PlayerMovement._currentMinSpeed = _pathMinSpeed;
-		_pathMaxSpeed = Path._speedLimits.y;
+
+		_pathMaxSpeed = PathData._speedLimits_.y;
 		_PlayerMovement._currentMaxSpeed = _pathMaxSpeed;
+
 		_playerSpeed = Mathf.Max(_PlayerVel._currentRunningSpeed, startSpeed);
 		_playerSpeed = Mathf.Clamp(_playerSpeed, _pathMinSpeed, _pathMaxSpeed); //Get new speed after changed according to primary inputs.
 
+		_PlayerMovement._useFlatTurnRate = 15;
+
 		_isGoingBackwards = isGoingBack;
 		_moveDirection = _isGoingBackwards ? -1 : 1;
-		_canReverse = Path._canPlayerReverse;
-		_canSlow = Path._canPlayerSlow;
-		_willLockFor = Path._lockPlayerFor;
+		_canReverse = PathData._canPlayerReverse_;
+		_canSlow = PathData._canPlayerSlow_;
+		_willLockFor = PathData._lockPlayerFor_;
 
 		GetSampleOfSpline();
 		if (willLockToStart) { PlaceOnSpline(); }
@@ -330,44 +338,14 @@ public class S_Action10_FollowAutoPath : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Path)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Actions = _Tools._ActionManager;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
+	public override void AssignTools () {
+		base.AssignTools();
 		_Pathers = _Tools.PathInteraction;
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
-		_Sounds = _Tools.SoundControl;
-		_CamHandler = _Tools.CamHandler._HedgeCam;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 
 	}
 	#endregion

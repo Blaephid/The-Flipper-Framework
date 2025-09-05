@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1315318846793320020
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 10
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: StylisedSky
+  m_Shader: {fileID: -6465566751694194690, guid: 1affc6b836b61964eb10940ae9aaedda,
+    type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Anisotropy: 0.76
+    - _B: -2
+    - _CloudAnisotropy: 0
+    - _CloudBrightness: 10
+    - _CloudDensity: 2
+    - _CloudDensitySmoothness: 1
+    - _CloudHeight: 0.25
+    - _CloudPhase: 0
+    - _CloudScale: 0.5
+    - _CloudSmoothness: 0
+    - _CloudSoftness: 0.05
+    - _CloudSpeed: 5
+    - _CloudThickness: 0.6
+    - _CloudTwirl: 1
+    - _DayBrightness: 1
+    - _DayScatterStrength: 1
+    - _DensityAtSeaLevel: 1.225
+    - _DensityPower: 10
+    - _EveningBrightness: 0.25
+    - _EveningScatterStrength: 12
+    - _EveningThreshold: 1.5
+    - _IndexOfRefraction: 180
+    - _K: 2
+    - _N: 0
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _Saturation: 2
+    - _ScaledHeight: 8
+    - _ScatterStrength: 20
+    - _StarBrightness: 500
+    - _StarJitterSpeed: 0.1
+    - _StarRotateSpeed: 5
+    - _StarScale: 2
+    - _StarSize: 0.98
+    - _StarSpeed: 0.1
+    - _StarThreshold: 20
+    - _Step: 0.6
+    - _SunIntensity: 100
+    - _SunSize: 0.2
+    - _WaveLength: 0
+    - _Wavelength: 0
+    - _X: 1
+    m_Colors:
+    - _CloudColour: {r: 1, g: 1, b: 1, a: 1}
+    - _Coefficients: {r: 1, g: 1, b: 1, a: 0}
+    - _Colour: {r: 1, g: 1, b: 1, a: 1}
+    - _Colour_Toggle: {r: 100, g: 100, b: 100, a: 0}
+    - _Colour_Weights: {r: 1, g: 1, b: 1, a: 0}
+    - _DayColour: {r: 1, g: 1, b: 1, a: 1}
+    - _DensityRemap: {r: 0.1, g: 2, b: 0, a: 0}
+    - _EveningColour: {r: 1, g: 0.5019609, b: 0.5019608, a: 1}
+    - _ScatteringCoefficients: {r: 5.8, g: 13.5, b: 33.1, a: 0}
+    - _SizeMultiplier: {r: 1, g: 0.1, b: 1, a: 0}
+    - _SkyColour: {r: 1, g: 1, b: 1, a: 1}
+    - _StarColour: {r: 0, g: 0.74242425, b: 1, a: 1}
+    - _SunColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Wavelengths: {r: 680, g: 550, b: 440, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

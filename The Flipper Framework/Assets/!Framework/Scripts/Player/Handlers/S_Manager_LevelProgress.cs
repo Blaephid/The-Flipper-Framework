@@ -2,8 +2,9 @@
 using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.InputSystem;
 
-public class S_Manager_LevelProgress : MonoBehaviour
+public class S_Manager_LevelProgress : S_Player_Base
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -15,38 +16,31 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	#region Unity Specific Properties
 
 	public static event EventHandler OnReset;
+	public static event EventHandler OnDeath;
 
+	private S_Control_EffectsPlayer _Effects;
+	private S_Handler_HealthAndHurt _HealthAndHurt;
+	private S_PlayerScore _Score;
 
-	private S_CharacterTools		_Tools;
-	private S_Handler_HealthAndHurt	_HealthAndHurt;
-
-	private S_ActionManager		_Actions;
-	private S_PlayerPhysics	_PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_Handler_Camera	_CamHandler;
-	private S_PlayerInput	_Input;
-
-	private Transform		_MainSkin;
-
-	public AudioClip		_GoalRingTouchingSound;
+	[Header("On Level End")]
+	public SceneField               _StageCompleteScene;
 
 	private Collider              _GoalRingObject;
 	#endregion
 
 	// Trackers
 	#region trackers
+	[NonSerialized]
+	public S_SpawnCharacter _Spawner;
+
 	//Reset transforms. Set on start and by checkpoints.
-	public Vector3		_resumePosition { get; set; }
-	public Quaternion		_resumeRotation { get; set; }
-	private Vector3		_resumeForwards;
+	public Transform _respawnTransform { get; set; }
+	public Vector3 _respawnPosition { get; set; }
+	public Quaternion _respawnRotation { get; set; }
+	private Vector3         _respawnForwards;
+	public LaunchPlayerData _RespawnLaunch { get; set; }
+	public Animator _RespawnAnimator;
 
-	//
-	public string		_nextLevelNameLeft;
-	public string		_nextLevelNameRight;
-
-	//Tracking ending levels.
-	private bool		_readyForNextStage = false;
-	private float		_readyCount = 0;
 	#endregion
 	#endregion
 
@@ -57,30 +51,20 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Awake () {
-		
+	public override void Awake () {
+		base.Awake();
 
-		_Tools =		GetComponentInParent<S_CharacterTools>();
-		_CamHandler =	_Tools.CamHandler;
-		_Actions =	_Tools._ActionManager;
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
-		_Input =		_Tools.GetComponent<S_PlayerInput>();
-		_HealthAndHurt =	_Tools.GetComponent<S_Handler_HealthAndHurt>();
+		_HealthAndHurt = _Tools.GetComponent<S_Handler_HealthAndHurt>();
+		_Effects = _Tools.EffectsControl;
+		_Score = _Tools.GetComponent<S_PlayerScore>();
 
-		_MainSkin =	_Tools.MainSkin;
+		_MainSkin = _Tools.MainSkin;
 
-		_resumePosition =	_MainSkin.position;
-		_resumeRotation =	_MainSkin.rotation;
-		_resumeForwards =	_MainSkin.forward;
+		SetCheckPoint(_Spawner.transform, _Spawner);
 
-		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
+		//_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
 	}
 
-	// Update is called once per frame
-	void Update () {
-		TransitionToNextStage();
-	}
 
 	//Since certain objects relate to progressing through on ending a level, they are handled here.
 	public void EventTriggerEnter ( Collider Col ) {
@@ -90,10 +74,10 @@ public class S_Manager_LevelProgress : MonoBehaviour
 			case "Checkpoint":
 				if (Col.TryGetComponent(out S_Data_Checkpoint CheckPointScript))
 				{
-					if (!CheckPointScript.IsOn)
+					if (!CheckPointScript._IsOn)
 					{
 						//Effects on object
-						CheckPointScript.IsOn = true;
+						CheckPointScript._IsOn = true;
 						Col.GetComponent<AudioSource>().Play();
 						foreach (Animator anim in CheckPointScript.Animators)
 						{
@@ -108,9 +92,14 @@ public class S_Manager_LevelProgress : MonoBehaviour
 				}
 				break;
 
-			case "GoalRing":
-				_readyForNextStage = true; //Sets this to true to the relevant calculations can happen due to the update script in a below method.
-				_GoalRingObject = Col;
+			case "Special":
+				if (Col.TryGetComponent(out S_Data_GoalRing GoalRingData))
+				{
+					GoalRingData.OnGet(transform);
+					_GoalRingObject = Col;
+
+					StartCoroutine(TransitionToStageComplete(GoalRingData));
+				}
 				break;
 		}
 	}
@@ -123,38 +112,42 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	/// 
 	#region private
 
-	private void TransitionToNextStage () {
-		if (_readyForNextStage) //Set when touching a goal ring.
+	private IEnumerator TransitionToStageComplete ( S_Data_GoalRing GoalRingData, float totalTime = 2.5f, float timeToSlow = 1.5f ) {
+
+		_Score._paused = true;
+
+		//Disables on control of character.
+		_Input._move = Vector3.zero;
+		_Input._completeControlLock = true;
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "NextStage");
+
+		_Input._completeControlLock = true;
+
+		yield return new WaitForSeconds(0.2f);
+
+		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(_CoreValues._Music, 2, 0));
+
+		float timeCount = 0;
+		while (timeCount <= totalTime && totalTime > 0)
 		{
-			//Disables on control of character.
-			_Input._move = Vector3.zero;
-			_PlayerPhys._listOfCanControl.Add(false);
+			yield return new WaitForEndOfFrame();
 
-			_readyCount += Time.deltaTime;
+			timeCount += Time.unscaledDeltaTime;
 
-			//Fade to black.
-			if (_readyCount > 0.1f)
-			{
-				Color alpha = Color.black;
-				_HealthAndHurt._FadeOutImage.color = Color.Lerp(_HealthAndHurt._FadeOutImage.color, alpha, Time.fixedTime * 0.1f);
-			}
-
-			//Activates the stage complete screen.
-			if (_readyCount > 0.6f)
-			{
-				PlayStageCompleteScene(_GoalRingObject);
-			}
+			Time.timeScale = Mathf.Lerp(1, 0.03f, timeCount / timeToSlow);
+			_HealthAndHurt._FadeOutImage.color = Color.Lerp(_HealthAndHurt._FadeOutImage.color, Color.black, timeCount / totalTime);
 		}
-	}
+		Time.timeScale = 1;
 
-	private void PlayStageCompleteScene ( Collider col ) {
+		_Tools.GetComponent<PlayerInput>().SwitchCurrentActionMap("Stage Complete");
 
-		SceneManager.LoadScene("Sc_StageCompleteScreen"); //Switch to scene
+		//Activates the stage complete screen.
+		_CoreUIElements._Root.SetActive(false);
+		_MainSkin.gameObject.SetActive(false);
+		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
+		_PlayerPhys._arePhysicsEnabled = false;
 
-		//Play appropriate music.
-		col.GetComponent<AudioSource>().clip = _GoalRingTouchingSound;
-		col.GetComponent<AudioSource>().loop = false;
-		col.GetComponent<AudioSource>().Play();
+		GoalRingData.OnStageEnd(_Score);
 	}
 
 	#endregion
@@ -166,11 +159,14 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	#region public 
 
 	//Called as soon as the fade to black is completed, and calls an event that should reset the level to how it was at the start (the player is handled in other methods). Remember that these events will be set locally in their own scripts.
-	public void RespawnObjects () {
+	public void CallRespawnEvents () {
 		if (OnReset != null)
 		{
-			Debug.LogWarning("Has begun respawning");
 			OnReset.Invoke(this, EventArgs.Empty);
+		}
+		if (OnDeath != null)
+		{
+			OnDeath.Invoke(this, EventArgs.Empty);
 		}
 
 	}
@@ -179,36 +175,67 @@ public class S_Manager_LevelProgress : MonoBehaviour
 	public void ResetToCheckPoint () {
 
 		//Temporarily prevents movement of any kind.
-		_Input.LockInputForAWhile(20, true, Vector3.zero);
-		StartCoroutine(_Actions.LockAirMovesForFrames(20));
+		_Input.LockInputForAWhile(9, true, Vector3.zero);
+		_Actions.LockAirMovesForFrames(9);
 
 		//Ends hurt state.
 		_Actions._ActionDefault.StartAction();
 
 		//Ensure efffects are disabled.
-		_Tools.HomingTrailScript.emitTime = 0;
-		_Tools.HomingTrailScript.emit = false;
+		_Effects.EnableLargeTrail(0);
 
 		//In case was killed by something that bypassed shield.
 		_HealthAndHurt.SetShield(false);
 
 		//Transform
-		_PlayerPhys.SetPlayerPosition(_resumePosition);
-		_MainSkin.forward = _resumeForwards;
+		_PlayerPhys.SetPlayerPosition(_respawnPosition);
+		_PlayerPhys.SetPlayerRotation(Quaternion.identity.normalized, true);
+		_MainSkin.forward = _respawnForwards;
 
 		//Ensures rotation is correct and can lead into instant movement.
-		_PlayerVel.SetBothVelocities(_MainSkin.forward * 2, new Vector2(1, 0));
+		_PlayerVel.SetBothVelocities(_MainSkin.forward * 0.05f, new Vector2(1, 0));
 
 		//Camera
-		_CamHandler._HedgeCam._isReversed = false;
 		_CamHandler._HedgeCam._lookTimer = 0;
-		_CamHandler._HedgeCam.SetBehind(20); //Sets camera back to behind player.
+		_CamHandler._HedgeCam.SetBehind(0); //Sets camera back to behind player.
+	}
+
+	public void TriggerAnimatorOnRespawn () {
+		if (!_RespawnAnimator) { return; }
+
+		_RespawnAnimator.enabled = true;
+		_RespawnAnimator.SetTrigger("Start");
+	}
+
+	public void LaunchOnRespawn () {
+		LaunchFromCheckpoint(true, _RespawnLaunch, _respawnTransform);
+	}
+
+	public void LaunchFromCheckpoint ( bool launch, LaunchPlayerData launchData, Transform transform ) {
+
+		if (!launch || !_Actions._ObjectForInteractions.TryGetComponent(out S_Interaction_Objects Objects)) { return; }
+
+		//Applying launch
+		if (launchData._force_ <= 0 && launchData._directionToUse_.sqrMagnitude <= 1) { return; }
+
+		_RespawnLaunch = launchData;
+		_respawnTransform = transform;
+
+		StartCoroutine
+			(Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, Vector3.zero, transform, Objects.transform, launchData));
+
 	}
 
 	//Checkpoints simply retain transform data, as the level will always reset to its base.
-	public void SetCheckPoint ( Transform position ) {
-		_resumePosition = position.position;
-		_resumeForwards = position.forward;
+	public void SetCheckPoint ( Transform checkPointTransform, S_SpawnCharacter SpawnerAtStartOfLevel = null, Animator RespawnAnimator = null ) {
+		_Spawner = SpawnerAtStartOfLevel;
+		_respawnTransform = checkPointTransform;
+		_respawnPosition = checkPointTransform.position;
+		_respawnForwards = checkPointTransform.forward;
+		_RespawnLaunch = _Spawner && _Spawner._launch ? _Spawner._launchOnSpawnData_ : new LaunchPlayerData();
+		_RespawnAnimator = _Spawner ? _Spawner._AnimatorOnSpawn : RespawnAnimator;
+
+		_CoreValues.SaveValuesOnCheckpoint();
 	}
 	#endregion
 

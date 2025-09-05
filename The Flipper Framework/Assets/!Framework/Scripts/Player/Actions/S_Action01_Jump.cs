@@ -1,28 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using JetBrains.Annotations;
 
-public class S_Action01_Jump : MonoBehaviour, IMainAction
+public class S_Action01_Jump : S_Action_Base, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
 	#region properties
-
-	//Unity
-	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Handler_Camera      _CamHandler;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Animator              _CharacterAnimator;
-	private GameObject            _JumpBall;
-	#endregion
-
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
@@ -48,7 +34,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	// Trackers
 	#region trackers
 
-	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
 	public float        _skinRotationSpeed = 8;
 
@@ -92,7 +77,8 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		}
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		HandleInputs();
 
 		//Tracking length of jump
@@ -105,29 +91,31 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	}
 
 	//Called when checking if this action is to be performed, including inputs.
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		if (_Input._JumpPressed)
 		{
 			switch (_Actions._whatCurrentAction)
 			{
 
-				case S_Enums.PrimaryPlayerStates.Jump:
+				case S_S_ActionHandling.PrimaryPlayerStates.Jump:
 					if (!_isJumping && _Actions._jumpCount < _maxJumps_ && _Actions._areAirActionsAvailable)
 					{
 						AssignStartValues(Vector3.up, false);
 						StartAction();
+						return true;
 					}
-					return true;
-				case S_Enums.PrimaryPlayerStates.WallRunning:
+					return false;
+				case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
 					AssignStartValues(_Actions._jumpAngle, true, _wallRunningJumpModifiers_.x, _wallRunningJumpModifiers_.y);
 					StartAction();
 					return true;
-				case S_Enums.PrimaryPlayerStates.WallClimbing:
+				case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
 					AssignStartValues(_Actions._jumpAngle, true, _wallClimbingJumpModifiers_.x, _wallClimbingJumpModifiers_.y);
 					StartCoroutine(_CamHandler._HedgeCam.KeepGoingBehindCharacterForFrames(10, 5, -20, true));
 					StartAction(); 
 					return true;
-				case S_Enums.PrimaryPlayerStates.Rail:
+				case S_S_ActionHandling.PrimaryPlayerStates.Rail:
 					//GetComponent<S_Action05_Rail>()._isGrinding = false;
 					AssignStartValues(transform.up, true);
 					StartAction();
@@ -157,12 +145,10 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (!_Actions._canChangeActions && !overwrite) { return; }
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
-
-		ReadyAction();
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Jump); //Called earlier than other actions to ensure other fixed updates that would interupt jump aiming end before we set values.
 
 		//Setting private
 		_isJumping = true;
@@ -179,8 +165,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 
 		_PlayerPhys._canStickToGround = false; //Prevents the  landing following the ground direction, converting fall speed to running speed.
 
-		//Prevent doing Air Action immediately.
-		_Actions.LockAirMovesForFrames(6);
 
 		//Effects
 		_CharacterAnimator.SetInteger("Action", 1);
@@ -192,9 +176,13 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		//Snap off of ground to make sure player jumps
 		_PlayerPhys.SetPlayerPosition(_PlayerVel.transform.position + (_upwardsDirection * 0.3f));
 
+		//Prevent doing Air Action immediately.
+		_Actions.LockAirMovesForFrames(6, true);
+
 		//If performing a grounded jump. JumpCount may be changed externally to allow for this.
 		if (_isJumpingFromGround)
 		{
+
 			//Sets jump stats for this specific jump.
 			_thisJumpSpeed = _startJumpSpeed_ * _jumpSpeedModifier;
 			_thisMinDuration = _minJumpTime_ * _jumpDurationModifier;
@@ -237,7 +225,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	public void StopAction (bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		_Actions._ActionDefault._animationAction = 0; //Ensures player will land properly in the correct animation when entering default action.
 		_PlayerPhys._canChangeGrounded = true;
@@ -270,14 +258,6 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_jumpDurationModifier = durationModifier;
 	}
 
-	public void HandleInputs () {
-		//Moving camera behind
-		if (!_Actions._isPaused) _CamHandler.AttemptCameraReset();
-
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
-	}
-
 	//Additional effects if a jump is being made from in the air.
 	private void JumpInAir () {
 
@@ -286,9 +266,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 		_PlayerVel.SetCoreVelocity(newVel, "Overwrite");
 
 		//Add particle effect during jump
-		GameObject JumpDashParticleClone = Instantiate(_Tools.JumpDashParticle, _Tools.FeetPoint.position, Quaternion.identity) as GameObject;
-		JumpDashParticleClone.transform.position = _Tools.FeetPoint.position;
-		JumpDashParticleClone.transform.rotation = Quaternion.LookRotation(Vector3.up);
+		_Effects.SpawnAirDashParticle(_Tools.FeetPoint);
 
 	}
 
@@ -349,6 +327,7 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 			//Prevents holding jump to keep doing so forever.
 			_Input._JumpPressed = false;
 
+			_Actions._ActionDefault.SwitchSkin(true);
 			_Actions._ActionDefault.StartAction();
 		}
 	}
@@ -368,42 +347,13 @@ public class S_Action01_Jump : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Jump)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_Sounds = _Tools.SoundControl;
-		_JumpBall = _Tools.JumpBall;
-
+	public override void AssignTools () {
+		base.AssignTools();
 	}
 
 	//Responsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_maxJumpTime_ = _Tools.Stats.JumpStats.jumpDuration.y;
 		_minJumpTime_ = _Tools.Stats.JumpStats.jumpDuration.x;
 		_startJumpSpeed_ = _Tools.Stats.JumpStats.jumpSpeed;

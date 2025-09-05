@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 6b86581f0c6ae27499802f25f3c3411d
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 60072b568d64c40a485e0fc55012dc9f, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 209857
+  packageName: FastSky - Procedural Sky and Clouds URP
+  packageVersion: 2.0
+  assetPath: Assets/FastSky/Shaders/Light/FastLight.shadersubgraph
+  uploadId: 576994

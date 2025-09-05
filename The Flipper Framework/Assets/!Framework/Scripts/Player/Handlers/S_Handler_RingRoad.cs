@@ -20,6 +20,8 @@ public class S_Handler_RingRoad : MonoBehaviour
 	private S_PlayerInput         _Input;
 	private S_ActionManager       _Actions;
 
+	private S_Action07_RingRoad  _RingRoadAction;
+
 	[HideInInspector]
 	public Transform              _TargetRing;
 	[HideInInspector]
@@ -39,8 +41,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 
 	// Trackers
 	#region trackers
-	[HideInInspector]
-	public bool         _isScanning;
+
 	#endregion
 	#endregion
 
@@ -83,11 +84,11 @@ public class S_Handler_RingRoad : MonoBehaviour
 					break;
 			}
 			//Determined in the road action script, based on if attempt action is called, which means this only updates if the current action can enter a ring road
-			if (_isScanning && _Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.RingRoad)//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
+			//if (_Actions.IsActionConnectedToCurrentAction(S_S_ActionHandling.PlayerControlledStates.None,S_S_ActionHandling.PlayerSituationalStates.RingRoad))//When active, ring road scans for rings on its own, meaning this won't need to scan seperately.
+			if(_RingRoadAction._inAStateConnectedToThis)
 			{
-				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, transform.position);
+				ScanForRings(new Vector2 (1, 0.1f), _MainSkin.forward, _PlayerPhys._CharacterCenterPosition);
 			}
-			_isScanning = false; //Set to false every frame but will be counteracted in Action RingRoad's AttemptAction()
 		}
 
 	}
@@ -154,7 +155,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 	void PlaceTargetInOrder ( Transform thisTarget, Vector3 scannerCentre ) {
 
 		//Get the distance and direction of this target from the scanning centre
-		float thisDistanceFromScannerSquared = S_CoreMethods.GetDistanceOfVectors(scannerCentre, thisTarget.position);
+		float thisDistanceFromScannerSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(scannerCentre, thisTarget.position);
 
 		//Go through the new ordered list so far.
 		for (int i = 0 ; i < _ListOfCloseTargets.Count ; i++)
@@ -167,7 +168,7 @@ public class S_Handler_RingRoad : MonoBehaviour
 			}
 
 			//If our checking target is closer than the target in this array space, then it goes before it. If not, check next array element.
-			float tempDistanceSquared = S_CoreMethods.GetDistanceOfVectors(scannerCentre, _ListOfCloseTargets[i].position);
+			float tempDistanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(scannerCentre, _ListOfCloseTargets[i].position);
 			if(thisDistanceFromScannerSquared < tempDistanceSquared)
 			{
 				_ListOfCloseTargets.Insert(i, thisTarget);
@@ -202,6 +203,9 @@ public class S_Handler_RingRoad : MonoBehaviour
 		_Actions = _Tools._ActionManager;
 
 		_MainSkin = _Tools.MainSkin;
+
+		_RingRoadAction = GetComponent<S_Action07_RingRoad>();
+		if (!_RingRoadAction) { enabled = false; }
 	}
 
 	//Reponsible for assigning stats from the stats script.

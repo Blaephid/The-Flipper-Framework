@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: fd4453f270eb2734b886efe5223588ce
+timeCreated: 1430156487
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/Blur.shader
+  uploadId: 243278

@@ -1,0 +1,27 @@
+#  ==========================================================================
+#  
+#  Wavefront OBJ format exported by Red-i Productions' "Riptide"
+#     (a free plugin for Cinema 4D PC & Mac, R7.3 or later)
+#  
+#  Red-i Productions
+#  http://skinprops.com
+#  
+#  ==========================================================================
+mtllib Manta_Ray_Ship.mtl
+# r Manta
+v -785.47735596 -0.00070923 -732.69030762
+v -785.47692871 -0.00041106 732.69079590
+v 785.47692871 0.00021574 -732.69085693
+v 785.47741699 0.00061158 732.69030762
+# 4 vertices
+
+vt 0.00100000 0.00310004
+vt 0.00100000 0.99919999
+vt 0.99860001 0.99919999
+vt 0.99860001 0.00310004
+# 4 texture coordinates
+
+usemtl manta
+f 1/4 2/3 4/2 3/1
+# 1 facets
+

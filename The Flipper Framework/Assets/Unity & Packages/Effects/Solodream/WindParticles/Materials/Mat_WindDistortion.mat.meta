@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f803c174ec9c94b469aa57c6fc6d4fe8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 278758
+  packageName: Wind Particles for Fan
+  packageVersion: 1.0.0
+  assetPath: Assets/Solodream/WindParticles/Materials/Mat_WindDistortion.mat
+  uploadId: 648146

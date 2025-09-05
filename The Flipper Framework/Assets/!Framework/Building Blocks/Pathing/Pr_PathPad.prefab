@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 114000014083343730}
   - component: {fileID: 6464676511089374715}
   - component: {fileID: 205000011634412510}
+  - component: {fileID: 7599018323143066650}
   m_Layer: 0
   m_Name: Pr_PathPad
   m_TagString: PathTrigger
@@ -72,6 +73,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: d7434cca2433a4941990d0661ddfb4f9, type: 3}
+  m_Resource: {fileID: 8300000, guid: d7434cca2433a4941990d0661ddfb4f9, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -169,6 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b45bd8aa17e33748bd217af8d984064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _InspectorTheme: {fileID: 0}
   _isOnRail_: 0
   _isDashRing_: 0
   _Path: {fileID: 0}
@@ -198,6 +201,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f92537ab1025b7740af8066810e49070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _InspectorTheme: {fileID: 0}
+  _ObjectsToTriggerOn: []
+  _ObjectsToTriggerOff: []
+  _triggerSelf: 0
+  _isLogicInPlayScript: 0
+  _TriggerForPlayerToRead: {fileID: 0}
+  _whatTriggerShape: 0
+  _drawAtAllTimes: 1
+  _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _willActivateCamera: 0
   _defaultCameraToFaceTrigger: 1
   _CinematicCamComponent: {fileID: 3679072135301013185}
@@ -234,6 +248,20 @@ LODGroup:
     renderers:
     - renderer: {fileID: 0}
   m_Enabled: 1
+--- !u!114 &7599018323143066650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010362990254}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _LinkedComponent: {fileID: 0}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
 --- !u!1 &1642057142461760
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,6 +322,8 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -499,7 +529,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5290740349256836575
 Transform:
   m_ObjectHideFlags: 0

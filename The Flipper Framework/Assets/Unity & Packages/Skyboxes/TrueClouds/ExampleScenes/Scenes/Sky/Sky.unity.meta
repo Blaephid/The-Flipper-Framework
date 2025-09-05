@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 785993d668d27434fa4866fc6cdf1702
+timeCreated: 1431595599
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Scenes/Sky/Sky.unity
+  uploadId: 243278

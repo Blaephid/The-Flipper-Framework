@@ -1,0 +1,56 @@
+
+==-------------------------= Sky Setup =-------------------------==
+
+The sky shader conatins both clouds and the skybox. To use it, open
+the Lighting Panel and assign a material from Assets/FastSky/Materials 
+to the skybox material slot or create your own material
+using the shader GapperGames/FastSky.
+
+==-------------------------= Material Parameters =-------------------------==
+
+=- Sun -=
+
+Sun Size: Self explanatory.
+Sun Intensity: Self explanatory.
+
+=- Sky -=
+
+DayColour: Colour of the sky during the day.
+Saturation: How intense the colours of the sky are - higher values are great for a stylised look.
+Wavelengths: The wavelengths of the Red, Green and Blue channels of light that are scattered through the atmosphere.
+DensityPower: Controls the density falloff - a.k.a the height of the horizon.
+DayScatterStrength: How much light is scattered during the day.
+EveningScatterStrength: How much light is scattered during the evening.
+DayBrightness: How bright the sky is during the day.
+EveningBrightness: How bright the sky is during the evening.
+EveningThreshold: How soon the sky transitions to evening.
+
+=- Stars -=
+
+StarColour: Self Explanatory.
+StarBrightness: Self Explanatory.
+StarSize: Self Explanatory.
+StarScale: The tiling of the Stars texture.
+StarSpeed: How fast the stars move.
+StarThreshold: How early the stars appear.
+
+=- Clouds -=
+
+CloudColour: Self Explanatory.
+CloudBrightness: Self Explanatory.
+CloudAnisotropy: Controls how much light gets scattered through the clouds.
+CloudDensity: Controls how dense the clouds are.
+CloudHeight: How high up the clouds stop.
+CloudThickness: How much sky the clouds cover.
+CloudSoftness: Controls how soft the clouds are.
+CloudSpeed: How fast the clouds move.
+CloudTwirl: How wispy/stretched the clouds are.
+CloudScale: The tiling of the clouds texture.
+
+==-------------------------=-----------=-------------------------==
+
+Please consider leaving a review for my asset as it really helps :)
+For any questions, or to show what you have made with my asset, 
+please email me at wgappster@gmail.com
+
+==-------------------------=-----------=-------------------------==

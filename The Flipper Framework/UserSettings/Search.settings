@@ -16,6 +16,20 @@ scopes = {
 	"last_search.0B486DF2" = ""
 	"OpenInspectorPreview.0B486DF2" = "0"
 	"currentGroup.0B486DF2" = null
+	"picker_window_position_offset.075BCD15" = "485.6;35.2;320;550.4"
+	"picker_visibility_flags.075BCD15" = "264"
+	"picker_item_size.075BCD15" = "96"
+	"picker_inspector.075BCD15" = "0"
+	"picker_current_group.075BCD15" = "all"
+	"last_search.5A656512" = "ref=\"Assets/!Framework/Scripts/Objects/Rails/SplineController.cs\""
+	"OpenInspectorPreview.5A656512" = "0"
+	"currentGroup.5A656512" = ""
+	"last_search.98CF4AA6" = "rigid"
+	"OpenInspectorPreview.98CF4AA6" = "0"
+	"currentGroup.98CF4AA6" = "scene"
+	"last_search.8DF93126" = ""
+	"OpenInspectorPreview.8DF93126" = "0"
+	"currentGroup.8DF93126" = null
 }
 providers = {
 	adb = {

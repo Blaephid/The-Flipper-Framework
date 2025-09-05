@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace templates
 {
-	public class ActionsTemplate : MonoBehaviour, IMainAction
+	public class ActionsTemplate : S_Action_Base, IMainAction
 	{
 		/// <summary>
 		/// Properties ----------------------------------------------------------------------------------
@@ -13,23 +13,12 @@ namespace templates
 		#region properties
 
 		//Unity
-		#region Unity Specific Properties
-		private S_CharacterTools      _Tools;
-		private S_PlayerPhysics       _PlayerPhys;
-		private S_PlayerInput         _Input;
-		private S_ActionManager       _Actions;
-		#endregion
-
-
 
 		//Stats - See Stats scriptable objects for tooltips explaining their purpose.
-		#region Stats
-		#endregion
 
 		// Trackers
-		#region trackers
-		private int         _positionInActionList;
-		#endregion
+	
+
 		#endregion
 
 		/// <summary>
@@ -48,22 +37,24 @@ namespace templates
 
 		}
 
-		private void FixedUpdate () {
+		new private void FixedUpdate () {
+			base.FixedUpdate();
 
 		}
 
-		public bool AttemptAction () {
+		new public  bool AttemptAction () {
+			if (!base.AttemptAction()) return false;
 			return false;
 		}
 
-		public void StartAction (bool overwrite = false) {
+		new public void StartAction (bool overwrite = false) {
 			if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 		}
 
 		public void StopAction ( bool isFirstTime = false ) {
 			if (!enabled) { return; } //If already disabled, return as nothing needs to change.
-			enabled = false; 
-			if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+			enabled = false;
+			if (isFirstTime) { SetUpAction(); return; }
 		}
 
 		#endregion
@@ -73,11 +64,6 @@ namespace templates
 		/// </summary>
 		/// 
 		#region private
-
-		public void HandleInputs () {
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);
-		}
 
 		#endregion
 
@@ -94,38 +80,15 @@ namespace templates
 		/// </summary>
 		#region Assigning
 
-		//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
-		public void ReadyAction () {
-			if (_PlayerPhys == null)
-			{
-
-				//Assign all external values needed for gameplay.
-				_Tools = GetComponentInParent<S_CharacterTools>();
-				AssignTools();
-				AssignStats();
-
-				//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-				for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-				{
-					if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Homing)
-					{
-						_positionInActionList = i;
-						break;
-					}
-				}
-			}
-		}
 
 		//Responsible for assigning objects and components from the tools script.
-		private void AssignTools () {
-			_Input = _Tools.GetComponent<S_PlayerInput>();
-			_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-			_Actions = _Tools._ActionManager;
+		public override void AssignTools () {
+			base.AssignTools();
 		}
 
 		//Reponsible for assigning stats from the stats script.
-		private void AssignStats () {
-
+		public override void AssignStats () {
+			
 		}
 		#endregion
 	}

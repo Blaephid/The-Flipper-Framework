@@ -5,10 +5,66 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-//[CreateAssetMenu(fileName = "Character X Stats")]
+[CreateAssetMenu(fileName = "SO_Character X Stats")]
 public class S_O_CharacterStats : ScriptableObject
 {
 	[HideInInspector] public string Title = "Title";
+
+	#region Core Values
+	//-------------------------------------------------------------------------------------------------
+
+	public StrucCoreValues StartCoreValuesStats = SetStrucCoreValues();
+	public StrucCoreValues CoreValuesStats = SetStrucCoreValues();
+
+	static StrucCoreValues SetStrucCoreValues () {
+		return new StrucCoreValues
+		{
+			dieAtDamageFromRingCount = 0,
+			minRingLoss = new Vector2(0.8f, 40),
+			startMaxRingCount = 100,
+			ringsOnPlayerStart = new Vector2(0, 1f),
+
+			gainEnergyFromRings = true,
+			gainEnergyOverTime = false,
+			energyGainPerRing = 4,
+			energyGainPerSecond = 10,
+			startMaxEnergy = 100,
+			energyOnPlayerStart = new Vector2(1, 0.5f),
+		};
+	}
+
+	[System.Serializable]
+	public struct StrucCoreValues
+	{
+		[Header("Ring Health")]
+		[Tooltip("Surface: If damaged with fewer rings than this, the player dies.")]
+		public int           dieAtDamageFromRingCount;
+		[Tooltip("Surface: When damaged, lose this many rings. X is a decimal value that represents the percentage of current rings, and y is a flat value to ensure some rings are still lost at low health.")]
+		public Vector2            minRingLoss;
+		[Tooltip("Surface: Will never lose more rings than this from one attack. If 0, there is no limit.")]
+		public int              maxRingLoss;
+		[Tooltip("Surface: When damaged, will never lose more rings than this.")]
+		public int              startMaxRingCount;
+		[Tooltip("Surface: X = How many rings at the start of a level. Y = How many rings when respawning at a checkpoint.")]
+		public Vector2              ringsOnPlayerStart;
+
+		[Header("Ring Energy")]
+		[Tooltip("If true, boost energy will increase when a ring is picked up.")]
+		public bool        gainEnergyFromRings;
+		[Tooltip("If true, boost energy will increase every fixed frame (55 a second).")]
+		public bool        gainEnergyOverTime;
+		[Tooltip("How much energy is gained whenever a ring is picked up.")]
+		public float       energyGainPerRing;
+		[Tooltip("How much energy is gained each fixed frame.")]
+		public float       energyGainPerSecond;
+		[Tooltip("Cannot gain more boost energy than this. This will be increased by levelling up, which is detailed in S_O_CharacterLevelUpStats scriptable objects.")]
+		public float    startMaxEnergy;
+		[Tooltip("Surface: X = How much percentage of energy at start of level. Y = How much when respawning at a checkpoint.")]
+		public Vector2              energyOnPlayerStart;
+
+	}
+	#endregion
+
 
 	#region acceleration
 	//-------------------------------------------------------------------------------------------------
@@ -301,7 +357,7 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("The magnitude of the force pushing the player into the ground while grounded. X is on flat ground, y is when ground is sloping down. This is not called with upwards slopes.")]
 		public Vector2       forceTowardsGround;
-		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (loops), and Y is positive Slopes (imagine running on the outside of a loop). ")]
+		[Tooltip("Core:  The lerping from current velocity to velocity aligned to the current slope. X is negative slopes (starting to face up), and Y is positive Slopes (starting to face more down). ")]
 		public Vector2      stickingLerps;
 		[Range(0, 1)]
 		[Tooltip("Core: The maximum difference betwen current ground angle and movement direction that allows the player to stick. 0 means the player can't stick to the ground, 1 is everything bellow 180° difference, and 0.5 is 90° angles")]
@@ -404,6 +460,13 @@ public class S_O_CharacterStats : ScriptableObject
 			rollingUphillBoost = 1.2f,
 			rollingStartSpeed = 5f,
 			rollingTurningModifier = 0.6f,
+			modifierFromEnergy = 1.5f,
+			EnergyByAngle = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(-1, 0f),
+				new Keyframe(0f, 15f),
+				new Keyframe(1f, 0f),
+			}),
 		};
 	}
 
@@ -426,6 +489,11 @@ public class S_O_CharacterStats : ScriptableObject
 		public float    rollingLandingBoost;
 		[Tooltip("Core: Can only exit a role after benn rolling for this many seconds.")]
 		public float    minRollingTime;
+		[Header("Interaction With Energy")]
+		[Tooltip("Core: How much energy is used per second when rolling on this angle. Set to 0 to disable this feature.")]
+		public AnimationCurve EnergyByAngle;
+		[Tooltip("Surface: Increases downhillBoost by this ammoung when using energy.")]
+		public float modifierFromEnergy;
 	}
 
 	#endregion
@@ -626,6 +694,7 @@ public class S_O_CharacterStats : ScriptableObject
 			dashSpeed = 80f,
 			maxDuration = 0.3f,
 			minDuration = 0.15f,
+			timeBeforeCanChangeAction = 0.1f,
 			turnSpeed = 8,
 			dashIncrease = 15,
 			forceUpwards = 0,
@@ -642,7 +711,7 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucAirDash
 	{
 		[Tooltip("Core: The type of dash that will be performed. Controlled means it will be treated as its own temporary state with its own turn values, and gravity calculations. Push means it will immeidately add force in the direction.")]
-		public S_Enums.JumpDashTypes   behaviour;
+		public S_GeneralEnums.JumpDashTypes   behaviour;
 		[Header("Pre Dash")]
 		[Tooltip("Surface: The minimum force to move in when in this state.")]
 		public float        dashSpeed;
@@ -657,6 +726,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public int          lockMoveInputOnStart;
 
 		[Header("In Dash")]
+		[Tooltip("How long in seconds before inputs can change Action")]
+		public float            timeBeforeCanChangeAction;
 		[Tooltip("Surface: How quickly will change direction after the first turn when in a controlled dash.")]
 		public float        turnSpeed;
 		[Tooltip("Surface: How long the controlled dash can last in seconds before ending.")]
@@ -759,6 +830,8 @@ public class S_O_CharacterStats : ScriptableObject
 			deceleration = 55f,
 			acceleration = 70,
 			homingCountLimit = 0,
+			speedMultiplier = 1.3f,
+			energyGained = 1,
 
 		};
 	}
@@ -800,6 +873,11 @@ public class S_O_CharacterStats : ScriptableObject
 		public float         deceleration;
 		[Tooltip("Surface: How must speed to gain per frame when inputing with homing direction. This cannot accelerate past the speed the attack started at.")]
 		public float         acceleration;
+		[Header("Perfect Homing Attack")]
+		[Tooltip("Surface: How must faster a perfect homing attack is than a normal one")]
+		public float         speedMultiplier;
+		[Tooltip("Surface: How much energy is gained (see energy)")]
+		public float         energyGained;
 	}
 	#endregion
 
@@ -814,17 +892,20 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucSpinCharge SetStrucSpinCharge () {
 		return new StrucSpinCharge
 		{
-			chargingSpeed = 1.05f,
-			tappingBonus = 2.1f,
+			energyUse = 15,
+			forceTowardsGround = new Vector2 (2, 0),
+			stickingLerps = new Vector2(1, 0.5f),
+			chargingSpeed = new Vector2 (0.9f, 1.2f),
+			tappingBonus = new Vector2 (2.5f, 4.5f),
 			delayBeforeLaunch = 12,
 			minimunCharge = 20f,
-			maximunCharge = 120f,
+			maximunCharge = new Vector2 (150, 190),
 			forceAgainstMovement = 1.2f,
 			shouldSetRolling = true,
 			maximumSpeedPerformedAt = 200f,
 			maximumSlopePerformedAt = -0.5f,
 			releaseShakeAmmount = new Vector4 (7, 0.1f, 15, 10),
-			cameraPauseEffect = new Vector2(3,40),
+			cameraFallBack = new Vector3(15,25, 0.5f),
 			SpeedLossByTime = new AnimationCurve(new Keyframe[]
 			{
 				new Keyframe(0f, 0.1f),
@@ -867,18 +948,24 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucSpinCharge
 	{
 		[Tooltip("Core: The means in which the spin charge will be aimed. By input means it will follow player input and velocity. Camera means it will always point in camera direction (unless camera is locked by something)")]
-		public S_Enums.SpinChargeAimingTypes whatAimMethod;
+		public S_GeneralEnums.SpinChargeAimingTypes whatAimMethod;
+		[Tooltip("Core: See Sticking To Ground for more info. This overwrites the value used there, allowing players to be more or less stuck to the ground in this state.")]
+		public Vector2 forceTowardsGround;
+		[Tooltip("Core: See Sticking To Ground for more info. This overwrites how much the player follows the curve of the ground. X is up, Y is down.")]
+		public Vector2 stickingLerps;
 		[Header ("Charge")]
-		[Tooltip("Surface: How much charge to gain every frame this is being performed.")]
-		public float                  chargingSpeed;
-		[Tooltip("Surface: How much charge to gain when pressing down on the charge button (after temporarily releasing)")]
-		public float                  tappingBonus;
+		[Tooltip("Surface: How much energy is used per second when charging to increase charge time.")]
+		public float energyUse;
+		[Tooltip("Surface: How much charge to gain every frame. X is normal charge, Y is charge when consuming energy.")]
+		public Vector2                 chargingSpeed;
+		[Tooltip("Surface: How much charge to gain when pressing down on the charge button (after temporarily releasing). X is normal, Y is with energy.")]
+		public Vector2                 tappingBonus;
 		[Tooltip("Core: How many frames to wait after the button is released before launching. (Can allow time for tapping).")]
 		public int                    delayBeforeLaunch;
 		[Tooltip("Surface: The minimum value the charge must hit to actually launch forwards.")]
 		public float                  minimunCharge;
-		[Tooltip("Surface: The maximum charge to be used when launching.")]
-		public float                  maximunCharge;
+		[Tooltip("Surface: The maximum charge to be used when launching. X is normal, Y is with energy.")]
+		public Vector2                  maximunCharge;
 		[Header("Release")]
 		[Tooltip("How much to shake the camera when launching. X is applied and multipled by charge, Y is minimum including this multiplication, Z is maximum. W is how long it lasts.")]
 		public Vector4                  releaseShakeAmmount;
@@ -889,7 +976,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: How much to rotate launch direction from velocity to facing direction, by the angle between.")]
 		public AnimationCurve         LerpRotationByAngle;
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
-		public Vector2 cameraPauseEffect;
+		public Vector3 cameraFallBack;
 		[Header("Control")]
 		[Tooltip("Core: If true, movement calculations will be taken as if the player is in the rolling state. Will also enter the rolling state when launched..")]
 		public bool                   shouldSetRolling;
@@ -928,7 +1015,7 @@ public class S_O_CharacterStats : ScriptableObject
 			bounceCoolDown = 0.4f,
 			coolDownModiferBySpeed = 0.003f,
 
-			cameraPauseEffect = new Vector2(2, 30)
+			cameraFallBack = new Vector3(13, 17, 0.8f)
 		};
 	}
 
@@ -960,7 +1047,7 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: Delay between bounces will be increase by this per unit of speed")]
 		public float                  coolDownModiferBySpeed;
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
-		public Vector2 cameraPauseEffect;
+		public Vector3 cameraFallBack;
 	}
 	#endregion
 
@@ -1014,7 +1101,7 @@ public class S_O_CharacterStats : ScriptableObject
 			minimunCharge = 40f,
 			maximunCharge = 150f,
 			minimumHeightToPerform = 3,
-			cameraPauseEffect = new Vector2 (3,40),
+			cameraFallBack = new Vector3 (15,25, 0.4f),
 		};
 	}
 
@@ -1023,14 +1110,14 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Tooltip("Surface: How much charge to gain per second")]
 		public float      chargingSpeed;
-		[Tooltip("Surface: The minimum speed to launch at. Does not start charging from here, but will always launch with this or more force.")]
+		[Tooltip("Surface: The minimum speed to launch at. Does not start charging from here, but will always launch with this or more force. Action inputs are not registered until this is reached.")]
 		public float      minimunCharge;
 		[Tooltip("Surface: The maximum speed to launch at, charge cannot exceed this.")]
 		public float      maximunCharge;
 		[Tooltip("Core: Can only start the action if higher than this above the ground.")]
 		public float      minimumHeightToPerform;
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
-		public Vector2 cameraPauseEffect;
+		public Vector3 cameraFallBack;
 	}
 	#endregion
 
@@ -1057,14 +1144,10 @@ public class S_O_CharacterStats : ScriptableObject
 			hasAirBoost = true,
 			boostFramesInAir = 40,
 			AngleOfAligningToEndBoost = 80,
-			gainEnergyFromRings = true,
-			gainEnergyOverTime = false,
-			energyGainPerRing = 4,
-			energyGainPerSecond = 10,
-			maxBoostEnergy = 100,
 			energyDrainedOnStart = 5,
 			energyDrainedPerSecond = 5,
-			cameraPauseEffect = new Vector2(2,40),
+			cameraFallBack = new Vector3(20,30, 0.8f),
+			minTimeBoosting = 0.7f,
 		};
 	}
 
@@ -1097,6 +1180,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public int         framesToLoseSpeed;
 		[Tooltip("How many seconds until another boost can start after one ended.")]
 		public float        cooldown;
+		[Tooltip("How many seconds until a boost can end (including when out of energy). If no air boost, this will not apply in the air.")]
+		public float        minTimeBoosting;
 		[Header("Air Boost")]
 		[Tooltip("If true, boost will act as normal in the air. If false, boost will end in the air.")]
 		public bool        hasAirBoost;
@@ -1105,23 +1190,13 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("If character rotates more than this many degrees when in the air (from automatic alignign to face up), then end boost.")]
 		public float       AngleOfAligningToEndBoost;
 		[Header("Energy")]
-		[Tooltip("If true, boost energy will increase when a ring is picked up.")]
-		public bool        gainEnergyFromRings;
-		[Tooltip("If true, boost energy will increase every fixed frame (55 a second).")]
-		public bool        gainEnergyOverTime;
-		[Tooltip("How much energy is gained whenever a ring is picked up.")]
-		public float       energyGainPerRing;
-		[Tooltip("How much energy is gained each fixed frame.")]
-		public float       energyGainPerSecond;
-		[Tooltip("Cannot gain more boost energy than this.")]
-		public float	maxBoostEnergy;
 		[Tooltip("How much boost energy is lost every second while boosting.")]
 		public float       energyDrainedPerSecond;
 		[Tooltip("How much energy is consumed when a boost starts.")]
 		public float       energyDrainedOnStart;
 		[Header("Effects")]
 		[Tooltip("Core: The fallback on the camera when this action is performed. The x is how many frames the camera will stay in place, the y is how many frames it will take to catch up again.")]
-		public Vector2 cameraPauseEffect;
+		public Vector3 cameraFallBack;
 	}
 	#endregion
 
@@ -1171,13 +1246,13 @@ public class S_O_CharacterStats : ScriptableObject
 		{
 			RadiusBySpeed = new AnimationCurve(new Keyframe[]
 			{
-				new Keyframe(0, 1.3f),
-				new Keyframe(0.15f, 1.3f),
-				new Keyframe(0.25f, 4f),
-				new Keyframe(0.7f, 7f),
-				new Keyframe(1f, 9f),
+				new Keyframe(0, 0),
+				new Keyframe(20, 0),
+				new Keyframe(60, 2),
+				new Keyframe(120, 5),
+				new Keyframe(200, 7f),
 			}),
-			RingMask = new LayerMask(),
+			PickupMask = new LayerMask(),
 			basePullSpeed = 1.2f
 		};
 	}
@@ -1186,10 +1261,10 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucItemPull
 	{
-		[Tooltip("Core: How close rings need to be to get pulled towards the player, by current running speed.")]
+		[Tooltip("Core: How close rings need to be to get pulled towards the player. NOT BASED ON PROPORTIONAL SPEED")]
 		public AnimationCurve RadiusBySpeed;
 		[Tooltip("Core: To be pulled in, objects must be on this layer")]
-		public LayerMask RingMask;
+		public LayerMask PickupMask;
 		[Tooltip("Core: How quickly to pull rings in, this will scale with player's running speed.")]
 		public float basePullSpeed;
 	}
@@ -1245,9 +1320,8 @@ public class S_O_CharacterStats : ScriptableObject
 		return new StrucHurt
 		{
 			invincibilityTime = 90,
-			maxRingLoss = 20,
 			ringReleaseSpeed = 550f,
-			respawnAfter = new Vector3(90, 120, 170),
+			respawnAfter = new Vector4(30, 80, 100, 108),
 			ringArcSpeed = 250f,
 			flickerTimes = new Vector2(5, 10),
 			RingsLostInSpawnByAmount = new AnimationCurve(new Keyframe[]
@@ -1271,10 +1345,8 @@ public class S_O_CharacterStats : ScriptableObject
 		[Tooltip("Core: The character will flicker when invincible. X = how long it will be visible, Y = how long it will be hidden.")]
 		public Vector2            flickerTimes;
 		[Tooltip("Core: How long in frames the three stages of respawning will take in total. X = when to start fading out. Y = when to end fading out (this is when the level will be reset). Z = When to respawn and fade back in.")]
-		public Vector3                respawnAfter;
+		public Vector4                respawnAfter;
 		[Header("Ring Loss")]
-		[Tooltip("Surface: When damage, will never lose more rings than this.")]
-		public int              maxRingLoss;
 		[Tooltip("Core: The force to apply on rings to move them away from the player when lost.")]
 		public float            ringReleaseSpeed;
 		[Tooltip("Core: Rings won't all be shot out in the same direction. Each frame the next ring will be shot out at this much of an angle from the last.")]
@@ -1289,7 +1361,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucRebound SetStrucRebound () {
 		return new StrucRebound
 		{
-			whatResponse = S_Enums.HurtResponses.Normal,
+			whatResponse = S_GeneralEnums.HurtResponses.Normal,
 			knockbackUpwardsForce = 30f,
 			recoilFrom = new LayerMask(),
 			knockbackForce = 25f,
@@ -1305,7 +1377,7 @@ public class S_O_CharacterStats : ScriptableObject
 	{
 		[Header("Interactions")]
 		[Tooltip("Core: How the player will respond when damaged. Normal = carrying on without losing much speed and 'phasing' through attack. Reset speed = being knocked back with a new set force, losing all speed. Frontier = being knocked back but not taking damage until hitting the ground in the damaged state.")]
-		public S_Enums.HurtResponses whatResponse;
+		public S_GeneralEnums.HurtResponses whatResponse;
 		[Tooltip("Core: Even if set to normal, solid objects of this layer will still knock the player back when damaged. E.G. if running into a spike wall, don't want to keep player momentum as they'd get stuck on it, so still bounce backwards there.")]
 		public LayerMask        recoilFrom;
 		[Tooltip("Surface: If being knocked back, this is how much to be sent upwards. Less in the air.")]
@@ -1357,7 +1429,14 @@ public class S_O_CharacterStats : ScriptableObject
 				new Keyframe(1f, 1.2f),
 			}),
 			railBoostDecaySpeed = 0.45f,
-			railBoostDecayTime = 0.45f
+			railBoostDecayTime = 0.45f,
+			HopSpeedByTime = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0),
+				new Keyframe(0.1f, 0),
+				new Keyframe(0.25f, 1),
+				new Keyframe(1f, 0.9f),
+			}),
 		};
 	}
 
@@ -1404,6 +1483,8 @@ public class S_O_CharacterStats : ScriptableObject
 		public float            hopSpeed;
 		[Tooltip("Core: The total distance a hop will travel to hit a rail.")]
 		public float            hopDistance;
+		[Tooltip("Used to prevent raill hopping being completely linear, so it can align to an animation. Maybe it starts slower, before raming up, as Sonic jumps, maybe there's a delay?")]
+		public AnimationCurve HopSpeedByTime;
 
 	}
 
@@ -1493,7 +1574,7 @@ public class S_O_CharacterStats : ScriptableObject
 	}
 
 #if UNITY_EDITOR
-	public S_O_CustomInspectorStyle InspectorTheme;
+	public S_O_CustomInspectorStyle _InspectorTheme;
 #endif
 
 }
@@ -1501,36 +1582,25 @@ public class S_O_CharacterStats : ScriptableObject
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(S_O_CharacterStats))]
-public class S_O_CharacterStatsEditor : Editor
+public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 {
-	S_O_CharacterStats stats;
-	GUIStyle headerStyle;
-	GUIStyle ResetToDefaultButton;
+	S_O_CharacterStats _OwnerScript;
 
-	public override void OnInspectorGUI () {
-		DrawInspector();
-	}
-	private void OnEnable () {
+	public override void OnEnable () {
 		//Setting variables
-		stats = (S_O_CharacterStats)target;
+		_OwnerScript = (S_O_CharacterStats)target;
+		_InspectorTheme = _OwnerScript._InspectorTheme;
 
-		if (stats.InspectorTheme == null) { return; }
-		headerStyle = stats.InspectorTheme._MainHeaders;
-		ResetToDefaultButton = stats.InspectorTheme._ResetButton;
+		base.OnEnable();
 	}
 
-	private void DrawInspector () {
+	public override S_O_CustomInspectorStyle GetInspectorStyleFromSerializedObject () {
+		return _OwnerScript._InspectorTheme;
+	}
 
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("InspectorTheme"), new GUIContent("Inspector Theme"));
-		serializedObject.ApplyModifiedProperties();
-
-		//Will only happen if above is attatched.
-		if (stats == null) return;
-
-		serializedObject.Update();
-
+	public override void DrawInspectorNotInherited () {
 		//Start Tite and description
-		stats.Title = EditorGUILayout.TextField(stats.Title);
+		_OwnerScript.Title = EditorGUILayout.TextField(_OwnerScript.Title);
 
 		EditorGUILayout.TextArea("This objects contains a bunch of stats you can change to adjust how the character controls. \n" +
 		"Feel free to copy and paste at your leisure, or input your own. \n" +
@@ -1541,7 +1611,8 @@ public class S_O_CharacterStatsEditor : Editor
 
 		//Order of Drawing
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Core Movement", headerStyle);
+		DrawCoreValues();
+		EditorGUILayout.LabelField("Core Movement", _HeaderStyle);
 		DrawSpeed();
 		DrawAccel();
 		DrawDecel();
@@ -1551,13 +1622,13 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawSticking();
 
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Additional Movement", headerStyle);
+		EditorGUILayout.LabelField("Additional Movement", _HeaderStyle);
 		DrawAir();
 		DrawRolling();
 		DrawSkidding();
 
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Aerial Actions", headerStyle);
+		EditorGUILayout.LabelField("Aerial Actions", _HeaderStyle);
 		DrawJumping();
 		DrawMultiJumps();
 		DrawHomingSearch();
@@ -1567,20 +1638,20 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawDropCharge();
 
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Grounded Actions", headerStyle);
+		EditorGUILayout.LabelField("Grounded Actions", _HeaderStyle);
 		DrawSpinCharge();
 		DrawQuickstep();
 		DrawBoost();
 
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Situational Actions", headerStyle);
+		EditorGUILayout.LabelField("Situational Actions", _HeaderStyle);
 		DrawRingRoad();
 		DrawRailStats();
 		DrawRailPosition();
 		DrawWallActionStats();
 
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Interactions", headerStyle);
+		EditorGUILayout.LabelField("Interactions", _HeaderStyle);
 		DrawEnemyInteraction();
 		DrawObjectInteraction();
 		DrawItemPulling();
@@ -1588,21 +1659,32 @@ public class S_O_CharacterStatsEditor : Editor
 		DrawWhenHurt();
 		DrawKnockback();
 
-		void DrawProperty ( string property, string outputName ) {
-			GUILayout.BeginHorizontal();
-			EditorGUILayout.PropertyField(serializedObject.FindProperty(property), new GUIContent(outputName));
+		//Acceleration
+		#region CoreValues
+		void DrawCoreValues () {
+			EditorGUILayout.Space();
+			S_S_CustomInspector.DrawEditableProperty(serializedObject, "CoreValuesStats", "CoreValues", true, true);
+
+
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject, "Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
+			{
+				_OwnerScript.CoreValuesStats = _OwnerScript.StartCoreValuesStats;
+			}
+			serializedObject.ApplyModifiedProperties();
+			GUILayout.EndHorizontal();
 		}
+		#endregion
 
 		//Speeds
 		#region Speeds
 		void DrawSpeed () {
 			EditorGUILayout.Space();
-			DrawProperty("SpeedStats", "Speeds");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"SpeedStats", "Speeds", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.SpeedStats = stats.StartSpeedStats;
+				_OwnerScript.SpeedStats = _OwnerScript.StartSpeedStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1613,12 +1695,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Acceleration
 		void DrawAccel () {
 			EditorGUILayout.Space();
-			DrawProperty("AccelerationStats", "Acceleration");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"AccelerationStats", "Acceleration", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.AccelerationStats = stats.StartAccelerationStats;
+				_OwnerScript.AccelerationStats = _OwnerScript.StartAccelerationStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1629,12 +1711,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Deceleration
 		void DrawDecel () {
 			EditorGUILayout.Space();
-			DrawProperty("DecelerationStats", "Deceleration");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"DecelerationStats", "Deceleration", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.DecelerationStats = stats.StartDecelerationStats;
+				_OwnerScript.DecelerationStats = _OwnerScript.StartDecelerationStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1645,12 +1727,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Turning
 		void DrawTurning () {
 			EditorGUILayout.Space();
-			DrawProperty("TurningStats", "Turning");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"TurningStats", "Turning", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.TurningStats = stats.StarTurningStats;
+				_OwnerScript.TurningStats = _OwnerScript.StarTurningStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1661,12 +1743,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Slopes
 		void DrawSlopes () {
 			EditorGUILayout.Space();
-			DrawProperty("SlopeStats", "On Slopes");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"SlopeStats", "On Slopes", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.SlopeStats = stats.StartSlopeStats;
+				_OwnerScript.SlopeStats = _OwnerScript.StartSlopeStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1677,12 +1759,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Sticking
 		void DrawSticking () {
 			EditorGUILayout.Space();
-			DrawProperty("GreedysStickToGround", "Sticking to the Ground (Greedy's Version)");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"GreedysStickToGround", "Sticking to the Ground (Greedy's Version)", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.GreedysStickToGround = stats.StartStickToGround;
+				_OwnerScript.GreedysStickToGround = _OwnerScript.StartStickToGround;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1693,12 +1775,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Ground
 		void DrawFindGround () {
 			EditorGUILayout.Space();
-			DrawProperty("FindingGround", "Finding the ground");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"FindingGround", "Finding the ground", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.FindingGround = stats.StartFindGround;
+				_OwnerScript.FindingGround = _OwnerScript.StartFindGround;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1709,12 +1791,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region InAir
 		void DrawAir () {
 			EditorGUILayout.Space();
-			DrawProperty("WhenInAir", "Air Control");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"WhenInAir", "Air Control", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.WhenInAir = stats.StartWhenInAir;
+				_OwnerScript.WhenInAir = _OwnerScript.StartWhenInAir;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1725,12 +1807,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Rolling
 		void DrawRolling () {
 			EditorGUILayout.Space();
-			DrawProperty("RollingStats", "Rolling");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"RollingStats", "Rolling", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.RollingStats = stats.StartRollingStats;
+				_OwnerScript.RollingStats = _OwnerScript.StartRollingStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1741,12 +1823,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Skidding
 		void DrawSkidding () {
 			EditorGUILayout.Space();
-			DrawProperty("SkiddingStats", "Skidding");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"SkiddingStats", "Skidding", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.SkiddingStats = stats.StartSkiddingStats;
+				_OwnerScript.SkiddingStats = _OwnerScript.StartSkiddingStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1757,12 +1839,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Jumping
 		void DrawJumping () {
 			EditorGUILayout.Space();
-			DrawProperty("JumpStats", "Jumps");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"JumpStats", "Jumps", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.JumpStats = stats.StarJumpStats;
+				_OwnerScript.JumpStats = _OwnerScript.StarJumpStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1773,12 +1855,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region MultiJumping
 		void DrawMultiJumps () {
 			EditorGUILayout.Space();
-			DrawProperty("MultipleJumpStats", "Additional Jumps");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"MultipleJumpStats", "Additional Jumps", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.MultipleJumpStats = stats.StartMultipleJumpStats;
+				_OwnerScript.MultipleJumpStats = _OwnerScript.StartMultipleJumpStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1789,12 +1871,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Quickstep
 		void DrawQuickstep () {
 			EditorGUILayout.Space();
-			DrawProperty("QuickstepStats", "Quickstep");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"QuickstepStats", "Quickstep", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.QuickstepStats = stats.StartQuickstepStats;
+				_OwnerScript.QuickstepStats = _OwnerScript.StartQuickstepStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1805,12 +1887,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region SpinCharge
 		void DrawSpinCharge () {
 			EditorGUILayout.Space();
-			DrawProperty("SpinChargeStats", "Spin Charge");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"SpinChargeStats", "Spin Charge", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.SpinChargeStats = stats.StartSpinChargeStat;
+				_OwnerScript.SpinChargeStats = _OwnerScript.StartSpinChargeStat;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1821,12 +1903,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Homing
 		void DrawHoming () {
 			EditorGUILayout.Space();
-			DrawProperty("HomingStats", "Homing Attack");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"HomingStats", "Homing Attack", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.HomingStats = stats.StartHomingStats;
+				_OwnerScript.HomingStats = _OwnerScript.StartHomingStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1834,12 +1916,12 @@ public class S_O_CharacterStatsEditor : Editor
 
 		void DrawHomingSearch () {
 			EditorGUILayout.Space();
-			DrawProperty("HomingSearch", "Homing Targetting");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"HomingSearch", "Homing Targetting", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.HomingSearch = stats.StartHomingSearch;
+				_OwnerScript.HomingSearch = _OwnerScript.StartHomingSearch;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1850,12 +1932,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Bounce
 		void DrawBounce () {
 			EditorGUILayout.Space();
-			DrawProperty("BounceStats", "Bounce");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"BounceStats", "Bounce", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.BounceStats = stats.StartBounceStats;
+				_OwnerScript.BounceStats = _OwnerScript.StartBounceStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1866,12 +1948,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region RingRoad
 		void DrawRingRoad () {
 			EditorGUILayout.Space();
-			DrawProperty("RingRoadStats", "Ring Road");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"RingRoadStats", "Ring Road", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.RingRoadStats = stats.StartRingRoadStats;
+				_OwnerScript.RingRoadStats = _OwnerScript.StartRingRoadStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1882,27 +1964,27 @@ public class S_O_CharacterStatsEditor : Editor
 		#region DropCharge
 		void DrawDropCharge () {
 			EditorGUILayout.Space();
-			DrawProperty("DropChargeStats", "Drop Charge");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"DropChargeStats", "Drop Charge", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.DropChargeStats = stats.StartDropChargeStats;
+				_OwnerScript.DropChargeStats = _OwnerScript.StartDropChargeStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
 		}
 		#endregion
-
+			
 		//JumpDash
 		#region JumpDash
 		void DrawJumpDash () {
 			EditorGUILayout.Space();
-			DrawProperty("JumpDashStats", "Jump Dash");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"JumpDashStats", "Jump Dash", true, true);
 
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.JumpDashStats = stats.StartJumpDashStats;
+				_OwnerScript.JumpDashStats = _OwnerScript.StartJumpDashStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1913,11 +1995,11 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Boost
 		void DrawBoost () {
 			EditorGUILayout.Space();
-			DrawProperty("BoostStats", "Boost Stats");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"BoostStats", "Boost Stats", true, true);
 
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.BoostStats = stats.StartBoostStats;
+				_OwnerScript.BoostStats = _OwnerScript.StartBoostStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1928,12 +2010,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region EnemyInteraction
 		void DrawEnemyInteraction () {
 			EditorGUILayout.Space();
-			DrawProperty("EnemyInteraction", "Interacting with Enemies");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"EnemyInteraction", "Interacting with Enemies", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.EnemyInteraction = stats.StartEnemyInteraction;
+				_OwnerScript.EnemyInteraction = _OwnerScript.StartEnemyInteraction;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1944,12 +2026,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region ItemPulling
 		void DrawItemPulling () {
 			EditorGUILayout.Space();
-			DrawProperty("ItemPulling", "Pulling in Items");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"ItemPulling", "Pulling in Items", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.ItemPulling = stats.StartItemPulling;
+				_OwnerScript.ItemPulling = _OwnerScript.StartItemPulling;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1960,12 +2042,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region WhenBonked
 		void DrawWhenBonked () {
 			EditorGUILayout.Space();
-			DrawProperty("WhenBonked", "Bonking");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"WhenBonked", "Bonking", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.WhenBonked = stats.StartWhenBonked;
+				_OwnerScript.WhenBonked = _OwnerScript.StartWhenBonked;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1976,12 +2058,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region WhenHurt
 		void DrawWhenHurt () {
 			EditorGUILayout.Space();
-			DrawProperty("WhenHurt", "Health interactions");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"WhenHurt", "Health interactions", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.WhenHurt = stats.StartWhenHurt;
+				_OwnerScript.WhenHurt = _OwnerScript.StartWhenHurt;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -1992,12 +2074,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Knockback
 		void DrawKnockback () {
 			EditorGUILayout.Space();
-			DrawProperty("KnockbackStats", "Knockback");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"KnockbackStats", "Knockback", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.KnockbackStats = stats.StartKnockBackStats;
+				_OwnerScript.KnockbackStats = _OwnerScript.StartKnockBackStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -2008,12 +2090,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region RailStats
 		void DrawRailStats () {
 			EditorGUILayout.Space();
-			DrawProperty("RailStats", "Rail Grinding");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"RailStats", "Rail Grinding", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.RailStats = stats.StartRailStats;
+				_OwnerScript.RailStats = _OwnerScript.StartRailStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -2024,12 +2106,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region RailPosition
 		void DrawRailPosition () {
 			EditorGUILayout.Space();
-			DrawProperty("RailPosition", "Position on Rails");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"RailPosition", "Position on Rails", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.RailPosition = stats.StartRailPosition;
+				_OwnerScript.RailPosition = _OwnerScript.StartRailPosition;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -2040,12 +2122,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region Object
 		void DrawObjectInteraction () {
 			EditorGUILayout.Space();
-			DrawProperty("ObjectInteractions", "Interactions");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"ObjectInteractions", "Interactions", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.ObjectInteractions = stats.StartObjectInteractions;
+				_OwnerScript.ObjectInteractions = _OwnerScript.StartObjectInteractions;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();
@@ -2056,12 +2138,12 @@ public class S_O_CharacterStatsEditor : Editor
 		#region WallRunningStats
 		void DrawWallActionStats () {
 			EditorGUILayout.Space();
-			DrawProperty("WallActionsStats", "On Wall Actions");
+			S_S_CustomInspector.DrawEditableProperty(serializedObject,"WallActionsStats", "On Wall Actions", true, true);
 
-			Undo.RecordObject(stats, "set to Defaults");
-			if (GUILayout.Button("Default", ResetToDefaultButton))
+			
+			if (S_S_CustomInspector.IsDrawnButtonPressed(serializedObject,"Default", _SmallButtonStyle, _OwnerScript, "Set to defaults"))
 			{
-				stats.WallActionsStats = stats.StartWallRunningStats;
+				_OwnerScript.WallActionsStats = _OwnerScript.StartWallRunningStats;
 			}
 			serializedObject.ApplyModifiedProperties();
 			GUILayout.EndHorizontal();

@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.ProBuilder.MeshOperations;
 
-public class S_Control_MovingPlatform : MonoBehaviour
+[AddComponentMenu("Data Components/Moving Platform")]
+public class S_Control_MovingPlatform : S_Data_Base
 {
 	[Header("Projection")]
 	public bool         _projectPath = true;
@@ -96,7 +97,7 @@ public class S_Control_MovingPlatform : MonoBehaviour
 
 			if (_canCarryPlayer)
 			{
-				_RB.velocity = Vector3.zero;
+				_RB.linearVelocity = Vector3.zero;
 				_RB.position = destination;
 			}
 			else
@@ -112,7 +113,7 @@ public class S_Control_MovingPlatform : MonoBehaviour
 
 			//Instead of going straight to a new location, apply velocity that will take it there in one frame. 
 			Vector3 direction = destination - _RB.position;
-			_RB.velocity = direction / Time.deltaTime;
+			_RB.linearVelocity = direction / Time.deltaTime;
 			return;
 		}
 	}

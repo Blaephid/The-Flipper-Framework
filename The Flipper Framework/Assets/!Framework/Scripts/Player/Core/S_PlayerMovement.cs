@@ -5,27 +5,13 @@ using UnityEngine;
 using UnityEngine.Windows;
 
 [RequireComponent(typeof(S_PlayerPhysics))]
-public class S_PlayerMovement : MonoBehaviour
+public class S_PlayerMovement : S_Player_Base
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
 	#region properties
-
-	//Unity
-	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Transform   _MainSkin;
-	#endregion
-
-
 
 	//Stats
 	#region Stats
@@ -69,6 +55,8 @@ public class S_PlayerMovement : MonoBehaviour
 	//Methods
 	public delegate Vector3 DelegateAccelerationAndTurning ( Vector3 vector, Vector3 input, Vector2 modifier );        //A delegate for deciding methods to calculate acceleration and turning 
 	public DelegateAccelerationAndTurning   CallAccelerationAndTurning; //This delegate will be called in controlled velocity to return changes to acceleration and turning. This will usually be the base one in this script, but may be changed externally depending on the action.
+	[HideInInspector] public bool _lockAccelerationAndTurningToDefault; //If true, the delegate above will not be called, and instead the default one will be, preventing any overwriting while locked.	
+
 
 	[HideInInspector]
 	public Vector3                _moveInput;         //Assigned by the input script, the direction the player is trying to go.
@@ -76,10 +64,21 @@ public class S_PlayerMovement : MonoBehaviour
 	[HideInInspector]
 	public Vector3                _trackMoveInput;    //Follows the input direction, and it is has changed but the controller input hasn't, that means the camera was moved to change direction.
 
+	public float _externalAccelModi { private get; set; } = 1;
+	public float _externalTurnModi { private get; set; } = 1;
+
 	[HideInInspector]
-	public float                  _currentTopSpeed;   //Player cannot exceed this speed by just running on flat ground. May be changed across gameplay.
+	public float _useFlatTurnRate = 0;
+
+	private float currentTopSpeedBackingField;
 	[HideInInspector]
-	public float                  _currentMaxSpeed;   //Player's core velocity can not exceed this by any means.
+	public float _currentTopSpeed   //Player cannot exceed this speed by just running on flat ground. May be changed across gameplay.
+		{ get { return currentTopSpeedBackingField * _CoreValues._currentSpeedMultiplier; } set { currentTopSpeedBackingField = value; } }
+
+	private float currentMaxSpeedBackingField;
+	[HideInInspector]
+	public float _currentMaxSpeed //Player's core horizontal velocity can not exceed this by any means.
+		{ get { return currentMaxSpeedBackingField * _CoreValues._currentSpeedMultiplier; } set { currentMaxSpeedBackingField = value; } }
 	[HideInInspector]
 	public float                  _currentMinSpeed;   //Player's running velocity can not go below this. Should be 0, and only temporarily set for certain actions.
 
@@ -100,17 +99,16 @@ public class S_PlayerMovement : MonoBehaviour
 	#endregion
 
 	//On start, assigns stats.
-	private void Awake () {
-		_Tools = GetComponent<S_CharacterTools>();
-		AssignTools();
-		AssignStats();
-
+	public override void Awake () {
+		base.Awake();
 		//Set delegates
 		CallAccelerationAndTurning = DefaultAccelerateAndTurn; //Whenever this delegate is called, it will call the default acceleration and turning present in this script, but the delegate may be changed by actions.
 
 	}
 
 	private void FixedUpdate () {
+		if (_CoreValues == null) return;
+
 		//Get curve positions, which will be used in calculations for this frame.
 		_curvePosAcell = _AccelBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _currentTopSpeed);
 		_curvePosDecell = _DecelBySpeed_.Evaluate(_PlayerVel._currentRunningSpeed / _currentMaxSpeed);
@@ -121,8 +119,10 @@ public class S_PlayerMovement : MonoBehaviour
 	//This turns, decreases and/or increases the velocity based on input.
 	public Vector3 HandleControlledVelocity ( Vector3 startVelocity, Vector2 modifier, float decelerationModifier = 1 ) {
 
+		modifier.Set(modifier.x * _externalAccelModi, modifier.y * _externalTurnModi);
+
 		//Certain actions control velocity in their own way, so if the list is greater than 0, end the method (ensuring anything that shouldn't carry over frames won't.)
-		if (_PlayerPhys._listOfCanControl.Count != 0)
+		if (_PlayerPhys._locksForCanControl.Count != 0)
 		{
 			_PlayerVel._externalRunningSpeed = -1;
 			return startVelocity;
@@ -139,9 +139,17 @@ public class S_PlayerMovement : MonoBehaviour
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		//Apply changes to the lateral velocity based on input.
-		lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier); //Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
+		if (!_lockAccelerationAndTurningToDefault)
+		{
+			//Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
+			lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier);
+		}
+		else
+		{
+			lateralVelocity = DefaultAccelerateAndTurn(lateralVelocity, _moveInput, modifier);
+		}
 
-		lateralVelocity = Decelerate(lateralVelocity, _moveInput * decelerationModifier, _curvePosDecell);
+		lateralVelocity = Decelerate(lateralVelocity, _moveInput * decelerationModifier);
 
 		//If external core speed has been set to a positive value this frame, overwrite running speed without losing direction.
 		if (_PlayerVel._externalRunningSpeed >= 0 && lateralVelocity.sqrMagnitude > -1)
@@ -209,23 +217,36 @@ public class S_PlayerMovement : MonoBehaviour
 		}
 
 		//A list is used rather than a single boolean because if just one was used, anything that takes turning away would overlap. This way means all instances of turning being disabled must stop in order to regain control.
-		else if (_PlayerPhys._listOfCanTurns.Count == 0)
+		else if (_PlayerPhys._locksForCanTurn.Count == 0)
 		{
 			// Step 2) Rotate lateral velocity towards the same velocity under the desired rotation.
 			//         The ammount rotated is determined by turn speed multiplied by turn rate (defined by the difference in angles, and current speed).
 			//	Turn speed will also increase if the difference in pure input (ignoring camera) is different, allowing precise movement with the camera.
 
-			float turnRate = (_PlayerPhys._isRolling ? _rollingTurningModifier_ : 1.0f);
-			turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
-			turnRate *= _TurnRateBySpeed_.Evaluate((_PlayerVel._coreVelocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
-
-			if (_Input.IsTurningBecauseOfCamera(inputDirection))
-			{
-				turnRate *= _TurnRateByInputChange_.Evaluate(Vector3.Angle(_Input._inputOnController, _Input._prevInputWithoutCamera) / 180);
-			}
+			float turnRate = 1;
 			dragRate = _DragByAngle_.Evaluate(deviationFromInput) * _curvePosDrag; //If turning, may lose speed.
 
-			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, _turnSpeed_ * turnRate * Mathf.Deg2Rad * modifier.x, 0.0f); //Apply turn by calculate speed
+			if (_useFlatTurnRate == 0)
+			{
+				turnRate = (_PlayerPhys._isRolling ? _rollingTurningModifier_ : 1.0f);
+				turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
+				turnRate *= _TurnRateBySpeed_.Evaluate((_PlayerVel._coreVelocity.sqrMagnitude / _currentMaxSpeed) / _currentMaxSpeed);
+
+				if (_Input.IsTurningBecauseOfCamera(inputDirection))
+				{
+					turnRate *= _TurnRateByInputChange_.Evaluate(Vector3.Angle(_Input._inputOnController, _Input._prevInputWithoutCamera) / 180);
+				}
+
+				turnRate *= _turnSpeed_;
+				turnRate *= modifier.x;
+			}
+			else
+			{
+				turnRate = _useFlatTurnRate;
+				turnRate *= _TurnRateByAngle_.Evaluate(deviationFromInput);
+			}
+
+			lateralVelocity = Vector3.RotateTowards(lateralVelocity, lateralToInput * lateralVelocity, turnRate * Mathf.Deg2Rad, 0.0f); //Apply turn by calculate speed
 		}
 
 		// Step 3) Get current velocity (if it's zero then use input)
@@ -233,17 +254,17 @@ public class S_PlayerMovement : MonoBehaviour
 		//         The total change is decided by acceleration based on input and speed, then drag from the turn.
 
 		Vector3 setVelocity = lateralVelocity.sqrMagnitude > 0 ? lateralVelocity : inputDirection;
-		float accelRate = 0;
+		float accelRate = modifier.y;
 
-		if (deviationFromInput < _angleToAccelerate_ || _PlayerVel._currentRunningSpeed < 10) //Will only accelerate if inputing in direction enough, unless under certain speed.
-		{
-			accelRate = (_PlayerPhys._isRolling && _PlayerPhys._isGrounded ? _currentRollAccell : _currentRunAccell) * inputMagnitude;
-			accelRate *= _curvePosAcell;
-			if (_PlayerPhys._isGrounded) accelRate *= _AccelBySlope_.Evaluate(_PlayerPhys._groundNormal.y);
-		}
+		//Setup for static method. Done for easier reading, as a static is used for visualisers.
+		float accellFromCurves = _curvePosAcell;
+		accellFromCurves *= _PlayerPhys._isGrounded ? _AccelBySlope_.Evaluate(_PlayerPhys._groundNormal.y) : 1;
+		bool inputtingEnough = deviationFromInput < _angleToAccelerate_ || _PlayerVel._currentRunningSpeed < 10;
+		float baseAccel =  _PlayerPhys._isRolling && _PlayerPhys._isGrounded ? _currentRollAccell : _currentRunAccell;
 
-		float speedChange = accelRate - (dragRate * _turnDrag_) * modifier.y;
+		accelRate = BuiltInAcceleration(modifier.y, _Input._lockedToCharacter, inputtingEnough, baseAccel, inputMagnitude, accellFromCurves);
 
+		float speedChange = accelRate - (dragRate * _turnDrag_);
 		setVelocity = Vector3.MoveTowards(setVelocity, Vector3.zero, -speedChange);
 
 		//Step 4) If the change is still under the current top speed, or the change is a decrease in total, then apply it.
@@ -256,43 +277,66 @@ public class S_PlayerMovement : MonoBehaviour
 		return lateralVelocity;
 	}
 
+	public static float BuiltInAcceleration ( float startAccel, bool lockedToBase, bool inputtingEnough, float baseOrRollAccell, float inputMagnitude, float accelerationFromCurves ) {
+		float accelRate = startAccel;
+
+		if (lockedToBase)
+		{
+			accelRate = baseOrRollAccell;
+		}
+		//Will only accelerate if inputing in direction enough, unless under certain speed.
+		else if (inputtingEnough) //Will only accelerate if inputing in direction enough, unless under certain speed.
+		{
+			accelRate *= baseOrRollAccell;
+			accelRate *= inputMagnitude;
+			accelRate *= accelerationFromCurves;
+		}
+
+		return accelRate;
+	}
+
 	//Handles decreasing the magnitude of the player's controlled velocity, usually only if there is no input, but other circumstances may decrease speed as well.
 	//Deceleration is calculated, then applied at the end of the method.
 	//is static so it can be called by simulations.
-	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier ) {
+	public Vector3 Decelerate ( Vector3 lateralVelocity, Vector3 input, float modifier = 1 ) {
 
-		float decelAmount = 0;
-		//Manual decelerations can only happen if nothing is denying them.
-		if (_PlayerPhys._listOfCanDecelerates.Count == 0)
-		{         //If there is no input, ready conventional deceleration.
-			if (input.sqrMagnitude < 0.1)
-			{
-				if (_PlayerPhys._isGrounded)
-				{
-					decelAmount = _moveDeceleration_ * modifier;
-				}
-				else if (_shouldStopAirMovementIfNoInput_)
-				{
-					decelAmount = _airDecel_ * modifier;
-				}
-			}
-			//If grounded and rolling but not on a slope, even with input, ready deceleration. 
-			else if (_PlayerPhys._isRolling && _PlayerPhys._groundNormal.y > _slopeEffectLimit_ && _PlayerVel._currentRunningSpeed > 10)
-			{
-				decelAmount = _rollingDecel_ * modifier;
-			}
-		}
-		//If in air, a constant deceleration is applied in addition to any others.
-		if (!_PlayerPhys._isGrounded && _PlayerVel._currentRunningSpeed > 14)
-		{
-			decelAmount += _constantAirDecel_;
-		}
+		bool canDecel = _PlayerPhys._locksForCanDecelerate.Count == 0;
+		bool notOnSlope = _PlayerPhys._groundNormal.y > _slopeEffectLimit_ && _PlayerVel._currentRunningSpeed > 10;
+		modifier *= _curvePosDecell;
+
+		float decelAmount = BuiltInDeceleration(canDecel, input, notOnSlope, _PlayerPhys._isRolling, _PlayerPhys._isGrounded, modifier, _Tools.Stats);
 
 		//Apply calculated deceleration
 		return Vector3.MoveTowards(lateralVelocity, Vector3.zero, decelAmount);
 	}
 
-	private void AssignStats () {
+	public static float BuiltInDeceleration ( bool canDecel, Vector3 input, bool notOnSlope, bool isRolling, bool isGrounded, float modifier, S_O_CharacterStats Stats ) {
+		float decelAmount = !isGrounded ? Stats.DecelerationStats.airConstantDecel : 0;
+
+		if (canDecel)
+		{
+			//If grounded and rolling but not on a slope, even with input, ready deceleration. 
+			if (isRolling && notOnSlope)
+			{
+				decelAmount += Stats.DecelerationStats.rollingFlatDecell;
+			}
+			//Normal deceleration
+			else if (isGrounded && input.sqrMagnitude < 0.1f)
+			{
+				decelAmount += Stats.DecelerationStats.moveDeceleration;
+			}
+			//An external stat decides if can slow down in the air.
+			else if (Stats.WhenInAir.shouldStopAirMovementWhenNoInput && input.sqrMagnitude < 0.1f)
+			{
+				decelAmount += Stats.DecelerationStats.airManualDecel;
+			}
+		}
+		return decelAmount;
+	}
+
+	public override void AssignStats () {
+		base.AssignStats();
+
 		_startAcceleration_ = _Tools.Stats.AccelerationStats.runAcceleration;
 		_startRollAcceleration_ = _Tools.Stats.AccelerationStats.rollAccel;
 		_AccelBySpeed_ = _Tools.Stats.AccelerationStats.AccelBySpeed;
@@ -327,14 +371,5 @@ public class S_PlayerMovement : MonoBehaviour
 		_currentRollAccell = _startRollAcceleration_;
 		_currentTopSpeed = _startTopSpeed_;
 		_currentMaxSpeed = _startMaxSpeed_;
-	}
-
-	private void AssignTools () {
-		_Actions = _Tools._ActionManager;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
-		_PlayerVel = GetComponent<S_PlayerVelocity>();
-
-		_MainSkin = _Tools.MainSkin;
 	}
 }

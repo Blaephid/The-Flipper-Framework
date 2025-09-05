@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 66ba89bf341ac754b8002ea71a6aa1e1
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 209857
+  packageName: FastSky - Procedural Sky and Clouds URP
+  packageVersion: 2.0
+  assetPath: Assets/FastSky/Demo/FastSkyDemo.unity
+  uploadId: 576994

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class S_AI_Health : MonoBehaviour, IHealthSystem
 {
@@ -12,6 +13,8 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 
 	public bool _willDestroy = true;
 
+	public event System.Action<GameObject, S_AI_Health> OnDefeated;
+
 	void Awake () {
 		_currentHealth = _maxHealth;
 	}
@@ -20,20 +23,38 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 		_currentHealth -= Damage;
 		if (_currentHealth <= 0)
 		{
-			if (SpawnReference != null)
-			{
-				SpawnReference.RestartSpawner();
-			}
-			GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
 
-			if (_willDestroy)
-				Destroy(gameObject);
-			else
-				gameObject.SetActive(false);
+			Defeated();
 			return true;
 		}
 		else
 			return false;
+	}
+
+	void Defeated () {
+		if (SpawnReference != null)
+		{
+			SpawnReference.RestartSpawner();
+		}
+		else if (!_willDestroy)
+		{
+			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+		}
+
+		GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
+
+		if (_willDestroy)
+			Destroy(gameObject);
+		else
+			gameObject.SetActive(false);
+
+		if(OnDefeated != null)
+			OnDefeated.Invoke(gameObject, this);
+	}
+
+	void EventReturnOnDeath ( object sender, EventArgs e ) {
+		_currentHealth = _maxHealth;
+		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 
 }

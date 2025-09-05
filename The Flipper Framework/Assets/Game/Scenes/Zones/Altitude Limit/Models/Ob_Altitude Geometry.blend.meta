@@ -1,9 +1,14 @@
 fileFormatVersion: 2
 guid: 8d129c3f98f53bd42922708607b3c653
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
   externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Curve
+    second: {fileID: 2100000, guid: 9092d9bd32c9e6043a8a0f47ff799a03, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -19,6 +24,46 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Guard
     second: {fileID: 2100000, guid: 9092d9bd32c9e6043a8a0f47ff799a03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Curve
+    second: {fileID: 2100000, guid: 9092d9bd32c9e6043a8a0f47ff799a03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Danger Lines
+    second: {fileID: 2100000, guid: 9ba210706e9d6ea49a7320cfb205d12b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Floor
+    second: {fileID: 2100000, guid: 7a239a2ea3ebebe4bb040f97b394bf8d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Guard
+    second: {fileID: 2100000, guid: 9092d9bd32c9e6043a8a0f47ff799a03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Road
+    second: {fileID: 2100000, guid: 467e10efe04648343a14811ba76e7367, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Straight
+    second: {fileID: 2100000, guid: 9092d9bd32c9e6043a8a0f47ff799a03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Wall
+    second: {fileID: 2100000, guid: 45e99a78b1ecb7c47af87e0ff9b9bf3f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Wall Local Space
+    second: {fileID: 2100000, guid: 9ad29cfaa91c2514987273742ece4ee6, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -39,6 +84,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Wall Local Space
     second: {fileID: 2100000, guid: 9ad29cfaa91c2514987273742ece4ee6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: manta
+    second: {fileID: 2100000, guid: 89f3fe050d5e5ff45a36972748fa9475, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -91,6 +141,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8

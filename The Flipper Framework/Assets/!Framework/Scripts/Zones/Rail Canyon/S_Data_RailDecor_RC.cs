@@ -1,0 +1,76 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+#if UNITY_EDITOR
+public class S_Data_RailDecor_RC : S_Data_Base
+{
+	[SerializeField, DrawTickBoxBefore("_showUnderPlatform"), Delayed]
+	private string _underPlatform = "Ob_RailUnderPlatform_RC";
+	[SerializeField, HideInInspector] bool _showUnderPlatform;
+
+	[SerializeField, DrawTickBoxBefore("_showSignPostLeft"), Delayed]
+	private string _leftSignPost = "Ob_Signpost_RC Left";
+	[SerializeField, HideInInspector] bool _showSignPostLeft;
+
+	[SerializeField, DrawTickBoxBefore("_showSignPostRight"), Delayed]
+	private string _rightSignPost = "Ob_Signpost_RC Right";
+	[SerializeField, HideInInspector] bool _showSignPostRight;
+
+	[SerializeField, DrawTickBoxBefore("_showLeftRailWall"), Delayed]
+	private string _leftRailWall = "Ob_RailSideDecorator_RC Left";
+	[SerializeField, HideInInspector] bool _showLeftRailWall;
+
+	[SerializeField,DrawTickBoxBefore("_showRightRailWall"), Delayed]
+	private string _rightRailWall = "Ob_RailSideDecorator_RC Right";
+	[SerializeField, HideInInspector] bool _showRightRailWall;
+
+	[SerializeField,DrawTickBoxBefore("_showRailWallConnector"), Delayed]
+	private string _railWallConnector = "Ob_RailUnderConnector_RC";
+	[SerializeField, HideInInspector] bool _showRailWallConnector;
+
+	[SerializeField,DrawTickBoxBefore("_showLeftRailDirector"), Delayed]
+	private string _leftRailDirector = "Ob_SideDecor_RC Left";
+	[SerializeField, HideInInspector] bool _showLeftRailDirector;
+
+	[SerializeField,DrawTickBoxBefore("_showRightRailDirector"), Delayed]
+	private string _rightRailDirector = "Ob_SideDecor_RC Right";
+	[SerializeField, HideInInspector] bool _showRightRailDirector;
+
+	[SerializeField,DrawTickBoxBefore("_showUnderClamps"), Delayed]
+	private string _underClamps = "Ob_WallClamps2_RC";
+	[SerializeField, HideInInspector] bool _showUnderClamps;
+
+	[SerializeField,DrawTickBoxBefore("_showGate"), Delayed]
+	private string _gate = "Ob_RailGate_RC";
+	[SerializeField, HideInInspector] bool _showGate;
+
+	[SerializeField,DrawTickBoxBefore("_showLargeGate"), Delayed]
+	private string _largeGate = "Ob_RailGateLarge_RC";
+	[SerializeField, HideInInspector] bool _showLargeGate;
+
+	[SerializeField,DrawTickBoxBefore("_showTunnelWallRight"), Delayed]
+	private string _tunnelWallRight = "Ob_FloatingTunnelWallRight_RC";
+	[SerializeField, HideInInspector] bool _showTunnelWallRight;
+
+	[SerializeField,DrawTickBoxBefore("_showTunnelWallLeft"), Delayed]
+	private string _tunnelWallLeft = "Ob_FloatingTunnelWallLeft_RC";
+	[SerializeField, HideInInspector] bool _showTunnelWallLeft;
+
+	private new void OnValidate () {
+		base.OnValidate();
+		S_S_Editor.FindObjectAndSetActive(_underPlatform, _showUnderPlatform, transform);
+		S_S_Editor.FindObjectAndSetActive(_leftSignPost, _showSignPostLeft, transform);
+		S_S_Editor.FindObjectAndSetActive(_rightSignPost, _showSignPostRight, transform);
+		S_S_Editor.FindObjectAndSetActive(_leftRailWall, _showLeftRailWall, transform);
+		S_S_Editor.FindObjectAndSetActive(_rightRailWall, _showRightRailWall, transform);
+		S_S_Editor.FindObjectAndSetActive(_leftRailDirector, _showLeftRailDirector, transform);
+		S_S_Editor.FindObjectAndSetActive(_rightRailDirector, _showRightRailDirector, transform);
+		S_S_Editor.FindObjectAndSetActive(_underClamps, _showUnderClamps, transform);
+		S_S_Editor.FindObjectAndSetActive(_railWallConnector, _showRailWallConnector, transform);
+		S_S_Editor.FindObjectAndSetActive(_largeGate, _showLargeGate, transform);
+		S_S_Editor.FindObjectAndSetActive(_gate, _showGate, transform);
+		S_S_Editor.FindObjectAndSetActive(_tunnelWallRight, _showTunnelWallRight, transform);
+		S_S_Editor.FindObjectAndSetActive(_tunnelWallLeft, _showTunnelWallLeft, transform);
+	}
+}
+#endif

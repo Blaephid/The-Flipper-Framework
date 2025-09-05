@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: e008cddabe2ee464e86c31af2b5b07c9
+timeCreated: 1517436512
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/Light/CloudsPointLight.shader
+  uploadId: 243278

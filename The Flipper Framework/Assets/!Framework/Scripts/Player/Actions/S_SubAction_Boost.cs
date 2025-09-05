@@ -5,41 +5,25 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder.Shapes;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
 using static Unity.VisualScripting.Member;
 
-public class S_SubAction_Boost : MonoBehaviour, ISubAction
+public class S_SubAction_Boost : S_Action_Base, ISubAction
 {
-
-
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
-	/// 
 	#region properties
 
 	//Unity
-	#region Unity Specific Properties
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerMovement	_PlayerMovement;
-	private S_CharacterTools      _Tools;
-	private S_ActionManager       _Actions;
-	private S_Handler_Camera      _CamHandler;
-	private S_PlayerInput         _Input;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Transform             _MainSkin;
 
 	//Represent the effect
 	private GameObject                      _BoostCone;
 	private MeshRenderer[]                  _ListOfSubCones;
+	private Animator                        _BoostConeAnimator;
 
-	private Animator    _CharacterAnimator;
-
-	//Used to display boost energy to player.
-	private S_UI_Boost            _BoostUI;
 	#endregion
 
 	//Stats - See CharacterStats for tooltips.
@@ -48,12 +32,6 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	private float       _boostFramesInAir_ = 60;
 	private float       _angleOfAligningToEndBoost_ = 85f;
 
-	private bool        _gainEnergyFromRings_ = true;
-	private bool        _gainEnergyOverTime_ = false;
-	private float       _energyGainPerSecond_ = 5;
-	private float       _energyGainPerRing_ = 5;
-
-	private float       _maxBoostEnergy_ = 100;
 	private float       _energyDrainedPerSecond_ = 0;
 	private float       _energyDrainedOnStart_ = 0;
 
@@ -72,13 +50,15 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	private float        _faceTurnSpeed_ = 6;
 
 	private float       _boostCooldown_ = 0.5f;
+	private float       _minTimeBoosting_ = 0.8f;
 
-	private Vector2     _cameraPauseEffect_ = new Vector2(3, 40);
+	private Vector3 _cameraPauseEffect_ = new Vector3(3, 40);
 	#endregion
 
 	// Trackers
 	#region trackers
-	private float                 _currentBoostEnergy = 10;
+
+	private float                   _timeBoosting;
 
 	//Running speed to apply / reach
 	private float                 _currentSpeed;                //Sets movement speed to this every frame, and when boost started will lerp towards goal speed.
@@ -86,7 +66,6 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	private float                 _currentSpeedLerpingTowardsGoal;        //Saved how much _currentSpeed increased towards goal speed, but ignores changes made to _currentSpeed externally, allowing _currentSpeed to lerp towards this when decreased after reaching _goalSpeed.
 
 	//Boost checkers/
-	private bool                  _inAStateThatCanBoost;        //Will be set false every frame, but true whenever AttemptAction is called. This means when false only, boost should end as not in a boostable state.
 	private bool                  _canStartBoost = true;        //Set false when using boost, and only true after a cooldown. Must be true to start a boost.
 	private bool                  _canBoostBecauseHasntBoostedInAir = true; //Turns false when starting a boost in the air, and true when grounded. Prevents starting multiple boosts in the air.
 
@@ -99,7 +78,6 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	private bool                  _isStrafing;
 	#endregion
-	#endregion
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -108,8 +86,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Awake () {
-		ReadyAction();
+	public override void Awake () {
+		base.Awake();
 
 		// Get all renderer components representing sub boost cones.
 		_ListOfSubCones = _BoostCone.GetComponentsInChildren<MeshRenderer>();
@@ -119,21 +97,20 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	// Update is called once per frame
 	void Update () {
-		_BoostUI.EnergyTracker.text = _currentBoostEnergy.ToString();
 
 		//If currently enabled, then apply rotation and animations to character.
 		if (_PlayerPhys._isBoosting)
 		{
 			switch (_Actions._whatCurrentAction)
 			{
-				case S_Enums.PrimaryPlayerStates.Default:
+				case S_S_ActionHandling.PrimaryPlayerStates.Default:
 					if (_PlayerPhys._isGrounded)
 						_Actions._ActionDefault.HandleAnimator(_Actions._ActionDefault._animationAction); // Means animation will reflect jumping or being grounded.;
 					else
 						_Actions._ActionDefault.HandleAnimator(11);
 					_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 					break;
-				case S_Enums.PrimaryPlayerStates.Jump:
+				case S_S_ActionHandling.PrimaryPlayerStates.Jump:
 					_Actions._ActionDefault.HandleAnimator(1);
 					_Actions._ActionDefault.SetSkinRotationToVelocity(10, _faceDirection, _faceDirectionOffset);
 					break;
@@ -144,22 +121,22 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	}
 
 	//Only called when enabled, but tracks the time of the quickstep and performs it until its up.
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		//base.FixedUpdate();
 		ApplyBoost();
-		_inAStateThatCanBoost = false; //Set to false at the end of every fixed frame, and if this is not set to true in the AttemptAction method, the boost will end.
 	}
 
 
 	//Called when attempting to perform an action, checking and preparing inputs.
-	public bool AttemptAction () {
-		_inAStateThatCanBoost = true; //This will lead to a back and forth with it being set to false every frame. This means as soon as this method stops being called, this will be false.
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 
 		if (_Input._BoostPressed)
 		{
 			_Input._RollPressed = false;
 			if (!_PlayerPhys._isBoosting)//Will only trigger start action if not already boosting.
 			{
-				if (_canStartBoost && _currentBoostEnergy > _energyDrainedOnStart_ && _canBoostBecauseHasntBoostedInAir)
+				if (_canStartBoost && _CoreValues._energy > _energyDrainedOnStart_ && _canBoostBecauseHasntBoostedInAir)
 				{
 					//Can always be performed on the ground, but if in the air, air actions must be available.
 					if (_PlayerPhys._isGrounded || _Actions._areAirActionsAvailable)
@@ -172,15 +149,16 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	}
 
 	//Called when the action is enabled and readies all variables for it to be performed.
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (!_Actions._canChangeActions && !overwrite) { return; }
 
 		//Flow Control
 		_PlayerPhys._isBoosting = true;
 		_canStartBoost = false;
+		_timeBoosting = 0;
 
 		//Energy management
-		_currentBoostEnergy -= _energyDrainedOnStart_;
+		_CoreValues.AdjustEnergy(-_energyDrainedOnStart_);
 
 		//Get speeds to start boost at and reach after some time.
 		_currentSpeed = _Actions._listOfSpeedOnPaths.Count > 0 ? _Actions._listOfSpeedOnPaths[0] : _PlayerVel._horizontalSpeedMagnitude; //The boost speed will be set to and increase from either the running speed, or path speed if currently in use.
@@ -201,9 +179,10 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			_canBoostBecauseHasntBoostedInAir = false; //This will prevent the boost being used again until grounded.
 			_CharacterAnimator.SetInteger("Action", 11);
 			_CharacterAnimator.SetTrigger("ChangedState");
-			
+
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_)); //Starts air boost parameters rather than normal boost.
 			_PlayerVel.SetBothVelocities(_faceDirection * _currentSpeed, new Vector2(1, 0));
+
 		}
 		else
 		{
@@ -220,13 +199,18 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		_savedSkinDirection = _MainSkin.forward; //Keeps track of which way was facing when started, and if these stop being equal it means something external has affected the character's direction.
 
 		//Effects
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2(_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2), 0.5f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
+			_PlayerVel._horizontalSpeedMagnitude, _goalSpeed + 2, 0.5f, "Boost")); //The camera will fall back before catching up.
 
-		_Sounds.BoostStartSound();
+		_Effects.TriggerBlurBurstScreen();
+		_Sounds.BoostSound();
 
 		//Make the boost effects fade in rather than appear instantly.
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
-		StartCoroutine(SetBoostEffectVisibility(0, 1, 8));
+		StartCoroutine(SetBoostEffectVisibility(0, 1, 20));
+
+
+		_ActionChain.AddToChain("Boost", 1, 10);
 	}
 	#endregion
 
@@ -240,14 +224,20 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	private void ApplyBoost () {
 		if (_PlayerPhys._isBoosting)
 		{
+			_timeBoosting += Time.deltaTime;
+			_CoreValues._currentlyDrainingEnergy = true;
+
 			//Energy management.
-			_currentBoostEnergy = Mathf.Max(_currentBoostEnergy - (_energyDrainedPerSecond_ * Time.fixedDeltaTime), 0);
+			_CoreValues.AdjustEnergy(-_energyDrainedPerSecond_ * Time.fixedDeltaTime);
 
 			Vector3 currentRunningPhysics = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity, false); //Get the running velocity in physics (seperate from script calculations) as this will factor in collision.
 
 			// Will end boost if released button , entered a state where without boost attached,  ran out of energy , or movement speed was decreased externally (like from a collision)
-			if (!_Input._BoostPressed || !_inAStateThatCanBoost || _currentBoostEnergy <= 0 
-				|| (currentRunningPhysics.sqrMagnitude < Mathf.Pow(40,2) && _currentSpeedLerpingTowardsGoal == _goalSpeed)) //Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
+			bool endBoost1 = !_Input._BoostPressed && _timeBoosting > _minTimeBoosting_;
+			bool endBoost2 = !_inAStateConnectedToThis;
+			bool endBoost3 = _CoreValues._energy <= 0 && _timeBoosting > _minTimeBoosting_;
+			bool endBoost4 = (currentRunningPhysics.sqrMagnitude < Mathf.Pow(40, 2) && _currentSpeedLerpingTowardsGoal == _goalSpeed);//Remember that sqrMagnitude means what it's being compared to should be squared (10 -> 100)
+			if (endBoost1 || endBoost2 || endBoost3 || endBoost4)
 			{
 				EndBoost();
 			}
@@ -255,7 +245,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 			if (_Actions._listOfSpeedOnPaths.Count == 0)
 			{
 				_currentSpeed = Mathf.Max(_currentSpeed, _PlayerVel._currentRunningSpeed); //If running speed has been increased beyond boost speed (such as through slope physics) then factor that in so it isn't set over.
-				
+
 				//If running speed has been decreased by an external force AFTER boost speed was set last frame (such as by slope physics), then apply the difference to the boost speed.
 				if (_PlayerVel._currentRunningSpeed < _PlayerVel._previousRunningSpeeds[1])
 				{
@@ -281,13 +271,15 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 			_Input._RollPressed = false; //This will ensure the player won't crouch or roll and instead stay boosting.
 		}
-		//If not currently boosting, then check if should gain energy each frame.
-		else if (_gainEnergyOverTime_) { GainEnergyFromTime(); }
+		else
+			_CoreValues._currentlyDrainingEnergy = false;
 	}
 
 	//Called when a boost should come to an end. Applies trackers to tell the script the boost is over, and applie ending effects.
 	private void EndBoost ( bool skipSlowing = false ) {
-		//Flow cotntrol
+
+
+		//Flow control
 		_PlayerPhys._isBoosting = false;
 
 		//Controls
@@ -304,8 +296,8 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 		//Effects
 		StopCoroutine(SetBoostEffectVisibility(0, 0, 0));
-		StartCoroutine(SetBoostEffectVisibility(1, 0.1f, 12));
-		_Sounds.BoostSource2.Stop();
+		StartCoroutine(SetBoostEffectVisibility(1, 0.1f, 30));
+		_Sounds.EndBoostSound();
 	}
 
 	//Lerps towards boost speed rather than change speed instantly. maxFrames is how many frames it will take to reach this from a speed less than the startBoostSpees stat.
@@ -339,7 +331,12 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 
 	//Called when starting or ending a boost, and will over time cause the boost effect to fade in. 
 	private IEnumerator SetBoostEffectVisibility ( float startAlpha, float setAlpha, float frames ) {
-		if (setAlpha > 0.5f) { _BoostCone.SetActive(true); } //If fading in, the effect should become active, enabling visibility, before increasing alpha.
+		if (setAlpha > 0.5f)
+		{
+			//If fading in, the effect should become active, enabling visibility, before increasing alpha.
+			_BoostCone.SetActive(true);
+			_BoostConeAnimator.SetTrigger("BoostEnter");
+		}
 
 		float segments = 1 / frames;
 		float lerpValue = startAlpha;
@@ -418,10 +415,10 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	}
 
 	//Ensures there will always be an input forwards if nothing else.
-	private Vector3 EnforceForwards (Vector3 input = default(Vector3)) {
+	private Vector3 EnforceForwards ( Vector3 input = default(Vector3) ) {
 		Vector3 localFaceDirection = _PlayerPhys.GetRelevantVector(_faceDirection, true);
 		if (_PlayerMovement._moveInput.sqrMagnitude < 0.1f) { _PlayerMovement._moveInput = localFaceDirection; }
-		
+
 		if (input.sqrMagnitude < 0.1f) { input = localFaceDirection; }
 		return input;
 	}
@@ -521,24 +518,12 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		}
 	}
 
-	//These functions will handle increasing boost energy from various sources. Some are events that will be attached to event Handlers.
-	void EventGainEnergyFromRings ( object sender, float source ) {
-		source *= _energyGainPerRing_; //The source is how many rings, so gain energy for each multiplied by amount per ring.
-		_currentBoostEnergy = Mathf.Min(_currentBoostEnergy + source, _maxBoostEnergy_);
-	}
-
-	//Not an event, but depending on stats will be called every frame to increase energy.
-	void GainEnergyFromTime () {
-		float source = Time.fixedDeltaTime * _energyGainPerSecond_;
-		_currentBoostEnergy = Mathf.Min(_currentBoostEnergy + source, _maxBoostEnergy_);
-	}
-
 	//These events must be set in the PlayerPhysics component, and will happen when the player goes from grounded to airborne, or vice versa.
 	public void EventOnGrounded () {
 		if (_PlayerPhys._isBoosting)
 		{
 			//If player has landed while still in default (E.G. didn't jump), then since StartAction won't be called, switch the animation to grounded running.
-			if (_CharacterAnimator.GetInteger("Action") != 0 && _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default)
+			if (_CharacterAnimator.GetInteger("Action") != 0 && _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Default)
 			{
 				_CharacterAnimator.SetInteger("Action", 0);
 				_CharacterAnimator.SetTrigger("ChangedState");
@@ -552,7 +537,7 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		{
 			StartCoroutine(CheckAirBoost(_boostFramesInAir_));
 			//Should perform air dash animation if losing ground while boosting, but not if willingly entered by jumping.
-			if (_CharacterAnimator.GetInteger("Action") != 11 && _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default)
+			if (_CharacterAnimator.GetInteger("Action") != 11 && _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Default)
 			{
 				_CharacterAnimator.SetInteger("Action", 11);
 				_CharacterAnimator.SetTrigger("ChangedState"); //Used immediately to switch.
@@ -571,32 +556,15 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 	/// </summary>
 	#region Assigning
 	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-		}
-	}
 
-	private void AssignStats () {
-		if (_gainEnergyFromRings_)
-			_Tools.GetComponent<S_Handler_HealthAndHurt>().onRingGet += EventGainEnergyFromRings;
+	public override void AssignStats () {
 
-		_cameraPauseEffect_ = _Tools.Stats.BoostStats.cameraPauseEffect;
+		_cameraPauseEffect_ = _Tools.Stats.BoostStats.cameraFallBack;
 
 		_hasAirBoost_ = _Tools.Stats.BoostStats.hasAirBoost;
 		_boostFramesInAir_ = _Tools.Stats.BoostStats.boostFramesInAir;
 		_angleOfAligningToEndBoost_ = _Tools.Stats.BoostStats.AngleOfAligningToEndBoost;
 
-		_gainEnergyFromRings_ = _Tools.Stats.BoostStats.gainEnergyFromRings;
-		_gainEnergyOverTime_ = _Tools.Stats.BoostStats.gainEnergyOverTime;
-		_energyGainPerSecond_ = _Tools.Stats.BoostStats.energyGainPerSecond;
-		_energyGainPerRing_ = _Tools.Stats.BoostStats.energyGainPerRing;
-
-		_maxBoostEnergy_ = _Tools.Stats.BoostStats.maxBoostEnergy;
 		_energyDrainedPerSecond_ = _Tools.Stats.BoostStats.energyDrainedPerSecond;
 		_energyDrainedOnStart_ = _Tools.Stats.BoostStats.energyDrainedOnStart;
 
@@ -615,26 +583,16 @@ public class S_SubAction_Boost : MonoBehaviour, ISubAction
 		_faceTurnSpeed_ = _Tools.Stats.BoostStats.faceTurnSpeed;
 
 		_boostCooldown_ = _Tools.Stats.BoostStats.cooldown;
+		_minTimeBoosting_ = _Tools.Stats.BoostStats.minTimeBoosting;
 
 	}
 
-	private void AssignTools () {
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-
-		_Sounds = _Tools.SoundControl;
-		_MainSkin = _Tools.MainSkin;
-		_CharacterAnimator = _Tools.CharacterAnimator;	
+	public override void AssignTools () {
+		base.AssignTools();
 
 		_BoostCone = _Tools.BoostCone;
 		_BoostCone.SetActive(false);
-
-		_BoostUI = _Tools.UISpawner._BoostUI;
+		_BoostConeAnimator = _BoostCone.GetComponent<Animator>();
 	}
 	#endregion
 }

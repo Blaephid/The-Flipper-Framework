@@ -32,7 +32,7 @@ public class S_AI_EnemyPhysics : MonoBehaviour
 	public void GeneralPhysics () {
 		if (AppliedInput == Vector3.zero)
 		{
-			E_rigidbody.velocity = E_rigidbody.velocity / MoveDecell;
+			E_rigidbody.linearVelocity = E_rigidbody.linearVelocity / MoveDecell;
 			b_normalSpeed = 0;
 		}
 
@@ -58,7 +58,7 @@ public class S_AI_EnemyPhysics : MonoBehaviour
 	}
 
 	public void AddVelocity ( Vector3 force ) {
-		E_rigidbody.velocity = E_rigidbody.velocity + force;
+		E_rigidbody.linearVelocity = E_rigidbody.linearVelocity + force;
 	}
 
 	public void HandleGroundControl ( float deltaTime, Vector3 input ) {
@@ -77,7 +77,7 @@ public class S_AI_EnemyPhysics : MonoBehaviour
 			// Fetch velocity in the Player's local frame, decompose into lateral and vertical
 			// motion, and decompose lateral motion further into normal and tangential components.
 
-			var velocity = E_rigidbody.velocity;
+			var velocity = E_rigidbody.linearVelocity;
 			var localVelocity = transform.InverseTransformDirection(velocity);
 
 			var lateralVelocity = new Vector3(localVelocity.x, 0.0f, localVelocity.z);
@@ -125,7 +125,7 @@ public class S_AI_EnemyPhysics : MonoBehaviour
 
 			localVelocity = normalVelocity + tangentVelocity + verticalVelocity;
 			velocity = transform.TransformDirection(localVelocity);
-			E_rigidbody.velocity = velocity;
+			E_rigidbody.linearVelocity = velocity;
 
 			//Export nescessary variables
 

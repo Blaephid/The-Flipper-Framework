@@ -1,0 +1,20 @@
+# This is an Asset Catalog Definition file for Blender.
+#
+# Empty lines and lines starting with `#` will be ignored.
+# The first non-ignored line should be the version indicator.
+# Other lines are of the format "UUID:catalog/path/for/assets:simple catalog name"
+
+VERSION 1
+
+76a1a55f-b52c-4bf8-afcd-9953fcfd258a:Additions:Additions
+607dbef4-00af-41fc-a819-b8556e765388:Buildings:Buildings
+2eb96171-f578-401f-bc2e-e06bfaf938e8:Close Decor:Close Decor
+4452b4cd-43ec-48c2-ba8a-5a0d288a17c6:Components:Components
+2d1f9c8f-4d21-4957-9418-5e1c470af162:Far Decor:Far Decor
+6fac405d-d372-4be2-86e6-72eb91fce5b7:Geometry:Geometry
+60552992-ca23-4662-a098-0b211e3850cc:Hanging:Hanging
+0619850c-f450-4a6d-9b61-420c40f49fa1:Interactables:Interactables
+b9ae7451-499d-4282-ad12-f6e526ed7a83:Platforms:Platforms
+22ba78b9-7747-4803-895d-9ac1a58f8e06:Rail Decor:Rail Decor
+7de31ebd-2e95-4c22-ba9d-4e81cc2c80bd:Scaffolding:Scaffolding
+7e3d21ba-c692-4434-89f7-2354059befea:Terrain:Terrain

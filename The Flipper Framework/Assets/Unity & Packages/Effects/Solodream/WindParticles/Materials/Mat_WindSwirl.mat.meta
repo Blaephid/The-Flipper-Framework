@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a76bbb402252118448d19ca227838f67
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 278758
+  packageName: Wind Particles for Fan
+  packageVersion: 1.0.0
+  assetPath: Assets/Solodream/WindParticles/Materials/Mat_WindSwirl.mat
+  uploadId: 648146

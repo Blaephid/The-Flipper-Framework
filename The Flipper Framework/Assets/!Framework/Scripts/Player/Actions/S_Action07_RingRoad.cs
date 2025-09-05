@@ -4,8 +4,9 @@ using SplineMesh;
 using System.Collections.Generic;
 
 
+
 [RequireComponent(typeof(S_Handler_RingRoad))]
-public class S_Action07_RingRoad : MonoBehaviour, IMainAction
+public class S_Action07_RingRoad : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -16,25 +17,10 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
 	private S_Handler_RingRoad    _RoadHandler;
-	private S_Control_SoundsPlayer _Sounds;
-
-	private Transform   _MainSkin;
-	private Animator    _CharacterAnimator;
-	private GameObject  _HomingTrailContainer;
-	private GameObject  _HomingTrail;
-	private GameObject  _JumpBall;
 
 	private Spline      _CreatedSpline;
 	#endregion
-
-	//General
-	#region General Properties
 
 	//Stats
 	#region Stats
@@ -46,7 +32,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is.  This is used for transitioning to other actions, by input or interaction.
 
 	public Vector3      _trailOffSet = new Vector3(0,-3,0);	//The trail effect will be away from the player by this.
 
@@ -60,7 +45,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	private List<Transform> _ListOfRingsInRoad = new List<Transform>();
 	#endregion
 
-	#endregion
 	#endregion
 
 	/// <summary>
@@ -87,7 +71,8 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		}
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		CreatePath();
 		_counter++;
 
@@ -96,8 +81,8 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		HandleInputs();
 	}
 
-	public bool AttemptAction () {
-		_RoadHandler._isScanning = true; //This makes it so the scanner will only happen if this method is called by another action (decided in the action manager).
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		if (_Input._InteractPressed && _RoadHandler._TargetRing != null && !enabled)
 		{
 			StartAction();
@@ -107,28 +92,24 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		//Physics
 		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one); //Prevent character moving outside of the path.
-		_PlayerPhys._listOfCanControl.Add(false); //Prevent controlled movement until end of action.
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "RingRoad");
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "RingRoad");
+		//_PlayerPhys._locksForCanControl.Add(false); //Prevent controlled movement until end of action.
 		_PlayerPhys._canChangeGrounded = false;
 		_PlayerPhys.SetIsGrounded(false);
-		_PlayerPhys._listOfIsGravityOn.Add(false);
+		//_PlayerPhys._locksForIsGravityOn.Add(false);
 
 		//Effects
 		_CharacterAnimator.SetTrigger("ChangedState");
 		_JumpBall.SetActive(false);
 		_Sounds.LightSpeedDashSound();
+		_Effects.EnableLargeTrail(1000, false);
 
-		//Trail that follows behind player.
-		if (_HomingTrailContainer.transform.childCount < 1)
-		{
-			GameObject HomingTrailClone = Instantiate (_HomingTrail, _HomingTrailContainer.transform.position, Quaternion.identity) as GameObject;
-			HomingTrailClone.transform.parent = _HomingTrailContainer.transform;
-			HomingTrailClone.transform.localPosition = _trailOffSet;
-		}
 
 		//Ready path. The way this action works is it creates a spline going through each ring target. This created an object with the component to store this data in.
 		GameObject GO = new GameObject("TEMPORARY SPLINE");
@@ -144,35 +125,36 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		_speedBeforeAction = _PlayerVel._horizontalSpeedMagnitude;
 		_Actions._listOfSpeedOnPaths.Add(Mathf.Max(_dashSpeed_, _speedBeforeAction * 1.2f)); //Speed to move at, always faster than was moving before.
 
-		//_directionToGo = _RoadHandler._TargetRing.position - transform.position; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 		_directionToGo = _PlayerVel._worldVelocity.normalized; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.RingRoad);
+		_ActionChain.AddToChain("Light Speed Dash", 2, 1);
+
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.RingRoad);
 		this.enabled = true;
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		Destroy(_CreatedSpline.gameObject); //Since its purpose is fulfiled, remove it to save space.
 
 		//Here to ensure this is always called no matter why the action ends.
 		_Input.LockInputForAWhile(10, false, _MainSkin.forward); //Lock for a moment.
-		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0, 15));
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canDecelerate, 0,"RingRoadTimed", 15));
 
 		_PlayerPhys._canChangeGrounded = true;
-		_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "RingRoad");
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
-		_PlayerPhys._listOfCanControl.RemoveAt(0); //Remove lock on control before this, but add a new delay before control returns.
-		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f));
+		 //Remove lock on control before this, but add a new delay before control returns.
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "RingRoad");
+		StartCoroutine(_PlayerPhys.LockFunctionForTime(S_PlayerPhysics.EnumControlLimitations.canControl, 0.2f, "RingRoadTimed"));
 
 		//End effects
-		for (int i = _HomingTrailContainer.transform.childCount - 1 ; i >= 0 ; i--)
-			Destroy(_HomingTrailContainer.transform.GetChild(i).gameObject);
+		_Effects.EnableLargeTrail(0.4f, false);
 	}
 	#endregion
 
@@ -181,12 +163,6 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
-	public void HandleInputs () {
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
-	}
-
 	private void CreatePath () {
 
 		int lastNode = _CreatedSpline.nodes.Count - 1;
@@ -196,7 +172,7 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 		if (_CreatedSpline.nodes.Count > 2) 
 			_RoadHandler.ScanForRings(new Vector2(1f, 3f), (_CreatedSpline.nodes[lastNode].Position - _CreatedSpline.nodes[lastNode - 1].Position), _CreatedSpline.nodes[lastNode].Position); //Called now because when being performed there needs to be constant updates to targets.
 		else
-			_RoadHandler.ScanForRings(new Vector2(1.2f, 1.5f), _directionToGo, _CreatedSpline.nodes.Count > 0 ? _CreatedSpline.nodes[lastNode].Position : transform.position);
+			_RoadHandler.ScanForRings(new Vector2(1.2f, 1.5f), _directionToGo, _CreatedSpline.nodes.Count > 0 ? _CreatedSpline.nodes[lastNode].Position : _PlayerPhys._CharacterCenterPosition);
 
 		//Goes through the list of targets from closest to furthers (see Handler_RingRoad).
 		for (int i = 0 ; i < _RoadHandler._ListOfCloseTargets.Count ; i++)
@@ -231,14 +207,15 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 			//Get the world transform point of that point on the spline.
 			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_positionAlongPath);
 
+			Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_CreatedSpline.transform, Sample);
 			//Rotate towards the next ring, according to the created spline.
-			_directionToGo = Sample.tangent;
-			Quaternion targetRotation = Quaternion.LookRotation(Sample.tangent);
+			_directionToGo = sampleTransform.forwards;
+			Quaternion targetRotation = sampleTransform.rotation;
 			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, targetRotation, 0.6f);
 
 			//Place player on it (since called in update, not fixed update, won't be too jittery).
-			_PlayerPhys.SetPlayerPosition(Sample.location);
-			_PlayerVel.SetBothVelocities(Sample.tangent * _Actions._listOfSpeedOnPaths[0], Vector2.right); //Ensures each ring will be collected and the move will look smooth even if only updating in FixedUpdate
+			_PlayerPhys.SetPlayerPosition(sampleTransform.location);
+			_PlayerVel.SetBothVelocities(sampleTransform.forwards * _Actions._listOfSpeedOnPaths[0], Vector2.right); //Ensures each ring will be collected and the move will look smooth even if only updating in FixedUpdate
 
 			//_PlayerPhys._horizontalSpeedMagnitude = _Actions._listOfSpeedOnPaths[0];
 		}
@@ -258,11 +235,13 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 
 		//Sends the player in the direction of the end of the spline.
 		CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length - 1);
-		_directionToGo = Sample.tangent;
+		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_CreatedSpline.transform, Sample);
+
+		_directionToGo = sampleTransform.forwards != Vector3.zero ? sampleTransform.forwards : _MainSkin.forward;
 
 		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _directionToGo);
 
-		_PlayerPhys.SetPlayerPosition( Sample.location);
+		_PlayerPhys.SetPlayerPosition(sampleTransform.location);
 		_PlayerVel.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
 
 		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
@@ -291,45 +270,14 @@ public class S_Action07_RingRoad : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.RingRoad)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
-		_Actions = _Tools._ActionManager;
+	public override void AssignTools () {
+		base.AssignTools();
 		_RoadHandler = GetComponent<S_Handler_RingRoad>();
-
-		_Sounds = _Tools.SoundControl;
-		_MainSkin = _Tools.MainSkin;
-		_HomingTrailContainer = _Tools.HomingTrailContainer;
-		_JumpBall = _Tools.JumpBall;
-		_HomingTrail = _Tools.HomingTrail;
-		_CharacterAnimator = _Tools.CharacterAnimator;
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_willCarrySpeed_ = _Tools.Stats.RingRoadStats.willCarrySpeed;
 		_dashSpeed_= _Tools.Stats.RingRoadStats.dashSpeed;
 		_minimumEndingSpeed_ = _Tools.Stats.RingRoadStats.minimumEndingSpeed;

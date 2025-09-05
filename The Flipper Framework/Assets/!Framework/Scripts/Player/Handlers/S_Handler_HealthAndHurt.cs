@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEditor;
 
-public class S_Handler_HealthAndHurt : MonoBehaviour
+public class S_Handler_HealthAndHurt : S_Player_Base
 {
 
 	/// <summary>
@@ -17,25 +17,19 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity      _PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
+
 	private S_Manager_LevelProgress _LevelHandler;
 	[HideInInspector]
 	public S_Interaction_Objects _Objects;
-	private S_Handler_Camera      _CamHandler;
-	private S_Control_SoundsPlayer _Sounds;
 	private S_Handler_CharacterAttacks      _Attacks;
 	private S_Action04_Hurt                 _HurtAction;
 
 	private GameObject            _JumpBall;
-	private Animator              _CharacterAnimator;
 	private List<SkinnedMeshRenderer> _SonicSkins = new List<SkinnedMeshRenderer>();
-	private Transform             _MainSkin;
-	private CapsuleCollider	_CharacterCapsule;
+	private CapsuleCollider _CharacterCapsule;
 	private GameObject            _ShieldObject;
+
+	private S_Control_EffectsPlayer _Effects;
 
 	[HideInInspector]
 	public Image        _FadeOutImage;
@@ -43,39 +37,38 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private GameObject  _MovingRing;
 	private GameObject  _ReleaseDirection;
 
-	public event	EventHandler<float> onRingGet;
 	#endregion
 
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
-	private S_Enums.HurtResponses _whatResponse_;
-	private int		_maxRingLoss_;
-	private float		_ringReleaseSpeed_;
-	private float		_ringArcSpeed_;
-	private int		_invincibilityTime_;
-	private Vector2		_flickerTime_;
-	private float		_damageShakeAmmount_;
-	private float		_enemyHitShakeAmmount_;
-	private AnimationCurve	_RingsLostInSpawnByAmount_;
-	private Vector3		_respawnAfter_;
+	private S_GeneralEnums.HurtResponses _whatResponse_;
+	private int             _maxRingLoss_;
+	private Vector2            _minRingLoss_;
+	private float           _ringReleaseSpeed_;
+	private float           _ringArcSpeed_;
+	private int             _invincibilityTime_;
+	private Vector2         _flickerTime_;
+	private float           _damageShakeAmmount_;
+	private float           _enemyHitShakeAmmount_;
+	private AnimationCurve  _RingsLostInSpawnByAmount_;
+	private Vector4         _respawnAfter_;
 
-	private Vector2		_minSpeedToBonk_;
-	private LayerMask		_BonkWall_;
+	private Vector2         _minSpeedToBonk_;
+	private LayerMask               _BonkWall_;
 	#endregion
 	// Trackers
 	#region trackers
 
 	//Health
-	[HideInInspector]
-	public float _ringAmount;			//The amount of health the player has. Goes down on hit, up on gaining rings.
-	private bool _gainedRingThisFrame;
+
 
 	//States
 	[HideInInspector]
 	public bool         _isHurt;
 	[HideInInspector]
-	public bool         _isInvincible;                //Cannot take damage while this is true. Temporarily set on hit.
+	public List<string>         _locksForInvicibility = new List<string>();                //Set externally (by sequences or items), acts as above.
+
 	[HideInInspector]
 	public bool         _isDead;                      //If the player has been killed
 	[HideInInspector]
@@ -83,16 +76,16 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	[HideInInspector]
 	public bool         _inHurtStateBeforeDamage;     //Frontiers hurt responses mean not takind damage until landing after being hit.
 	[HideInInspector]
-	public bool         _wasHurtWithoutKnockback;	//Frontiers hurt responses mean not takind damage until landing after being hit.
+	public bool         _wasHurtWithoutKnockback;   //Frontiers hurt responses mean not takind damage until landing after being hit.
 
 	//Counters
-	private int         _counter;			//How long is hurt for, when to end invincibility.
-	private float       _flickerCounter;		//When invncible after taking damage, skin will flicker, this handles when to show and hide it.
-	private int         _deadCounter = 0;		//Follows how long the player has been dead to allow respawning and resetting.
+	private int         _counter;                   //How long is hurt for, when to end invincibility.
+	private float       _flickerCounter;            //When invncible after taking damage, skin will flicker, this handles when to show and hide it.
+	private int         _deadCounter = 0;           //Follows how long the player has been dead to allow respawning and resetting.
 
 	//Release rings on hurt
 	private bool        _isReleasingRings = false;
-	private int         _ringsToLose;		//Tracks how many rings to be shot out, doesn't decrease 1 per ring spawned, but does decrease.
+	private int         _ringsToLose;               //Tracks how many rings to be shot out, doesn't decrease 1 per ring spawned, but does decrease.
 	#endregion
 	#endregion
 
@@ -103,12 +96,16 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	#region Inherited
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
-	private void OnEnable () {
-		ReadyScript();
+	public override void Awake () {
+		base.Awake();
+
+		_isDead = true;
+		_deadCounter = (int)_respawnAfter_.z - 1;
 	}
 
 	private void FixedUpdate () {
 		HandleDamaged();
+		TrackDeath();
 
 		//For debugging purposes, kill the player at any time by pressing a button.
 		if (_Input._KillBindPressed)
@@ -120,9 +117,9 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	}
 
 	//Any collisions involved in losing health are here, rather than in the object interaction script.
-	public void EventTriggerEnter ( Collider other ) {
+	public void EventTriggerEnter ( Collider Col ) {
 
-		switch (other.tag)
+		switch (Col.tag)
 		{
 			case "Hazard":
 				DamagePlayer();
@@ -131,20 +128,25 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			case "Enemy":
 				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraShake(_enemyHitShakeAmmount_, 12));
 
-				if (!_Attacks.AttemptAttackOnContact(other, S_Enums.AttackTargets.Enemy))
+				if (!_Attacks.AttemptAttackOnContact(Col, S_GeneralEnums.AttackTargets.Enemy))
 				{
+					if (Col.TryGetComponent(out S_EnemyAttack EnemyAttack))
+						if (!EnemyAttack._isHazzard) { return; }
 					DamagePlayer();
 				}
 				return;
 			case "Pit":
+				if(_isDead) { return; }
 				_Sounds.DieSound();
-				Die();
+				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(new Vector2 (90,0), 0, 0, 0, 0.25f, "Pit")); //The camera will fall back before catching up.
+				Die(false);
 				return;
 		}
 	}
 
 	public void EventCollisionEnter ( Collision collision ) {
-		
+		if (collision == null || !collision.collider) { return; }
+
 		switch (collision.collider.tag)
 		{
 			case "Hazard":
@@ -178,12 +180,11 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		_counter += 1;
 		if (_counter < _invincibilityTime_)
 		{
-			_isInvincible = true;
+			S_S_Logic.AddLockToList(ref _locksForInvicibility, "Damaged");
 			SkinFlicker();
 		}
-		else if(_isInvincible)
+		else if (S_S_Logic.RemoveLockFromList(ref _locksForInvicibility, "Damaged"))
 		{
-			_isInvincible = false;
 			_Actions._ActionDefault.HideCurrentSkins(true);
 		}
 
@@ -222,16 +223,16 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 		if (_ringsToLose > 0)
 		{
 			//Get spawn location
-			Vector3 pos = transform.position;
+			Vector3 pos = _PlayerPhys._CharacterCenterPosition;
 			pos.y += 1;
 
 			//Spawn a ring based on the moving ring prefab and shoot it out away from the player
 			GameObject movingRing = Instantiate(_MovingRing, pos, Quaternion.identity);
 			movingRing.transform.parent = null;
-			movingRing.GetComponent<Rigidbody>().velocity = Vector3.zero;
+			movingRing.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 
 			Vector3 launchDirection = _ReleaseDirection.transform.forward * _ringReleaseSpeed_;
-			launchDirection += new Vector3 (_HurtAction._knockbackDirection.x, 0, _HurtAction._knockbackDirection.z) * 850;// Apply additional force towards where player is beng sent
+			launchDirection += new Vector3(_HurtAction._knockbackDirection.x, 0, _HurtAction._knockbackDirection.z) * 850;// Apply additional force towards where player is beng sent
 			movingRing.GetComponent<Rigidbody>().AddForce(launchDirection, ForceMode.Acceleration); //Apply force out from player
 
 			_ReleaseDirection.transform.Rotate(0, _ringArcSpeed_, 0); //Change the direction to fire ring in next spawn.
@@ -246,7 +247,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	}
 
 	//Called when the player has to die, activating trackers for the death state, and disables control, while still entering the hurt state.
-	private void Die () {
+	private void Die (bool applyResponse = true) {
 		//If not dead already.
 		if (!_isDead)
 		{
@@ -259,89 +260,101 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			_isDead = true;
 
 			//Set public
-			_ringAmount = 0;
-			_PlayerPhys._listOfCanControl.Add(false);
+			if(!_LevelHandler._Spawner)
+				_CoreValues.SetValuesOnRespawn();
+			else
+				_CoreValues.SetValuesOnLevelStart();
+
+			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Dead"); //Does not have to be undone because on respawn, this will be cleared.
 
 			//Enter the hurt action until respawn
-			StartCoroutine(TrackDeath());
-			if (!_HurtAction.enabled) _HurtAction.StartAction();
+			if (!_HurtAction.enabled && applyResponse) _HurtAction.StartAction();
 		}
 	}
 
-	//A coroutine that updates independantly even when the player object is disabled. This handles the different events that happen when dead until respawning.
-	private IEnumerator TrackDeath () {
-		_PlayerPhys._listOfCanControl.Add(false); //Does not have to be undone because on respawn, this will be cleared.
+	private void TrackDeath () {
+		if (!_isDead) { return; }
 
-		while (_isDead)
+		_deadCounter += 1;
+
+		//Start fading out the screen
+		if (_deadCounter > _respawnAfter_.x && _deadCounter < _respawnAfter_.y)
 		{
-			yield return new WaitForFixedUpdate();
-
 			_Input._move = Vector3.zero;
-			_deadCounter += 1;
 
-			//Start fading out the screen
-			if (_deadCounter > _respawnAfter_.x && _deadCounter < _respawnAfter_.y)
+			//Gets the percentage value of the movement from start fade out time to end fade out time
+			float lerpTotal = _respawnAfter_.y - _respawnAfter_.x; //The difference between start and end
+			float lerpAmount = (_deadCounter - _respawnAfter_.x); //The amount after the start
+			lerpAmount = lerpAmount / lerpTotal;    //The progress as a percentage
+
+			//Change colour according to the larp value
+			Color imageColour = Color.black;
+			imageColour.a = 1;
+			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
+		}
+		//When the screen is fully faded, respawn elements
+		else if (_deadCounter == _respawnAfter_.y)
+		{
+			_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
+			_LevelHandler.CallRespawnEvents();
+
+			_counter = _invincibilityTime_; //Ends the counter for flickering so the character will be fully visible on respawn.
+		}
+		//And after being dead for long enough, respawn the player.
+		else if (_deadCounter == _respawnAfter_.z)
+		{
+			ResetStatsOnRespawn();
+			_Input._move = Vector3.zero;
+
+			//Move player back to checkPoint
+			_LevelHandler.ResetToCheckPoint();
+
+			_CharacterCapsule.gameObject.SetActive(true); //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
+			_FadeOutImage.color = Color.black;
+		}
+		//Removed screen overlay to reveal new location
+		else if (_deadCounter > _respawnAfter_.z)
+		{
+			float lerpAmount = (_deadCounter - _respawnAfter_.z); //The amount after the start
+			lerpAmount = lerpAmount / (_respawnAfter_.w - _respawnAfter_.z);    //The progress as a percentage
+
+			//Change colour according to the lerp value
+			Color imageColour = Color.black;
+			imageColour.a = 0;
+			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
+
+			if (_deadCounter == _respawnAfter_.w - 5)
 			{
-				//Gets the percentage value of the movement from start fade out time to end fade out time
-				float lerpTotal = _respawnAfter_.y - _respawnAfter_.x; //The difference between start and end
-				float lerpAmount = (_deadCounter - _respawnAfter_.x); //The amount after the start
-				lerpAmount = lerpAmount / lerpTotal;    //The progress as a percentage
-
-				//Change colour according to the larp value
-				Color imageColour = Color.black;
-				imageColour.a = 1;
-				_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
+				_LevelHandler.LaunchOnRespawn();
+				_LevelHandler.TriggerAnimatorOnRespawn() ;
 			}
-			//When the screen is fully faded, respawn elements
-			else if (_deadCounter == _respawnAfter_.y)
+
+			//End state
+			else if (_deadCounter == _respawnAfter_.w)
 			{
-				_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
-				_LevelHandler.RespawnObjects();
-				_CamHandler.ResetOnDeath();
-
-				_counter = _invincibilityTime_; //Ends the counter for flickering so the character will be fully visible on respawn.
-			}
-			//And after being dead for long enough, respawn the player.
-			else if (_deadCounter == _respawnAfter_.z)
-			{
-				ResetStatsOnRespawn();
-
-				//Move player back to checkPoint
-				_LevelHandler.ResetToCheckPoint();
-
-				_CharacterCapsule.gameObject.SetActive(true); ; //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
-			}
-			//Removed screen overlay to reveal new location
-			else if (_deadCounter > _respawnAfter_.z)
-			{
-				float lerpAmount = (_deadCounter - _respawnAfter_.x); //The amount after the start
-				lerpAmount = lerpAmount / 10;    //The progress as a percentage
-
-				//Change colour according to the lerp value
-				Color imageColour = Color.black;
-				imageColour.a = 0;
-				_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
-
-				//End state
-				if (_deadCounter == _respawnAfter_.z + 10)
-				{
-					_isDead = false;
-					_deadCounter = 0;
-				}
+				_isDead = false;
+				_deadCounter = 0;
 			}
 		}
+		else
+			_Input._move = Vector3.zero;
 	}
 
 	//Returns the player to the state they should be at the start.
-	private void ResetStatsOnRespawn() {
+	private void ResetStatsOnRespawn () {
 		//Visual
 		_CharacterAnimator.SetBool("Dead", false);
 
 		//Reset trackers
-		_PlayerPhys._listOfCanControl.Clear();
-		_PlayerPhys._listOfCanTurns.Clear();
+		_PlayerPhys._locksForCanControl.Clear();
+		_PlayerPhys._locksForIsGravityOn.Clear();
+		_PlayerPhys._locksForCanDecelerate.Clear();
+		_PlayerPhys._locksForCanTurn.Clear();
+
 		_PlayerPhys._canChangeGrounded = true;
-		_PlayerPhys._arePhysicsOn = true;
+		_PlayerPhys._areSpeedChangesEnabled = true;
+
+		_Input.UnLockInput();
 
 		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(0, 0));
 	}
@@ -351,74 +364,93 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	private void CheckBonk () {
 		switch (_Actions._whatCurrentAction)
 		{
-			case S_Enums.PrimaryPlayerStates.Default:
+			case S_S_ActionHandling.PrimaryPlayerStates.Default:
 				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.x) TryBonk();
 				break;
-			case S_Enums.PrimaryPlayerStates.Jump:
+			case S_S_ActionHandling.PrimaryPlayerStates.Jump:
 				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
 				break;
-			case S_Enums.PrimaryPlayerStates.JumpDash:
+			case S_S_ActionHandling.PrimaryPlayerStates.JumpDash:
 				if (_PlayerVel._horizontalSpeedMagnitude > _minSpeedToBonk_.y) TryBonk();
+				break;
+			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
+				TryBonk(transform.up * 0.5f);
 				break;
 		}
 	}
 
 	//Checks walls infront of the character, ready to rebound off if too close.
-	private void TryBonk () {
+	private void TryBonk ( Vector3 offset = default(Vector3) ) {
 
 		Vector3 movingDirection = _PlayerVel._worldVelocity.normalized;
-		float distance = _PlayerVel._horizontalSpeedMagnitude * Time.fixedDeltaTime + 0.2f; //Uses timme.delta time to check where the character should probably be next frame.
-		Vector3 sphereStartOffset = transform.up * (_CharacterCapsule.height / 2); // Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
+		float distance = _PlayerVel._horizontalSpeedMagnitude * Time.fixedDeltaTime + 0.2f; //Uses time.delta time to check where the character should probably be next frame.
+
+		// Since capsule casts take two spheres placed and moved along a direction, this is for the placement of those spheres.
+		Vector3 sphereStart1 =_PlayerPhys._CharacterCenterPositionUpper + offset;
+		Vector3 sphereStart2 =_PlayerPhys._CharacterCenterPositionLower + offset;
+
+		Debug.DrawRay(sphereStart1, movingDirection * distance, Color.red);
+		Debug.DrawRay(sphereStart2, movingDirection * distance, Color.red);
+		Debug.DrawLine(sphereStart1 + (transform.up * _CharacterCapsule.radius * 0.8f),
+			 sphereStart2 - (transform.up * _CharacterCapsule.radius * 0.8f), Color.red);
 
 		//Checks for a wall, and if the direction of it is similar to movement direction, ready bonk.
-		if (Physics.CapsuleCast(transform.position + sphereStartOffset, transform.position,
-			_CharacterCapsule.radius / 1.5f, movingDirection, out RaycastHit wallHit, distance, _BonkWall_))
+		if (Physics.CapsuleCast(sphereStart1, sphereStart2,
+			_CharacterCapsule.radius * 0.8f, movingDirection, out RaycastHit wallHit, distance, _BonkWall_))
 		{
-			float directionAngle = Vector3.Angle(movingDirection, wallHit.point - transform.position); //Difference between moving direction and direction of collision
+			float directionAngle = Vector3.Angle(movingDirection, wallHit.point - _PlayerPhys._CharacterCenterPosition); //Difference between moving direction and direction of collision
 			float intoAngle = Vector3.Angle(movingDirection, wallHit.normal); //Difference between the player movement direction and wall they're going into. 180 means running straight into a wall facing directily flat on.
 			float surfaceAngle = Vector3.Angle(transform.up, wallHit.normal); //Difference between character upwards direction and surface upwards direction
-			if (directionAngle < 80 && surfaceAngle > 50 && intoAngle > 158)
-				StartCoroutine(DelayBonk());
+			if (directionAngle < 80 && surfaceAngle > 60 && intoAngle > 165)
+				StartCoroutine(DelayBonk(wallHit.point, wallHit.normal));
 		}
 	}
 
 	//Since wall climbing and running are based on running into walls, this gives those a chance before bonking.
-	IEnumerator DelayBonk () {
+	IEnumerator DelayBonk (Vector3 point, Vector3 normal) {
 		Vector3 rememberDirection = _MainSkin.forward; //Saves the direction so the player can't rotate from it until bonk is over
 		float rememberSpeed = _PlayerVel._horizontalSpeedMagnitude;
 
-		//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
-		if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.WallClimbing)
+		switch (_Actions._whatCurrentAction)
 		{
-			_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
-			_HurtAction._wasHit = false;
-			_Actions._ActionHurt.StartAction();
-		}
-		else
-		{
-			//Trigger the 3 frame delay, ensuring player can't move or rotate until it is over.
-			for (int i = 0 ; i < 3 ; i++)
-			{
-				yield return new WaitForFixedUpdate();
+			//If already in a wallrunning state, then this can't transition into a wall climb, so rebound off immediately.
+			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
+			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
+				PerformBonk(-_PlayerVel._previousVelocity[1].normalized, point, normal);
+				break;
+			default:
+				//Trigger the 3 frame delay, ensuring player can't move or rotate until it is over.
+				for (int i = 0 ; i < 3 ; i++)
+				{
+					yield return new WaitForFixedUpdate();
 
-				if (_Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Hurt) { break; }
+					if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Hurt) { break; }
 
 					_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
-				_PlayerVel._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
-				_MainSkin.forward = rememberDirection;
-			}
+					_PlayerVel._horizontalSpeedMagnitude = rememberSpeed; //Wont affect velocity, but this will trick trackers using speed into thinking the character is still moving.
+					_MainSkin.forward = rememberDirection;
+				}
 
-			//If still not in a wallrunning state or been hurt, then rebound off the wall.
-			if (_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Hurt)
-			{
-				_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[3].normalized;
-				_HurtAction._wasHit = false;
-				_Actions._ActionHurt.StartAction();
-			}
+				//If still not in a wallrunning state or been hurt, then rebound off the wall.
+				if (_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.WallClimbing && _Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Hurt)
+				{
+					PerformBonk(-_PlayerVel._previousVelocity[3].normalized, point, normal);
+				}
+				break;
 		}
 	}
 
 	#endregion
+
+	private void PerformBonk(Vector3 backwardsDirection, Vector3 point, Vector3 normal ) {
+		_HurtAction._knockbackDirection = backwardsDirection;
+		_HurtAction._wasHit = false;
+
+		_Effects.SpawnBonkParticle(point, normal);
+		_Effects.EnableLargeTrail(0);
+
+		_Actions._ActionHurt.StartAction();
+	}
 
 	/// <summary>
 	/// Public ----------------------------------------------------------------------------------
@@ -429,7 +461,7 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	//Whenever the player has been hit, will trigger the action and deal damage to the health or shield.
 	public void DamagePlayer () {
 
-		if(_isInvincible) { return; }
+		if (_locksForInvicibility.Count > 0) { return; }
 
 		if (!_Actions._ActionHurt.enabled)
 		{
@@ -437,12 +469,12 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			switch (_whatResponse_)
 			{
 				//Damaged immediately but won't be knocked back or have velocity greatly changed.
-				case S_Enums.HurtResponses.Normal:
+				case S_GeneralEnums.HurtResponses.Normal:
 					NormalResponse();
 					break;
-					//If not killed, respond as above, if killed, die immediately, with knockback.
-				case S_Enums.HurtResponses.NormalSansDeathDelay:
-					if (_ringAmount <= 0 && !_hasShield)
+				//If not killed, respond as above, if killed, die immediately, with knockback.
+				case S_GeneralEnums.HurtResponses.NormalSansDeathDelay:
+					if (_CoreValues._ringCount <= 0 && !_hasShield)
 					{
 						DieWithoutDelay();
 					}
@@ -452,23 +484,23 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 					}
 					break;
 				//Damaged immediately and will enter a seperate knockback state.
-				case S_Enums.HurtResponses.ResetSpeed:
+				case S_GeneralEnums.HurtResponses.ResetSpeed:
 					CheckHealth();
 					_HurtAction._knockbackDirection = -_MainSkin.forward;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
 				//Won't be damaged until the EventOnGrounded action in the hurt script. This will then call the CheckHealth script
-				case S_Enums.HurtResponses.Frontiers:
+				case S_GeneralEnums.HurtResponses.Frontiers:
 					_inHurtStateBeforeDamage = true;
 					_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 					_HurtAction._wasHit = true;
 					_HurtAction.StartAction();
 					break;
 				//Same as frontiers response, but if should die, will do so immediately, rather than wait to hit ground.
-				case S_Enums.HurtResponses.FrontiersSansDeathDelay:
+				case S_GeneralEnums.HurtResponses.FrontiersSansDeathDelay:
 					_HurtAction._wasHit = true;
-					if (_ringAmount > 0 || _hasShield)
+					if (_CoreValues._ringCount > 0 || _hasShield)
 					{
 						_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 						_inHurtStateBeforeDamage = true;
@@ -506,11 +538,11 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 			SetShield(false);
 		}
 		//Otherwise, either lose rings or die
-		else if (_ringAmount > 0)
+		else if (_CoreValues._ringCount > 0)
 		{
 			LoseRings();
 		}
-		else if (_ringAmount <= 0)
+		else if (_CoreValues._ringCount <= 0)
 		{
 			Die();
 		}
@@ -519,12 +551,17 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 	//Sets values when hurt, and readies rings to be fired out.
 	public void LoseRings ( float damage = 0 ) {
-		//Gets how many rings to lose. This will typically me the max ring loss, but if that's set to zero, it will be all rings instead.
-		damage = damage <= 0 ? _maxRingLoss_ : damage;
-		damage = damage <= 0 ? _ringAmount : damage;
-		damage = Mathf.Clamp(damage, 0, _ringAmount);
 
-		_ringAmount = (int) _ringAmount - damage; //Ensures it will be decreased to a whole number, not a decimal.
+		//Ensure damage is minimum
+		damage = Mathf.Max(damage, _CoreValues._ringCount * _minRingLoss_.x); //Proportional to current rings
+		damage = Mathf.Max(damage, _minRingLoss_.y);
+
+		damage = Mathf.Min(damage, _maxRingLoss_);
+
+
+		damage = Mathf.Clamp(damage, 0, _CoreValues._ringCount); //Prevent going into negative rings
+
+		_CoreValues.AdjustRings(-(int)damage, false); //Ensures it will be decreased to a whole number, not a decimal.
 
 		//Set time to be in hurt state
 		_counter = 0;
@@ -542,17 +579,18 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 
 
 	//Called when a ring is picked up. Doesn't apply it until the end of the frame to ensure that only one ring is gained per frame, ignoring potential multiple collisions.
-	public IEnumerator GainRing (float amount, Collider col, GameObject Particle) {
-		Instantiate(Particle, col.transform.position, Quaternion.identity);
+	public IEnumerator GainRing ( float amount, Collider col, GameObject Particle ) {
+		Instantiate(Particle, _PlayerPhys._CharacterCenterPosition, Quaternion.identity, transform);
 		Destroy(col.gameObject);
 
-		_gainedRingThisFrame = false;
-
-		float ThisFramesRingCount = _ringAmount;
+		int ThisFramesRingCount = _CoreValues._ringCount;
 		yield return new WaitForEndOfFrame();
 
-		_ringAmount = Mathf.Clamp(ThisFramesRingCount + amount, _ringAmount, ThisFramesRingCount + 100); 
-		if(!_gainedRingThisFrame && onRingGet != null) { onRingGet.Invoke(null, amount); }
+		//Prevents multiple rings being gained in the same frame.
+		if (_CoreValues._ringCount != ThisFramesRingCount + 1)
+		{
+			_CoreValues.AdjustRings(1, true);
+		}
 	}
 
 	//Called whenever the player should gain or lose a shield, which blocks one hit.
@@ -567,50 +605,39 @@ public class S_Handler_HealthAndHurt : MonoBehaviour
 	/// </summary>
 	#region Assigning
 
-	//If not assigned already, sets the tools and stats and gets placement in Action Manager's action list.
-	public void ReadyScript () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			_counter = _invincibilityTime_;
-			_ReleaseDirection = new GameObject();
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_PlayerPhys =		_Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =		_Tools.GetComponent<S_PlayerVelocity>();
-		_Actions =		_Tools._ActionManager;
-		_LevelHandler =		_Actions._ObjectForInteractions.GetComponent<S_Manager_LevelProgress>();
-		_Objects =		_Actions._ObjectForInteractions.GetComponent<S_Interaction_Objects>();
-		_CamHandler = 		_Tools.CamHandler;
-		_Input =			_Tools.GetComponent<S_PlayerInput>();
-		_Attacks =		_Actions._ObjectForInteractions.GetComponent<S_Handler_CharacterAttacks>();
-		_HurtAction =		_Actions._ObjectForActions.GetComponent<S_Action04_Hurt>();
+	public override void AssignTools () {
+		base.AssignTools();
 
-		_FadeOutImage =		_Tools.UISpawner._BaseUIElements.FadeOutBox;
-		_CharacterCapsule =		_Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
-		_MainSkin =		_Tools.MainSkin;
-		_JumpBall =		_Tools.JumpBall;
-		_Sounds =			_Tools.SoundControl;
-		_CharacterAnimator =	_Tools.CharacterAnimator;
+		_LevelHandler = _Actions._ObjectForInteractions.GetComponent<S_Manager_LevelProgress>();
+		_Objects = _Actions._ObjectForInteractions.GetComponent<S_Interaction_Objects>();
+
+		_Attacks = _Actions._ObjectForInteractions.GetComponent<S_Handler_CharacterAttacks>();
+		_HurtAction = _Actions._ObjectForActions.GetComponent<S_Action04_Hurt>();
+
+		_Effects = _Tools.EffectsControl;
+
+		_FadeOutImage = _Tools.UISpawner._BaseUIElements.FadeOutBox;
+		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
+		_JumpBall = _Tools.JumpBall;
+		_Sounds = _Tools.SoundControl;
 
 		_SonicSkins.Add(_Tools.SkinRenderer);
-		_MovingRing =		_Tools.MovingRingObject;
-		_ShieldObject =		_Tools.Shield;
+		_MovingRing = _Tools.MovingRingObject;
+		_ShieldObject = _Tools.Shield;
+
+		AssignStats();
+		_counter = _invincibilityTime_;
+		_ReleaseDirection = new GameObject();
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_invincibilityTime_ = _Tools.Stats.WhenHurt.invincibilityTime;
 		_flickerTime_ = _Tools.Stats.WhenHurt.flickerTimes;
 
-		_maxRingLoss_ = _Tools.Stats.WhenHurt.maxRingLoss;
+		_minRingLoss_ = _Tools.Stats.CoreValuesStats.minRingLoss;
+		_maxRingLoss_ = _Tools.Stats.CoreValuesStats.maxRingLoss;
 		_ringReleaseSpeed_ = _Tools.Stats.WhenHurt.ringReleaseSpeed;
 		_ringArcSpeed_ = _Tools.Stats.WhenHurt.ringArcSpeed;
 		_RingsLostInSpawnByAmount_ = _Tools.Stats.WhenHurt.RingsLostInSpawnByAmount;

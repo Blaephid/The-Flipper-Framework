@@ -1,0 +1,129 @@
+fileFormatVersion: 2
+guid: 9ceafdf3f648de847aad12d6bd4df86e
+timeCreated: 1429778417
+licenseType: Store
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Mesh_0490
+    100004: Mesh_0657
+    100006: Mesh_0659
+    100008: Mesh_0660
+    100010: Mesh_0661
+    100012: Mesh_0663
+    100014: Mesh_0664
+    100016: Mesh_0665
+    100018: Mesh_0667
+    100020: Mesh_0844
+    100022: Mesh_0848
+    400000: //RootNode
+    400002: Mesh_0490
+    400004: Mesh_0657
+    400006: Mesh_0659
+    400008: Mesh_0660
+    400010: Mesh_0661
+    400012: Mesh_0663
+    400014: Mesh_0664
+    400016: Mesh_0665
+    400018: Mesh_0667
+    400020: Mesh_0844
+    400022: Mesh_0848
+    2300000: Mesh_0490
+    2300002: Mesh_0657
+    2300004: Mesh_0659
+    2300006: Mesh_0660
+    2300008: Mesh_0661
+    2300010: Mesh_0663
+    2300012: Mesh_0664
+    2300014: Mesh_0665
+    2300016: Mesh_0667
+    2300018: Mesh_0844
+    2300020: Mesh_0848
+    3300000: Mesh_0490
+    3300002: Mesh_0657
+    3300004: Mesh_0659
+    3300006: Mesh_0660
+    3300008: Mesh_0661
+    3300010: Mesh_0663
+    3300012: Mesh_0664
+    3300014: Mesh_0665
+    3300016: Mesh_0667
+    3300018: Mesh_0844
+    3300020: Mesh_0848
+    4300000: Mesh_0490
+    4300002: Mesh_0657
+    4300004: Mesh_0659
+    4300006: Mesh_0660
+    4300008: Mesh_0661
+    4300010: Mesh_0663
+    4300012: Mesh_0664
+    4300014: Mesh_0665
+    4300016: Mesh_0667
+    4300018: Mesh_0844
+    4300020: Mesh_0848
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Models/Dragon.obj
+  uploadId: 243278

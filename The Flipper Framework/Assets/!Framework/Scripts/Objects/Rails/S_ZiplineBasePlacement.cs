@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SplineMesh;
+using static UnityEngine.ParticleSystem;
 
 [ExecuteInEditMode]
 public class S_ZiplineBasePlacement : MonoBehaviour
@@ -21,7 +22,9 @@ public class S_ZiplineBasePlacement : MonoBehaviour
         {
             if (Rail == null) GetComponentInParent<Spline>();
             CurveSample sample = (!isEnd) ? Rail.GetSampleAtDistance(Range) : Rail.GetSampleAtDistance(Rail.Length - Range);
-            transform.position = Rail.transform.position + (Rail.transform.rotation * sample.location);
+			Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(Rail.transform, sample);
+
+			transform.position = sampleTransform.location;
 
 
             Vector3 dir = Vector3.zero;

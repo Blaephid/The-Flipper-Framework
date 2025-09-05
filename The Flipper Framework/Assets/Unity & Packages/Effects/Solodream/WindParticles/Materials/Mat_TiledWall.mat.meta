@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3308190effeeb6c458044f8f5b18b73a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 278758
+  packageName: Wind Particles for Fan
+  packageVersion: 1.0.0
+  assetPath: Assets/Solodream/WindParticles/Materials/Mat_TiledWall.mat
+  uploadId: 648146

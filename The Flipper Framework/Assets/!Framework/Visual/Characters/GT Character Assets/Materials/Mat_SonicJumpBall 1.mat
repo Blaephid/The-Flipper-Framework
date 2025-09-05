@@ -19,7 +19,8 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -107,11 +108,11 @@ Material:
     - _BumpScale: 1
     - _Bump_Power: 0.54
     - _CenterPower: 20
-    - _Center_Power: 30
+    - _Center_Power: 32.76
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Emission: 0.4
+    - _Emission: 0.8
     - _FadeMax: 4
     - _FadeMin: 2
     - _GlossMapScale: 1
@@ -125,8 +126,8 @@ Material:
     - _QueueOffset: 0
     - _Reflectivity: 0
     - _RimPower: 3.7
-    - _Rim_Power: 4
-    - _Smoothness: 0.168
+    - _Rim_Power: 7.14
+    - _Smoothness: 0.325
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -139,7 +140,7 @@ Material:
     - _Center_Color: {r: 0.19037023, g: 0.3154668, b: 0.5849056, a: 0}
     - _Center_Modifier: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Dif_Color: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
+    - _Dif_Color: {r: 0, g: 0.40874764, b: 0.5943396, a: 0}
     - _DifuseColor: {r: 0.83823526, g: 0.83823526, b: 0.83823526, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 0.0627451, g: 3.4196079, b: 5.992157, a: 1}
@@ -148,6 +149,7 @@ Material:
     - _Rim_Modifier: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &5141926322209774786
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -160,4 +162,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 7
+  version: 10

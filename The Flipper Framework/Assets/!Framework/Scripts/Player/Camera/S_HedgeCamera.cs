@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Cinemachine;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 //using UnityEngine.UIElements;
 
 [RequireComponent(typeof(CinemachineVirtualCamera))]
@@ -19,11 +22,13 @@ public class S_HedgeCamera : MonoBehaviour
 
 	public S_PlayerPhysics        _PlayerPhys;
 	private S_PlayerVelocity       _PlayerVel;
-	private S_PlayerMovement	_PlayerMovement;
-	public Transform              _Skin;
+	private S_PlayerMovement            _PlayerMovement;
 	private S_ActionManager        _Actions;
 	public S_PlayerInput          _Input;
 
+	[Header("Objects")]
+	public Transform              _Skin;
+	public Transform              _PlayerMainBody;
 	[Header("Target Levels")]
 	public Transform              _BaseTarget;
 	public Transform               _FinalTarget;
@@ -33,11 +38,15 @@ public class S_HedgeCamera : MonoBehaviour
 	public Transform               _TargetByAngle;
 	public Transform              _PlayerTransformCopy;
 
+	//Handling targets being reparented
+	private Vector3                     _BaseTargetStart;
+	private Transform       _CurrentReparentedTarget;
+	private Transform                   _movedTargetsPreviousParent;
 
 	[Header("Cameras")]
 
 	public CinemachineVirtualCamera         _SecondaryCamera;
-	private CinemachineBrain		_MainCameraBrain;
+	private CinemachineBrain                        _MainCameraBrain;
 
 	private Transform              _PlayerTransformReal;
 
@@ -46,57 +55,56 @@ public class S_HedgeCamera : MonoBehaviour
 	private CinemachineFramingTransposer              _Transposer;
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See camera stats scriptable objects for details
 	#region Stats
 	[HideInInspector]
 	public bool                   _shouldSetHeightWhenMoving_;
-	private float                 _lockHeightSpeed_;
-	private bool                  _shouldFaceDownWhenInAir_;
-	private float                 _minHeightToLookDown_ = 50;
-	private float                 _heightToLock_;
-	private float                 _heightFollowSpeed_;
-	private float                 _fallSpeedThreshold_;
+	[NonSerialized] public float                 _lockHeightSpeed_;
+	[NonSerialized] public bool                  _shouldFaceDownWhenInAir_;
+	[NonSerialized] public float                 _minHeightToLookDown_ = 50;
+	[NonSerialized] public float                 _heightToLock_;
+	[NonSerialized] public float                 _heightFollowSpeed_;
+	[NonSerialized] public float                 _fallSpeedThreshold_;
 
 	[HideInInspector]
 	public float                  _cameraMaxDistance_ = 11;
 	private AnimationCurve        _cameraDistanceBySpeed_;
-	private bool                  _shouldAffectDistanceBySpeed_;
-	private Vector3               _angleThreshold_;
+	[NonSerialized] public bool                  _shouldAffectDistanceBySpeed_;
+	[NonSerialized] public Vector2               _angleThreshold_;
 
-	private bool                  _shouldAffectFOVBySpeed_;
-	private float                 _baseFOV_;
+	[NonSerialized] public bool                  _shouldAffectFOVBySpeed_;
+	[HideInInspector]
+	public float                 _baseFOV_;
 	private AnimationCurve        _cameraFOVBySpeed_;
 
-	private Vector3               _dampingBehind_;
-	private Vector3               _dampingInFront_;
+	[NonSerialized] public Vector3               _dampingBehind_;
+	[NonSerialized] public Vector3               _dampingInFront_;
 
-	private float                 _cameraVerticalRotationSpeed_ = 10;
+	[NonSerialized] public float                 _cameraVerticalRotationSpeed_ = 10;
 	private AnimationCurve        _VerticalFollowSpeedByAngle_;
 
-	private float                 _inputXSpeed_ = 1;
-	private float                 _inputYSpeed_ = 0.5f;
+	[NonSerialized] public float                 _inputXSpeed_ = 1;
+	[NonSerialized] public float                 _inputYSpeed_ = 0.5f;
 
-	private float                 _afterMoveXDelay_ = 0.3f;
-	private float                 _afterMoveYDelay_ = 0.5f;
+	[NonSerialized] public float                 _afterMoveXDelay_ = 0.3f;
+	[NonSerialized] public float                 _afterMoveYDelay_ = 0.5f;
 
-	private float                 _stationaryCamIncrease_ = 1.2f;
+	[NonSerialized] public float                 _stationaryCamIncrease_ = 1.2f;
 
-	private float                 _yMinLimit_ = -20f;
-	private float                 _yMaxLimit_ = 80f;
+	[NonSerialized] public float                 _yMinLimit_ = -20f;
+	[NonSerialized] public float                 _yMaxLimit_ = 80f;
 
 	[HideInInspector]
 	public float                  _lockCamAtSpeed_ = 130;
 
-	private float                 _shakeDampen_;
-	private float                  _rotateToBehindSpeed_;
-	private float                  _rotateCharacterBeforeCameraFollows_;
-	private float                 _followFacingDirectionSpeed_;
+	[NonSerialized] public float                 _shakeDampen_;
+	[NonSerialized] public float                  _rotateToBehindSpeed_;
+	[NonSerialized] public float                  _rotateCharacterBeforeCameraFollows_;
+	[NonSerialized] public float                 _followFacingDirectionSpeed_;
 
-	private float                 _inputPredictonDistance_;
-	private float                 _cameraMoveToInputSpeed_;
+	[NonSerialized] public float                 _inputPredictonDistance_;
+	[NonSerialized] public float                 _cameraMoveToInputSpeed_;
 
 
 	LayerMask                     _CollidableLayers_;
@@ -114,13 +122,13 @@ public class S_HedgeCamera : MonoBehaviour
 	public float                  _startLockCam;
 	private bool                  _isFacingDown = false;
 
-	private float                 _posX = 0.0f;
-	private float                 _preX = 0.0f;
+	private float                 _xPositionOfCamera = 0.0f;
+	private float                 _xPrevious = 0.0f;
 
 	[HideInInspector]
-	public float                  _posY = 20.0f;
+	public float                  _yPositionOfCamera = 20.0f;
 	[HideInInspector]
-	public float                  _preY = 20.0f;
+	public float                  _yPrevious = 20.0f;
 
 	private float                 _changeY;
 	private float                 _changeX;
@@ -133,31 +141,67 @@ public class S_HedgeCamera : MonoBehaviour
 	[HideInInspector]
 	public bool                   _isLocked;
 	[HideInInspector]
-	public bool                   _canMove;
+	public bool             _isYLocked;
+	[HideInInspector]
+	public bool             _isXLocked;
 	[HideInInspector]
 	public bool                   _isMasterLocked;
 	private float                 _heightToLook;
-	[HideInInspector]
-	public float                  _lookTimer;
+
+	private float _backingLookTimer;
+	public float _lookTimer { get { return _backingLookTimer; } set { _backingLookTimer = value; } }
+
 	private float                 _backBehindTimer;
 	private float                 _equalHeightTimer;
+
+	public float _currentDistance { get; private set; }
+	public float _currentFOV { get; private set; }
+
 	[HideInInspector]
 	public float                  _lockedRotationSpeed;
 	private Vector3                _currentFaceDirection;
 	private bool                  _isRotatingBehind;
+	private float                   _stickToPlayerSpeed;
 
+	[HideInInspector]
+	public bool _canAffectDistanceBySpeed {
+		get { return _canAffectDistanceBySpeedBacker; }
+		set
+		{
+			_canAffectDistanceBySpeedBacker = value;
+		}
+	}
+	public bool                     _canAffectDistanceBySpeedBacker = true;
+
+	public bool _canAffectFOVBySpeed {
+		get { return _canAffectFOVBySpeedBacker; }
+		set
+		{
+			_canAffectFOVBySpeedBacker = value;
+		}
+	}
+
+	public bool                     _canAffectFOVBySpeedBacker = true;
 
 	private float                 _lockTimer;
-	[HideInInspector]
-	public bool                   _isReversed;
 
 	//Effects
-	private Vector3               _lookAtDir;
+	[NonSerialized]
+	public Vector3               _lookAtDirection; //A direction in world space the camera will aim to look towards. Usually set by Camera Triggers
+	[NonSerialized]
+	public Transform              _lookAtLockOn;  //If not null, will update the above every frame to be the direction of this object.
 	private bool                  _willChangeHeight;
 	private bool                  _isPlayerTransformCopyControlledExternally;
-	private Quaternion            _externalAlignment;
 
-	private float                 _distanceModifier = 1;
+	private bool                        _rotateToLocalDirection;
+	private Vector3                     _localLookAtDirection;
+	private Vector3                      _previousTranslatedLocalLookAtDirection;
+	private bool                     _isCurrentlyRotationTowardsLocalDirection = true;
+
+	[HideInInspector]
+	public float                 _distanceModifier = 1;
+	[HideInInspector]
+	public float                 _FOVModifier = 1;
 
 	[HideInInspector]
 	public float                  _invertedX = 1;
@@ -172,10 +216,17 @@ public class S_HedgeCamera : MonoBehaviour
 
 	private Vector3               _predictAheadPosition;
 	private Vector3               _AngleOffset;
+
+	[HideInInspector]
+	public List<string>             _locksForCameraFallBack = new List<string>();
+	private string          _currentSourceOfFallBack = "";
+	private Vector3                 _startPositionOfFallBack;
+	private float            _lerpSpeedOfFallBack;
+
 	#endregion
 
 	#endregion
-	#endregion
+
 
 	/// <summary>
 	/// Inherited ----------------------------------------------------------------------------------
@@ -189,6 +240,8 @@ public class S_HedgeCamera : MonoBehaviour
 
 		SetTools();
 		SetStats();
+
+		_BaseTargetStart = _BaseTarget.transform.position - _Skin.position;
 
 		//Deals with cursor 
 		Cursor.visible = false;
@@ -222,13 +275,16 @@ public class S_HedgeCamera : MonoBehaviour
 	private void HandleCameraMovement () {
 
 		//Set to the change this frame can be tracked.
-		_preY = _posY;
-		_preX = _posX;
+		_yPrevious = _yPositionOfCamera;
+		_xPrevious = _xPositionOfCamera;
 
 		//If LookTimer is currently below zero, then direct the camera towards the point of interest
 		if (_lookTimer < 0 || _lookTimer == 1)
 		{
-			RotateDirection(_lookAtDir, _lockedRotationSpeed, _heightToLook, _willChangeHeight);
+			if (_lookAtLockOn)
+			{ _lookAtDirection = (_lookAtLockOn.position - _Skin.position).normalized; }
+
+			RotateDirection(_lookAtDirection, _lockedRotationSpeed, _heightToLook, _willChangeHeight);
 
 			//Count down timer to zero
 			if (_lookTimer < 0)
@@ -242,21 +298,22 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 
 		//Changes the x and y values of the camera by input, changing speed based on a number of factors, such as if stationary and external modifiers.
-		if (!_isLocked && _canMove)
-		{
-			float camMoveSpeed = _PlayerVel._speedMagnitudeSquared > 100 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
-			camMoveSpeed *= _moveModifier;
-			float movementX = _Input.moveCamX * _inputXSpeed_ * _invertedX;
-			float movementY = _Input.moveCamY * _inputYSpeed_ * _invertedY;
-			_moveModifier = Mathf.MoveTowards(_moveModifier, 1, Time.deltaTime);
 
-			_posX += movementX * camMoveSpeed;
-			_posY -= movementY * camMoveSpeed;
-		}
+		float camMoveSpeed = _PlayerVel._speedMagnitudeSquared > 100 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
+		camMoveSpeed *= _moveModifier;
+		float movementX = _Input.moveCamX * _inputXSpeed_ * _invertedX;
+		float movementY = _Input.moveCamY * _inputYSpeed_ * _invertedY;
+		_moveModifier = Mathf.MoveTowards(_moveModifier, 1, Time.deltaTime);
+
+		if (!_isXLocked)
+			_xPositionOfCamera += movementX * camMoveSpeed;
+		if (!_isYLocked)
+			_yPositionOfCamera -= movementY * camMoveSpeed;
+
 
 		//Pres were assigned in the movement script and this is used to see how much was changed this frame. 
-		_changeY = Mathf.Abs(_preY - _posY);
-		_changeX = Mathf.Abs(_preX - _posX);
+		_changeY = Mathf.Abs(_yPrevious - _yPositionOfCamera);
+		_changeX = Mathf.Abs(_xPrevious - _xPositionOfCamera);
 
 		//If the camera was changed, then ready the delay before automoving.
 		if (_changeY > 0.5f || _changeX > 0.5f)
@@ -303,7 +360,7 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 
 		//Apply, ensuring matches player rotation.
-		_TargetByInput.localPosition = _PlayerPhys.GetRelevantVector(_predictAheadPosition);
+		_TargetByInput.position =_TargetByInput.parent.position + _predictAheadPosition;
 		_TargetByAngle.localPosition = Vector3.zero;
 		_TargetByAngle.position += _AngleOffset;
 
@@ -330,7 +387,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Handles the PlayerTransformCopy, making it match the actual player, or its own angle. This will later be used as a reference for the camera to rotate around.
 	void AlignPlayerTransformCopy () {
-		if(_isPlayerTransformCopyControlledExternally) { return; }
+		if (_isPlayerTransformCopyControlledExternally) { return; }
 		Quaternion newRot = _PlayerTransformCopy.rotation;
 		Quaternion targetRot = Quaternion.identity;
 		bool willLerp = false;
@@ -340,7 +397,7 @@ public class S_HedgeCamera : MonoBehaviour
 		if (_PlayerTransformReal.up.y < _angleThreshold_.x || _PlayerTransformCopy.up.y < 1f)
 		{
 			//If exited angle limit, new target is facing up again, otherwise, only aim to change up direction
-			if (_PlayerTransformReal.up.y > _angleThreshold_.y) 
+			if (_PlayerTransformReal.up.y > _angleThreshold_.y)
 				targetRot = Quaternion.FromToRotation(_PlayerTransformCopy.up, Vector3.up) * _PlayerTransformCopy.rotation;
 			else
 				targetRot = Quaternion.FromToRotation(_PlayerTransformCopy.up, _PlayerTransformReal.up) * _PlayerTransformCopy.rotation;
@@ -390,7 +447,6 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Sets the camera a distance away from the player, either by adjusting the cinemachine or placing manually.
 	void HandleCameraDistance () {
-		_distanceModifier = 1;
 
 		//Set up variables to limit the view changes.
 		Vector3 actionModifier = GetDistanceModifiedByAction();
@@ -401,24 +457,31 @@ public class S_HedgeCamera : MonoBehaviour
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
 		if (_shouldAffectDistanceBySpeed_)
 		{
-			float targetDistance = _cameraDistanceBySpeed_.Evaluate(speedPercentage);
-			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistance, 0.1f);
+			float targetDistanceModi = _cameraDistanceBySpeed_.Evaluate(speedPercentage);
+			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistanceModi, 0.1f);
 		}
 
 		//To make the player feel faster than they are, changes camera Field Of View based on speed.
-		if(_shouldAffectFOVBySpeed_)
+		if (_shouldAffectFOVBySpeed_)
 		{
-			float targetFOV = _cameraFOVBySpeed_.Evaluate(speedPercentage) * _baseFOV_;
-			_VirtualCamera.m_Lens.FieldOfView = Mathf.Lerp(_VirtualCamera.m_Lens.FieldOfView, targetFOV, 0.2f);
-			_SecondaryCamera.m_Lens.FieldOfView = _VirtualCamera.m_Lens.FieldOfView;
+			float targetFOVModi = _cameraFOVBySpeed_.Evaluate(speedPercentage);
+			_FOVModifier = Mathf.Lerp(_FOVModifier, targetFOVModi, 0.2f);
 		}
 
-		float dist = _cameraMaxDistance_ * _distanceModifier;
+		//If the _can values are false, modifiers will still be calculated, just not applied. This ensures smooth transitions when toggling these.
+		float useDistanceModifier = _canAffectDistanceBySpeed ? _distanceModifier : 1;
+		float useFOVModifier = _canAffectFOVBySpeed ? _FOVModifier : 1;
+
+		float dist = _cameraMaxDistance_ * useDistanceModifier;
+		_VirtualCamera.m_Lens.FieldOfView = _baseFOV_ * useFOVModifier;
+		_SecondaryCamera.m_Lens.FieldOfView = _baseFOV_ * useFOVModifier;
+		_currentFOV = _baseFOV_ * useFOVModifier;
 
 		//If the object has a virtual camera set to framing transposer, then that will handle placement on its own.
 		if (_Transposer && _VirtualCamera.enabled)
 		{
 			_Transposer.m_CameraDistance = dist;
+			_currentDistance = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, _FinalTarget.position);
 		}
 		//If not, position is calculated by distance and if there is a wall in the way.
 		else
@@ -437,16 +500,19 @@ public class S_HedgeCamera : MonoBehaviour
 			//Get position by moving from the camera anchor in a backwards direction relative to the overall rotation.
 			var position = _lerpedRot * new Vector3(0, 0, dist + 0.3f);
 			transform.position = _FinalTarget.position + position + _hitNormal;
+
+			_currentDistance = dist;
 		}
 
 	}
 
 	//The distance and FOV the camera changes can depend on the action (where some require greater zoom out). This returns the modifier, and min and max values.
 	private Vector3 GetDistanceModifiedByAction () {
-		switch (_Actions._whatCurrentAction) {
+		switch (_Actions._whatCurrentAction)
+		{
 			default:
 				return new Vector3(0, 1, 1);
-			case S_Enums.PrimaryPlayerStates.WallClimbing:
+			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
 				return new Vector3(0.6f, 1.3f, 1);
 		}
 	}
@@ -473,14 +539,15 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//Handles the height or direction of the camera based on certain situations such as when falling for too long.
 	void HandleCameraSituations () {
+		AutoRotateCamera();
 
 		if (_isLocked) { return; }
 
 		//Changing camera height
-		float verticalSpeed = _PlayerTransformReal.InverseTransformDirection(_PlayerPhys._RB.velocity).y;
+		float verticalSpeed = _PlayerTransformReal.InverseTransformDirection(_PlayerPhys._RB.linearVelocity).y;
 
 		//Making the camera face down when in the air for long enough.
-		bool isRightAction = _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Jump || _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.Default || _Actions._whatCurrentAction == S_Enums.PrimaryPlayerStates.DropCharge;
+		bool isRightAction = _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Jump || _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Default || _Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.DropCharge;
 
 		if (_shouldFaceDownWhenInAir_ && !_PlayerPhys._isGrounded && verticalSpeed < _fallSpeedThreshold_ && isRightAction)
 		{
@@ -510,43 +577,81 @@ public class S_HedgeCamera : MonoBehaviour
 				ChangeHeight(_heightToLock_, _lockHeightSpeed_);
 		}
 
-		AutoRotateCamera();
 	}
 
 	//Handles when the camera will rotate to direction automatically, mainly rotating behind the character when running.
 	private void AutoRotateCamera () {
-		//Changing camera direction
-		if (_backBehindTimer < 0)
-			_backBehindTimer += Time.deltaTime;
 
-		//Certain actions will have different requirements for the camera to move behind. The switch sets the requirements before the if statement checks against them.
-		float minSpeed;
-		bool skipDelay = false;
-		switch (_Actions._whatCurrentAction)
-		{
-			default:
-				minSpeed = _lockCamAtSpeed_;
-				break;
-			case S_Enums.PrimaryPlayerStates.WallRunning:
-				minSpeed = 60;
-				skipDelay = true;
-				break;
-			case S_Enums.PrimaryPlayerStates.Homing:
-				minSpeed = 0;
-				break;
+		HandleRotatingBehindCharacter();
+		HandleSetLocalRotation();
+
+		return;
+		void HandleRotatingBehindCharacter () {
+			//Changing camera direction
+			if (_backBehindTimer < 0)
+				_backBehindTimer += Time.deltaTime;
+
+			//Certain actions will have different requirements for the camera to move behind. The switch sets the requirements before the if statement checks against them.
+			float minSpeed;
+			bool skipDelay = false;
+			switch (_Actions._whatCurrentAction)
+			{
+				default:
+					minSpeed = _lockCamAtSpeed_;
+					break;
+				case S_S_ActionHandling.PrimaryPlayerStates.WallRunning:
+					minSpeed = 60;
+					skipDelay = true;
+					break;
+				case S_S_ActionHandling.PrimaryPlayerStates.Homing:
+					minSpeed = 0;
+					break;
+			}
+
+			float dif = Vector3.Angle(GetFaceDirection(transform.forward), _currentFaceDirection) / 180;
+
+			//If moving fast enough, the delay from moving the camera has expired, and the player is facing a different enough angle to the camera, then it will move behind. MinSpeed at 0 means it won't happen.
+			if (_PlayerVel._horizontalSpeedMagnitude > minSpeed && minSpeed > 0 && ((_backBehindTimer >= 0 && (dif >= _rotateCharacterBeforeCameraFollows_ || _isRotatingBehind)) || skipDelay))
+			{
+				GoBehindCharacter(_rotateToBehindSpeed_, 0, false);
+			}
+			else if (_PlayerVel._horizontalSpeedMagnitude < minSpeed)
+			{
+				_isRotatingBehind = false;
+			}
+			//_CurrentFaceDirection is used to add a delay to rotating before the camera starts following. It moves towards the player rotation, and GoBehindCharacter sets isRotatingBehind to true until rotation is completed, resetting the delay.
+			if (!_isRotatingBehind)
+			{
+				_currentFaceDirection = Vector3.RotateTowards(_currentFaceDirection, GetFaceDirection(_Skin.forward), Mathf.Deg2Rad * _followFacingDirectionSpeed_, 0);
+			}
 		}
 
-		float dif = Vector3.Angle(GetFaceDirection(transform.forward), _currentFaceDirection) / 180;
+		//This is set externally, and every frame will rotate towards the intended local rotation. This means rather than looking at a world space direction, the camera stays at the same point relative to the 
+		//characters rotation. Similar to rotating behind the character, but for any angle, not just directly behind.
+		void HandleSetLocalRotation () {
+			if (_isRotatingBehind || !_rotateToLocalDirection) { return; }
+			if (_lookTimer < 0 || _lookTimer == 1) { return; } //Only take control if not being directed to look in a different direction.
 
-		//If moving fast enough, the delay from moving the camera has expired, and the player is facing a different enough angle to the camera, then it will move behind. MinSpeed at 0 means it won't happen.
-		if (_PlayerVel._horizontalSpeedMagnitude > minSpeed && minSpeed > 0 && ((_backBehindTimer >= 0 && (dif >= _rotateCharacterBeforeCameraFollows_ || _isRotatingBehind)) || skipDelay))
-		{
-			GoBehindCharacter(_rotateToBehindSpeed_, 0, false);
-		}
-		//_CurrentFaceDirection is used to add a delay to rotating before the camera starts following. It moves towards the player rotation, and GoBehindCharacter sets isRotatingBehind to true until rotation is completed, resetting the delay.
-		if (!_isRotatingBehind)
-		{
-			_currentFaceDirection = Vector3.RotateTowards(_currentFaceDirection, GetFaceDirection(_Skin.forward), Mathf.Deg2Rad * _followFacingDirectionSpeed_, 0);
+			Vector3 directionInWorldSpace = _Skin.transform.rotation * _localLookAtDirection;
+			float turnThisFrame = Vector3.Angle(directionInWorldSpace, _previousTranslatedLocalLookAtDirection);
+
+			//To prevent the camera doing a huge turn if the character justs turns around. If they start facing the other way, change the location to look at to match on the other side
+			if (_previousTranslatedLocalLookAtDirection != Vector3.zero && turnThisFrame > 26 && _isCurrentlyRotationTowardsLocalDirection)
+			{
+				_localLookAtDirection *= -1;
+				directionInWorldSpace *= -1;
+				_isCurrentlyRotationTowardsLocalDirection = false;
+			}
+			//After the player slows their turn, return to rotating to the new direction.
+			else if (!_isCurrentlyRotationTowardsLocalDirection && turnThisFrame < 0.03f)
+			{
+				_isCurrentlyRotationTowardsLocalDirection = true;
+			}
+
+			_previousTranslatedLocalLookAtDirection = directionInWorldSpace;
+
+			if (turnThisFrame < 25 && _isCurrentlyRotationTowardsLocalDirection)
+				RotateDirection(directionInWorldSpace, _stickToPlayerSpeed, 0, false);
 		}
 	}
 
@@ -557,16 +662,16 @@ public class S_HedgeCamera : MonoBehaviour
 		transform.rotation = _lerpedRot;
 
 		//Keeps horizontal and vertical positons always represented within 360 degrees
-		_posX = ClampAngleX(_posX, -1, 361);
-		_posY = ClampAngleY(_posY, _yMinLimit_, _yMaxLimit_);
+		_xPositionOfCamera = ClampAngleX(_xPositionOfCamera, -1, 361);
+		_yPositionOfCamera = ClampAngleY(_yPositionOfCamera, _yMinLimit_, _yMaxLimit_);
 
 		//Takes the x and y positions as euler angles around the player.
-		_lerpedRot = Quaternion.Euler(_posY, _posX, 0);
+		_lerpedRot = Quaternion.Euler(_yPositionOfCamera, _xPositionOfCamera, 0);
 		_lerpedRot = _PlayerTransformCopy.rotation * _lerpedRot;
 	}
 
 	private void ApplyCameraEffects () {
-
+		KeepFallBackCameraFollowing();
 	}
 
 
@@ -589,16 +694,9 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 		_lockHeightSpeed_ = initialFollow;
 	}
-	#endregion
-
-	/// <summary>
-	/// Public ----------------------------------------------------------------------------------
-	/// </summary>
-	/// 
-	#region public 
 
 	//Causes the camera to turn around to face a designated vector direction in world space.
-	public void RotateDirection ( Vector3 dir, float speed, float height, bool changeHeight ) {
+	private void RotateDirection ( Vector3 dir, float speed, float height, bool changeHeight ) {
 
 		dir = dir == Vector3.zero ? transform.forward : dir;
 
@@ -612,12 +710,13 @@ public class S_HedgeCamera : MonoBehaviour
 
 		//Lerp can't compute looping where -1 is actually 359. This lies to it about having higher and lower values so it moves accurately. These are then back to within 360 later.
 		float xSpeed = speed;
-		//if (_posX < 90 && eulerY > 270) { eulerY -= 360; }
-		//else if (_posX > 270 && eulerY < 90) { eulerY += 360; }
-		if (_posX - eulerY < -180) { eulerY -= 360; }
-		else if (eulerY - _posX < -180) { eulerY += 360; }
 
-		_posX = Mathf.Lerp(_posX, eulerY, Time.deltaTime * xSpeed);
+		if (_xPositionOfCamera - eulerY < -180) { eulerY -= 360; }
+		else if (eulerY - _xPositionOfCamera < -180) { eulerY += 360; }
+
+		xSpeed = xSpeed < 0 ? 1 : xSpeed * Time.deltaTime;
+
+		_xPositionOfCamera = Mathf.Lerp(_xPositionOfCamera, eulerY, xSpeed);
 		//True either if hieght is set manually, or told to include vertical in look direction.
 		if (changeHeight)
 		{
@@ -629,11 +728,19 @@ public class S_HedgeCamera : MonoBehaviour
 			//If height was not preset, then use this.
 			height = height != 0 ? height : yTarget;
 
-			_posY = Mathf.MoveTowards(_posY, height, speed);
+			float ySpeed = speed < 0 ? 10000 : speed;
+			_yPositionOfCamera = Mathf.MoveTowards(_yPositionOfCamera, height, ySpeed);
 		}
 	}
+	#endregion
 
-	public IEnumerator KeepGoingBehindCharacterForFrames(int frames, float speed, float height, bool overwrite ) {
+	/// <summary>
+	/// Public ----------------------------------------------------------------------------------
+	/// </summary>
+	/// 
+	#region public 
+
+	public IEnumerator KeepGoingBehindCharacterForFrames ( int frames, float speed, float height, bool overwrite ) {
 		for (int i = 0 ; i < frames ; i++)
 		{
 			GoBehindCharacter(speed, height, overwrite);
@@ -641,19 +748,25 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 	}
 
+	public void SetToStickToLocalRotation ( bool set, Vector3 rotationInWorld, float speed ) {
+		_rotateToLocalDirection = set;
+		_isCurrentlyRotationTowardsLocalDirection = set;
+		_stickToPlayerSpeed = speed;
+		if (!set) { return; }
+
+		_localLookAtDirection = _Skin.transform.InverseTransformDirection(rotationInWorld);
+		_previousTranslatedLocalLookAtDirection = _Skin.rotation * _localLookAtDirection;
+		_lookTimer = 0;
+	}
+
 	//Called by other scripts to make the camera face the direction the character is facing.
 	public void GoBehindCharacter ( float speed, float height, bool evenIfLocked = false ) {
 		bool changeHeight = height != 0;
 
-		if (_isReversed)
-		{
-			RotateDirection(-_Skin.forward, speed, height, changeHeight);
-		}
-		else if (!_isLocked || evenIfLocked)
+		if (!_isLocked || evenIfLocked)
 		{
 			RotateDirection(_Skin.forward, speed, height, changeHeight);
 		}
-
 
 		//These are relevant to auto rotating behind player, when camera completes its rotation, rotation delay is reset.
 		_isRotatingBehind = true;
@@ -675,10 +788,10 @@ public class S_HedgeCamera : MonoBehaviour
 	//Called by other scripts to immediately set the camera to behind the character.
 	public void SetBehind ( int height ) {
 		bool changeHeight = height != 0;
-		RotateDirection(_Skin.forward, 2000, 14, changeHeight);
+		RotateDirection(_Skin.forward, -1, 14, changeHeight);
 	}
 
-	public IEnumerator KeepGoingToHeightForFrames(int frames, float height, float speed ) {
+	public IEnumerator KeepGoingToHeightForFrames ( int frames, float height, float speed ) {
 		for (int i = 0 ; i < frames ; i++)
 		{
 			ChangeHeight(height, speed);
@@ -693,11 +806,11 @@ public class S_HedgeCamera : MonoBehaviour
 			//A switch is used so it's less clutured than an if statement.
 			switch (_Actions._whatCurrentAction)
 			{
-				case S_Enums.PrimaryPlayerStates.Rail:
+				case S_S_ActionHandling.PrimaryPlayerStates.Rail:
 					break;
 				default:
 				{
-					_posY = Mathf.MoveTowards(_posY, height, Time.deltaTime * speed);
+					_yPositionOfCamera = Mathf.MoveTowards(_yPositionOfCamera, height, Time.deltaTime * speed);
 					break;
 				}
 			}
@@ -723,29 +836,31 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	//Tells the camera to look in the direction, changing eulers over the next few frames to do so. See camera movement and rotate direction for more.
-	public void SetCameraWithSeperateHeight ( Vector3 dir, float duration, float heightSet, float speed, Vector3 externalAlignment ) {
+	public void SetCameraWithSeperateHeight ( Vector3 dir, float duration, float heightSet, float speed, Vector3 externalAlignment, Transform TargetLockOn = null ) {
 
-		_lookAtDir = dir;
+		_lookAtDirection = dir;
 		_lookTimer = duration > 0 ? -duration : 1;
 		_heightToLook = heightSet;
 		_lockedRotationSpeed = speed;
 		_willChangeHeight = true;
+		_lookAtLockOn = TargetLockOn;
 
 		AlignPlayerTransformExternally(externalAlignment);
 	}
 
 	//Tell camera to look in direction but not change height seperately from the target.
-	public void SetCameraNoSeperateHeight ( Vector3 dir, float duration, float speed, Vector3 externalAlignment, bool directionIncludesHeight ) {
-		_lookAtDir = dir;
+	public void SetCameraNoSeperateHeight ( Vector3 dir, float duration, float speed, Vector3 externalAlignment, bool directionIncludesHeight, Transform TargetLockOn = null ) {
+		_lookAtDirection = dir;
 		_lookTimer = duration > 0 ? -duration : 1;
 		_heightToLook = 0;
 		_lockedRotationSpeed = speed;
 		_willChangeHeight = directionIncludesHeight;
+		_lookAtLockOn = TargetLockOn;
 
 		AlignPlayerTransformExternally(externalAlignment);
 	}
 
-	void AlignPlayerTransformExternally (Vector3 externalAlignmentUp) {
+	void AlignPlayerTransformExternally ( Vector3 externalAlignmentUp ) {
 		if (externalAlignmentUp != Vector3.zero)
 		{
 			_PlayerTransformCopy.rotation = Quaternion.LookRotation(_PlayerTransformCopy.forward, externalAlignmentUp);
@@ -780,38 +895,34 @@ public class S_HedgeCamera : MonoBehaviour
 			//Once through 50% of the shake time, start slowing it down until it reaches 0.
 			if (i > frames * 0.5f)
 			{
-				_Noise.m_AmplitudeGain = Mathf.Max(_Noise.m_AmplitudeGain -(segments / 0.5f), 0);
+				_Noise.m_AmplitudeGain = Mathf.Max(_Noise.m_AmplitudeGain - (segments / 0.5f), 0);
 			}
 
 			//If the secondary camera is in affect, ensure it has the same shake. (An exmaple of this situation is when launching a spin charge.)
-			_SecondaryCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = _Noise.m_AmplitudeGain;		
+			_SecondaryCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = _Noise.m_AmplitudeGain;
 		}
 	}
 
 	//Called externally and temporarily creates activates the second camera at the position of the main one, before transitioning back to the primary.
 	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
-	public IEnumerator ApplyCameraPause ( Vector2 frames, Vector2 speedBeforeAndAfter, float minDifference = 0 ) {
-		if (_SecondaryCamera.gameObject.activeSelf) { yield break; } //If secondary camera is already active, don't move it, let it play out.
+	public IEnumerator ApplyCameraFallBack ( Vector2 frames, float secondaryCameraLerpAfterPlayer, float playerSpeedBefore, float playerSpeedAfter, float minDifference, string source ) {
+		if (_locksForCameraFallBack.Count > 0) { yield break; }
 
-		//If the caller has input a speed the player is suddenly moving at, affect the lerp time by the speed difference.
-		if (speedBeforeAndAfter.y > 0 && speedBeforeAndAfter.y >= speedBeforeAndAfter.x)
+		if (_currentSourceOfFallBack == source) //The same thing can't apply multiple fall backs.
 		{
-			//Get a percentage difference as 0->1+
-			float speedDifference = speedBeforeAndAfter.y - speedBeforeAndAfter.x;
-			speedDifference = speedDifference / speedBeforeAndAfter.x;
-			speedDifference = Mathf.Lerp(minDifference, 1, speedDifference);
-
-			//The smaller the difference in speed, the less time the lerp from camera to camera will take.
-			frames *= speedDifference;
+			yield break;
 		}
-
-		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
-		_MainCameraBrain.m_DefaultBlend.m_Time = frames.y / 55; //Convert to seconds
+		_currentSourceOfFallBack = source;
 
 		//Sets the secondary camera to the position of the primary, then makes it take over display.
 		_SecondaryCamera.transform.position = transform.position;
 		_SecondaryCamera.transform.rotation = transform.rotation;
+		_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0);
 		_SecondaryCamera.gameObject.SetActive(true);
+
+		//Ensures secondary camera will loosely still follow player.
+		_lerpSpeedOfFallBack = secondaryCameraLerpAfterPlayer;
+		_startPositionOfFallBack = transform.position;
 
 		//Remain locked in place for x frames. At least 1
 		for (int i = 1 ; i <= Mathf.Max(frames.x, 2) ; i++)
@@ -819,22 +930,66 @@ public class S_HedgeCamera : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
+		//If the caller has input a speed the player is suddenly moving at, affect the lerp time by the speed difference.
+		if (playerSpeedAfter > 0 && playerSpeedAfter >= playerSpeedBefore)
+		{
+			//Get a percentage difference as 0->1+
+			float speedDifference = playerSpeedAfter - playerSpeedBefore;
+			speedDifference = speedDifference / playerSpeedBefore;
+			speedDifference = Mathf.Lerp(minDifference, 1, speedDifference);
+
+			//The smaller the difference in speed, the less time the lerp from camera to camera will take.
+			frames *= speedDifference;
+		}
+
+		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
+		_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseIn, frames.y / 50f);
 		_SecondaryCamera.gameObject.SetActive(false); //Disabling the secondary camera will cause the brain to automatically transition back to primary (assuming no other virtual cameras are at play.
+
+		_currentSourceOfFallBack = "";
 	}
 
+	private void KeepFallBackCameraFollowing () {
+		if (_currentSourceOfFallBack == "") { return; }
+
+		_SecondaryCamera.transform.position = Vector3.Lerp(_startPositionOfFallBack, transform.position, _lerpSpeedOfFallBack);
+	}
+
+
 	//Called to make the camera target at a new position, attached to the secondary target, which is set to follow another transform (usually the player or the player skin).
-	public void SetSecondaryCameraTarget (Transform newParent, Vector3 position) {
+	public void SetCameraTargetToNewParent ( Transform TargetToMove, Transform newParent, Vector3 position, int frames ) {
+		if (!(position.sqrMagnitude >= 0)) { return; }
+		if (_CurrentReparentedTarget != null) { ReturnCameraTargetsToNormal(_CurrentReparentedTarget, frames); }
+
 		_TemporaryCameraTarget.parent = newParent;
 		_TemporaryCameraTarget.position = position;
 
-		_FinalTarget.parent = _TemporaryCameraTarget;
-		_FinalTarget.localPosition = Vector3.zero;
+		_movedTargetsPreviousParent = TargetToMove.parent;
+		_CurrentReparentedTarget = TargetToMove;
+
+		TargetToMove.parent = _TemporaryCameraTarget;
+
+		StartCoroutine(LerpTargetPosition(TargetToMove, TargetToMove.localPosition, Vector3.zero, frames));
+	}
+
+	private IEnumerator LerpTargetPosition ( Transform Target, Vector3 localPositionA, Vector3 localPositionB, float frames ) {
+		frames = Mathf.Max(frames, 1);
+		for (float f = 1 ; f <= frames ; f++)
+		{
+			yield return new WaitForFixedUpdate();
+			Target.localPosition = Vector3.Lerp(localPositionA, localPositionB, f / frames);
+		}
 	}
 
 	//Undoes the above method, returning the camera target to its normal place.
-	public void DisableSecondaryCameraTarget () {
-		_FinalTarget.parent = _TargetByCollisions;
-		_FinalTarget.localPosition = Vector3.zero;
+	public void ReturnCameraTargetsToNormal ( Transform TargetToReturn, float frames ) {
+		if (!_movedTargetsPreviousParent) { return; }
+		TargetToReturn = TargetToReturn ? TargetToReturn : _CurrentReparentedTarget;
+		TargetToReturn.parent = _movedTargetsPreviousParent;
+
+		StartCoroutine(LerpTargetPosition(TargetToReturn, TargetToReturn.localPosition, Vector3.zero, frames));
+		_CurrentReparentedTarget = null;
+		_movedTargetsPreviousParent = null;
 	}
 
 	#endregion
@@ -866,65 +1021,64 @@ public class S_HedgeCamera : MonoBehaviour
 
 	void SetStats () {
 		_isLocked = false;
-		_canMove = true;
 
 		_invertedX = 1;
 		_invertedY = 1;
 
-		_shouldSetHeightWhenMoving_ =		_Tools.CameraStats.LockHeightStats.LockHeight;
-		_lockHeightSpeed_ =			_Tools.CameraStats.LockHeightStats.LockHeightSpeed;
-		_shouldFaceDownWhenInAir_ =		_Tools.CameraStats.AutoLookDownStats.shouldLookDownWhenInAir;
-		_minHeightToLookDown_ =		_Tools.CameraStats.AutoLookDownStats.minHeightToLookDown;
-		_heightToLock_ =			_Tools.CameraStats.LockHeightStats.HeightToLock;
-		_heightFollowSpeed_ =		_Tools.CameraStats.AutoLookDownStats.HeightFollowSpeed;
-		_fallSpeedThreshold_ =		_Tools.CameraStats.AutoLookDownStats.FallSpeedThreshold;
+		_shouldSetHeightWhenMoving_ = _Tools.CameraStats.LockHeightStats.LockHeight;
+		_lockHeightSpeed_ = _Tools.CameraStats.LockHeightStats.LockHeightSpeed;
+		_shouldFaceDownWhenInAir_ = _Tools.CameraStats.AutoLookDownStats.shouldLookDownWhenInAir;
+		_minHeightToLookDown_ = _Tools.CameraStats.AutoLookDownStats.minHeightToLookDown;
+		_heightToLock_ = _Tools.CameraStats.LockHeightStats.HeightToLock;
+		_heightFollowSpeed_ = _Tools.CameraStats.AutoLookDownStats.HeightFollowSpeed;
+		_fallSpeedThreshold_ = _Tools.CameraStats.AutoLookDownStats.FallSpeedThreshold;
 
-		_cameraMaxDistance_ =		_Tools.CameraStats.DistanceStats.CameraDistance;
-		_cameraDistanceBySpeed_ =		_Tools.CameraStats.DistanceStats.cameraDistanceBySpeed;
-		_shouldAffectDistanceBySpeed_ =	_Tools.CameraStats.DistanceStats.shouldAffectDistancebySpeed;
+		_cameraMaxDistance_ = _Tools.CameraStats.DistanceStats.CameraDistance;
+		_cameraDistanceBySpeed_ = _Tools.CameraStats.DistanceStats.cameraDistanceBySpeed;
+		_shouldAffectDistanceBySpeed_ = _Tools.CameraStats.DistanceStats.shouldAffectDistancebySpeed;
 		_VirtualCamera.GetComponent<CinemachineCollider>().m_CollideAgainst = _Tools.CameraStats.DistanceStats.CollidableLayers;
-		_CollidableLayers_ =		_Tools.CameraStats.DistanceStats.CollidableLayers;
+		_CollidableLayers_ = _Tools.CameraStats.DistanceStats.CollidableLayers;
 
-		_shouldAffectFOVBySpeed_ =	_Tools.CameraStats.FOVStats.shouldAffectFOVbySpeed;
-		_baseFOV_ =			_Tools.CameraStats.FOVStats.baseFOV;
-		_cameraFOVBySpeed_ =		_Tools.CameraStats.FOVStats.cameraFOVBySpeed;
+		_shouldAffectFOVBySpeed_ = _Tools.CameraStats.FOVStats.shouldAffectFOVbySpeed;
+		_baseFOV_ = _Tools.CameraStats.FOVStats.baseFOV;
+		_cameraFOVBySpeed_ = _Tools.CameraStats.FOVStats.cameraFOVBySpeed;
 
-		_dampingBehind_ =		_Tools.CameraStats.cinemachineStats.dampingBehind;
-		_dampingInFront_ =		_Tools.CameraStats.cinemachineStats.dampingInFront;
+		_dampingBehind_ = _Tools.CameraStats.cinemachineStats.dampingBehind;
+		_dampingInFront_ = _Tools.CameraStats.cinemachineStats.dampingInFront;
 		_Transposer.m_SoftZoneHeight = _Tools.CameraStats.cinemachineStats.softZone.y;
 		_Transposer.m_SoftZoneWidth = _Tools.CameraStats.cinemachineStats.softZone.x;
 		_Transposer.m_DeadZoneHeight = _Tools.CameraStats.cinemachineStats.deadZone.y;
 		_Transposer.m_DeadZoneWidth = _Tools.CameraStats.cinemachineStats.deadZone.x;
 
-		_angleThreshold_.x =	_Tools.CameraStats.AligningStats.angleThresholdUpwards;
-		_angleThreshold_.y =	_Tools.CameraStats.AligningStats.angleThresholdDownwards;
+		_angleThreshold_.x = _Tools.CameraStats.AligningStats.angleThresholdUpwards;
+		_angleThreshold_.y = _Tools.CameraStats.AligningStats.angleThresholdDownwards;
 		_cameraVerticalRotationSpeed_ = _Tools.CameraStats.AligningStats.CameraVerticalRotationSpeed;
 		_VerticalFollowSpeedByAngle_ = _Tools.CameraStats.AligningStats.vertFollowSpeedByAngle;
 
-		_inputXSpeed_ =		_Tools.CameraStats.InputStats.InputXSpeed;
-		_inputYSpeed_ =		_Tools.CameraStats.InputStats.InputYSpeed;
-		_stationaryCamIncrease_ =	_Tools.CameraStats.InputStats.stationaryCamIncrease;
+		_inputXSpeed_ = _Tools.CameraStats.InputStats.InputXSpeed;
+		_inputYSpeed_ = _Tools.CameraStats.InputStats.InputYSpeed;
+		_stationaryCamIncrease_ = _Tools.CameraStats.InputStats.stationaryCamIncrease;
 
 		_afterMoveXDelay_ = _Tools.CameraStats.RotateBehindStats.afterMoveXDelay;
 		_afterMoveYDelay_ = _Tools.CameraStats.LockHeightStats.afterMoveYDelay;
 
-		_yMinLimit_ =	_Tools.CameraStats.ClampingStats.yMinLimit;
-		_yMaxLimit_ =	_Tools.CameraStats.ClampingStats.yMaxLimit;
+		_yMinLimit_ = _Tools.CameraStats.ClampingStats.yMinLimit;
+		_yMaxLimit_ = _Tools.CameraStats.ClampingStats.yMaxLimit;
 
-		_lockCamAtSpeed_ =			_Tools.CameraStats.RotateBehindStats.LockCamAtHighSpeed;
-		_rotateToBehindSpeed_ =		_Tools.CameraStats.RotateBehindStats.rotateToBehindSpeed;
-		_rotateCharacterBeforeCameraFollows_ =	_Tools.CameraStats.RotateBehindStats.rotateCharacterBeforeCameraFollows;
-		_followFacingDirectionSpeed_ =	_Tools.CameraStats.RotateBehindStats.followFacingDirectionSpeed;
+		_lockCamAtSpeed_ = _Tools.CameraStats.RotateBehindStats.LockCamAtHighSpeed;
+		_rotateToBehindSpeed_ = _Tools.CameraStats.RotateBehindStats.rotateToBehindSpeed;
+		_rotateCharacterBeforeCameraFollows_ = _Tools.CameraStats.RotateBehindStats.rotateCharacterBeforeCameraFollows;
+		_followFacingDirectionSpeed_ = _Tools.CameraStats.RotateBehindStats.followFacingDirectionSpeed;
 
-		_shakeDampen_ =		_Tools.CameraStats.EffectsStats.ShakeDampen;
+		_shakeDampen_ = _Tools.CameraStats.EffectsStats.ShakeDampen;
 
-		_inputPredictonDistance_ =	_Tools.CameraStats.LookAheadStats.inputPredictonDistance;
-		_cameraMoveToInputSpeed_ =	_Tools.CameraStats.LookAheadStats.cameraMoveToInputSpeed;
+		_inputPredictonDistance_ = _Tools.CameraStats.LookAheadStats.inputPredictonDistance;
+		_cameraMoveToInputSpeed_ = _Tools.CameraStats.LookAheadStats.cameraMoveToInputSpeed;
 		_shouldMoveInInputDirection_ = _Tools.CameraStats.LookAheadStats.shouldMoveInInputDirection;
 
-		_shouldMoveBasedOnAngle_ =	_Tools.CameraStats.TargetByAngleStats.shouldMoveBasedOnAngle;
-		_moveUpByAngle_ =		_Tools.CameraStats.TargetByAngleStats.moveUpByAngle;
-		_moveSideByAngle_ =		_Tools.CameraStats.TargetByAngleStats.moveSideByAngle;
+		_shouldMoveBasedOnAngle_ = _Tools.CameraStats.TargetByAngleStats.shouldMoveBasedOnAngle;
+		_moveUpByAngle_ = _Tools.CameraStats.TargetByAngleStats.moveUpByAngle;
+		_moveSideByAngle_ = _Tools.CameraStats.TargetByAngleStats.moveSideByAngle;
 
 		_startLockCam = _lockCamAtSpeed_;
 	}

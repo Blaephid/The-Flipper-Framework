@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b982e808b9880e74a96504086ae0743d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 209857
+  packageName: FastSky - Procedural Sky and Clouds URP
+  packageVersion: 2.0
+  assetPath: Assets/FastSky/Demo/FastSkyPostProcessing.asset
+  uploadId: 576994

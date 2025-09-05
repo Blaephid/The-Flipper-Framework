@@ -1,0 +1,609 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7488240101494650286
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2156781799199756737}
+  - component: {fileID: 4328308454773616306}
+  - component: {fileID: 1978768067270438884}
+  - component: {fileID: 811316758950732783}
+  m_Layer: 0
+  m_Name: PR_E_RhinoMaster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2156781799199756737
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7488240101494650286}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7307.1, y: -333.86072, z: 2146.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4328308454773616306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7488240101494650286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b941a5bba308144e8f7b405d71eda2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSelected: 1
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 0
+  _normalOutlineColour: {r: 1, g: 1, b: 1, a: 0.09411765}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 0.5686275}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.015686275}
+  SetAllToSplineButton: 0
+  _RhinosToSpawn: {fileID: 7074064230608196790, guid: 1ab55f8ea652f894daa6a7133c10a2b2,
+    type: 3}
+  _VisualiseMesh: {fileID: 3475219529124927411, guid: 759e7e43de9834c429aceb013b33ec0e,
+    type: 3}
+  _Rhinos: []
+  _RhinosBackup:
+  - _whichRail: 0
+    _Object: {fileID: 0}
+    _RailEnemyData:
+      _StartSpline_: {fileID: 0}
+      _StartingConnectedRails_: {fileID: 0}
+      _startOffset_: {x: 10, y: 0, z: 0}
+      _startDistance_: 20
+      _rhino_: 1
+      _armouredTrain_: 0
+      _startSpeed_: 130
+      _startAtPlayerSpeed_: 0
+      _minimumSpeed_: 60
+      _railUpOffset_: 0
+      _followPlayer_: 1
+      _isBackwards_: 0
+      _CurveToFullSpeed_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _LerpFollowByDistance_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: -500
+          value: 1.5
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -100
+          value: 1.35
+          inSlope: -0.0011363636
+          outSlope: -0.0011363636
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -60
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -20
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 20
+          value: 1.2
+          inSlope: 0.0009523809
+          outSlope: 0.0009523809
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 400
+          value: 1.4
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _FollowBySpeedDifference_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 100
+          value: 1.2
+          inSlope: 0.009799331
+          outSlope: 0.009799331
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.20416671
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _followLerpSpeed_: 0.3
+      _distanceAheadOfPlayerToAimFor_: 35
+    _RailEnemyScript: {fileID: 0}
+    _RhinoActions: {fileID: 0}
+  - _whichRail: 0
+    _Object: {fileID: 0}
+    _RailEnemyData:
+      _StartSpline_: {fileID: 0}
+      _StartingConnectedRails_: {fileID: 0}
+      _startOffset_: {x: 20, y: 0, z: 0}
+      _startDistance_: 20
+      _rhino_: 1
+      _armouredTrain_: 0
+      _startSpeed_: 130
+      _startAtPlayerSpeed_: 0
+      _minimumSpeed_: 60
+      _railUpOffset_: 0
+      _followPlayer_: 1
+      _isBackwards_: 0
+      _CurveToFullSpeed_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _LerpFollowByDistance_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: -500
+          value: 1.5
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -100
+          value: 1.35
+          inSlope: -0.0011363636
+          outSlope: -0.0011363636
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -60
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -20
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 20
+          value: 1.2
+          inSlope: 0.0009523809
+          outSlope: 0.0009523809
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 400
+          value: 1.4
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _FollowBySpeedDifference_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 100
+          value: 1.2
+          inSlope: 0.009799331
+          outSlope: 0.009799331
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.20416671
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _followLerpSpeed_: 0.3
+      _distanceAheadOfPlayerToAimFor_: 35
+    _RailEnemyScript: {fileID: 0}
+    _RhinoActions: {fileID: 0}
+  - _whichRail: 0
+    _Object: {fileID: 0}
+    _RailEnemyData:
+      _StartSpline_: {fileID: 0}
+      _StartingConnectedRails_: {fileID: 0}
+      _startOffset_: {x: -10, y: 0, z: 0}
+      _startDistance_: 20
+      _rhino_: 1
+      _armouredTrain_: 0
+      _startSpeed_: 130
+      _startAtPlayerSpeed_: 0
+      _minimumSpeed_: 60
+      _railUpOffset_: 0
+      _followPlayer_: 1
+      _isBackwards_: 0
+      _CurveToFullSpeed_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _LerpFollowByDistance_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: -500
+          value: 1.5
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -100
+          value: 1.35
+          inSlope: -0.0011363636
+          outSlope: -0.0011363636
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -60
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -20
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 20
+          value: 1.2
+          inSlope: 0.0009523809
+          outSlope: 0.0009523809
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 400
+          value: 1.4
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _FollowBySpeedDifference_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 100
+          value: 1.2
+          inSlope: 0.009799331
+          outSlope: 0.009799331
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.20416671
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _followLerpSpeed_: 0.3
+      _distanceAheadOfPlayerToAimFor_: 35
+    _RailEnemyScript: {fileID: 0}
+    _RhinoActions: {fileID: 0}
+  - _whichRail: 0
+    _Object: {fileID: 0}
+    _RailEnemyData:
+      _StartSpline_: {fileID: 0}
+      _StartingConnectedRails_: {fileID: 0}
+      _startOffset_: {x: -20, y: 0, z: 0}
+      _startDistance_: 20
+      _rhino_: 1
+      _armouredTrain_: 0
+      _startSpeed_: 130
+      _startAtPlayerSpeed_: 0
+      _minimumSpeed_: 60
+      _railUpOffset_: 0
+      _followPlayer_: 1
+      _isBackwards_: 0
+      _CurveToFullSpeed_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _LerpFollowByDistance_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: -500
+          value: 1.5
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -100
+          value: 1.35
+          inSlope: -0.0011363636
+          outSlope: -0.0011363636
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -60
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -20
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 20
+          value: 1.2
+          inSlope: 0.0009523809
+          outSlope: 0.0009523809
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 400
+          value: 1.4
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _FollowBySpeedDifference_:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 100
+          value: 1.2
+          inSlope: 0.009799331
+          outSlope: 0.009799331
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.20416671
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _followLerpSpeed_: 0.3
+      _distanceAheadOfPlayerToAimFor_: 35
+    _RailEnemyScript: {fileID: 0}
+    _RhinoActions: {fileID: 0}
+  _InheritRhinosFromThisOnActivation: {fileID: 0}
+  _distanceBetweenRails: 10
+  _timeBetweenAttacks_: {x: 1, y: 1.5}
+  _timeBetweenHops_: {x: 5, y: 6}
+  _timeBeforeFirstHop_: 4
+  _timeBeforeFirstAttack_: 4
+--- !u!114 &1978768067270438884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7488240101494650286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0d2ac51df5ede444bbc480427d48e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _FurtherTriggerThese:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &811316758950732783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7488240101494650286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _LinkedComponent: {fileID: 4328308454773616306}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f738cb6cb2fe62c4d978f8cae0bc5d04, type: 3}
+  m_Name: SOStage_AltitudeLimit
+  m_EditorClassIdentifier: Assembly-CSharp::S_O_StageScenes
+  _StageName: Altitude Limit
+  _minSecondsToLoadScenes: 1
+  _BaseScene:
+    m_SceneAsset: {fileID: 102900000, guid: 975ff8a3a5aaa15418195c73ef31af20, type: 3}
+    m_SceneName: Sc_AltitudeLimit
+  _Scenes: []
+  _Ranks:
+    Time_XRank: 110
+    Time_SRank: 130
+    Time_ARank: 180
+    Time_BRank: 240
+    Time_CRank: 280
+    Time_DRank: 6001
+    Rings_SRank: 280
+    Rings_ARank: 220
+    Rings_BRank: 170
+    Rings_CRank: 120
+    Rings_DRank: 0
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

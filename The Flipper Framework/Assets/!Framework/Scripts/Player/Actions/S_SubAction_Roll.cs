@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
-public class S_SubAction_Roll : MonoBehaviour, ISubAction
+public class S_SubAction_Roll : S_Action_Base, ISubAction
 {
 
 
@@ -16,17 +16,6 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_CharacterTools      _Tools;
-	private S_PlayerInput         _Input;
-	private S_Control_SoundsPlayer _Sounds;
-	private S_ActionManager       _Actions;
-	private S_Action00_Default    _Action00;
-
-	private CapsuleCollider           _StandingCapsule;
-	private CapsuleCollider            _RollingCapsule;
-	private Animator              _CharacterAnimator;
 
 	#endregion
 
@@ -34,15 +23,22 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	#region Stats
 	private float       _rollingStartSpeed_;
 	private float       _minRollTime_ = 0.3f;
+
+	//Energy
+	private AnimationCurve _EnergyUseByAngle_;
+	private float _pointsFromEnergyRoll_;
+	private float _modifierFromEnergy_;
 	#endregion
 
 	// Trackers
 	#region trackers
-	private S_Enums.PrimaryPlayerStates _whatCurrentAction;
+	private S_S_ActionHandling.PrimaryPlayerStates _whatCurrentAction;
 
 	private bool       _isRollingFromThis;
 	[HideInInspector]
 	public float        _rollCounter;
+
+	private float _speedBeforeRoll;
 	#endregion
 
 	#endregion
@@ -53,39 +49,47 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Awake () {
-		if (!_PlayerPhys)
-		{
-			AssignTools();
-			AssignStats();
-		}
-	}
-
-	// Update is called once per frame
-	void Update () {
-
-	}
-
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		//base.FixedUpdate();
 
 		if (_PlayerPhys._isRolling)
 		{
 			//Cancels rolling if the ground is lost, or the player performs a different Action / Subaction
-			if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_Enums.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatCurrentAction)))
+			if (!_PlayerPhys._isGrounded || (_isRollingFromThis && (_Actions._whatSubAction != S_S_ActionHandling.SubPlayerStates.Rolling || _whatCurrentAction != _Actions._whatCurrentAction)))
 			{
 				UnCurl();
 			}
 
 			//While isRolling is set externally, the counter tracks when it is.
-			else if (_isRollingFromThis)
-				_rollCounter += Time.deltaTime;
+			if (!_isRollingFromThis) { return; }
+
+			_rollCounter += Time.deltaTime;
+
+			if (_rollCounter > 0.5f && _PlayerVel._horizontalSpeedMagnitude > _speedBeforeRoll + 30) { _ActionChain.AddToChain("Roll", 2, 1); }
+
+
+			//If gaining speed from roll. Use energy for greater effect and gain points
+			if (_PlayerVel._previousHorizontalSpeeds[2] < _PlayerVel._previousHorizontalSpeeds[0])
+
+			{
+				float energyUse = _EnergyUseByAngle_.Evaluate(_PlayerPhys._groundNormal.y) / 55;
+				if (_CoreValues._energy >= energyUse)
+				{
+					_CoreValues.AdjustEnergy(-energyUse);
+					_CoreValues.SetMultiplierFromEnergy(_modifierFromEnergy_);
+					_CoreValues.AdjustPoints(_pointsFromEnergyRoll_ / 55);
+					return;
+				}
+			}
+			_CoreValues.SetMultiplierFromEnergy(1);
 		}
 	}
 
 	//Called when attempting to perform an action, checking and preparing inputs.
-	public bool AttemptAction () {
-		switch(_Actions._whatCurrentAction)
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
+
+		switch (_Actions._whatCurrentAction)
 		{
 			//Any action with this on
 			default:
@@ -96,8 +100,8 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 					if (_Input._RollPressed && !_isRollingFromThis && _PlayerVel._horizontalSpeedMagnitude > _rollingStartSpeed_)
 					{
 						_whatCurrentAction = _Actions._whatCurrentAction; //If the current action stops matching this, then the player has switched actions while rolling
-						_Actions._whatSubAction = S_Enums.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
-						
+						_Actions._whatSubAction = S_S_ActionHandling.SubPlayerStates.Rolling; //If what subaction changes from this, then the player has stopped rolling.
+
 						Curl();
 						return true;
 					}
@@ -112,7 +116,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		}
 		return false;
 	}
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 
 	}
 	#endregion
@@ -129,12 +133,14 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 		{
 			_Sounds.StartRollingSound();
 			SetIsRolling(true);
+
+			_speedBeforeRoll = _PlayerVel._horizontalSpeedMagnitude;
 		}
 	}
 
 	//When the player wants to stop rolling while on the ground, check if there's enough room to stand up.
 	public void UnCurl () {
-		if (_PlayerPhys._isRolling && !Physics.BoxCast(_StandingCapsule.transform.position, 
+		if (_PlayerPhys._isRolling && !Physics.BoxCast(_StandingCapsule.transform.position,
 			new Vector3(_StandingCapsule.radius, _StandingCapsule.height / 2.1f, _StandingCapsule.radius), Vector3.zero, transform.rotation, 0))
 		{
 			SetIsRolling(false);
@@ -150,7 +156,7 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 			if (value)
 			{
 				//Make shorter to slide under spaces
-				_Actions._ActionDefault.OverWriteCollider(_RollingCapsule);
+				_Actions._ActionDefault.OverWriteCollider(_LowerCapsule);
 			}
 			//Set to not rolling from was
 			else
@@ -173,22 +179,18 @@ public class S_SubAction_Roll : MonoBehaviour, ISubAction
 	/// </summary>
 	#region Assigning
 
-	private void AssignTools () {
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_Sounds = _Tools.SoundControl;
-		_Actions = _Tools._ActionManager;
-		_Action00 = _Actions._ActionDefault;
-		_StandingCapsule = _Tools.StandingCapsule.GetComponent<CapsuleCollider>();
-		_RollingCapsule = _Tools.CrouchCapsule.GetComponent<CapsuleCollider>();
-		_CharacterAnimator = _Tools.CharacterAnimator;
+	public override void AssignTools () {
+		base.AssignTools();
+
 	}
 
-	private void AssignStats () {
+	public override void AssignStats () {
 		_minRollTime_ = _Tools.Stats.RollingStats.minRollingTime;
 		_rollingStartSpeed_ = _Tools.Stats.RollingStats.rollingStartSpeed;
+
+		_modifierFromEnergy_ = _Tools.Stats.RollingStats.modifierFromEnergy;
+		_EnergyUseByAngle_ = _Tools.Stats.RollingStats.EnergyByAngle;
+		_pointsFromEnergyRoll_ = _Tools.LevelUpStats.pointsFromRolling;
 	}
 	#endregion
 }

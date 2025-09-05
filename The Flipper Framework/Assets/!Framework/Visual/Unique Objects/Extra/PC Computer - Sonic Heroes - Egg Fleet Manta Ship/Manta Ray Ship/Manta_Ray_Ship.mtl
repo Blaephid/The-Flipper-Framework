@@ -1,0 +1,15 @@
+#  ==========================================================================
+#  Wavefront Material file
+#  Exported by Red-i Productions' "Riptide"
+#  (a free plugin for Cinema 4D PC & Mac, R7.3 or later)
+#  
+#  Red-i Productions
+#  http://skinprops.com
+#  
+#  ==========================================================================
+
+newmtl manta
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd manta.png
+map_d manta.png

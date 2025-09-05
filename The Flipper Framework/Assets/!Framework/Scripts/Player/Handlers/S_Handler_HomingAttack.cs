@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using System.Linq;
 
-public class S_Handler_HomingAttack : MonoBehaviour
+public class S_Handler_HomingAttack : S_Player_Base
 {
 
 	/// <summary>
@@ -15,31 +15,25 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
+
+
+	private S_Action02_Homing     _HomingAction;
 
 	private AudioSource           _IconSound;
-	private Animator              _IconAnim;
-	private Animator              _CharacterAnimator;
-	private Transform             _MainSkin;
 
 	private Transform             _MainCamera;
 
-	private Transform             _IconTransform;
-	private GameObject            _NormalIcon;
-	private GameObject            _DamageIcon;
+	private GameObject      _IconHUDObject;
+	private RectTransform     _IconRectTransform;
+	private Animator        _IconHUDAnimator;
 
 	[HideInInspector]
 	public Transform            _TargetObject;                //The target set at the end of an update
 	[HideInInspector]
-	public Transform		_PreviousTarget;
+	public Transform                _PreviousTarget;
 	private Transform            _targetPlayedAnimationOn;     //If different to the current target, then play animation and set to current target so it doesn't happen again until new target.
 	#endregion
 
-	//General
-	#region General Properties
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
@@ -64,17 +58,16 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	// Trackers
 	#region trackers
 
-	[HideInInspector]
-	public bool         _isScanning = false;          //Will only go through the target searching and calculations when this is true
-
 	private float       _currentTargetDistanceSquared;
 	[HideInInspector]
-	public bool         _isHomingAvailable;
+	public bool         _isHomingAvailable;//Must be true for scan to be active.
+	[HideInInspector]
+	public bool         _isHomingLocked; //Can only perform if true, but will still scan and show icons.
 
-	private float       _counterWithThisTarget;       //Increases when there is a target, and is reset when target changes. Used to make sure targets can't change until they've been targets for long enough.
+	[HideInInspector]
+	public float       _timeOnThisTarget;       //Increases when there is a target, and is reset when target changes. Used to make sure targets can't change until they've been targets for long enough.
 	#endregion
 
-	#endregion
 	#endregion
 
 	/// <summary>
@@ -84,11 +77,17 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	#region Inherited
 
 	// Start is called before the first frame update
-	void Awake () {
-		ReadyScript();
-		_IconTransform.parent = null; //Makes it seperate to player object so it doesn't move with them.
+	public override void Awake () {
+		base.Awake();
 
 		StartCoroutine(ScanForTargets(_timeBetweenScans_)); //For efficiency, this is not done every frame, instead being every x seconds.
+	}
+
+	private void Update () {
+		if (_TargetObject) { _timeOnThisTarget += Time.deltaTime; }
+		else _timeOnThisTarget = 0;
+		
+		UpdateHomingReticle();
 	}
 
 	#endregion
@@ -103,17 +102,16 @@ public class S_Handler_HomingAttack : MonoBehaviour
 		//Will constantly be checking, but only performing calculations if isScanning
 		while (true)
 		{
-			yield return new WaitForSeconds(.02f);
 			yield return new WaitForEndOfFrame();
+
 			//Determined in the homing action script, based on if attempt action is called, which means this only updates if the current action can perform homing attacks.
-			if (_isScanning)
+			if (_HomingAction._inAStateConnectedToThis && _isHomingAvailable)
 			{
 				UpdateHomingTargets();
 
 				//Wait until next check, taking longer if no object yet as it needs to be quicker if multiple are around.
 				if (_TargetObject)
 				{
-					_counterWithThisTarget += secondsBetweenChecks;
 					yield return new WaitForSeconds(secondsBetweenChecks);
 				}
 				else
@@ -124,13 +122,11 @@ public class S_Handler_HomingAttack : MonoBehaviour
 			//If not scanning then there can't be a target
 			else if (_TargetObject)
 			{
-				_counterWithThisTarget = 0;
 				_TargetObject = null;
 				_PreviousTarget = null;
-				UpdateHomingReticle();
 			}
-
-			_isScanning = false; //Set to false every frame but will be counteracted in Action homing's AttemptAction()
+			else
+				yield return new WaitForSeconds(secondsBetweenChecks);
 		}
 	}
 
@@ -138,11 +134,7 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	private void UpdateHomingTargets () {
 
 		_TargetObject = GetClosestTarget(_TargetLayer_, _targetSearchDistance_);
-
 		DelayingTargetSwitch();
-
-		UpdateHomingReticle();
-
 	}
 
 	//Checks for potential target then finds the closest.
@@ -150,74 +142,70 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 		Transform closestTarget = null;
 		_currentTargetDistanceSquared = 0;
-		int checkLimit = 0;
 
 		//First, send a spherecast in direction camera is facing, this has more range than normal checks. This takes priority as it allows for precision.
 		RaycastHit[] NewTargetsInRange = Physics.SphereCastAll(transform.position, _radiusOfCameraTargetCheck_, _MainCamera.forward, _faceRange_ * radius, TargetMask);
-		if (NewTargetsInRange.Length > 0)
+		Collider[] TargetsInRange = new Collider[NewTargetsInRange.Length];
+		for (int i = 0 ; i < NewTargetsInRange.Length ; i++)
 		{
-			for (int i = 0 ; i < NewTargetsInRange.Length ; i++)
-			{
-				RaycastHit hit = NewTargetsInRange[i];
-				float distanceSquared = Mathf.Pow(hit.distance, 2);
-				//If hit has the homing target component and is far enough away, then compare to current closest.
-				if (hit.collider.gameObject.GetComponent<S_Data_HomingTarget>() && distanceSquared > _minTargetDistanceSquared_)
-				{
-					Transform newTarget = hit.collider.transform;
-					closestTarget = CheckTarget(newTarget, distanceSquared * _cameraDirectionPriority_, closestTarget, _facingAmount_);
-				}
-
-				//For efficiency, cannot check more than 3 objects
-				checkLimit++;
-				if (checkLimit > 3) { break; }
-			}
+			TargetsInRange[i] = NewTargetsInRange[i].collider;
 		}
-		checkLimit = 0;
 
-		//If nothing found yet, check fir all potential targets around the player.
-		Collider[] TargetsInRange = Physics.OverlapSphere(transform.position, radius, TargetMask);
-		if(TargetsInRange.Length > 0)
+		CheckArrayOfTargets(ref TargetsInRange, _cameraDirectionPriority_);
+
+		if (!closestTarget)
 		{
-			for (int i = 0 ; i < TargetsInRange.Length ; i++)
-			{
-				Collider hit = TargetsInRange[i];
-				float distanceSquared = S_CoreMethods.GetDistanceOfVectors(transform.position, hit.transform.position);
+			//If nothing found yet, check for all potential targets around the player.
+			TargetsInRange = Physics.OverlapSphere(transform.position, radius, TargetMask);
 
-				//If has the homing target component and is far enough away, then compare to current closest.
-				if (hit.gameObject.GetComponent<S_Data_HomingTarget>() && distanceSquared > _minTargetDistanceSquared_)
-				{
-					Transform newTarget = hit.gameObject.transform;
-					closestTarget = CheckTarget(newTarget, distanceSquared, closestTarget, _facingAmount_);
-				}
-
-				//For efficiency, cannot check more than 3 objects
-				checkLimit++;
-				if (checkLimit > 3) { break; }
-			}
+			CheckArrayOfTargets(ref TargetsInRange, 1);
 		}
 
 		//If there is currently already a target, compare it to the new closest, with a modification to distance that makes it seem closer, and therefore higher priority.
 		if (_PreviousTarget != null)
 		{
-			float distanceSquared = S_CoreMethods.GetDistanceOfVectors(transform.position, _PreviousTarget.transform.position);
+			float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, _PreviousTarget.transform.position);
 			closestTarget = CheckTarget(_PreviousTarget.transform, distanceSquared * _currentTargetPriority_, closestTarget, _facingAmount_);
 		}
 
 		return closestTarget;
+
+		void CheckArrayOfTargets ( ref Collider[] targets, float extraPriority ) {
+			int checkLimit = 0;
+
+			for (int i = 0 ; i < targets.Length ; i++)
+			{
+				Collider hit = TargetsInRange[i];
+				float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, hit.transform.position);
+
+				//If has the homing target component and is far enough away, then compare to current closest.
+				if (hit.gameObject.TryGetComponent(out S_Data_HomingTarget TargetData) && distanceSquared > _minTargetDistanceSquared_)
+				{
+					Transform checkTarget = hit.gameObject.transform;
+					float distanceToUse = (distanceSquared / TargetData._distanceModifier) * extraPriority; //Some targets may need to be closer.
+					closestTarget = CheckTarget(checkTarget, distanceToUse, closestTarget, _facingAmount_);
+					//Compare 
+				}
+
+				//For efficiency, cannot check more than 4 objects
+				checkLimit++;
+				if (checkLimit == 4) { break; }
+			}
+		}
 	}
 
 	//Takes in a target and return the closer of it or the current one.
 	private Transform CheckTarget ( Transform newTarget, float distanceSquared, Transform closest, float facingAmount, bool skipIsOnScreen = false ) {
 
 		//If this new target is out of the maximum range, then ignore it, no matter the check. Gets its own distance because the distance parameter won't always be the exact distance.
-		if (S_CoreMethods.GetDistanceOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_ ) { return closest; } 
+		if (S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_) { return closest; }
 
 
 		//Make sure Sonic is facing the target enough
 		Vector3 direction = (newTarget.position - transform.position).normalized;
 		float angle = Vector3.Angle(new Vector3(_MainSkin.forward.x, 0, _MainSkin.forward.z), new Vector3 (direction.x, 0, direction.z));
 		bool isFacing = angle < facingAmount;
-		
+
 		bool isOnScreen = true;
 		if (!skipIsOnScreen)
 		{
@@ -246,33 +234,33 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	}
 
 	//Prevents targets from changing too quickly.
-	private void DelayingTargetSwitch() {
+	private void DelayingTargetSwitch () {
 		if (_PreviousTarget)
 		{
 			//If there is no current target but there is still a previous target
 			if (!_TargetObject)
 			{
 				//Then check the timer and keep the target the same if still under. But the target must still be on screen and within face range.
-				if (_counterWithThisTarget < _timeToKeepTarget_.y) { _TargetObject = CheckTarget(_PreviousTarget, 0, null, 160, true); }
+				if (_timeOnThisTarget < _timeToKeepTarget_.y) { _TargetObject = CheckTarget(_PreviousTarget, 0, null, 160, true); }
 			}
 			//If the target has changed, then once time has expired, reset the counter.
 			else if (_TargetObject != _PreviousTarget)
 			{
-				if (_counterWithThisTarget < _timeToKeepTarget_.x)
+				if (_timeOnThisTarget < _timeToKeepTarget_.x)
 				{
 					_TargetObject = CheckTarget(_PreviousTarget, 0, _TargetObject, 160, false);
 				}
 				else
 				{
 					_PreviousTarget = _TargetObject;
-					_counterWithThisTarget = 0;
+					_timeOnThisTarget = 0;
 				}
 			}
 		}
 		else
 		{
 			_PreviousTarget = _TargetObject;
-			_counterWithThisTarget = 0;
+			_timeOnThisTarget = 0;
 		}
 	}
 
@@ -288,40 +276,46 @@ public class S_Handler_HomingAttack : MonoBehaviour
 
 	//Handles the location, animations and effects of the homing reticle, based on whether or not there is a current target
 	public void UpdateHomingReticle () {
+
 		if (_TargetObject != null)
 		{
-			_IconTransform.position = _TargetObject.transform.position; //Places icon on target
+			Vector3 screenPos = Camera.main.WorldToScreenPoint(_TargetObject.transform.position);
+			_IconRectTransform.position = new Vector3(screenPos.x, screenPos.y, 0); //Places icon on target in UI space
 
-			//Effects icon size by camera distance
-			float camDist = S_CoreMethods.GetDistanceOfVectors(transform.position, _MainCamera.position);
-			_IconTransform.localScale = (Vector3.one * _iconScale_) + (Vector3.one * (camDist * Mathf.Pow(_iconDistanceScaling_, 2)));
+			float camDist = screenPos.z;
+			float newSize = camDist * _iconDistanceScaling_;
+			newSize += _iconScale_;
+			newSize = Mathf.Clamp(newSize, 0.1f, _iconScale_ * 3f);
+
+			_IconRectTransform.localScale = Vector3.one * newSize / 20;
 
 			//If this is a new target, then play sound and animation.
 			if (_targetPlayedAnimationOn != _TargetObject)
 			{
 				_targetPlayedAnimationOn = _TargetObject;
 				_IconSound.Play();
-				_IconAnim.SetTrigger("NewTgt");
+				_IconHUDAnimator.SetTrigger("EnterNormal");
+
+				//Depending on the target, will show a different icon 
+				switch (_TargetObject.GetComponent<S_Data_HomingTarget>().type)
+				{
+					case S_Data_HomingTarget.TargetType.normal:
+						_IconHUDAnimator.SetTrigger("EnterNormal");
+						break;
+					case S_Data_HomingTarget.TargetType.destroy:
+						_IconHUDAnimator.SetTrigger("EnterDestroy");
+						break;
+				}
 			}
 
-			//Depending on the target, will show a different icon (all are children of the proper target being placed)
-			switch (_TargetObject.GetComponent<S_Data_HomingTarget>().type)
-			{
-				case S_Data_HomingTarget.TargetType.normal:
-					_DamageIcon.SetActive(false);
-					_NormalIcon.SetActive(true);
-					break;
-				case S_Data_HomingTarget.TargetType.destroy:
-					_DamageIcon.SetActive(true);
-					_NormalIcon.SetActive(false);
-					break;
-			}
+			_IconHUDObject.SetActive(true); //Makes sure the icon is visible
 		}
 
 		//Hide Icon if no target
 		else
 		{
-			_IconTransform.localScale = Vector3.zero;
+			_IconRectTransform.localScale = Vector3.zero; //Set scale to 0, rather than deactivate, to ensure the animator can still be called.
+			_targetPlayedAnimationOn = null;
 		}
 	}
 
@@ -332,40 +326,28 @@ public class S_Handler_HomingAttack : MonoBehaviour
 	/// </summary>
 	#region Assigning
 
-	//If stats and tools are not assigned yet, assign them now.
-	public void ReadyScript () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_Actions = _Tools.GetComponent<S_ActionManager>();
+	public override void AssignTools () {
+		base.AssignTools();
 
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
 		_MainCamera = Camera.main.transform;
-		_IconTransform = _Tools.homingIcons.transform;
-		_NormalIcon = _Tools.NormalIcon;
-		_DamageIcon = _Tools.DamageIcon;
 
-		_IconSound = _IconTransform.gameObject.GetComponent<AudioSource>();
-		_IconAnim = _IconTransform.gameObject.GetComponent<Animator>();
+		_IconHUDObject = _CoreUIElements._HomingIconObject;
+		_IconSound = _IconHUDObject.GetComponent<AudioSource>();
+		_IconHUDAnimator = _IconHUDObject.GetComponent<Animator>();
+		_IconRectTransform = _IconHUDObject.GetComponent<RectTransform>();
+
+		_HomingAction = GetComponent<S_Action02_Homing>();
+		if (!_HomingAction) { enabled = false; }
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
+		base.AssignStats();
 		_targetSearchDistance_ = _Tools.Stats.HomingSearch.targetSearchDistance;
 		_faceRange_ = _Tools.Stats.HomingSearch.distanceModifierInCameraDirection;
 		_minTargetDistanceSquared_ = Mathf.Pow(_Tools.Stats.HomingSearch.minimumTargetDistance, 2);
-		_maxTargetDistanceSquared_ = Mathf.Pow( _Tools.Stats.HomingSearch.maximumTargetDistance,2);
+		_maxTargetDistanceSquared_ = Mathf.Pow(_Tools.Stats.HomingSearch.maximumTargetDistance, 2);
 		_TargetLayer_ = _Tools.Stats.HomingSearch.TargetLayer;
 		_BlockingLayers_ = _Tools.Stats.HomingSearch.blockingLayers;
 		_facingAmount_ = _Tools.Stats.HomingSearch.facingAmount;

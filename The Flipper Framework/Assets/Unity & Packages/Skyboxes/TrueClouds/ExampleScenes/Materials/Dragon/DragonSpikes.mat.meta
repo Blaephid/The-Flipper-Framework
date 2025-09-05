@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cdae10b910a1f9046ba80a9647921f1c
+timeCreated: 1430239118
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Materials/Dragon/DragonSpikes.mat
+  uploadId: 243278

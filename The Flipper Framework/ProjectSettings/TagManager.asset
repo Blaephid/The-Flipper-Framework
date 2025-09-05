@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags:
   - Rail
   - Spring
@@ -16,29 +16,35 @@ TagManager:
   - Enemy
   - Ring Road
   - MovingRing
-  - CameraTrigger
   - HintRing
   - Switch
   - SpeedPad
   - Checkpoint
-  - GoalRing
   - PathTrigger
-  - Bumper
   - Pit
   - MovingPlatform
   - Upreel
   - CancelHoming
   - Enable Objects Physics
-  - Player Effect
+  - Recorder
+  - EffectTrigger
+  - NormalTrigger
+  - RailBooster
+  - Music
+  - Sphere
+  - Special
+  - Dash Launcher
+  - FxTemporaire
+  - Bumper
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Standard (Camera Wont Collide)
   - Water
   - UI
   - Editor Only
-  - 
+  - Background
   - Player_01
   - Player_02
   - Player_03
@@ -50,7 +56,7 @@ TagManager:
   - PostProcessGlobal
   - Homing Target
   - Ring Road Target
-  - Rings
+  - Pickups
   - ItemPull
   - Attack
   - 
@@ -67,3 +73,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  m_RenderingLayers:
+  - Default
+  - Light Layer 1
+  - Light Layer 2
+  - Light Layer 3
+  - Light Layer 4
+  - Light Layer 5
+  - Light Layer 6
+  - Light Layer 7

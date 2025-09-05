@@ -16,7 +16,8 @@ public class S_Upreel : MonoBehaviour
 	//Unity
 	public GameObject			_HomingTarget;
 	public GameObject			_HandleObject;
-	public Transform			_HandlePosition;
+	public Transform			_Handle;
+	public Transform			_GripPoint;
 	public Transform			_TopAchor;
 	public Transform			_LineEndAnchor;
 	public AudioSource			_AudioSource;
@@ -84,11 +85,14 @@ public class S_Upreel : MonoBehaviour
 		if (_isMoving) //Because this will also be called the frame the player leaves the upreel.
 		{
 			_velocity = _direction * _worldSpeed * transform.up;
-			_HandleRB.velocity = _velocity;
+			_HandleRB.linearVelocity = _velocity;
 		}
+		else
+			_velocity = Vector3.zero;
 
-		//Send the location back to the player.
-		return PlaceHandleOnLength();
+			PlaceHandleOnLength();
+
+		return _GripPoint.position;
 	}
 
 	public void SetLine () {
@@ -129,7 +133,7 @@ public class S_Upreel : MonoBehaviour
 		}
 
 		PlaceHandleOnLength(); //Called again here (not just in Update) to ensure at the right point before a player launches off.
-		_HandleRB.velocity = Vector3.zero;
+		_HandleRB.linearVelocity = Vector3.zero;
 		_AudioSource.Stop();
 		_isMoving = false;
 		_direction = 0;

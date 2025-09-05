@@ -1,33 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Cinemachine.DocumentationSortingAttribute;
 
-public class S_SubAction_Skid : MonoBehaviour, ISubAction
+
+public class S_SubAction_Skid : S_Action_Base, ISubAction
 {
-
-
-
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
 	/// </summary>
 	/// 
 	#region properties
 
-	//Unity
-	#region Unity Specific Properties
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerMovement	_PlayerMovement;
-	private S_CharacterTools      _Tools;
-	private S_PlayerInput         _Input;
-	private S_Control_SoundsPlayer _Sounds;
-	private S_ActionManager       _Actions;
 
-	#endregion
-
-	//General
-	#region General Properties
 
 	//Stats
 	#region Stats
@@ -45,10 +29,9 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	// Trackers
 	#region trackers
 	public bool         _isSkidding;
-	private S_Enums.PrimaryPlayerStates _whatCurrentAction;
+	private S_S_ActionHandling.PrimaryPlayerStates _whatCurrentAction;
 	#endregion
 
-	#endregion
 	#endregion
 
 	/// <summary>
@@ -57,21 +40,9 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Awake () {
-		if(_Tools == null)
-		{
-			AssignTools();
-			AssignStats();
-		}
-	}
-
-	// Update is called once per frame
-	void Update () {
-
-	}
-
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		//base.FixedUpdate();
+		if (!_Actions) { return; }
 		if(_whatCurrentAction != _Actions._whatCurrentAction) 
 		{ 
 			StopAction();
@@ -81,51 +52,51 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	}
 
 	//Called when attempting to perform an action, checking and preparing inputs.
-	public bool AttemptAction () {
-		bool willStartAction = false;
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
+
 		_whatCurrentAction = _Actions._whatCurrentAction;
 
 		//Different actions require different skids, even though they all call this function.
 		switch (_Actions._whatCurrentAction)
 		{
-			case S_Enums.PrimaryPlayerStates.Default:
+			case S_S_ActionHandling.PrimaryPlayerStates.Default:
 				if (_PlayerPhys._isGrounded)
 				{
-					willStartAction = TryRegularSkid();
+					return TryRegularSkid();
 				}
 				else
 				{
-					willStartAction = TryJumpSkid();
+					return TryJumpSkid();
 				}
-				break;
+			case S_S_ActionHandling.PrimaryPlayerStates.Jump:
+				return TryJumpSkid();
 
-			case S_Enums.PrimaryPlayerStates.Jump:
-				willStartAction = TryJumpSkid();
-				break;
-
-			case S_Enums.PrimaryPlayerStates.SpinCharge:
-				willStartAction = TrySpinSkid();
-				break;
-			case S_Enums.PrimaryPlayerStates.Homing:
-				willStartAction = _Actions._ObjectForActions.GetComponent<S_Action02_Homing>().TryHomingSkid();
-				break;
-
+			case S_S_ActionHandling.PrimaryPlayerStates.SpinCharge:
+				return TrySpinSkid();
+			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
+				return _Actions._ObjectForActions.GetComponent<S_Action02_Homing>().TryHomingSkid();
 		}
-		return willStartAction;
+		return false;
 	}
 
 	//Called when skidding is started and _isSkiddin is used to prevent the sound being played multiple times.
-	public void StartAction(bool overwrite = false) {
+	new public void StartAction(bool overwrite = false) {
 		if (!_isSkidding)
 		{
-			_Actions._whatSubAction = S_Enums.SubPlayerStates.Skidding;
+			_Input._BoostPressed = false;
+			_Actions._whatSubAction = S_S_ActionHandling.SubPlayerStates.Skidding;
 			if (!enabled) { enabled = true; }
 
-			_Sounds.SkiddingSound();
+			if (_PlayerPhys._isGrounded)
+			{
+				_Sounds.SkiddingSound();
 
-			_Tools.CharacterAnimator.SetBool("Skidding", true);
+				_Tools.CharacterAnimator.SetBool("Skidding", true);
+			}
 			_isSkidding = true;
-			if (_shouldSkiddingDisableTurning_) { _PlayerPhys._listOfCanTurns.Add(false); }
+			if (_shouldSkiddingDisableTurning_) { S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanTurn, "Skid"); }
+			else { _PlayerMovement._externalTurnModi = 0.5f; }
 		}
 	}
 
@@ -133,9 +104,10 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	public void StopAction() {
 		if (_isSkidding)
 		{
+			_PlayerMovement._externalTurnModi = 1f;
 			_Tools.CharacterAnimator.SetBool("Skidding", false);
 			_isSkidding = false;
-			if (_shouldSkiddingDisableTurning_) { _PlayerPhys._listOfCanTurns.Remove(false); }
+			if (_shouldSkiddingDisableTurning_) { S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanTurn, "Skid"); }
 		}
 	}
 
@@ -183,7 +155,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		if(!_canSkidInAir_) { return false; }
 
 		//If the input direction is different enough to the current movement direction, then a skid should be performed. 
-		if ((_PlayerMovement._inputVelocityDifference > _regularSkidAngleStartPoint_) && !_Input._isInputLocked)
+		if ((_PlayerMovement._inputVelocityDifference > _regularSkidAngleStartPoint_ && _PlayerVel._horizontalSpeedMagnitude > 20) && !_Input._isInputLocked)
 		{
 			//Uses relevant velocity rather whan world in order to not skid against vertical speed from jumping or falling.
 			Vector3 releVel = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity);
@@ -196,6 +168,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 				{
 					_PlayerVel.AddCoreVelocity(new Vector3(releVel.x, 0f, releVel.z).normalized * _airSkiddingIntensity_ * (_PlayerPhys._isRolling ? 0.5f : 1));
 				}
+			StartAction();
 			return true;
 		}
 		//In case the player lost ground but was skidding before doing so.
@@ -210,6 +183,7 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 		if (_PlayerMovement._inputVelocityDifference > _spinSkidAngleStartPoint_ && !_Input._isInputLocked)
 		{
 			_PlayerVel.AddCoreVelocity(_PlayerVel._coreVelocity.normalized * _regularSkiddingIntensity_ * 0.6f);
+			StartAction();
 			return true;
 		}
 		return false;
@@ -221,17 +195,12 @@ public class S_SubAction_Skid : MonoBehaviour, ISubAction
 	/// </summary>
 	#region Assigning
 
-	private void AssignTools() {
-		_Tools = GetComponentInParent<S_CharacterTools>();
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_Sounds = _Tools.SoundControl;
-		_Actions = _Tools._ActionManager;
-		_PlayerMovement = _Tools.GetComponent<S_PlayerMovement>();
+	public override void AssignTools() {
+
+		base.AssignTools();
 	}
 
-	private void AssignStats() {
+	public override void AssignStats() {
 		_regularSkiddingIntensity_ = _Tools.Stats.SkiddingStats.skiddingIntensity;
 		_airSkiddingIntensity_ = _Tools.Stats.SkiddingStats.skiddingIntensity;
 		_canSkidInAir_ = _Tools.Stats.SkiddingStats.canSkidInAir;

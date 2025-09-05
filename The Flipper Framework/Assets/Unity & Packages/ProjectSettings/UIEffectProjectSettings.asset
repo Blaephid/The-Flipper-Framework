@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &-2100592118200069981
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ShaderVariants
+  m_Shaders:
+  - first: {fileID: 4800000, guid: 96246b1ead49a4c5a996fd477bc5a117, type: 3}
+    second:
+      variants:
+      - keywords: DETAIL_ADDITIVE UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: SAMPLING_BLUR_FAST TRANSITION_PATTERN UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: SAMPLING_BLUR_FAST TRANSITION_SHINY UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: SAMPLING_BLUR_FAST UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: SAMPLING_BLUR_MEDIUM UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: TONE_GRAYSCALE UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: TONE_SEPIA UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: TRANSITION_SHINY UNITY_UI_ALPHACLIP
+        passType: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d43f626d9b5f4d729097092ded48bdb, type: 3}
+  m_Name: UIEffectProjectSettings
+  m_EditorClassIdentifier: 
+  m_RuntimePresets: []
+  m_RuntimePresetsV2: []
+  m_UseHDRColorPicker: 1
+  m_ShaderVariantCollection: {fileID: 0}
+  m_ShaderVariantRegistry:
+    m_OptionalShaders:
+    - key: Hidden/UI/Default (SoftMaskable)
+      value: Hidden/UI/Default (UIEffect)
+    m_Asset: {fileID: -2100592118200069981}
+    m_ErrorOnUnregisteredVariant: 0
+    m_UnregisteredVariants: []

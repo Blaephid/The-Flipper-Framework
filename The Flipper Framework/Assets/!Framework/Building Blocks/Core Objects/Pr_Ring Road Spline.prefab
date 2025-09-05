@@ -43,7 +43,8 @@ GameObject:
   - component: {fileID: 853586103888125666}
   - component: {fileID: 5455047339599456840}
   - component: {fileID: 553594820864921953}
-  - component: {fileID: 3617762599319094144}
+  - component: {fileID: 6119010090249839587}
+  - component: {fileID: 9078566645498452727}
   m_Layer: 0
   m_Name: Spline
   m_TagString: Untagged
@@ -79,33 +80,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodes:
-  - position: {x: 5, y: 0, z: 0}
-    direction: {x: 5, y: 0, z: -3}
+  - position: {x: 0, y: 0.0000038146973, z: 0}
+    direction: {x: 5.000183, y: 0.0000038146973, z: -0.000024795532}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
-  - position: {x: 10, y: 0, z: 0}
-    direction: {x: 10, y: 0, z: 3}
+  - position: {x: 49.999817, y: 0.0000019073486, z: 0.000024795532}
+    direction: {x: 49.999817, y: 0.0000019073486, z: 0.000024795532}
     up: {x: 0, y: 1, z: 0}
     scale: {x: 1, y: 1}
     roll: 0
   curves:
   - n1:
-      position: {x: 5, y: 0, z: 0}
-      direction: {x: 5, y: 0, z: -3}
+      position: {x: 0, y: 0.0000038146973, z: 0}
+      direction: {x: 5.000183, y: 0.0000038146973, z: -0.000024795532}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
     n2:
-      position: {x: 10, y: 0, z: 0}
-      direction: {x: 10, y: 0, z: 3}
+      position: {x: 49.999817, y: 0.0000019073486, z: 0.000024795532}
+      direction: {x: 49.999817, y: 0.0000019073486, z: 0.000024795532}
       up: {x: 0, y: 1, z: 0}
       scale: {x: 1, y: 1}
       roll: 0
     Changed:
       m_PersistentCalls:
         m_Calls: []
-  Length: 7.5348897
+  Length: 49.999817
   isLoop: 0
   CurveChanged:
     m_PersistentCalls:
@@ -122,58 +123,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a04b79867c9442bac30e6bda02cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdateThis: 0
-  justStart: 0
-  onlyOne: 0
-  none: 0
-  onEnd: 0
-  prefab: {fileID: 1543253352267630, guid: 8f33dd768b24bc44084c70b4c9605d8f, type: 3}
-  asPrefab: 1
-  scale: 1
-  scaleRange: 0
-  spacing: 8
-  spacingRange: 0
-  offset: 0
-  offsetRange: 0
-  Offset3d: {x: 0, y: 0, z: 0}
-  offsetRotation: {x: 0, y: 0, z: 0}
-  initialSpacing: 0
-  EndingSpacing: 0
-  isRandomYaw: 0
-  randomSeed: 0
-  alingwithterrain: 0
---- !u!114 &3617762599319094144
+  _Spline: {fileID: 0}
+  _toUpdate: 1
+  _movingCurves: 0
+  UpdateButton: 0
+  DataResetButton: 0
+  _spacingRange_: {x: 12, y: 12}
+  _rememberspacingRange_: {x: 20, y: 20}
+  _maxNumber_: -1
+  _spaceFromStart_: 0
+  _spaceFromEnd_: 0
+  _addOnStart_: 0
+  _addOnEnd_: 0
+  _PrefabToPlace_: {fileID: 1543253352267630, guid: 41f48bd94c27ee141880c4de20d81fdc,
+    type: 3}
+  _placeAsPrefab_: 1
+  _CurrentPrefabToSpawn: Pr_RingSpawner - Eternal
+  _DataForPrefabs: {fileID: 0}
+  _mainScale: {x: 1, y: 1, z: 1}
+  _mainOffset: {x: 0, y: 2, z: 0}
+  _mainRotation: {x: 0, y: 0, z: 0}
+  _TransformsPerPoint_:
+  - _scale: {x: 1, y: 1, z: 1}
+    _offset3d: {x: 0, y: 2, z: 0}
+    _rotation: {x: 0, y: 0, z: 0}
+  _alignWithTerrain_: 1
+--- !u!114 &6119010090249839587
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1752959267358373740}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 887a5ceafaae7c94eaa1512d747b752f, type: 3}
+  m_Script: {fileID: 11500000, guid: b9c8b87cf845f3c4cb854007700733aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whatToSpawn: 0
-  _GeneralSpawner:
-    _TeleportSparkle: {fileID: 0}
-    _ObjectToSpawn: {fileID: 0}
-    _willRespawnOnDeath: 0
-    _distanceFromPlayerToSpawn: 0
-    _willAutoSpawn: 0
-    _willRespawnWhenDestroyed: 0
-    _respawnDelay: 0
-  _RingSpawner:
-    _TransformToFollow: {fileID: 0}
-    _followOffset: {x: 0, y: 0, z: 0}
-  isBooster: 0
-  speed: 0
-  setRailSpeed: 0
-  addRailSpeed: 0
-  isSpring: 0
-  force: 100
-  LockControl: 1
-  LockTime: 60
-  lockGravity: {x: 0, y: -1.5, z: 0}
-  lockAirMoves: 1
-  lockAirMovesTime: 30
+  _isSelected: 1
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 1
+  _viewVisualisationDataHidden: 1
+  _drawAtAllTimes: 0
+  _drawIfParentSelected: 1
+  _normalOutlineColour: {r: 0.6792453, g: 0.6120927, b: 0.40690637, a: 1}
+  _selectedOutlineColour: {r: 0.6981132, g: 0.52600914, b: 0, a: 1}
+  _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _distancePerCalculation: 20
+  _selectPointOffset: {x: 0, y: 0, z: 0}
+  _selectHandleSize: 2
+  _SplineToDisplay: {fileID: 5455047339599456840}
+--- !u!114 &9078566645498452727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752959267358373740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c14671167cf9642a2c8d492da2ab05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _LinkedComponent: {fileID: 6119010090249839587}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

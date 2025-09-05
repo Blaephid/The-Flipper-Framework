@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Runtime.InteropServices.WindowsRuntime;
 
 [RequireComponent(typeof(S_Handler_WallActions))]
-public class S_Action12_WallRunning : MonoBehaviour, IMainAction
+public class S_Action12_WallRunning : S_Action_Base, IMainAction
 {
 	/// <summary>
 	/// Properties ----------------------------------------------------------------------------------
@@ -15,24 +15,14 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	[HideInInspector]	public  S_CharacterTools                _Tools;
-	[HideInInspector]	public  S_PlayerPhysics                 _PlayerPhys;
-	[HideInInspector]   public  S_PlayerVelocity                _PlayerVel;
-	[HideInInspector]	public  S_PlayerInput                   _Input;
-	[HideInInspector]	public  S_ActionManager                 _Actions;
-	[HideInInspector]	public  S_Control_SoundsPlayer          _Sounds;
 	[HideInInspector]	public  S_Handler_HomingAttack          _HomingControl;
-	[HideInInspector]	public  S_Handler_Camera                _CamHandler;
 	[HideInInspector]	public  S_Handler_WallActions           _WallHandler;
 
-	[HideInInspector]	public  GameObject            _JumpBall;
 	[HideInInspector]	public  GameObject            _DropShadow;
 	[HideInInspector]	public  Transform             _CamTarget;
 	[HideInInspector]	public  Transform             _ConstantTarget;
 	[HideInInspector]	public  CapsuleCollider       _CoreCollider;
 	[HideInInspector]	public  GameObject            _CurrentWall;
-	[HideInInspector]	public  Animator              _CharacterAnimator;
-	[HideInInspector]	public  Transform             _MainSkin;
 	[HideInInspector]	public  Transform             _CharacterTransform;
 	#endregion
 
@@ -48,8 +38,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	// Trackers
 	#region trackers
-	[HideInInspector]
-	public  int         _positionInActionList;        //In every action script, takes note of where in the Action Managers Main action list this script is. 
 
 	[HideInInspector]
 	public Vector3      _originalVelocity;
@@ -94,11 +82,6 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	/// 
 	#region Inherited
 
-	// Start is called before the first frame update
-	void Start () {
-
-	}
-
 
 	// Update is called once per frame
 	void Update () {
@@ -106,7 +89,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_counter += Time.deltaTime;
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		if (_isWall)
 		{
 			RunningInteraction();
@@ -114,6 +98,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 			CheckCanceling();
 			HandleInputs();
+
+			if(_counter > 0.5f) { _ActionChain.AddToChain("Wall Run", 1, 1); }
 		}
 		else
 		{
@@ -122,17 +108,19 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		}
 	}
 
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 		if (enabled) return false;
 
+		//Searching for walls is done in S_Handler_WallActions, to ensure it's not done multiple times.
+
+		//Because WallCLimbing inherits from WallRunning, it will call this too, so check.
 		if (this is S_Action15_WallClimbing)
 		{
-			_WallHandler._isScanningForClimb = true;
 			if (_WallHandler.TryWallClimb()) { return true; }
 		}
 		else
 		{
-			_WallHandler._isScanningForRun = true;
 			if (_WallHandler.TryWallRun()) { return true; }
 		}
 
@@ -140,7 +128,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	//Due to requiring additional data for the wall, this is called in the SetUp methods, unlike AttemptAction.
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		_isWall = true;
@@ -169,8 +157,8 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_PlayerPhys._canChangeGrounded = false;
 
 		//Control
-		_PlayerPhys._listOfCanControl.Add(false);
-		_PlayerPhys._listOfIsGravityOn.Add(false);
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "WallRunning");
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "WallRunning");
 
 		this.enabled = true;
 	}
@@ -178,10 +166,10 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		//Wall fields
-		_WallHandler._BannedWall = _CurrentWall;
+		//_WallHandler._BannedWall = _CurrentWall;
 		_isWall = false;
 
 		//Universal
@@ -189,19 +177,18 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 		_CamHandler._HedgeCam._shouldSetHeightWhenMoving_ = false;
 
 		//Control
-		if(_PlayerPhys._listOfIsGravityOn.Count > 0)
-			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-		if(_PlayerPhys._listOfCanControl.Count > 0)
-			_PlayerPhys._listOfCanControl.RemoveAt(0);
 		_PlayerPhys._canChangeGrounded = true;
 
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "WallRunning");
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "WallRunning");
+
 		//Return camera to normal position
-		_CamHandler._HedgeCam.DisableSecondaryCameraTarget();
+		_CamHandler._HedgeCam.ReturnCameraTargetsToNormal(_CamHandler._HedgeCam._BaseTarget, 30);
 
 		//In case action change was intentional (not from losing grip on a wall) make sure player moves away from wall.
-		if(_Actions._whatCurrentAction != S_Enums.PrimaryPlayerStates.Default)
+		if(_Actions._whatCurrentAction != S_S_ActionHandling.PrimaryPlayerStates.Default)
 		{
-			_Input.LockInputForAWhile(4, false, _wallHit.normal, S_Enums.LockControlDirection.Change);
+			_Input.LockInputForAWhile(4, false, _wallHit.normal, S_GeneralEnums.LockControlDirection.Change);
 		}
 	}
 	#endregion
@@ -211,20 +198,14 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	/// </summary>
 	/// 
 	#region private
-
-	public void HandleInputs () {
-		//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-		_Actions.HandleInputs(_positionInActionList);
-	}
-
 	private void RunningInteraction () {
 		_Input.LockInputForAWhile(20f, false, Vector3.zero); //Locks input for half a second so any actions that end this don't have immediate control.
 
-		_raycastOrigin = transform.position + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
+		_raycastOrigin = _PlayerPhys._CharacterCenterPosition + (_MainSkin.up * 0.2f) - (_MainSkin.forward * 0.3f);
 
 		//Get information of wall
 		int wallDirection = _isWallOnRight ? 1: -1;
-		Vector3 raycastOrigin = transform.position + _MainSkin.forward * 0.3f;
+		Vector3 raycastOrigin = _PlayerPhys._CharacterCenterPosition + _MainSkin.forward * 0.3f;
 		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.right * wallDirection, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
 		
 
@@ -295,7 +276,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 	public void SetupRunning ( RaycastHit wallHit, bool wallRight ) {
 
-		Vector3 wallDirection = wallHit.point - transform.position;
+		Vector3 wallDirection = wallHit.point - _PlayerPhys._CharacterCenterPosition;
 
 		//Wall values
 		_wallHit = wallHit;
@@ -313,9 +294,9 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 
 		//Offset camera and seperate from realtime movers (like move target to input)
 		Vector3 camOffset = (_isWallOnRight ? -_MainSkin.right : _MainSkin.right) * 2;
-		_CamHandler._HedgeCam.SetSecondaryCameraTarget(_MainSkin, transform.position + camOffset);
+		_CamHandler._HedgeCam.SetCameraTargetToNewParent(_CamHandler._HedgeCam._BaseTarget,_MainSkin, _PlayerPhys._CharacterCenterPosition + camOffset, 10);
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.WallRunning); //Not part of startAction because other actions inherit that
 		StartAction();
 	}
 
@@ -350,7 +331,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	public bool IsOnGround () {
 		if(_PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
-			Vector3 rayCastStartPosition = transform.position + _wallHit.normal * 0.5f;
+			Vector3 rayCastStartPosition = _PlayerPhys._CharacterCenterPosition + _wallHit.normal * 0.5f;
 			float range = (_CoreCollider.height / 2) + 0.5f;
 			return Physics.Raycast(rayCastStartPosition, -GetUpDirectionOfWall(_wallHit.normal), out RaycastHit hitGroundTemp, range, _PlayerPhys._Groundmask_);
 		}
@@ -364,48 +345,11 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (this is S_Action15_WallClimbing)
-				{
-					if(_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.WallClimbing){
-						_positionInActionList = i;
-						break;
-					}
-				}
-				else if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.WallRunning)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	public void AssignTools () {
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel = _Tools.GetComponent<S_PlayerVelocity>();
-		_Actions = _Tools._ActionManager;
-		_CamHandler = _Tools.CamHandler;
-		_Input = _Tools.GetComponent<S_PlayerInput>();
-		_WallHandler = GetComponent<S_Handler_WallActions>();
-
-		_CharacterAnimator = _Tools.CharacterAnimator;
-		_MainSkin = _Tools.MainSkin;
+	public override void AssignTools () {
+		base.AssignTools();
+		_WallHandler = GetComponent<S_Handler_WallActions>();	
 		_CharacterTransform = _Tools.CharacterModelOffset;
-		_Sounds = _Tools.SoundControl;
-		_JumpBall = _Tools.JumpBall;
 		_DropShadow = _Tools.DropShadow;
 		_CamTarget = _Tools.CameraTarget;
 		_ConstantTarget = _Tools.ConstantTarget;
@@ -413,7 +357,7 @@ public class S_Action12_WallRunning : MonoBehaviour, IMainAction
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	public void AssignStats () {
+	public override void AssignStats () {
 
 		_wallCheckDistance_ = _Tools.Stats.WallActionsStats.wallCheckDistance;
 		_wallLayerMask_ = _Tools.Stats.WallActionsStats.WallLayerMask;

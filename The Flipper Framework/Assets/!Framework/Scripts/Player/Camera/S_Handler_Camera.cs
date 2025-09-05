@@ -2,19 +2,30 @@
 using Cinemachine;
 using System.Collections;
 using UnityEngine.Windows;
+using System;
+using System.Collections.Generic;
+using Unity.Collections;
+using Unity.VisualScripting;
 
 public class S_Handler_Camera : MonoBehaviour
 {
 
-	public S_HedgeCamera	_HedgeCam;
+	public S_HedgeCamera          _HedgeCam;
 	public CinemachineVirtualCamera _VirtCam;
-	private S_CharacterTools	_Tools;
-	private S_PlayerInput	_Input;
-	private S_PlayerPhysics	_PlayerPhys;
+	private S_CharacterTools      _Tools;
+	private S_PlayerInput         _Input;
+	private S_PlayerPhysics       _PlayerPhys;
 
 	private Transform             _MainSkin;
 
 	[HideInInspector] public float _initialDistance;
+	[HideInInspector] public float _initialFOV;
+
+	private bool startedLerpingFOV;
+	private bool startedLerpingDistance;
+
+	//This is used to check what the current dominant trigger is, as multiple triggers might be working together under one effect. These will have their read values set to the same.
+	private List<S_Trigger_External> _CurrentActiveCameraTriggers = new List<S_Trigger_External>();
 
 	void Awake () {
 		_Tools = GetComponentInParent<S_CharacterTools>();
@@ -23,137 +34,234 @@ public class S_Handler_Camera : MonoBehaviour
 		_MainSkin = _Tools.MainSkin;
 
 		_initialDistance = _Tools.CameraStats.DistanceStats.CameraDistance;
+		_initialFOV = _Tools.CameraStats.FOVStats.baseFOV;
+	}
+	private void OnEnable () {
+		S_Manager_LevelProgress.OnDeath += EventOnDeath;
+	}
+	private void OnDisable () {
+		S_Manager_LevelProgress.OnDeath -= EventOnDeath;
 	}
 
-	//Called when entering a trigger in the physics script (must be assigned in Unity editor)
-	public void EventTriggerEnter ( Collider col ) {
-		if (col.tag == "CameraTrigger")
+	#region Trigger Interaction
+
+	public void StartCameraEffect ( S_Trigger_Camera cameraData ) {
+		switch (cameraData._whatType)
 		{
-			//What happens depends on the data set to the camera trigger in its script.
-			if (col.TryGetComponent(out S_Trigger_Camera cameraData))
-			{
-				switch (cameraData.Type)
+			//Rotates the camera in direction and prevents controlled rotation.
+			case enumCameraControlType.SetToDirection:
+				SetHedgeCamera(cameraData, cameraData._directionToSet);
+				break;
+
+			//Reneables camera control but still affects distance and other.
+			case enumCameraControlType.RemoveEffects:
+				RemoveAdditonalCameraEffects(cameraData, cameraData._removeAll);
+				return;
+
+			//Nothing changes in control, but distance and height may change.
+			case enumCameraControlType.OnlyApplyEffects:
+				if (cameraData._willChangeAltitude)
 				{
-					//Rotates the camera in direction and prevents controlled rotation.
-					case TriggerType.LockToDirection:
-						SetHedgeCamera(cameraData, cameraData.forward);
-						LockCamera(true);
-						changeDistance(cameraData);
-						break;
-
-						//Reneables camera control but still affects distance and other.
-					case TriggerType.SetFree:
-						_HedgeCam._cameraMaxDistance_ = _initialDistance;
-						LockCamera(false);
-						_HedgeCam._isReversed = false;
-						break;
-
-						//Nothing changes in control, but distance and height may change.
-					case TriggerType.justEffect:
-						changeDistance(cameraData);
-						if (cameraData.willChangeAltitude)
-							_HedgeCam.SetCameraHeightOnly(cameraData.newAltitude, cameraData.faceSpeed, cameraData.duration);
-						break;
-
-					//Allow controlled rotation but manually rotate in direction.
-					case TriggerType.SetFreeAndLookTowards:
-						SetHedgeCamera(cameraData, cameraData.forward);
-						changeDistance(cameraData);
-						LockCamera(false);
-						break;
-
-
-					//Make camera face behind player.
-					case TriggerType.Reverse:				
-						_HedgeCam._isReversed = true;
-						SetHedgeCamera(cameraData, -_MainSkin.forward);
-						changeDistance(cameraData);
-						LockCamera(false);
-						break;
-
-						//Make camera face behind player and disable rotation.
-					case TriggerType.ReverseAndLockControl:
-						_HedgeCam._isReversed = true;
-						SetHedgeCamera(cameraData, -_MainSkin.forward);
-						changeDistance(cameraData);
-						LockCamera(true) ;
-						break;
+					_HedgeCam._lookAtDirection = Vector3.zero;
+					_HedgeCam._lookAtLockOn = null;
+					_HedgeCam.SetCameraHeightOnly(cameraData._newAltitude, cameraData._faceSpeed, cameraData._duration);
 				}
+				break;
 
+			//Make camera face behind player.
+			case enumCameraControlType.SetToInfrontOfCharacter:
+				cameraData._directionToSet = -_MainSkin.forward;
+				SetHedgeCamera(cameraData, cameraData._directionToSet);
+				break;
 
-			}
+			//Make camera face behind player and disable rotation.
+			case enumCameraControlType.SetToBehindCharacter:
+				cameraData._directionToSet = _MainSkin.forward;
+				SetHedgeCamera(cameraData, cameraData._directionToSet);
+				break;
+			case enumCameraControlType.SetToViewTarget:
+				if (!cameraData._lockOnTarget) return;
+				cameraData._directionToSet = (cameraData._lockOnTarget.position - _MainSkin.position).normalized;
+				SetHedgeCamera(cameraData, cameraData._directionToSet, cameraData._lockOnTarget);
+				break;
 		}
 
+		ApplyAdditionalCameraEffects(cameraData);
 	}
 
-	//Makes it so the camera will be further out from the player.
-	void changeDistance(S_Trigger_Camera cameraData) {
-		if (!cameraData.willChangeDistance)
+
+	public void EndCameraEffect ( S_Trigger_Camera cameraData ) {
+		//If trigger was set to undo effects on exit, then reset all data to how they should be again.
+		if (cameraData._willReleaseOnExit)
 		{
-			_HedgeCam._cameraMaxDistance_ = _initialDistance;
+			RemoveAdditonalCameraEffects(cameraData);
+		}
+	}
+
+	#endregion
+
+	#region Camera Effects
+
+	private void ApplyAdditionalCameraEffects(S_Trigger_Camera cameraData ) {
+
+		if (cameraData._willChangeDistance)
+			StartCoroutine(LerpToNewDistance(cameraData._newDistance.y, cameraData._newDistance.x, false, cameraData._affectNewDistanceBySpeed));
+
+		if (cameraData._willChangeFOV)
+			StartCoroutine(LerpToNewFOV(cameraData._newFOV.y, cameraData._newFOV.x, false, cameraData._affectNewFOVBySpeed));
+
+		if (cameraData._willOffsetTarget)
+			HandleSecondaryTargetWithOffset(cameraData);
+
+		SetLockCameras(cameraData, true);
+		if (cameraData._lockToCharacterRotation)
+			_HedgeCam.SetToStickToLocalRotation(true, cameraData._directionToSet, cameraData._followPlayerSpeed);
+	}
+
+	private void RemoveAdditonalCameraEffects(S_Trigger_Camera cameraData, bool removeAll = false ) {
+
+		if (removeAll)
+		{
+			StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, !_HedgeCam._canAffectDistanceBySpeed, true));
+			StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, !_HedgeCam._canAffectFOVBySpeed, true));
 		}
 		else
 		{
-			_HedgeCam._cameraMaxDistance_ = cameraData.newDistance;
+			if (removeAll || (cameraData && cameraData._willChangeDistance))
+				StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, true, !cameraData._affectNewDistanceBySpeed));
+			if (removeAll || (cameraData && cameraData._willChangeFOV))
+			{
+				StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, true, !cameraData._affectNewFOVBySpeed));
+			}
 		}
+		//if (removeAll || cameraData._willChangeDistance)
+		//	StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, true, cameraData && !removeAll ? !cameraData._affectNewDistanceBySpeed : true));
+		//if (removeAll || cameraData._willChangeFOV)
+		//	StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, true, cameraData && !removeAll ? !cameraData._affectNewFOVBySpeed : true));
+
+		SetLockCameras(cameraData, false, !removeAll);
+
+		if (removeAll || cameraData._lockToCharacterRotation)
+			_HedgeCam.SetToStickToLocalRotation(false, Vector3.zero, 0);
+
+		if(removeAll || cameraData._willOffsetTarget)
+			_HedgeCam.ReturnCameraTargetsToNormal(null, cameraData ? cameraData._framesToOffset : 0);
+
+		if (removeAll || (cameraData._whatType != enumCameraControlType.OnlyApplyEffects && cameraData._Direction))
+			_HedgeCam._lookTimer = 0; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
+	}
+
+	private IEnumerator LerpToNewDistance(float frames, float distance, bool goalHasModifier = false, bool setAffectedBySpeed = false) {
+		float startDistance = _HedgeCam._cameraMaxDistance_;
+
+		startedLerpingDistance = true;
+
+		//To ensure transition on screen is smooth, if setting speed to not adjust distance, ensure lerp from the current result, as HedgeCamera will immediately stop applying the modifier.
+		if (!setAffectedBySpeed)
+		{
+			startDistance *= _HedgeCam._canAffectDistanceBySpeed ? _HedgeCam._distanceModifier : 1;
+			_HedgeCam._canAffectDistanceBySpeed = false;
+		}
+
+		for (float f = 1f ; f <= frames ; f++)
+		{
+			yield return new WaitForFixedUpdate();
+
+			if (startedLerpingDistance && f > 1) { yield break; } //If another instance of this coroutine was called, stop moving this one.
+			startedLerpingDistance = false;
+
+			float goalDistance = goalHasModifier ? distance * _HedgeCam._distanceModifier : distance;
+			_HedgeCam._cameraMaxDistance_ = Mathf.Lerp(startDistance, goalDistance, f / frames);
+		}
+		if(setAffectedBySpeed && !_HedgeCam._canAffectDistanceBySpeed)
+		{
+			_HedgeCam._canAffectDistanceBySpeed = true;
+			_HedgeCam._cameraMaxDistance_ = distance;
+		}
+	}
+
+	private IEnumerator LerpToNewFOV ( float frames, float newFOV, bool goalHasModifier = false, bool setAffectedBySpeed = false ) {
+		float startFOV =  _HedgeCam._baseFOV_;
+
+		startedLerpingFOV = true;
+
+		if (!setAffectedBySpeed)
+		{
+			startFOV *= _HedgeCam._canAffectFOVBySpeed ? _HedgeCam._FOVModifier : 1;
+			_HedgeCam._canAffectFOVBySpeed = false;
+		}
+
+		for (float f = 1f; f <= frames ; f++)
+		{
+			yield return new WaitForFixedUpdate();
+
+			if(startedLerpingFOV && f > 1) 	{ yield  break; } //If another instance of this coroutine was called, stop moving this one.
+			startedLerpingFOV = false;
+
+			float goalFOV = goalHasModifier ? newFOV * _HedgeCam._FOVModifier : newFOV;
+			_HedgeCam._baseFOV_ = Mathf.Lerp(startFOV, goalFOV, f / frames);
+		}
+
+		if (setAffectedBySpeed && !_HedgeCam._canAffectFOVBySpeed)
+		{
+			_HedgeCam._canAffectFOVBySpeed = true;
+			_HedgeCam._baseFOV_ = newFOV;
+		}
+	}
+
+	private void HandleSecondaryTargetWithOffset(S_Trigger_Camera cameraData ) {
+		Vector3 newTargetPosition = _PlayerPhys._CharacterPivotPosition;
+		newTargetPosition += cameraData._asLocalOffset ?  _MainSkin.rotation * cameraData._newOffset : cameraData._newOffset;
+
+		Transform TargetToMove = cameraData._overWriteAllOffsets ? _HedgeCam._FinalTarget : _HedgeCam._BaseTarget;
+		Transform NewParent = cameraData._asLocalOffset ? _HedgeCam._Skin : _HedgeCam._PlayerMainBody;
+
+		_HedgeCam.SetCameraTargetToNewParent(TargetToMove, NewParent, newTargetPosition, cameraData._framesToOffset);	
 	}
 
 	//Will either make it so the camera can't be moved in the hedge cam script, or that it can.
-	public  void LockCamera(bool state) {
-		_HedgeCam._isMasterLocked = state;
-		_HedgeCam._isLocked = state;
-		_HedgeCam._canMove = !state;
+	public void SetLockCameras ( S_Trigger_Camera cameraData, bool setTo, bool overWriteIfFalse = true ) {
+		//For each boolean, only set if camera data is set true (meaning camera data effects this, ignore if not.
+		//If overwritting everything, then just set to false.
+
+		if (!overWriteIfFalse)
+		{
+			_HedgeCam._isXLocked = false;
+			_HedgeCam._isYLocked = false;
+			_HedgeCam._isLocked = false;
+			_HedgeCam._isMasterLocked = false;
+			S_S_Logic.RemoveLockFromList(ref _HedgeCam._locksForCameraFallBack, "cameraTrigger");
+		}
+		else
+		{
+			_HedgeCam._isMasterLocked = cameraData._lockCamera ? setTo : _HedgeCam._isMasterLocked;
+			_HedgeCam._isLocked = cameraData._lockCamera ? setTo : _HedgeCam._isLocked;
+			_HedgeCam._isYLocked = cameraData._lockCameraY ? setTo : _HedgeCam._isYLocked;
+			_HedgeCam._isXLocked = cameraData._lockCameraX ? setTo : _HedgeCam._isXLocked;
+			if (cameraData._lockCameraFallBack) { S_S_Logic.AddLockToList(ref _HedgeCam._locksForCameraFallBack, "cameraTrigger"); }
+		}
 	}
 
 	//Calls the hedgecam to rotate towards or change height.
-	void SetHedgeCamera(S_Trigger_Camera cameraData, Vector3 direction) {
-		Vector3 targetUpDirection = cameraData.willRotateCameraUpToThis 
+	void SetHedgeCamera ( S_Trigger_Camera cameraData, Vector3 direction, Transform LockOn = null ) {
+		Vector3 targetUpDirection = cameraData._setCameraReferenceWorldRotation
 			? cameraData.transform.up : Vector3.zero;
 
-
-		if (cameraData.willChangeAltitude)
-			_HedgeCam.SetCameraWithSeperateHeight(direction, cameraData.duration, cameraData.newAltitude, cameraData.faceSpeed, targetUpDirection);
+		if (cameraData._willChangeAltitude)
+			_HedgeCam.SetCameraWithSeperateHeight(direction, cameraData._duration, cameraData._newAltitude, cameraData._faceSpeed, targetUpDirection, LockOn);
 		else
-			_HedgeCam.SetCameraNoSeperateHeight(direction, cameraData.duration, cameraData.faceSpeed, targetUpDirection, cameraData.willRotateVertically);
+			_HedgeCam.SetCameraNoSeperateHeight(direction, cameraData._duration, cameraData._faceSpeed, targetUpDirection, cameraData._willRotateVertically, LockOn);
 	}
 
-	public void EventTriggerExit ( Collider col ) {
-		if (col.tag == "CameraTrigger")
-		{
-			//What happens depends on the data set to the camera trigger in its script.
-			if (col.TryGetComponent(out S_Trigger_Camera cameraData))
-			{
-				//If trigger was set to undo effects on exit, then reset all data to how they should be again.
-				if (cameraData.ReleaseOnExit)
-				{
-					_HedgeCam._cameraMaxDistance_ = _initialDistance;
-					_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
-
-					switch (cameraData.Type)
-					{
-						case TriggerType.LockToDirection:
-							LockCamera(false);
-							return;
-						case TriggerType.Reverse:
-							_HedgeCam._isReversed = false;
-							break;
-						case TriggerType.ReverseAndLockControl:
-							_HedgeCam._isReversed = false;
-							_HedgeCam._canMove = true;
-							break;
-					}
-				}
-			}
-		}
-	}
 
 	//Certain actions will call this in input, where if button is pressed under right speed, then camera will reset to behind character's back.
 	public void AttemptCameraReset () {
 		//Set Camera to back
 		if (_Input._CamResetPressed)
 		{
-			if(!_HedgeCam._isLocked) {
-				if (_Input.moveVec == Vector2.zero && _PlayerPhys._PlayerVelocity._horizontalSpeedMagnitude < 5f)
+			if (!_HedgeCam._isLocked)
+			{
+				if (_Input.moveVec == Vector2.zero && _PlayerPhys._PlayerVel._horizontalSpeedMagnitude < 5f)
 				{
 					_HedgeCam.SetCameraWithSeperateHeight(_MainSkin.forward, 0.25f, 0, 12, Vector3.zero);
 					_Input._CamResetPressed = false;
@@ -162,11 +270,10 @@ public class S_Handler_Camera : MonoBehaviour
 		}
 	}
 
-	public void ResetOnDeath () {
-		LockCamera(false);
+	public void EventOnDeath ( object sender, EventArgs e ) {
+		RemoveAdditonalCameraEffects(null, true);
 
 		_HedgeCam._cameraMaxDistance_ = _initialDistance;
-		_HedgeCam._lookTimer = -Time.fixedDeltaTime; // To ensure the HedgeCamera script will end the look timer countdown and apply necessary changes.
-
 	}
+	#endregion
 }

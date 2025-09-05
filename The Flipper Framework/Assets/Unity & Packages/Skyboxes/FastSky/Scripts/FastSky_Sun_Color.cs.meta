@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: b1460bd2bbd806745bf3c2890e1de370
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 209857
+  packageName: FastSky - Procedural Sky and Clouds URP
+  packageVersion: 2.0
+  assetPath: Assets/FastSky/Scripts/FastSky_Sun_Color.cs
+  uploadId: 576994

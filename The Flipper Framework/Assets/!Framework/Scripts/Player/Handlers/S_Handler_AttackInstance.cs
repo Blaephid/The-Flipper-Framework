@@ -11,7 +11,7 @@ public class S_Handler_AttackInstance : MonoBehaviour
 		switch ( other.tag )
 		{
 			case "Enemy":
-				_AttacksComponent.AttackThing(other, S_Enums.PlayerAttackTypes.Rolling, S_Enums.AttackTargets.Enemy, 1);
+				_AttacksComponent.AttackThing(other, S_GeneralEnums.PlayerAttackTypes.Rolling, S_GeneralEnums.AttackTargets.Enemy, 1);
 				break;
 		}
 	}

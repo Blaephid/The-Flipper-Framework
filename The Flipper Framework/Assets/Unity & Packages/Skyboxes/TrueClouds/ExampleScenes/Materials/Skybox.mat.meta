@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 99351b924f1d97a4297f625ac5d45cb2
+timeCreated: 1431596607
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Materials/Skybox.mat
+  uploadId: 243278

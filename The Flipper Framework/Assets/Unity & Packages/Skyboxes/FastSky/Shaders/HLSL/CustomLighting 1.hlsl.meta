@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 66aa088e28495b548a036c9daf4cfbc9
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 209857
+  packageName: FastSky - Procedural Sky and Clouds URP
+  packageVersion: 2.0
+  assetPath: Assets/FastSky/Shaders/HLSL/CustomLighting 1.hlsl
+  uploadId: 576994

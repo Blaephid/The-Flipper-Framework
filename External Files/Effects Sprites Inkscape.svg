@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920mm"
+   height="1080mm"
+   viewBox="0 0 1920 1080"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="Effects Sprites Inkscape.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#636363"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#222222"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="0.7011013"
+     inkscape:cx="876.47819"
+     inkscape:cy="2020.3928"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="2391"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid1"
+       units="mm"
+       originx="0"
+       originy="0"
+       spacingx="0.99999998"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.09411765"
+       color="#0099e5"
+       opacity="0.0627451"
+       empspacing="5"
+       dotted="false"
+       gridanglex="30"
+       gridanglez="30"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter2"
+       x="-0.11976175"
+       y="-0.11976297"
+       width="1.2395235"
+       height="1.2395259">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.4950386"
+         id="feGaussianBlur2" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4"
+       x="-0.083710995"
+       y="-0.083710995"
+       width="1.167422"
+       height="1.167422">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="8.3710997"
+         id="feGaussianBlur4" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter5"
+       x="-0.0079502434"
+       y="-0.0079502434"
+       width="1.0159005"
+       height="1.0159005">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.79502434"
+         id="feGaussianBlur5" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter6"
+       x="-0.16399643"
+       y="-0.14202508"
+       width="1.3279929"
+       height="1.2840502">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="23.574485"
+         id="feGaussianBlur6" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter8"
+       x="-0.012698015"
+       y="-0.012698015"
+       width="1.025396"
+       height="1.025396">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.6840206"
+         id="feGaussianBlur8" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter9"
+       x="-0.016247043"
+       y="-0.016247043"
+       width="1.0324941"
+       height="1.0324941">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.1546955"
+         id="feGaussianBlur9" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter10"
+       x="-0.051128754"
+       y="-0.051128754"
+       width="1.1022575"
+       height="1.1022575">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="4.6868025"
+         id="feGaussianBlur10" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter11"
+       x="-0.046357424"
+       y="-0.17746968"
+       width="1.0927148"
+       height="1.3549394">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="4.9257452"
+         id="feGaussianBlur11" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path11"
+       style="opacity:0.539867;fill:#ffffff;stroke-width:2.50867;stroke-miterlimit:2000;filter:url(#filter11)"
+       inkscape:transform-center-x="-38.473389"
+       d="m 330,534.63409 -222.16796,20.73179 c -31.111651,-22.03204 -29.767691,-44.24381 0,-66.613 L 330,502.00577 c 10.23371,9.6669 16.14541,19.84449 0,32.62832 z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="..\The Flipper Framework\Assets\!Framework\Visual\Effects\Textures\Tex_Spark.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       sodipodi:type="star"
+       style="opacity:0.539867;fill:#ffffff;stroke-width:7.50001;stroke-miterlimit:2000;filter:url(#filter6)"
+       id="path6"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="580"
+       sodipodi:cy="169.99998"
+       sodipodi:r1="229.99998"
+       sodipodi:r2="57.499996"
+       sodipodi:arg1="0"
+       sodipodi:arg2="1.0471976"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="m 809.99998,169.99998 -344.99997,199.18583 0,-398.371655 z"
+       inkscape:transform-center-x="-45.018625"
+       inkscape:transform-center-y="-2.2297576e-06"
+       transform="matrix(0.78293254,0,0,0.47484671,155.93636,119.27606)"
+       inkscape:export-filename="..\The Flipper Framework\Assets\!Framework\Visual\Effects\Player\Interactions\Tex_ArrowBlue.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       sodipodi:type="star"
+       style="opacity:0.539867;mix-blend-mode:normal;fill:#ffffff;stroke:none;stroke-width:7.50001;stroke-miterlimit:2000;filter:url(#filter4)"
+       id="path4"
+       inkscape:flatsided="false"
+       sodipodi:sides="4"
+       sodipodi:cx="240"
+       sodipodi:cy="219.99998"
+       sodipodi:r1="120"
+       sodipodi:r2="30"
+       sodipodi:arg1="-1.5707963"
+       sodipodi:arg2="-0.78539802"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="M 240,99.999985 261.21321,198.78678 360,219.99999 261.2132,241.21319 240,339.99998 218.78679,241.21319 120,219.99998 l 98.7868,-21.2132 z"
+       inkscape:transform-center-x="4.0236221e-06"
+       inkscape:transform-center-y="-13.807326"
+       transform="matrix(1.2049347,0,0,1.2049347,-51.637315,-48.000048)"
+       inkscape:export-filename="..\The Flipper Framework\Assets\!Framework\Visual\Effects\Player\Interactions\Tex_SparkleNew.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="path1"
+       style="fill:#ffffff;stroke:none;stroke-width:34.4373;stroke-miterlimit:2000"
+       d="m 143.73138,-234.98921 c -50.443893,-5e-5 -91.337063,40.89227 -91.338063,91.33617 -5e-5,50.44464 40.89343,91.338115 91.338063,91.338064 50.44464,4.7e-5 91.33812,-40.893424 91.33807,-91.338064 -10e-4,-50.4439 -40.89416,-91.33622 -91.33807,-91.33617 z m 0,31.68473 c 32.94495,-2.7e-4 59.65253,26.70626 59.65356,59.65121 2.8e-4,32.94586 -26.70769,59.653827 -59.65356,59.653557 -32.94586,2.7e-4 -59.653823,-26.707697 -59.653553,-59.653557 0.001,-32.94495 26.708613,-59.65148 59.653553,-59.65121 z"
+       sodipodi:nodetypes="cccccccccc" />
+    <path
+       id="path2"
+       style="opacity:0.470309;mix-blend-mode:normal;fill:#ffffff;stroke:none;stroke-width:9.4258;stroke-miterlimit:2000;filter:url(#filter2)"
+       d="m 117.18947,-68.999443 c -13.80693,-1.4e-5 -24.99974,11.192571 -25.000012,24.999507 -1.4e-5,13.807138 11.192882,25.000039 25.000012,25.000025 13.80714,1.3e-5 25.00004,-11.192887 25.00003,-25.000025 -2.7e-4,-13.806936 -11.19309,-24.999521 -25.00003,-24.999507 z m 0,5.203409 c 10.93317,-8.9e-5 19.79641,8.862793 19.79675,19.795967 9e-5,10.933478 -8.86327,19.796835 -19.79675,19.796746 -10.93348,8.9e-5 -19.796827,-8.863268 -19.796737,-19.796746 3.4e-4,-10.933174 8.863577,-19.796056 19.796737,-19.795967 z"
+       sodipodi:nodetypes="cccccccccc"
+       inkscape:export-filename="..\The Flipper Framework\Assets\!Framework\Visual\Effects\Player\Interactions\Tex_BlurElipse.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="matrix(3.6535189,0,0,3.6535189,-15.826193,20.75508)" />
+    <path
+       sodipodi:type="star"
+       style="fill:#ffffff;stroke:none;stroke-width:7.50001;stroke-miterlimit:2000;filter:url(#filter5)"
+       id="path3"
+       inkscape:flatsided="false"
+       sodipodi:sides="4"
+       sodipodi:cx="240"
+       sodipodi:cy="219.99998"
+       sodipodi:r1="120"
+       sodipodi:r2="30"
+       sodipodi:arg1="-1.5707963"
+       sodipodi:arg2="-0.78539802"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="M 240,99.999985 261.21321,198.78678 360,219.99999 261.2132,241.21319 240,339.99998 218.78679,241.21319 120,219.99998 l 98.7868,-21.2132 z"
+       inkscape:transform-center-x="3.1534571e-06"
+       inkscape:transform-center-y="-9.3985015"
+       transform="matrix(0.82029031,0,0,0.82018621,41.540279,39.866122)" />
+    <path
+       sodipodi:type="star"
+       style="opacity:0.539867;fill:#ffffff;stroke-width:7.50001;stroke-miterlimit:2000"
+       id="path5"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="580"
+       sodipodi:cy="169.99998"
+       sodipodi:r1="229.99998"
+       sodipodi:r2="57.499996"
+       sodipodi:arg1="0"
+       sodipodi:arg2="1.0471976"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="m 809.99998,169.99998 -344.99997,199.18583 0,-398.371655 z"
+       inkscape:transform-center-x="-43.430966"
+       transform="matrix(0.75532109,0,0,0.45810043,171.951,122.12293)" />
+    <path
+       sodipodi:type="star"
+       style="opacity:0.539867;fill:#ffffff;stroke-width:7.50001;stroke-miterlimit:2000;filter:url(#filter8)"
+       id="path7"
+       inkscape:flatsided="false"
+       sodipodi:sides="20"
+       sodipodi:cx="1348.0101"
+       sodipodi:cy="200"
+       sodipodi:r1="106.5166"
+       sodipodi:r2="160.43964"
+       sodipodi:arg1="-2.5432274"
+       sodipodi:arg2="-2.3861477"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="m 1260,140 -28.7846,-49.999444 51.6331,25.739414 -11.925,-56.447201 41.152,40.435142 6.1018,-57.369526 26.6428,51.172793 23.5313,-52.676117 9.5255,56.901294 38.6574,-42.826402 -8.5242,57.059897 49.9995,-28.784538 -25.7394,51.633088 56.4472,-11.92505 -40.4352,41.15206 57.3695,6.10175 -51.1727,26.6428 52.6761,23.53126 -56.9013,9.52554 42.8264,38.65738 -57.0599,-8.52414 28.7845,49.99944 -51.6331,-25.73941 11.9251,56.4472 -41.1521,-40.43514 -6.1017,57.36952 -26.6428,-51.17279 -23.5313,52.67612 -9.5255,-56.9013 -38.6574,42.82641 8.5241,-57.0599 -49.9994,28.78454 25.7394,-51.63309 -56.4472,11.92505 40.4351,-41.15206 -57.3695,-6.10175 51.1728,-26.6428 -52.6761,-23.53126 56.9013,-9.52554 -42.8264,-38.65738 z"
+       inkscape:transform-center-x="2.1119466e-05"
+       inkscape:transform-center-y="-8.6233082e-06"
+       transform="matrix(1.457727,0,0,0.8899428,-745.03077,22.011434)" />
+    <path
+       sodipodi:type="star"
+       style="opacity:0.539867;fill:#ffffff;stroke-width:7.50001;stroke-miterlimit:2000;filter:url(#filter9)"
+       id="path8"
+       inkscape:flatsided="false"
+       sodipodi:sides="20"
+       sodipodi:cx="1348.0101"
+       sodipodi:cy="200"
+       sodipodi:r1="106.5166"
+       sodipodi:r2="160.43964"
+       sodipodi:arg1="-2.5432274"
+       sodipodi:arg2="-2.3861477"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="m 1260,140 -28.7846,-49.999444 51.6331,25.739414 -11.925,-56.447201 41.152,40.435142 6.1018,-57.369526 26.6428,51.172793 23.5313,-52.676117 9.5255,56.901294 38.6574,-42.826402 -8.5242,57.059897 49.9995,-28.784538 -25.7394,51.633088 56.4472,-11.92505 -40.4352,41.15206 57.3695,6.10175 -51.1727,26.6428 52.6761,23.53126 -56.9013,9.52554 42.8264,38.65738 -57.0599,-8.52414 28.7845,49.99944 -51.6331,-25.73941 11.9251,56.4472 -41.1521,-40.43514 -6.1017,57.36952 -26.6428,-51.17279 -23.5313,52.67612 -9.5255,-56.9013 -38.6574,42.82641 8.5241,-57.0599 -49.9994,28.78454 25.7394,-51.63309 -56.4472,11.92505 40.4351,-41.15206 -57.3695,-6.10175 51.1728,-26.6428 -52.6761,-23.53126 56.9013,-9.52554 -42.8264,-38.65738 z"
+       inkscape:transform-center-x="3.0771956e-05"
+       inkscape:transform-center-y="-6.6233082e-06"
+       transform="matrix(1.1938802,0,0,0.72886425,-389.36262,54.227146)" />
+    <path
+       sodipodi:type="star"
+       style="opacity:0.539867;fill:#ffffff;stroke-width:7.50001;stroke-miterlimit:2000;filter:url(#filter10)"
+       id="path9"
+       inkscape:flatsided="false"
+       sodipodi:sides="4"
+       sodipodi:cx="1270"
+       sodipodi:cy="10"
+       sodipodi:r1="130.38405"
+       sodipodi:r2="36.099464"
+       sodipodi:arg1="2.5748634"
+       sodipodi:arg2="-2.8609092"
+       inkscape:rounded="-3.469447e-18"
+       inkscape:randomized="0"
+       d="M 1160,80.000004 1235.3132,-2.609044e-8 1200,-99.999998 1280,-24.68676 1380,-60.000004 1304.6868,20 1340,120 1260,44.68676 Z"
+       inkscape:transform-center-x="8.7e-05"
+       transform="matrix(1.8474428,0.69049757,-1.1603734,1.0481681,-1114.6486,-677.4136)"
+       inkscape:transform-center-y="-1.9238941e-05"
+       inkscape:export-filename="..\The Flipper Framework\Assets\!Framework\Visual\Effects\Player\Interactions\Tex_SpikeBlast.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="path10"
+       style="opacity:0.539867;fill:#ffffff;stroke-width:2.50867;stroke-miterlimit:2000"
+       inkscape:transform-center-x="-38.473389"
+       d="m 330,534.63409 -222.16796,20.73179 c -31.111651,-22.03204 -29.767691,-44.24381 0,-66.613 L 330,502.00577 c 10.23371,9.6669 16.14541,19.84449 0,32.62832 z"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+</svg>

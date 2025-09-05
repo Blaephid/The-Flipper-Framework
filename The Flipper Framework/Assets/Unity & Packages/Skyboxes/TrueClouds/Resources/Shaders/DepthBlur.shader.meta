@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 86ffe5743a2c74741be2ae7d00c19d9b
+timeCreated: 1431090677
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/DepthBlur.shader
+  uploadId: 243278

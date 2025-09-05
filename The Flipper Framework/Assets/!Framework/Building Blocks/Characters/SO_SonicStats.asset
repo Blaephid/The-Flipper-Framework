@@ -13,6 +13,30 @@ MonoBehaviour:
   m_Name: SO_SonicStats
   m_EditorClassIdentifier: 
   Title: Sonic
+  StartCoreValuesStats:
+    dieAtDamageFromRingCount: 0
+    minRingLoss: {x: 0.8, y: 40}
+    maxRingLoss: 100
+    startMaxRingCount: 100
+    ringsOnPlayerStart: {x: 0, y: 1}
+    gainEnergyFromRings: 1
+    gainEnergyOverTime: 0
+    energyGainPerRing: 4
+    energyGainPerSecond: 10
+    startMaxEnergy: 100
+    energyOnPlayerStart: {x: 1, y: 0.5}
+  CoreValuesStats:
+    dieAtDamageFromRingCount: 15
+    minRingLoss: {x: 0.8, y: 60}
+    maxRingLoss: 80
+    startMaxRingCount: 100
+    ringsOnPlayerStart: {x: 0, y: 5}
+    gainEnergyFromRings: 1
+    gainEnergyOverTime: 1
+    energyGainPerRing: 1.5
+    energyGainPerSecond: 3
+    startMaxEnergy: 100
+    energyOnPlayerStart: {x: 0.8, y: 0.5}
   StartAccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4
@@ -21,8 +45,8 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 3
+        time: -0.00617218
+        value: 2.5002136
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -30,8 +54,26 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.22
-        value: 2.5
+        time: 0.14655346
+        value: 1.5054858
+        inSlope: 0.17781135
+        outSlope: 0.17781135
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 1
+      - serializedVersion: 3
+        time: 0.2644902
+        value: 1.4960827
+        inSlope: -0.13208015
+        outSlope: -0.13208015
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.6005403
+      - serializedVersion: 3
+        time: 0.66790164
+        value: 1.0069519
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -39,14 +81,14 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.6
-        value: 0.1
-        inSlope: 0
-        outSlope: 0
+        time: 0.87535614
+        value: 0.09743878
+        inSlope: -2.0582414
+        outSlope: -2.0582414
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 1
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
         value: 0.02
@@ -544,8 +586,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.95
-        value: 0.2
+        time: 0.9333374
+        value: 0.2848999
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -553,8 +595,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
-        value: 0
+        time: 1.0166769
+        value: 0.28655544
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -893,8 +935,8 @@ MonoBehaviour:
     topSpeed: 90
     maxSpeed: 160
   SpeedStats:
-    topSpeed: 100
-    maxSpeed: 160
+    topSpeed: 110
+    maxSpeed: 180
   StartSlopeStats:
     isUsingSlopePhysics: 1
     slopeEffectLimit: 0.92
@@ -1074,7 +1116,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: -1
-        value: 1.2
+        value: 0.97659075
         inSlope: 0.5426819
         outSlope: 0.5426819
         tangentMode: 34
@@ -1083,7 +1125,7 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: -0.5623816
-        value: 1.4374876
+        value: 1.2140783
         inSlope: 0.3425485
         outSlope: 0.3425485
         tangentMode: 0
@@ -1092,7 +1134,7 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0
-        value: 1.5
+        value: 1.2765907
         inSlope: -0.005334998
         outSlope: -0.005334998
         tangentMode: 0
@@ -1100,38 +1142,47 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.44166666
       - serializedVersion: 3
-        time: 0.25777882
-        value: 1.4634968
-        inSlope: -0.396147
-        outSlope: -0.396147
+        time: 0.21433401
+        value: 1.2294726
+        inSlope: -0.47046843
+        outSlope: -0.47046843
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.6345046
       - serializedVersion: 3
-        time: 0.7
-        value: 0.6
-        inSlope: -0.029690564
-        outSlope: -0.029690564
+        time: 0.68336594
+        value: 0.99638253
+        inSlope: -0.793425
+        outSlope: -0.793425
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 1
+        outWeight: 0.5522988
       - serializedVersion: 3
-        time: 1
-        value: 0.5
-        inSlope: -0.3333334
-        outSlope: -0.3333334
-        tangentMode: 34
+        time: 0.89439183
+        value: 0.07879499
+        inSlope: -1.2392635
+        outSlope: -1.2392635
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
+        inWeight: 0.18938246
+        outWeight: 0.93117476
+      - serializedVersion: 3
+        time: 0.98999023
+        value: 0
+        inSlope: -0.12303343
+        outSlope: -0.12303343
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     generalHillMultiplier: 0.8
     uphillMultiplier: 0.36
-    downhillMultiplier: 0.27
+    downhillMultiplier: 0.4
     SlopePowerByCurrentSpeed:
       serializedVersion: 2
       m_Curve:
@@ -1156,15 +1207,15 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0.25
         value: 3
-        inSlope: -38.067356
-        outSlope: -38.067356
+        inSlope: -12.735115
+        outSlope: -12.735115
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.060297847
-        outWeight: 0.07583907
+        outWeight: 0.28733775
       - serializedVersion: 3
         time: 0.4384415
-        value: 1.0150815
+        value: 1.0433713
         inSlope: -0.04856667
         outSlope: -0.04856667
         tangentMode: 0
@@ -1172,8 +1223,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.8776433
-        value: 1.1328996
+        time: 0.6514928
+        value: 1.0479997
         inSlope: -0.18180363
         outSlope: -0.18180363
         tangentMode: 0
@@ -1181,8 +1232,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.91554785
       - serializedVersion: 3
-        time: 1.0118829
-        value: 0.8161291
+        time: 1.0118219
+        value: 2.528379
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1205,7 +1256,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.08
+        time: 0.05899246
         value: 0
         inSlope: 0.33930302
         outSlope: 0.33930302
@@ -1223,8 +1274,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.23611149
       - serializedVersion: 3
-        time: 0.5165283
-        value: 0.989733
+        time: 0.63836974
+        value: 0.9944632
         inSlope: -0.065906554
         outSlope: -0.065906554
         tangentMode: 0
@@ -1232,8 +1283,8 @@ MonoBehaviour:
         inWeight: 0.4257487
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.8665585
-        value: 0.70779127
+        time: 0.8120083
+        value: 0.9303178
         inSlope: -1.1196592
         outSlope: -1.1196592
         tangentMode: 0
@@ -1241,8 +1292,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.9166555
-        value: 0.15
+        time: 0.91664624
+        value: 0.8223022
         inSlope: -0.03771157
         outSlope: -0.03771157
         tangentMode: 0
@@ -1250,8 +1301,8 @@ MonoBehaviour:
         inWeight: 1
         outWeight: 0
       - serializedVersion: 3
-        time: 1.0083339
-        value: 0.12111206
+        time: 0.99995685
+        value: 0.7934143
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1266,7 +1317,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: -0.0008468628
-        value: 0.40056765
+        value: 0.5025574
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1274,16 +1325,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.20093316
-        value: 0.49763983
-        inSlope: 0.8240505
-        outSlope: 0.8240505
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.4441452
+        time: 0.2110138
         value: 1.006813
         inSlope: 0
         outSlope: 0
@@ -1390,7 +1432,7 @@ MonoBehaviour:
   FindingGround:
     GroundMask:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 9
     groundAngleDifferenceLimit: {x: 20, y: 65, z: 75}
     rayToGroundDistance: {x: 1.4, y: 1.2}
     raytoGroundSpeedRatio: 0.018
@@ -1410,12 +1452,46 @@ MonoBehaviour:
     fallGravity: {x: 0, y: -1.5, z: 0}
     upGravity: {x: 0, y: -1.45, z: 0}
   RollingStats:
-    rollingDownhillBoost: 1.7
+    rollingDownhillBoost: 2.4
     rollingUphillBoost: 2.4
-    rollingStartSpeed: 5
-    rollingTurningModifier: 0.8
-    rollingLandingBoost: 1.2
+    rollingStartSpeed: 10
+    rollingTurningModifier: 0.7
+    rollingLandingBoost: 1.5
     minRollingTime: 0.4
+    EnergyByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0
+        value: 15
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    modifierFromEnergy: 1.5
   StartRollingStats:
     rollingDownhillBoost: 1.9
     rollingUphillBoost: 1.2
@@ -1423,9 +1499,43 @@ MonoBehaviour:
     rollingTurningModifier: 0.6
     rollingLandingBoost: 1.4
     minRollingTime: 0.4
+    EnergyByAngle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0
+        value: 15
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    modifierFromEnergy: 1.5
   SkiddingStats:
     angleToPerformSkid: 130
-    angleToPerformSpinSkid: 140
+    angleToPerformSpinSkid: 180
     angleToPerformHomingSkid: 130
     canSkidInAir: 1
     shouldSkiddingDisableTurning: 1
@@ -1676,7 +1786,7 @@ MonoBehaviour:
     airStepDistance: 12
     StepLayerMask:
       serializedVersion: 2
-      m_Bits: 8193
+      m_Bits: 8201
     cooldown: {x: 0.025, y: 0.2}
   StartQuickstepStats:
     stepDuration: 55
@@ -1691,15 +1801,16 @@ MonoBehaviour:
     behaviour: 0
     dashSpeed: 80
     dashIncrease: 15
-    forceUpwards: 30
-    horizontalAngle: 45
+    forceUpwards: 35
+    horizontalAngle: 109
     lockMoveInputOnStart: 0
+    timeBeforeCanChangeAction: 0.1
     turnSpeed: 5
     maxDuration: 0.3
     minDuration: 0.15
-    faceDownwardsSpeed: 3
-    maxDownwardsSpeed: -10
-    lockMoveInputOnEnd: 0
+    faceDownwardsSpeed: 4
+    maxDownwardsSpeed: -13
+    lockMoveInputOnEnd: 1
     speedAfterDash: -5
     framesToChangeSpeed: 5
   StartJumpDashStats:
@@ -1709,6 +1820,7 @@ MonoBehaviour:
     forceUpwards: 0
     horizontalAngle: 45
     lockMoveInputOnStart: 0
+    timeBeforeCanChangeAction: 0.1
     turnSpeed: 8
     maxDuration: 0.3
     minDuration: 0.15
@@ -1719,21 +1831,21 @@ MonoBehaviour:
     framesToChangeSpeed: 5
   HomingSearch:
     timeBetweenScans: 0.06
-    targetSearchDistance: 44
+    targetSearchDistance: 60
     distanceModifierInCameraDirection: 1.2
     radiusOfCameraTargetCheck: 15
-    minimumTargetDistance: 4
+    minimumTargetDistance: 5
     maximumTargetDistance: 80
     TargetLayer:
       serializedVersion: 2
       m_Bits: 131072
     blockingLayers:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 9
     cameraDirectionPriority: 0.5
-    facingAmount: 110
-    currentTargetPriority: 0.3
-    timeToKeepTarget: {x: 0.25, y: 0.2}
+    facingAmount: 95
+    currentTargetPriority: 0.35
+    timeToKeepTarget: {x: 0.25, y: 0.3}
     iconScale: 1.5
     iconDistanceScaling: 0.2
   StartHomingSearch:
@@ -1756,21 +1868,23 @@ MonoBehaviour:
     iconScale: 1.5
     iconDistanceScaling: 0.2
   HomingStats:
-    canBePerformedOnGround: 1
+    canBePerformedOnGround: 0
     canDashWhenFalling: 1
     homingCountLimit: 0
-    attackSpeed: 100
-    timerLimit: 1.5
-    turnSpeed: 7
+    attackSpeed: 180
+    timerLimit: 1.2
+    turnSpeed: 8
     successDelay: 0.3
-    minimumSpeedOnHit: 60
+    minimumSpeedOnHit: 120
     lerpToNewInputOnHit: 0.292
     lerpToPreviousDirectionOnHit: 0.782
-    canBeControlled: 0
-    maximumSpeed: 140
-    minimumSpeed: 60
+    canBeControlled: 1
+    maximumSpeed: 240
+    minimumSpeed: 70
     deceleration: 55
     acceleration: 70
+    speedMultiplier: 2
+    energyGained: 15
   StartHomingStats:
     canBePerformedOnGround: 0
     canDashWhenFalling: 1
@@ -1787,13 +1901,18 @@ MonoBehaviour:
     minimumSpeed: 60
     deceleration: 55
     acceleration: 70
+    speedMultiplier: 1.3
+    energyGained: 1
   SpinChargeStats:
     whatAimMethod: 0
-    chargingSpeed: 1.05
-    tappingBonus: 2.1
-    delayBeforeLaunch: 9
-    minimunCharge: 20
-    maximunCharge: 120
+    forceTowardsGround: {x: 2, y: 0}
+    stickingLerps: {x: 0, y: 0}
+    energyUse: 22
+    chargingSpeed: {x: 0.9, y: 1.2}
+    tappingBonus: {x: 1.8, y: 3.2}
+    delayBeforeLaunch: 10
+    minimunCharge: 40
+    maximunCharge: {x: 150, y: 190}
     releaseShakeAmmount: {x: 4, y: 0.15, z: 18, w: 14}
     ForceGainByAngle:
       serializedVersion: 2
@@ -1993,9 +2112,9 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    cameraPauseEffect: {x: 3, y: 40}
-    shouldSetRolling: 0
-    forceAgainstMovement: 1.2
+    cameraFallBack: {x: 15, y: 25, z: 0.5}
+    shouldSetRolling: 1
+    forceAgainstMovement: -0.05
     SpeedLossByTime:
       serializedVersion: 2
       m_Curve:
@@ -2033,11 +2152,14 @@ MonoBehaviour:
     maximumSlopePerformedAt: -0.5
   StartSpinChargeStat:
     whatAimMethod: 0
-    chargingSpeed: 1.05
-    tappingBonus: 2.1
+    forceTowardsGround: {x: 2, y: 2}
+    stickingLerps: {x: 0, y: 0}
+    energyUse: 0
+    chargingSpeed: {x: 0.9, y: 1.2}
+    tappingBonus: {x: 1.8, y: 3.2}
     delayBeforeLaunch: 12
     minimunCharge: 20
-    maximunCharge: 120
+    maximunCharge: {x: 150, y: 190}
     releaseShakeAmmount: {x: 10, y: 0.2, z: 20, w: 10}
     ForceGainByAngle:
       serializedVersion: 2
@@ -2237,7 +2359,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    cameraPauseEffect: {x: 3, y: 40}
+    cameraFallBack: {x: 15, y: 25, z: 0.5}
     shouldSetRolling: 1
     forceAgainstMovement: 1.2
     SpeedLossByTime:
@@ -2289,7 +2411,7 @@ MonoBehaviour:
     lerpTowardsInput: 0.5
     bounceCoolDown: 0.4
     coolDownModiferBySpeed: 0.003
-    cameraPauseEffect: {x: 2, y: 30}
+    cameraFallBack: {x: 13, y: 17, z: 0.8}
   StartBounceStats:
     startDropSpeed: -100
     maxDropSpeed: 0
@@ -2304,7 +2426,7 @@ MonoBehaviour:
     lerpTowardsInput: 0.5
     bounceCoolDown: 0.4
     coolDownModiferBySpeed: 0.003
-    cameraPauseEffect: {x: 2, y: 30}
+    cameraFallBack: {x: 13, y: 17, z: 0.8}
   RingRoadStats:
     dashSpeed: 120
     minimumEndingSpeed: 80
@@ -2324,40 +2446,36 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
   DropChargeStats:
-    chargingSpeed: 110
-    minimunCharge: 40
-    maximunCharge: 150
+    chargingSpeed: 150
+    minimunCharge: 70
+    maximunCharge: 180
     minimumHeightToPerform: 3
-    cameraPauseEffect: {x: 3, y: 40}
+    cameraFallBack: {x: 15, y: 25, z: 0.7}
   StartDropChargeStats:
     chargingSpeed: 1.2
     minimunCharge: 40
     maximunCharge: 150
     minimumHeightToPerform: 3
-    cameraPauseEffect: {x: 3, y: 40}
+    cameraFallBack: {x: 15, y: 25, z: 0.4}
   BoostStats:
     startBoostSpeed: 70
-    framesToReachBoostSpeed: 7
+    framesToReachBoostSpeed: 11
     boostSpeed: 140
-    maxSpeedWhileBoosting: 170
+    maxSpeedWhileBoosting: 180
     regainBoostSpeed: 3
     turnCharacterThreshold: 55
     boostTurnSpeed: 2
     faceTurnSpeed: 12
-    speedLostOnEndBoost: 20
-    framesToLoseSpeed: 30
-    cooldown: 0.5
+    speedLostOnEndBoost: 25
+    framesToLoseSpeed: 25
+    cooldown: 0.8
+    minTimeBoosting: 0.6
     hasAirBoost: 0
-    boostFramesInAir: 45
-    AngleOfAligningToEndBoost: 70
-    gainEnergyFromRings: 1
-    gainEnergyOverTime: 0
-    energyGainPerRing: 4
-    energyGainPerSecond: 10
-    maxBoostEnergy: 100
-    energyDrainedPerSecond: 0
-    energyDrainedOnStart: 0
-    cameraPauseEffect: {x: 2, y: 50}
+    boostFramesInAir: 55
+    AngleOfAligningToEndBoost: 60
+    energyDrainedPerSecond: 12
+    energyDrainedOnStart: 5
+    cameraFallBack: {x: 10, y: 15, z: 0.85}
   StartBoostStats:
     startBoostSpeed: 70
     framesToReachBoostSpeed: 5
@@ -2370,20 +2488,16 @@ MonoBehaviour:
     speedLostOnEndBoost: 20
     framesToLoseSpeed: 30
     cooldown: 0.5
+    minTimeBoosting: 0
     hasAirBoost: 1
     boostFramesInAir: 40
     AngleOfAligningToEndBoost: 80
-    gainEnergyFromRings: 1
-    gainEnergyOverTime: 0
-    energyGainPerRing: 4
-    energyGainPerSecond: 10
-    maxBoostEnergy: 100
     energyDrainedPerSecond: 5
     energyDrainedOnStart: 5
-    cameraPauseEffect: {x: 2, y: 40}
+    cameraFallBack: {x: 20, y: 30, z: 0.8}
   EnemyInteraction:
-    bouncingPower: 45
-    homingBouncingPower: 40
+    bouncingPower: 80
+    homingBouncingPower: 70
     shouldStopOnHit: 0
     damageShakeAmmount: 0.5
     hitShakeAmmount: 1.2
@@ -2398,8 +2512,8 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 1.3
+        time: 0.028126836
+        value: 0.01403904
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2407,8 +2521,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.15
-        value: 1.3
+        time: 20
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2416,26 +2530,26 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.25
-        value: 4
-        inSlope: 0
-        outSlope: 0
+        time: 59.333435
+        value: 3.1740875
+        inSlope: 0.044856973
+        outSlope: 0.044856973
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.26487026
+        outWeight: 0.58266133
+      - serializedVersion: 3
+        time: 120
+        value: 5
+        inSlope: 0.022551361
+        outSlope: 0.022551361
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.38337955
       - serializedVersion: 3
-        time: 0.7
+        time: 200
         value: 7
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 9
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2445,7 +2559,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    RingMask:
+    PickupMask:
       serializedVersion: 2
       m_Bits: 1048576
     basePullSpeed: 1.2
@@ -2501,7 +2615,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    RingMask:
+    PickupMask:
       serializedVersion: 2
       m_Bits: 0
     basePullSpeed: 1.2
@@ -2528,8 +2642,7 @@ MonoBehaviour:
   WhenHurt:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
-    respawnAfter: {x: 90, y: 120, z: 170}
-    maxRingLoss: 20
+    respawnAfter: {x: 30, y: 70, z: 100, w: 108}
     ringReleaseSpeed: 550
     ringArcSpeed: 250
     RingsLostInSpawnByAmount:
@@ -2586,8 +2699,7 @@ MonoBehaviour:
   StartWhenHurt:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
-    respawnAfter: {x: 90, y: 120, z: 170}
-    maxRingLoss: 20
+    respawnAfter: {x: 90, y: 120, z: 170, w: 108}
     ringReleaseSpeed: 550
     ringArcSpeed: 250
     RingsLostInSpawnByAmount:
@@ -2642,10 +2754,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   KnockbackStats:
-    whatResponse: 3
+    whatResponse: 4
     recoilFrom:
       serializedVersion: 2
-      m_Bits: 4097
+      m_Bits: 4105
     knockbackUpwardsForce: 30
     knockbackForce: 25
     hurtControlLock: {x: 10, y: 15}
@@ -2664,12 +2776,12 @@ MonoBehaviour:
     stateLengthWithKnockback: 130
     stateLengthWithoutKnockback: 90
   RailStats:
-    railMaxSpeed: 125
-    railTopSpeed: 80
+    railMaxSpeed: 190
+    railTopSpeed: 100
     minimumStartSpeed: 20
-    RailPushFowardmaxSpeed: 100
-    RailPushFowardIncrements: 10
-    RailPushFowardDelay: 0.35
+    RailPushFowardmaxSpeed: 120
+    RailPushFowardIncrements: 20
+    RailPushFowardDelay: 0.4
     PushBySpeed:
       serializedVersion: 2
       m_Curve:
@@ -2721,16 +2833,58 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    RailSlopePower: 2.5
-    RailUpHillMultiplier: {x: 1.2, y: 1.8}
-    RailDownHillMultiplier: {x: 0.6, y: 0.85}
+    RailSlopePower: 1.3
+    RailUpHillMultiplier: {x: 0.3, y: 0.7}
+    RailDownHillMultiplier: {x: 1, y: 1.8}
     railDecaySpeed: 0.015
-    RailPlayerBrakePower: 0.97
+    RailPlayerBrakePower: 0.975
     railBoostDecaySpeed: 0.4
     railBoostDecayTime: 0.4
-    hopDelay: 0.3
-    hopSpeed: 80
-    hopDistance: 12
+    hopDelay: 0.06
+    hopSpeed: 65
+    hopDistance: 16
+    HopSpeedByTime:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.35
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.4
+        value: 1.2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.99580485
+        value: 0.99622566
+        inSlope: -0.5563673
+        outSlope: -0.5563673
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.2133982
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   StartRailStats:
     railMaxSpeed: 125
     railTopSpeed: 80
@@ -2799,8 +2953,50 @@ MonoBehaviour:
     hopDelay: 0.3
     hopSpeed: 70
     hopDistance: 12
+    HopSpeedByTime:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.25
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.9
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   RailPosition:
-    offsetRail: 2
+    offsetRail: 0
     offsetZip: -6
   StartRailPosition:
     offsetRail: 2
@@ -2816,7 +3012,7 @@ MonoBehaviour:
     minHeight: 5
     WallLayerMask:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 9
     scrapeModifier: 0.5
     climbModifier: 1
     fallOffAtFallSpeed: 15
@@ -2833,4 +3029,4 @@ MonoBehaviour:
     fallOffAtFallSpeed: 15
     jumpFromClimbingModifiers: {x: 0, y: 0}
     jumpFromRunningModifiers: {x: 0, y: 0}
-  InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

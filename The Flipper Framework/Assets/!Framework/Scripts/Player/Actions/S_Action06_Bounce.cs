@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using Unity.VisualScripting;
 
-public class S_Action06_Bounce : MonoBehaviour, IMainAction
+public class S_Action06_Bounce : S_Action_Base, IMainAction
 {
 
 	/// <summary>
@@ -14,18 +14,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 	//Unity
 	#region Unity Specific Properties
-	private S_CharacterTools      _Tools;
-	private S_PlayerPhysics       _PlayerPhys;
-	private S_PlayerVelocity	_PlayerVel;
-	private S_PlayerInput         _Input;
-	private S_ActionManager       _Actions;
-	private S_Control_SoundsPlayer _Sounds;
-	private S_VolumeTrailRenderer _HomingTrailScript;
-	private S_Handler_Camera      _CamHandler;
-
-	private Animator    _BallAnimator;
-	private Transform   _MainSkin;
-	private CapsuleCollider _CharacterCapsule;
 	#endregion
 
 
@@ -45,12 +33,12 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	private float	_bounceCoolDown_;
 	private float	_cooldownModifierBySpeed_;
 
-	private Vector2               _cameraPauseEffect_ = new Vector2(3, 35);
+	private Vector3 _cameraPauseEffect_ = new Vector3(3, 35);
 	#endregion
 
 	// Trackers
 	#region trackers
-	private int         _positionInActionList;         //In every action script, takes note of where in the Action Managers Main action list this script is. 
+	
 
 	private float       _counter;
 
@@ -81,17 +69,19 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	void Update () {
 	}
 
-	private void FixedUpdate () {
+	new private void FixedUpdate () {
+		base.FixedUpdate();
 		CheckSpeed(); //Called first to make sure state will be changed after any physics changes.
 		CheckForGround();
 
 		HandleInputs();
 	}
 	
-	public bool AttemptAction () {
+	new public bool AttemptAction () {
+		if (!base.AttemptAction()) return false;
 
 		//Can only bounce if it isn't locked in the actionManager, and not moving too fast up.
-		if (_Input._BouncePressed && _PlayerPhys._RB.velocity.y < 35f && _Actions._areAirActionsAvailable && _isBounceAvailable)
+		if (_Input._BouncePressed && _PlayerPhys._timeInAir > 0.3f && _Actions._areAirActionsAvailable && _isBounceAvailable)
 		{
 			StartAction();
 			return true;
@@ -99,12 +89,12 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		return false;
 	}
 
-	public void StartAction ( bool overwrite = false ) {
+	new public void StartAction ( bool overwrite = false ) {
 		if (enabled || (!_Actions._canChangeActions && !overwrite)) { return; }
 
 		_hasBounced = false; //Tracks when to end the action.
 
-		_Actions.ChangeAction(S_Enums.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
+		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.Bounce); //Called first so stopAction methods in other actions happen before this.
 		this.enabled = true;
 
 		_memorisedSpeed = _PlayerVel._currentRunningSpeed; //Stores the running speed the player was before bouncing.
@@ -114,8 +104,9 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_trackedVerticalSpeed = _PlayerVel._coreVelocity.y;
 
 		//Physics
-		_PlayerPhys._listOfIsGravityOn.Add(false); //Moving down will be handled here rather than through the premade gravity in physics script.
-		_PlayerVel.SetCoreVelocity(new Vector3(_PlayerPhys._RB.velocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.velocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
+		//_PlayerPhys._locksForIsGravityOn.Add(false); //Moving down will be handled here rather than through the premade gravity in physics script.
+		_PlayerVel.SetCoreVelocity(new Vector3(_PlayerPhys._RB.linearVelocity.x * _bounceHaltFactor_, 0f, _PlayerPhys._RB.linearVelocity.z * _bounceHaltFactor_)); //Immediately slows down player movement and removes vertical movement.
 		float thisDropSpeed = Mathf.Min(_startDropSpeed_, _PlayerVel._coreVelocity.y - 20);
 		_PlayerVel.AddCoreVelocity(new Vector3(0,  thisDropSpeed , 0)); // Apply downward force, this is instant rather than  ramp up like gravity.
 
@@ -125,18 +116,19 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_Actions._ActionDefault.SwitchSkin(false); //Ball animation rather than character ones.
 		_BallAnimator.SetInteger("Action", 1); //Ensures it is set to jump first, because it will then transition from that to bounce.
 
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraPause(_cameraPauseEffect_, new Vector2 ( -_PlayerVel._coreVelocity.y, -thisDropSpeed), 1f)); //The camera will fall back before catching up.
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(_cameraPauseEffect_, _cameraPauseEffect_.z,
+			-_PlayerVel._coreVelocity.y, -thisDropSpeed, 1f, "Bounce")); //The camera will fall back before catching up.
 
 		_Sounds.BounceStartSound();
 
-		_HomingTrailScript.emitTime = -1f; //Makes the trail follow along behind the player
-		_HomingTrailScript.emit = true;
+		//Makes the trail follow along behind the player
+		_Effects.EnableLargeTrail(-1f);
 	}
 
 	public void StopAction ( bool isFirstTime = false ) {
 		if (!enabled) { return; } //If already disabled, return as nothing needs to change.
 		enabled = false;
-		if (isFirstTime) { ReadyAction(); return; } //First time is called on ActionManager Awake() to ensure this starts disabled and has a single opportunity to assign tools and stats.
+		if (isFirstTime) { SetUpAction(); return; }
 
 		//Apply a cooldown so this can't be performed again immediately.
 		float coolDown = _bounceCoolDown_;
@@ -145,9 +137,10 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 
 		//Incase this was disabled by changing action, rather than a bounce.
 		if(!_hasBounced)
-			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
-
-		_HomingTrailScript.emitTime = 0.2f;
+		{
+			S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
+			_Effects.EnableLargeTrail(0);
+		}
 	}
 
 	#endregion
@@ -158,11 +151,6 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	/// 
 	#region private
 
-	public void HandleInputs () {
-			//Action Manager goes through all of the potential action this action can enter and checks if they are to be entered
-			_Actions.HandleInputs(_positionInActionList);	
-	}
-
 	//Searched for ground below the player as they move down, calling any bounces or calculations post bounce.
 	private void CheckForGround () {
 
@@ -171,12 +159,13 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		bool isGroundHit = _PlayerPhys._isGrounded || isRaycasthit;
 
 		RaycastHit UseHit = isRaycasthit ? _HitGround : _PlayerPhys._HitGround; //Get which one to use
+		_counter += Time.deltaTime;
+
 
 		//If no longer hitting the ground but did earlier, then has bounced and won't be grounded immediately, so end action after a delay.
 		if (!isGroundHit && _hasBounced)
 		{
-			_counter += Time.deltaTime;
-			if(_counter > 0.12f)
+			if(_counter > 0.15f)
 			{
 				_Actions._ActionDefault.StartAction();
 			}
@@ -202,7 +191,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 			_BallAnimator.SetFloat("VerticalSpeed", _trackedVerticalSpeed);
 			_BallAnimator.SetInteger("Action", 6); //Causes a transition through the jump animation
 
-			float vertSpeed = _PlayerPhys._RB.velocity.y;
+			float vertSpeed = _PlayerPhys._RB.linearVelocity.y;
 			//If fall speed has been decreased this much, then something must be in the way so end the action.
 			 if (vertSpeed > 1)
 			{
@@ -235,8 +224,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_currentBounceForce = Mathf.Clamp(_currentBounceForce, _BounceUpSpeeds_[_Actions._bounceCount], _currentBounceForce);
 
 		//Effects
-		_HomingTrailScript.emitTime = _currentBounceForce / 60f;
-		_HomingTrailScript.emit = true;
+		_Effects.EnableLargeTrail(_currentBounceForce / 60f);
 		_Sounds.BounceImpactSound();
 
 		//Set animations back to jump shape, ensuring the player is still in a ball since they'd be set to normal when grounded.
@@ -263,8 +251,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		}
 
 		//Starts applying normal force downwards again, even before exiting action.
-		if(_PlayerPhys._listOfIsGravityOn.Count > 0) 
-			_PlayerPhys._listOfIsGravityOn.RemoveAt(0);
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "Bounce");
 
 		Vector3 input = transform.TransformDirection(_PlayerPhys._PlayerMovement._moveInput);
 
@@ -284,6 +271,8 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		{
 			_Actions._bounceCount++;
 		}
+
+		_ActionChain.AddToChain("Bounce", 1, 5);
 	}
 
 	#endregion
@@ -306,44 +295,13 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 	/// </summary>
 	#region Assigning
 
-	//Assigns all external elements of the action.
-	public void ReadyAction () {
-		if (_PlayerPhys == null)
-		{
-			//Assign all external values needed for gameplay.
-			_Tools = GetComponentInParent<S_CharacterTools>();
-			AssignTools();
-			AssignStats();
-
-			//Get this actions placement in the action manager list, so it can be referenced to acquire its connected actions.
-			for (int i = 0 ; i < _Actions._MainActions.Count ; i++)
-			{
-				if (_Actions._MainActions[i].State == S_Enums.PrimaryPlayerStates.Bounce)
-				{
-					_positionInActionList = i;
-					break;
-				}
-			}
-		}
-	}
-
 	//Responsible for assigning objects and components from the tools script.
-	private void AssignTools () {
-		_Input =	_Tools.GetComponent<S_PlayerInput>();
-		_PlayerPhys =	_Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVel =	_Tools.GetComponent<S_PlayerVelocity>();
-		_Actions =	_Tools._ActionManager;
-
-		_MainSkin =		_Tools.MainSkin;
-		_Sounds =			_Tools.SoundControl;
-		_HomingTrailScript =	_Tools.HomingTrailScript;
-		_BallAnimator =		_Tools.BallAnimator;
-		_CharacterCapsule =		_Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
-		_CamHandler =		_Tools.CamHandler;
+	public override void AssignTools () {
+		base.AssignTools();
 	}
 
 	//Reponsible for assigning stats from the stats script.
-	private void AssignStats () {
+	public override void AssignStats () {
 		_startDropSpeed_ = _Tools.Stats.BounceStats.startDropSpeed;
 		_maxDropSpeed_ = _Tools.Stats.BounceStats.maxDropSpeed;
 
@@ -360,7 +318,7 @@ public class S_Action06_Bounce : MonoBehaviour, IMainAction
 		_bounceHaltFactor_ =	_Tools.Stats.BounceStats.bounceHaltFactor;
 		_horizontalSpeedDecay_ =	_Tools.Stats.BounceStats.horizontalSpeedDecay;
 
-		_cameraPauseEffect_ =	_Tools.Stats.BounceStats.cameraPauseEffect;
+		_cameraPauseEffect_ =	_Tools.Stats.BounceStats.cameraFallBack;
 	}
 	#endregion
 

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 59e3c4074dbc4a543beb7651e54a6672
+timeCreated: 1468855645
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Materials/Red.mat
+  uploadId: 243278

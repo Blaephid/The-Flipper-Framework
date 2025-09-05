@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 29aed08e597ddba4d9b8d4eaa391a03a
+timeCreated: 1525123684
+licenseType: Store
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Materials/FireTint.mat
+  uploadId: 243278

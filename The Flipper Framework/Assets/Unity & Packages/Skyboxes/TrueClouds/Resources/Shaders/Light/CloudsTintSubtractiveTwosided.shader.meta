@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 026674cc3fbe72147bb31b602524bc51
+timeCreated: 1517436512
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/Resources/Shaders/Light/CloudsTintSubtractiveTwosided.shader
+  uploadId: 243278

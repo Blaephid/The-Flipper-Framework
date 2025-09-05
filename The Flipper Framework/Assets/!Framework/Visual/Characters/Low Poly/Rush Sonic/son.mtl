@@ -1,0 +1,48 @@
+newmtl Def13
+Ka 0.282353 0.282353 0.282353
+Kd 0.6901961 0.6901961 0.6901961
+d 1
+Tr 1
+map_Ka Def13.png
+map_Kd Def13.png
+map_d Def13.png
+newmtl Def21
+Ka 0.282353 0.282353 0.282353
+Kd 0.6901961 0.6901961 0.6901961
+d 1
+Tr 1
+map_Ka Def21.png
+map_Kd Def21.png
+map_d Def21.png
+newmtl Def22
+Ka 0.282353 0.282353 0.282353
+Kd 0.6901961 0.6901961 0.6901961
+d 1
+Tr 1
+map_Ka Def22.png
+map_Kd Def22.png
+map_d Def22.png
+newmtl Def23
+Ka 0.282353 0.282353 0.282353
+Kd 0.6901961 0.6901961 0.6901961
+d 1
+Tr 1
+map_Ka Def23.png
+map_Kd Def23.png
+map_d Def23.png
+newmtl Def29
+Ka 0.282353 0.282353 0.282353
+Kd 0.6901961 0.6901961 0.6901961
+d 1
+Tr 1
+map_Ka Def29.png
+map_Kd Def29.png
+map_d Def29.png
+newmtl Def31
+Ka 0.282353 0.282353 0.282353
+Kd 0.6901961 0.6901961 0.6901961
+d 1
+Tr 1
+map_Ka Def31.png
+map_Kd Def31.png
+map_d Def31.png

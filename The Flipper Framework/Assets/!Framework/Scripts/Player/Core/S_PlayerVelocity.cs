@@ -3,29 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(S_PlayerPhysics))]
-public class S_PlayerVelocity : MonoBehaviour
+public class S_PlayerVelocity : S_Player_Base
 {
 	#region properties
-	#region Unity
-	private S_CharacterTools	_Tools;
-	private S_PlayerPhysics	_PlayerPhys;
-	private Rigidbody		_RB;
-	#endregion
 
-	#region trackers
+	private Rigidbody		_RB;
+
+
 	//Stats
 	private float                 _landingConversionFactor_ = 2;
 	private float                 _rollingLandingBoost_;
 
 	//Velocities in use
 	[HideInInspector]
-	public Vector3                _coreVelocity;                //Core velocity is the velocity under the player's control. Whether it be through movement, actions or more. It cannot exceed maximum speed. Most calculations are based on this
+	public Vector3                _coreVelocity;                //Core velocity is the velocity under the player's control. Whether it be through movement, actions or more. It cannot exceed maximum speed on horizontal. Most calculations are based on this
 	[HideInInspector]
 	public Vector3                _environmentalVelocity;       //Environmental velocity is the velocity applied by external forces, such as springs, fans and more.
 	[HideInInspector]
 	public Vector3                _totalVelocity;               //The combination of core and environmetal velocity determening actual movement direction and speed in game.
+							[HideInInspector]
+	public Vector3                _totalVelocityLocal;          //The speed above but relative to the players rotation.
 	[HideInInspector]
 	public Vector3                _worldVelocity;               //This is set at the start of a frame as a temporary total velocity, based on the actual velocity in physics. So Total Velocity is set, then affected by collision after the FixedUpdate, then adjusted by TrackAndChangeVelocity, then set here.
+	[HideInInspector]
+	public Vector3                _worldDirection;
 	[HideInInspector]
 	public List<Vector3>          _previousVelocity = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
 
@@ -61,13 +62,11 @@ public class S_PlayerVelocity : MonoBehaviour
 	[HideInInspector]
 	public bool                  _resetEnvironmentalOnAirAction;
 	#endregion
-	#endregion
 
 	#region Inherited
 
-	private void Awake () {
-		_Tools = GetComponent<S_CharacterTools>();
-		_PlayerPhys = GetComponent<S_PlayerPhysics>();
+	public override void Awake () {
+		base.Awake();
 		_RB = GetComponent<Rigidbody>();
 	}
 
@@ -79,7 +78,6 @@ public class S_PlayerVelocity : MonoBehaviour
 	/// On the other end, PlayerPhysics FixedUpdate happens BEFORE every other fixedUpdate.
 	private void FixedUpdate () {
 		SetTotalVelocity();
-		_PlayerPhys.ClearListsOfCollisions();
 	}
 	#endregion
 
@@ -88,7 +86,7 @@ public class S_PlayerVelocity : MonoBehaviour
 	//Then apply the difference to the _corevelocity as well so it knows there's been a change and can make calculations based on it.
 	public void CheckAndApplyVelocityChanges () {
 
-		Vector3 velocityThisFrame = _RB.velocity;
+		Vector3 velocityThisFrame = _RB.linearVelocity;
 		Vector3 velocityLastFrame = _previousVelocity[0];
 
 		bool fromAirToGround = _PlayerPhys._isGrounded && _PlayerPhys._wasInAirLastFrame;
@@ -101,14 +99,13 @@ public class S_PlayerVelocity : MonoBehaviour
 				//Must remove from the velocity change calculations otherwise coreVelocity wont be updated accurately.
 				velocityThisFrame -= _environmentalVelocity;
 				velocityLastFrame -= _environmentalVelocity;
-				SetEnvironmentalVelocity(Vector3.zero, false, false, S_Enums.ChangeLockState.Unlock);
+				SetEnvironmentalVelocity(Vector3.zero, false, false, S_GeneralEnums.ChangeLockState.Unlock);
 			}
 			_PlayerPhys._wasInAirLastFrame = false;
 		}
 
-
-		Debug.DrawRay(transform.position, velocityThisFrame * Time.deltaTime, Color.red, 10f);
-		Debug.DrawRay(transform.position, velocityLastFrame * Time.deltaTime, Color.green, 10f);
+		//Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, velocityThisFrame * Time.deltaTime, Color.blue, 10f);
+		//Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, velocityLastFrame * Time.deltaTime, Color.green, 10f);
 
 		//General velocities applied just for last frame (like an anti offset set when groundsticking) are removed later on in this script so should not be factored in here.
 		if (_velocityToNotCountWhenCheckingForAChange != Vector3.zero)
@@ -125,7 +122,8 @@ public class S_PlayerVelocity : MonoBehaviour
 		//Only apply the changes if physics decreased the speed.
 		if (speedThisFrameSquared < speedLastFrameSquared)
 		{
-			Debug.DrawRay(transform.position, Vector3.up * 2, Color.black, 10f);
+			Debug.DrawRay(transform.position, Vector3.up * 2, Color.white, 10f);
+			Debug.DrawRay(transform.position, velocityLastFrame.normalized * 8, Color.red, 10f);
 
 			float angleChange = Vector3.Angle(velocityThisFrame, velocityLastFrame);
 			if (speedThisFrameSquared < 0.01f) { angleChange = 0; } //Because angle would still be calculated even if a one vector is zero.
@@ -211,10 +209,12 @@ public class S_PlayerVelocity : MonoBehaviour
 					_environmentalVelocity = Vector3.zero;
 				}
 			}
+
+			//Debug.DrawRay(transform.position, _coreVelocity.normalized * 5, Color.cyan, 10f);
 		}
 		//World velocity is the actual rigidbody velocity found at the start of the frame, edited here if needed, with some of the removed velocity reapplied.
-		//_worldVelocity = velocityThisFrame + _velocityToNotCountWhenCheckingForAChange;
 		_worldVelocity = velocityThisFrame + _velocityToCarryOntoNextFrame;
+		_worldDirection = _worldVelocity.sqrMagnitude > 2 ? _worldVelocity.normalized : _MainSkin.forward;
 
 		_velocityToCarryOntoNextFrame = Vector3.zero;
 		_velocityToNotCountWhenCheckingForAChange = Vector3.zero; //So this can be increased over this update, then checked again at the start of this method.
@@ -268,13 +268,15 @@ public class S_PlayerVelocity : MonoBehaviour
 			_totalVelocity += _listOfVelocityToAddThisUpdate[i];
 		}
 
+		_totalVelocityLocal = transform.InverseTransformDirection(_totalVelocity);
+
 		//Clear the lists to prevent forces carrying over multiple frames.
 		_listOfCoreVelocityToAdd.Clear();
 		_listOfVelocityToAddThisUpdate.Clear();
 		_isOverwritingCoreVelocity = false;
 
 		//Sets rigidbody velocity, this should be the only line in the player scripts to do so.
-		_RB.velocity = _totalVelocity;
+		_RB.linearVelocity = _totalVelocity;
 
 		//Adds this new velocity to a list of 2, tracking the last 2 frames.
 		_previousVelocity.Insert(0, _totalVelocity);
@@ -300,6 +302,8 @@ public class S_PlayerVelocity : MonoBehaviour
 
 		_previousRunningSpeeds.Insert(0, _currentRunningSpeed);
 		_previousRunningSpeeds.RemoveAt(3);
+
+		//Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _totalVelocity * Time.deltaTime, Color.gray, 10f);
 	}
 	#endregion
 
@@ -351,42 +355,44 @@ public class S_PlayerVelocity : MonoBehaviour
 	}
 
 	//Environmental. Caused by objects in the world, but can b removed by others.
-	public void SetEnvironmentalVelocity ( Vector3 force, bool willRemoveOnGrounded, bool willRemoveOnAirAction,
-		S_Enums.ChangeLockState whatToDoWithDeceleration = S_Enums.ChangeLockState.Ignore, bool shouldPrintForce = false ) {
+	public void SetEnvironmentalVelocity ( Vector3 force, bool willReturnDecelOnGrounded, bool willReturnDecelOnAirAction,
+		S_GeneralEnums.ChangeLockState whatToDoWithDeceleration = S_GeneralEnums.ChangeLockState.Ignore, bool shouldPrintForce = false ) {
 
 		_environmentalVelocity = force;
 
 		//Because HandleDeceleration can be called to lock multiple times before being called to unlock (because Unlock should only be called when removing environmnetal velocity),
 		//only add a new lock if it hasn't locked this way already.
-		if ((_resetEnvironmentalOnAirAction && willRemoveOnAirAction) || (_resetEnvironmentalOnGrounded && willRemoveOnGrounded))
+		if ((_resetEnvironmentalOnAirAction && willReturnDecelOnAirAction) || (_resetEnvironmentalOnGrounded && willReturnDecelOnGrounded))
 		{
-			//Intentionally empty, so the else only happens if the above is false.
+			//Intentionally empty, as this prevents applying multiple lockDecelerations from env velocity.
 		}
 		else
 		{
-			//This will apply or remove constraints on deceleration, as certain calls will prevent manual deceleration, while calls that remove this velocity will allow it again. But will usually be ignored.
-			if (willRemoveOnAirAction && willRemoveOnGrounded) { whatToDoWithDeceleration = S_Enums.ChangeLockState.Lock; }
+			//This will apply or remove constraints on deceleration, as certain calls will prevent manual deceleration, while calls that remove this velocity will allow it again.
+			if (willReturnDecelOnAirAction && willReturnDecelOnGrounded) { whatToDoWithDeceleration = S_GeneralEnums.ChangeLockState.Lock; }
 			HandleDecelerationWhenEnvironmentalForce(whatToDoWithDeceleration);
 		}
 
-		_resetEnvironmentalOnGrounded = willRemoveOnGrounded;
-		_resetEnvironmentalOnAirAction = willRemoveOnAirAction;
+		_resetEnvironmentalOnGrounded = willReturnDecelOnGrounded;
+		_resetEnvironmentalOnAirAction = willReturnDecelOnAirAction;
 
 		if (shouldPrintForce) Debug.Log("Set Environmental FORCE  " + force);
 	}
 
-	private void HandleDecelerationWhenEnvironmentalForce ( S_Enums.ChangeLockState whatCase ) {
+	private void HandleDecelerationWhenEnvironmentalForce ( S_GeneralEnums.ChangeLockState whatCase ) {
 
 		//Due to deceleration working with core velocity at different speeds. Sometimes when environmental velocity is set, it will prevent deceleration because that would make the movement path inconsistent
 		//(as core velocity won't always be the same before environmental is added).
 		switch (whatCase)
 		{
 			//This should always be called before Unlock. As such, whenever an environmental velocity is setting willRemoveOnGrounded to true, it should do this. Because the check will call unlock if true, then stop checking.
-			case S_Enums.ChangeLockState.Lock:
-				_PlayerPhys._listOfCanDecelerates.Add(false); break;
+			case S_GeneralEnums.ChangeLockState.Lock:
+				S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanDecelerate, "EnvironmentForce");
+				//_PlayerPhys._locksForCanDecelerate.Add(false); 
+				break;
 			//This should only be called when environmental velocity is being removed.
-			case S_Enums.ChangeLockState.Unlock:
-				_PlayerPhys._listOfCanDecelerates.RemoveAt(0); break;
+			case S_GeneralEnums.ChangeLockState.Unlock:
+				S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanDecelerate, "EnvironmentForce"); break;
 				//Ignore is the default state, which means this call won't change the deceleration ability.
 		}
 	}
@@ -396,17 +402,9 @@ public class S_PlayerVelocity : MonoBehaviour
 		//If The last time environmental velocity was set, it was set to reset here, then remove environmental velocity. This will be called in other air actions as well.
 		if (_resetEnvironmentalOnGrounded)
 		{
-			SetEnvironmentalVelocity(Vector3.zero, false, false, S_Enums.ChangeLockState.Unlock);
+			SetEnvironmentalVelocity(Vector3.zero, false, false, S_GeneralEnums.ChangeLockState.Unlock);
 		}
 	}
 	#endregion
 
-
-	#region Assigning
-	private void AssignStats () {
-		_landingConversionFactor_ = _Tools.Stats.SlopeStats.landingConversionFactor;
-		_rollingLandingBoost_ = _Tools.Stats.RollingStats.rollingLandingBoost;
-
-	}
-	#endregion
 }

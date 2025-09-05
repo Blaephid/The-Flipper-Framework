@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 298280243dbd9d6418832f30a2101685
+timeCreated: 1430250570
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Prefabs/cloud_02.prefab
+  uploadId: 243278

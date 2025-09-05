@@ -43,10 +43,6 @@ public class S_Handler_WallActions : MonoBehaviour
 	// Trackers
 	#region trackers
 
-	[HideInInspector]
-	public bool         _isScanningForRun;
-	[HideInInspector]
-	public bool         _isScanningForClimb;
 
 	[HideInInspector]
 	public float        _currentSpeed;
@@ -71,12 +67,16 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	// Start is called before the first frame update
 	void Start () {
-		StartCoroutine(CheckForWalls());
+		//StartCoroutine(CheckForWallsCoroutine());
 	}
 
 	// Called when the script is enabled, but will only assign the tools and stats on the first time.
 	private void OnEnable () {
 		ReadyScript();
+	}
+
+	private void FixedUpdate () {
+		CheckForWalls();
 	}
 
 	#endregion
@@ -87,12 +87,12 @@ public class S_Handler_WallActions : MonoBehaviour
 	/// 
 	#region private
 	//Responsible for swtiching to wall run if specifications are met.
-	private IEnumerator CheckForWalls () {
+	private IEnumerator CheckForWallsCoroutine () {
 		while (true)
 		{
 			yield return new WaitForFixedUpdate();
 
-			//Set these to false so they're considered that way if not scanning, or later scans fail.
+			//Set these to false so they're considered that way if not scanning, or later scans dont happen
 			_isWallFront = false;
 			_isWallRight = false;
 			_isWallLeft = false;
@@ -101,7 +101,7 @@ public class S_Handler_WallActions : MonoBehaviour
 			if (IsEnoughAboveGround())
 			{
 				_currentSpeed = _PlayerVel._horizontalSpeedMagnitude;
-				_saveVelocity = _PlayerPhys._RB.velocity;
+				_saveVelocity = _PlayerPhys._RB.linearVelocity;
 
 				//Has to be inputting at all, check if inputting towards a wall later.
 				if (_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.8f)
@@ -110,17 +110,35 @@ public class S_Handler_WallActions : MonoBehaviour
 					CheckForWall();
 				}
 			}
-			_isScanningForRun = false; //Set to false every frame but will be counteracted in Action WallRunning's AttemptAction()
-			_isScanningForClimb = false;
+		}
+	}
 
+	private void CheckForWalls () {
+		//Set these to false so they're considered that way if not scanning, or later scans dont happen
+		_isWallFront = false;
+		_isWallRight = false;
+		_isWallLeft = false;
+
+		//If High enough above ground and in an action calling WallRunning's AttemptAction()
+		if (IsEnoughAboveGround())
+		{
+			_currentSpeed = _PlayerVel._horizontalSpeedMagnitude;
+			_saveVelocity = _PlayerPhys._RB.linearVelocity;
+
+			//Has to be inputting at all, check if inputting towards a wall later.
+			if (_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.8f)
+			{
+				//Checks for nearby walls using raycasts
+				CheckForWall();
+			}
 		}
 	}
 
 
 	private void CheckForWall () {
-		Vector3 origin = transform.position - _MainSkin.up * 0.4f;
+		Vector3 origin = _PlayerPhys._CharacterCenterPosition - _MainSkin.up * 0.2f;
 
-		if (_isScanningForClimb)
+		if (_WallClimbing && _WallClimbing._inAStateConnectedToThis)
 		{
 			if (IsInputtingInCharacterAngle(_MainSkin.forward) && IsRunningFastEnough(40))
 			{
@@ -135,16 +153,18 @@ public class S_Handler_WallActions : MonoBehaviour
 		}
 
 		//If running AttemptAction is being called.
-		if (_isScanningForRun)
+		if(_WallRunning && _WallRunning._inAStateConnectedToThis)
 		{
 			//Offset origin
 			origin -= _MainSkin.forward * 0.2f;
-			origin -= _MainSkin.right * 0.4f; //For scanning to the right, put slightly more to the left
 
 			float distance = Mathf.Max(_wallCheckDistance_.y, GetSpeedToTheSide()) + 0.4f;
 
 			if (IsInputtingInCharacterAngle(_MainSkin.right) && IsRunningFastEnough(50))
 			{
+				origin -= _MainSkin.right * 0.4f; //For scanning to the right, put slightly more to the left
+				Debug.DrawRay(origin, _MainSkin.right * distance, Color.white, 5);
+
 				//Checks for nearby walls using raycasts, outputing hits and booleans
 				_isWallRight = Physics.BoxCast(origin, new Vector3(0.05f, 0.15f, 1f), _MainSkin.right, out _RightWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
 
@@ -153,8 +173,9 @@ public class S_Handler_WallActions : MonoBehaviour
 
 			else if (IsInputtingInCharacterAngle(-_MainSkin.right) && IsRunningFastEnough(50))
 			{
-				origin += _MainSkin.right * 0.8f; //For scanning to the left, but same distance on right.
+				origin += _MainSkin.right * 0.4f; //For scanning to the left, but same distance on right.
 
+				Debug.DrawRay(origin, _MainSkin.right * distance, Color.white, 5f);
 				_isWallLeft = Physics.BoxCast(origin, new Vector3 (0.05f, 0.15f, 1f), -_MainSkin.right, out _LeftWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
 				_isWallLeft = IsWallNotBanned(_LeftWallHit);
 			}
@@ -195,8 +216,9 @@ public class S_Handler_WallActions : MonoBehaviour
 	private bool IsInputtingTowardsWall ( Vector3 hitPoint, float angleLimit = 20 ) {
 		if(_Input._constantInputRelevantToCharacter.sqrMagnitude < 0.5) { return false; }
 
-		Vector3 directionToWall = hitPoint - transform.position;
+		Vector3 directionToWall = hitPoint - _PlayerPhys._CharacterCenterPosition;
 		float angle =Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter);
+
  		return angle < angleLimit;
 	}
 
@@ -230,11 +252,10 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	public bool TryWallRun () {
-		//If has detected a wall on one of the sides
-		if(_isWallLeft || _isWallRight)
-		{
-			Debug.Log("Is Wall and is left - " + _isWallLeft);
 
+		//If has detected a wall on one of the sides
+		if (_isWallLeft || _isWallRight)
+		{
 			//For less lines, set the hit to be used, prioritising the right side than the left
  			RaycastHit RelevantHit = _isWallRight ? _RightWallHit : _LeftWallHit;
 

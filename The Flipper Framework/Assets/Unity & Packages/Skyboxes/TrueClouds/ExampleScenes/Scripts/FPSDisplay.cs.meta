@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: decb6cd4a830b824095100cbf102073c
+timeCreated: 1459445357
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107379
+  packageName: True Clouds/Fog (Mobile & PC)
+  packageVersion: 1.5
+  assetPath: Assets/TrueClouds/ExampleScenes/Scripts/FPSDisplay.cs
+  uploadId: 243278

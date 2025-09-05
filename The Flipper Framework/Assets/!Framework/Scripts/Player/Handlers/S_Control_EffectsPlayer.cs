@@ -1,75 +1,285 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.VFX;
+using System;
 
-public class S_Control_EffectsPlayer : MonoBehaviour
+public class S_Control_EffectsPlayer : S_Player_Base
 {
 
-	private S_PlayerPhysics _PlayerPhys;
-	private S_PlayerVelocity _PlayerVelocity;
-	public S_CharacterTools _Tools;
-	private S_Handler_Camera _CamHandler;
 
-	public ParticleSystem RunningDust;
-	public ParticleSystem SpeedLinesCharacter;
-	public VisualEffect		_SpeedLinesScreen;
-	public ParticleSystem SpinDashDust;
-	public ParticleSystem SpinDashEnergy;
-	public float RunningDustThreshold;
-	public float SpeedLinesThreshold;
+	Camera MainCamera;
 
-	private GameObject  _HomingTrailContainer;
-	private GameObject  _JumpDashParticle;
+	[Header("VFX to Trigger")]
 
-	[Header("Rails")]
-	[SerializeField]
-	ParticleSystem RailsSparks1;
-	[SerializeField]
-	ParticleSystem RailsSparks2;
+	[SerializeField, ColourIfNull(0.8f,0,0,1)] ParticleSystem RunningDust;
+	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect _SpeedLinesWind;
+	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect _SpeedLinesCharacter;
+
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _ActionChainEffect;
+
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem SpinDashEnergy;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem RailsSparksLeft;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem RailsSparksRight;
+
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _Quickstep;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _Roll;
+
+	[Header("Screen VFX To Trigger")]
+	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect             _SpeedLinesScreen;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect             _BlurBurst;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect             _PointsGain;
+
+	[Header("Trails")]
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] GameObject  _LesserTrails;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] TrailRenderer   _DefaultSpeedTrail;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] S_VolumeTrailRenderer  _LargeSpeedTrail;
+
+	[Header("VFX to Spawn")]
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] GameObject  _JumpDashParticle;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] GameObject  _BonkParticle;
+
+	[Header("Skin Sockets")]
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] Transform _LeftFoot;
+	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] Transform _RightFoot;
 
 	[Header("Mouth Sides")]
 	Transform _Head;
 	Transform LeftMouth, RightMouth;
 
-	private void Start () {
-		_HomingTrailContainer = _Tools.HomingTrailContainer;
-		_JumpDashParticle = _Tools.JumpDashParticle;
-		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
-		_PlayerVelocity = _Tools.GetComponent<S_PlayerVelocity>();
-		_CamHandler = _Tools.CamHandler;
+	[Header("Values")]
+	public float RunningDustThreshold;
+	public Vector2 _speedLinesThreshold;
 
-		_Head = _Tools.Head;
-		LeftMouth = _Tools.LeftMouth;
-		RightMouth = _Tools.RightMouth;
+	//Trackers
+	private bool _canShowLesserTrails = true;
+	private bool _canShowDefaultTrail = true;
+
+	private void Start () {
+		SpinDashEnergy.Stop();
+
+		if (RailsSparksLeft)
+			RailsSparksLeft.Stop();
+		if (RailsSparksRight)
+			RailsSparksRight.Stop();
+
+		_BlurBurst.gameObject.SetActive(false);
+		_SpeedLinesWind.Stop();
+		_SpeedLinesCharacter.Stop();
+		_ActionChainEffect.Stop();
+		_PointsGain.Stop();
+		_Quickstep.Stop();
 	}
 
 	void Update () {
 
 		HandleMouths();
 
-		if (_PlayerVelocity._currentRunningSpeed > RunningDustThreshold && _PlayerPhys._isGrounded && RunningDust != null)
-		{
-			RunningDust.Emit(Random.Range(0, 20));
-		}
+		HandleSpeedLinesOnCharacter();
+		HandleSpeedLinesOnScreen();
+		HandleTrailsOnCharacter();
+	}
 
-		if (_PlayerVelocity._currentRunningSpeed > SpeedLinesThreshold && SpeedLinesCharacter != null && SpeedLinesCharacter.isPlaying == false)
-		{
-			SpeedLinesCharacter.Play();
-		}
-		else if ((_PlayerVelocity._currentRunningSpeed < SpeedLinesThreshold - 5 && SpeedLinesCharacter.isPlaying == true) || Mathf.Abs(_PlayerVelocity._coreVelocity.y) > _PlayerVelocity._currentRunningSpeed)
-		{
-			SpeedLinesCharacter.Stop();
-		}
+	//VFX
+	#region VFX
 
-		if (_PlayerVelocity._horizontalSpeedMagnitude > 70)
-		{
-			_SpeedLinesScreen.SetFloat("Intensity", (_PlayerVelocity._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed) * 2);
+	//Private
+
+	private void HandleSpeedLinesOnCharacter () {
+
+		CheckIntensity(_SpeedLinesWind, _speedLinesThreshold.x);
+		CheckIntensity(_SpeedLinesCharacter, _speedLinesThreshold.y);
+		return;
+
+		void CheckIntensity (VisualEffect lines, float threshold) {
+			if (_PlayerVel._currentRunningSpeed > threshold)
+			{
+				lines.Play();
+
+				float intensity = _PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed;
+				lines.SetFloat("Intensity", intensity);
+				lines.SetFloat("Player Speed", _PlayerVel._currentRunningSpeed);
+			}
+			else if (_PlayerVel._currentRunningSpeed < threshold - 2)
+			{
+				lines.Stop();
+			}
 		}
-		else
-			_SpeedLinesScreen.SetFloat("Intensity", 0);
 
 	}
 
+	//Controls and activates the anime style speedlines on the screen edges based on speed.
+	private void HandleSpeedLinesOnScreen () {
+		if (_PlayerVel._currentRunningSpeed > 50)
+		{
+			float intensity = Mathf.Min(_PlayerVel._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
+			intensity = Mathf.Max(Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)) - intensity, intensity - Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)));
+			_SpeedLinesScreen.SetFloat("Intensity", intensity);
+		}
+		else
+		{
+			_SpeedLinesScreen.SetFloat("Intensity", 0);
+		}
+	}
+
+	private void HandleTrailsOnCharacter () {
+
+		DefaultTrail();
+		LesserTrails();
+		return;
+
+		void DefaultTrail () {
+			if (_canShowDefaultTrail)
+			{
+				if (_PlayerVel._horizontalSpeedMagnitude > 60)
+				{
+					_DefaultSpeedTrail.emitting = true;
+					return;
+				}
+			}
+			_DefaultSpeedTrail.emitting = false;
+		}
+
+		void LesserTrails () {
+			if (!_canShowLesserTrails) { return; }
+			EnableLesserTrails(_PlayerVel._speedMagnitudeSquared > 40 * 40 && _PlayerVel._currentRunningSpeed > 10, false);
+		}
+	}
+
+
+	//Public
+	public void EnableLesserTrails ( bool enable, bool locked ) {
+		if (_LesserTrails.activeSelf != enable)
+			_LesserTrails.SetActive(enable);
+
+		_canShowLesserTrails = !locked;
+	}
+
+	public void EnableLargeTrail ( float time, bool special = false ) {
+		_LargeSpeedTrail.StartEmit(time, DisableLargeTrail, special);
+
+		_DefaultSpeedTrail.emitting = false;
+		_canShowDefaultTrail = false;
+	}
+
+	public void DisableLargeTrail () {
+		_canShowDefaultTrail = true;
+	}
+
+	public void HandleSpinDashEffect ( int amm, float speed, float currentCharge, float maxCharge ) {
+
+		float chargeUsedForEffect = Mathf.Min( currentCharge * 0.15f, 55);
+
+
+		//Activate spin dash energy effect
+		if (!SpinDashEnergy.isPlaying)
+		{
+			SpinDashEnergy.gameObject.SetActive(true);
+			SpinDashEnergy.Play();
+		}
+
+		var emission = SpinDashEnergy.emission;
+		emission.rateOverTime = chargeUsedForEffect;
+
+		ParticleSystem.MainModule Main = SpinDashEnergy.main;
+
+		//Once fully charged, dim effect slightly.
+		if (currentCharge > maxCharge - 0.3f)
+			Main.startColor = new Color(0.6f, 0.6f, 0.6f, 1);
+		else
+			Main.startColor = new Color(1f, 1f, 1f, 1);
+	}
+
+	//Disable spin dash energy effect
+	public void EndSpinDashEffect () {
+		SpinDashEnergy.Stop();
+		var emission = SpinDashEnergy.emission;
+		emission.rateOverTime = 0f;
+		SpinDashEnergy.gameObject.SetActive(false);
+	}
+
+	public void HandleGrindSparks ( float speed ) {
+
+		//Activate or deactivate effect
+		if (RailsSparksLeft && speed > 30 && !RailsSparksLeft.isPlaying)
+		{
+			RailsSparksLeft.Play();
+			RailsSparksRight.Play();
+		}
+
+		else if (RailsSparksLeft && speed <= 30 && RailsSparksLeft.isPlaying)
+		{
+			RailsSparksLeft.Stop();
+			RailsSparksRight.Stop();
+		}
+
+
+		ParticleSystem.MainModule Main = RailsSparksLeft.main;
+		ParticleSystem.EmissionModule Emmis = RailsSparksLeft.emission;
+		Main.startSpeed = Mathf.Clamp(speed * 0.2f, 30, 60);
+		Emmis.rateOverTime = Mathf.Clamp(speed * 0.25f, 20, 70);
+
+		Main = RailsSparksRight.main;
+		Emmis = RailsSparksRight.emission;
+		Main.startSpeed = Mathf.Clamp(speed * 0.2f, 30, 60);
+		Emmis.rateOverTime = Mathf.Clamp(speed * 0.25f, 20, 70);
+
+	}
+
+
+	//Trigger
+
+	public void ActionChainAdd () {
+		_ActionChainEffect.Stop();
+		_ActionChainEffect.Play();
+	}
+
+	public void PointsGain ( float amount ) {
+
+		amount /= 15;
+		amount += 1;
+		amount = Mathf.Min(amount, 2);
+		_PointsGain.SetFloat("Intensity", amount);
+		_PointsGain.Play();
+	}
+
+	public void QuickStepBlur (bool right) {
+		_Quickstep.Play();
+		_Quickstep.SetBool("Right", !right);
+	}
+
+
+	//Spawn
+
+	//Spawn an instance of the air dash particle, which is not locked onto the character.
+	public void SpawnAirDashParticle ( Transform characterReferencePoint ) {
+		GameObject JumpDashParticleClone = Instantiate(_JumpDashParticle, characterReferencePoint.position, characterReferencePoint.rotation);
+
+		//Affect by player speed.
+		if (_PlayerVel._speedMagnitudeSquared > Mathf.Pow(100, 2))
+		{
+			float scale = _PlayerVel._speedMagnitudeSquared / Mathf.Pow(100,2);
+			JumpDashParticleClone.transform.localScale = Vector3.one * scale;
+		}
+	}
+
+	public void SpawnBonkParticle ( Vector3 position, Vector3 normal ) {
+		GameObject BonkParticleClone = Instantiate(_BonkParticle, position, Quaternion.LookRotation(normal)) ;
+	}
+
+
+	//Trigger Screen
+
+	public void TriggerBlurBurstScreen () {
+		Vector2 screenPosition = MainCamera.WorldToViewportPoint(_PlayerPhys._CharacterCenterPosition);
+
+		_BlurBurst.gameObject.SetActive(false);
+		_BlurBurst.gameObject.SetActive(true);
+		_BlurBurst.SetVector3("Screen Position", screenPosition);
+	}
+
+	#endregion
+
+	//Not a VFX, but ensures which of the characters two possible mouths is used based on camera angle. Gives the Side Mouth effect.
 	private void HandleMouths () {
 		Vector3 direction = _CamHandler._HedgeCam.transform.position - _Head.position;
 		bool _isFacingRightSide = Vector3.Dot(_Head.forward, direction.normalized) < 0f;
@@ -78,56 +288,14 @@ public class S_Control_EffectsPlayer : MonoBehaviour
 		RightMouth.localScale = !_isFacingRightSide ? Vector3.zero : Vector3.one;
 	}
 
-	public ParticleSystem GetSpinDashDust () {
-		return SpinDashDust;
-	}
+	public override void AssignTools () {
+		base.AssignTools();
 
-	public void DoSpindash ( int amm, float speed, float charge, ParticleSystem spinDashDust, float maxCharge ) {
+		_Head = _Tools.Head;
+		LeftMouth = _Tools.LeftMouth;
+		RightMouth = _Tools.RightMouth;
 
-		float energyCharge = charge * 0.15f;
-		if (energyCharge > 55f)
-			energyCharge = 55f;
-
-		ParticleSystem.MainModule ma = spinDashDust.main;
-		ma.startSpeed = speed;
-		SpinDashDust.Emit(amm);
-
-		if (!SpinDashEnergy.isPlaying)
-		{
-			SpinDashEnergy.gameObject.SetActive(true);
-			SpinDashEnergy.Play();
-			charge = 0;
-		}
-		var emission = SpinDashEnergy.emission;
-		emission.rateOverTime = energyCharge;
-
-		ma = SpinDashEnergy.main;
-
-		if (charge > maxCharge - 0.3f)
-			ma.startColor = new Color(0.2f, 0.13f, 0.13f, 1);
-		else
-			ma.startColor = new Color(1f, 1f, 1f, 1);
-	}
-
-	public void EndSpinDash () {
-		SpinDashEnergy.Stop();
-		var emission = SpinDashEnergy.emission;
-		emission.rateOverTime = 0f;
-		SpinDashEnergy.gameObject.SetActive(false);
-	}
-
-
-	public void AirDashParticle () {
-		GameObject JumpDashParticleClone = Instantiate(_JumpDashParticle, _Tools.transform.position, Quaternion.identity) as GameObject;
-
-		if (_PlayerVelocity._speedMagnitudeSquared > Mathf.Pow(100,2))
-		{
-			float scale = _PlayerVelocity._speedMagnitudeSquared / Mathf.Pow(100,2);
-			JumpDashParticleClone.transform.localScale = Vector3.one * scale;
-		}
-
-		JumpDashParticleClone.transform.position = _Tools.transform.position;
-		JumpDashParticleClone.transform.rotation = _Tools.MainSkin.transform.rotation;
+		MainCamera = Camera.main;
 	}
 
 }
