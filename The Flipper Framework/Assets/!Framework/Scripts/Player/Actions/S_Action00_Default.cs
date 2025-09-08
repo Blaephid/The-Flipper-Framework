@@ -289,7 +289,6 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 	//Called externally if the coyote time has to be ended prematurely.
 	public void CancelCoyote () {
 		_isCoyoteInEffect = false;
-		StopCoroutine(CoyoteTime());
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.

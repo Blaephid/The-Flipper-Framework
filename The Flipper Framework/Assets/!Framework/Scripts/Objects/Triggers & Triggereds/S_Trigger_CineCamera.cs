@@ -125,6 +125,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 
 	public void TriggerObjectEachFrame ( S_CharacterTools Player = null ) {
 		//Only check if the player has already been saved to check its actions.
+
 		if (_PlayerActions != null)
 		{
 			bool inValidAction = false;

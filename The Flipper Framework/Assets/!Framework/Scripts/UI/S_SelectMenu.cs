@@ -13,36 +13,52 @@ public class S_SelectMenu : MonoBehaviour
 	[Header("Animations")]
 	public Animator     _Measurers;
 	public int          _delayBeforeMeasurersEnter;
-	public Animation[]  _AdditionalAnimations;
+	public StrucTriggerAnimation[]  _AnimationsOnGo;
 
 	[Header("Stage Screen")]
 	public GameObject _StageScreenObject;
 	public Animator _StageScreenAnimator;
 	public TextMeshProUGUI _StageNameText;
 	public TextMeshProUGUI _CharacterText;
-	public int          _framesBeforeStageScreen = 20;
+	public float          _secondsBeforeStageScreen = 20;
 
 	[Header("Loading Next Scene")]
 	public GameObject   _GoButton;
-	public int          _framesBeforeLoading;
+	public float          _secondsBeforeLoading;
 
 	[Header("Current")]
 	public GameObject _SelectedCharacter;
 	public S_O_StageScenes _SelectedStageObject;
 	private bool _hasSelectedStage = false;
 
+	private bool _isLoadingStage = false;
+
 	// Start is called before the first frame update
-	void Start () {
+	void Awake () {
 		_SelectedCharacter = null;
 		_SelectedStageObject = null;
-		//_selectedStage = null;
-		_GoButton.SetActive(false);
+		
+		if(_GoButton)
+			_GoButton.SetActive(false);
 
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_Measurers, "MoveIn", _delayBeforeMeasurersEnter));
 		_StageScreenObject.SetActive(false);
+
+		AssignObjectIfSpawnerIsPresent();
+	}
+
+	//For instances of this menu present in the stage scenes or spawned by the player.
+	//Due to "dontdestroyonload", this will only be present when loading scenes directly in editor, as the one from the stage select screen will take priority.
+	private void AssignObjectIfSpawnerIsPresent () {
+		S_SpawnCharacter Spawner = GameObject.FindFirstObjectByType<S_SpawnCharacter>();
+		if(!Spawner) { return; }
+
+		AssignStageObject(Spawner._StageInfo);
+		AssignCharacter(Spawner._DefaultCharacter);
 	}
 
 	private void CheckIfSelected () {
+		if(!_GoButton) { return; }
 		if (_SelectedCharacter && _hasSelectedStage  && _GoButton)
 		{
 			_GoButton.SetActive(true);
@@ -70,24 +86,31 @@ public class S_SelectMenu : MonoBehaviour
 
 	//Activated by the go button in the level.
 	public void StartLevel () {
+		if(_isLoadingStage) { return; }
 
+		gameObject.SetActive(true);
 		GameObject[] MusicObject = GameObject.FindGameObjectsWithTag("Music");
 		if (MusicObject != null && MusicObject.Length > 0)
 			if (MusicObject[0].TryGetComponent(out AudioSource Source))
 				StartCoroutine(S_S_Objects.LerpAudioSourceVolume(Source, 1, 0));
 
-		//Exit animation
-		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_Measurers, "MoveOut", _delayBeforeMeasurersEnter));
-		foreach(Animation anim in _AdditionalAnimations)
-			StartCoroutine(S_S_Objects.TriggerAnimationAfterDelay(anim, 2));
+		//Exit animations
+		foreach(StrucTriggerAnimation anim in _AnimationsOnGo)
+		{
+			StartCoroutine(S_S_Objects.TriggerAnimationAfterDelay(anim.AnimClip, 2));
+			StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(anim.Animator, anim.trigger, 0, 0.05f));
+		}
 
 		//Start loading
-		StartCoroutine(S_TitleScreenControl.DelayMovingToNextScene(_SelectedStageObject, _framesBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Overworld, OnLoad));
+		_isLoadingStage = true;
 		_StageScreenObject.SetActive(true);
-		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_StageScreenAnimator, "Enter", _framesBeforeStageScreen));
+		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_StageScreenAnimator, "Enter", 0, _secondsBeforeStageScreen));
+		StartCoroutine(S_TitleScreenControl.DelayMovingToNextScene(_SelectedStageObject, _secondsBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Overworld, OnLoad));
 	}
 
 	public void OnLoad () {
+		_isLoadingStage = false;
+		Time.timeScale = 1;
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_StageScreenAnimator, "Exit", 8));
 	}
 }

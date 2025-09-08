@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 [Serializable]
 public class LaunchPlayerData {
@@ -84,5 +85,13 @@ public class S_Structs
 	///
 	//Scripting
 	///
+}
+
+[Serializable]
+public struct StrucTriggerAnimation
+{
+	public Animation AnimClip;
+	public Animator Animator;
+	public string trigger;
 }
 

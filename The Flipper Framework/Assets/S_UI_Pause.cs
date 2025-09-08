@@ -32,6 +32,8 @@ public class S_UI_Pause : MonoBehaviour
 			Time.timeScale = 1;
 			Cursor.visible = false;
 			Cursor.lockState = CursorLockMode.Locked;
+
+			GameObject.FindFirstObjectByType<S_ActionManager>()._isPaused = false;
 		}
 		else
 		{
@@ -40,6 +42,8 @@ public class S_UI_Pause : MonoBehaviour
 			Time.timeScale = 0;
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
+
+			GameObject.FindFirstObjectByType<S_ActionManager>()._isPaused = true;
 		}
 
 	}

@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -2495,9 +2495,44 @@ PrefabInstance:
       objectReference: {fileID: 1563707116}
     - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
         type: 3}
+      propertyPath: _secondsBeforeLoading
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
       propertyPath: '_AdditionalAnimations.Array.data[0]'
       value: 
       objectReference: {fileID: 1691384227}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[0].trigger
+      value: MoveOut
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[1].trigger
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[0].Animator
+      value: 
+      objectReference: {fileID: 1563707116}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[1].AnimClip
+      value: 
+      objectReference: {fileID: 1691384227}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[1].Animator
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

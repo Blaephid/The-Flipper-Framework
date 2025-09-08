@@ -213,8 +213,7 @@ MonoBehaviour:
   _VisualiseWithMesh: {fileID: 0}
   _meshScale: 1
   _isActive: 0
-  _DefaultCharacter: {fileID: 1493631986700570, guid: 71fa442458744984f909f71d50a2c086,
-    type: 3}
+  _DefaultCharacter: {fileID: 11400000, guid: 06005182f53fd4d48bb7efe5aceb1802, type: 2}
   _CameraBrain: {fileID: 6625669370527078817}
   _StageInfo: {fileID: 0}
   _MusicPlayer: {fileID: 82898679489416450}
@@ -249,7 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isSelected: 0
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 1
   _viewVisualisationDataHidden: 1
@@ -572,7 +571,7 @@ Transform:
   m_GameObject: {fileID: 4410452247959996546}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.566101, z: 0.9111786}
+  m_LocalPosition: {x: 0, y: 1.0461006, z: 0.9111786}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

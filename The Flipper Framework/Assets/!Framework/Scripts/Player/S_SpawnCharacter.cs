@@ -7,6 +7,9 @@ using UnityEngine;
 
 public class S_SpawnCharacter : S_Vis_Base
 {
+	public static bool s_CanSpawn = true;
+
+
 #if UNITY_EDITOR
 	[OnlyDrawIf("_viewVisualisationData", true)]
 	[DrawHorizontalWithOthers(new string[] { "_meshScale" }, new float[] { 2.5f, 1f })]
@@ -24,7 +27,7 @@ public class S_SpawnCharacter : S_Vis_Base
 	[SerializeField]
 
 	[Header("Stage Info")]
-	public GameObject      _DefaultCharacter;
+	public S_O_CharactersForMenu      _DefaultCharacter;
 	public CinemachineBrain _CameraBrain;
 	public S_O_StageScenes _StageInfo;
 	public AudioSource _MusicPlayer;
@@ -89,7 +92,17 @@ public class S_SpawnCharacter : S_Vis_Base
 
 	// Use this for initialization
 	void Awake () {
-		//Some object shouldn't deactivate until the player is spawned in (like the start camera).
+		StartCoroutine(WaitUntilCanSpawn());
+	}
+
+	//If loading a scene directly in editor, s_CanSpawn will be true, but if loading in from a loading screen, it will not be true until every main scene is loaded in.
+	IEnumerator WaitUntilCanSpawn () {
+		while (!s_CanSpawn)
+		{
+			yield return new WaitForEndOfFrame();
+		}
+
+		//Some objects shouldn't deactivate until the player is spawned in (like the start camera).
 		for (int i = 0 ; i < _ListOfDeactivationsToDelay.Length ; i++)
 		{
 			_ListOfDeactivationsToDelay[i]._delayInSeconds = (_spawnDelay + 1) * Time.fixedDeltaTime;
@@ -114,7 +127,7 @@ public class S_SpawnCharacter : S_Vis_Base
 			}
 			else
 			{
-				_CharacterToSpawn = _DefaultCharacter;
+				_CharacterToSpawn = _DefaultCharacter._Prefab;
 			}
 
 			GameObject Player = Instantiate(_CharacterToSpawn, transform.position, Quaternion.identity, transform);

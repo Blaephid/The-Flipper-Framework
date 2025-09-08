@@ -124,7 +124,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &1273471518503418798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,7 +169,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: ce736a2ec1831a94284c4f1cc00f55e5, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 2
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
@@ -850,7 +850,7 @@ GameObject:
   - component: {fileID: 8155353491748236448}
   - component: {fileID: 3513309565807234129}
   m_Layer: 0
-  m_Name: Pr_UI_Character&StageSelecter
+  m_Name: Pr_UI_StageLoading
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -892,9 +892,9 @@ MonoBehaviour:
   _StageScreenAnimator: {fileID: 5772875486655097421}
   _StageNameText: {fileID: 8528247838637352061}
   _CharacterText: {fileID: 8262424002826464341}
-  _framesBeforeStageScreen: 20
+  _secondsBeforeStageScreen: 0.4
   _GoButton: {fileID: 0}
-  _framesBeforeLoading: 80
+  _secondsBeforeLoading: 0
   _SelectedCharacter: {fileID: 0}
   _SelectedStageObject: {fileID: 0}
 --- !u!114 &3513309565807234129

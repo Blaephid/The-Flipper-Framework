@@ -1,10 +1,12 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class S_Handler_HealthAndHurt : S_Player_Base
 {
@@ -266,6 +268,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 				_CoreValues.SetValuesOnLevelStart();
 
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Dead"); //Does not have to be undone because on respawn, this will be cleared.
+			S_S_Logic.AddLockToList(ref _CamHandler._HedgeCam._locksForCameraFallBack, "Dead");
 
 			//Enter the hurt action until respawn
 			if (!_HurtAction.enabled && applyResponse) _HurtAction.StartAction();
@@ -350,6 +353,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		_PlayerPhys._locksForIsGravityOn.Clear();
 		_PlayerPhys._locksForCanDecelerate.Clear();
 		_PlayerPhys._locksForCanTurn.Clear();
+		_CamHandler._HedgeCam._locksForCameraFallBack.Clear();
 
 		_PlayerPhys._canChangeGrounded = true;
 		_PlayerPhys._areSpeedChangesEnabled = true;
@@ -357,6 +361,10 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		_Input.UnLockInput();
 
 		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(0, 0));
+
+		//Camera
+		//Ensure no fallback is active
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(Vector2.zero,0,0,0,0,"Death"));
 	}
 
 	//Bonking refers to rebounding off solid surfaces when moving into them at high speed.

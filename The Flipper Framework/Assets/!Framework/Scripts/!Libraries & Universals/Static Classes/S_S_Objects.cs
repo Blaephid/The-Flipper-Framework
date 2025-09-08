@@ -22,20 +22,46 @@ public class S_S_Objects
 	}
 
 
-	//Takes an animator and the name of a trigger, then after x frames, sends that trigger to than animator.
-	public static IEnumerator TriggerAnimatorAfterDelay ( Animator Animator, string trigger, int frames = 0 ) {
-		for (int i = 0 ; i < frames ; i++)
+	//Takes an animator and the name of a trigger, then after x frames, sends that trigger to that animator.
+	public static IEnumerator TriggerAnimatorAfterDelay ( Animator Animator, string trigger, int frames = 0, float seconds = 0 ) {
+		if(!Animator) { yield break; }
+
+		if (trigger == "") trigger = "Trigger";
+
+		if (seconds == 0 || Time.timeScale == 0)
 		{
-			yield return new WaitForFixedUpdate();
+			for (int i = 0 ; i < frames ; i++)
+			{
+				yield return new WaitForFixedUpdate();
+			}
 		}
-		Animator.SetTrigger(trigger);
+		else
+		{
+			yield return new WaitForSecondsRealtime(seconds);
+		}
+
+			Animator.SetTrigger(trigger);
 	}
 
 	//Sames as above but with a specific animation component rather than an animator.
-	public static IEnumerator TriggerAnimationAfterDelay ( Animation Clip, int frames ) {
-		for (int i = 0 ; i < frames ; i++)
+	public static IEnumerator TriggerAnimationAfterDelay ( Animation Clip, int frames, float seconds = 0 ) {
+		if(!Clip) { yield break; }
+
+		if (seconds != 0 || Time.timeScale == 0)
 		{
-			yield return new WaitForFixedUpdate();
+			seconds = seconds == 0 ? frames / 55 : seconds;
+			yield return new WaitForSecondsRealtime(seconds);
+			for (int i = 0 ; i < frames ; i++)
+			{
+				yield return new WaitForFixedUpdate();
+			}
+		}
+		else
+		{
+			for (int i = 0 ; i < frames ; i++)
+			{
+				yield return new WaitForFixedUpdate();
+			}
 		}
 		Clip.Play();
 	}

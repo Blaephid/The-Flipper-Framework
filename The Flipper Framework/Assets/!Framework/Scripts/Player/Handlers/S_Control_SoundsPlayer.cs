@@ -100,26 +100,6 @@ public class S_Control_SoundsPlayer : S_Player_Base
 			WindSource.volume = Mathf.Lerp(WindSource.volume, 0, 0.2f);
 	}
 
-	private void HandleWindSoundOld () {
-		if (_PlayerVel._speedMagnitudeSquared > 70 * 70)
-		{
-			if (_windActive) { return; }
-			_windActive = true;
-			StopCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, 0));
-			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, _startWindSourceVolume));
-
-			if (!WindSource.isPlaying)
-				WindSource.Play();
-		}
-		else
-		{
-			if (!_windActive) { return; }
-			_windActive = false;
-			StopCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, _startWindSourceVolume));
-			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 1, 0));
-		}
-	}
-
 	#endregion
 
 

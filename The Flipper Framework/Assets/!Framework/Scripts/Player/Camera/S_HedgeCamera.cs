@@ -250,6 +250,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//LateUpdate is called at the end of an update, and all camera controls are handled here.
 	void LateUpdate () {
+		if(_Actions._isPaused) { return; }
 
 		HandleTargetPosition();
 		AlignPlayerTransformCopy();
@@ -908,11 +909,15 @@ public class S_HedgeCamera : MonoBehaviour
 	public IEnumerator ApplyCameraFallBack ( Vector2 frames, float secondaryCameraLerpAfterPlayer, float playerSpeedBefore, float playerSpeedAfter, float minDifference, string source ) {
 		if (_locksForCameraFallBack.Count > 0) { yield break; }
 
+		if(!_MainCameraBrain) { yield break; }
+
 		if (_currentSourceOfFallBack == source) //The same thing can't apply multiple fall backs.
 		{
 			yield break;
 		}
 		_currentSourceOfFallBack = source;
+
+		string thisSource = _currentSourceOfFallBack;
 
 		//Sets the secondary camera to the position of the primary, then makes it take over display.
 		_SecondaryCamera.transform.position = transform.position;
@@ -929,6 +934,10 @@ public class S_HedgeCamera : MonoBehaviour
 		{
 			yield return new WaitForFixedUpdate();
 		}
+
+		if (_locksForCameraFallBack.Count > 0) { yield break; }
+		//if something else took control, no need to continue this coroutine.
+		if (thisSource != _currentSourceOfFallBack){yield break;}
 
 		//If the caller has input a speed the player is suddenly moving at, affect the lerp time by the speed difference.
 		if (playerSpeedAfter > 0 && playerSpeedAfter >= playerSpeedBefore)

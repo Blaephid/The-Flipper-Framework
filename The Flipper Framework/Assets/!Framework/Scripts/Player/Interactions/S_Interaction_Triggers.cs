@@ -302,11 +302,11 @@ public class S_Interaction_Triggers : S_Player_Base
 		if (!Col.TryGetComponent(out S_Trigger_External HostTriggerData)) { return null; };
 
 		//If no logic is found, ignore.
-		if (HostTriggerData == null || HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate.Count == 0) return null;
+		if (HostTriggerData == null || HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadActivate.Count == 0) return null;
 
-		for (int i = 0 ; i < HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate.Count ; i++)
+		for (int i = 0 ; i < HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadActivate.Count ; i++)
 		{
-			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate[i].GetComponent<S_Trigger_External>();
+			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadActivate[i].GetComponent<S_Trigger_External>();
 
 			//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
 			if (list.Count == 0) { list = new List<S_Trigger_External>(); }
@@ -335,11 +335,11 @@ public class S_Interaction_Triggers : S_Player_Base
 		if (!Col.TryGetComponent(out S_Trigger_External HostTriggerData)) { return null; }
 
 		//If no logic is found, ignore.
-		if (HostTriggerData == null || HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate == null) return null;
+		if (HostTriggerData == null || HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadDeactivate == null) return null;
 
-		for (int i = 0 ; i < HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate.Count ; i++)
+		for (int i = 0 ; i < HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadDeactivate.Count ; i++)
 		{
-			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate[i].GetComponent<S_Trigger_External>();
+			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadDeactivate[i].GetComponent<S_Trigger_External>();
 
 			//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
 			if (list.Count > 0 && !list.Contains(ReferencedTriggerData)) { continue; }
