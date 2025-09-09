@@ -27,7 +27,9 @@ public class S_SelectMenu : MonoBehaviour
 	public float          _secondsBeforeLoading;
 
 	[Header("Current")]
-	public GameObject _SelectedCharacter;
+	[NonSerialized]
+	public S_O_CharactersForMenu _SelectedCharacter;
+	[NonSerialized]
 	public S_O_StageScenes _SelectedStageObject;
 	private bool _hasSelectedStage = false;
 
@@ -35,8 +37,6 @@ public class S_SelectMenu : MonoBehaviour
 
 	// Start is called before the first frame update
 	void Awake () {
-		_SelectedCharacter = null;
-		_SelectedStageObject = null;
 		
 		if(_GoButton)
 			_GoButton.SetActive(false);
@@ -44,17 +44,16 @@ public class S_SelectMenu : MonoBehaviour
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_Measurers, "MoveIn", _delayBeforeMeasurersEnter));
 		_StageScreenObject.SetActive(false);
 
-		AssignObjectIfSpawnerIsPresent();
 	}
 
 	//For instances of this menu present in the stage scenes or spawned by the player.
 	//Due to "dontdestroyonload", this will only be present when loading scenes directly in editor, as the one from the stage select screen will take priority.
-	private void AssignObjectIfSpawnerIsPresent () {
+	public void AssignObjectIfSpawnerIsPresent () {
 		S_SpawnCharacter Spawner = GameObject.FindFirstObjectByType<S_SpawnCharacter>();
 		if(!Spawner) { return; }
 
 		AssignStageObject(Spawner._StageInfo);
-		AssignCharacter(Spawner._DefaultCharacter);
+		AssignCharacter(Spawner._CharacterToSpawn);
 	}
 
 	private void CheckIfSelected () {
@@ -77,7 +76,7 @@ public class S_SelectMenu : MonoBehaviour
 	}
 
 	public void AssignCharacter ( S_O_CharactersForMenu Character ) {
-		_SelectedCharacter = Character._Prefab;
+		_SelectedCharacter = Character;
 		if (_CharacterText)
 			_CharacterText.text = Character._displayName;
 		CheckIfSelected();
@@ -86,7 +85,7 @@ public class S_SelectMenu : MonoBehaviour
 
 	//Activated by the go button in the level.
 	public void StartLevel () {
-		if(_isLoadingStage) { return; }
+		if(_isLoadingStage || !_SelectedStageObject || !_SelectedCharacter ) { return; }
 
 		gameObject.SetActive(true);
 		GameObject[] MusicObject = GameObject.FindGameObjectsWithTag("Music");
@@ -100,12 +99,15 @@ public class S_SelectMenu : MonoBehaviour
 			StartCoroutine(S_S_Objects.TriggerAnimationAfterDelay(anim.AnimClip, 2));
 			StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(anim.Animator, anim.trigger, 0, 0.05f));
 		}
-
 		//Start loading
 		_isLoadingStage = true;
 		_StageScreenObject.SetActive(true);
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_StageScreenAnimator, "Enter", 0, _secondsBeforeStageScreen));
 		StartCoroutine(S_TitleScreenControl.DelayMovingToNextScene(_SelectedStageObject, _secondsBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Overworld, OnLoad));
+	}
+
+	private void OnDestroy () {
+		Debug.Log(gameObject + "Was destoyed");
 	}
 
 	public void OnLoad () {

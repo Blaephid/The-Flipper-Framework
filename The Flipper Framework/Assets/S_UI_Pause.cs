@@ -57,4 +57,13 @@ public class S_UI_Pause : MonoBehaviour
 		S_Manager_LevelProgress.ReturnToTitleScreen();
 	}
 
+	public void FindRestartLevelAndRestart() {
+		S_SelectMenu StageManagement = GameObject.FindFirstObjectByType<S_SelectMenu>(FindObjectsInactive.Include);
+
+		if (StageManagement)
+		{
+			StageManagement.AssignObjectIfSpawnerIsPresent();
+			StageManagement.StartLevel();
+		}
+	}
 }

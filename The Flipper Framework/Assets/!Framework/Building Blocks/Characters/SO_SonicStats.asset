@@ -2642,7 +2642,7 @@ MonoBehaviour:
   WhenHurt:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
-    respawnAfter: {x: 30, y: 70, z: 100, w: 108}
+    respawnAfter: {x: 15, y: 55, z: 80, w: 92}
     ringReleaseSpeed: 550
     ringArcSpeed: 250
     RingsLostInSpawnByAmount:

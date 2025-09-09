@@ -53,13 +53,13 @@ public class S_LightRails : S_Triggered_Base, ITriggerable
 	private void Trigger (bool switchToRed) {
 		if (switchToRed)
 		{
-			_isCurrentlyOn = true;
+			_notInDefaultState = true;
 			SetBlueActive(false);
 			SetExternalConnectedRails(ref _BlueRailAddons, ref _RedRailAddons);
 		}
 		else
 		{
-			_isCurrentlyOn = false;
+			_notInDefaultState = false;
 			SetBlueActive(true);
 			SetExternalConnectedRails(ref _RedRailAddons, ref _BlueRailAddons);
 		}
@@ -73,7 +73,7 @@ public class S_LightRails : S_Triggered_Base, ITriggerable
 
 
 	public override void ResetToOriginal () {
-		Trigger(!_isCurrentlyOn);
+		Trigger(!_notInDefaultState);
 	}
 
 	//Takes two arrays of addons, and applies the first next and prev to match what's now being assigned.

@@ -223,6 +223,8 @@ public class S_HedgeCamera : MonoBehaviour
 	private Vector3                 _startPositionOfFallBack;
 	private float            _lerpSpeedOfFallBack;
 
+	private Vector3 _previousPosition;
+
 	#endregion
 
 	#endregion
@@ -250,6 +252,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 	//LateUpdate is called at the end of an update, and all camera controls are handled here.
 	void LateUpdate () {
+
 		if(_Actions._isPaused) { return; }
 
 		HandleTargetPosition();
@@ -262,6 +265,8 @@ public class S_HedgeCamera : MonoBehaviour
 		ConfirmCameraChanges();
 		ChangeBasedOnFacing();
 		HandleCameraDistance();
+
+		_previousPosition = transform.position;
 	}
 
 	#endregion
@@ -930,14 +935,14 @@ public class S_HedgeCamera : MonoBehaviour
 		_startPositionOfFallBack = transform.position;
 
 		//Remain locked in place for x frames. At least 1
-		for (int i = 1 ; i <= Mathf.Max(frames.x, 2) ; i++)
+		for (int i = 1 ; i <= Mathf.Max(frames.x, 1) ; i++)
 		{
 			yield return new WaitForFixedUpdate();
 		}
 
-		if (_locksForCameraFallBack.Count > 0) { yield break; }
+		if (_locksForCameraFallBack.Count > 0) { _currentSourceOfFallBack = ""; yield break; }
 		//if something else took control, no need to continue this coroutine.
-		if (thisSource != _currentSourceOfFallBack){yield break;}
+		if (thisSource != _currentSourceOfFallBack){ yield break;}
 
 		//If the caller has input a speed the player is suddenly moving at, affect the lerp time by the speed difference.
 		if (playerSpeedAfter > 0 && playerSpeedAfter >= playerSpeedBefore)
@@ -951,8 +956,10 @@ public class S_HedgeCamera : MonoBehaviour
 			frames *= speedDifference;
 		}
 
+		CinemachineBlendDefinition.Style Style = frames.y == 0 ? CinemachineBlendDefinition.Style.Cut : CinemachineBlendDefinition.Style.EaseIn;
+
 		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
-		_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseIn, frames.y / 50f);
+		_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(Style, frames.y / 50f);
 		_SecondaryCamera.gameObject.SetActive(false); //Disabling the secondary camera will cause the brain to automatically transition back to primary (assuming no other virtual cameras are at play.
 
 		_currentSourceOfFallBack = "";

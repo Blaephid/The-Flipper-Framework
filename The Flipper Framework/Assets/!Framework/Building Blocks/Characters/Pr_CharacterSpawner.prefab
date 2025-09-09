@@ -212,9 +212,9 @@ MonoBehaviour:
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _VisualiseWithMesh: {fileID: 0}
   _meshScale: 1
-  _isActive: 0
+  _isActive: 1
   _DefaultCharacter: {fileID: 11400000, guid: 06005182f53fd4d48bb7efe5aceb1802, type: 2}
-  _CameraBrain: {fileID: 6625669370527078817}
+  _CameraBrain: {fileID: 8416304642151928847}
   _StageInfo: {fileID: 0}
   _MusicPlayer: {fileID: 82898679489416450}
   _PostProcessing: {fileID: 2195762130908376458}
@@ -551,12 +551,12 @@ GameObject:
   - component: {fileID: 4259941353761359385}
   - component: {fileID: 5171931442243885788}
   - component: {fileID: 7501275256464650382}
-  - component: {fileID: 4905481180013178688}
   - component: {fileID: 3756712414567191747}
-  - component: {fileID: 6625669370527078817}
-  - component: {fileID: 2412348188940808024}
+  - component: {fileID: 8416304642151928847}
+  - component: {fileID: 164630443607691332}
+  - component: {fileID: 1637980493462451181}
   m_Layer: 8
-  m_Name: Main Camera
+  m_Name: Main Camera Geometry
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -571,7 +571,7 @@ Transform:
   m_GameObject: {fileID: 4410452247959996546}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.0461006, z: 0.9111786}
+  m_LocalPosition: {x: 0, y: 1.0460997, z: 0.91120005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -637,14 +637,6 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4410452247959996546}
   m_Enabled: 1
---- !u!81 &4905481180013178688
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4410452247959996546}
-  m_Enabled: 1
 --- !u!114 &3756712414567191747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,7 +681,7 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &6625669370527078817
+--- !u!114 &8416304642151928847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -700,8 +692,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShowDebugText: 0
+  m_EditorClassIdentifier: Cinemachine::Cinemachine.CinemachineBrain
+  m_ShowDebugText: 1
   m_ShowCameraFrustum: 1
   m_IgnoreTimeScale: 0
   m_WorldUpOverride: {fileID: 0}
@@ -709,7 +701,7 @@ MonoBehaviour:
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 7
-    m_Time: 0.5454546
+    m_Time: 0.5
     m_CustomCurve:
       serializedVersion: 2
       m_Curve:
@@ -759,24 +751,35 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2412348188940808024
+--- !u!114 &164630443607691332
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4410452247959996546}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5581a25298e347940b3e1c9251f6414b, type: 3}
+  m_Script: {fileID: 11500000, guid: ef570566389477f42aeb5481b2326658, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  _fileName: Screenshot
-  _folderPathFromAssets: /Assets/ScreenShots/
-  _scaleValue: 2
-  _withUI: 0
-  _fileNameWithTimeStamp: 1
-  _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::S_Debug_TrackPosition
+  _inEditor: 0
+  _log: 1
+  _drawLine: 1
+  _lineColour: {r: 1, g: 1, b: 1, a: 1}
+  _lineTime: 10
+--- !u!114 &1637980493462451181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4410452247959996546}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be6131f6978a7940a65d24d78a6c1a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::S_debug_CineBrain
 --- !u!1 &7125000171673488568
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,7 +829,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 100
+  m_Priority: -2
   m_StandbyUpdate: 1
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -862,10 +865,11 @@ GameObject:
   - component: {fileID: 1804352825786268786}
   - component: {fileID: 6315965792158941082}
   - component: {fileID: 7218667507526512321}
-  - component: {fileID: 8685527390820748160}
+  - component: {fileID: 4625290661275111143}
+  - component: {fileID: 4054843734174042417}
   m_Layer: 8
-  m_Name: Background Camera
-  m_TagString: MainCamera
+  m_Name: Main Camera Background
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1007,7 +1011,15 @@ MonoBehaviour:
   _withUI: 0
   _fileNameWithTimeStamp: 1
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}
---- !u!114 &8685527390820748160
+--- !u!81 &4625290661275111143
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8161840258486311087}
+  m_Enabled: 1
+--- !u!114 &4054843734174042417
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1018,5 +1030,5 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c87d3bb816bd67459c794b9a612614b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::S_MatchMainCamera
   _MainCamera: {fileID: 5171931442243885788}

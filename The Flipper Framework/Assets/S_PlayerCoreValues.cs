@@ -71,6 +71,8 @@ public class S_PlayerCoreValues : S_Player_Base
 	}
 
 	private void LateUpdate () {
+		if(_Actions._isPaused) { return; }
+
 		UpdateSpeed();
 		UpdateRingDisplay();
 		UpdateEnergy();

@@ -157,8 +157,6 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 
 		_useStartSpeed = _Data._startAtPlayerSpeed_ ? _PlayerVel._horizontalSpeedMagnitude : _Data._startSpeed_;
 		_RF._grindingSpeed = _useStartSpeed * _Data._CurveToFullSpeed_.Evaluate(0);
-
-		//S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
 
 	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
@@ -175,12 +173,41 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		if (set)
 		{
 			SetAnimatorTrigger("Start");
+			//For rhino actions
 			if (OnActivate != null)
 				OnActivate.Invoke();
 		}
-		else { OnDeactivate.Invoke(); }
+		//For rhino actions
+		else if (OnDeactivate != null) { OnDeactivate.Invoke(); }
 
 		if (!_RF || !_RF._PathSpline) { _isActive = false; }
+	}
+
+	public override void ResetToOriginal () {
+
+		this.enabled = true;
+		gameObject.SetActive(true);
+
+		TriggerObjectOff();
+
+		transform.position = _startPosition;
+		ResetSplineDetails();
+		PlaceOnSplineBeforeGame();
+		ResetRigidBody();
+
+		//Reset tracking values
+		_hasReachedGoalInFrontOfPlayer = false;
+		_playerDistanceIncludingOffset = 0;
+		_playerDistanceWithoutOffset = 0;
+		_playerSpeed = 0;
+		_listOfPlayerSpeeds = new List<float> { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
+		_timeGrinding = 0;
+
+		_notInDefaultState = false;
+	}
+
+	private void OnDisable () {
+		
 	}
 
 	private void OnDestroy () {
@@ -598,28 +625,6 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		_RB.linearVelocity = Vector3.zero;
 		_RB.useGravity = false;
 		_RB.freezeRotation = true;
-	}
-
-	public override void ResetToOriginal ( ) {
-
-		gameObject.SetActive(true);
-		enabled = true;
-
-		TriggerObjectOff();
-
-		transform.position = _startPosition;
-		ResetSplineDetails();
-		PlaceOnSplineBeforeGame();
-		ResetRigidBody();
-
-		//Reset tracking values
-		_hasReachedGoalInFrontOfPlayer = false;
-		_playerDistanceIncludingOffset = 0;
-		_playerDistanceWithoutOffset = 0;
-		_playerSpeed = 0;
-		_listOfPlayerSpeeds = new List<float> { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
-		_timeGrinding = 0;
-
 	}
 
 	public void SetToSpline () {

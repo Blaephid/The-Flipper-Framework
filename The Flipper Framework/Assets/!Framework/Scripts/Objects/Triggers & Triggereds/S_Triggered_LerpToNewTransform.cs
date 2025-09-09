@@ -81,7 +81,7 @@ public class S_Triggered_LerpToNewTransform : S_Triggered_Base, ITriggerable
 
 		_isLerping = true;
 
-		_isCurrentlyOn = _currentlyTransformA;
+		_notInDefaultState = _currentlyTransformA;
 		GoalTransform = _currentlyTransformA ? TransformB : TransformA;
 		FromTransform = _currentlyTransformA ? TransformA : TransformB;
 

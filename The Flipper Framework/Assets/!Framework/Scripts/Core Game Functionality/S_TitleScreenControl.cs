@@ -14,7 +14,7 @@ public class S_TitleScreenControl : MonoBehaviour
 
 	[Header("On Start")]
 	public S_O_StageScenes _sceneToGoToOnStart;
-	public int          _framesBeforeLoading = 30;
+	public float          _secondsBeforeLoading = 0.6f;
 	public AudioSource      _AudioOnStart;
 
 	[Header("Fading")]
@@ -53,20 +53,26 @@ public class S_TitleScreenControl : MonoBehaviour
 
 	//Called by a start button and starts the animation, then goes onto the inputting scene.
 	public void PressStart () {
+		if (!S_SpawnCharacter.s_CanSpawnNow) { return; } //Prevent spamming the button
+
 		S_CarryAcrossScenes.whatIsCurrentSceneType = S_CarryAcrossScenes.EnumGameSceneTypes.Menus;
-		StartCoroutine(DelayMovingToNextScene(_sceneToGoToOnStart, _framesBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Menus));
+		StartCoroutine(DelayMovingToNextScene(_sceneToGoToOnStart, _secondsBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Menus));
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_Measurers, "MoveOut", _delayBeforeMeasurersEnter));
 		if (_AudioOnStart != null) _AudioOnStart.Play();
 	}
 
 	public static IEnumerator DelayMovingToNextScene ( S_O_StageScenes Scene, float seconds, S_CarryAcrossScenes.EnumGameSceneTypes NewSceneType, Action OnLoad = null ) {
 
-		if (!S_SpawnCharacter.s_CanSpawn) { yield break; } //Cant have multiple running at once
-		S_SpawnCharacter.s_CanSpawn = false; //Ensures player will not spawn until level is COMPLETELY loaded, including important scenes.
+		Debug.Log("START READYING LOAD " + S_SpawnCharacter.s_CanSpawnNow);
+		if (!S_SpawnCharacter.s_CanSpawnNow) { yield break; } //Cant have multiple running at once
+		S_SpawnCharacter.s_CanSpawnNow = false; //Ensures player will not spawn until level is COMPLETELY loaded, including important scenes.
 
+		Debug.Log("START WAIT" + Mathf.Max(0.1f, seconds));
 		//Allow any animation to finish.
 		yield return new WaitForSecondsRealtime(Mathf.Max(0.1f, seconds)); //Use seconds rather than frames because this can be called when timescale is 0
-		
+
+		Debug.Log(" WAIT COMPLETE");
+
 		bool hasSubScenes = Scene._Scenes != null && Scene._Scenes.Length > 0;
 
 		//Tracking progress of loading scenes overall
@@ -81,6 +87,8 @@ public class S_TitleScreenControl : MonoBehaviour
 
 		AsyncOperation mainScene = SceneManager.LoadSceneAsync(Scene._BaseScene);
 		mainScene.allowSceneActivation = false;
+
+		Debug.Log("LOAD BASE");
 
 		while (mainProgress < 0.9f || (secondsTaken <= minSecondsToLoadScene && !hasSubScenes))
 		{
@@ -127,7 +135,6 @@ public class S_TitleScreenControl : MonoBehaviour
 			bool allReady = true;
 			for (int i = 0 ; i < loadingAllScenes.Count ; i++)
 			{
-				Debug.Log(loadingAllScenes[i].progress);
 				if (loadingAllScenes[i].progress < 0.9f)
 				{
 					allReady = false;
@@ -153,7 +160,6 @@ public class S_TitleScreenControl : MonoBehaviour
 			bool allLoaded = true;
 			for (int i = 0 ; i < loadingAllScenes.Count ; i++)
 			{
-				Debug.Log(loadingAllScenes[i].isDone);
 				if (!loadingAllScenes[i].isDone)
 				{
 					allLoaded = false;
@@ -182,7 +188,7 @@ public class S_TitleScreenControl : MonoBehaviour
 		void OnLoadComplete () {
 			//Once all scenes are ready, start the game
 			Time.timeScale = 1f;
-			S_SpawnCharacter.s_CanSpawn = true;
+			S_SpawnCharacter.s_CanSpawnNow = true;
 
 			if (OnLoad != null)
 				OnLoad.Invoke();

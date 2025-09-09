@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class S_SpawnCharacter : S_Vis_Base
 {
-	public static bool s_CanSpawn = true;
+	[NonSerialized] public static bool s_CanSpawnNow = true;
 
 
 #if UNITY_EDITOR
@@ -43,7 +43,7 @@ public class S_SpawnCharacter : S_Vis_Base
 
 
 	//Spawning
-	private GameObject            _CharacterToSpawn;
+	[NonSerialized] public S_O_CharactersForMenu            _CharacterToSpawn;
 	public static Transform _SpawnedPlayer;
 	public static float           _spawnCheckModifier = 1;
 
@@ -97,7 +97,7 @@ public class S_SpawnCharacter : S_Vis_Base
 
 	//If loading a scene directly in editor, s_CanSpawn will be true, but if loading in from a loading screen, it will not be true until every main scene is loaded in.
 	IEnumerator WaitUntilCanSpawn () {
-		while (!s_CanSpawn)
+		while (!s_CanSpawnNow)
 		{
 			yield return new WaitForEndOfFrame();
 		}
@@ -127,10 +127,10 @@ public class S_SpawnCharacter : S_Vis_Base
 			}
 			else
 			{
-				_CharacterToSpawn = _DefaultCharacter._Prefab;
+				_CharacterToSpawn = _DefaultCharacter;
 			}
 
-			GameObject Player = Instantiate(_CharacterToSpawn, transform.position, Quaternion.identity, transform);
+			GameObject Player = Instantiate(_CharacterToSpawn._Prefab, transform.position, Quaternion.identity, transform);
 
 			SetPlayerValuesOnStart(Player);
 			//Check S_CharacterTools Awake For assigning references to this. It's there because the Awakes of Player happen before any more code in this method.

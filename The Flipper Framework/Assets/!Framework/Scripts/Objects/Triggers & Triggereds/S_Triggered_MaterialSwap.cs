@@ -29,12 +29,12 @@ public class S_Triggered_MaterialSwap : S_Triggered_Base, ITriggerable
 
 			if (thisSwap._onMaterialA)
 			{
-				_isCurrentlyOn = true;
+				_notInDefaultState = true;
 				materialsCopy[thisSwap._materialIndex] = thisSwap._toMaterial;
 			}
 			else
 			{
-				_isCurrentlyOn = false;
+				_notInDefaultState = false;
 				materialsCopy[thisSwap._materialIndex] = thisSwap._fromMaterial;
 			}
 

@@ -41,7 +41,6 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 	#endregion
 
-
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
 	private S_GeneralEnums.HurtResponses _whatResponse_;
@@ -138,8 +137,6 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 				}
 				return;
 			case "Pit":
-				if(_isDead) { return; }
-				_Sounds.DieSound();
 				StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(new Vector2 (90,0), 0, 0, 0, 0.25f, "Pit")); //The camera will fall back before catching up.
 				Die(false);
 				return;
@@ -257,6 +254,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			_Sounds.DieSound();
 			_JumpBall.SetActive(false);
 			_CharacterAnimator.SetBool("Dead", true);
+			_FadeOutImage.gameObject.SetActive(true);
 
 			//Trackers
 			_isDead = true;
@@ -272,6 +270,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 			//Enter the hurt action until respawn
 			if (!_HurtAction.enabled && applyResponse) _HurtAction.StartAction();
+			else _Actions._ActionDefault.StartAction();
 		}
 	}
 
@@ -280,31 +279,39 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 		_deadCounter += 1;
 
+		//For easier tracking of each values purpose
+		float thresholdForStartFadeOut = (int)_respawnAfter_.x;
+		float thresholdForReset = (int)_respawnAfter_.y;
+		float thresholdForRespawnPlayer = (int) _respawnAfter_.z;
+		float thresholdForStartFadeIn = (int) _respawnAfter_.z + 3; //Ensures screen is fully black for a few more frames to hide the player teleporting or launching.
+		float thresholdForEndFadeIn = (int) Mathf.Max( _respawnAfter_.w, thresholdForStartFadeIn + 1);
+
 		//Start fading out the screen
-		if (_deadCounter > _respawnAfter_.x && _deadCounter < _respawnAfter_.y)
+		if (_deadCounter > thresholdForStartFadeOut && _deadCounter < thresholdForReset)
 		{
 			_Input._move = Vector3.zero;
 
 			//Gets the percentage value of the movement from start fade out time to end fade out time
-			float lerpTotal = _respawnAfter_.y - _respawnAfter_.x; //The difference between start and end
-			float lerpAmount = (_deadCounter - _respawnAfter_.x); //The amount after the start
+			float lerpTotal = thresholdForReset - thresholdForStartFadeOut; //The difference between start and end
+			float lerpAmount = (_deadCounter - thresholdForStartFadeOut) + 1; //The amount after the start
 			lerpAmount = lerpAmount / lerpTotal;    //The progress as a percentage
 
-			//Change colour according to the larp value
+			//Change colour according to the lerp value
 			Color imageColour = Color.black;
 			imageColour.a = 1;
-			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
+			_FadeOutImage.color = Color.Lerp(Color.clear, imageColour, lerpAmount);
 		}
 		//When the screen is fully faded, respawn elements
-		else if (_deadCounter == _respawnAfter_.y)
+		else if (_deadCounter == thresholdForReset)
 		{
-			_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
+			//_CharacterCapsule.gameObject.SetActive(false);  //Disables the player now that they can't be seen, this will prevent other updates outside of this coroutine.
+			_Actions._ActionDefault.SetColliderActive(false);
 			_LevelHandler.CallRespawnEvents();
 
 			_counter = _invincibilityTime_; //Ends the counter for flickering so the character will be fully visible on respawn.
 		}
 		//And after being dead for long enough, respawn the player.
-		else if (_deadCounter == _respawnAfter_.z)
+		else if (_deadCounter == thresholdForRespawnPlayer)
 		{
 			ResetStatsOnRespawn();
 			_Input._move = Vector3.zero;
@@ -312,28 +319,27 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			//Move player back to checkPoint
 			_LevelHandler.ResetToCheckPoint();
 
-			_CharacterCapsule.gameObject.SetActive(true); //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
-			_FadeOutImage.color = Color.black;
+			//_CharacterCapsule.gameObject.SetActive(true); //Reenables character object to allow all other updates to happen again, and retrigger any collisions at the new location.
+			_Actions._ActionDefault.SetColliderActive(true);
+
+			_LevelHandler.LaunchOnRespawn();
+			_LevelHandler.TriggerAnimatorOnRespawn();
+
 		}
 		//Removed screen overlay to reveal new location
-		else if (_deadCounter > _respawnAfter_.z)
+		else if (_deadCounter > thresholdForStartFadeIn)
 		{
-			float lerpAmount = (_deadCounter - _respawnAfter_.z); //The amount after the start
-			lerpAmount = lerpAmount / (_respawnAfter_.w - _respawnAfter_.z);    //The progress as a percentage
+
+			float lerpAmount = (_deadCounter - thresholdForStartFadeIn) + 1; //The amount after the start
+			lerpAmount = lerpAmount / (thresholdForEndFadeIn - thresholdForStartFadeIn);    //The progress as a percentage
 
 			//Change colour according to the lerp value
 			Color imageColour = Color.black;
 			imageColour.a = 0;
-			_FadeOutImage.color = Color.Lerp(_FadeOutImage.color, imageColour, lerpAmount);
-
-			if (_deadCounter == _respawnAfter_.w - 5)
-			{
-				_LevelHandler.LaunchOnRespawn();
-				_LevelHandler.TriggerAnimatorOnRespawn() ;
-			}
+			_FadeOutImage.color = Color.Lerp(Color.black, imageColour, lerpAmount);
 
 			//End state
-			else if (_deadCounter == _respawnAfter_.w)
+			if (_deadCounter == thresholdForEndFadeIn)
 			{
 				_isDead = false;
 				_deadCounter = 0;
@@ -361,10 +367,6 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		_Input.UnLockInput();
 
 		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(0, 0));
-
-		//Camera
-		//Ensure no fallback is active
-		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(Vector2.zero,0,0,0,0,"Death"));
 	}
 
 	//Bonking refers to rebounding off solid surfaces when moving into them at high speed.
@@ -508,7 +510,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 				//Same as frontiers response, but if should die, will do so immediately, rather than wait to hit ground.
 				case S_GeneralEnums.HurtResponses.FrontiersSansDeathDelay:
 					_HurtAction._wasHit = true;
-					if (_CoreValues._ringCount > 0 || _hasShield)
+					if (_CoreValues._ringCount > _CoreValues._dieAtRingCount_ || _hasShield)
 					{
 						_HurtAction._knockbackDirection = -_PlayerVel._previousVelocity[1].normalized;
 						_inHurtStateBeforeDamage = true;
@@ -546,11 +548,11 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			SetShield(false);
 		}
 		//Otherwise, either lose rings or die
-		else if (_CoreValues._ringCount > 0)
+		else if (_CoreValues._ringCount > _CoreValues._dieAtRingCount_)
 		{
 			LoseRings();
 		}
-		else if (_CoreValues._ringCount <= 0)
+		else if (_CoreValues._ringCount <= _CoreValues._dieAtRingCount_)
 		{
 			Die();
 		}

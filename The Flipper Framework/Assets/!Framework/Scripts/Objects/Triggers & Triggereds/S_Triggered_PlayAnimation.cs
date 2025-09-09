@@ -27,7 +27,6 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 		if (!CanBeTriggeredOn(Player)) { return; }
 
 		SetAnimatorSpeed(Player);
-		_isCurrentlyOn = true;
 		_Animator.SetTrigger("TriggerOn");
 
 	}
@@ -36,7 +35,7 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 		if (!CanBeTriggeredOff(Player)) { return; }
 
 		SetAnimatorSpeed(Player);
-		_isCurrentlyOn = false;
+		_notInDefaultState = false;
 		_Animator.SetTrigger("TriggerOff");
 
 	}
@@ -58,7 +57,7 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 
 	public override void EventReturnOnDeath ( object sender, EventArgs e ) {
 
-		_isCurrentlyOn = false;
+		_notInDefaultState = false;
 		base.EventReturnOnDeath(sender, e);
 	}
 }

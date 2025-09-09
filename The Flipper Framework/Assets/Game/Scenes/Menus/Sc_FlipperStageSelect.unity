@@ -2428,6 +2428,16 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 3513309565807234129, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: willReplaceOldInstancesWithThis
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5535624559727572518, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7474941497722396790, guid: 75395601d6941a14086ad46cf82fa9a8,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2496,7 +2506,12 @@ PrefabInstance:
     - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
         type: 3}
       propertyPath: _secondsBeforeLoading
-      value: 0
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _secondsBeforeStageScreen
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
         type: 3}

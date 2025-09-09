@@ -198,6 +198,11 @@ public class S_Manager_LevelProgress : S_Player_Base
 		//Camera
 		_CamHandler._HedgeCam._lookTimer = 0;
 		_CamHandler._HedgeCam.SetBehind(0); //Sets camera back to behind player.
+
+		//Ensure no fallback is active
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(Vector2.zero, 0, 0, 0, 0, "Death"));
+		_Tools.MainCamera.transform.position = _CamHandler._HedgeCam.transform.position;
+		_Tools.MainCamera.transform.rotation = _CamHandler._HedgeCam.transform.rotation;
 	}
 
 	public void TriggerAnimatorOnRespawn () {

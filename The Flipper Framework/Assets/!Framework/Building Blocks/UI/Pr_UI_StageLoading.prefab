@@ -886,8 +886,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Measurers: {fileID: 0}
   _delayBeforeMeasurersEnter: 6
-  _AdditionalAnimations:
-  - {fileID: 0}
+  _AnimationsOnGo: []
   _StageScreenObject: {fileID: 1426467439370562145}
   _StageScreenAnimator: {fileID: 5772875486655097421}
   _StageNameText: {fileID: 8528247838637352061}
@@ -895,8 +894,6 @@ MonoBehaviour:
   _secondsBeforeStageScreen: 0.4
   _GoButton: {fileID: 0}
   _secondsBeforeLoading: 0
-  _SelectedCharacter: {fileID: 0}
-  _SelectedStageObject: {fileID: 0}
 --- !u!114 &3513309565807234129
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -910,7 +907,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: CharacterSelector
-  willReplaceOldInstancesWithThis: 1
+  willReplaceOldInstancesWithThis: 0
+  willCopyValuesWhenOverwriting: 0
   CarryAcrossMenuScenes: 1
   CarryAcrossCharacterScenes: 1
 --- !u!1 &7795999558899514199
