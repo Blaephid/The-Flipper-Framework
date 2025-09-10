@@ -8331,13 +8331,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5984858131545758309}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71501b7289cf5214e9d49718dabc8380, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PassOnToSpawner:
-    _Root: {fileID: 5984858131545758309}
+    _HudRoot: {fileID: 706545813736439010}
     _HomingIconScript: {fileID: 337845427714294787}
     _HomingIconObject: {fileID: 4207600700419641535}
     GaugeAnimator: {fileID: 174251654477162914}

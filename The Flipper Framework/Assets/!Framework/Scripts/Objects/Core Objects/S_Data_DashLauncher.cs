@@ -21,14 +21,6 @@ public class S_Data_DashLauncher : S_Data_Base
 		_CameraRotateTime_ = new Vector2 (0.15f, 20f),
 	};
 
-	[Header("Lock?")]
-	public Vector3	_PositionToLockTo;
-	public int	_lockControlFrames_ = 30;
-	public S_GeneralEnums.LockControlDirection _lockInputTo_;
-
-	public Vector3      _overwriteGravity_;
-	public float	_lockAirMovesFor_ = 30f;
-
 	[ExecuteInEditMode]
 	private void Update () {
 		if(!Application.isPlaying){UpdateLaunchDataToDirection();}

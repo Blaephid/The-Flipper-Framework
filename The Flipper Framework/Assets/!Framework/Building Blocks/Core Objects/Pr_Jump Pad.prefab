@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4000011037360016}
+  - component: {fileID: 9009932116234549583}
+  - component: {fileID: 1112201277313343932}
   m_Layer: 0
   m_Name: Pr_Jump Pad
   m_TagString: Untagged
@@ -35,77 +37,13 @@ Transform:
   - {fileID: 1392181525161063026}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!1 &2391450905858721188
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7047104281063144656}
-  - component: {fileID: 7338609545123183068}
-  - component: {fileID: 2820719134234371529}
-  - component: {fileID: 6356343449703203089}
-  m_Layer: 0
-  m_Name: LockPosition
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7047104281063144656
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2391450905858721188}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.19511828, y: 0.6796535, z: 0.19511825, w: 0.6796535}
-  m_LocalPosition: {x: -2.87, y: 2.28, z: -0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4000011037360016}
-  m_LocalEulerAnglesHint: {x: -32.036, y: 90, z: 0}
---- !u!114 &7338609545123183068
+--- !u!114 &9009932116234549583
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2391450905858721188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isSelected: 1
-  _hasVisualisationScripted: 1
-  _viewVisualisationData: 0
-  _viewVisualisationDataHidden: 0
-  _drawAtAllTimes: 1
-  _drawIfParentSelected: 1
-  _normalOutlineColour: {r: 1, g: 0, b: 0, a: 0.5}
-  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
-  _selectedFillColour: {r: 0.5, g: 0, b: 0, a: 1}
-  _debugForce: 1
-  _calculations: 94
-  _LauncherScript: {fileID: 2820719134234371529}
-  _launcherStructName: _launchData_
-  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
-    type: 2}
-  _ShotCenter: {fileID: 7047104281063144656}
-  _coreVelAtEnd: {x: -234.86966, y: -251.09981, z: -0.000018578488}
-  _environmentalVelAtStart: {x: -16.330933, y: 122.85252, z: -0.0000012917945}
---- !u!114 &2820719134234371529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2391450905858721188}
+  m_GameObject: {fileID: 1000010362990254}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 449ecafe41cb81840a8866154cf514d8, type: 3}
@@ -123,15 +61,18 @@ MonoBehaviour:
   _hasDataChanged: 1
   source: Jump Pad
   _launchData_:
+    _frameDelay: 0
     _force_: 231.6
-    _direction_: {x: 0, y: 0, z: 1}
-    _directionToUse_: {x: -0.84771556, y: 0.5304513, z: -0.000000067055225}
+    _direction_: {x: 1, y: 0.72, z: 0}
+    _directionToUse_: {x: -0.00000011920929, y: 0.72, z: 1.0000001}
+    _shotOrigin: {fileID: 7047104281063144656}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
-    _useCore: 1
+    _coreVelocityImportance: 0.802
+    _delayGroundedFor: 25
     _lockInputFrames_: 0
     _lockAirMovesFrames_: 0
     _lockInputTo_: 0
-  _willCarrySpeed_: 1
+  _willCarrySpeed_: 0
   _cameraEffect:
     _willAffectCamera_: 1
     _CameraRotateTime_: {x: 0.15, y: 20}
@@ -140,18 +81,18 @@ MonoBehaviour:
   _lockInputTo_: 0
   _overwriteGravity_: {x: 0, y: 0, z: 0}
   _lockAirMovesFor_: 30
---- !u!82 &6356343449703203089
+--- !u!82 &1112201277313343932
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2391450905858721188}
+  m_GameObject: {fileID: 1000010362990254}
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: d7434cca2433a4941990d0661ddfb4f9, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: d7434cca2433a4941990d0661ddfb4f9, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -238,6 +179,68 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!1 &2391450905858721188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7047104281063144656}
+  - component: {fileID: 7338609545123183068}
+  m_Layer: 0
+  m_Name: LockPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7047104281063144656
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2391450905858721188}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.49, y: 4.008, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4000011037360016}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7338609545123183068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2391450905858721188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSelected: 1
+  _hasVisualisationScripted: 1
+  _viewVisualisationData: 0
+  _viewVisualisationDataHidden: 0
+  _drawAtAllTimes: 1
+  _drawIfParentSelected: 1
+  _normalOutlineColour: {r: 1, g: 0, b: 0, a: 0.5}
+  _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
+  _selectedFillColour: {r: 0.5, g: 0, b: 0, a: 1}
+  _debugForce: 1
+  _calculations: 93
+  _LauncherScript: {fileID: 9009932116234549583}
+  _launcherStructName: _launchData_
+  _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
+    type: 2}
+  _ShotCenter: {fileID: 7047104281063144656}
+  _coreVelAtEnd: {x: -0.000027689892, y: -248.39981, z: 232.27966}
+  _environmentalVelAtStart: {x: -0.0000063896214, y: 166.75201, z: 53.600037}
 --- !u!1 &6378014637767686565
 GameObject:
   m_ObjectHideFlags: 0
@@ -314,7 +317,7 @@ MonoBehaviour:
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _hasDataChanged: 1
-  _ObjectWithMainScript: {fileID: 2391450905858721188}
+  _ObjectWithMainScript: {fileID: 1000010362990254}
 --- !u!1001 &1502158033926182297
 PrefabInstance:
   m_ObjectHideFlags: 0

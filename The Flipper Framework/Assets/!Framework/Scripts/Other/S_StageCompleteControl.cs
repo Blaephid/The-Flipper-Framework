@@ -74,29 +74,29 @@ public class S_StageCompleteControl : MonoBehaviour
 			//For minutes, seconds, milliseconds, rings gained, and ring lost, give random numbers quickly until locking them in.
 
 			if (count < secondsForLockInOfElement[0])
-				_MinutesText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 99));
+				_MinutesText.text = S_S_MoreMaths.DisplayIn2Digits(Random.Range(0, 99));
 			else
-				_MinutesText.text = S_PlayerScore.DisplayIn2Digits((int)Score._minutes);
+				_MinutesText.text = S_S_MoreMaths.DisplayIn2Digits((int)Score._minutes);
 
 			if (count < secondsForLockInOfElement[1])
-				_SecondsText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 59));
+				_SecondsText.text = S_S_MoreMaths.DisplayIn2Digits(Random.Range(0, 59));
 			else
-				_SecondsText.text = S_PlayerScore.DisplayIn2Digits((int)Score._seconds);
+				_SecondsText.text = S_S_MoreMaths.DisplayIn2Digits((int)Score._seconds);
 
 			if (count < secondsForLockInOfElement[2])
-				_MilisecondsText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 99));
+				_MilisecondsText.text = S_S_MoreMaths.DisplayIn2Digits(Random.Range(0, 99));
 			else
-				_MilisecondsText.text = S_PlayerScore.DisplayIn2Digits((int)Score._milliseconds);
+				_MilisecondsText.text = S_S_MoreMaths.DisplayIn2Digits((int)Score._milliseconds);
 
 			if (count < secondsForLockInOfElement[3])
-				_RingsGainedText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 999));
+				_RingsGainedText.text = S_S_MoreMaths.DisplayIn2Digits(Random.Range(0, 999));
 			else
-				_RingsGainedText.text = S_PlayerScore.DisplayIn2Digits((int)Score._ringScoreGained);
+				_RingsGainedText.text = S_S_MoreMaths.DisplayIn2Digits((int)Score._ringScoreGained);
 
 			if (count < secondsForLockInOfElement[4])
-				_RingsLostText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 999));
+				_RingsLostText.text = S_S_MoreMaths.DisplayIn2Digits(Random.Range(0, 999));
 			else
-				_RingsLostText.text = S_PlayerScore.DisplayIn2Digits((int)Score._ringScoreLost);
+				_RingsLostText.text = S_S_MoreMaths.DisplayIn2Digits((int)Score._ringScoreLost);
 
 		}
 

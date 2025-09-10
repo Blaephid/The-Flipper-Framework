@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class S_SpawnCharacter : S_Vis_Base
 {
-	[NonSerialized] public static bool s_CanSpawnNow = true;
+	[NonSerialized] public static bool s_CanSpawn = true;
 
 
 #if UNITY_EDITOR
@@ -29,7 +29,7 @@ public class S_SpawnCharacter : S_Vis_Base
 	[Header("Stage Info")]
 	public S_O_CharactersForMenu      _DefaultCharacter;
 	public CinemachineBrain _CameraBrain;
-	public S_O_StageScenes _StageInfo;
+	public S_O_StageInfo _StageInfo;
 	public AudioSource _MusicPlayer;
 	public GameObject _PostProcessing;
 
@@ -97,7 +97,7 @@ public class S_SpawnCharacter : S_Vis_Base
 
 	//If loading a scene directly in editor, s_CanSpawn will be true, but if loading in from a loading screen, it will not be true until every main scene is loaded in.
 	IEnumerator WaitUntilCanSpawn () {
-		while (!s_CanSpawnNow)
+		while (!s_CanSpawn)
 		{
 			yield return new WaitForEndOfFrame();
 		}

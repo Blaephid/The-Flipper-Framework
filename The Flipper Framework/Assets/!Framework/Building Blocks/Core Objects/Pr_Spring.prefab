@@ -107,12 +107,13 @@ MonoBehaviour:
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
   _hasDataChanged: 1
   _launchData_:
+    _frameDelay: 0
     _force_: 100
     _direction_: {x: 0, y: 1, z: 0}
     _directionToUse_: {x: 0, y: 1, z: 0}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
-    _useCore: 0
-    _frameDelay: 0
+    _coreVelocityImportance: 0.337
+    _delayGroundedFor: 8
     _lockInputFrames_: 55
     _lockAirMovesFrames_: 30
     _lockInputTo_: 1
@@ -778,22 +779,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.2727475
+      value: 0.05656086
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0676204
+      value: -0.0014933271
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.9315054
+      value: 0.9980503
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.23094164
+      value: 0.026350647
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

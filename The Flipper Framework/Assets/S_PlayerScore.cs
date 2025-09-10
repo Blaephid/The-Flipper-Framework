@@ -7,7 +7,7 @@ public class S_PlayerScore : S_Player_Base
 {
 
 	//Ranks
-	[NonSerialized] public S_O_StageScenes _StageInfo;
+	[NonSerialized] public S_O_StageInfo _StageInfo;
 	int _timeRank;
 	int _ringsRank;
 	[NonSerialized] public string _ringsRankText;
@@ -64,20 +64,18 @@ public class S_PlayerScore : S_Player_Base
 		_milliseconds = _seconds - (int)_seconds;
 		_milliseconds = (int)(_milliseconds * 100);
 
+		Vector3 timeVector = S_S_MoreMaths.ConvertFloatTimeToMinutesVector(_trueTime);
+
 		//To prevent TMPros becoming too narrow.
-		string displayMinutes = DisplayIn2Digits(_minutes);
-		string displaySeconds = DisplayIn2Digits((int)_seconds);
-		string displayMilli = DisplayIn2Digits((int)_milliseconds);
+		string displayMinutes = S_S_MoreMaths.DisplayIn2Digits((int)timeVector.x);
+		string displaySeconds = S_S_MoreMaths.DisplayIn2Digits((int)timeVector.y);
+		string displayMilli = S_S_MoreMaths.DisplayIn2Digits((int)timeVector.z);
 
 		_CoreUIElements.MillisecondsText.text = displayMilli;
 		_CoreUIElements.SecondsText.text = displaySeconds;
 		_CoreUIElements.MinutesText.text = displayMinutes;
 
 		return;
-	}
-
-	public static string DisplayIn2Digits ( int value ) {
-		return value >= 10 ? value.ToString() : "0" + value.ToString();
 	}
 
 	#endregion
@@ -92,7 +90,7 @@ public class S_PlayerScore : S_Player_Base
 		else
 		{
 			float lossPriority = 0.85f;
-			_ringScore -= (int)(change * lossPriority);
+			_ringScore += (int)(change * lossPriority);
 			_ringScoreLost += Mathf.Abs(change * lossPriority);
 		}
 	}
@@ -124,30 +122,30 @@ public class S_PlayerScore : S_Player_Base
 
 	//Add a time rank point for each level.
 	private void CheckTimeRank () {
-		if (_trueTime <= _StageInfo._Ranks.Time_DRank) { _timeRank++; }
+		if (_trueTime <= _StageInfo._Ranks.TimeTotal_DRank) { _timeRank++; }
 		else { return; }
-		if (_trueTime < _StageInfo._Ranks.Time_CRank) { _timeRank++; }
+		if (_trueTime <= _StageInfo._Ranks.TimeTotal_CRank) { _timeRank++; }
 		else { return; }
-		if (_trueTime < _StageInfo._Ranks.Time_BRank) { _timeRank++; }
+		if (_trueTime <= _StageInfo._Ranks.TimeTotal_BRank) { _timeRank++; }
 		else { return; }
-		if (_trueTime < _StageInfo._Ranks.Time_ARank) { _timeRank++; }
+		if (_trueTime <= _StageInfo._Ranks.TimeTotal_ARank) { _timeRank++; }
 		else { return; }
-		if (_trueTime < _StageInfo._Ranks.Time_SRank) { _timeRank++; }
+		if (_trueTime <= _StageInfo._Ranks.TimeTotal_SRank) { _timeRank++; }
 		else { return; }
-		if (_trueTime < _StageInfo._Ranks.Time_XRank) { _timeRank++; }
+		if (_trueTime <= _StageInfo._Ranks.TimeTotal_XRank) { _timeRank++; }
 		else { return; }
 	}
 
 	private void CheckRingsRank () {
 		if (_ringScore >= _StageInfo._Ranks.Rings_DRank) { _ringsRank++; }
 		else { return; }
-		if (_ringScore > _StageInfo._Ranks.Rings_CRank) { _ringsRank++; }
+		if (_ringScore >= _StageInfo._Ranks.Rings_CRank) { _ringsRank++; }
 		else { return; }
-		if (_ringScore > _StageInfo._Ranks.Rings_BRank) { _ringsRank++; }
+		if (_ringScore >= _StageInfo._Ranks.Rings_BRank) { _ringsRank++; }
 		else { return; }
-		if (_ringScore > _StageInfo._Ranks.Rings_ARank) { _ringsRank++; }
+		if (_ringScore >= _StageInfo._Ranks.Rings_ARank) { _ringsRank++; }
 		else { return; }
-		if (_ringScore > _StageInfo._Ranks.Rings_SRank) { _ringsRank++; }
+		if (_ringScore >= _StageInfo._Ranks.Rings_SRank) { _ringsRank++; }
 		else { return; }
 	}
 

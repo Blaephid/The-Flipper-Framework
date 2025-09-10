@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -708,9 +708,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Measurers: {fileID: 1611128991}
   _delayBeforeMeasurersEnter: 5
-  _sceneToGoToOnStart: {fileID: 11400000, guid: 4834d45cb38ca6d418b1cbf2262372e3,
-    type: 2}
-  _framesBeforeLoading: 30
+  _sceneToGoToOnStart:
+    m_SceneAsset: {fileID: 102900000, guid: 5676cf941754d7b45bd92c1841a071df, type: 3}
+    m_SceneName: Sc_FlipperStageSelect
+  _secondsBeforeLoading: 0.6
   _AudioOnStart: {fileID: 0}
   _BlackFade: {fileID: 1417137427}
   _framesToFadeInOnLoad: 30

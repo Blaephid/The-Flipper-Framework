@@ -214,7 +214,7 @@ public class S_PlayerVelocity : S_Player_Base
 		}
 		//World velocity is the actual rigidbody velocity found at the start of the frame, edited here if needed, with some of the removed velocity reapplied.
 		_worldVelocity = velocityThisFrame + _velocityToCarryOntoNextFrame;
-		_worldDirection = _worldVelocity.sqrMagnitude > 2 ? _worldVelocity.normalized : _MainSkin.forward;
+		_worldDirection = _worldVelocity.sqrMagnitude > 4 ? _worldVelocity.normalized : _MainSkin.forward;
 
 		_velocityToCarryOntoNextFrame = Vector3.zero;
 		_velocityToNotCountWhenCheckingForAChange = Vector3.zero; //So this can be increased over this update, then checked again at the start of this method.

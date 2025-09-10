@@ -60,6 +60,9 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -81,6 +84,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -168,11 +172,13 @@ MonoBehaviour:
   _hasDataChanged: 1
   source: Dash Ring
   _launchData_:
+    _frameDelay: 0
     _force_: 100
     _direction_: {x: 0, y: 0, z: 1}
     _directionToUse_: {x: 0, y: 0, z: -1}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
-    _useCore: 0
+    _coreVelocityImportance: 1
+    _delayGroundedFor: 8
     _lockInputFrames_: 30
     _lockAirMovesFrames_: 30
     _lockInputTo_: 2
@@ -213,8 +219,8 @@ MonoBehaviour:
   _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
     type: 2}
   _ShotCenter: {fileID: 4000013130497754}
-  _coreVelAtEnd: {x: 0, y: -159.29991, z: -45.25}
-  _environmentalVelAtStart: {x: 0, y: 0, z: -100}
+  _coreVelAtEnd: {x: 0, y: -159.29991, z: -46.25}
+  _environmentalVelAtStart: {x: 0, y: 0, z: -98}
 --- !u!82 &82000010483717982
 AudioSource:
   m_ObjectHideFlags: 0
@@ -226,7 +232,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 7ed4a1d0ecd9d4843a847c0dbf19c4cb, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 7ed4a1d0ecd9d4843a847c0dbf19c4cb, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -407,22 +413,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.070880614
+      value: -0.7087951
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.003332126
+      value: -0.026215104
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.9963789
+      value: -0.70444554
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.046840172
+      value: 0.026054239
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

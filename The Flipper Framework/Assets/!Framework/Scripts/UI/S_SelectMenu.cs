@@ -30,7 +30,7 @@ public class S_SelectMenu : MonoBehaviour
 	[NonSerialized]
 	public S_O_CharactersForMenu _SelectedCharacter;
 	[NonSerialized]
-	public S_O_StageScenes _SelectedStageObject;
+	public S_O_StageInfo _SelectedStageObject;
 	private bool _hasSelectedStage = false;
 
 	private bool _isLoadingStage = false;
@@ -67,7 +67,7 @@ public class S_SelectMenu : MonoBehaviour
 	}
 
 
-	public void AssignStageObject ( S_O_StageScenes LevelSceneObject ) {
+	public void AssignStageObject ( S_O_StageInfo LevelSceneObject ) {
 		_SelectedStageObject = LevelSceneObject;
 		_hasSelectedStage = true;
 		if(_StageNameText)
@@ -103,7 +103,7 @@ public class S_SelectMenu : MonoBehaviour
 		_isLoadingStage = true;
 		_StageScreenObject.SetActive(true);
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_StageScreenAnimator, "Enter", 0, _secondsBeforeStageScreen));
-		StartCoroutine(S_TitleScreenControl.DelayMovingToNextScene(_SelectedStageObject, _secondsBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Overworld, OnLoad));
+		StartCoroutine(S_TitleScreenControl.DelayMovingToNextScene(_SelectedStageObject, null, _secondsBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Overworld, OnLoad));
 	}
 
 	private void OnDestroy () {

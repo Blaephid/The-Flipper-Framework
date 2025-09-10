@@ -129,6 +129,7 @@ public class S_AddOnRail : MonoBehaviour
 			if(TryGetComponent(out S_SplineMeshTiling MeshTiling))
 			{
 				Vector3 baseOffset = MeshTiling.translation;
+				baseOffset.y = 0;
 				Vector3 getDirection = (newDirection - newPosition).normalized;
 
 				Vector3 upOffset = newUp * baseOffset.y;

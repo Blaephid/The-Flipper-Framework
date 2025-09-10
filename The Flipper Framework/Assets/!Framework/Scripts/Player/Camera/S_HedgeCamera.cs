@@ -69,7 +69,8 @@ public class S_HedgeCamera : MonoBehaviour
 
 	[HideInInspector]
 	public float                  _cameraMaxDistance_ = 11;
-	private AnimationCurve        _cameraDistanceBySpeed_;
+	private AnimationCurve        _distanceBySpeed_;
+	private AnimationCurve        _distanceByAngleAgainstVelocity_;
 	[NonSerialized] public bool                  _shouldAffectDistanceBySpeed_;
 	[NonSerialized] public Vector2               _angleThreshold_;
 
@@ -132,6 +133,8 @@ public class S_HedgeCamera : MonoBehaviour
 
 	private float                 _changeY;
 	private float                 _changeX;
+
+	private float                   _angleAgainstCharacter;
 
 	Quaternion                    _lerpedRot;
 
@@ -201,6 +204,8 @@ public class S_HedgeCamera : MonoBehaviour
 	[HideInInspector]
 	public float                 _distanceModifier = 1;
 	[HideInInspector]
+	public float                 _distanceModifier2 = 1;
+	[HideInInspector]
 	public float                 _FOVModifier = 1;
 
 	[HideInInspector]
@@ -263,7 +268,7 @@ public class S_HedgeCamera : MonoBehaviour
 		ApplyCameraEffects();
 
 		ConfirmCameraChanges();
-		ChangeBasedOnFacing();
+		CheckCharacterMovingTowardsCamera();
 		HandleCameraDistance();
 
 		_previousPosition = transform.position;
@@ -426,17 +431,17 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	//Changes variables and elements to the camera movement depending if the player is moving towards or away from it.
-	void ChangeBasedOnFacing () {
+	void CheckCharacterMovingTowardsCamera () {
 		//Get player and camera direction without vertical since vertical damping is not used.
-		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerVel._worldVelocity);
+		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerVel._worldDirection);
 		playerVelocity.y = 0;
 		Vector3 cameraDirectionWithoutY = _PlayerTransformCopy.InverseTransformDirection(transform.forward);
 		cameraDirectionWithoutY.y = 0;
 
-		float angle = Vector3.Angle(playerVelocity, cameraDirectionWithoutY);
+		_angleAgainstCharacter = Vector3.Angle(playerVelocity, cameraDirectionWithoutY);
 
 		//If camera is facing same way as player, following behind.
-		if (angle < 90)
+		if (_angleAgainstCharacter < 90)
 		{
 			_Transposer.m_XDamping = _dampingBehind_.x;
 			_Transposer.m_ZDamping = _dampingBehind_.z;
@@ -455,17 +460,18 @@ public class S_HedgeCamera : MonoBehaviour
 	void HandleCameraDistance () {
 
 		//Set up variables to limit the view changes.
-		Vector3 actionModifier = GetDistanceModifiedByAction();
-		float minValue = actionModifier.x;
-		float maxValue = actionModifier.z;
-		float speedPercentage = Mathf.Clamp((_PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed) * actionModifier.y, minValue, maxValue);
+		float actionModifier = GetDistanceModifiedByAction();
+		float speedPercentage = (_PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed) * actionModifier;
 
 		//Pushes camera further away from character at higher speeds, allowing more control and sense of movement
 		if (_shouldAffectDistanceBySpeed_)
 		{
-			float targetDistanceModi = _cameraDistanceBySpeed_.Evaluate(speedPercentage);
+			float targetDistanceModi = _distanceBySpeed_.Evaluate(speedPercentage);
 			_distanceModifier = Mathf.Lerp(_distanceModifier, targetDistanceModi, 0.1f);
 		}
+
+		float targetDistanceModi2 = _distanceByAngleAgainstVelocity_.Evaluate(_angleAgainstCharacter);
+		_distanceModifier2 = Mathf.Lerp(_distanceModifier2, targetDistanceModi2, 0.05f);
 
 		//To make the player feel faster than they are, changes camera Field Of View based on speed.
 		if (_shouldAffectFOVBySpeed_)
@@ -476,6 +482,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 		//If the _can values are false, modifiers will still be calculated, just not applied. This ensures smooth transitions when toggling these.
 		float useDistanceModifier = _canAffectDistanceBySpeed ? _distanceModifier : 1;
+		useDistanceModifier *= _distanceModifier2;
 		float useFOVModifier = _canAffectFOVBySpeed ? _FOVModifier : 1;
 
 		float dist = _cameraMaxDistance_ * useDistanceModifier;
@@ -513,13 +520,17 @@ public class S_HedgeCamera : MonoBehaviour
 	}
 
 	//The distance and FOV the camera changes can depend on the action (where some require greater zoom out). This returns the modifier, and min and max values.
-	private Vector3 GetDistanceModifiedByAction () {
+	private float GetDistanceModifiedByAction () {
 		switch (_Actions._whatCurrentAction)
 		{
-			default:
-				return new Vector3(0, 1, 1);
 			case S_S_ActionHandling.PrimaryPlayerStates.WallClimbing:
-				return new Vector3(0.6f, 1.3f, 1);
+				return 1.2f;
+			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
+				return 1.4f;
+			case S_S_ActionHandling.PrimaryPlayerStates.JumpDash:
+				return 1.3f;
+			default:
+				return 1;
 		}
 	}
 
@@ -1050,7 +1061,8 @@ public class S_HedgeCamera : MonoBehaviour
 		_fallSpeedThreshold_ = _Tools.CameraStats.AutoLookDownStats.FallSpeedThreshold;
 
 		_cameraMaxDistance_ = _Tools.CameraStats.DistanceStats.CameraDistance;
-		_cameraDistanceBySpeed_ = _Tools.CameraStats.DistanceStats.cameraDistanceBySpeed;
+		_distanceBySpeed_ = _Tools.CameraStats.DistanceStats.distanceByRunningSpeed;
+		_distanceByAngleAgainstVelocity_ = _Tools.CameraStats.DistanceStats.distanceByAngleAgainstCharacter;
 		_shouldAffectDistanceBySpeed_ = _Tools.CameraStats.DistanceStats.shouldAffectDistancebySpeed;
 		_VirtualCamera.GetComponent<CinemachineCollider>().m_CollideAgainst = _Tools.CameraStats.DistanceStats.CollidableLayers;
 		_CollidableLayers_ = _Tools.CameraStats.DistanceStats.CollidableLayers;

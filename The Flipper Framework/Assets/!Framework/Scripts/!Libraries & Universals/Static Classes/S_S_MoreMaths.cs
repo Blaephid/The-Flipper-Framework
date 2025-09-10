@@ -73,4 +73,26 @@ public class S_S_MoreMaths
 		return (int)result;
 	}
 	#endregion
+
+	//	Time
+	#region TIME
+
+	public static Vector3 ConvertFloatTimeToMinutesVector ( float time ) {
+		float minutes = (int)time / (int)60;
+		float seconds = (int)time - minutes;
+		float milliseconds = time - (minutes * seconds) - seconds;
+
+		return new Vector3(minutes, seconds, milliseconds);
+	}
+
+	public static float ConvertVectorMinutesTimeToTotalTime ( Vector3 time ) {
+		float totalTime = (time.x * 60) + time.y + (time.z / 100);
+
+		return totalTime;
+	}
+
+	public static string DisplayIn2Digits ( int value ) {
+		return value >= 10 ? value.ToString() : "0" + value.ToString();
+	}
+	#endregion
 }

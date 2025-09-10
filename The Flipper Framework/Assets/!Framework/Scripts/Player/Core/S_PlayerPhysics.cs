@@ -145,7 +145,7 @@ public class S_PlayerPhysics : S_Player_Base
 	[HideInInspector]
 	public Vector3                _groundNormal;
 	private List<Vector3>              _listOfPreviousGroundNormals = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3 (0,0,0)};        //Used to prevent the player jittering between two different upwards direction due to matching the rotation of one making the other be detected.
-	private Vector3               _keepNormal;        //Used when in the air to remember up direction when the ground was lost.
+	[NonSerialized] public Vector3               _keepNormal;        //Used when in the air to remember up direction when the ground was lost.
 	private float                 _groundingDelay;    //Set when ground is lost and can't enter grounded state again until it's over.
 	[HideInInspector]
 	public float                  _timeOnGround;
@@ -397,6 +397,11 @@ public class S_PlayerPhysics : S_Player_Base
 				Vector3 offsetFromCenterForCheck = _PlayerVel._horizontalSpeedMagnitude > 30 ? _PlayerVel._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.8f; //The offset from the main check that will rotate
 				Vector3 startForward = offsetFromCenterForCheck;
 
+				float forwardBoundary = Mathf.Cos(75 * Mathf.Deg2Rad); //Ground in front is more important than ground on the side.
+				float sideBoundary = Mathf.Cos(55 * Mathf.Deg2Rad); //Use Cos to get a dot that can be compared as calling .Angle for each check is expensive.
+				Vector2 countsAsSide = new Vector2(55, 120);
+
+
 				for (int i = 0 ; i < checksAtRotations.Length * distances.Length ; i++)
 				{
 					int distancesLevel = i / (checksAtRotations.Length); //First round is at first index, second round is at second index.
@@ -419,17 +424,16 @@ public class S_PlayerPhysics : S_Player_Base
 					{
 						Vector3 thisNormal = hitSecondTemp.normal;
 
-						//If this instance is too much of an outlier, ignore it because it is probably a wall.
-						//A slope behind or infront should be of higher priority than a slope on the side.
-						float boundary = 0.75f; float importance = 1;
+						float boundary = forwardBoundary; float importance = 1;
 
 						//if on side
-						if (Vector3.Angle(startForward, offsetFromCenterForCheck) > 40 && Vector3.Angle(startForward, offsetFromCenterForCheck) < 140)
+						if (Vector3.Angle(startForward, offsetFromCenterForCheck) > countsAsSide.x && Vector3.Angle(startForward, offsetFromCenterForCheck) < countsAsSide.y)
 						{
-							boundary = 0.45f; importance = 0.7f;
+							boundary = sideBoundary; importance = 0.85f;
 						}
 
-						if (Mathf.Abs(firstGroundHit.normal.y - thisNormal.y) < boundary)
+						//Only add if this instance is not too great an outlier, like a wall.
+						if((Vector3.Dot(firstGroundHit.normal, thisNormal) > boundary))
 							tempNormal += (thisNormal * importance);
 					}
 				}
@@ -925,6 +929,8 @@ public class S_PlayerPhysics : S_Player_Base
 	public void SetIsGrounded ( bool value, float timer = 0 ) {
 		if (_isGrounded != value)
 		{
+			Debug.Log("Set grounded to " + false);
+
 			_isGrounded = value;
 
 			_timeOnGround = 0;
@@ -972,7 +978,7 @@ public class S_PlayerPhysics : S_Player_Base
 		if (shouldPrintLocation) Debug.Log("Change Position to  " + newPosition + " On frame " + _fixedFrameCount);
 	}
 
-	public void SetPlayerRotation ( Quaternion newRotation, bool immediately = false, bool shouldPrintRotation = false ) {
+	public void SetPlayerRotation ( Quaternion newRotation, bool immediately = false, bool shouldPrintRotation = true ) {
 		if (immediately)
 			transform.rotation = newRotation;
 		//Using rigidBody is smoother but wont take effect this frame, so if you need to rotate for specific calculations, change the transform.

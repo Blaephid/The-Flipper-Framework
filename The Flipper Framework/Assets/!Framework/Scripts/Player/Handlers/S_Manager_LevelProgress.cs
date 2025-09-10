@@ -142,12 +142,15 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_Tools.GetComponent<PlayerInput>().SwitchCurrentActionMap("Stage Complete");
 
 		//Activates the stage complete screen.
-		_CoreUIElements._Root.SetActive(false);
-		_MainSkin.gameObject.SetActive(false);
-		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
-		_PlayerPhys._arePhysicsEnabled = false;
-
 		GoalRingData.OnStageEnd(_Score);
+
+		//Effects on character
+		_CoreUIElements._HudRoot.SetActive(false);
+		_MainSkin.gameObject.SetActive(false);
+
+		_PlayerPhys._arePhysicsEnabled = false;
+		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
+		_PlayerVel.SetTotalVelocity(); //Because fixedupdates will be called less, and physics are disabled
 	}
 
 	#endregion
@@ -227,7 +230,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_respawnTransform = transform;
 
 		StartCoroutine
-			(Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, Vector3.zero, transform, Objects.transform, launchData));
+			(Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, transform, Objects.transform, launchData));
 
 	}
 

@@ -222,12 +222,13 @@ MonoBehaviour:
   _AnimatorOnSpawn: {fileID: 0}
   _launch: 0
   _launchOnSpawnData_:
+    _frameDelay: 0
     _force_: 120
     _direction_: {x: 0, y: 0, z: 1}
     _directionToUse_: {x: 0, y: 0, z: 0}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
-    _useCore: 0
-    _frameDelay: 0
+    _coreVelocityImportance: 0.746
+    _delayGroundedFor: 0
     _lockInputFrames_: 80
     _lockAirMovesFrames_: 0
     _lockInputTo_: 0

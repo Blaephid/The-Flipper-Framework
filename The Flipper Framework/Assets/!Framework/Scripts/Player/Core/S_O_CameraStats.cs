@@ -86,17 +86,21 @@ public class S_O_CameraStats : ScriptableObject
 		{
 			CameraDistance = 8,
 			shouldAffectDistancebySpeed = true,
-			cameraDistanceBySpeed = new AnimationCurve(new Keyframe[]
+			distanceByRunningSpeed = new AnimationCurve(new Keyframe[]
 			{
-				new Keyframe(0, 0.8f),
-				new Keyframe(0.2f, 0.85f),
-				new Keyframe(0.3f, 1f),
-				new Keyframe(0.4f, 1f),
-				new Keyframe(0.6f, 1.2f),
-				new Keyframe(0.7f, 1.2f),
-				new Keyframe(0.8f, 1.35f),
-				new Keyframe(0.85f, 1.5f),
-				new Keyframe(1f, 1.5f),
+				new Keyframe(0, 1f),
+				new Keyframe(0.2f, 1.03f),
+				new Keyframe(0.5f, .7f),
+				new Keyframe(0.7f, 0.4f),
+				new Keyframe(1f, 0.3f),
+			}),
+			distanceByAngleAgainstCharacter = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0f, 1f),
+				new Keyframe(45, 1.2f),
+				new Keyframe(90f, 1f),
+				new Keyframe(180f, 1.45f),
+
 			}),
 			CollidableLayers = new LayerMask()
 		};
@@ -109,8 +113,10 @@ public class S_O_CameraStats : ScriptableObject
 		public float CameraDistance;
 		[Tooltip("If true, the camera distance will change depending on running speed.")]
 		public bool shouldAffectDistancebySpeed;
-		[Tooltip("Multiply distance by the x, obtained from current running speed.")]
-		public AnimationCurve cameraDistanceBySpeed;
+		[Tooltip("Multiply distance by the y, obtained from current running speed.")]
+		public AnimationCurve distanceByRunningSpeed;
+		[Tooltip("Multiply distance by the y, obtained from angle from behind player direction. So 0 is directly behind player, and 180 is when player is heading straight towards the camera.")]
+		public AnimationCurve distanceByAngleAgainstCharacter;
 		[Tooltip("Objects on this layer will force the camera closer to the player if blocking it from reaching its proper distance.")]
 		public LayerMask CollidableLayers;
 	}

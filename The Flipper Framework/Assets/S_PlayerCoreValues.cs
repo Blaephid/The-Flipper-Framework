@@ -133,7 +133,6 @@ public class S_PlayerCoreValues : S_Player_Base
 		proportionalSpeed = Mathf.Clamp(proportionalSpeed, 0, 1);
 		proportionalSpeed = _barFillBySpeed.Evaluate(proportionalSpeed);
 
-
 		_displaySpeed = LerpDisplayValue(proportionalSpeed, ref _prevDisplaySpeed);
 		_CoreUIElements.SpeedBar.fillAmount = _displaySpeed;
 	}

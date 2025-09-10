@@ -21,7 +21,7 @@ public class S_Spawn_UI : MonoBehaviour
 	public struct StrucCoreUIElements
 	{
 		[Header("General")]
-		[ColourIfNullAttribute(.8f, 0,0, 1)]    public GameObject       _Root;
+		[ColourIfNullAttribute(.8f, 0,0, 1)]    public GameObject       _HudRoot;
 		[ColourIfNullAttribute(.8f, 0,0, 1)]    public S_HomingIcon	_HomingIconScript;
 		[ColourIfNullAttribute(.8f, 0,0, 1)]    public GameObject       _HomingIconObject;
 		[Header("Gauge")]

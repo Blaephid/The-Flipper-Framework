@@ -7,6 +7,9 @@ using UnityEngine.SocialPlatforms.Impl;
 
 [Serializable]
 public class LaunchPlayerData {
+	[Tooltip("Wont calculate launch until this many frames have passed, useful for specific scripted moments.")]
+	public int _frameDelay;
+
 	[Header ("Physics")]
 	[Tooltip("The magnitude of the environmental velocity added to player.")]
 	public float	_force_;
@@ -14,11 +17,16 @@ public class LaunchPlayerData {
 	public Vector3 _direction_;
 	[CustomReadOnly]
 	public Vector3 _directionToUse_;
+	[Tooltip("If null, uses gameObject, if set to a transform then the player launches from this position, snapping to it beforehand.")]
+	public Transform _shotOrigin;
 
+	[Header("Overwrite Values")]
 	[Tooltip("Since characters can have different gravities. If this is not zero, the player gravity will be this until they hit the ground.")]
 	public Vector3 _overwriteGravity_;
-	public bool _useCore;
-	public int _frameDelay;
+	[Tooltip("How much of the launch should be applied as core velocity (which can be controlled or accelerated). Core velocity will always be overwritten if greater than launch force."), Range(0,1)]
+	public float _coreVelocityImportance;
+	[Tooltip("As some launchers are close to the ground, but must be aerial, this prevents the player being grounded until after launched a bit. Prevents adjusting velocity to ground.")]
+	public int _delayGroundedFor = 8;
 
 	[Header("Effects")]
 	[Tooltip("How many frames until the player regains control.")]
@@ -29,6 +37,7 @@ public class LaunchPlayerData {
 	[Tooltip("What the player's input will be during the frames their control is locked.")]
 	public S_GeneralEnums.LockControlDirection _lockInputTo_;
 
+	//Due to the world being calculated each frame in editor, ensure very value above is included here as well.
 	public static LaunchPlayerData SetLaunchDataToDirection ( Transform transformForRotation, LaunchPlayerData _launchData_ ) {
 
 		return new LaunchPlayerData()
@@ -40,8 +49,10 @@ public class LaunchPlayerData {
 			_lockAirMovesFrames_ = _launchData_._lockAirMovesFrames_,
 			_overwriteGravity_ = _launchData_._overwriteGravity_,
 			_lockInputTo_ = _launchData_._lockInputTo_,
-			_useCore = _launchData_._useCore,
+			_coreVelocityImportance = _launchData_._coreVelocityImportance,
 			_frameDelay = _launchData_._frameDelay,
+			_delayGroundedFor = _launchData_._delayGroundedFor,
+			_shotOrigin = _launchData_._shotOrigin,
 		};
 
 	}

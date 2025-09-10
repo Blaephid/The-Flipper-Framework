@@ -306,7 +306,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: dc6f281d3d120aa4da6c7e2b3f656ba5,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: S_O_StageScenes, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: S_O_StageInfo, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: Sc_AltitudeLimit
@@ -638,7 +638,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: 14ad1e28b438e3242ad3935eab43731f,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: S_O_StageScenes, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: S_O_StageInfo, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1022,7 +1022,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: b7b3453a0d6ceec49abf159176c700dc,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: S_O_StageScenes, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: S_O_StageInfo, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: Sc_Showroom
