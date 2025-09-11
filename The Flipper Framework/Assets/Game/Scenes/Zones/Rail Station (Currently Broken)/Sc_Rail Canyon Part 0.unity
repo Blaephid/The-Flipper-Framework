@@ -938,6 +938,11 @@ PrefabInstance:
       objectReference: {fileID: 2009196946}
     - target: {fileID: 5154311999330725752, guid: b22c4f561cfa1fc43aa285fddf2e3f4e,
         type: 3}
+      propertyPath: m_Name
+      value: StageComplete Cam
+      objectReference: {fileID: 0}
+    - target: {fileID: 5154311999330725752, guid: b22c4f561cfa1fc43aa285fddf2e3f4e,
+        type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -1046,7 +1051,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 24.039
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5842665369282444167, guid: b22c4f561cfa1fc43aa285fddf2e3f4e, type: 3}
+    - {fileID: 8163109667126233670, guid: b22c4f561cfa1fc43aa285fddf2e3f4e, type: 3}
+    - {fileID: 7021728777735844784, guid: b22c4f561cfa1fc43aa285fddf2e3f4e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1902,7 +1910,10 @@ PrefabInstance:
       propertyPath: _environmentalVelAtStart.z
       value: -1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5459477568774567904, guid: e1180a0a56256ef48bde3844e985b3e8, type: 3}
+    - {fileID: 5900860811238589158, guid: e1180a0a56256ef48bde3844e985b3e8, type: 3}
+    - {fileID: 2970299666251488224, guid: e1180a0a56256ef48bde3844e985b3e8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

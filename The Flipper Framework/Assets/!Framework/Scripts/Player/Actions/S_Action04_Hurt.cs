@@ -97,7 +97,7 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 			_Sounds.BonkSound();
 		else
 		{
-			_Sounds.HitSound(); //If not frontier reaction (where ring loss is delayed), this will be overwritten by ring long sound.
+			_Sounds.HitSound();
 			_Sounds.PainVoicePlay();
 		}
 

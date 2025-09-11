@@ -1349,7 +1349,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -2047,7 +2047,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -3215,7 +3215,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -6876,7 +6876,10 @@ PrefabInstance:
       propertyPath: m_DefaultBlend.m_CustomCurve.m_Curve.Array.size
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5459477568774567904, guid: e1180a0a56256ef48bde3844e985b3e8, type: 3}
+    - {fileID: 5900860811238589158, guid: e1180a0a56256ef48bde3844e985b3e8, type: 3}
+    - {fileID: 2970299666251488224, guid: e1180a0a56256ef48bde3844e985b3e8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -7094,7 +7097,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Spline: {fileID: 1884034878}
-  _toUpdate: 0
+  _toUpdate: 1
   _movingCurves: 0
   UpdateButton: 0
   DataResetButton: 0
@@ -9536,7 +9539,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -18425,7 +18428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Spline: {fileID: 1884034878}
-  _toUpdate: 0
+  _toUpdate: 1
   _movingCurves: 0
   UpdateButton: 0
   DataResetButton: 0
@@ -18875,7 +18878,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -20303,7 +20306,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -23225,7 +23228,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -24935,7 +24938,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -25638,7 +25641,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -32663,7 +32666,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -33422,6 +33425,56 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2677301294458166405, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: TrackerSettings.BindingMode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2677301294458166405, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: TrackerSettings.PositionDamping.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2677301294458166405, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: TrackerSettings.PositionDamping.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2677301294458166405, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: TrackerSettings.PositionDamping.z
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3587227360699244136, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_DeadZoneWidth
+      value: 0.409
+      objectReference: {fileID: 0}
+    - target: {fileID: 3587227360699244136, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_SoftZoneWidth
+      value: 1.025
+      objectReference: {fileID: 0}
+    - target: {fileID: 3587227360699244136, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_DeadZoneHeight
+      value: 0.139
+      objectReference: {fileID: 0}
+    - target: {fileID: 3587227360699244136, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_SoftZoneHeight
+      value: 0.702
+      objectReference: {fileID: 0}
+    - target: {fileID: 3587227360699244136, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_VerticalDamping
+      value: 5.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 3587227360699244136, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_HorizontalDamping
+      value: 5.16
+      objectReference: {fileID: 0}
     - target: {fileID: 6276180953404390346, guid: b42e04ca8fbf19244a302cc20b0170c5,
         type: 3}
       propertyPath: m_DeadZoneWidth
@@ -33692,7 +33745,65 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6276180955197928734, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_Name
+      value: Cool Cam
+      objectReference: {fileID: 0}
+    - target: {fileID: 8393379359272050552, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_XDamping
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8393379359272050552, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_YDamping
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8393379359272050552, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_ZDamping
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8393379359272050552, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: m_BindingMode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074517066068726699, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: Damping.x
+      value: 5.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074517066068726699, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: Damping.y
+      value: 5.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074517066068726699, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: Composition.DeadZone.Size.x
+      value: 0.409
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074517066068726699, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: Composition.DeadZone.Size.y
+      value: 0.139
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074517066068726699, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: Composition.HardLimits.Size.x
+      value: 1.025
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074517066068726699, guid: b42e04ca8fbf19244a302cc20b0170c5,
+        type: 3}
+      propertyPath: Composition.HardLimits.Size.y
+      value: 0.702
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6276180955197928732, guid: b42e04ca8fbf19244a302cc20b0170c5, type: 3}
+    - {fileID: 3587227360699244136, guid: b42e04ca8fbf19244a302cc20b0170c5, type: 3}
+    - {fileID: 8393379359272050552, guid: b42e04ca8fbf19244a302cc20b0170c5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -36035,7 +36146,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -43816,7 +43927,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Spline: {fileID: 1884034878}
-  _toUpdate: 0
+  _toUpdate: 1
   _movingCurves: 0
   UpdateButton: 0
   DataResetButton: 0
@@ -52801,7 +52912,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -55766,7 +55877,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -58634,7 +58745,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -61045,7 +61156,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.9811321, g: 0.6004328, b: 0.254539, a: 1}
   _selectedOutlineColour: {r: 0.8301887, g: 0.34545657, b: 0, a: 1}
   _selectedFillColour: {r: 0.764151, g: 0.54314846, b: 0.032440357, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _whatTriggerShape: 0
   _PlayerTools: {fileID: 0}
   _isExit_: 0
@@ -62895,7 +63006,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -63607,7 +63718,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
-  _hasDataChanged: 0
+  _hasDataChanged: 1
   _SpawnerData:
     _TeleportSparkle: {fileID: 1000010740309330, guid: 3942fad4ef49b25488a40273be03693d,
       type: 3}
@@ -66328,7 +66439,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5842665369282444167, guid: b22c4f561cfa1fc43aa285fddf2e3f4e, type: 3}
+    - {fileID: 8163109667126233670, guid: b22c4f561cfa1fc43aa285fddf2e3f4e, type: 3}
+    - {fileID: 7021728777735844784, guid: b22c4f561cfa1fc43aa285fddf2e3f4e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

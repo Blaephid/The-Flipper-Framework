@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class S_Control_SoundsPlayer : S_Player_Base
 {
+	private bool _isActive;
 
 	[Header("Audio Sources")]
 	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource  FeetSource;
@@ -53,7 +55,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 	public AudioClip Clip_DIe;
 	public AudioClip Clip_Spiked;
 	public AudioClip Clip_Bonk;
-	public AudioClip Clip_HitByDanger;
+	public GameObject Ob_HitByDanger;
 
 	[Header("Additional SFX")]
 	public GameObject _LevelUpSound;
@@ -76,12 +78,23 @@ public class S_Control_SoundsPlayer : S_Player_Base
 			WindSource.volume = 0;
 		}
 
+		S_Manager_LevelProgress.OnStageClear += EventStageClear;
 	}
 
 	#region update
 
 	private void Update () {
+		if(!_isActive) { return; }
 		HandleWindSound();
+	}
+
+	public void EventStageClear ( object sender, EventArgs e ) {
+		_isActive = false;
+		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 0.7f, 0));
+	}
+
+	private void OnDestroy () {
+		S_Manager_LevelProgress.OnStageClear -= EventStageClear;
 	}
 
 	private void HandleWindSound () {
@@ -106,17 +119,17 @@ public class S_Control_SoundsPlayer : S_Player_Base
 	#region VoiceSource
 
 	public void CombatVoicePlay () {
-		int rand = Random.Range(0, CombatVoiceClips.Length);
+		int rand = UnityEngine.Random.Range(0, CombatVoiceClips.Length);
 		VoiceSource.clip = CombatVoiceClips[rand];
 		VoiceSource.Play();
 	}
 	public void JumpingVoicePlay () {
-		int rand = Random.Range(0, JumpingVoiceClips.Length);
+		int rand = UnityEngine.Random.Range(0, JumpingVoiceClips.Length);
 		VoiceSource.clip = JumpingVoiceClips[rand];
 		VoiceSource.Play();
 	}
 	public void PainVoicePlay () {
-		int rand = Random.Range(0, PainVoiceClips.Length);
+		int rand = UnityEngine.Random.Range(0, PainVoiceClips.Length);
 		VoiceSource.clip = PainVoiceClips[rand];
 		VoiceSource.Play();
 	}
@@ -130,7 +143,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 		//if (FootSteps.Length > 0 && !FeetSource.isPlaying)
 		if (FootSteps.Length > 0)
 		{
-			int rand = Random.Range (0, FootSteps.Length);
+			int rand = UnityEngine.Random.Range (0, FootSteps.Length);
 			FeetSource.clip = FootSteps[rand];
 			FeetSource.Play();
 		}
@@ -205,10 +218,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 		DamageSource.clip = Clip_RingLoss;
 		DamageSource.Play();
 	}
-	public void HitSound () {
-		DamageSource.clip = Clip_HitByDanger;
-		DamageSource.Play();
-	}
+
 	public void BonkSound () {
 		DamageSource.clip = Clip_Bonk;
 		DamageSource.Play();
@@ -293,6 +303,9 @@ public class S_Control_SoundsPlayer : S_Player_Base
 
 	public void RailLandSound () {
 		Instantiate(Ob_RailLand, transform.position, transform.rotation);
+	}
+	public void HitSound () {
+		Instantiate(Ob_HitByDanger, transform.position, transform.rotation);
 	}
 
 	#endregion

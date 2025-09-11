@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static Cinemachine.AxisState;
+using static Unity.Cinemachine.InputAxis;
 
 public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 {

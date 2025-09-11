@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Cinemachine;
+using Unity.Cinemachine;
 using System;
 using UnityEditor;
 using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
@@ -16,7 +16,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 
 	[Header("Attached Elements")]
 	[Tooltip("Controls the properties of the cinemachine component, by setting it to follow or look at the player.")]
-	public CinemachineVirtualCamera         _CinematicCamComponent;
+	public CinemachineCamera         _CinematicCamComponent;
 	[Tooltip("The gameObject that will be set to active or inactive. Likely the same as the above.")]
 	public GameObject                       _CinematicCamObject;
 	private CinemachineBrain _MainCameraBrain;
@@ -102,7 +102,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 			Vector3 direction = (transform.position - _CinematicCamObject.transform.position).normalized;
 			if(direction != Vector3.zero) _CinematicCamObject.transform.forward = direction;
 
-			if(followPlayer) { _CinematicCamComponent.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = _CinematicCamObject.transform.position - transform.position; }
+			if(followPlayer) { _CinematicCamComponent.GetComponent<CinemachineFollow>().FollowOffset = _CinematicCamObject.transform.position - transform.position; }
 		}
 	}
 
@@ -185,10 +185,10 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 
 		if (frames != 0)
 		{
-			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, frames / 50f);
+			_MainCameraBrain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, frames / 50f);
 		}
 		else
-			_MainCameraBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0);
+			_MainCameraBrain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0);
 	}
 
 	public void ReturnOnDeath ( object sender, EventArgs e ) {

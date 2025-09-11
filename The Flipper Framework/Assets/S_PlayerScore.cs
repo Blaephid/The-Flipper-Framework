@@ -27,8 +27,8 @@ public class S_PlayerScore : S_Player_Base
 	[HideInInspector] public bool _paused;
 	[HideInInspector] public float _trueTime;
 	[HideInInspector] public int _minutes;
-	[HideInInspector] public float _seconds;
-	[HideInInspector] public float _milliseconds;
+	[HideInInspector] public int _seconds;
+	[HideInInspector] public int _milliseconds;
 
 	public static Dictionary<int, string> RankValueToLetter = new Dictionary<int, string>()
 	{
@@ -51,25 +51,18 @@ public class S_PlayerScore : S_Player_Base
 	//Time is displayed by three different TMPros.
 	private void UpdateTime () {
 		_trueTime += Time.deltaTime;
-		_seconds += Time.deltaTime;
 
 		_trueTime = Mathf.Min(_trueTime, 5999);
 
-		if (_seconds >= 60)
-		{
-			_minutes = Mathf.Min(_minutes + 1, 99);
-			_seconds -= 60;
-		}
-
-		_milliseconds = _seconds - (int)_seconds;
-		_milliseconds = (int)(_milliseconds * 100);
-
 		Vector3 timeVector = S_S_MoreMaths.ConvertFloatTimeToMinutesVector(_trueTime);
+		_minutes = (int)timeVector.x;
+		_seconds = (int)timeVector.y;
+		_milliseconds = (int)timeVector.z;
 
 		//To prevent TMPros becoming too narrow.
-		string displayMinutes = S_S_MoreMaths.DisplayIn2Digits((int)timeVector.x);
-		string displaySeconds = S_S_MoreMaths.DisplayIn2Digits((int)timeVector.y);
-		string displayMilli = S_S_MoreMaths.DisplayIn2Digits((int)timeVector.z);
+		string displayMinutes = S_S_MoreMaths.DisplayIntInStringDigits(_minutes);
+		string displaySeconds = S_S_MoreMaths.DisplayIntInStringDigits(_seconds);
+		string displayMilli = S_S_MoreMaths.DisplayIntInStringDigits(_milliseconds);
 
 		_CoreUIElements.MillisecondsText.text = displayMilli;
 		_CoreUIElements.SecondsText.text = displaySeconds;

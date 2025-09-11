@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Cinemachine;
+using Unity.Cinemachine;
 using System.Collections;
 using UnityEngine.Windows;
 using System;
@@ -11,7 +11,7 @@ public class S_Handler_Camera : MonoBehaviour
 {
 
 	public S_HedgeCamera          _HedgeCam;
-	public CinemachineVirtualCamera _VirtCam;
+	public CinemachineCamera _VirtCam;
 	private S_CharacterTools      _Tools;
 	private S_PlayerInput         _Input;
 	private S_PlayerPhysics       _PlayerPhys;

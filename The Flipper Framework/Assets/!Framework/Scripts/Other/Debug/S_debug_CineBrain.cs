@@ -1,4 +1,4 @@
-﻿using Cinemachine;
+﻿using Unity.Cinemachine;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -15,7 +15,7 @@ public class S_debug_CineBrain : MonoBehaviour
 		{
 			if (brain.ActiveVirtualCamera != null)
 			{
-				// ActiveVirtualCamera is an ICinemachineCamera, not necessarily a CinemachineVirtualCamera
+				// ActiveVirtualCamera is an ICinemachineCamera, not necessarily a CinemachineCamera
 				ICinemachineCamera activeCam = brain.ActiveVirtualCamera;
 				Debug.Log("Active VCam: " + activeCam.Name);
 			}

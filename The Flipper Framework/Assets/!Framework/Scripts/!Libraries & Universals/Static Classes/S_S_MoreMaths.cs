@@ -12,7 +12,7 @@ public class S_S_MoreMaths
 		return (Vector1 - Vector2).sqrMagnitude;
 	}
 
-	public static Vector3 TreatAxisAsZeroForVector(Vector3 vector, float clamp ) {
+	public static Vector3 TreatAxisAsZeroForVector ( Vector3 vector, float clamp ) {
 		if (Mathf.Abs(vector.x) < clamp) vector.x = 0;
 		if (Mathf.Abs(vector.y) < clamp) vector.y = 0;
 		if (Mathf.Abs(vector.z) < clamp) vector.z = 0;
@@ -30,8 +30,11 @@ public class S_S_MoreMaths
 		return Vector1;
 	}
 
-	public static Vector3 GetDirection ( Vector3 fromStart, Vector3 toEnd ) {
-		return (toEnd - fromStart).normalized;
+	public static Vector3 GetDirection ( Vector3 fromStart, Vector3 toEnd, bool normalize = true ) {
+		if (normalize)
+			return (toEnd - fromStart).normalized;
+		else
+			return (toEnd - fromStart);
 	}
 
 	//	Comparisons
@@ -79,8 +82,9 @@ public class S_S_MoreMaths
 
 	public static Vector3 ConvertFloatTimeToMinutesVector ( float time ) {
 		float minutes = (int)time / (int)60;
-		float seconds = (int)time - minutes;
-		float milliseconds = time - (minutes * seconds) - seconds;
+		float seconds = (int)time - (minutes * 60);
+		float milliseconds = time - (minutes * 60) - seconds;
+		milliseconds *= 100;
 
 		return new Vector3(minutes, seconds, milliseconds);
 	}
@@ -91,8 +95,10 @@ public class S_S_MoreMaths
 		return totalTime;
 	}
 
-	public static string DisplayIn2Digits ( int value ) {
-		return value >= 10 ? value.ToString() : "0" + value.ToString();
+	public static string DisplayIntInStringDigits ( int value, int characters = 2 ) {
+		string str = value >= 10 ? value.ToString() : "0" + value.ToString();
+		str = str.Substring(0, characters);
+		return str;
 	}
 	#endregion
 }

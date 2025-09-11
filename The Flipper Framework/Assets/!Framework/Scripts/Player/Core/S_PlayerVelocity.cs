@@ -26,7 +26,7 @@ public class S_PlayerVelocity : S_Player_Base
 	[HideInInspector]
 	public Vector3                _worldVelocity;               //This is set at the start of a frame as a temporary total velocity, based on the actual velocity in physics. So Total Velocity is set, then affected by collision after the FixedUpdate, then adjusted by TrackAndChangeVelocity, then set here.
 	[HideInInspector]
-	public Vector3                _worldDirection;
+	public Vector3                _totalDirection;
 	[HideInInspector]
 	public List<Vector3>          _previousVelocity = new List<Vector3>() {Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };           //The total velocity at the end of the previous TWO frames, compared to Unity physics at the start of a frame to see if anything major like collision has changed movement.
 
@@ -214,7 +214,8 @@ public class S_PlayerVelocity : S_Player_Base
 		}
 		//World velocity is the actual rigidbody velocity found at the start of the frame, edited here if needed, with some of the removed velocity reapplied.
 		_worldVelocity = velocityThisFrame + _velocityToCarryOntoNextFrame;
-		_worldDirection = _worldVelocity.sqrMagnitude > 4 ? _worldVelocity.normalized : _MainSkin.forward;
+		_totalDirection = _worldVelocity + _velocityToNotCountWhenCheckingForAChange; //To not count force on ground as intended direction
+		_totalDirection = _totalDirection.sqrMagnitude > 4 ? _totalDirection.normalized : _MainSkin.forward;
 
 		_velocityToCarryOntoNextFrame = Vector3.zero;
 		_velocityToNotCountWhenCheckingForAChange = Vector3.zero; //So this can be increased over this update, then checked again at the start of this method.

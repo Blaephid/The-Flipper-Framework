@@ -79,27 +79,34 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		HandleTrailsOnCharacter();
 	}
 
+	private void OnDisable () {
+		HandleSpeedLinesOnCharacter(0);
+		HandleSpeedLinesOnScreen(0);
+	}
+
 	//VFX
 	#region VFX
 
 	//Private
 
-	private void HandleSpeedLinesOnCharacter () {
+	private void HandleSpeedLinesOnCharacter (float currentSpeed = -1) {
+
+		currentSpeed = currentSpeed == -1 ? _PlayerVel._currentRunningSpeed : currentSpeed;
 
 		CheckIntensity(_SpeedLinesWind, _speedLinesThreshold.x);
 		CheckIntensity(_SpeedLinesCharacter, _speedLinesThreshold.y);
 		return;
 
 		void CheckIntensity (VisualEffect lines, float threshold) {
-			if (_PlayerVel._currentRunningSpeed > threshold)
+			if (currentSpeed > threshold)
 			{
 				lines.Play();
 
-				float intensity = _PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed;
+				float intensity = currentSpeed / _PlayerMovement._currentMaxSpeed;
 				lines.SetFloat("Intensity", intensity);
-				lines.SetFloat("Player Speed", _PlayerVel._currentRunningSpeed);
+				lines.SetFloat("Player Speed", currentSpeed);
 			}
-			else if (_PlayerVel._currentRunningSpeed < threshold - 2)
+			else if (currentSpeed < threshold - 2)
 			{
 				lines.Stop();
 			}
@@ -108,10 +115,13 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	}
 
 	//Controls and activates the anime style speedlines on the screen edges based on speed.
-	private void HandleSpeedLinesOnScreen () {
-		if (_PlayerVel._currentRunningSpeed > 50)
+	private void HandleSpeedLinesOnScreen (float currentSpeed = -1) {
+
+		currentSpeed = currentSpeed == -1 ? _PlayerVel._currentRunningSpeed : currentSpeed;
+
+		if (currentSpeed > 50)
 		{
-			float intensity = Mathf.Min(_PlayerVel._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
+			float intensity = Mathf.Min(currentSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
 			intensity = Mathf.Max(Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)) - intensity, intensity - Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)));
 			_SpeedLinesScreen.SetFloat("Intensity", intensity);
 		}

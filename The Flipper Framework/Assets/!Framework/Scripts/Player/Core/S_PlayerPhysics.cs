@@ -28,7 +28,7 @@ public class S_PlayerPhysics : S_Player_Base
 	private CapsuleCollider       _CharacterCapsule;
 	private Transform             _FeetTransform;
 	[HideInInspector]
-	public Transform             _CenterOfMass;
+	public Transform             _CenterOfMassTransform;
 	#endregion
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
@@ -355,7 +355,7 @@ public class S_PlayerPhysics : S_Player_Base
 		_CharacterCenterPosition = _CharacterPivotPosition + _colliderOffsetFromPivot;
 		_CharacterCenterPositionUpper = _CharacterCenterPosition + transform.up * _CharacterCapsule.height / 4;
 		_CharacterCenterPositionLower = _CharacterCenterPosition - transform.up * _CharacterCapsule.height / 4;
-		_CenterOfMass.position = _CharacterCenterPosition;
+		_CenterOfMassTransform.position = _CharacterCenterPosition;
 	}
 
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
@@ -417,7 +417,7 @@ public class S_PlayerPhysics : S_Player_Base
 					Vector3 fromCenterToOuter = (thisEndPosition - castStartPosition).normalized;
 					thisEndPosition += fromCenterToOuter;
 
-					Debug.DrawLine(castStartPosition, thisEndPosition, Color.gray);
+					//Debug.DrawLine(castStartPosition, thisEndPosition, Color.gray);
 
 					//Find floor
 					if (Physics.Linecast(castStartPosition, thisEndPosition, out RaycastHit hitSecondTemp, _Groundmask_))
@@ -438,8 +438,6 @@ public class S_PlayerPhysics : S_Player_Base
 					}
 				}
 				tempNormal = tempNormal.normalized; //Gets the average upwards direction by adding them all together then normalizing.
-
-				Debug.DrawRay(firstGroundHit.point, tempNormal * 5, Color.green, 10f);
 			}
 
 			//Depending on situation, can allow for greater difference in floor, like if in the air should be easier to find ground as normal to compare is always straight up
@@ -449,7 +447,6 @@ public class S_PlayerPhysics : S_Player_Base
 			else //or should be a higher limit if going uphill, calculated if new normal is pointing away moving direction
 			{
 				//If the directions without vertical lead to the normal facing away from move direction.
-				//useGroundDifferentLimit = Vector3.Angle(lateralDirection, lateralTempNormal) > 85f ? _groundDifferenceLimit_.z : useGroundDifferentLimit;
 				if (Vector3.Angle(tempNormal, -_PlayerVel._worldVelocity) < Vector3.Angle(_HitGround.normal, -_PlayerVel._worldVelocity))
 				{
 					useGroundDifferentLimit = _groundDifferenceLimit_.z;
@@ -929,7 +926,6 @@ public class S_PlayerPhysics : S_Player_Base
 	public void SetIsGrounded ( bool value, float timer = 0 ) {
 		if (_isGrounded != value)
 		{
-			Debug.Log("Set grounded to " + false);
 
 			_isGrounded = value;
 
@@ -978,7 +974,7 @@ public class S_PlayerPhysics : S_Player_Base
 		if (shouldPrintLocation) Debug.Log("Change Position to  " + newPosition + " On frame " + _fixedFrameCount);
 	}
 
-	public void SetPlayerRotation ( Quaternion newRotation, bool immediately = false, bool shouldPrintRotation = true ) {
+	public void SetPlayerRotation ( Quaternion newRotation, bool immediately = false, bool shouldPrintRotation = false ) {
 		if (immediately)
 			transform.rotation = newRotation;
 		//Using rigidBody is smoother but wont take effect this frame, so if you need to rotate for specific calculations, change the transform.
@@ -1103,7 +1099,7 @@ public class S_PlayerPhysics : S_Player_Base
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_FeetTransform = _Tools.FeetPoint;
 
-		_CenterOfMass = _Tools.CenterOfMass;
+		_CenterOfMassTransform = _Tools.CenterOfMass;
 	}
 	#endregion
 }

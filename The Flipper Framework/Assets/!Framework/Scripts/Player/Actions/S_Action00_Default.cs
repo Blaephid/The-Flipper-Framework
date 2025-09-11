@@ -173,7 +173,12 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		if (direction == default(Vector3))
 		{
 			direction = _PlayerVel._coreVelocity;
-			if (direction.sqrMagnitude < 7 * 7) { return; }
+			if (direction.sqrMagnitude < 3 * 3) {
+				//return;
+				//Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _Input._move * 5, Color.yellow);
+				if (_Input._move.sqrMagnitude > 0.2f)
+					direction = _Input._move;
+			}
 		}
 
 		if (upDirection == default(Vector3))

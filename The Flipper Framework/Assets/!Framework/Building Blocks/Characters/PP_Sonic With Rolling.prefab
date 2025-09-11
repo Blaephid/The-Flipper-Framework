@@ -160,6 +160,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f5ef85eb390c04bb495406b01b98b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1480864705968184944 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6805699039582454011, guid: 71fa442458744984f909f71d50a2c086,
+    type: 3}
+  m_PrefabInstance: {fileID: 5404220241408564875}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
 --- !u!4 &5400017215913025193 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4242608932995106, guid: 71fa442458744984f909f71d50a2c086,
@@ -190,18 +202,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4118abbbd81f40f4a9a770c7cb7576c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6781992325786300764 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1504729745689472983, guid: 71fa442458744984f909f71d50a2c086,
-    type: 3}
-  m_PrefabInstance: {fileID: 5404220241408564875}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7476512044897495804 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3260128645584876663, guid: 71fa442458744984f909f71d50a2c086,
@@ -212,18 +212,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 436692277dcc6cd4b8d0f30eaaee2382, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &7781733717246801328 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2378428623847615291, guid: 71fa442458744984f909f71d50a2c086,
-    type: 3}
-  m_PrefabInstance: {fileID: 5404220241408564875}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &6061115396462050870
@@ -454,7 +442,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _VirtCam
       value: 
-      objectReference: {fileID: 7781733717246801328}
+      objectReference: {fileID: 0}
     - target: {fileID: 4584081993875375216, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
       propertyPath: _HedgeCam
@@ -517,9 +505,34 @@ PrefabInstance:
       objectReference: {fileID: 6225059401288121592}
     - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
+      propertyPath: _moveSpeed
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _ascendSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
       propertyPath: _VirtualCamera
       value: 
-      objectReference: {fileID: 6781992325786300764}
+      objectReference: {fileID: 1480864705968184944}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _rotateSpeed.x
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _rotateSpeed.y
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _maxDistanceFromPlayer
+      value: 400
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3399936635228185353, guid: 749dc6a02381bea4d992b33d7c015589, type: 3}
     m_RemovedGameObjects: []

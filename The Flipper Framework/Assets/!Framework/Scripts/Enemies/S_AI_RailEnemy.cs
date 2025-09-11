@@ -322,7 +322,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		_onSamePath = _PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected());
 		if (!_onSamePath)
 		{
-			if (Vector3.Angle(_PlayerVel._worldDirection, S_S_MoreMaths.GetDirection(_PlayerVel.transform.position, transform.position)) < 100)
+			if (Vector3.Angle(_PlayerVel._totalDirection, S_S_MoreMaths.GetDirection(_PlayerVel.transform.position, transform.position)) < 100)
 				SetHasReachedGoalInFrontOfPlayer(true); //If player's direction is taking them towards the rhinos, then the rhinos are in front.
 			else SetHasReachedGoalInFrontOfPlayer(false);
 		}

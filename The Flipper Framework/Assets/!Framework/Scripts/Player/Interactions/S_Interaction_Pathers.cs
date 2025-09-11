@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 using System.Collections;
-using Cinemachine;
+using Unity.Cinemachine;
 using SplineMesh;
 using System.Drawing;
 

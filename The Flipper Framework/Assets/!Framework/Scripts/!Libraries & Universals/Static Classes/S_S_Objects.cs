@@ -84,7 +84,7 @@ public class S_S_Objects
 	}
 
 	//Used for fading audio in or out.
-	public static IEnumerator LerpAudioSourceVolume ( AudioSource Source, float duration, float targetVolume ) {
+	public static IEnumerator LerpAudioSourceVolume ( AudioSource Source, float seconds, float targetVolume ) {
 		if (!Source) { yield break; }
 		float initialVolume = Source.volume;
 		float time = 0;
@@ -94,8 +94,8 @@ public class S_S_Objects
 		while (Source.volume != targetVolume)
 		{
 			yield return new WaitForEndOfFrame();
-			time += Time.deltaTime;
-			lerpProgress = time / duration;
+			time += Time.unscaledDeltaTime;
+			lerpProgress = time / seconds;
 
 			if (!Source) { yield break; }
 

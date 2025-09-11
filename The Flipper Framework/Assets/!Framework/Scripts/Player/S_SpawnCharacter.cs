@@ -1,4 +1,4 @@
-﻿using Cinemachine;
+﻿using Unity.Cinemachine;
 using NUnit.Framework.Constraints;
 using System;
 using System.Collections;

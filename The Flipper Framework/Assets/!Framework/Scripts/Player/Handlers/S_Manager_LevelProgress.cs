@@ -17,6 +17,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 	public static event EventHandler OnReset;
 	public static event EventHandler OnDeath;
+	public static event EventHandler OnStageClear;
 
 	private S_Control_EffectsPlayer _Effects;
 	private S_Handler_HealthAndHurt _HealthAndHurt;
@@ -24,8 +25,6 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 	[Header("On Level End")]
 	public SceneField               _StageCompleteScene;
-
-	private Collider              _GoalRingObject;
 	#endregion
 
 	// Trackers
@@ -96,7 +95,6 @@ public class S_Manager_LevelProgress : S_Player_Base
 				if (Col.TryGetComponent(out S_Data_GoalRing GoalRingData))
 				{
 					GoalRingData.OnGet(transform);
-					_GoalRingObject = Col;
 
 					StartCoroutine(TransitionToStageComplete(GoalRingData));
 				}
@@ -126,6 +124,9 @@ public class S_Manager_LevelProgress : S_Player_Base
 		yield return new WaitForSeconds(0.2f);
 
 		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(_CoreValues._Music, 2, 0));
+
+		if (OnStageClear != null)
+			OnStageClear.Invoke(this, EventArgs.Empty);
 
 		float timeCount = 0;
 		while (timeCount <= totalTime && totalTime > 0)

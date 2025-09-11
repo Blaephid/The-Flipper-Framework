@@ -97,7 +97,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 
 	public void TriggerObjectOnce ( S_CharacterTools Player = null ) {
 		S_PlayerPhysics PlayerPhys = Player._PlayerPhys;
-		_PlayerCenter = PlayerPhys._CenterOfMass;
+		_PlayerCenter = PlayerPhys._CenterOfMassTransform;
 		_PlayerVel = PlayerPhys._PlayerVel;
 
 		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;

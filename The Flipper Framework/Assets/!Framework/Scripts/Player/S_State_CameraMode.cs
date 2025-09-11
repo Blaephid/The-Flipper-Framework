@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Cinemachine;
+using Unity.Cinemachine;
 
 public class S_State_CameraMode : MonoBehaviour
 {
@@ -20,7 +20,7 @@ public class S_State_CameraMode : MonoBehaviour
 	private PlayerInput                     _PlayerInput;
 	private S_PlayerInput                   _InputScript;
 
-	public CinemachineVirtualCamera	_VirtualCamera;
+	public CinemachineCamera	_VirtualCamera;
 	private Transform                       _CamTransform;
 	#endregion
 
