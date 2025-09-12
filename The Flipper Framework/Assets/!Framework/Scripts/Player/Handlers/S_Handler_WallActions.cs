@@ -163,7 +163,6 @@ public class S_Handler_WallActions : MonoBehaviour
 			if (IsInputtingInCharacterAngle(_MainSkin.right) && IsRunningFastEnough(50))
 			{
 				origin -= _MainSkin.right * 0.4f; //For scanning to the right, put slightly more to the left
-				Debug.DrawRay(origin, _MainSkin.right * distance, Color.white, 5);
 
 				//Checks for nearby walls using raycasts, outputing hits and booleans
 				_isWallRight = Physics.BoxCast(origin, new Vector3(0.05f, 0.15f, 1f), _MainSkin.right, out _RightWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
@@ -174,8 +173,6 @@ public class S_Handler_WallActions : MonoBehaviour
 			else if (IsInputtingInCharacterAngle(-_MainSkin.right) && IsRunningFastEnough(50))
 			{
 				origin += _MainSkin.right * 0.4f; //For scanning to the left, but same distance on right.
-
-				Debug.DrawRay(origin, _MainSkin.right * distance, Color.white, 5f);
 				_isWallLeft = Physics.BoxCast(origin, new Vector3 (0.05f, 0.15f, 1f), -_MainSkin.right, out _LeftWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
 				_isWallLeft = IsWallNotBanned(_LeftWallHit);
 			}
@@ -190,7 +187,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	private float GetSpeedToTheSide () {
-		Vector3 releventVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._totalVelocity, false);
+		Vector3 releventVelocity = _PlayerPhys.GetRelevantDirection(_PlayerVel._totalVelocity, false);
 		return Mathf.Abs(releventVelocity.x * Time.deltaTime * 1.5f);
 	}
 

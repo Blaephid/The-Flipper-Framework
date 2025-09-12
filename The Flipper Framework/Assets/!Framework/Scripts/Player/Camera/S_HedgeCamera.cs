@@ -260,7 +260,7 @@ public class S_HedgeCamera : MonoBehaviour
 	//LateUpdate is called at the end of an update, and all camera controls are handled here.
 	void LateUpdate () {
 
-		//if (_Actions._isPaused) { return; }
+		if (_Actions._isPaused) { return; }
 
 		HandleTargetPosition();
 		AlignPlayerTransformCopy();
@@ -401,7 +401,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 			//Default
 
-			targetOffset = S_S_MoreMaths.GetDirection(_BaseTarget.position,_TargetByCollisions.parent.position, false);
+			targetOffset = S_S_MoreMaths.GetDirection(_BaseTarget.position, _TargetByCollisions.parent.position, false);
 			//Min distance
 			if (targetOffset.sqrMagnitude <= 0.4f * 0.4f) targetOffset = _PlayerVel._totalDirection;
 			else if (targetOffset.sqrMagnitude < 0.8f * 0.8f) targetOffset = targetOffset.normalized;
@@ -981,6 +981,8 @@ public class S_HedgeCamera : MonoBehaviour
 	//Called externally and temporarily creates activates the second camera at the position of the main one, before transitioning back to the primary.
 	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
 	public IEnumerator ApplyCameraFallBack ( Vector2 frames, float secondaryCameraLerpAfterPlayer, float playerSpeedBefore, float playerSpeedAfter, float minDifference, string source ) {
+		Debug.Log("Start fall back with lock " + _locksForCameraFallBack.Count);
+
 		if (_locksForCameraFallBack.Count > 0) { yield break; }
 
 		if (!_MainCameraBrain) { yield break; }
@@ -1007,9 +1009,12 @@ public class S_HedgeCamera : MonoBehaviour
 		for (int i = 1 ; i <= Mathf.Max(frames.x, 1) ; i++)
 		{
 			yield return new WaitForFixedUpdate();
+			if (_locksForCameraFallBack.Count > 0) { break; }
 		}
 
-		if (_locksForCameraFallBack.Count > 0) { _currentSourceOfFallBack = ""; yield break; }
+		Debug.Log("Start catch up with lock " + _locksForCameraFallBack.Count);
+		Debug.Log("This is " + thisSource + " Against " + _currentSourceOfFallBack);
+
 		//if something else took control, no need to continue this coroutine.
 		if (thisSource != _currentSourceOfFallBack) { yield break; }
 
@@ -1026,6 +1031,9 @@ public class S_HedgeCamera : MonoBehaviour
 		}
 
 		CinemachineBlendDefinition.Styles Style = frames.y == 0 ? CinemachineBlendDefinition.Styles.Cut : CinemachineBlendDefinition.Styles.EaseIn;
+		if (_locksForCameraFallBack.Count > 0) frames.y = 0;
+
+		Debug.Log("Set secondary to Inactve");
 
 		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
 		_MainCameraBrain.DefaultBlend = new CinemachineBlendDefinition(Style, frames.y / 50f);

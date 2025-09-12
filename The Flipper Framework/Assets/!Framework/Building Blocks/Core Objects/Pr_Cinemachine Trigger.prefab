@@ -73,16 +73,19 @@ MonoBehaviour:
       _TriggersForPlayerToReadDeactivate: []
   _defaultCameraToFaceTrigger: 1
   _CinematicCamComponent: {fileID: 3842768257874451482}
+  _FollowComponent: {fileID: 2677301294458166405}
+  _RotationComponent: {fileID: 9074517066068726699}
   _CinematicCamObject: {fileID: 6276180955197928734}
   _endCameraIfExitsValidAction: 0
   _ListOfActionsThisWorksOn: 0000000002000000040000000100000005000000060000000700000008000000030000000a000000
   _startFromCurrentCam: 0
-  _startOffset: {x: 0, y: 0, z: 0}
+  _startOffset: {x: 0, y: 0, z: -10}
   _framesIn: 0
   _framesOut: 0
   _delayBeforeDeactivating: 0
   lookPlayer: 1
   followPlayer: 0
+  _applyTargetOnlyOnBlendEnd: 0
   _willSetCameraBehind: 1
   _lockPlayerInputFor: 5
   _LockInputTo_: 2
@@ -148,8 +151,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6276180955197928734}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.26033688, y: 0.19210614, z: -0.05293813, w: 0.9447315}
-  m_LocalPosition: {x: -0.338, y: 0.611, z: -0.6739999}
+  m_LocalRotation: {x: -0.000000015834848, y: -0.000000011380953, z: -0.000000007848434,
+    w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.59287554}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -168,8 +172,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
   Priority:
-    Enabled: 0
-    m_Value: 0
+    Enabled: 1
+    m_Value: 20
   OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20170927
@@ -177,7 +181,7 @@ MonoBehaviour:
   Target:
     TrackingTarget: {fileID: 0}
     LookAtTarget: {fileID: 0}
-    CustomLookAtTarget: 0
+    CustomLookAtTarget: 1
   Lens:
     FieldOfView: 60.000004
     OrthographicSize: 5
@@ -211,7 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineFollow
   TrackerSettings:
-    BindingMode: 1
+    BindingMode: 4
     PositionDamping: {x: 1, y: 1, z: 1}
     AngularDampingMode: 0
     RotationDamping: {x: 0, y: 0, z: 0}

@@ -9,58 +9,58 @@ using UnityEngine.Windows;
 public class S_RailFollow_Base : MonoBehaviour
 {
 	//Current rail
-	[HideInInspector] public Transform             _RailTransform;
-	[HideInInspector] public CurveSample            _Sample;
+	[NonSerialized] public Transform             _RailTransform;
+	[NonSerialized] public CurveSample            _Sample;
 
-	[HideInInspector]
+	[NonSerialized]
 	public Spline                 _PathSpline;
-	[HideInInspector] public S_AddOnRail            _ConnectedRails;
+	[NonSerialized] public S_AddOnRail            _ConnectedRails;
 
 	//ZipLine
-	[HideInInspector]
+	[NonSerialized]
 	public Transform              _ZipHandle;
-	[HideInInspector]
+	[NonSerialized]
 	public Rigidbody              _ZipBody;
 
 
-	[HideInInspector]
+	[NonSerialized]
 	public S_Interaction_Pathers.PathTypes _whatKindOfRail;     //Set when entering the action, deciding if this is a zipline, rail or later added type
 
 
-	[HideInInspector] public bool                   _isGoingBackwards;  //Is the player going up or down on the spline points.
-	[HideInInspector] public int                   _movingDirection;   //A 1 or -1 based on going backwards or not. Used in calculations.
+	[NonSerialized] public bool                   _isGoingBackwards;  //Is the player going up or down on the spline points.
+	[NonSerialized] public int                   _movingDirection;   //A 1 or -1 based on going backwards or not. Used in calculations.
 
-	[HideInInspector]
+	[NonSerialized]
 	public float                  _pointOnSpline = 0f; //The actual place on the spline being travelled. The number is how many units along the length of the spline it is (not affected by spline length).
 	private float                  _clampedPointOnSpline = 0f;
 
-	[HideInInspector] public Spline.SampleTransforms                        _sampleTransforms;
-	[HideInInspector] public Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
-	[HideInInspector] public Vector3               _sampleRight;
-	[HideInInspector] public Vector3               _sampleLocation;
-	[HideInInspector] public Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
-	[HideInInspector] public Quaternion             _sampleRotation; 
+	[NonSerialized] public Spline.SampleTransforms                        _sampleTransforms;
+	[NonSerialized] public Vector3               _sampleForwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
+	[NonSerialized] public Vector3               _sampleRight;
+	[NonSerialized] public Vector3               _sampleLocation;
+	[NonSerialized] public Vector3               _sampleUpwards;    //The sample is the world point of a spline at a distance along it. This if the relevant forwards direction of that point including spline transform.
+	[NonSerialized] public Quaternion             _sampleRotation; 
 
-	[HideInInspector] public float       _grindingSpeed;     //Set by action pathSpeeds every frame. Used to check movement along rail.
+	[NonSerialized] public float       _grindingSpeed;     //Set by action pathSpeeds every frame. Used to check movement along rail.
 
 	//Quaternion rot;
-	[HideInInspector] public Vector3               _setOffSet;         //Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
-	[HideInInspector] public Vector3               _currentWorldOffset;  //The above offset applied onto the current sample.
-	[HideInInspector] public Vector3               _currentCenterOffset; 
-	[HideInInspector] public float                 _upOffsetRail_ = 2.05f;
-	[HideInInspector] public float                 _upOffsetZip_ = -2.05f;
+	[NonSerialized] public Vector3               _setOffSet;         //Will follow a spline at this distance (relevant to sample forwards). Set when entering a spline and used to grind on rails offset of the spline. Hopping will change this value to move to the sides.
+	[NonSerialized] public Vector3               _currentWorldOffset;  //The above offset applied onto the current sample.
+	[NonSerialized] public Vector3               _currentCenterOffset; 
+	[NonSerialized] public float                 _upOffsetRail_ = 2.05f;
+	[NonSerialized] public float                 _upOffsetZip_ = -2.05f;
 
-	[HideInInspector] public bool                  _isRailLost;        //Set to true when point on spline surpasses the limit, to inform later if statements that update.
+	[NonSerialized] public bool                  _isRailLost;        //Set to true when point on spline surpasses the limit, to inform later if statements that update.
 
 	private float _distanceMovedSinceLastFixedUpdate;
 	private float _timeAtLastFixedUpdate;
 
 	//Rail switching (used by player and rhinoliners)
-	[HideInInspector] public float       _hopThisFrame;
-	[HideInInspector] public float       _distanceToHop;    //Set when starting a hop and will go down by distance traveled every frame, ending action when zero.
-	[HideInInspector] public float       _timeHopping;
-	[HideInInspector] public float       _timeToCompleteHop;
-	[HideInInspector] public bool        _isHoppingRight;   //Hopping to a rail on the right or on the left.
+	[NonSerialized] public float       _hopThisFrame;
+	[NonSerialized] public float       _distanceToHop;    //Set when starting a hop and will go down by distance traveled every frame, ending action when zero.
+	[NonSerialized] public float       _timeHopping;
+	[NonSerialized] public float       _timeToCompleteHop;
+	[NonSerialized] public bool        _isHoppingRight;   //Hopping to a rail on the right or on the left.
 
 	public void CustomUpdate () {
 

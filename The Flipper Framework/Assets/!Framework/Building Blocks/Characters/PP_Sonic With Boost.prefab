@@ -522,6 +522,7 @@ MonoBehaviour:
   CameraStats: {fileID: 11400000, guid: ba202d2693251114c953112101121bfc, type: 2}
   _ActionManager: {fileID: 5590984561777244973}
   PathInteraction: {fileID: 7941823437262557940}
+  TriggerInteraction: {fileID: 6727819514511924890}
   CamHandler: {fileID: 5736244429373450162}
   PlayerEvents: {fileID: 4777535912325801024}
   _HealthHandler: {fileID: 5416488146372199807}
@@ -1082,7 +1083,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Tools: {fileID: 0}
   _moveDeceleration_: 1.3
-  _lockAccelerationAndTurningToDefault: 0
+  _lockAccelAndTurnToDefaultOnyl: 0
   _moveInput: {x: 0, y: 0, z: 0}
   _trackMoveInput: {x: 0, y: 0, z: 0}
   _useFlatTurnRate: 0
@@ -9684,7 +9685,6 @@ MonoBehaviour:
   Clip_DIe: {fileID: 8300000, guid: 0d1153847e106544d8c06ef14b47a622, type: 3}
   Clip_Spiked: {fileID: 8300000, guid: 22c0a4a11dd9d7c48b32442d93a8f401, type: 3}
   Clip_Bonk: {fileID: 8300000, guid: b99c03758b6883d4e8124bf20d8402c9, type: 3}
-  Clip_HitByDanger: {fileID: 8300000, guid: ee727cbd504feb04c89141b70e7e42aa, type: 3}
   Ob_HitByDanger: {fileID: 5114165620824742214, guid: 6ffffe60374e49046b3fdde732d0f10e,
     type: 3}
   _LevelUpSound: {fileID: 5114165620824742214, guid: 0b1e29547c461c74893881e921e61dc7,
@@ -10590,7 +10590,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  BlendHint: 0
+  BlendHint: 16
 --- !u!114 &7124121952634667382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28449,6 +28449,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
+      propertyPath: _MainActions.Array.data[4].SituationalStates.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
       propertyPath: _MainActions.Array.data[5].SituationalStates.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -28531,6 +28536,11 @@ PrefabInstance:
         type: 3}
       propertyPath: '_MainActions.Array.data[3].SituationalStates.Array.data[4]'
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[4].SituationalStates.Array.data[3]'
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
@@ -28839,6 +28849,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1662691c848ef3f4caa5c4f59d5f16ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6727819514511924890 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3267591947753520472, guid: 0e8f736d2dd9706438972762531b3f8f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8072374280709137346}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b97790d1646ef9443bf81c289de9505f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &7941823437262557940 stripped

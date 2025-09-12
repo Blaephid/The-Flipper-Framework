@@ -142,7 +142,7 @@ public class S_Action15_WallClimbing : S_Action12_WallRunning
 		yield return new WaitForFixedUpdate();
 		_Actions._ActionDefault.StartAction();
 
-		newVelocity += inwards * _PlayerPhys.GetRelevantVector(_originalVelocity).x;
+		newVelocity += inwards * _PlayerPhys.GetRelevantDirection(_originalVelocity).x;
 		_PlayerVel.SetCoreVelocity(newVelocity);
 	}
 

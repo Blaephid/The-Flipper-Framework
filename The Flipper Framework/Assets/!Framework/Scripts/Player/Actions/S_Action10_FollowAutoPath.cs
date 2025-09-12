@@ -105,7 +105,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		_Actions._listOfSpeedOnPaths.Add(_playerSpeed);
 
 		//This ensures that no matter what, turning will act as normal (The boost subaction changes turning, this ensures that won't happen
-		_PlayerPhys._PlayerMovement._lockAccelerationAndTurningToDefault = true;
+		_PlayerPhys._PlayerMovement._lockAccelAndTurnToDefaultOnyl = true;
 
 		if (_CharacterAnimator.GetInteger("Action") != 0)
 			_CharacterAnimator.SetTrigger("ChangedState"); //This is the only animation change because if set to this in the air, should keep the apperance from other actions. The animator will only change when action is changed.
@@ -124,7 +124,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		_PlayerPhys._areSpeedChangesEnabled = true;
 		_PlayerPhys._rayToGroundDistance_ = _Tools.Stats.FindingGround.rayToGroundDistance;
 
-		_PlayerPhys._PlayerMovement._lockAccelerationAndTurningToDefault = false;
+		_PlayerPhys._PlayerMovement._lockAccelAndTurnToDefaultOnyl = false;
 
 		_Pathers._canExitAutoPath = false; //Will no longer cancel action when hitting a trigger.
 
@@ -202,7 +202,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 	private void SetRunningInDirectionOfSpline () {
 
 		//Ensure starts going down the same direction every time.
-		Vector3 relevantVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity);
+		Vector3 relevantVelocity = _PlayerPhys.GetRelevantDirection(_PlayerVel._worldVelocity);
 		Vector3 verticalVelocity = transform.up * relevantVelocity.y; //Seperates this so player can fall to the ground while still following the path.
 
 		_PlayerVel.SetBothVelocities((_sampleForwards * _playerSpeed) + verticalVelocity, Vector2.right, "Overwrite");
@@ -242,7 +242,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 		}
 	
 		//Ensure player is either inputting along or against the path, translated to current rotation.
-		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_sampleForwards * direction);
+		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantDirection(_sampleForwards * direction);
 		_Input.LockInputForAWhile(0, false, _sampleForwards * direction, S_GeneralEnums.LockControlDirection.Change);
 
 		//Call methods after input is changed, acting as if mvoing normally just in the desired direction
@@ -283,7 +283,7 @@ public class S_Action10_FollowAutoPath : S_Action_Base, IMainAction
 			direction.Normalize();
 
 			//Don't apply any velocity upwards, so take relevant to player, remove veritcal, then return.
-			direction = _PlayerPhys.GetRelevantVector(direction, false);
+			direction = _PlayerPhys.GetRelevantDirection(direction, false);
 			direction = transform.TransformDirection(direction);
 
 			_PlayerVel.AddGeneralVelocity(direction.normalized * 4, false, false);

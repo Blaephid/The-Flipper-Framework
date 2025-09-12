@@ -230,7 +230,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 			//Energy management.
 			_CoreValues.AdjustEnergy(-_energyDrainedPerSecond_ * Time.fixedDeltaTime);
 
-			Vector3 currentRunningPhysics = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity, false); //Get the running velocity in physics (seperate from script calculations) as this will factor in collision.
+			Vector3 currentRunningPhysics = _PlayerPhys.GetRelevantDirection(_PlayerVel._worldVelocity, false); //Get the running velocity in physics (seperate from script calculations) as this will factor in collision.
 
 			// Will end boost if released button , entered a state where without boost attached,  ran out of energy , or movement speed was decreased externally (like from a collision)
 			bool endBoost1 = !_Input._BoostPressed && _timeBoosting > _minTimeBoosting_;
@@ -397,7 +397,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 		for (int i = 0 ; i < Frames ; i++)
 		{
-			runningVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity, false).normalized; //Every update ensures its applying against players running speed, leaving gravity alone.
+			runningVelocity = _PlayerPhys.GetRelevantDirection(_PlayerVel._coreVelocity, false).normalized; //Every update ensures its applying against players running speed, leaving gravity alone.
 
 			if (_PlayerVel._horizontalSpeedMagnitude < 80) { yield break; } //Won't decrease speed if player is already running under a certain speed.
 
@@ -416,7 +416,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 
 	//Ensures there will always be an input forwards if nothing else.
 	private Vector3 EnforceForwards ( Vector3 input = default(Vector3) ) {
-		Vector3 localFaceDirection = _PlayerPhys.GetRelevantVector(_faceDirection, true);
+		Vector3 localFaceDirection = _PlayerPhys.GetRelevantDirection(_faceDirection, true);
 		if (_PlayerMovement._moveInput.sqrMagnitude < 0.1f) { _PlayerMovement._moveInput = localFaceDirection; }
 
 		if (input.sqrMagnitude < 0.1f) { input = localFaceDirection; }
@@ -439,7 +439,7 @@ public class S_SubAction_Boost : S_Action_Base, ISubAction
 		Vector3 inputDirection = input.normalized;
 
 		//Because input is relative to transform, temporarily make face directions operate in the same space. Without vertical value so it interacts properly with input direction.
-		Vector3 localFaceDirection = _PlayerPhys.GetRelevantVector(_faceDirection, false);
+		Vector3 localFaceDirection = _PlayerPhys.GetRelevantDirection(_faceDirection, false);
 
 		_PlayerMovement._inputVelocityDifference = lateralVelocity.sqrMagnitude < 1 ? 0 : Vector3.Angle(localFaceDirection, inputDirection); //The change in input in degrees, this will be used by the skid script to calculate whether should skid.
 		float inputDifference = _PlayerMovement._inputVelocityDifference;

@@ -365,8 +365,6 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		_PlayerPhys._areSpeedChangesEnabled = true;
 
 		_Input.UnLockInput();
-
-		_PlayerVel.SetBothVelocities(Vector3.zero, new Vector2(0, 0));
 	}
 
 	//Bonking refers to rebounding off solid surfaces when moving into them at high speed.
@@ -399,10 +397,10 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		Vector3 sphereStart1 =_PlayerPhys._CharacterCenterPositionUpper + offset;
 		Vector3 sphereStart2 =_PlayerPhys._CharacterCenterPositionLower + offset;
 
-		Debug.DrawRay(sphereStart1, movingDirection * distance, Color.red);
-		Debug.DrawRay(sphereStart2, movingDirection * distance, Color.red);
-		Debug.DrawLine(sphereStart1 + (transform.up * _CharacterCapsule.radius * 0.8f),
-			 sphereStart2 - (transform.up * _CharacterCapsule.radius * 0.8f), Color.red);
+		//Debug.DrawRay(sphereStart1, movingDirection * distance, Color.red);
+		//Debug.DrawRay(sphereStart2, movingDirection * distance, Color.red);
+		//Debug.DrawLine(sphereStart1 + (transform.up * _CharacterCapsule.radius * 0.8f),
+		//	 sphereStart2 - (transform.up * _CharacterCapsule.radius * 0.8f), Color.red);
 
 		//Checks for a wall, and if the direction of it is similar to movement direction, ready bonk.
 		if (Physics.CapsuleCast(sphereStart1, sphereStart2,

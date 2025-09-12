@@ -15,6 +15,7 @@ public class S_Handler_Camera : MonoBehaviour
 	private S_CharacterTools      _Tools;
 	private S_PlayerInput         _Input;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_Interaction_Triggers _Triggers;
 
 	private Transform             _MainSkin;
 
@@ -32,6 +33,7 @@ public class S_Handler_Camera : MonoBehaviour
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_MainSkin = _Tools.MainSkin;
+		_Triggers = _Tools.TriggerInteraction;
 
 		_initialDistance = _Tools.CameraStats.DistanceStats.CameraDistance;
 		_initialFOV = _Tools.CameraStats.FOVStats.baseFOV;
@@ -122,6 +124,7 @@ public class S_Handler_Camera : MonoBehaviour
 
 		if (removeAll)
 		{
+			_Triggers.ClearEffectTriggersOfType<S_Trigger_Camera>();
 			StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, !_HedgeCam._canAffectDistanceBySpeed, true));
 			StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, !_HedgeCam._canAffectFOVBySpeed, true));
 		}

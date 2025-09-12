@@ -571,7 +571,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 				//Crouching, relevant to slope physics.
 				_isCrouching = _Input._RollPressed;
-				_CharacterAnimator.SetBool("isRolling", _isCrouching);
+				_CharacterAnimator.SetBool("isCrouching", _Input._RollPressed);
 
 				RailTrick();
 

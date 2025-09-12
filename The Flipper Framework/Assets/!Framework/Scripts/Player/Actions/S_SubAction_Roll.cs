@@ -65,11 +65,16 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 
 			_rollCounter += Time.deltaTime;
 
-			if (_rollCounter > 0.5f && _PlayerVel._horizontalSpeedMagnitude > _speedBeforeRoll + 30) { _ActionChain.AddToChain("Roll", 2, 1); }
+			if (_rollCounter > 0.5f && _PlayerVel._horizontalSpeedMagnitude > _speedBeforeRoll + 30) 
+			{ 
+				_ActionChain.AddToChain("Roll", 2, 1);
+				_speedBeforeRoll = _PlayerVel._horizontalSpeedMagnitude;
+			}
 
-
+			float prevSpeed = _PlayerVel._previousHorizontalSpeeds[3];
+			float nowSpeed = _PlayerVel._previousHorizontalSpeeds[0];
 			//If gaining speed from roll. Use energy for greater effect and gain points
-			if (_PlayerVel._previousHorizontalSpeeds[2] < _PlayerVel._previousHorizontalSpeeds[0])
+			if (prevSpeed + 2f < nowSpeed && (_rollCounter > Time.deltaTime * 3))
 
 			{
 				float energyUse = _EnergyUseByAngle_.Evaluate(_PlayerPhys._groundNormal.y) / 55;
@@ -77,7 +82,8 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 				{
 					_CoreValues.AdjustEnergy(-energyUse);
 					_CoreValues.SetMultiplierFromEnergy(_modifierFromEnergy_);
-					_CoreValues.AdjustPoints(_pointsFromEnergyRoll_ / 55);
+					float pointsPerFrame = _pointsFromEnergyRoll_ / 55;
+					_CoreValues.AdjustPoints(pointsPerFrame * (1 + (Mathf.Abs(nowSpeed - prevSpeed) / 10)));
 					return;
 				}
 			}

@@ -198,7 +198,7 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 			{
 				//If being moved upwards but not running upwards, add to jump to ensure can overcome that (like on a platform moving upwards.)
 				//World velocity is the actual direction moving, because Total And RB are set already because all of S_PlayerPhysics happens before this.
-				Vector3 forceAlreadyMovingUpwards = _PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity, true);
+				Vector3 forceAlreadyMovingUpwards = _PlayerPhys.GetRelevantDirection(_PlayerVel._worldVelocity, true);
 
 				_PlayerVel.AddCoreVelocity(_upwardsDirection * Mathf.Max(0, forceAlreadyMovingUpwards.y));
 				_jumpSlopeSpeed = 0; //Means slope jump force won't be applied this jump
@@ -285,7 +285,7 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
  				EndJumpForce();
 			}
 			//If no longer moving upwards, then there is probably something blocking the jump, so end it early.
-			else if (_isJumping && _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity).y <= 0 && _counter > 0.2f)
+			else if (_isJumping && _PlayerPhys.GetRelevantDirection(_PlayerVel._coreVelocity).y <= 0 && _counter > 0.2f)
 			{
 				EndJumpForce();
 			}

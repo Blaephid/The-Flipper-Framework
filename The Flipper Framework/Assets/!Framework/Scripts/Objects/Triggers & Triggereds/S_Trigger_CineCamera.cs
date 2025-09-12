@@ -17,6 +17,8 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 	[Header("Attached Elements")]
 	[Tooltip("Controls the properties of the cinemachine component, by setting it to follow or look at the player.")]
 	public CinemachineCamera         _CinematicCamComponent;
+	public CinemachineFollow         _FollowComponent;
+	public CinemachineRotationComposer        _RotationComponent;
 	[Tooltip("The gameObject that will be set to active or inactive. Likely the same as the above.")]
 	public GameObject                       _CinematicCamObject;
 	private CinemachineBrain _MainCameraBrain;
@@ -47,8 +49,10 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 	[Tooltip("See Cinemachine Virtual Camera component. If this is true, the players transform becomes what the virtual camera follows, using its own parameters.")]
 	[HideInInspector]
 	public bool followPlayer;
+	[Tooltip("If true, the vir cam will only start following after the main camera has reached it. This prevents the blend going weird directions as the player moves towards it.")]
+	public bool _applyTargetOnlyOnBlendEnd = false;
 
-	[Header("On End")]
+[Header("On End")]
 	[Tooltip("If true, when the main camera returns to the player, it will be behind them.")]
 	public bool         _willSetCameraBehind = true;
 	public int          _lockPlayerInputFor = 5;
@@ -63,7 +67,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 	//Player
 	private S_ActionManager       _PlayerActions;
 	private S_Handler_Camera      _PlayerCameraHandler;
-	private S_HedgeCamera		_HedgeCamera;
+	private S_HedgeCamera           _HedgeCamera;
 
 	// Start is called before the first frame update
 
@@ -73,12 +77,19 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		//Ensure cinematic camera isn't on and save its starting transform.
 		cameraOriginalPosition = _CinematicCamObject.transform.position;
 		cameraOriginalRotation = _CinematicCamObject.transform.rotation;
+
+		_CinematicCamComponent.LookAt = null;
+		_CinematicCamComponent.Follow = null;
+
 		_CinematicCamObject.SetActive(false);
 	}
 
 #if UNITY_EDITOR
 	public override void OnValidate () {
 		base.OnValidate();
+
+		if(_FollowComponent)
+			_startOffset = _FollowComponent.FollowOffset;
 	}
 
 	public override void DrawAdditionalGizmos ( bool selected, Color colour ) {
@@ -97,12 +108,15 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 #endif
 
 	private void FaceCinematicCameraIn () {
+		Transform Target = _CinematicCamComponent.Target.TrackingTarget;
+		if (Target == null) { Target = transform; }
+
 		if (TriggerObjects._hasTrigger && _defaultCameraToFaceTrigger && !Application.isPlaying)
 		{
-			Vector3 direction = (transform.position - _CinematicCamObject.transform.position).normalized;
-			if(direction != Vector3.zero) _CinematicCamObject.transform.forward = direction;
+			Vector3 direction = (Target.position - _CinematicCamObject.transform.position).normalized;
+			if (direction != Vector3.zero) _CinematicCamObject.transform.forward = direction;
 
-			if(followPlayer) { _CinematicCamComponent.GetComponent<CinemachineFollow>().FollowOffset = _CinematicCamObject.transform.position - transform.position; }
+			if (followPlayer) { _CinematicCamComponent.GetComponent<CinemachineFollow>().FollowOffset = _CinematicCamObject.transform.position - Target.position; }
 		}
 	}
 
@@ -140,7 +154,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 				}
 			}
 
-			if(!inValidAction && _endCameraIfExitsValidAction)
+			if (!inValidAction && _endCameraIfExitsValidAction)
 			{
 				StartCoroutine(DeactivateCam());
 			}
@@ -161,17 +175,11 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		{
 			_CinematicCamObject.transform.position = _PlayerCameraHandler._HedgeCam.transform.position;
 			_CinematicCamObject.transform.rotation = _PlayerCameraHandler._HedgeCam.transform.rotation;
+
+			_CinematicCamObject.transform.position += _startOffset;
 		}
-		
 
-		//Apply requirements onto cinemachine
-		if (lookPlayer)
-			_CinematicCamComponent.LookAt = _PlayerTools.transform;
-
-		if (followPlayer)
-			_CinematicCamComponent.Follow = _PlayerTools.transform;
-
-		_CinematicCamObject.transform.position += _startOffset;
+		StartCoroutine(SetPlayerAsTarget());
 
 		SetBlend(_framesIn);
 
@@ -181,7 +189,22 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		S_Manager_LevelProgress.OnReset += ReturnOnDeath; //Ensures camera will end if player dies when its active.
 	}
 
-	private void SetBlend(float frames ) {
+	private IEnumerator SetPlayerAsTarget () {
+		if (_applyTargetOnlyOnBlendEnd)
+		{
+			for (int i = 0 ; i < _framesIn ; i++)
+				yield return new WaitForFixedUpdate();
+		}
+
+		//Apply requirements onto cinemachine
+		if (lookPlayer)
+			_CinematicCamComponent.LookAt = _PlayerTools.transform;
+
+		if (followPlayer)
+			_CinematicCamComponent.Follow = _PlayerTools.transform;
+	}
+
+	private void SetBlend ( float frames ) {
 
 		if (frames != 0)
 		{
@@ -196,7 +219,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		ResetCamera();
 	}
 
-	public void ResetCamera() {
+	public void ResetCamera () {
 		//Deactivate
 		_isCurrentlyActive = false;
 		_PlayerActions = null;

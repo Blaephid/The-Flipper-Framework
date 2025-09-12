@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using UnityEditor;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using System;
 
 public class S_Action00_Default : S_Action_Base, IMainAction
 {
@@ -50,7 +51,9 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 	[HideInInspector]
 	public int          _animationAction = 0;
 
-	[HideInInspector]
+	[NonSerialized]
+	public bool     _canHandleSkinRotation = true;
+	[NonSerialized]
 	public bool     _isAnimatorControlledExternally = false;
 	private Vector3 _skinRotationLockedTo;
 
@@ -72,12 +75,16 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		if (!_isAnimatorControlledExternally)
 		{
 			HandleAnimator(_animationAction);
+
+			if (!_canHandleSkinRotation) { return; }
+
 			if (_skinRotationLockedTo != Vector3.zero)
 			{
 				SetSkinRotationToVelocity(_skinRotationSpeed, _skinRotationLockedTo);
 			}
 			else
 				SetSkinRotationToVelocity(_skinRotationSpeed);
+
 		}
 	}
 
@@ -173,11 +180,12 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		if (direction == default(Vector3))
 		{
 			direction = _PlayerVel._coreVelocity;
-			if (direction.sqrMagnitude < 3 * 3) {
-				//return;
-				//Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, _Input._move * 5, Color.yellow);
-				if (_Input._move.sqrMagnitude > 0.2f)
-					direction = _Input._move;
+			if (direction.sqrMagnitude < 3 * 3)
+			{
+				if (_Input._move.sqrMagnitude < 0.2f)
+					return;
+
+				direction = _Input._move;
 			}
 		}
 
@@ -188,6 +196,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 
 		//Gets a direction to rotate towards based on input direction, and if there isn't one, don't change it.
 		Vector3 newForward = direction - upDirection * Vector3.Dot(direction, upDirection);
+		newForward.Normalize();
 		if (newForward.sqrMagnitude > 0.01f)
 		{
 			//Makes a rotation that only changes horizontally, never looking up or down.
@@ -202,6 +211,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 			{
 				rotateSpeed = rotateSpeed != 0 ? rotateSpeed * Time.deltaTime * 0.75f : 1;
 			}
+
 			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, targetRotation, rotateSpeed);
 
 
@@ -261,7 +271,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		}
 	}
 
-	public void SetColliderActive (bool set) {
+	public void SetColliderActive ( bool set ) {
 		//Because actualy deactivating the collider would mess up all triggers as exit isn't called, just shrink it grealy instead.
 		if (!set) OverWriteCollider(_DisableCapsule);
 

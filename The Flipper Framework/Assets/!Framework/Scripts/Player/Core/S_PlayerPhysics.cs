@@ -417,8 +417,6 @@ public class S_PlayerPhysics : S_Player_Base
 					Vector3 fromCenterToOuter = (thisEndPosition - castStartPosition).normalized;
 					thisEndPosition += fromCenterToOuter;
 
-					//Debug.DrawLine(castStartPosition, thisEndPosition, Color.gray);
-
 					//Find floor
 					if (Physics.Linecast(castStartPosition, thisEndPosition, out RaycastHit hitSecondTemp, _Groundmask_))
 					{
@@ -628,8 +626,6 @@ public class S_PlayerPhysics : S_Player_Base
 		if (_timeOnGround > 0.12f && _PlayerVel._horizontalSpeedMagnitude > 3)
 		{
 
-			Debug.DrawRay(_CharacterCenterPosition, velocity * Time.deltaTime, Color.gray, 10f);
-
 			Vector3 currentGroundNormal = _groundNormal;
 			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.07f);
 			Vector3 rayCastDirection = AlignWithNormal(_PlayerVel._worldVelocity.normalized, _groundNormal, 1);
@@ -661,11 +657,11 @@ public class S_PlayerPhysics : S_Player_Base
 			if (_timeOnGround > 0.08)
 			{
 				//Since stationary, remove any relative upwards force in core that might push the player off the ground.
-				velocity = GetRelevantVector(velocity);
+				velocity = GetRelevantDirection(velocity);
 				velocity.y = 0;
 				velocity = transform.TransformDirection(velocity);
 			}
-			_PlayerVel.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false);
+			_PlayerVel.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false, false);
 		}
 		return velocity;
 	}
@@ -711,7 +707,7 @@ public class S_PlayerPhysics : S_Player_Base
 		velocity = Vector3.LerpUnclamped(velocity, Dir, lerpAmount);
 
 		// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
-		_PlayerVel.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
+		_PlayerVel.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false, false);
 
 		return velocity;
 	}
@@ -913,13 +909,13 @@ public class S_PlayerPhysics : S_Player_Base
 	}
 
 	//Called anywhere to get what the input velocity is in the player's local space.
-	public Vector3 GetRelevantVector ( Vector3 vel, bool includeY = true ) {
-		vel = transform.InverseTransformDirection(vel);
+	public Vector3 GetRelevantDirection ( Vector3 dir, bool includeY = true ) {
+		dir = transform.InverseTransformDirection(dir);
 		if (!includeY)
 		{
-			vel.y = 0;
+			dir.y = 0;
 		}
-		return vel;
+		return dir;
 	}
 
 	//Since there's such a difference between being grounded and not, this is called whenever the value is changed to affect any other relevant variables at the same time.

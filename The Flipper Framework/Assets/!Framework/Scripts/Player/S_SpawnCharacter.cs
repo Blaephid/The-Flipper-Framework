@@ -70,13 +70,6 @@ public class S_SpawnCharacter : S_Vis_Base
 	}
 
 #if UNITY_EDITOR
-	//[ExecuteInEditMode]
-	//[ExecuteAlways]
-	//private void Update () {
-	//	if(Application.isPlaying) { return; }
-	//	_hasVisualisationScripted = true;
-	//	UpdateLaunchDataToDirection();
-	//}
 
 	[ExecuteAlways]
 	private void OnEnable () {

@@ -16,6 +16,7 @@ public class S_CharacterTools : MonoBehaviour
 	[Header("Attach from Action Manager")]
 	public S_ActionManager  _ActionManager;
 	public S_Interaction_Pathers  PathInteraction;
+	public S_Interaction_Triggers  TriggerInteraction;
 	public S_Handler_Camera       CamHandler;
 	public S_PlayerEvents   PlayerEvents;
 

@@ -230,8 +230,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_RespawnLaunch = launchData;
 		_respawnTransform = transform;
 
-		StartCoroutine
-			(Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, transform, Objects.transform, launchData));
+		Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, transform, Objects.transform, launchData);
 
 	}
 

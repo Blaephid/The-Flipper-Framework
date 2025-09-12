@@ -329,7 +329,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 
 	//Because canChangeGrounded is set to false on start, use own method when checking for ground, with own values to ensure doesn't count the current wall being climbed as ground.
 	public bool IsOnGround () {
-		if(_PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
+		if(_PlayerPhys.GetRelevantDirection(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
 			Vector3 rayCastStartPosition = _PlayerPhys._CharacterCenterPosition + _wallHit.normal * 0.5f;
 			float range = (_CoreCollider.height / 2) + 0.5f;

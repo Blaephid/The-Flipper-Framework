@@ -63,6 +63,10 @@ public class S_Interaction_Triggers : S_Player_Base
 
 	#region Enabling and Disabling
 
+	public void ClearEffectTriggersOfType<T> ( ) where T : S_Trigger_External {
+		_CurrentActiveEffectTriggers.RemoveAll(item => item is T);
+	}
+
 	public void CheckEffectsTriggerEnter ( Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
 		List<S_Trigger_Base> EffectsData = S_Interaction_Triggers.CheckTriggerEnter(Col, ref _CurrentActiveEffectTriggers);
