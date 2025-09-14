@@ -13,7 +13,11 @@ using UnityEngine;
 [AddComponentMenu("Data Components/Armoured Train")]
 public class S_Data_ArmouredTrain : S_Data_Base
 {
-#if UNITY_EDITOR
+	public S_AI_RailEnemy       _RailBehaviour;
+	public Collider[]       _Colliders;
+	private bool _isMoving;
+
+
 	public bool _updateAutomatically = true;
 
 	public StrucSegments[] _Segments;
@@ -42,6 +46,34 @@ public class S_Data_ArmouredTrain : S_Data_Base
 		}
 #endif
 	}
+
+	private void Start () {
+		if (!Application.isPlaying) { return; }
+		SetIsMoving(true);
+		SetIsMoving(false);
+	}
+
+	private void FixedUpdate () {
+		if (_RailBehaviour._RF._grindingSpeed > 0)
+		{
+			SetIsMoving(true);
+		}
+		else
+			SetIsMoving(false);
+	}
+
+	private void SetIsMoving(bool set ) {
+		if(set == _isMoving) { return; }
+
+		_isMoving = set;
+
+		foreach(Collider Col in _Colliders)
+		{
+			Col.enabled = set;
+		}
+	}
+
+#if UNITY_EDITOR
 
 	public void RemoveExtraSegmentsIfNotWanted () {
 		//In case the user removes an element from the array of segements, the creation would not know, so destroy extra child object segments from the scene if this happens.
@@ -81,8 +113,11 @@ public class S_Data_ArmouredTrain : S_Data_Base
 				meshForCollider = source.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh;
 			else if(source.GetComponentInChildren<MeshRenderer>())
 				meshForCollider = source.GetComponentInChildren<MeshFilter>().sharedMesh;
-			thisSegment.GetComponent<MeshCollider>().sharedMesh = meshForCollider;
-			thisSegment.GetComponent<MeshCollider>().convex = true;
+			if (thisSegment.GetComponent<MeshCollider>())
+			{
+				thisSegment.GetComponent<MeshCollider>().sharedMesh = meshForCollider;
+				thisSegment.GetComponent<MeshCollider>().convex = true;
+			}
 
 			thisSegment.transform.localPosition = _Segments[i]._localOffset;
 			thisSegment.transform.localEulerAngles = _Segments[i]._rotationOffset;

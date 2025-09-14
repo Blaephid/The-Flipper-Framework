@@ -172,6 +172,8 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 
 		if (set)
 		{
+			
+			_RB.constraints = RigidbodyConstraints.FreezeRotation;
 			SetAnimatorTrigger("Start");
 			//For rhino actions
 			if (OnActivate != null)
@@ -329,7 +331,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 
 		if (!_Data._followPlayer_) return;
 
-		_listOfPlayerSpeeds.Insert(0, _PlayerVel._horizontalSpeedMagnitude);
+		_listOfPlayerSpeeds.Insert(0, Mathf.Min( _PlayerVel._horizontalSpeedMagnitude, _PlayerVel._PlayerMovement._currentMaxSpeed));
 		_listOfPlayerSpeeds.RemoveAt(_listOfPlayerSpeeds.Count - 1);
 		_playerSpeed = _listOfPlayerSpeeds[_listOfPlayerSpeeds.Count - 1]; //The player speed to lerp to is delayed by x frames.
 
@@ -342,10 +344,10 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
 				break; //Already handled above
 			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
-				if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
-					goalSpeed = _RF._grindingSpeed * 0.96f;
+				if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 20 * 20) //If player is homing in on this, slow down to allow the hit to be made.
+					goalSpeed = _RF._grindingSpeed * 0.94f;
 				else
-					goalSpeed = _RF._grindingSpeed * 1.08f;
+					goalSpeed = _RF._grindingSpeed * 1.02f;
 				break;
 			default:
 				//Lerp on player speed.
@@ -605,6 +607,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		if (_Data._rhino_)
 		{
 			_RB.freezeRotation = false;
+			_RB.constraints = RigidbodyConstraints.None;
 			_RB.useGravity = true;
 			SetAnimatorTrigger("Jump");
 			SetAnimatorBool("IsActive", false);
@@ -616,6 +619,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		{
 			_RF._grindingSpeed = 0;
 			_RB.linearVelocity = Vector3.zero;
+			_RB.constraints = RigidbodyConstraints.FreezeAll;
 		}
 		_RF._grindingSpeed = 0;
 		_isActive = false;

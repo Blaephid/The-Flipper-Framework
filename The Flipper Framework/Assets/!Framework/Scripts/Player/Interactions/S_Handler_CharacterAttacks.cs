@@ -217,8 +217,14 @@ public class S_Handler_CharacterAttacks : S_Player_Base
 			if (targetRB)
 			{
 				newForwardDirection = targetRB.linearVelocity.normalized;
-				newLocation = targetRB.transform.position;
+				newLocation = targetRB.position;
 				newDownDirection = -targetRB.transform.up;
+			}
+			else
+			{
+				newForwardDirection = Col.transform.forward;
+				newLocation = Col.transform.position;
+				newDownDirection = -Col.transform.up;
 			}
 		}
 
@@ -226,8 +232,10 @@ public class S_Handler_CharacterAttacks : S_Player_Base
 		_PlayerPhys.SetPlayerPosition(newLocation);
 		_PlayerPhys.SetPlayerRotation(Quaternion.LookRotation(newForwardDirection, -newDownDirection), true);
 
+		newForwardDirection = (newDownDirection + newForwardDirection).normalized;
 		Vector3 newVelocity = newForwardDirection * newSpeed;
-		newVelocity += newDownDirection * 30;
+		//Vector3 newVelocity = newForwardDirection * newSpeed;
+		//newVelocity += newDownDirection * 30;
 
 		_PlayerVel.SetBothVelocities(newVelocity, new Vector2(1, 0));
 	}

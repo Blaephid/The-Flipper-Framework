@@ -981,7 +981,6 @@ public class S_HedgeCamera : MonoBehaviour
 	//Called externally and temporarily creates activates the second camera at the position of the main one, before transitioning back to the primary.
 	//The x value is the frames fully stationary, and the y is how long it takes to catch up again.
 	public IEnumerator ApplyCameraFallBack ( Vector2 frames, float secondaryCameraLerpAfterPlayer, float playerSpeedBefore, float playerSpeedAfter, float minDifference, string source ) {
-		Debug.Log("Start fall back with lock " + _locksForCameraFallBack.Count);
 
 		if (_locksForCameraFallBack.Count > 0) { yield break; }
 
@@ -1012,9 +1011,6 @@ public class S_HedgeCamera : MonoBehaviour
 			if (_locksForCameraFallBack.Count > 0) { break; }
 		}
 
-		Debug.Log("Start catch up with lock " + _locksForCameraFallBack.Count);
-		Debug.Log("This is " + thisSource + " Against " + _currentSourceOfFallBack);
-
 		//if something else took control, no need to continue this coroutine.
 		if (thisSource != _currentSourceOfFallBack) { yield break; }
 
@@ -1032,8 +1028,6 @@ public class S_HedgeCamera : MonoBehaviour
 
 		CinemachineBlendDefinition.Styles Style = frames.y == 0 ? CinemachineBlendDefinition.Styles.Cut : CinemachineBlendDefinition.Styles.EaseIn;
 		if (_locksForCameraFallBack.Count > 0) frames.y = 0;
-
-		Debug.Log("Set secondary to Inactve");
 
 		//This will tell the cinemachine brain to make the transition from secondary to hedgecamera take this many frames (converted to seconds) in this way.
 		_MainCameraBrain.DefaultBlend = new CinemachineBlendDefinition(Style, frames.y / 50f);
