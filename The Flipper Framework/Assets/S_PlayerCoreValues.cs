@@ -65,6 +65,10 @@ public class S_PlayerCoreValues : S_Player_Base
 	private float _displayPoints;
 	private float _prevDisplayPoints;
 
+	//States
+	[NonSerialized] public bool _inBall;
+	
+
 	private void Start () {
 		_Score = GetComponent<S_PlayerScore>();
 		SetValuesOnLevelStart();

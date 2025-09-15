@@ -16,6 +16,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect _SpeedLinesCharacter;
 
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _ActionChainEffect;
+	[SerializeField] Color[] _ActionChainColours = new Color[1];
 
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem SpinDashEnergy;
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem RailsSparksLeft;
@@ -238,7 +239,12 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	//Trigger
 
-	public void ActionChainAdd () {
+	public void ActionChainAdd (int score) {
+		score = Mathf.Min(score, _ActionChainColours.Length);
+		score -= 1;
+
+		_ActionChainEffect.SetVector4("Colour", _ActionChainColours[score]);	
+
 		_ActionChainEffect.Stop();
 		_ActionChainEffect.Play();
 	}

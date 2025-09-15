@@ -215,8 +215,8 @@ public class S_PlayerPhysics : S_Player_Base
 
 	private void Start () {
 		//Set grounded to true then not to ensure all default values are set.
-		SetIsGrounded(true);
-		SetIsGrounded(false);
+		SetIsGrounded(true, 0, false);
+		SetIsGrounded(false, 0, false);
 
 		_fixedFrameCount = 0;
 		_frameCount = 0;
@@ -654,9 +654,8 @@ public class S_PlayerPhysics : S_Player_Base
 		else if (_isGrounded)
 		{
 			//Gives a small chance to convert fall speed to run speed based on slopes.
-			if (_timeOnGround > 0.08)
+			if (_timeOnGround > 0.08 && velocity.sqrMagnitude > 5*5)
 			{
-				//Since stationary, remove any relative upwards force in core that might push the player off the ground.
 				velocity = GetRelevantDirection(velocity);
 				velocity.y = 0;
 				velocity = transform.TransformDirection(velocity);
@@ -919,16 +918,10 @@ public class S_PlayerPhysics : S_Player_Base
 	}
 
 	//Since there's such a difference between being grounded and not, this is called whenever the value is changed to affect any other relevant variables at the same time.
-	public void SetIsGrounded ( bool value, float timer = 0 ) {
+	public void SetIsGrounded ( bool value, float timer = 0, bool canAddToAction = true ) {
 		if (_isGrounded != value)
 		{
-
 			_isGrounded = value;
-
-			_timeOnGround = 0;
-			_timeInAir = 0;
-			_timeUpHill = 0;
-
 
 			//If changed to be in the air when was on the ground
 			if (!_isGrounded)
@@ -953,7 +946,16 @@ public class S_PlayerPhysics : S_Player_Base
 				_keepNormalCounter = 0;
 
 				if (_Actions) _Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
+
+				if(canAddToAction)
+					StartCoroutine(_ActionChain.CheckLandingQuality(_groundNormal));
 			}
+
+
+			_timeOnGround = 0;
+			_timeInAir = 0;
+			_timeUpHill = 0;
+
 		}
 	}
 

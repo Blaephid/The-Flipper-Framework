@@ -110,9 +110,6 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 		_isPressedCurrently = true;
 		_isActive = true;
 
-		//Change collider to be smaller
-		_Actions._ActionDefault.OverWriteCollider(_LowerCapsule);
-
 		_PlayerPhys._canStickToGround = true; //Allows following the ground when in a normal grounded state.
 
 		//Visuals & Effects
@@ -295,7 +292,7 @@ public class S_Action03_SpinCharge : S_Action_Base, IMainAction
 
 			float chainValue = Mathf.Lerp(0, 3, (_Actions._charge / 1.5f) / _maximunCharge_.x);
 			chainValue = Mathf.Round(chainValue);
-			_ActionChain.AddToChain("Spin Dash", (int)chainValue, 10);
+			_ActionChain.AddToChain("Spin Dash", (int)chainValue, 10,"", 10);
 
 			_Actions._ActionDefault.StartAction();
 		}

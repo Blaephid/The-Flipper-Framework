@@ -224,8 +224,11 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
 					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
 					_RF._grindingSpeed = Mathf.Max(charge, _RF._grindingSpeed + (charge / 2));
+					if (!_PlayerPhys._isGrounded) StartCoroutine(_ActionChain.CheckLandingQuality(_RF._sampleUpwards));
 					break;
 				default:
+					if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Bounce) _ActionChain.AddToChain("Bounce", 1, 5);
+
 					//If any other action, then check if speed on rail is gained from falling onto, or being launched up into.
 					if (Mathf.Abs(_PlayerVel._worldVelocity.y) > _RF._grindingSpeed)
 					{
@@ -240,6 +243,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 							_RF._grindingSpeed = Mathf.Abs(_PlayerVel._worldVelocity.y);
 						}
 					}
+					if(!_PlayerPhys._isGrounded) StartCoroutine(_ActionChain.CheckLandingQuality(_RF._sampleUpwards));
 					break;
 			}
 
@@ -396,7 +400,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	public void MoveOnRail () {
 
 		if (!_isGrinding) { return; }
-		_PlayerPhys.SetIsGrounded(true, 0.5f);
+		_PlayerPhys.SetIsGrounded(true, 0.5f, false);
 
 		HandleRailSpeed(); //Make changes to player speed based on angle
 

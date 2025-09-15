@@ -868,7 +868,7 @@ public class S_Interaction_Objects : S_Player_Base
 				_CoreValues.AdjustEnergy(DataRSR._energyGained);
 				_CoreValues.AdjustPoints(DataRSR._powerGained);
 
-				_ActionChain.AddToChain("Red Star Ring", 2, 1, Col.gameObject.GetInstanceID().ToString());
+				_ActionChain.AddToChain("Red Star Ring", 2, 1, Col.gameObject.GetInstanceID().ToString(), 15);
 				break;
 		}
 	}

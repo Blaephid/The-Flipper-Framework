@@ -403,7 +403,7 @@ public class S_HedgeCamera : MonoBehaviour
 
 			targetOffset = S_S_MoreMaths.GetDirection(_BaseTarget.position, _TargetByCollisions.parent.position, false);
 			//Min distance
-			if (targetOffset.sqrMagnitude <= 0.4f * 0.4f) targetOffset = _PlayerVel._totalDirection;
+			if (targetOffset.sqrMagnitude <= 0.4f * 0.4f) targetOffset = _PlayerVel._worldForwardDirection;
 			else if (targetOffset.sqrMagnitude < 0.8f * 0.8f) targetOffset = targetOffset.normalized;
 			targetOffset *= 2f;
 
@@ -491,7 +491,7 @@ public class S_HedgeCamera : MonoBehaviour
 	//Changes variables and elements to the camera movement depending if the player is moving towards or away from it.
 	void CheckCharacterMovingTowardsCamera () {
 		//Get player and camera direction without vertical since vertical damping is not used.
-		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerVel._totalDirection);
+		Vector3 playerVelocity = _PlayerTransformCopy.InverseTransformDirection(_PlayerVel._worldForwardDirection);
 		playerVelocity.y = 0;
 		Vector3 cameraDirectionWithoutY = _PlayerTransformCopy.InverseTransformDirection(transform.forward);
 		cameraDirectionWithoutY.y = 0;

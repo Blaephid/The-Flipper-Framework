@@ -89,7 +89,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  pointsFromRolling: 200
+  pointsFromRolling: 40
   pointsFromPerfectHomingAttack: 25
   _Levels:
   - level: 1

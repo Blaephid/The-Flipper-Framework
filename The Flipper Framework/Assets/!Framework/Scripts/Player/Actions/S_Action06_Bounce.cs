@@ -216,7 +216,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 
 		_Input._BouncePressed = false; //Prevents the action from being hold spammed.
 
-		_PlayerPhys.SetIsGrounded(true); //Resets air actions like homing attacks, air dashes, etc.
+		_PlayerPhys.SetIsGrounded(true, 0.1f, false); //Resets air actions like homing attacks, air dashes, etc.
 
 		_hasBounced = true; //Prevents speed being adjusted and allows the action to be exited.
 
@@ -272,7 +272,7 @@ public class S_Action06_Bounce : S_Action_Base, IMainAction
 			_Actions._bounceCount++;
 		}
 
-		_ActionChain.AddToChain("Bounce", 1, 5);
+		_ActionChain.AddToChain("Bounce", 1, 5, "", 5);
 	}
 
 	#endregion

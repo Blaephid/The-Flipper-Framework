@@ -125,6 +125,7 @@ public class S_PlayerMovement : S_Player_Base
 		if (_PlayerPhys._locksForCanControl.Count != 0)
 		{
 			_PlayerVel._externalRunningSpeed = -1;
+			_PlayerVel._additionalExternalRunningSpeed = 0;
 			return startVelocity;
 		}
 
@@ -167,11 +168,20 @@ public class S_PlayerMovement : S_Player_Base
 			}
 		}
 
+		if (_PlayerVel._additionalExternalRunningSpeed >= 0 && lateralVelocity.sqrMagnitude > 1)
+		{
+			lateralVelocity += lateralVelocity.normalized * _PlayerVel._additionalExternalRunningSpeed;
+			_PlayerVel._additionalExternalRunningSpeed = 0; //Set to a negative value so core speeds of 0 can be set externally.
+		}
+
 		//Before taking off, no matter the acceleration, there will be one frame before the player starts gaining speed, this is to give an easy change to remove speed if trying to move into an obstacle.
 		if (lateralVelocityBeforeChanges.sqrMagnitude < Mathf.Pow(0.0001f, 2))
 		{
 			lateralVelocity = lateralVelocity.normalized * 0.005f;
 		}
+
+		_PlayerVel._lateralVelocity = lateralVelocity;
+		
 
 		// Clamp horizontal running speed. coreVelocity can never exceed the player moving laterally faster than this.
 		localVelocity = lateralVelocity + verticalVelocity;

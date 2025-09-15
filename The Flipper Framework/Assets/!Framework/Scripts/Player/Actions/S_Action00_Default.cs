@@ -237,14 +237,6 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 
 		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
 
-		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
-		for (int i = 0 ; i < _PlayerSkin.Count ; i++)
-		{
-			SkinnedMeshRenderer Skin = _PlayerSkin[i];
-			Skin.enabled = setMainSkin;
-			if (Skin.enabled) { _CurrentSkins.Add(Skin); }
-		}
-
 		_SpinDashBall.enabled = !setMainSkin;
 		//If ball enabled, disable the animator so its sounds don't overlap.
 		if (_SpinDashBall.enabled)
@@ -261,6 +253,14 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 			_Effects.EnableLesserTrails(false, false);
 			_CurrentAnimator = _CharacterAnimator;
 			_CharacterAnimator.speed = 1;
+		}
+
+		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
+		for (int i = 0 ; i < _PlayerSkin.Count ; i++)
+		{
+			SkinnedMeshRenderer Skin = _PlayerSkin[i];
+			Skin.enabled = setMainSkin;
+			if (Skin.enabled) { _CurrentSkins.Add(Skin); }
 		}
 	}
 
@@ -279,6 +279,11 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 	}
 
 	public void OverWriteCollider ( CapsuleCollider newCollider ) {
+		if (newCollider == _LowerCapsule)
+			_CoreValues._inBall = true;
+		else
+			_CoreValues._inBall = false;
+
 		_CharacterCapsule.radius = newCollider.radius;
 		_CharacterCapsule.center = newCollider.center;
 		_CharacterCapsule.material = newCollider.material;

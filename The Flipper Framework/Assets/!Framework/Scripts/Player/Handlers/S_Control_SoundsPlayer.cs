@@ -59,6 +59,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 
 	[Header("Additional SFX")]
 	public GameObject _LevelUpSound;
+	public GameObject[] _ActionChainSounds;
 
 	[Header("Voice")]
 	public AudioClip[] CombatVoiceClips;
@@ -284,6 +285,13 @@ public class S_Control_SoundsPlayer : S_Player_Base
 	#endregion
 
 	#region SpawningSFXObjects
+
+	public void ActionChainSound ( int score ) {
+		score = Mathf.Min(score, _ActionChainSounds.Length);
+		score -= 1;
+
+		Instantiate(_ActionChainSounds[score], transform.position, transform.rotation);
+	}
 
 	public void LevelUpSound () {
 		Instantiate(_LevelUpSound, transform.position, transform.rotation);

@@ -1110,7 +1110,8 @@ MonoBehaviour:
   _totalVelocity: {x: 0, y: 0, z: 0}
   _totalVelocityLocal: {x: 0, y: 0, z: 0}
   _worldVelocity: {x: 0, y: 0, z: 0}
-  _totalDirection: {x: 0, y: 0, z: 0}
+  _worldForwardDirection: {x: 0, y: 0, z: 0}
+  _lateralVelocity: {x: 0, y: 0, z: 0}
   _previousVelocity:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
@@ -1118,6 +1119,7 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   _externalRunningSpeed: 0
+  _additionalExternalRunningSpeed: 0
   _speedMagnitudeSquared: 0
   _horizontalSpeedMagnitude: 0
   _currentRunningSpeed: 0
@@ -9689,6 +9691,10 @@ MonoBehaviour:
     type: 3}
   _LevelUpSound: {fileID: 5114165620824742214, guid: 0b1e29547c461c74893881e921e61dc7,
     type: 3}
+  _ActionChainSounds:
+  - {fileID: 5114165620824742214, guid: 7e84b336d4a84b74cbf801a8068e6903, type: 3}
+  - {fileID: 5114165620824742214, guid: 7e84b336d4a84b74cbf801a8068e6903, type: 3}
+  - {fileID: 5114165620824742214, guid: dbcd243201d3e934590ace29f3687c03, type: 3}
   CombatVoiceClips:
   - {fileID: 8300000, guid: 22a16f262c9d0714f8dd7438a6397814, type: 3}
   - {fileID: 8300000, guid: 5d94c7cfa49276648b57eb00c7198fae, type: 3}
@@ -9726,6 +9732,10 @@ MonoBehaviour:
   _SpeedLinesWind: {fileID: 4447762079408028007}
   _SpeedLinesCharacter: {fileID: 1357469328132827726}
   _ActionChainEffect: {fileID: 5602673517800940507}
+  _ActionChainColours:
+  - {r: 0.25910288, g: 0.90943396, b: 0.5259066, a: 0}
+  - {r: 0.79856044, g: 0.9098039, b: 0.25882354, a: 0}
+  - {r: 0.94716984, g: 0.92935556, b: 0.83458173, a: 0}
   SpinDashEnergy: {fileID: 6466641387993368723}
   RailsSparksLeft: {fileID: 3665193414302307084}
   RailsSparksRight: {fileID: 5704504662201302378}
@@ -11263,7 +11273,10 @@ VisualEffect:
     m_Vector3f:
       m_Array: []
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 0, y: 0.85490197, z: 0.19847739, w: 0}
+        m_Name: Colour
+        m_Overridden: 0
     m_Uint:
       m_Array: []
     m_Int:
