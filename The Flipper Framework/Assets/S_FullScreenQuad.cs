@@ -25,6 +25,10 @@ public class S_FullScreenQuad : MonoBehaviour
 		if (_updateInGameTime) FitFullScreenQuad();
 	}
 
+	private void LateUpdate () {
+		if (_updateInGameTime) FitFullScreenQuad();
+	}
+
 	public void FitFullScreenQuad () {
 		if (!CameraToStickTo) { return; }
 

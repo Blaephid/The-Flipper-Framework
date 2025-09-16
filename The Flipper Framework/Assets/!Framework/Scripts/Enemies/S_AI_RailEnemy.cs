@@ -145,7 +145,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 
 	public void TriggerObjectOnce ( S_CharacterTools Player = null ) {
 		if (!CanBeTriggeredOn(Player)) { return; }
-		SetIsActive(true);
+		SetIsActivelyMoving(true);
 		_RF.StartOnRail();
 
 		if (!_isActive) { return; }
@@ -161,12 +161,12 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 
 	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
 		if (!CanBeTriggeredOff(Player)) { return; }
-		SetIsActive(false);
+		SetIsActivelyMoving(false);
 		_RF._grindingSpeed = 0;
 	}
 	#endregion
 
-	private void SetIsActive ( bool set ) {
+	private void SetIsActivelyMoving ( bool set ) {
 		_isActive = set;
 		_timeGrinding = 0;
 
@@ -628,7 +628,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 	private void ResetRigidBody () {
 		_RB.linearVelocity = Vector3.zero;
 		_RB.useGravity = false;
-		_RB.freezeRotation = true;
+		_RB.constraints = RigidbodyConstraints.FreezeAll;
 	}
 
 	public void SetToSpline () {

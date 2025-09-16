@@ -225,6 +225,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
 					_RF._grindingSpeed = Mathf.Max(charge, _RF._grindingSpeed + (charge / 2));
 					if (!_PlayerPhys._isGrounded) StartCoroutine(_ActionChain.CheckLandingQuality(_RF._sampleUpwards));
+
+					float chainValue = Mathf.Lerp(0, 2, _Actions._charge / 180);
+					chainValue = Mathf.Round(chainValue);
+					_ActionChain.AddToChain("Drop Dash", (int)chainValue, 4, "", 5);
 					break;
 				default:
 					if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Bounce) _ActionChain.AddToChain("Bounce", 1, 5);

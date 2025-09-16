@@ -2658,7 +2658,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 30
+        time: 10
         value: 2
         inSlope: 0
         outSlope: 0
@@ -2667,7 +2667,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 50
+        time: 30
         value: 3
         inSlope: 0
         outSlope: 0
@@ -2676,16 +2676,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 75
-        value: 4
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 100
+        time: 60
         value: 5
         inSlope: 0
         outSlope: 0
@@ -3017,7 +3008,7 @@ MonoBehaviour:
     climbModifier: 1
     fallOffAtFallSpeed: 15
     jumpFromClimbingModifiers: {x: 0.8, y: 1.3}
-    jumpFromRunningModifiers: {x: 0.8, y: 1.5}
+    jumpFromRunningModifiers: {x: 1.2, y: 1.6}
   StartWallRunningStats:
     wallCheckDistance: {x: 10, y: 6}
     minHeight: 5

@@ -10,11 +10,11 @@ public class S_Triggered_MaterialSwap : S_Triggered_Base, ITriggerable
 
 
 	private void Start () {
-		TriggerObjectOn(null); //Call immediately to ensure from material exists and is ready.
+		//TriggerObjectOn(null); //Call immediately to ensure from material exists and is ready.
 	}
 
 	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
-		if (!CanBeTriggeredOn(Player)) { return; }
+		if (!enabled) { return; }
 
 		SwitchMaterials();
 	}
@@ -30,11 +30,13 @@ public class S_Triggered_MaterialSwap : S_Triggered_Base, ITriggerable
 			if (thisSwap._onMaterialA)
 			{
 				_notInDefaultState = true;
+				S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 				materialsCopy[thisSwap._materialIndex] = thisSwap._toMaterial;
 			}
 			else
 			{
 				_notInDefaultState = false;
+				S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 				materialsCopy[thisSwap._materialIndex] = thisSwap._fromMaterial;
 			}
 
@@ -56,5 +58,5 @@ public class MaterialsToSwap
 	[SerializeField] public Material _fromMaterial;
 	[ColourIfNull(0.7f, 0, 0, 1)]
 	[SerializeField] public Material _toMaterial;
-	[NonSerialized] public bool _onMaterialA = false;
+	[NonSerialized] public bool _onMaterialA = true;
 }

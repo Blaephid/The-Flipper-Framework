@@ -58,6 +58,8 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	[HideInInspector]   public Vector3      _raycastOrigin;
 	[HideInInspector]	public  bool        _isHoldingWall;
 	[HideInInspector]	public  float       _counter;
+	private bool                                    _hasAddedToChain;
+
 	[HideInInspector]	public  float       _distanceFromWall;
 	[HideInInspector]   public float       _checkDistance;
 
@@ -99,7 +101,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 			CheckCanceling();
 			HandleInputs();
 
-			if(_counter > 0.5f) { _ActionChain.AddToChain("Wall Run", 1, 1); }
+			if(_counter > 0.5f && !_hasAddedToChain) { _hasAddedToChain = true; _ActionChain.AddToChain("Wall Run", 1, 1); }
 		}
 		else
 		{
@@ -133,6 +135,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 
 		_isWall = true;
 		_counter = 0;
+		_hasAddedToChain = false;
 
 		_distanceFromWall = _CoreCollider.radius * 1.25f;
 

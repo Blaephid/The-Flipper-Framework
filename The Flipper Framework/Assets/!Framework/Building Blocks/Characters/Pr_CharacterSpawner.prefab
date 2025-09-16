@@ -228,7 +228,7 @@ MonoBehaviour:
     _directionToUse_: {x: 0, y: 0, z: 0}
     _shotOrigin: {fileID: 0}
     _overwriteGravity_: {x: 0, y: 0, z: 0}
-    _coreVelocityImportance: 0.746
+    _coreVelocityImportance: 1
     _delayGroundedFor: 0
     _lockInputFrames_: 80
     _lockAirMovesFrames_: 0
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d9264e731051141b20b5e300f45f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isSelected: 0
+  _isSelected: 1
   _hasVisualisationScripted: 1
   _viewVisualisationData: 1
   _viewVisualisationDataHidden: 1
@@ -732,12 +732,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
   Priority:
-    Enabled: 0
-    m_Value: 0
+    Enabled: 1
+    m_Value: -2
   OutputChannel: 1
   StandbyUpdate: 1
-  m_StreamingVersion: 20170927
-  m_LegacyPriority: -2
+  m_StreamingVersion: 20241001
+  m_LegacyPriority: 0
   Target:
     TrackingTarget: {fileID: 0}
     LookAtTarget: {fileID: 0}

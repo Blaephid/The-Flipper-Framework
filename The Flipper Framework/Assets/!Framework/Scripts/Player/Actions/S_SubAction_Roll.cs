@@ -67,7 +67,7 @@ public class S_SubAction_Roll : S_Action_Base, ISubAction
 
 			if (_rollCounter > 0.5f && _PlayerVel._horizontalSpeedMagnitude > _speedBeforeRoll + 30) 
 			{ 
-				_ActionChain.AddToChain("Roll", 2, 1, "", 15);
+				_ActionChain.AddToChain("Roll", 2, 1, "", 15, true);
 				_speedBeforeRoll = _PlayerVel._horizontalSpeedMagnitude;
 			}
 

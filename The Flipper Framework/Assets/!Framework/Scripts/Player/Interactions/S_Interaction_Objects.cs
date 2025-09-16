@@ -50,6 +50,9 @@ public class S_Interaction_Objects : S_Player_Base
 
 	// Trackers
 	#region trackers
+	private bool _canAddObjectToActionChain = true;
+	private int _howManyDelaysOnActionChain = 0;
+
 	private Vector3     _translateOnPlatform;
 
 	[HideInInspector]
@@ -499,7 +502,7 @@ public class S_Interaction_Objects : S_Player_Base
 			_Input.LockInputForAWhile(SpeedPadScript._lockControlFrames_, false, GO.transform.forward, SpeedPadScript._lockInputTo_);
 		}
 
-		_ActionChain.AddToChain("Speed Pad", 2, 1, GO.GetInstanceID().ToString());
+		AddObjectToActionChain("Speed Pad", 2, 1, GO.GetInstanceID().ToString());
 	}
 
 	private void LaunchFromDashLauncher ( Collider Col ) {
@@ -518,7 +521,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 		ObjectRotatesCamera(GO, DashRingScript._cameraEffect);
 
-		_ActionChain.AddToChain(DashRingScript.source, 2, 1, GO.GetInstanceID().ToString());
+		AddObjectToActionChain(DashRingScript.source, 2, 1, GO.GetInstanceID().ToString());
 	}
 
 	private void BoostOnRail ( Collider Col ) {
@@ -536,7 +539,7 @@ public class S_Interaction_Objects : S_Player_Base
 			SnapToObject(GO.transform, RailBoosterScript._PositionToLockTo);
 		}
 
-		_ActionChain.AddToChain("Rail Booster", 2, 1, GO.GetInstanceID().ToString());
+		AddObjectToActionChain("Rail Booster", 1, 1, GO.GetInstanceID().ToString());
 		StartCoroutine(RailAction.ApplyBoosters(RailBoosterScript));
 
 		ObjectRotatesCamera(GO, RailBoosterScript._cameraEffect);
@@ -680,7 +683,7 @@ public class S_Interaction_Objects : S_Player_Base
 		if (SpringScript._Animator != null)
 			SpringScript._Animator.SetTrigger("Hit");
 
-		_ActionChain.AddToChain("Spring", 2, 1, GO.GetInstanceID().ToString());
+		AddObjectToActionChain("Spring", 2, 1, GO.GetInstanceID().ToString());
 	}
 
 	public void ApplyLaunchEffects ( LaunchPlayerData launchData ) {
@@ -873,6 +876,29 @@ public class S_Interaction_Objects : S_Player_Base
 		}
 	}
 
+	private void AddObjectToActionChain( string source, int value, int differenceBetweenThisSourceInChain = 2, string subSource = "", float addSpeed = 0, bool sound = false ) {
+		if(_canAddObjectToActionChain)
+			_ActionChain.AddToChain(source, value, differenceBetweenThisSourceInChain, subSource, addSpeed, sound);
+
+		StartCoroutine(DelayAddingAnotherObjectToActionChain());
+	}
+
+	//To prevent getting too many points from multiple objects placed directrly in line with each other.
+	private IEnumerator DelayAddingAnotherObjectToActionChain () {
+		_canAddObjectToActionChain = false;
+
+		_howManyDelaysOnActionChain++;
+		int thisDelay = _howManyDelaysOnActionChain;
+
+		yield return new WaitForSeconds(0.3f);
+
+		//Only end delay after most recent delay
+		if (thisDelay != _howManyDelaysOnActionChain) { yield break; }
+
+		_howManyDelaysOnActionChain = 0; 
+		_canAddObjectToActionChain = true;
+	}
+
 	#endregion
 
 	/// <summary>
@@ -896,7 +922,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 		MonitorData.DestroyMonitor();
 
-		_ActionChain.AddToChain("Monitor", 2, 0, MonitorData.gameObject.GetInstanceID().ToString());
+		AddObjectToActionChain("Monitor", 2, 0, MonitorData.gameObject.GetInstanceID().ToString());
 	}
 	#endregion
 

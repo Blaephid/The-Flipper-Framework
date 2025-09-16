@@ -95,8 +95,13 @@ public class S_S_MoreMaths
 		return totalTime;
 	}
 
-	public static string DisplayIntInStringDigits ( int value, int characters = 2 ) {
-		string str = value >= 10 ? value.ToString() : "0" + value.ToString();
+	public static string DisplayIntAsStringInXDigits ( int value, int characters = 2 ) {
+		string str = value.ToString();
+		for (int i = 10 ; i < Mathf.Pow(10, characters) ; i *= 10)
+		{
+			if (value < i)
+				str = "0" + str;
+		}
 		str = str.Substring(0, characters);
 		return str;
 	}

@@ -247,7 +247,7 @@ public class S_Action01_Jump : S_Action_Base, IMainAction
 
 	//Called when entering the action, to ready any variables needed for performing it.
 	private void AssignStartValues ( Vector3 normaltoJump, bool fromGround = false, float speedModifier = 1, float durationModifier = 1 ) {
-		if (1 - Mathf.Abs(normaltoJump.y) < 0.1f)
+		if (1 - normaltoJump.y < 0.1f)
 			normaltoJump = Vector3.up;
 
 		//Sets jump directionaw

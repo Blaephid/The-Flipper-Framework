@@ -22,7 +22,7 @@ public class S_Triggered_Base : S_Vis_Base, ITriggerable
 	public virtual bool CanBeTriggeredOff ( S_CharacterTools Player ) {
 		if (!enabled) { return false; }
 
-		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+		_notInDefaultState = false;
 		return true;
 	}
 

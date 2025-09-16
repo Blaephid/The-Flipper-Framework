@@ -79,7 +79,7 @@ public class S_ActionChain : S_Player_Base
 		_delay = _delayBetweenChains;
 	}
 
-	public void AddToChain ( string source, int value, int differenceBetweenThisSourceInChain = 2, string subSource = "", float addSpeed = 0 ) {
+	public void AddToChain ( string source, int value, int differenceBetweenThisSourceInChain = 2, string subSource = "", float addSpeed = 0, bool sound = false ) {
 		if (!_isActionChainEnabled || _delay >= 0) return;
 
 		int firstIndex = _ChainList.IndexOf(source);
@@ -125,7 +125,7 @@ public class S_ActionChain : S_Player_Base
 			_CoreUIElements.AChainLevelText.text = _chainLevel.ToString();
 
 			_Effects.ActionChainAdd(value);
-			_Sounds.ActionChainSound(value);
+			if(sound) _Sounds.ActionChainSound(value);
 
 			if(addSpeed > 0 && _PlayerVel._currentRunningSpeed > 10)
 			{
@@ -171,83 +171,75 @@ public class S_ActionChain : S_Player_Base
 
 		//Get boxcast values on right first.
 		Vector3 dir = _PlayerVel._worldForwardDirection;
-		Vector3 boxHalfSize = new Vector3 (2.5f, (_Actions._ActionDefault._CharacterCapsule.height / 2) + 1, 0.2f);
+		Vector3 boxHalfSize = new Vector3 (2.5f, (_Actions._ActionDefault._CharacterCapsule.height / 2.2f), 0.2f);
 		Vector3 startPos = _PlayerPhys._CharacterCenterPosition;
+		if (_PlayerPhys._isGrounded) startPos += _MainSkin.up * 0.2f;
 
-		//Ensure there is actually something to get through
-		Debug.DrawRay(startPos, dir * _PlayerVel._horizontalSpeedMagnitude * Time.deltaTime * 2.5f, Color.yellow, 10f);
-		if (Physics.BoxCast(startPos, new Vector3(1, 2, 0.5f), dir, Quaternion.identity, _PlayerVel._horizontalSpeedMagnitude * Time.deltaTime * 2.5f))
+		//Ensure there is actually a space the player can fit through.
+		if (Physics.BoxCast(startPos, new Vector3(0.5f, 2.2f, 0.5f), dir, Quaternion.identity, _PlayerVel._speedMagnitude * Time.deltaTime * 2.5f))
 			return;
 
-		startPos += _MainSkin.right * boxHalfSize.x * 1.1f;
-		if(_PlayerPhys._isGrounded) startPos += _MainSkin.up * 1.1f;
-
-		Debug.DrawRay(startPos, dir * _PlayerVel._horizontalSpeedMagnitude * Time.deltaTime * 1.5f, Color.yellow, 10f);
-
-		//Check in front on the right or left for walls.
-		if(Physics.BoxCast(startPos, boxHalfSize, dir, out RaycastHit hit, transform.rotation, _PlayerVel._horizontalSpeedMagnitude * Time.deltaTime * 1.5f, _PlayerPhys._Groundmask_))
-		{
-			//If this point on a wall is accessible to the player, and reflect back at them, then it is a wall that needs to be avoided.
-			Debug.DrawLine(startPos, hit.point, Color.magenta, 10f);
-
-			Vector3 reflect = Vector3.Reflect(dir, hit.normal);
-			if (Vector3.Angle(reflect, -dir) < 40f) 
-			{
-				Debug.DrawLine(_PlayerPhys._CharacterCenterPosition, hit.point, Color.white, 10f);
-				if(!Physics.Raycast(_PlayerPhys._CharacterCenterPosition, S_S_MoreMaths.GetDirection(_PlayerPhys._CharacterCenterPosition, hit.point), hit.distance * 0.95f, _PlayerPhys._Groundmask_))
-					hits++;
-			}
-
-			Debug.DrawRay(hit.point, reflect * 3, Color.green, 10f);
-			Debug.DrawRay(hit.point, -dir * 3, Color.red, 10f);
-		}
-		startPos -= _MainSkin.right * boxHalfSize.x * 1.2f * 2;
-		Debug.DrawRay(startPos, dir * _PlayerVel._horizontalSpeedMagnitude * Time.deltaTime * 1.5f, Color.yellow, 10f);
-		if (Physics.BoxCast(startPos, boxHalfSize, dir, out  hit, transform.rotation, _PlayerVel._horizontalSpeedMagnitude * Time.deltaTime * 1.5f, _PlayerPhys._Groundmask_))
-		{
-			Debug.DrawLine(startPos, hit.point, Color.magenta, 10f);
-
-			Vector3 reflect = Vector3.Reflect(dir, hit.normal);
-			if (Vector3.Angle(reflect, -dir) < 40f)
-			{
-				if (!Physics.Linecast(_PlayerPhys._CharacterCenterPosition, hit.point))
-					hits++;
-				Debug.DrawLine(_PlayerPhys._CharacterCenterPosition, hit.point, Color.white, 10f);
-				if (!Physics.Raycast(_PlayerPhys._CharacterCenterPosition, S_S_MoreMaths.GetDirection(_PlayerPhys._CharacterCenterPosition, hit.point), hit.distance * 0.95f, _PlayerPhys._Groundmask_))
-					hits++;
-			}
-
-			Debug.DrawRay(hit.point, reflect * 3, Color.green, 10f);
-			Debug.DrawRay(hit.point, -dir * 3, Color.red, 10f);
-		}
+		//Walls on either side
+		CheckWall(startPos, dir, _MainSkin.right * boxHalfSize.x * 1.1f); //Right
+		CheckWall(startPos, dir, -_MainSkin.right * boxHalfSize.x * 1.1f); //Left
 
 		if (hits > 0)
 			StartCoroutine(WaitAndSeeIfPlayerPassesWalls( _PlayerVel._coreVelocity.sqrMagnitude, hits));
 
+		return;
+		void CheckWall ( Vector3 startPos, Vector3 dir, Vector3 offset ) {
+			startPos += offset;
+
+			//Check in front on the right or left for walls.
+			if (Physics.BoxCast(startPos, boxHalfSize, dir, out RaycastHit hit, transform.rotation, _PlayerVel._speedMagnitude * Time.deltaTime * 1.5f, _PlayerPhys._Groundmask_))
+			{
+				Vector3 checkPos = hit.point + (S_S_MoreMaths.GetDirection(_PlayerPhys._CharacterCenterPosition, hit.point) * 0.05f);
+				checkPos += offset.normalized * 0.05f; //Because boxcasts frequently hit corners, which will have perpendicular normals, offset a bit more.
+
+				Debug.DrawLine(_PlayerPhys._CharacterCenterPosition, checkPos, Color.magenta, 10f);
+				//Because boxcasts can hit this that aren't actually in the way, do a cast to check if the wall is actually in the way, or get the side facing the player.
+				if (Physics.Linecast(_PlayerPhys._CharacterCenterPosition, checkPos, out hit, _PlayerPhys._Groundmask_))
+				{
+					//If this point on a wall is accessible to the player, and reflects back at them, then it is a wall that needs to be avoided.
+					if (Vector3.Angle(hit.normal, -dir) < 30f)
+					{
+						hits++;
+					}
+
+					Debug.DrawRay(hit.point, hit.normal * 3, Color.green, 10f);
+					Debug.DrawRay(hit.point, -dir * 3, Color.red, 10f);
+				}
+			}
+		}
+
 	}
 
 	private IEnumerator WaitAndSeeIfPlayerPassesWalls (float sqrSpeedBefore, int hits) {
-		for (int i = 0 ; i < 4 ; i++)
+		for (int i = 0 ; i < 3 ; i++)
 		{
 			yield return new WaitForFixedUpdate();
 
-			if(_PlayerVel._coreVelocity.sqrMagnitude < 80 * 80 || _PlayerVel._coreVelocity.sqrMagnitude < sqrSpeedBefore - 64) { yield break; } //if players down or collides, they didn't make it through.
+			if(_PlayerVel._coreVelocity.sqrMagnitude < 70 * 70 || _PlayerVel._coreVelocity.sqrMagnitude < sqrSpeedBefore - 81) 
+			{ yield break; } //if players down or collides, they didn't make it through.
 			if (_timeSinceTrick < 0.5f) { yield break; } //if a previous check proves to have worked when waiting.
 		}
 
 		if (hits == 1)
 		{
-			AddToChain("Close Call", 2, 1, "", 7);
+			AddToChain("Close Call", 1, 1, "", 12, true);
 			_timeSinceTrick = 0;
 		}
 		else if (hits == 2)
 		{
-			AddToChain("Thread the Needle", 3, 1, "", 10);
+			AddToChain("Thread the Needle", 2, 1, "", 20, true);
 			_timeSinceTrick = 0;
 		}
 	}
 
 	public IEnumerator CheckLandingQuality (Vector3 groundNormal ) {
+		if(_PlayerPhys._timeInAir < 0.3f) { yield break; }
+		if(_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Hurt) { yield break; }
+
 		float minSpeed = 60;
 
 		if (_PlayerVel._totalVelocity.sqrMagnitude < minSpeed * minSpeed) { yield break; }
@@ -285,12 +277,12 @@ public class S_ActionChain : S_Player_Base
 
 		void PerfectLanding () {
 			Debug.Log("Perfect Landing");
-			AddToChain("Perfect Landing", 2, 1,"", 15);
+			AddToChain("Perfect Landing", 2, 1,"", 15, true);
 		}
 
 		void GoodLanding () {
 			Debug.Log("Good Landing");
-			AddToChain("Good Landing", 1, 2,"", 8);
+			AddToChain("Good Landing", 1, 2,"", 8, true);
 		}
 	}
 

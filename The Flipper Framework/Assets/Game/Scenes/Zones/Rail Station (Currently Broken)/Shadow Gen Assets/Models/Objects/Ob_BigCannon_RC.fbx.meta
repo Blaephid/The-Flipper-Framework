@@ -1,9 +1,74 @@
 fileFormatVersion: 2
 guid: df7fb7cc59639e34ebea1a2e839d7136
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7008_redwall_RC
+    second: {fileID: 2100000, guid: 9506b02738c534742aec227846f66263, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7023_partswall_RC
+    second: {fileID: 2100000, guid: a8792ae9bfb669743916eb22674ac251, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_7025_partswall_RC
+    second: {fileID: 2100000, guid: de938ed7656ad5e4ab3684ac63993932, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_8007_RC
+    second: {fileID: 2100000, guid: f4e7e9eb02249b74bb7fd0895429bbda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_bigca6_RC
+    second: {fileID: 2100000, guid: dfa26901ded505045874280a38c24286, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_darkgray_RC
+    second: {fileID: 2100000, guid: 421146ef5a38e95459b02ee0f5f32b6f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_edge_arrow_RC
+    second: {fileID: 2100000, guid: c21e24231edde97409b38ef1dcadd087, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_frame_RC
+    second: {fileID: 2100000, guid: e88c372dd7d8db94581f57b4a0dd8de1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_gray_RC
+    second: {fileID: 2100000, guid: e65b5524c09a2df41b25863a42aa9f92, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_propeller01_RC
+    second: {fileID: 2100000, guid: 0665a8e215c5e9e45b6049cdf86b1249, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_propeller02_RC
+    second: {fileID: 2100000, guid: c793259611383114a95c354d5df08747, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_sidedeco_RC
+    second: {fileID: 2100000, guid: 4d5c3d500df728a418fd4494746cc76e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_metal_white_RC
+    second: {fileID: 2100000, guid: f5ae76b2b11c68446be1246ecb2385d5, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -29,7 +94,36 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Ob_BigCannon_RC|w02_obj_bigcannon
+      takeName: Ob_BigCannon_RC|w02_obj_bigcannon
+      internalID: 166247084512265174
+      firstFrame: 0
+      lastFrame: 600
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -56,6 +150,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8

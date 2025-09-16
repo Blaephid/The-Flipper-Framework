@@ -204,10 +204,10 @@ public class S_PlayerCoreValues : S_Player_Base
 
 	//Gain or lose rings
 	public void AdjustRings ( int change, bool forEnergy ) {
-		_ringCount += change;
-
-		if (_ringCount < _currentMaxRings)
+		if (_ringCount <= _currentMaxRings)
 			_Score.AdjustRingScore(change);
+
+		_ringCount += change;
 
 		_ringCount = Mathf.Clamp(_ringCount, 0, _currentMaxRings);
 
@@ -221,7 +221,7 @@ public class S_PlayerCoreValues : S_Player_Base
 
 	public void AdjustPoints ( float change ) {
 		_pointsCount += change;
-		_pointsCount = Mathf.Clamp(_pointsCount, 0, _currentPointsNeedForNextLevel);
+		_pointsCount = Mathf.Clamp(_pointsCount, 0, _currentPointsNeedForNextLevel + 1);
 
 		_pointsInQuickSuccession += change;
 		_countdownForPointsQuickSuccession = _setCountdownTo;

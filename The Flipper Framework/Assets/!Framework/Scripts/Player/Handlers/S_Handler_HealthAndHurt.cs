@@ -236,7 +236,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 			_ReleaseDirection.transform.Rotate(0, _ringArcSpeed_, 0); //Change the direction to fire ring in next spawn.
 
-			_ringsToLose -= Mathf.Max((int)_RingsLostInSpawnByAmount_.Evaluate(_ringsToLose), 1); //The number of rings to lose spent depends on how many there are. If it was always one cost per spawn, it would get distracting and heavy at high damage.
+			_ringsToLose -= Mathf.Max ((int)_RingsLostInSpawnByAmount_.Evaluate(_ringsToLose), 1); //The number of rings to lose spent depends on how many there are. If it was always one cost per spawn, it would get distracting and heavy at high damage.
 		}
 		//When out of rings to spawn, end the method.
 		else
@@ -266,7 +266,6 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 				_CoreValues.SetValuesOnLevelStart();
 
 			S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "Dead"); //Does not have to be undone because on respawn, this will be cleared.
-			S_S_Logic.AddLockToList(ref _CamHandler._HedgeCam._locksForCameraFallBack, "Dead");
 
 			//Enter the hurt action until respawn
 			if (!_HurtAction.enabled && applyResponse) _HurtAction.StartAction();
@@ -580,7 +579,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 		//Readies the rings being spawned as objects in the world
 		if (!_isReleasingRings)
 		{
-			_ringsToLose = (int)damage;
+			_ringsToLose = (int)damage - 1;
 			_isReleasingRings = true;
 		}
 	}

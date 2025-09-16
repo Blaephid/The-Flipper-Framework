@@ -49,6 +49,8 @@ public class S_PlayerVelocity : S_Player_Base
 	[HideInInspector]
 	public float                  _speedMagnitudeSquared;              //The speed of the player at the end of the frame.
 	[HideInInspector]
+	public float                  _speedMagnitude;        
+	[HideInInspector]
 	public float                  _horizontalSpeedMagnitude;    //The speed of the player relative to the character transform, so only shows running speed.
 	[HideInInspector]
 	public float                  _currentRunningSpeed;         //Similar to horizontalSpedMagnitde, but only core velocity, therefore the actual running velocity applied through this script.
@@ -282,6 +284,7 @@ public class S_PlayerVelocity : S_Player_Base
 
 		//Assigns the global variables for the current movement, since it's assigned at the end of a frame, changes between frames won't be counted when using this,
 		_speedMagnitudeSquared = _totalVelocity.sqrMagnitude;
+		_speedMagnitude = _totalVelocity.magnitude;
 		Vector3 releVec = _PlayerPhys.GetRelevantDirection(_totalVelocity, false);
 		_horizontalSpeedMagnitude = releVec.magnitude;
 

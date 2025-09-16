@@ -39,5 +39,7 @@ EditorBuildSettings:
     path: Assets/Game/Scenes/Zones/Rail Station (Currently Broken)/Sc_Rail Canyon
       PART 2.unity
     guid: e5010835dc3ff0c4ea1488067942c330
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f,
+      type: 2}
   m_UseUCBPForAssetBundles: 0
