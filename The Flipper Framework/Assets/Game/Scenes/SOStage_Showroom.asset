@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: SOStage_Showroom
   m_EditorClassIdentifier: Assembly-CSharp::S_O_StageScenes
   _StageName: Showroom
-  _minSecondsToLoadScenes: 0.3
+  _minSecondsToLoadScenes: 1
   _BaseScene:
     m_SceneAsset: {fileID: 102900000, guid: f1427bd62c373394c9bcbc9478219ba9, type: 3}
     m_SceneName: Sc_Showroom
-  _Scenes: []
+  _AdditionalScenes: []
   _Ranks:
     Time_XRank: {x: 0, y: 30, z: 0}
     TimeTotal_XRank: 30

@@ -41,7 +41,7 @@ EditorBuildSettings:
     guid: e5010835dc3ff0c4ea1488067942c330
   - enabled: 1
     path: Assets/Game/Scenes/Zones/Rail Station (Currently Broken)/Sc_Rail Canyon
-      Part 3.unity
+      PART 3.unity
     guid: eab1bdef08d432649a90cc7d6731eed8
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f,

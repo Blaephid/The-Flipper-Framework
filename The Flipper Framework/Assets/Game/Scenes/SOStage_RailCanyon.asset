@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SOStage_RailCanyon
   m_EditorClassIdentifier: Assembly-CSharp::S_O_StageScenes
   _StageName: Rail Canyon
-  _minSecondsToLoadScenes: 0.7
+  _minSecondsToLoadScenes: 1.6
   _BaseScene:
     m_SceneAsset: {fileID: 102900000, guid: 1719789e4a637a144bef30ae15520c27, type: 3}
     m_SceneName: Sc_Rail Canyon BASE
@@ -25,7 +25,7 @@ MonoBehaviour:
   - m_SceneAsset: {fileID: 102900000, guid: e5010835dc3ff0c4ea1488067942c330, type: 3}
     m_SceneName: Sc_Rail Canyon PART 2
   - m_SceneAsset: {fileID: 102900000, guid: eab1bdef08d432649a90cc7d6731eed8, type: 3}
-    m_SceneName: Sc_Rail Canyon Part 3
+    m_SceneName: Sc_Rail Canyon PART 3
   _Ranks:
     Time_XRank: {x: 1, y: 15, z: 0}
     TimeTotal_XRank: 75

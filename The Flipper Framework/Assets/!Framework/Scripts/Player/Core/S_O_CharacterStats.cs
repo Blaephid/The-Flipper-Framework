@@ -768,6 +768,14 @@ public class S_O_CharacterStats : ScriptableObject
 			timeBetweenScans = 0.06f,
 			radiusOfCameraTargetCheck = 15,
 			cameraDirectionPriority = 0.5f,
+			TargetPriorityByDistanceFromScreenMiddle = new AnimationCurve(new Keyframe[]
+			{
+				new Keyframe(0, 0.5f),
+				new Keyframe(0.1f, 0.5f),
+				new Keyframe(0.15f, 0.6f),
+				new Keyframe(0.7f, 1f),
+				new Keyframe(1f, 1.2f)
+			}),
 		};
 	}
 
@@ -793,11 +801,13 @@ public class S_O_CharacterStats : ScriptableObject
 		public LayerMask              TargetLayer;
 		[Tooltip("Core: Will ignore a target if an object of this layer is between it and the character")]
 		public LayerMask              blockingLayers;
-		[Range(0f, 1f), Tooltip("Core: Determines how much to favour a target found by the sphere cast rather than the sphere check. It does this by treating the camera one as closer by this amount. (So 1 means a target found through the cast will be treated as 0 distance from player.)")]
+		[Range(0f, 1f), Tooltip("Core: Determines how much to favour a target found by the sphere cast rather than the sphere check. Multiplies distance of targets by this, meaning the lower the closer it seems. 0 is always beats other targets.")]
 		public float                  cameraDirectionPriority;
+		[Tooltip("Core: Determines how much to favour a target based on its distance from the middle of the screen, allowing aiming with the camera. The lower the y, the more valued as it multiplies the distance.)")]
+		public AnimationCurve TargetPriorityByDistanceFromScreenMiddle;
 		[Tooltip("Core: The maximum angle there can be between the characters facing direction and direction of target for the target to be allowed. So if 90, then any targets behind the character will not be counted.")]
 		public float                  facingAmount;
-		[Range(0f, 1f), Tooltip("Core: If switching target, this sets how much to prioritise the old target to the new one. 0.5 means the new target must be more than twice as close.")]
+		[Range(0f, 1f), Tooltip("Core: If switching target, the old target's distance is multiplied by this. 0.5 means the new target must be more than twice as close, 0 means old target every time.")]
 		public float                  currentTargetPriority;
 		[Tooltip("Core: The minimum time in seconds an object can be considered the closest target before changing. X = How long before switching to the new closest target. Y = How long before setting there as being no current target.")]
 		public Vector2                timeToKeepTarget;

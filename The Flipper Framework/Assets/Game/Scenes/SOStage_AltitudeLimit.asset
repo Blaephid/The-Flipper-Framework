@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SOStage_AltitudeLimit
   m_EditorClassIdentifier: Assembly-CSharp::S_O_StageScenes
   _StageName: Altitude Limit
-  _minSecondsToLoadScenes: 0.4
+  _minSecondsToLoadScenes: 1.5
   _BaseScene:
     m_SceneAsset: {fileID: 102900000, guid: 975ff8a3a5aaa15418195c73ef31af20, type: 3}
     m_SceneName: Sc_AltitudeLimit

@@ -101,6 +101,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	[HideInInspector]
 	public bool         _isGrinding; //USed to ensure no calculations are made from this still being active for possibly one frame called by Update when ending action.
+
+	private bool    _isPausedLocal;
 	#endregion
 	#endregion
 
@@ -125,7 +127,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_RF.ApplyHopUpdate(_hopSpeed_, _HopSpeedByTime_); //As rail hopping is shared between player and rhinoliners. The fixedUpdate version is not shared as those handle physics differently.
 
 		EffectsControl();
-		SoundControl();
 		//Handle animations
 		switch (_RF._whatKindOfRail)
 		{
@@ -145,6 +146,23 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	new private void FixedUpdate () {
 		base.FixedUpdate();
+		if(_Actions._isPaused)
+		{
+			if(!_isPausedLocal)
+			{
+				_Sounds.RailGrindStop();
+				_isPausedLocal = true;
+			}
+			return;
+		}
+		else if(!_Actions._isPaused && _isPausedLocal)
+		{
+			_Sounds.RailGrindSound(true);
+			_isPausedLocal = false;
+		}
+
+		SoundControl();
+
 		if (!enabled || !_isGrinding || !_RF._RailTransform) { return; }
 
 		_PlayerPhys._timeOnGround = 0;

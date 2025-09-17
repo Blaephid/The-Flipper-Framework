@@ -6,6 +6,8 @@ public class S_UI_Pause : MonoBehaviour
 {
 	public GameObject _Pause;
 	public Animator   _PauseAnimator;
+
+	private bool _isPausedLocal;
 	void Start () {
 
 		SetPanelActive(false);
@@ -26,26 +28,34 @@ public class S_UI_Pause : MonoBehaviour
 
 	public void PauseToggle () {
 
-		if (_Pause.activeSelf)
+		if (_isPausedLocal)
 		{
 			_PauseAnimator.SetTrigger("Exit");
-			Time.timeScale = 1;
+			StartCoroutine(WaitOneFrameBeforeSettingTimeScale(1));
 			Cursor.visible = false;
 			Cursor.lockState = CursorLockMode.Locked;
 
 			GameObject.FindFirstObjectByType<S_ActionManager>()._isPaused = false;
+			_isPausedLocal = false;
 		}
 		else
 		{
 			SetPanelActive(true);
 			_PauseAnimator.SetTrigger("Enter");
-			Time.timeScale = 0;
+			StartCoroutine(WaitOneFrameBeforeSettingTimeScale(0));
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
 
 			GameObject.FindFirstObjectByType<S_ActionManager>()._isPaused = true;
+			_isPausedLocal = true;
 		}
 
+	}
+
+	//Gives one frame for any _isPaused effects to happen.
+	private IEnumerator WaitOneFrameBeforeSettingTimeScale (float set) {
+		yield return new WaitForSecondsRealtime(0.05f);
+		Time.timeScale = set;
 	}
 
 	public void Resume () {
@@ -62,6 +72,9 @@ public class S_UI_Pause : MonoBehaviour
 
 		if (StageManagement)
 		{
+			S_SpawnCharacter Spawner = GameObject.FindFirstObjectByType<S_SpawnCharacter>(FindObjectsInactive.Include);
+			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(Spawner._MusicPlayer, 0.8f, 0f));
+
 			StageManagement.AssignObjectIfSpawnerIsPresent();
 			StageManagement.StartLevel();
 		}

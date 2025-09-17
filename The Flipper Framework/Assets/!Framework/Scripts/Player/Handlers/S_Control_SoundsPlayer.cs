@@ -99,7 +99,9 @@ public class S_Control_SoundsPlayer : S_Player_Base
 	}
 
 	private void HandleWindSound () {
-		if(_PlayerVel._speedMagnitudeSquared > 50 * 50)
+		if (_Actions._isPaused){ WindSource.volume = 0; return; }
+
+		if (_PlayerVel._speedMagnitudeSquared > 50 * 50)
 		{
 			if (!WindSource.isPlaying)
 				WindSource.Play();

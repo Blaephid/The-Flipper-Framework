@@ -9248,6 +9248,7 @@ MonoBehaviour:
     GaugeAnimator: {fileID: 0}
     HealthyRingsCounter: {fileID: 0}
     DangerousRingsCounter: {fileID: 0}
+    MaxRingsCounter: {fileID: 0}
     EnergyBar: {fileID: 0}
     LevelBar: {fileID: 0}
     SpeedBar: {fileID: 0}
@@ -10308,7 +10309,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: aa804211c6807bb48b205536796982fb, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.302
+  m_Volume: 0.46
   m_Pitch: 1
   Loop: 1
   Mute: 0

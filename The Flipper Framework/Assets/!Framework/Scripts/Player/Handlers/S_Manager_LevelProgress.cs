@@ -149,6 +149,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		//Effects on character
 		_CoreUIElements._HudRoot.SetActive(false);
 		_MainSkin.gameObject.SetActive(false);
+		_Actions._isPaused = true;
 
 		_PlayerPhys._arePhysicsEnabled = false;
 		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
@@ -169,6 +170,15 @@ public class S_Manager_LevelProgress : S_Player_Base
 		{
 			//EditorApplication.isPaused = true;
 			Debug.Log(OnReset.GetInvocationList().Length);
+			if (OnReset != null)
+			{
+				foreach (var d in OnReset.GetInvocationList())
+				{
+					UnityEngine.Object target = d.Target as UnityEngine.Object;
+					Debug.Log($"Listener: {d.Method.Name} on {target}");
+				}
+			}
+
 			OnReset.Invoke(this, EventArgs.Empty);
 		}
 		if (OnDeath != null)

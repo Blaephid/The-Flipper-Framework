@@ -745,7 +745,7 @@ MonoBehaviour:
   _Models: []
   _modelStartRotations: []
   _disanceBetweenModels: 0
-  _isActive: 0
+  _isMoving: 0
   _PlayerRailAction: {fileID: 0}
   _PlayerActions: {fileID: 0}
 --- !u!114 &1660191052784083580
@@ -1263,12 +1263,12 @@ PrefabInstance:
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}
       propertyPath: _isSelected
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114445653056905026, guid: 95bdfb4c2cd05c542b7ec5bfa38a4213,
         type: 3}
       propertyPath: _distanceModifier
-      value: 0.5
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

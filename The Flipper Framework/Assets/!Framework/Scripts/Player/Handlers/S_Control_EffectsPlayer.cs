@@ -54,6 +54,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	//Trackers
 	private bool _canShowLesserTrails = true;
 	private bool _canShowDefaultTrail = true;
+	private bool _canHandleLines = true;
 
 	private void Start () {
 		SpinDashEnergy.Stop();
@@ -69,20 +70,26 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		_ActionChainEffect.Stop();
 		_PointsGain.Stop();
 		_Quickstep.Stop();
+
+		S_Manager_LevelProgress.OnStageClear += EventStageClear;
 	}
 
 	void Update () {
 
 		HandleMouths();
 
+		if (!_canHandleLines) { return; }
 		HandleSpeedLinesOnCharacter();
 		HandleSpeedLinesOnScreen();
-		HandleTrailsOnCharacter();
+		HandleTrailsOnCharacter(_PlayerVel._speedMagnitude);
 	}
 
-	private void OnDisable () {
+	public void EventStageClear ( object sender, EventArgs e ) {
+		_canHandleLines = false;
+
 		HandleSpeedLinesOnCharacter(0);
 		HandleSpeedLinesOnScreen(0);
+		HandleTrailsOnCharacter(0);
 	}
 
 	//VFX
@@ -132,7 +139,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		}
 	}
 
-	private void HandleTrailsOnCharacter () {
+	private void HandleTrailsOnCharacter (float speed) {
 
 		DefaultTrail();
 		LesserTrails();
@@ -141,7 +148,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		void DefaultTrail () {
 			if (_canShowDefaultTrail)
 			{
-				if (_PlayerVel._horizontalSpeedMagnitude > 60)
+				if (speed > 60)
 				{
 					_DefaultSpeedTrail.emitting = true;
 					return;
@@ -152,7 +159,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 		void LesserTrails () {
 			if (!_canShowLesserTrails) { return; }
-			EnableLesserTrails(_PlayerVel._speedMagnitudeSquared > 40 * 40 && _PlayerVel._currentRunningSpeed > 10, false);
+			EnableLesserTrails(speed > 40 * 40 && _PlayerVel._currentRunningSpeed > 10, false);
 		}
 	}
 
