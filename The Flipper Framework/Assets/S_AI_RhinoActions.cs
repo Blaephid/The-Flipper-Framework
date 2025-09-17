@@ -91,11 +91,11 @@ public class S_AI_RhinoActions : MonoBehaviour
 				{ TryLandOnRail(); }
 				break;
 			case RhinoStates.switching:
-				if (!_RailBehaviour._isActive) return;
+				if (!_RailBehaviour._isMoving) return;
 				ApplyHopFixedUpdate();
 				break;
 			case RhinoStates.shooting:
-				if (!_RailBehaviour._isActive) return;
+				if (!_RailBehaviour._isMoving) return;
 				_timeSpentReadyingShot += Time.fixedDeltaTime;
 
 				if (_timeSpentReadyingShot >= _timeToReadyShot)
@@ -243,7 +243,7 @@ public class S_AI_RhinoActions : MonoBehaviour
 			if (set)
 			{
 				_SFX.PlaySource("Grinding");
-				_RailBehaviour._isActive = true;
+				_RailBehaviour._isMoving = true;
 				_RailBehaviour.SetAnimatorBool("CurrentlyOnRail", true);
 				_HomingTarget.OnHit = S_Data_HomingTarget.EffectOnHoming.shootdownWithCarry;
 				_HomingTarget.OnDestroy = S_Data_HomingTarget.EffectOnHoming.shootdownWithCarry;

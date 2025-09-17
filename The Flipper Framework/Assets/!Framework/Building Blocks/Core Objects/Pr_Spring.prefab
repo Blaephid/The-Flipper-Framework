@@ -126,7 +126,7 @@ MonoBehaviour:
   _CharacterStatsToFollow: {fileID: 11400000, guid: 34f1f00a526b2f848b8ac693e5b7e9ee,
     type: 2}
   _ShotCenter: {fileID: 4000012764413882}
-  _coreVelAtEnd: {x: 75.582466, y: -199.79987, z: 11.7555685}
+  _coreVelAtEnd: {x: 76.870895, y: -199.79987, z: 11.955963}
   _environmentalVelAtStart: {x: 1.9762397, y: 57.952763, z: 0.30737078}
 --- !u!114 &2685212621995745683
 MonoBehaviour:
@@ -780,22 +780,22 @@ PrefabInstance:
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.6905133
+      value: -0.6808605
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.0064877677
+      value: 0.010935912
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7232587
+      value: 0.732237
       objectReference: {fileID: 0}
     - target: {fileID: 1292613313013815353, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0067954287
+      value: 0.011761114
       objectReference: {fileID: 0}
     - target: {fileID: 3295355349864895002, guid: 66de5ca968adc424589a7eef127f4aef,
         type: 3}

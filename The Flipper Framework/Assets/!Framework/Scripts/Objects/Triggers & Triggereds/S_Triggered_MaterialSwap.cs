@@ -8,14 +8,7 @@ public class S_Triggered_MaterialSwap : S_Triggered_Base, ITriggerable
 	[SerializeField] MeshRenderer _Renderer;
 	[SerializeField] MaterialsToSwap[] _MaterialSwapping;
 
-
-	private void Start () {
-		//TriggerObjectOn(null); //Call immediately to ensure from material exists and is ready.
-	}
-
-	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
-		if (!enabled) { return; }
-
+	public override void ChildTriggerObjectOn ( S_CharacterTools Player = null ) {
 		SwitchMaterials();
 	}
 
@@ -29,14 +22,10 @@ public class S_Triggered_MaterialSwap : S_Triggered_Base, ITriggerable
 
 			if (thisSwap._onMaterialA)
 			{
-				_notInDefaultState = true;
-				S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 				materialsCopy[thisSwap._materialIndex] = thisSwap._toMaterial;
 			}
 			else
 			{
-				_notInDefaultState = false;
-				S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 				materialsCopy[thisSwap._materialIndex] = thisSwap._fromMaterial;
 			}
 
@@ -45,7 +34,7 @@ public class S_Triggered_MaterialSwap : S_Triggered_Base, ITriggerable
 		}
 	}
 
-	public override void ResetToOriginal () {
+	public override void ChildResetToOriginal () {
 		SwitchMaterials();
 	}
 }

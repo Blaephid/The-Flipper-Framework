@@ -6,44 +6,74 @@ using UnityEngine;
 
 public class S_Triggered_Base : S_Vis_Base, ITriggerable
 {
-	[NonSerialized] public bool _triggeredOnStart;
-	[NonSerialized] public bool _notInDefaultState;
+	[NonSerialized] public bool _notInStartState;
+	[NonSerialized] public bool _canBeTriggeredOn = true;
 
-	public virtual bool CanBeTriggeredOn ( S_CharacterTools Player ) {
-		if (!enabled) { return false; }
+	[NonSerialized] public bool _doesTriggeringOffResetToStartState = true; //Set per child. If false, then the script doesnt go back to its default state when turned off.
+
+	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
+		if (!CanBeTriggeredOn(Player)) { return; }
+		ChildTriggerObjectOn(Player);
+	}
+
+	public virtual void ChildTriggerObjectOn ( S_CharacterTools Player = null ) {
+
+	}
+
+	private bool CanBeTriggeredOn ( S_CharacterTools Player ) {
+		if (!enabled || !_canBeTriggeredOn) { return false; }
 		GameObject Go = gameObject;
 
-		_notInDefaultState = true;
-		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+		//If first turned on since start or player death.
+		if (!_notInStartState)
+		{
+			Debug.Log(gameObject + " No longer in start state");
+			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+		}
+		_notInStartState = true;
 
 		return true;
 	}
 
-	public virtual bool CanBeTriggeredOff ( S_CharacterTools Player ) {
-		if (!enabled) { return false; }
+	//
+	public void StartTriggeredOn ( S_CharacterTools Player = null ) {
+		ChildTriggerObjectOn(Player);
+	}
 
-		_notInDefaultState = false;
+	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
+		if (!CanBeTriggeredOff(Player, _doesTriggeringOffResetToStartState)) { return; }
+		ChildTriggerObjectOff();
+	}
+
+	public virtual void ChildTriggerObjectOff ( S_CharacterTools Player = null ) {
+
+	}
+
+	private bool CanBeTriggeredOff ( S_CharacterTools Player, bool settingToStartState ) {
+
+		if (settingToStartState && _notInStartState)
+		{
+			Debug.Log(gameObject + "Back in start state");
+			S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+			_notInStartState = false;
+		}
 		return true;
 	}
 
-	public virtual void StartTriggeredOn ( S_CharacterTools Player = null ) {
-		_triggeredOnStart = true;
-	}
-
-	public virtual void ResetToOriginal () {
+	public virtual void ChildResetToOriginal () {
 
 	}
 
 	public virtual void EventReturnOnDeath ( object sender, EventArgs e ) {
-		Debug.Log(" reset from " + this);
+		Debug.Log(" reset " + this);
 		this.enabled = true; //In case this component has been disabled or destroyed at some point, which interupts the reset.
-		
-		GameObject GO = gameObject;
+
+		if (_notInStartState) { ChildResetToOriginal(); } //if changed from start state. The start state may have been changed by StartTriggeredOn
+
 		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+		_notInStartState = false;
+		_canBeTriggeredOn = true;
 
-		//_notInDefaultState is handled seperately by most children of this class, but by default is set to true whenever triggered on.
-
-		if (_notInDefaultState && !_triggeredOnStart) { ResetToOriginal(); } //if changed from default state, and not at the start
-		else if (!_notInDefaultState && _triggeredOnStart) { ResetToOriginal(); } //if was set at the start, but has since been changed back
+		Debug.Log("finish reset from " + this);
 	}
 }

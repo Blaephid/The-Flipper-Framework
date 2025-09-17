@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4998489574652392}
   m_Layer: 0
-  m_Name: Pr_Ring Road Spline
+  m_Name: Pr_Pickup Spawner Spline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

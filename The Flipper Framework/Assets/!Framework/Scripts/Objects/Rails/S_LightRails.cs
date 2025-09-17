@@ -34,8 +34,7 @@ public class S_LightRails : S_Triggered_Base, ITriggerable
 			if (!RailsA[i].PrevRail) { RailsA[i].PrevRail = RailsB[i].PrevRail; }
 		}
 	}
-	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
-		if (!CanBeTriggeredOn(Player)) { return; }
+	public override void ChildTriggerObjectOn ( S_CharacterTools Player = null) {
 
 		if(!_BlueRail || !_RedRail) return;
 
@@ -45,21 +44,14 @@ public class S_LightRails : S_Triggered_Base, ITriggerable
 		Trigger(_blueActive);
 	}
 
-	public override void StartTriggeredOn ( S_CharacterTools Player = null ) {
-		base.StartTriggeredOn(Player);
-		Trigger(_blueActive );
-	}
-
 	private void Trigger (bool switchToRed) {
 		if (switchToRed)
 		{
-			_notInDefaultState = true;
 			SetBlueActive(false);
 			SetExternalConnectedRails(ref _BlueRailAddons, ref _RedRailAddons);
 		}
 		else
 		{
-			_notInDefaultState = false;
 			SetBlueActive(true);
 			SetExternalConnectedRails(ref _RedRailAddons, ref _BlueRailAddons);
 		}
@@ -72,8 +64,8 @@ public class S_LightRails : S_Triggered_Base, ITriggerable
 	}
 
 
-	public override void ResetToOriginal () {
-		Trigger(!_notInDefaultState);
+	public override void ChildResetToOriginal () {
+		Trigger(!_notInStartState);
 	}
 
 	//Takes two arrays of addons, and applies the first next and prev to match what's now being assigned.

@@ -10,8 +10,8 @@ public class S_SplitTriggered : MonoBehaviour, ITriggerable
 		S_Trigger_External.TriggerGivenObjects(TriggerTypes.On, _FurtherTriggerThese, Player);
 	}
 
-	public void TriggerObjectOnce ( S_CharacterTools Player = null ) {
-		S_Trigger_External.TriggerGivenObjects(TriggerTypes.Once, _FurtherTriggerThese, Player);
+	public void TriggerObjectOnce ( S_CharacterTools Player = null) {
+		//S_Trigger_External.TriggerGivenObjects(TriggerTypes.Once, _FurtherTriggerThese, Player);
 	}
 
 	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
@@ -27,6 +27,10 @@ public class S_SplitTriggered : MonoBehaviour, ITriggerable
 	public void TriggerObjectEither ( S_CharacterTools Player = null ) {
 		S_Trigger_External.TriggerGivenObjects(TriggerTypes.Either, _FurtherTriggerThese, Player);
 
+	}
+
+	public void StartTriggeredOn ( S_CharacterTools Player = null ) {
+		S_Trigger_External.TriggerGivenObjects(TriggerTypes.Start, _FurtherTriggerThese, Player);
 	}
 
 	public void ResetObject ( S_CharacterTools Player = null ) {

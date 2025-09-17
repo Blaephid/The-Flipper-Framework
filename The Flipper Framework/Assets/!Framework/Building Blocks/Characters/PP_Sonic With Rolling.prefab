@@ -325,6 +325,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
+      propertyPath: _MainActions.Array.data[1].ConnectedStates.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
       propertyPath: _MainActions.Array.data[0].SituationalStates.Array.size
       value: 8
       objectReference: {fileID: 0}
@@ -362,6 +367,16 @@ PrefabInstance:
         type: 3}
       propertyPath: _MainActions.Array.data[12].SituationalStates.Array.size
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[1].ConnectedStates.Array.data[1]'
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_MainActions.Array.data[1].ConnectedStates.Array.data[2]'
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
@@ -458,11 +473,12 @@ PrefabInstance:
       propertyPath: '_MainActions.Array.data[11].PerformableSubStates.Array.data[0]'
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4584081993875375216, guid: 749dc6a02381bea4d992b33d7c015589,
+    - target: {fileID: 4559098073210278401, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
-      propertyPath: _VirtCam
+      propertyPath: SphereCollectParticle
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1000011339303976, guid: 8d0783263d7e4524b9fe14c3feacdcd6,
+        type: 3}
     - target: {fileID: 4584081993875375216, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
       propertyPath: _HedgeCam
@@ -525,36 +541,10 @@ PrefabInstance:
       objectReference: {fileID: 6225059401288121592}
     - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
-      propertyPath: _moveSpeed
-      value: 16
-      objectReference: {fileID: 0}
-    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
-        type: 3}
-      propertyPath: _ascendSpeed
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
-        type: 3}
       propertyPath: _VirtualCamera
       value: 
       objectReference: {fileID: 1480864705968184944}
-    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
-        type: 3}
-      propertyPath: _rotateSpeed.x
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
-        type: 3}
-      propertyPath: _rotateSpeed.y
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
-        type: 3}
-      propertyPath: _maxDistanceFromPlayer
-      value: 400
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 3399936635228185353, guid: 749dc6a02381bea4d992b33d7c015589, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

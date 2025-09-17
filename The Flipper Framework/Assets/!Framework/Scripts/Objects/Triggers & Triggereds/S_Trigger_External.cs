@@ -14,7 +14,6 @@ public class S_Trigger_External : S_Trigger_Base
 	private float _delayBetweenMultiTriggers = 0.3f;
 	private float _timeSinceTriggered = 0;
 	private bool _wastriggered;
-	private bool _triggeredThisLife = false;
 
 	private void Start () {
 		if (_triggerOnStart) { StartCoroutine(DelayBeforeTrigger()); }
@@ -38,12 +37,6 @@ public class S_Trigger_External : S_Trigger_Base
 
 		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
 		TriggerGivenObjects(TriggerTypes.Either, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
-		if (!_triggeredThisLife)
-		{
-			TriggerGivenObjects(TriggerTypes.Once, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
-			_triggeredThisLife = true;
-			S_Manager_LevelProgress.OnReset += EventResetOnDeath;
-		}
 	}
 
 	public void OnTriggerStay ( Collider other ) {
@@ -60,7 +53,7 @@ public class S_Trigger_External : S_Trigger_Base
 		TriggerGivenObjects(TriggerTypes.Off, TriggerObjects._ObjectsToTriggerOff, _PlayerTools);
 	}
 
-	public static void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects, S_CharacterTools Player ) {
+	public static void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects, S_CharacterTools Player) {
 		if (gameObjects.Count == 0) { return; }
 
 		//Go through each given gameObject and trigger if possible.
@@ -81,13 +74,7 @@ public class S_Trigger_External : S_Trigger_Base
 				{
 					case TriggerTypes.On: Trigger.TriggerObjectOn(Player); break;
 
-					case TriggerTypes.Once: Trigger.TriggerObjectOnce(Player); break;
-
 					case TriggerTypes.Off: Trigger.TriggerObjectOff(Player); break;
-
-					case TriggerTypes.Either: Trigger.TriggerObjectEither(Player); break;
-
-					case TriggerTypes.Reset: Trigger.ResetObject(Player); break;
 
 					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(Player); break;
 
@@ -103,11 +90,6 @@ public class S_Trigger_External : S_Trigger_Base
 			_timeSinceTriggered += Time.deltaTime;
 			_wastriggered = _timeSinceTriggered >= _delayBetweenMultiTriggers;
 		}
-	}
-
-	void EventResetOnDeath ( object sender, EventArgs e ) {
-		_triggeredThisLife = false;
-		S_Manager_LevelProgress.OnReset -= EventResetOnDeath;
 	}
 
 

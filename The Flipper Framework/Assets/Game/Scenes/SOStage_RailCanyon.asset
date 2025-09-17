@@ -24,13 +24,15 @@ MonoBehaviour:
     m_SceneName: Sc_Rail Canyon PART 1
   - m_SceneAsset: {fileID: 102900000, guid: e5010835dc3ff0c4ea1488067942c330, type: 3}
     m_SceneName: Sc_Rail Canyon PART 2
+  - m_SceneAsset: {fileID: 102900000, guid: eab1bdef08d432649a90cc7d6731eed8, type: 3}
+    m_SceneName: Sc_Rail Canyon Part 3
   _Ranks:
-    Time_XRank: {x: 1, y: 20, z: 0}
-    TimeTotal_XRank: 80
-    Time_SRank: {x: 2, y: 0, z: 0}
-    TimeTotal_SRank: 120
-    Time_ARank: {x: 2, y: 30, z: 0}
-    TimeTotal_ARank: 150
+    Time_XRank: {x: 1, y: 15, z: 0}
+    TimeTotal_XRank: 75
+    Time_SRank: {x: 1, y: 55, z: 0}
+    TimeTotal_SRank: 115
+    Time_ARank: {x: 2, y: 25, z: 0}
+    TimeTotal_ARank: 145
     Time_BRank: {x: 3, y: 0, z: 0}
     TimeTotal_BRank: 180
     Time_CRank: {x: 3, y: 40, z: 0}

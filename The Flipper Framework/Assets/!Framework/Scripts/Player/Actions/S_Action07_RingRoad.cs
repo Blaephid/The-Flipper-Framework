@@ -228,25 +228,28 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 	//Handles player physics when at the end of a chain of rings.
 	private void EndRingRoad () {
 
-		//End at the speed started at (with a slight change), but with a minimum.
-		float endingSpeedResult = Mathf.Max(_minimumEndingSpeed_, _speedBeforeAction * _speedGain_);
+		if (_CreatedSpline.Length > 0) {
 
-		if (!_willCarrySpeed_) endingSpeedResult = _minimumEndingSpeed_; //Speed unaffected by how it was before the action.
+			//End at the speed started at (with a slight change), but with a minimum.
+			float endingSpeedResult = Mathf.Max(_minimumEndingSpeed_, _speedBeforeAction * _speedGain_);
 
-		//Sends the player in the direction of the end of the spline.
-		CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length - 1);
-		Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_CreatedSpline.transform, Sample);
+			if (!_willCarrySpeed_) endingSpeedResult = _minimumEndingSpeed_; //Speed unaffected by how it was before the action.
 
-		_directionToGo = sampleTransform.forwards != Vector3.zero ? sampleTransform.forwards : _MainSkin.forward;
+			//Sends the player in the direction of the end of the spline.
+			CurveSample Sample = _CreatedSpline.GetSampleAtDistance(_CreatedSpline.Length - 1);
+			Spline.SampleTransforms sampleTransform = Spline.GetSampleTransformInfo(_CreatedSpline.transform, Sample);
 
-		_Actions._ActionDefault.SetSkinRotationToVelocity(0, _directionToGo);
+			_directionToGo = sampleTransform.forwards != Vector3.zero ? sampleTransform.forwards : _MainSkin.forward;
 
-		_PlayerPhys.SetPlayerPosition(sampleTransform.location);
-		_PlayerVel.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
+			_Actions._ActionDefault.SetSkinRotationToVelocity(0, _directionToGo);
 
-		//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
-		float differentSpeedOnExit = _Actions._listOfSpeedOnPaths[0] - endingSpeedResult;
-		if(differentSpeedOnExit > 0) { StartCoroutine(LoseTemporarySpeedOverTime(differentSpeedOnExit)); }
+			_PlayerPhys.SetPlayerPosition(sampleTransform.location);
+			_PlayerVel.SetBothVelocities(_directionToGo.normalized * endingSpeedResult, new Vector2(1, 0));
+
+			//If the speed the player is at now is lower than the speed they were dashing at, lerp the difference rather than make it instant.
+			float differentSpeedOnExit = _Actions._listOfSpeedOnPaths[0] - endingSpeedResult;
+			if (differentSpeedOnExit > 0) { StartCoroutine(LoseTemporarySpeedOverTime(differentSpeedOnExit)); }
+		}
 
 		_Actions._ActionDefault.HandleAnimator(0);
 		_Actions._ActionDefault.StartAction();

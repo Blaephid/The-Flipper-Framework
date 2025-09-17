@@ -7,28 +7,17 @@ using static S_S_ActionHandling;
 
 public interface ITriggerable
 {
-	public void TriggerObjectOn (S_CharacterTools Player = null ) {
+	public void TriggerObjectOn (S_CharacterTools Player = null) {
 
 	}
 
-	public void TriggerObjectOnce ( S_CharacterTools Player = null ) {
-
-	}
-
-	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
+	public void TriggerObjectOff ( S_CharacterTools Player = null) {
 
 	}
 
 	public void TriggerObjectEachFrame( S_CharacterTools Player = null ) { 
 	}
 
-	public void TriggerObjectEither ( S_CharacterTools Player = null ) {
-
-	}
-
-	public void ResetObject ( S_CharacterTools Player = null) {
-
-	}
 	public void StartTriggeredOn ( S_CharacterTools Player = null ) {
 	}
 }
@@ -36,7 +25,7 @@ public interface ITriggerable
 public enum TriggerTypes
 {
 	On,
-	Once,
+	//Once,
 	Off,
 	Either,
 	Reset,

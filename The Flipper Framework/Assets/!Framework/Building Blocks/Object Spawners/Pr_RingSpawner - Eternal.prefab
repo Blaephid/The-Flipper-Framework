@@ -120,7 +120,7 @@ MonoBehaviour:
     _ObjectToSpawn: {fileID: 1000013484563888, guid: e1e8c7cdca478bc4794b004ed1591681,
       type: 3}
     _willRespawnOnDeath: 1
-    _distanceFromPlayerToSpawn: 500
+    _distanceFromPlayerToSpawn: 900
     _willAutoSpawn: 1
     _willRespawnWhenDestroyed: 0
     _respawnDelay: 5

@@ -28,7 +28,7 @@ namespace SplineMesh
 
 		private SplineNode currentSelection 
 			{ get { return selectionBackerField;} 
-			set { Debug.Log("Set to " + (value == null ? "null" : value)); selectionBackerField = value; } }
+			set { selectionBackerField = value; } }
 		private SplineNode selectionBackerField;
 
 		private SelectionType selectionType;

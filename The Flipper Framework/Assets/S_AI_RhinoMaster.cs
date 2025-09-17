@@ -9,7 +9,7 @@ using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 
 [ExecuteInEditMode]
-public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
+public class S_AI_RhinoMaster : S_Triggered_Base, ITriggerable
 {
 	[AsButton("Set All To Spline", "SetAllToSpline", null)]
 	[SerializeField] bool SetAllToSplineButton;
@@ -95,12 +95,12 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		SetUpNextHop(_timeBeforeFirstHop_);
 	}
 
-	public void TriggerObjectOnce ( S_CharacterTools Player = null ) {
+	public override void ChildTriggerObjectOn ( S_CharacterTools Player = null ) {
 		S_PlayerPhysics PlayerPhys = Player._PlayerPhys;
 		_PlayerCenter = PlayerPhys._CenterOfMassTransform;
 		_PlayerVel = PlayerPhys._PlayerVel;
 
-		S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+		_canBeTriggeredOn = false; //To prevent being activated multiple times per life.
 
 		AddRhinosFromArrayToLists(ref _Rhinos);
 		if (_InheritRhinosFromThisOnActivation)
@@ -221,7 +221,7 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		HealthScript.OnDefeated -= EventRhinoDefeated;
 	}
 
-	void EventReturnOnDeath ( object sender, EventArgs e ) {
+	public override void ChildResetToOriginal () {
 
 		for (int i = 0 ; i < _listOfAllRhinoObjects.Count ; i++)
 		{
@@ -230,8 +230,6 @@ public class S_AI_RhinoMaster : S_Vis_Base, ITriggerable
 		}
 
 		Start();
-
-		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
 	}
 
 #if UNITY_EDITOR

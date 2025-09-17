@@ -165,7 +165,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 		if (_PreviousTarget != null)
 		{
 			float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, _PreviousTarget.transform.position);
-			closestTarget = CheckTarget(_PreviousTarget.transform, distanceSquared * _currentTargetPriority_, closestTarget, _facingAmount_);
+			closestTarget = CheckTarget(_PreviousTarget.transform, distanceSquared * _currentTargetPriority_, closestTarget, _facingAmount_, false);
 		}
 
 		return closestTarget;
@@ -183,7 +183,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 				{
 					Transform checkTarget = hit.gameObject.transform;
 					float distanceToUse = (distanceSquared / TargetData._distanceModifier) * extraPriority; //Some targets may need to be closer.
-					closestTarget = CheckTarget(checkTarget, distanceToUse, closestTarget, _facingAmount_);
+					closestTarget = CheckTarget(checkTarget, distanceToUse, closestTarget, _facingAmount_, false);
 					//Compare 
 				}
 
@@ -195,7 +195,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 	}
 
 	//Takes in a target and return the closer of it or the current one.
-	private Transform CheckTarget ( Transform newTarget, float distanceSquared, Transform closest, float facingAmount, bool skipIsOnScreen = false ) {
+	private Transform CheckTarget ( Transform newTarget, float distanceSquared, Transform closest, float facingAmount, bool skipIsOnScreen ) {
 
 		//If this new target is out of the maximum range, then ignore it, no matter the check. Gets its own distance because the distance parameter won't always be the exact distance.
 		if (S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_) { return closest; }
@@ -203,7 +203,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 
 		//Make sure Sonic is facing the target enough
 		Vector3 direction = (newTarget.position - transform.position).normalized;
-		float angle = Vector3.Angle(new Vector3(_MainSkin.forward.x, 0, _MainSkin.forward.z), new Vector3 (direction.x, 0, direction.z));
+		float angle = Vector3.Angle(_MainSkin.forward, direction);
 		bool isFacing = angle < facingAmount;
 
 		bool isOnScreen = true;
@@ -211,7 +211,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 		{
 			//Make sure the target is on screen
 			Vector3 screenPoint = _MainCamera.GetComponent<Camera>().WorldToViewportPoint(newTarget.position);
-			isOnScreen = screenPoint.z > 0.3f && screenPoint.x > 0.08 && screenPoint.x < 0.92f && screenPoint.y > 0f && screenPoint.y < 0.95f;
+			isOnScreen = screenPoint.z > 0.5f && screenPoint.x > 0.1 && screenPoint.x < 0.9f && screenPoint.y > 0f && screenPoint.y < 0.95f;
 		}
 
 		//If the above are true, and the distance to this new target is less than the one to the closest, this becomes the target.

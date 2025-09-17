@@ -121,10 +121,14 @@ public class S_PlayerCoreValues : S_Player_Base
 	private void UpdateRingDisplay () {
 		_CoreUIElements.HealthyRingsCounter.text = "" + (int)_ringCount;
 		_CoreUIElements.DangerousRingsCounter.text = "" + (int)_ringCount;
+		_CoreUIElements.MaxRingsCounter.text = "" + (int)_ringCount;
 
 		bool canDieFromDamage = _ringCount <= _dieAtRingCount_;
-		_CoreUIElements.HealthyRingsCounter.gameObject.SetActive(!canDieFromDamage);
-		_CoreUIElements.DangerousRingsCounter.gameObject.SetActive(canDieFromDamage);
+		bool isMaxRings = _ringCount == _currentMaxRings;
+
+		_CoreUIElements.HealthyRingsCounter.gameObject.SetActive(!canDieFromDamage && !isMaxRings);
+		_CoreUIElements.DangerousRingsCounter.gameObject.SetActive(canDieFromDamage && !isMaxRings);
+		_CoreUIElements.MaxRingsCounter.gameObject.SetActive(isMaxRings);
 
 	}
 

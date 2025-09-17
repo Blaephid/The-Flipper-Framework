@@ -89,6 +89,7 @@ MonoBehaviour:
     GaugeAnimator: {fileID: 174251654477162914}
     HealthyRingsCounter: {fileID: 8147848706460757434}
     DangerousRingsCounter: {fileID: 4906906745124591957}
+    MaxRingsCounter: {fileID: 8550531415347682943}
     EnergyBar: {fileID: 5559760073075288138}
     LevelBar: {fileID: 3307274250122590372}
     SpeedBar: {fileID: 1458164407645269971}
@@ -579,6 +580,18 @@ RectTransform:
 --- !u!114 &8147848706460757434 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4024625857875439055, guid: 6409a31eca64ba346bfa1978d539c7be,
+    type: 3}
+  m_PrefabInstance: {fileID: 5100518847790465141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8550531415347682943 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3486131200532258314, guid: 6409a31eca64ba346bfa1978d539c7be,
     type: 3}
   m_PrefabInstance: {fileID: 5100518847790465141}
   m_PrefabAsset: {fileID: 0}

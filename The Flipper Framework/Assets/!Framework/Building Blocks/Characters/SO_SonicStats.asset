@@ -26,17 +26,17 @@ MonoBehaviour:
     startMaxEnergy: 100
     energyOnPlayerStart: {x: 1, y: 0.5}
   CoreValuesStats:
-    dieAtDamageFromRingCount: 15
+    dieAtDamageFromRingCount: 10
     minRingLoss: {x: 0.8, y: 60}
     maxRingLoss: 80
     startMaxRingCount: 100
     ringsOnPlayerStart: {x: 0, y: 5}
     gainEnergyFromRings: 1
     gainEnergyOverTime: 1
-    energyGainPerRing: 1.5
-    energyGainPerSecond: 3
+    energyGainPerRing: 1.2
+    energyGainPerSecond: 2.5
     startMaxEnergy: 100
-    energyOnPlayerStart: {x: 0.8, y: 0.5}
+    energyOnPlayerStart: {x: 0.7, y: 0.5}
   StartAccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4
@@ -1831,11 +1831,11 @@ MonoBehaviour:
     framesToChangeSpeed: 5
   HomingSearch:
     timeBetweenScans: 0.06
-    targetSearchDistance: 60
-    distanceModifierInCameraDirection: 1.2
-    radiusOfCameraTargetCheck: 15
-    minimumTargetDistance: 5
-    maximumTargetDistance: 80
+    targetSearchDistance: 70
+    distanceModifierInCameraDirection: 1.4
+    radiusOfCameraTargetCheck: 20
+    minimumTargetDistance: 8
+    maximumTargetDistance: 110
     TargetLayer:
       serializedVersion: 2
       m_Bits: 131072
@@ -1843,9 +1843,9 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 9
     cameraDirectionPriority: 0.5
-    facingAmount: 95
-    currentTargetPriority: 0.35
-    timeToKeepTarget: {x: 0.25, y: 0.3}
+    facingAmount: 90
+    currentTargetPriority: 0.269
+    timeToKeepTarget: {x: 0.3, y: 0.4}
     iconScale: 1.5
     iconDistanceScaling: 0.2
   StartHomingSearch:
@@ -1873,14 +1873,14 @@ MonoBehaviour:
     homingCountLimit: 0
     attackSpeed: 180
     timerLimit: 1.2
-    turnSpeed: 8
+    turnSpeed: 9
     successDelay: 0.3
     minimumSpeedOnHit: 120
     lerpToNewInputOnHit: 0.292
     lerpToPreviousDirectionOnHit: 0.782
-    canBeControlled: 1
+    canBeControlled: 0
     maximumSpeed: 240
-    minimumSpeed: 70
+    minimumSpeed: 60
     deceleration: 55
     acceleration: 70
     speedMultiplier: 2

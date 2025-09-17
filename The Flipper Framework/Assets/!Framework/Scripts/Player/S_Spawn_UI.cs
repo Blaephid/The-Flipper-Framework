@@ -28,6 +28,7 @@ public class S_Spawn_UI : MonoBehaviour
 		[ColourIfNullAttribute(.8f, 0,0, 1)]	public Animator         GaugeAnimator;
 		[ColourIfNullAttribute(.8f, 0,0, 1)]	public TextMeshProUGUI  HealthyRingsCounter;
 		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public TextMeshProUGUI  DangerousRingsCounter;
+		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public TextMeshProUGUI  MaxRingsCounter;
 		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public Image                    EnergyBar;
 		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public Image                    LevelBar;
 		[ColourIfNullAttribute(.8f, 0, 0, 1)]	public Image                    SpeedBar;

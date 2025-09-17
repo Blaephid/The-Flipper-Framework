@@ -3,6 +3,7 @@ using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.InputSystem;
+using UnityEditor;
 
 public class S_Manager_LevelProgress : S_Player_Base
 {
@@ -166,6 +167,8 @@ public class S_Manager_LevelProgress : S_Player_Base
 	public void CallRespawnEvents () {
 		if (OnReset != null)
 		{
+			//EditorApplication.isPaused = true;
+			Debug.Log(OnReset.GetInvocationList().Length);
 			OnReset.Invoke(this, EventArgs.Empty);
 		}
 		if (OnDeath != null)

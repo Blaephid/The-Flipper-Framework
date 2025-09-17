@@ -91,6 +91,9 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -110,6 +113,7 @@ VFXRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -169,7 +173,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 2
+  m_Radius: 3.02
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7622187594490188968
 MonoBehaviour:
@@ -196,6 +200,9 @@ MonoBehaviour:
   _Animator: {fileID: 6477021500263798591}
   _AudioSource: {fileID: 5375133784380071508}
   _VisualEffect: {fileID: 8161497835590010963}
+  _ringsGained: 10
+  _energyGained: 50
+  _powerGained: 20
 --- !u!95 &6477021500263798591
 Animator:
   serializedVersion: 7
@@ -293,7 +300,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 79d85a014b8f61e45a7796cd2972847e, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 79d85a014b8f61e45a7796cd2972847e, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -391,17 +398,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 771cd9519330275469d15ac50dbd9976,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.102612406
+      value: 0.14178982
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 771cd9519330275469d15ac50dbd9976,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.102612406
+      value: 0.14178982
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 771cd9519330275469d15ac50dbd9976,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.102612406
+      value: 0.14178982
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 771cd9519330275469d15ac50dbd9976,
         type: 3}
