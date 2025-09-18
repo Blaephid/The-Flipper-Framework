@@ -72,8 +72,15 @@ public class S_AI_RhinoActions : MonoBehaviour
 	private void Start () {
 		_RailBehaviour = GetComponent<S_AI_RailEnemy>();
 
-		_RailBehaviour.OnActivate += TriggerOn;
-		_RailBehaviour.OnDeactivate += TriggerOff;
+		_RailBehaviour.OnActivate += EventTriggerOn;
+		_RailBehaviour.OnDeactivate += EventTriggerOff;
+		_RailBehaviour.OnReset += EventOnReset;
+	}
+
+	private void OnDestroy () {
+		_RailBehaviour.OnActivate -= EventTriggerOn;
+		_RailBehaviour.OnDeactivate -= EventTriggerOff;
+		_RailBehaviour.OnReset -= EventOnReset;
 	}
 
 	private void Update () {
@@ -125,16 +132,25 @@ public class S_AI_RhinoActions : MonoBehaviour
 	}
 
 
-	public void TriggerOn () {
+	public void EventTriggerOn () {
 		_currentState = RhinoStates.normal;
 		_AttackData._isHazzard = true;
 		SetOnRail(true);
 		_SFX.PlaySource("Engine");
 	}
 
-	public void TriggerOff () {
+	public void EventTriggerOff () {
 		_SFX.StopSource("Grinding");
 		_SFX.StopSource("Engine");
+		_VFX.StopSource("ReadyShot");
+	}
+
+	public void EventOnReset () {
+		_SFX.StopSource("Grinding");
+		_SFX.StopSource("Engine");
+		_VFX.StopSource("ReadyShot");
+
+		_currentState = RhinoStates.normal;
 	}
 
 	#region JumpOffRail

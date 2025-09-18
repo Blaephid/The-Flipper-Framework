@@ -80,6 +80,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 		}
 
 		S_Manager_LevelProgress.OnStageClear += EventStageClear;
+		S_Manager_LevelProgress.OnDeath += EventSoundsOnDeath;
 	}
 
 	#region update
@@ -94,8 +95,15 @@ public class S_Control_SoundsPlayer : S_Player_Base
 		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 0.7f, 0));
 	}
 
+	public void EventSoundsOnDeath ( object sender, EventArgs e ) {
+		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 0.4f, 0));
+		SpinDashSource.Stop();
+		GrindSource.Stop();
+	}
+
 	private void OnDestroy () {
 		S_Manager_LevelProgress.OnStageClear -= EventStageClear;
+		S_Manager_LevelProgress.OnDeath -= EventSoundsOnDeath;
 	}
 
 	private void HandleWindSound () {

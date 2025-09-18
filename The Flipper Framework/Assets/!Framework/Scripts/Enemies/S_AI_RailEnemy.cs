@@ -97,6 +97,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 	public event System.Action<GameObject> OnFallBehindPlayer;
 	public event System.Action OnActivate;
 	public event System.Action OnDeactivate;
+	public event System.Action OnReset;
 
 
 	//At start
@@ -121,7 +122,6 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		//Start Position
 		PlaceOnSplineBeforeGame();
 		_startPosition = transform.position;
-		_RF._setOffSet = -_Data._startOffset_;
 
 		SetAnimatorBool("CurrentlyOnRail", true);
 	}
@@ -206,14 +206,12 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		_playerSpeed = 0;
 		_listOfPlayerSpeeds = new List<float> { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
 		_timeGrinding = 0;
+
+		 if (OnReset != null) { OnReset.Invoke(); }
 	}
 
 	private void OnDisable () {
-		
-	}
 
-	private void OnDestroy () {
-		Debug.Log(gameObject + " Destroyed");
 	}
 
 	/// 
@@ -590,6 +588,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 
 		_RF._upOffsetRail_ = _Data._railUpOffset_;
 
+		_RF._setOffSet = -_Data._startOffset_;
 		Vector3 thisOffset = _RF._sampleRotation * _Data._startOffset_; //Add offset to allow multiple rails from one spline.
 
 		//Move to spline

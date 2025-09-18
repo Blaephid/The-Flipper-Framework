@@ -41,7 +41,7 @@ public class S_Spawners_Base : S_Data_Base
 		if (!isSet)
 		{
 			_counter = Mathf.Max(_SpawnerData._respawnDelay, 0.01f);
-			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+			S_Manager_LevelProgress.OnReset += EventSpawnerOnReset;
 			isSet = true;
 		}
 	}
@@ -84,7 +84,7 @@ public class S_Spawners_Base : S_Data_Base
 	}
 
 	//Destroys any enemy spawned, so a new one can be created again in the above methods.
-	private void EventReturnOnDeath ( object sender, EventArgs e ) {
+	private void EventSpawnerOnReset ( object sender, EventArgs e ) {
 		//Since enemies can move, this removes that one and gets ready to spawn a new one in the correct place
 		if (_SpawnerData._willRespawnOnDeath && _ObjectClone != null)
 		{

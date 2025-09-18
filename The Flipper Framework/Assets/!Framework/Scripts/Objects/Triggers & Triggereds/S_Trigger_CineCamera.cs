@@ -186,7 +186,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		S_S_Logic.AddLockToList(ref _HedgeCamera._locksForCameraFallBack, gameObject.name);
 		_CinematicCamObject.SetActive(true); //Blending is handled by the blend object attached to the main camera cinemachine brain.
 
-		S_Manager_LevelProgress.OnReset += ReturnOnDeath; //Ensures camera will end if player dies when its active.
+		S_Manager_LevelProgress.OnReset += EventCineCamOnReset; //Ensures camera will end if player dies when its active.
 	}
 
 	private IEnumerator SetPlayerAsTarget () {
@@ -214,7 +214,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 			_MainCameraBrain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0);
 	}
 
-	public void ReturnOnDeath ( object sender, EventArgs e ) {
+	public void EventCineCamOnReset ( object sender, EventArgs e ) {
 		SetBlend(0);
 		ResetCamera();
 	}
@@ -228,7 +228,7 @@ public class S_Trigger_CineCamera : S_Trigger_External, ITriggerable
 		_CinematicCamObject.transform.position = cameraOriginalPosition;
 		_CinematicCamObject.transform.rotation = cameraOriginalRotation;
 
-		S_Manager_LevelProgress.OnReset -= ReturnOnDeath; //Ensures camera will end if player dies when its active.
+		S_Manager_LevelProgress.OnReset -= EventCineCamOnReset; //Ensures camera will end if player dies when its active.
 	}
 
 	public IEnumerator DeactivateCam () {

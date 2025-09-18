@@ -27,8 +27,8 @@ MonoBehaviour:
     energyOnPlayerStart: {x: 1, y: 0.5}
   CoreValuesStats:
     dieAtDamageFromRingCount: 10
-    minRingLoss: {x: 0.8, y: 60}
-    maxRingLoss: 80
+    minRingLoss: {x: 0.8, y: 30}
+    maxRingLoss: 50
     startMaxRingCount: 100
     ringsOnPlayerStart: {x: 0, y: 5}
     gainEnergyFromRings: 1
@@ -2605,8 +2605,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 20
-        value: 0
+        time: 11.034882
+        value: 0.013305664
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2614,8 +2614,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 59.333435
-        value: 3.1740875
+        time: 24.718124
+        value: 2.9609528
         inSlope: 0.044856973
         outSlope: 0.044856973
         tangentMode: 0
@@ -2623,8 +2623,8 @@ MonoBehaviour:
         inWeight: 0.26487026
         outWeight: 0.58266133
       - serializedVersion: 3
-        time: 120
-        value: 5
+        time: 101.07364
+        value: 5.5195007
         inSlope: 0.022551361
         outSlope: 0.022551361
         tangentMode: 0
@@ -2632,8 +2632,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.38337955
       - serializedVersion: 3
-        time: 200
-        value: 7
+        time: 199.50195
+        value: 7.5195084
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2727,8 +2727,8 @@ MonoBehaviour:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
     respawnAfter: {x: 15, y: 55, z: 80, w: 92}
-    ringReleaseSpeed: 550
-    ringArcSpeed: 250
+    ringReleaseSpeed: 700
+    ringArcSpeed: 400
     RingsLostInSpawnByAmount:
       serializedVersion: 2
       m_Curve:
@@ -2760,7 +2760,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 60
+        time: 40
         value: 5
         inSlope: 0
         outSlope: 0

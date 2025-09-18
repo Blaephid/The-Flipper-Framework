@@ -38,7 +38,7 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 		}
 		else if (!_willDestroy)
 		{
-			S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
+			S_Manager_LevelProgress.OnReset += EventAIHealthOnReset;
 		}
 
 		GameObject.Instantiate(Explosion, transform.position, Quaternion.identity);
@@ -52,9 +52,9 @@ public class S_AI_Health : MonoBehaviour, IHealthSystem
 			OnDefeated.Invoke(gameObject, this);
 	}
 
-	void EventReturnOnDeath ( object sender, EventArgs e ) {
+	void EventAIHealthOnReset ( object sender, EventArgs e ) {
 		_currentHealth = _maxHealth;
-		S_Manager_LevelProgress.OnReset -= EventReturnOnDeath;
+		S_Manager_LevelProgress.OnReset -= EventAIHealthOnReset;
 	}
 
 }

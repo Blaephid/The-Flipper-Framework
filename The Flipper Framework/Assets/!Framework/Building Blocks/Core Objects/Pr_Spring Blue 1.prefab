@@ -120,22 +120,22 @@ PrefabInstance:
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.0637141
+      value: 0.5995703
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.00086224097
+      value: 0.044370096
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.99787647
+      value: 0.7969121
       objectReference: {fileID: 0}
     - target: {fileID: 1449241969662908950, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0135042295
+      value: -0.058974024
       objectReference: {fileID: 0}
     - target: {fileID: 3749572640961938305, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
@@ -194,12 +194,12 @@ PrefabInstance:
     - target: {fileID: 5119825325252721446, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: _environmentalVelAtStart.x
-      value: 0
+      value: 1.9762397
       objectReference: {fileID: 0}
     - target: {fileID: 5119825325252721446, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}
       propertyPath: _environmentalVelAtStart.y
-      value: 100
+      value: 57.952763
       objectReference: {fileID: 0}
     - target: {fileID: 6634983686320038530, guid: 8246331b774a4c04eb8b5ef338a220db,
         type: 3}

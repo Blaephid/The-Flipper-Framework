@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using Unity.VisualScripting;
 
 public class S_TitleScreenControl : MonoBehaviour
 {
@@ -22,19 +23,21 @@ public class S_TitleScreenControl : MonoBehaviour
 	public int      _framesToFadeInOnLoad = 30;
 	public int      _framesToFadeOutOnStart = 20;
 
-	//For tracking fade
-	private float   _currentAlpha = 1;
 
-	void Start () {
+	void OnEnable () {
+		Time.timeScale = 1;
 		_BlackFade.enabled = true;
 
-		StartCoroutine(FadeBlack(_BlackFade, 0, _framesToFadeInOnLoad, _currentAlpha));
-		_currentAlpha = 0;
+		StartCoroutine(FadeBlack(_BlackFade, 0, _framesToFadeInOnLoad, 1));
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_Measurers, "MoveIn", _delayBeforeMeasurersEnter));
 	}
 
+	private void OnDisable () {
+		Debug.Log(gameObject + "Disabled");
+	}
+
 	//Lerps from current alpha of the fade image to set alpha smoothly over desired frames
-	public static IEnumerator FadeBlack ( Image Fade, int goalAlpha, float frames, float currentAlpha ) {
+	public  IEnumerator FadeBlack ( Image Fade, int goalAlpha, float frames, float currentAlpha ) {
 
 		float startAlpha = currentAlpha;
 		for (float i = 1 ; i < frames + 1 ; i++)
@@ -58,6 +61,8 @@ public class S_TitleScreenControl : MonoBehaviour
 		S_CarryAcrossScenes.whatIsCurrentSceneType = S_CarryAcrossScenes.EnumGameSceneTypes.Menus;
 		StartCoroutine(DelayMovingToNextScene(null, _sceneToGoToOnStart, _secondsBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Menus));
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_Measurers, "MoveOut", _delayBeforeMeasurersEnter));
+		_BlackFade.enabled = false;
+
 		if (_AudioOnStart != null) _AudioOnStart.Play();
 	}
 

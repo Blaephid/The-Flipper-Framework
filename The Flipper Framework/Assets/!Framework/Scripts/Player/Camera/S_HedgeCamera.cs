@@ -291,12 +291,13 @@ public class S_HedgeCamera : MonoBehaviour
 		_yPrevious = _yPositionOfCamera;
 		_xPrevious = _xPositionOfCamera;
 
-		//If LookTimer is currently below zero, then direct the camera towards the point of interest
+		//If LookTimer is currently below zero or set to infinite(1), then direct the camera towards the point of interest
 		if (_lookTimer < 0 || _lookTimer == 1)
 		{
 			if (_lookAtLockOn)
-			{ _lookAtDirection = (_lookAtLockOn.position - _Skin.position).normalized; }
+				_lookAtDirection = S_S_MoreMaths.GetDirection(_Skin.position, _lookAtLockOn.position);
 
+			//Safe to pass with no lookRotation, as it won't rotate, but still does height.
 			RotateDirection(_lookAtDirection, _lockedRotationSpeed, _heightToLook, _willChangeHeight);
 
 			//Count down timer to zero
@@ -949,6 +950,12 @@ public class S_HedgeCamera : MonoBehaviour
 		_lockedRotationSpeed = speed;
 		_heightToLook = heightSet;
 		_willChangeHeight = true;
+	}
+
+	public void ClearCameraDirectionSet () {
+		_lookTimer = 0;
+		_lookAtLockOn = null;
+		_lookAtDirection = Vector3.zero;
 	}
 
 	//

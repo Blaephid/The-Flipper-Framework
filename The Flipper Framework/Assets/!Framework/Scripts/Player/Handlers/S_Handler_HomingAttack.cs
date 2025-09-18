@@ -103,7 +103,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 		//Will constantly be checking, but only performing calculations if isScanning
 		while (true)
 		{
-			yield return new WaitForEndOfFrame();
+			yield return new WaitForFixedUpdate();
 
 			//Determined in the homing action script, based on if attempt action is called, which means this only updates if the current action can perform homing attacks.
 			if (_HomingAction._inAStateConnectedToThis && _isHomingAvailable)
@@ -216,8 +216,6 @@ public class S_Handler_HomingAttack : S_Player_Base
 
 			float distanceFromScreenMiddle = Vector2.Distance(new Vector2(screenPoint.x, screenPoint.y), new Vector2(0.5f, 0.5f));
 			distanceSquared *= _TargetImportanceByDistanceFromScreenMiddle_.Evaluate(distanceFromScreenMiddle);
-
-			Debug.Log("Screen Pos: " + screenPoint + " Distance from middle: " + distanceFromScreenMiddle + " Multiplied by: " + _TargetImportanceByDistanceFromScreenMiddle_.Evaluate(distanceFromScreenMiddle));
 		}
 
 		//If the above are true, and the distance to this new target is less than the one to the closest, this becomes the target.

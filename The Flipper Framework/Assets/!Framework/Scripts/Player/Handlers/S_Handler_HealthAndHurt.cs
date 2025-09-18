@@ -258,9 +258,10 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 			//Trackers
 			_isDead = true;
+			_LevelHandler.CallDeathEvents();
 
 			//Set public
-			if(!_LevelHandler._Spawner)
+			if (!_LevelHandler._Spawner)
 				_CoreValues.SetValuesOnRespawn();
 			else
 				_CoreValues.SetValuesOnLevelStart();
@@ -280,6 +281,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 
 		//For easier tracking of each values purpose
 		float thresholdForStartFadeOut = (int)_respawnAfter_.x;
+		float thresholdForEndFadeOut = (int)_respawnAfter_.y - 2;
 		float thresholdForReset = (int)_respawnAfter_.y;
 		float thresholdForRespawnPlayer = (int) _respawnAfter_.z;
 		float thresholdForStartFadeIn = (int) _respawnAfter_.z + 3; //Ensures screen is fully black for a few more frames to hide the player teleporting or launching.
@@ -291,7 +293,7 @@ public class S_Handler_HealthAndHurt : S_Player_Base
 			_Input._move = Vector3.zero;
 
 			//Gets the percentage value of the movement from start fade out time to end fade out time
-			float lerpTotal = thresholdForReset - thresholdForStartFadeOut; //The difference between start and end
+			float lerpTotal = thresholdForEndFadeOut - thresholdForStartFadeOut; //The difference between start and end
 			float lerpAmount = (_deadCounter - thresholdForStartFadeOut) + 1; //The amount after the start
 			lerpAmount = lerpAmount / lerpTotal;    //The progress as a percentage
 

@@ -68,8 +68,7 @@ public class S_PlayerPhysics : S_Player_Base
 	[NonSerialized] public Vector2               _bounceAirControl_;
 
 	[Header("Rolling Values")]
-	public float _rollingDownhillBoost_ 
-		{ get { return _rollingDownhillBoostBackingField * _CoreValues._multiplierFromEnergy; } set { _rollingDownhillBoostBackingField = value; } }
+	public float _rollingDownhillBoost_ { get { return _rollingDownhillBoostBackingField * _CoreValues._multiplierFromEnergy; } set { _rollingDownhillBoostBackingField = value; } }
 	private float                 _rollingDownhillBoostBackingField;
 
 	[NonSerialized] public float                 _rollingUphillBoost_;
@@ -431,7 +430,7 @@ public class S_PlayerPhysics : S_Player_Base
 						}
 
 						//Only add if this instance is not too great an outlier, like a wall.
-						if((Vector3.Dot(firstGroundHit.normal, thisNormal) > boundary))
+						if ((Vector3.Dot(firstGroundHit.normal, thisNormal) > boundary))
 							tempNormal += (thisNormal * importance);
 					}
 				}
@@ -654,7 +653,7 @@ public class S_PlayerPhysics : S_Player_Base
 		else if (_isGrounded)
 		{
 			//Gives a small chance to convert fall speed to run speed based on slopes.
-			if (_timeOnGround > 0.08 && velocity.sqrMagnitude > 5*5)
+			if (_timeOnGround > 0.08 && velocity.sqrMagnitude > 5 * 5)
 			{
 				velocity = GetRelevantDirection(velocity);
 				velocity.y = 0;
@@ -832,12 +831,7 @@ public class S_PlayerPhysics : S_Player_Base
 					if (_keepNormal.y < _rotationResetThreshold_)
 					{
 						//Disabled turning until all the way over to prevent velocity changing because of the unqiue camera movement.
-						if (!_isUpsideDown)
-						{
-							_isUpsideDown = true;
-							S_S_Logic.AddLockToList(ref _locksForCanTurn, "isUpsideDown");
-							//_locksForCanTurn.Add(false);
-						}
+						S_S_Logic.AddLockToList(ref _locksForCanTurn, "isUpsideDown");
 
 						// Going off the current rotation, can tell if needs to rotate right or left (rotate right if right side is higher than left), and prepare the angle to rotate around. 
 						if (localRight.y >= 0)
@@ -883,21 +877,15 @@ public class S_PlayerPhysics : S_Player_Base
 				{
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
 					SetPlayerRotation(Quaternion.RotateTowards(transform.rotation, targetRot, 180f * Time.deltaTime));
-					//If the rotation amoung is less than the difference, then the rotation will complete to face upwards.
-					if (Quaternion.Angle(targetRot, transform.rotation) < 180 * Time.deltaTime)
-					{
-						if (_isUpsideDown)
-						{
-							S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, "isUpsideDown");
-							//_locksForCanTurn.Remove(false);
-						}
-						else if (_amountToRotate > 60)
-							StartCoroutine(_CamHandler._HedgeCam.KeepGoingToHeightForFrames(30, 50, 60));
-
-						_amountToRotate = 0;
-						_isUpsideDown = false;
-					}
 				}
+			}
+			//On rotation to face upwards complete
+			else
+			{
+				S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, "isUpsideDown");
+				if (_amountToRotate > 60)
+					StartCoroutine(_CamHandler._HedgeCam.KeepGoingToHeightForFrames(30, 50, 60));
+				_amountToRotate = 0;
 			}
 		}
 
@@ -941,13 +929,12 @@ public class S_PlayerPhysics : S_Player_Base
 				{
 					_isUpsideDown = false;
 					S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, "isUpsideDown");
-					//_locksForCanTurn.Remove(false);
 				}
 				_keepNormalCounter = 0;
 
 				if (_Actions) _Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
 
-				if(canAddToAction)
+				if (canAddToAction)
 					StartCoroutine(_ActionChain.CheckLandingQuality(_groundNormal));
 			}
 

@@ -1,15 +1,15 @@
 using UnityEngine;
 
-#if UNITY_EDITOR
 [ExecuteAlways]
 public class S_LockScale : MonoBehaviour
 {
 	[SerializeField] float setScale = 1;
 
+#if UNITY_EDITOR
 	private void Awake () {
 		if (Application.isPlaying) { enabled = false; }
 	}
-
+#endif
 	// Update is called once per frame
 	void Update () {
 		if(transform.parent == null) { enabled = false; return; }
@@ -19,4 +19,3 @@ public class S_LockScale : MonoBehaviour
 		transform.localScale = S_S_Objects.LockScale(transform, setScale);
 	}
 }
-#endif

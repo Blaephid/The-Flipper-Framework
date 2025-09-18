@@ -52,6 +52,7 @@ MonoBehaviour:
   UpdateButton: 0
   DataResetButton: 0
   _spacingRange_: {x: 20, y: 20}
+  _rememberspacingRange_: {x: 20, y: 20}
   _maxNumber_: 0
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -329,6 +330,7 @@ MonoBehaviour:
   UpdateButton: 0
   DataResetButton: 0
   _spacingRange_: {x: 200, y: 200}
+  _rememberspacingRange_: {x: 20, y: 20}
   _maxNumber_: -1
   _spaceFromStart_: 0
   _spaceFromEnd_: 0
@@ -463,6 +465,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: translation.y
+      value: -0.9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 5010467065650553813, guid: 3d641b812358c084184cd679f5898ae7, type: 3}
@@ -575,6 +582,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: translation.y
+      value: -0.9
       objectReference: {fileID: 0}
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}
@@ -693,6 +705,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
+        type: 3}
+      propertyPath: translation.y
+      value: -0.9
       objectReference: {fileID: 0}
     - target: {fileID: 6728679038143064151, guid: 3d641b812358c084184cd679f5898ae7,
         type: 3}

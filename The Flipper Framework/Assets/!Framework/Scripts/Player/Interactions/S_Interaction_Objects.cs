@@ -545,7 +545,7 @@ public class S_Interaction_Objects : S_Player_Base
 		ObjectRotatesCamera(GO, RailBoosterScript._cameraEffect);
 	}
 
-	private GameObject GetObjectWithData ( Collider Col ) {
+	public static GameObject GetObjectWithData ( Collider Col ) {
 		if (Col.TryGetComponent(out S_Data_Redirect Redirect))
 		{
 			return Redirect._ObjectWithMainScript;

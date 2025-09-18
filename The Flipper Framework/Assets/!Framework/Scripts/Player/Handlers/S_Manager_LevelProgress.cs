@@ -168,24 +168,21 @@ public class S_Manager_LevelProgress : S_Player_Base
 	public void CallRespawnEvents () {
 		if (OnReset != null)
 		{
-			//EditorApplication.isPaused = true;
-			Debug.Log(OnReset.GetInvocationList().Length);
-			if (OnReset != null)
-			{
-				foreach (var d in OnReset.GetInvocationList())
-				{
-					UnityEngine.Object target = d.Target as UnityEngine.Object;
-					Debug.Log($"Listener: {d.Method.Name} on {target}");
-				}
-			}
+			//Debug.Log(OnReset.GetInvocationList().Length);
+
+			//	foreach (var d in OnReset.GetInvocationList())
+			//	{
+			//		UnityEngine.Object target = d.Target as UnityEngine.Object;
+			//		Debug.Log($"Listener: {d.Method.Name} on {target}");
+			//	}
 
 			OnReset.Invoke(this, EventArgs.Empty);
 		}
-		if (OnDeath != null)
-		{
-			OnDeath.Invoke(this, EventArgs.Empty);
-		}
+	}
 
+	public void CallDeathEvents () {
+		if (OnDeath != null)
+			OnDeath.Invoke(this, EventArgs.Empty);
 	}
 
 	//Called after enough time has passed after death, right before removing the fade to black. This will reposition the player, but trackers (like physic checkers) are reset in the Handler_HealthAndHurt script.
@@ -205,6 +202,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_HealthAndHurt.SetShield(false);
 
 		//Transform
+		_PlayerPhys.SetPlayerPosition(new Vector3 (9999,9999,9999)); //Ensures player exits all triggers its currently in, then reenters.
 		_PlayerPhys.SetPlayerPosition(_respawnPosition);
 		_PlayerPhys.SetPlayerRotation(Quaternion.identity.normalized, true);
 		_MainSkin.forward = _respawnForwards;

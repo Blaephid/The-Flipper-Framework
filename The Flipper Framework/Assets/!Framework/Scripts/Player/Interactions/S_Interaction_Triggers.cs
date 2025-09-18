@@ -47,10 +47,10 @@ public class S_Interaction_Triggers : S_Player_Base
 	#region Inherited
 
 	private void OnEnable () {
-		S_Manager_LevelProgress.OnDeath += EventOnDeath;
+		S_Manager_LevelProgress.OnReset += EventTriggerIntOnReset;
 	}
 	private void OnDisable () {
-		S_Manager_LevelProgress.OnDeath -= EventOnDeath;
+		S_Manager_LevelProgress.OnReset -= EventTriggerIntOnReset;
 	}
 
 	#endregion
@@ -165,7 +165,7 @@ public class S_Interaction_Triggers : S_Player_Base
 			ValueEditor.rememberComponent = component;
 			ValueEditor.rememberValueObject = value;
 			ValueEditor.rememberField = field;
-			SetOrResetValue(ValueEditor, value, value, true, component, field);
+			SetOrResetValue(ValueEditor, value, true, component, field);
 		}
 	}
 
@@ -180,11 +180,11 @@ public class S_Interaction_Triggers : S_Player_Base
 
 			if (value == null || component == null) { continue; }
 
-			SetOrResetValue(ValueEditor, value, null, false, component, field);
+			SetOrResetValue(ValueEditor, null, false, component, field);
 		}
 	}
 
-	private void SetOrResetValue ( ValueEditing ValueEditor, object value, object setRemember, bool replace, UnityEngine.Component component, FieldInfo field ) {
+	private void SetOrResetValue ( ValueEditing ValueEditor, object setRemember, bool replace, UnityEngine.Component component, FieldInfo field ) {
 		switch (ValueEditor.DataType)
 		{
 			case DataTypes.Float:
@@ -378,7 +378,7 @@ public class S_Interaction_Triggers : S_Player_Base
 		_CamHandler = _Tools.CamHandler;
 	}
 
-	public void EventOnDeath ( object sender, EventArgs e ) {
+	public void EventTriggerIntOnReset ( object sender, EventArgs e ) {
 		_CurrentActiveEffectTriggers.Clear();
 	}
 	#endregion

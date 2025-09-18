@@ -53,9 +53,9 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 		_Animator.SetTrigger("TriggerOff");
 	}
 
-	public override void EventReturnOnDeath ( object sender, EventArgs e ) {
+	public override void EventTriggeredBaseOnReset ( object sender, EventArgs e ) {
 
 		_notInStartState = false;
-		base.EventReturnOnDeath(sender, e);
+		base.EventTriggeredBaseOnReset(sender, e);
 	}
 }

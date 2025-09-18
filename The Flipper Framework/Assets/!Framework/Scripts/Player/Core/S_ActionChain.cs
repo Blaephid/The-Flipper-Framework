@@ -37,6 +37,12 @@ public class S_ActionChain : S_Player_Base
 
 	private void Start () {
 		ClearChain();
+
+		S_Manager_LevelProgress.OnDeath += EventEndChainOnDeath;
+	}
+
+	private void OnDestroy () {
+		S_Manager_LevelProgress.OnDeath -= EventEndChainOnDeath;
 	}
 
 	private void FixedUpdate () {
@@ -63,11 +69,11 @@ public class S_ActionChain : S_Player_Base
 
 	#region Handling Chain
 
-	private void ClearChain () {
+	private void ClearChain (float modifier = 1) {
 		_chainActive = false;
 
 		_pointsGained = _PointsGainedByLevel_.Evaluate(_chainLevel);
-		_pointsGained = Mathf.Round(_pointsGained);
+		_pointsGained = Mathf.Round(_pointsGained * modifier);
 
 		_CoreUIElements.AChainResultText.text = _pointsGained.ToString();
 		_CoreUIElements.AChainUIScript.EndChain(ExitAnimationFinished);
@@ -77,6 +83,11 @@ public class S_ActionChain : S_Player_Base
 		_ChainPositionList.Clear();
 
 		_delay = _delayBetweenChains;
+	}
+
+	public void EventEndChainOnDeath ( object sender, EventArgs e ) {
+		_CoreUIElements.AChainAnimator.SetFloat("CountdownModifier", 1000); //Ensure UI animation ends immediately.
+		ClearChain(0.5f);
 	}
 
 	public void AddToChain ( string source, int value, int differenceBetweenThisSourceInChain = 2, string subSource = "", float addSpeed = 0, bool sound = false ) {
@@ -276,12 +287,12 @@ public class S_ActionChain : S_Player_Base
 		yield break;
 
 		void PerfectLanding () {
-			Debug.Log("Perfect Landing");
+	
 			AddToChain("Perfect Landing", 2, 1,"", 15, true);
 		}
 
 		void GoodLanding () {
-			Debug.Log("Good Landing");
+
 			AddToChain("Good Landing", 1, 2,"", 8, true);
 		}
 	}

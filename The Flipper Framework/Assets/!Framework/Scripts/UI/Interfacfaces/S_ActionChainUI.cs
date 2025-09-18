@@ -59,6 +59,16 @@ public class S_ActionChainUI : MonoBehaviour
 		}
 	}
 
+	public void CancelChain () {
+		//Clear list
+		foreach (Animator animator in ListAnimators)
+		{
+			//animator.transform.SetParent(null);
+			animator.SetBool("End", true);
+			StartCoroutine(DestoryAfterTime(animator, 4));
+		}
+	}
+
 	private IEnumerator DestoryAfterTime (Animator anim, float time = 10) {
 
 		yield return new WaitForSeconds(time);

@@ -18,7 +18,11 @@ public class S_RailFollow_Base : MonoBehaviour
 
 	//ZipLine
 	[NonSerialized]
-	public Transform              _ZipHandle;
+	public Transform              _ZipHandlePivot;
+	[NonSerialized]
+	public CapsuleCollider             _ZipHandleCollider;
+	[NonSerialized]
+	public Transform              _ZipHandleGrip;
 	[NonSerialized]
 	public Rigidbody              _ZipBody;
 
@@ -158,8 +162,10 @@ public class S_RailFollow_Base : MonoBehaviour
 				//Similar to on rail, but place handle first, and player relevant to that.
 				newPos = _sampleLocation;
 				newPos += _setOffSet;
-				_ZipHandle.transform.position = newPos;
-				SetPosition(newPos + (_ZipHandle.transform.up * _upOffsetZip_));
+				_ZipHandlePivot.transform.position = newPos;
+				newPos += (_ZipHandleGrip.position - _ZipHandlePivot.transform.position);
+
+				SetPosition(newPos);
 				break;
 		}
 

@@ -51,6 +51,7 @@ public class S_AddOnRail : MonoBehaviour
 		GetPositions();
 	}
 
+
 	public void SetValueOfConnectedRails () {
 		if (!this.isActiveAndEnabled) { return; }
 
@@ -70,6 +71,7 @@ public class S_AddOnRail : MonoBehaviour
 
 		GetPositions();
 	}
+
 
 	public void UpdateAllInstances () {
 		S_AddOnRail[] railsMeshes = FindObjectsByType<S_AddOnRail>(FindObjectsSortMode.None);
@@ -182,7 +184,9 @@ public class S_AddOnRail : MonoBehaviour
 		Vector3 useOffset = sampleTransform.rotation * _selfOffset;
 		return sampleTransform.location + useOffset;
 	}
+#endif
 
+#if UNITY_EDITOR
 	private void OnDrawGizmosSelected () {
 
 		if (NextRail)

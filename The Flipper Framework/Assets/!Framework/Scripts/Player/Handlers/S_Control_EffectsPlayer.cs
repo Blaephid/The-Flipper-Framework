@@ -74,6 +74,10 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		S_Manager_LevelProgress.OnStageClear += EventStageClear;
 	}
 
+	private void OnDestroy () {
+		S_Manager_LevelProgress.OnStageClear -= EventStageClear;
+	}
+
 	void Update () {
 
 		HandleMouths();
@@ -247,6 +251,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	//Trigger
 
 	public void ActionChainAdd (int score) {
+		if (score <= 0) return;
 		score = Mathf.Min(score, _ActionChainColours.Length);
 		score -= 1;
 
