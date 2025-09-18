@@ -128,7 +128,7 @@ public class S_PlayerInput : S_Player_Base
 		}
 		else
 		{
-			_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
+			_PlayerMovement._moveInput = _PlayerPhys.GetRelevantDirection(_lockedMoveInput, false);
 		}
 	}
 
@@ -217,17 +217,22 @@ public class S_PlayerInput : S_Player_Base
 			//If enum is not set in the call, move becomes the input given.
 			case S_GeneralEnums.LockControlDirection.Change:
 				_lockedControllerInput = Vector2.one;
-				_lockedMoveInput = newInput; break;
+				_lockedMoveInput = newInput;
+				break;
 			case S_GeneralEnums.LockControlDirection.NoInput:
 				_lockedControllerInput = Vector2.zero;
-				_lockedMoveInput = Vector3.zero; break;
+				_lockedMoveInput = Vector3.zero;
+				break;
 			case S_GeneralEnums.LockControlDirection.CharacterForwards:
 				_lockedControllerInput = Vector2.one;
 				_lockedToCharacter = true;
-				_lockedMoveInput = _MainSkin.forward; break;
+				_lockedMoveInput = _MainSkin.forward;
+				break;
 		}
 
-		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
+		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantDirection(_lockedMoveInput, false);
+
+		//Debug.Log("Change Input to " + _PlayerMovement._moveInput + " At " + whatLock + " For " + frames);
 
 		//Sets time to count to before unlocking. If already locked, then will only change if to a higher timer.
 		_lockedTime = frames;
@@ -243,7 +248,7 @@ public class S_PlayerInput : S_Player_Base
 
 		_lockedControllerInput = Vector2.one;
 		_lockedMoveInput = _MainSkin.forward;
-		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantVector(_lockedMoveInput, false);
+		_PlayerMovement._moveInput = _PlayerPhys.GetRelevantDirection(_lockedMoveInput, false);
 	}
 
 	public void LockInputIndefinately ( bool lockCam, Vector3 newInput, S_GeneralEnums.LockControlDirection whatLock = S_GeneralEnums.LockControlDirection.Change ) {

@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using UnityEditor;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using System;
 
 public class S_Action00_Default : S_Action_Base, IMainAction
 {
@@ -50,7 +51,9 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 	[HideInInspector]
 	public int          _animationAction = 0;
 
-	[HideInInspector]
+	[NonSerialized]
+	public bool     _canHandleSkinRotation = true;
+	[NonSerialized]
 	public bool     _isAnimatorControlledExternally = false;
 	private Vector3 _skinRotationLockedTo;
 
@@ -72,12 +75,16 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		if (!_isAnimatorControlledExternally)
 		{
 			HandleAnimator(_animationAction);
+
+			if (!_canHandleSkinRotation) { return; }
+
 			if (_skinRotationLockedTo != Vector3.zero)
 			{
 				SetSkinRotationToVelocity(_skinRotationSpeed, _skinRotationLockedTo);
 			}
 			else
 				SetSkinRotationToVelocity(_skinRotationSpeed);
+
 		}
 	}
 
@@ -173,7 +180,13 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		if (direction == default(Vector3))
 		{
 			direction = _PlayerVel._coreVelocity;
-			if (direction.sqrMagnitude < 7 * 7) { return; }
+			if (direction.sqrMagnitude < 3 * 3)
+			{
+				if (_Input._move.sqrMagnitude < 0.2f)
+					return;
+
+				direction = _Input._move;
+			}
 		}
 
 		if (upDirection == default(Vector3))
@@ -183,6 +196,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 
 		//Gets a direction to rotate towards based on input direction, and if there isn't one, don't change it.
 		Vector3 newForward = direction - upDirection * Vector3.Dot(direction, upDirection);
+		newForward.Normalize();
 		if (newForward.sqrMagnitude > 0.01f)
 		{
 			//Makes a rotation that only changes horizontally, never looking up or down.
@@ -197,6 +211,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 			{
 				rotateSpeed = rotateSpeed != 0 ? rotateSpeed * Time.deltaTime * 0.75f : 1;
 			}
+
 			_MainSkin.rotation = Quaternion.Lerp(_MainSkin.rotation, targetRotation, rotateSpeed);
 
 
@@ -222,14 +237,6 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 
 		_CurrentSkins.Clear(); //Adds all of the enabled skins to a list so they can be handled later.
 
-		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
-		for (int i = 0 ; i < _PlayerSkin.Count ; i++)
-		{
-			SkinnedMeshRenderer Skin = _PlayerSkin[i];
-			Skin.enabled = setMainSkin;
-			if (Skin.enabled) { _CurrentSkins.Add(Skin); }
-		}
-
 		_SpinDashBall.enabled = !setMainSkin;
 		//If ball enabled, disable the animator so its sounds don't overlap.
 		if (_SpinDashBall.enabled)
@@ -247,6 +254,14 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 			_CurrentAnimator = _CharacterAnimator;
 			_CharacterAnimator.speed = 1;
 		}
+
+		//Handles the proper player skins, enabling/disabling them and adding them to the list if visible.
+		for (int i = 0 ; i < _PlayerSkin.Count ; i++)
+		{
+			SkinnedMeshRenderer Skin = _PlayerSkin[i];
+			Skin.enabled = setMainSkin;
+			if (Skin.enabled) { _CurrentSkins.Add(Skin); }
+		}
 	}
 
 	public void HideCurrentSkins ( bool hide ) {
@@ -256,7 +271,7 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 		}
 	}
 
-	public void SetColliderActive (bool set) {
+	public void SetColliderActive ( bool set ) {
 		//Because actualy deactivating the collider would mess up all triggers as exit isn't called, just shrink it grealy instead.
 		if (!set) OverWriteCollider(_DisableCapsule);
 
@@ -264,6 +279,11 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 	}
 
 	public void OverWriteCollider ( CapsuleCollider newCollider ) {
+		if (newCollider == _LowerCapsule)
+			_CoreValues._inBall = true;
+		else
+			_CoreValues._inBall = false;
+
 		_CharacterCapsule.radius = newCollider.radius;
 		_CharacterCapsule.center = newCollider.center;
 		_CharacterCapsule.material = newCollider.material;
@@ -289,7 +309,6 @@ public class S_Action00_Default : S_Action_Base, IMainAction
 	//Called externally if the coyote time has to be ended prematurely.
 	public void CancelCoyote () {
 		_isCoyoteInEffect = false;
-		StopCoroutine(CoyoteTime());
 	}
 
 	//This has to be set up in Editor. The invoker is in the PlayerPhysics script component, adding this event to it will mean this is called whenever the player lands.

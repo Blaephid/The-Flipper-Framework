@@ -20,8 +20,8 @@ public class S_Data_HomingTarget : S_Data_Base
 	public EffectOnHoming OnHit = EffectOnHoming.normal;
 	public EffectOnHoming OnDestroy = EffectOnHoming.normal;
 
-	[Tooltip("When checking if this is a valid target, must be within the homing actions distance * this. Used to make some homing targets more difficult.")]
-	[Range(0.1f,1)]
+	[Tooltip("When checking if this is a valid target, must be within the homing actions multiplied by this. Used to make some homing targets more difficult.")]
+	[Range(0.1f,2)]
 	public float _distanceModifier = 1;
 
 	//These are used to track how fast the target is moving to adjust homing attack speed.

@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -306,7 +306,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: dc6f281d3d120aa4da6c7e2b3f656ba5,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: S_O_StageScenes, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: S_O_StageInfo, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: Sc_AltitudeLimit
@@ -638,7 +638,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: 14ad1e28b438e3242ad3935eab43731f,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: S_O_StageScenes, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: S_O_StageInfo, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1022,7 +1022,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: b7b3453a0d6ceec49abf159176c700dc,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: S_O_StageScenes, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: S_O_StageInfo, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: Sc_Showroom
@@ -2428,6 +2428,16 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 3513309565807234129, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: willReplaceOldInstancesWithThis
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5535624559727572518, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7474941497722396790, guid: 75395601d6941a14086ad46cf82fa9a8,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2495,9 +2505,49 @@ PrefabInstance:
       objectReference: {fileID: 1563707116}
     - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
         type: 3}
+      propertyPath: _secondsBeforeLoading
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _secondsBeforeStageScreen
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
       propertyPath: '_AdditionalAnimations.Array.data[0]'
       value: 
       objectReference: {fileID: 1691384227}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[0].trigger
+      value: MoveOut
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[1].trigger
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[0].Animator
+      value: 
+      objectReference: {fileID: 1563707116}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[1].AnimClip
+      value: 
+      objectReference: {fileID: 1691384227}
+    - target: {fileID: 8155353491748236448, guid: 75395601d6941a14086ad46cf82fa9a8,
+        type: 3}
+      propertyPath: _AnimationsOnGo.Array.data[1].Animator
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

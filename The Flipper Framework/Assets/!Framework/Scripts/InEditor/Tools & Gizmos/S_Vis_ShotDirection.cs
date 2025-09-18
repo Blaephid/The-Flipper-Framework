@@ -67,6 +67,8 @@ public class S_Vis_ShotDirection : S_Vis_Base
 	}
 
 	private void OnValidate () {
+		if(Application.isPlaying) { return; }
+
 		//Delay this because OnValidate is called on creation, before anything else, so scripts like PlaceOnSpline would set up shot before changing position.
 		EditorApplication.delayCall += () =>
 		{
@@ -135,7 +137,7 @@ public class S_Vis_ShotDirection : S_Vis_Base
 		_lockFrames = _launcherData._lockInputFrames_;
 		Vector3 direction = _launcherData._directionToUse_;
 
-		Vector3[] velocitySplit = S_Interaction_Objects.SplitCoreAndEnvironmentalVelocities(null, direction, _launcherData._force_, 0, _maxSpeed, _launcherData._useCore);
+		Vector3[] velocitySplit = S_Interaction_Objects.SplitCoreAndEnvironmentalVelocities(null, direction, _launcherData._force_, 0, _maxSpeed, _launcherData._coreVelocityImportance);
 
 		//Use the launch data to proejct where player will go.
 		return PreviewTrajectory(_ShotCenter.position, velocitySplit[0], velocitySplit[1], _launcherData._lockInputTo_);

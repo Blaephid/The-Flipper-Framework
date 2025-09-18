@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static Cinemachine.AxisState;
+using static Unity.Cinemachine.InputAxis;
 
 public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 {
@@ -23,20 +23,17 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 		}
 	}
 
-	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
-		if (!CanBeTriggeredOn(Player)) { return; }
+	public override void ChildTriggerObjectOn ( S_CharacterTools Player = null ) {
 
 		SetAnimatorSpeed(Player);
-		_isCurrentlyOn = true;
 		_Animator.SetTrigger("TriggerOn");
 
 	}
 
-	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
-		if (!CanBeTriggeredOff(Player)) { return; }
+	public override void ChildTriggerObjectOff ( S_CharacterTools Player = null ) {
 
 		SetAnimatorSpeed(Player);
-		_isCurrentlyOn = false;
+		_notInStartState = false;
 		_Animator.SetTrigger("TriggerOff");
 
 	}
@@ -49,16 +46,16 @@ public class S_Triggered_PlayAnimation : S_Triggered_Base, ITriggerable
 		_Animator.speed = (_defaultSpeed * speedModi);
 	}
 
-	public override void ResetToOriginal () {
+	public override void ChildResetToOriginal () {
 		if (!_Animator) { return; }
 
 		_Animator.speed = 50;
 		_Animator.SetTrigger("TriggerOff");
 	}
 
-	public override void EventReturnOnDeath ( object sender, EventArgs e ) {
+	public override void EventTriggeredBaseOnReset ( object sender, EventArgs e ) {
 
-		_isCurrentlyOn = false;
-		base.EventReturnOnDeath(sender, e);
+		_notInStartState = false;
+		base.EventTriggeredBaseOnReset(sender, e);
 	}
 }

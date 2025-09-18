@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
-
+using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class S_StageCompleteControl : MonoBehaviour
 {
@@ -28,6 +28,16 @@ public class S_StageCompleteControl : MonoBehaviour
 	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _MilisecondsText;
 	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _RingsGainedText;
 	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _RingsLostText;
+
+	[Header("Next Rank Texts")]
+	[ColourIfNull(1,0,0,1)]public GameObject _TimeNextRank;
+	[ColourIfNull(1,0,0,1)]public GameObject _RingsNextRank;
+	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _TimeNextRankNote;
+	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _RingsNextRankNote;
+	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _MinutesNextText;
+	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _SecondsNextText;
+	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _MilisecondsNextText;
+	[ColourIfNull(1,0,0,1)]public TextMeshProUGUI _RingsNextText;
 
 	[Header("Audio")]
 	[ColourIfNull(1,0,0,1)]public AudioSource _ResultsMusic;
@@ -56,7 +66,46 @@ public class S_StageCompleteControl : MonoBehaviour
 		_TimeRankText.text = Score._timeRankText;
 		_TotalRankText.text = Score._totalRankText;
 
+		DisplayNextRank(Score);
+
 		StartCoroutine(BuildUpScoreDisplays(Score));
+	}
+
+	private void DisplayNextRank ( S_PlayerScore Score ) {
+		if (Score._toNextRankTime == Vector3.zero) { _TimeNextRank.SetActive(false); }
+		else
+		{
+			switch (Score._timeRankText)
+			{
+				case "S":
+					_TimeNextRankNote.text = "Secret Rank At";
+					break;
+				case "A":
+					_TimeNextRankNote.text = "Max Rank At";
+					break;
+				default:
+					_TimeNextRankNote.text = "Next Rank At";
+					break;
+			}
+
+			_MinutesNextText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits((int)Score._toNextRankTime.x);
+			_SecondsNextText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits((int)Score._toNextRankTime.y);
+			_MilisecondsNextText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits((int)Score._toNextRankTime.z);
+		}
+		if (Score._toNextRankRings == 0) { _RingsNextRank.SetActive(false); }
+		else
+		{
+			switch (Score._ringsRankText)
+			{
+				case "A":
+					_RingsNextRankNote.text = "Max Rank At";
+					break;
+				default:
+					_RingsNextRankNote.text = "Next Rank At";
+					break;
+			}
+			_RingsNextText.text = Score._toNextRankRings.ToString();
+		}
 	}
 
 	//Gives the value a "calculating result" effect, before revealing ranks.
@@ -74,29 +123,29 @@ public class S_StageCompleteControl : MonoBehaviour
 			//For minutes, seconds, milliseconds, rings gained, and ring lost, give random numbers quickly until locking them in.
 
 			if (count < secondsForLockInOfElement[0])
-				_MinutesText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 99));
+				_MinutesText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits(Random.Range(0, 99));
 			else
-				_MinutesText.text = S_PlayerScore.DisplayIn2Digits((int)Score._minutes);
+				_MinutesText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits((int)Score._minutes);
 
 			if (count < secondsForLockInOfElement[1])
-				_SecondsText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 59));
+				_SecondsText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits(Random.Range(0, 59));
 			else
-				_SecondsText.text = S_PlayerScore.DisplayIn2Digits((int)Score._seconds);
+				_SecondsText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits((int)Score._seconds);
 
 			if (count < secondsForLockInOfElement[2])
-				_MilisecondsText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 99));
+				_MilisecondsText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits(Random.Range(0, 99));
 			else
-				_MilisecondsText.text = S_PlayerScore.DisplayIn2Digits((int)Score._milliseconds);
+				_MilisecondsText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits((int)Score._milliseconds);
 
 			if (count < secondsForLockInOfElement[3])
-				_RingsGainedText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 999));
+				_RingsGainedText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits(Random.Range(0, 999));
 			else
-				_RingsGainedText.text = S_PlayerScore.DisplayIn2Digits((int)Score._ringScoreGained);
+				_RingsGainedText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits((int)Score._ringScoreGained, 3);
 
 			if (count < secondsForLockInOfElement[4])
-				_RingsLostText.text = S_PlayerScore.DisplayIn2Digits(Random.Range(0, 999));
+				_RingsLostText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits(Random.Range(0, 999));
 			else
-				_RingsLostText.text = S_PlayerScore.DisplayIn2Digits((int)Score._ringScoreLost);
+				_RingsLostText.text = S_S_MoreMaths.DisplayIntAsStringInXDigits((int)Score._ringScoreLost, 3);
 
 		}
 

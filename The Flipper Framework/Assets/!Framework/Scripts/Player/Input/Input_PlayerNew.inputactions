@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "Input_PlayerNew",
     "maps": [
         {
@@ -392,7 +393,7 @@
                 {
                     "name": "",
                     "id": "b3cc9dc9-c695-48db-927c-460f8c419a19",
-                    "path": "<Keyboard>/c",
+                    "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -1081,7 +1082,7 @@
                     "name": "New action",
                     "type": "Button",
                     "id": "9a5c38f1-dd51-4cfe-b6fa-136d7438ef30",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -1109,7 +1110,7 @@
                     "name": "Continue",
                     "type": "Button",
                     "id": "55630bbb-1783-4378-a7db-499c061405ad",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -1120,6 +1121,17 @@
                     "name": "",
                     "id": "1c4ac385-c21c-4d34-9133-8350783a29b1",
                     "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Continue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8cd80cbc-0a93-4e45-a7a7-256f0b4b3e6d",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

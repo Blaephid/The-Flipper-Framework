@@ -53,6 +53,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 	private Vector2     _timeToKeepTarget_;
 	private float       _timeBetweenScans_;
 	private int         _radiusOfCameraTargetCheck_;
+	private AnimationCurve _TargetImportanceByDistanceFromScreenMiddle_;
 	#endregion
 
 	// Trackers
@@ -102,7 +103,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 		//Will constantly be checking, but only performing calculations if isScanning
 		while (true)
 		{
-			yield return new WaitForEndOfFrame();
+			yield return new WaitForFixedUpdate();
 
 			//Determined in the homing action script, based on if attempt action is called, which means this only updates if the current action can perform homing attacks.
 			if (_HomingAction._inAStateConnectedToThis && _isHomingAvailable)
@@ -165,7 +166,7 @@ public class S_Handler_HomingAttack : S_Player_Base
 		if (_PreviousTarget != null)
 		{
 			float distanceSquared = S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, _PreviousTarget.transform.position);
-			closestTarget = CheckTarget(_PreviousTarget.transform, distanceSquared * _currentTargetPriority_, closestTarget, _facingAmount_);
+			closestTarget = CheckTarget(_PreviousTarget.transform, distanceSquared * _currentTargetPriority_, closestTarget, _facingAmount_, false);
 		}
 
 		return closestTarget;
@@ -182,8 +183,9 @@ public class S_Handler_HomingAttack : S_Player_Base
 				if (hit.gameObject.TryGetComponent(out S_Data_HomingTarget TargetData) && distanceSquared > _minTargetDistanceSquared_)
 				{
 					Transform checkTarget = hit.gameObject.transform;
-					float distanceToUse = (distanceSquared / TargetData._distanceModifier) * extraPriority; //Some targets may need to be closer.
-					closestTarget = CheckTarget(checkTarget, distanceToUse, closestTarget, _facingAmount_);
+					//Distance modifier makes target easier or harder.
+					float distanceToUse = (distanceSquared * TargetData._distanceModifier) * extraPriority; //The lower the priority, the closer it seems.
+					closestTarget = CheckTarget(checkTarget, distanceToUse, closestTarget, _facingAmount_, false);
 					//Compare 
 				}
 
@@ -195,15 +197,14 @@ public class S_Handler_HomingAttack : S_Player_Base
 	}
 
 	//Takes in a target and return the closer of it or the current one.
-	private Transform CheckTarget ( Transform newTarget, float distanceSquared, Transform closest, float facingAmount, bool skipIsOnScreen = false ) {
+	private Transform CheckTarget ( Transform newTarget, float distanceSquared, Transform closest, float facingAmount, bool skipIsOnScreen ) {
 
 		//If this new target is out of the maximum range, then ignore it, no matter the check. Gets its own distance because the distance parameter won't always be the exact distance.
 		if (S_S_MoreMaths.GetDistanceSqrOfVectors(transform.position, newTarget.position) > _maxTargetDistanceSquared_) { return closest; }
 
-
 		//Make sure Sonic is facing the target enough
 		Vector3 direction = (newTarget.position - transform.position).normalized;
-		float angle = Vector3.Angle(new Vector3(_MainSkin.forward.x, 0, _MainSkin.forward.z), new Vector3 (direction.x, 0, direction.z));
+		float angle = Vector3.Angle(_MainSkin.forward, direction);
 		bool isFacing = angle < facingAmount;
 
 		bool isOnScreen = true;
@@ -211,7 +212,10 @@ public class S_Handler_HomingAttack : S_Player_Base
 		{
 			//Make sure the target is on screen
 			Vector3 screenPoint = _MainCamera.GetComponent<Camera>().WorldToViewportPoint(newTarget.position);
-			isOnScreen = screenPoint.z > 0.3f && screenPoint.x > 0.08 && screenPoint.x < 0.92f && screenPoint.y > 0f && screenPoint.y < 0.95f;
+			isOnScreen = screenPoint.z > 2f && screenPoint.x > 0.1 && screenPoint.x < 0.9f && screenPoint.y > 0f && screenPoint.y < 0.95f;
+
+			float distanceFromScreenMiddle = Vector2.Distance(new Vector2(screenPoint.x, screenPoint.y), new Vector2(0.5f, 0.5f));
+			distanceSquared *= _TargetImportanceByDistanceFromScreenMiddle_.Evaluate(distanceFromScreenMiddle);
 		}
 
 		//If the above are true, and the distance to this new target is less than the one to the closest, this becomes the target.
@@ -352,11 +356,12 @@ public class S_Handler_HomingAttack : S_Player_Base
 		_BlockingLayers_ = _Tools.Stats.HomingSearch.blockingLayers;
 		_facingAmount_ = _Tools.Stats.HomingSearch.facingAmount;
 		_homingDelay_ = _Tools.Stats.HomingStats.successDelay;
-		_currentTargetPriority_ = 1 - _Tools.Stats.HomingSearch.currentTargetPriority;
-		_cameraDirectionPriority_ = 1 - _Tools.Stats.HomingSearch.cameraDirectionPriority;
+		_currentTargetPriority_ = _Tools.Stats.HomingSearch.currentTargetPriority;
+		_cameraDirectionPriority_ = _Tools.Stats.HomingSearch.cameraDirectionPriority;
 		_timeToKeepTarget_ = _Tools.Stats.HomingSearch.timeToKeepTarget;
 		_timeBetweenScans_ = _Tools.Stats.HomingSearch.timeBetweenScans;
 		_radiusOfCameraTargetCheck_ = _Tools.Stats.HomingSearch.radiusOfCameraTargetCheck;
+		_TargetImportanceByDistanceFromScreenMiddle_ = _Tools.Stats.HomingSearch.TargetPriorityByDistanceFromScreenMiddle;
 
 		_iconScale_ = _Tools.Stats.HomingSearch.iconScale;
 		_iconDistanceScaling_ = _Tools.Stats.HomingSearch.iconDistanceScaling;

@@ -158,8 +158,8 @@ public class S_Action02_Homing : S_Action_Base, IMainAction
 		_Target = _HomingHandler._TargetObject.transform;
 		_TargetData = _Target.GetComponent<S_Data_HomingTarget>();
 
-		_targetDirection = _Target.position - _PlayerPhys._CharacterCenterPosition;
-		_currentDirection = Vector3.RotateTowards(_MainSkin.forward, _targetDirection, Mathf.Deg2Rad * _homingTurnSpeed_ * 8, 0.0f);
+		_targetDirection =S_S_MoreMaths.GetDirection(_PlayerPhys._CharacterCenterPosition, _Target.position);
+		_currentDirection = _targetDirection;
 
 		//Setting public
 		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "Homing");

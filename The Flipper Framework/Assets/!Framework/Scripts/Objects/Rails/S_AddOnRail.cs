@@ -51,6 +51,7 @@ public class S_AddOnRail : MonoBehaviour
 		GetPositions();
 	}
 
+
 	public void SetValueOfConnectedRails () {
 		if (!this.isActiveAndEnabled) { return; }
 
@@ -70,6 +71,7 @@ public class S_AddOnRail : MonoBehaviour
 
 		GetPositions();
 	}
+
 
 	public void UpdateAllInstances () {
 		S_AddOnRail[] railsMeshes = FindObjectsByType<S_AddOnRail>(FindObjectsSortMode.None);
@@ -129,6 +131,7 @@ public class S_AddOnRail : MonoBehaviour
 			if(TryGetComponent(out S_SplineMeshTiling MeshTiling))
 			{
 				Vector3 baseOffset = MeshTiling.translation;
+				baseOffset.y = 0;
 				Vector3 getDirection = (newDirection - newPosition).normalized;
 
 				Vector3 upOffset = newUp * baseOffset.y;
@@ -181,7 +184,9 @@ public class S_AddOnRail : MonoBehaviour
 		Vector3 useOffset = sampleTransform.rotation * _selfOffset;
 		return sampleTransform.location + useOffset;
 	}
+#endif
 
+#if UNITY_EDITOR
 	private void OnDrawGizmosSelected () {
 
 		if (NextRail)

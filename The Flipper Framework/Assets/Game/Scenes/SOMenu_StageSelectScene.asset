@@ -9,13 +9,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f738cb6cb2fe62c4d978f8cae0bc5d04, type: 3}
+  m_Script: {fileID: 11500000, guid: fa72f364402e9b84ca6a66e97f2d8b76, type: 3}
   m_Name: SOMenu_StageSelectScene
   m_EditorClassIdentifier: Assembly-CSharp::S_O_StageScenes
   _StageName: 
   _minSecondsToLoadScenes: 0
   _BaseScene:
-    m_SceneAsset: {fileID: 102900000, guid: 5676cf941754d7b45bd92c1841a071df, type: 3}
-    m_SceneName: Sc_FlipperStageSelect
-  _Scenes: []
+    m_SceneAsset: {fileID: 0}
+    m_SceneName: 
+  _AdditionalScenes: []
+  _Ranks:
+    Time_XRank: {x: 0, y: 0, z: 0}
+    TimeTotal_XRank: 0
+    Time_SRank: {x: 0, y: 0, z: 0}
+    TimeTotal_SRank: 0
+    Time_ARank: {x: 0, y: 0, z: 0}
+    TimeTotal_ARank: 0
+    Time_BRank: {x: 0, y: 0, z: 0}
+    TimeTotal_BRank: 0
+    Time_CRank: {x: 0, y: 0, z: 0}
+    TimeTotal_CRank: 0
+    Time_DRank: {x: 99, y: 59, z: 0}
+    TimeTotal_DRank: 5999
+    Rings_SRank: 0
+    Rings_ARank: 0
+    Rings_BRank: 0
+    Rings_CRank: 0
+    Rings_DRank: 0
   _InspectorTheme: {fileID: 11400000, guid: 94aee69ef1f5bbf439ac320683d4c454, type: 2}

@@ -58,6 +58,8 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 	[HideInInspector]   public Vector3      _raycastOrigin;
 	[HideInInspector]	public  bool        _isHoldingWall;
 	[HideInInspector]	public  float       _counter;
+	private bool                                    _hasAddedToChain;
+
 	[HideInInspector]	public  float       _distanceFromWall;
 	[HideInInspector]   public float       _checkDistance;
 
@@ -99,7 +101,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 			CheckCanceling();
 			HandleInputs();
 
-			if(_counter > 0.5f) { _ActionChain.AddToChain("Wall Run", 1, 1); }
+			if(_counter > 0.5f && !_hasAddedToChain) { _hasAddedToChain = true; _ActionChain.AddToChain("Wall Run", 1, 1); }
 		}
 		else
 		{
@@ -133,6 +135,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 
 		_isWall = true;
 		_counter = 0;
+		_hasAddedToChain = false;
 
 		_distanceFromWall = _CoreCollider.radius * 1.25f;
 
@@ -329,7 +332,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 
 	//Because canChangeGrounded is set to false on start, use own method when checking for ground, with own values to ensure doesn't count the current wall being climbed as ground.
 	public bool IsOnGround () {
-		if(_PlayerPhys.GetRelevantVector(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
+		if(_PlayerPhys.GetRelevantDirection(_PlayerVel._worldVelocity).y < -1) //Can only be grounded if going down wall (because wall climbing can transition to grounded seperately).
 		{
 			Vector3 rayCastStartPosition = _PlayerPhys._CharacterCenterPosition + _wallHit.normal * 0.5f;
 			float range = (_CoreCollider.height / 2) + 0.5f;

@@ -33,10 +33,11 @@ namespace SplineMesh
 			Vector3 sampleUpwards = SplineTransform.rotation * sample.up;
 			Vector3 sampleRight = Vector3.Cross( sampleUpwards, sampleForwards);
 
-			Vector3 sampleLocation = (SplineTransform.rotation * sample.location);
-			sampleLocation = new Vector3(sampleLocation.x * SplineTransform.lossyScale.z, 
-				sampleLocation.y * SplineTransform.lossyScale.y, 
+			Vector3 sampleLocation = sample.location;
+			sampleLocation = new Vector3(sampleLocation.x * SplineTransform.lossyScale.z,
+				sampleLocation.y * SplineTransform.lossyScale.y,
 				sampleLocation.z * SplineTransform.lossyScale.x);
+			sampleLocation = SplineTransform.rotation * sampleLocation;
 			sampleLocation += SplineTransform.position;
 			Quaternion sampleRotation = SplineTransform.rotation * sample.Rotation;
 

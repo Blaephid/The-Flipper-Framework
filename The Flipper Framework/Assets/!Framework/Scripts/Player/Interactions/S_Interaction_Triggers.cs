@@ -47,10 +47,10 @@ public class S_Interaction_Triggers : S_Player_Base
 	#region Inherited
 
 	private void OnEnable () {
-		S_Manager_LevelProgress.OnDeath += EventOnDeath;
+		S_Manager_LevelProgress.OnReset += EventTriggerIntOnReset;
 	}
 	private void OnDisable () {
-		S_Manager_LevelProgress.OnDeath -= EventOnDeath;
+		S_Manager_LevelProgress.OnReset -= EventTriggerIntOnReset;
 	}
 
 	#endregion
@@ -62,6 +62,10 @@ public class S_Interaction_Triggers : S_Player_Base
 	#region private (can be called externally as long as only working on scripts purpose)
 
 	#region Enabling and Disabling
+
+	public void ClearEffectTriggersOfType<T> ( ) where T : S_Trigger_External {
+		_CurrentActiveEffectTriggers.RemoveAll(item => item is T);
+	}
 
 	public void CheckEffectsTriggerEnter ( Collider Col ) {
 		//This static method determines the data of the trigger entered, and returns data if its different, or null if it isn't. It also adds to the list of camera triggers if it shares data.
@@ -161,7 +165,7 @@ public class S_Interaction_Triggers : S_Player_Base
 			ValueEditor.rememberComponent = component;
 			ValueEditor.rememberValueObject = value;
 			ValueEditor.rememberField = field;
-			SetOrResetValue(ValueEditor, value, value, true, component, field);
+			SetOrResetValue(ValueEditor, value, true, component, field);
 		}
 	}
 
@@ -176,11 +180,11 @@ public class S_Interaction_Triggers : S_Player_Base
 
 			if (value == null || component == null) { continue; }
 
-			SetOrResetValue(ValueEditor, value, null, false, component, field);
+			SetOrResetValue(ValueEditor, null, false, component, field);
 		}
 	}
 
-	private void SetOrResetValue ( ValueEditing ValueEditor, object value, object setRemember, bool replace, UnityEngine.Component component, FieldInfo field ) {
+	private void SetOrResetValue ( ValueEditing ValueEditor, object setRemember, bool replace, UnityEngine.Component component, FieldInfo field ) {
 		switch (ValueEditor.DataType)
 		{
 			case DataTypes.Float:
@@ -302,11 +306,11 @@ public class S_Interaction_Triggers : S_Player_Base
 		if (!Col.TryGetComponent(out S_Trigger_External HostTriggerData)) { return null; };
 
 		//If no logic is found, ignore.
-		if (HostTriggerData == null || HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate.Count == 0) return null;
+		if (HostTriggerData == null || HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadActivate.Count == 0) return null;
 
-		for (int i = 0 ; i < HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate.Count ; i++)
+		for (int i = 0 ; i < HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadActivate.Count ; i++)
 		{
-			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects._TriggersForPlayerToReadActivate[i].GetComponent<S_Trigger_External>();
+			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadActivate[i].GetComponent<S_Trigger_External>();
 
 			//If either there isn't any camera logic already in effect, or this is a new trigger unlike the already active one, set this as the first active.
 			if (list.Count == 0) { list = new List<S_Trigger_External>(); }
@@ -335,11 +339,11 @@ public class S_Interaction_Triggers : S_Player_Base
 		if (!Col.TryGetComponent(out S_Trigger_External HostTriggerData)) { return null; }
 
 		//If no logic is found, ignore.
-		if (HostTriggerData == null || HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate == null) return null;
+		if (HostTriggerData == null || HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadDeactivate == null) return null;
 
-		for (int i = 0 ; i < HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate.Count ; i++)
+		for (int i = 0 ; i < HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadDeactivate.Count ; i++)
 		{
-			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects._TriggersForPlayerToReadDeactivate[i].GetComponent<S_Trigger_External>();
+			S_Trigger_External ReferencedTriggerData = HostTriggerData.TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadDeactivate[i].GetComponent<S_Trigger_External>();
 
 			//If the trigger exited is NOT set to the same logic as currently active, then don't do anything.
 			if (list.Count > 0 && !list.Contains(ReferencedTriggerData)) { continue; }
@@ -374,7 +378,7 @@ public class S_Interaction_Triggers : S_Player_Base
 		_CamHandler = _Tools.CamHandler;
 	}
 
-	public void EventOnDeath ( object sender, EventArgs e ) {
+	public void EventTriggerIntOnReset ( object sender, EventArgs e ) {
 		_CurrentActiveEffectTriggers.Clear();
 	}
 	#endregion

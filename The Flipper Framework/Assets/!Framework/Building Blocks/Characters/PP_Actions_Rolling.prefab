@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84f9c6d1025f5e74e8387e08a266035a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _regularSkidAngleStartPoint_: 0
   _regularSkiddingIntensity_: 0
   _isSkidding: 0
@@ -61,6 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d900770bff08f5047b6885e331fec8f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
 --- !u!114 &3464681610144582972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,6 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f41c6a689164e749972941802ec5704, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _rollCounter: 0
 --- !u!1 &2987150101943081207
 GameObject:
@@ -204,7 +207,10 @@ MonoBehaviour:
   _dashDelayCounter: 0
   _jumpAngle: {x: 0, y: 0, z: 0}
   _dashAngle: {x: 0, y: 0, z: 0}
+  _speedBeforeAction: 0
+  _currentTargetPosition: {x: 0, y: 0, z: 0}
   _areAirActionsAvailable: 1
+  _areAirActionsActive: 1
   _isPaused: 0
 --- !u!114 &3624239064362977154
 MonoBehaviour:
@@ -553,16 +559,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e68b4ac01ce5dc42b13673e287b845a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   RingCollectParticle: {fileID: 1000011339303976, guid: a9392ff007f838347a83411dd1d9e5e7,
     type: 3}
+  SphereCollectParticle: {fileID: 0}
   SpeedPadTrack: {fileID: 2100000, guid: 620ddb7d525d8cf4c8825898d6d3273c, type: 2}
   DashRingMaterial: {fileID: 2100000, guid: b759e3326b7e5e442b0b7e8f2058a414, type: 2}
   NormalShieldMaterial: {fileID: 2100000, guid: 87b5faac8a750664d9bb8eda1b21739b,
     type: 2}
   DashRingLightsColor: {r: 0, g: 0, b: 0, a: 0}
   _displaySpeed: 0
-  _canHover: 0
-  _totalWindDirection: {x: 0, y: 0, z: 0}
+  _finalWindVector: {x: 0, y: 0, z: 0}
 --- !u!114 &2175753145177796918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,6 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4194a8c5cb9ce4dbdb070aefc6c1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _bouncingPower_: 0
   _homingBouncingPower_: 0
   _shouldStopOnHit_: 0
@@ -621,9 +629,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da02b53e7cffa2549856b2800d6d0816, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _GoalRingTouchingSound: {fileID: 0}
-  _nextLevelNameLeft: 
-  _nextLevelNameRight: 
+  _Tools: {fileID: 0}
+  _StageCompleteScene:
+    m_SceneAsset: {fileID: 0}
+    m_SceneName: 
+  _RespawnAnimator: {fileID: 0}
 --- !u!114 &4584081993875375216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -652,6 +662,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b97790d1646ef9443bf81c289de9505f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
 --- !u!1 &6765472363586466154
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,10 +710,10 @@ MonoBehaviour:
   _Tools: {fileID: 0}
   _VirtualCamera: {fileID: 0}
   _timeScaleWhenActive: 0.000001
-  _moveSpeed: 8
-  _ascendSpeed: 6
-  _rotateSpeed: {x: 8, y: 6}
-  _maxDistanceFromPlayer: 300
+  _moveSpeed: 16
+  _ascendSpeed: 10
+  _rotateSpeed: {x: 9, y: 7}
+  _maxDistanceFromPlayer: 400
 --- !u!1 &8040024586553236849
 GameObject:
   m_ObjectHideFlags: 0
@@ -728,7 +739,6 @@ GameObject:
   - component: {fileID: 391286721165643762}
   - component: {fileID: 8402612575521108964}
   - component: {fileID: 2394129168238109761}
-  - component: {fileID: 3399936635228185353}
   - component: {fileID: 18308483529194356}
   - component: {fileID: 7549531087015490786}
   m_Layer: 0
@@ -765,13 +775,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6da8dadf30a2c64abf5847208a3b113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _skinRotationSpeed: 13
   _canDashDuringFall_: 0
   _isCoyoteInEffect: 0
   _coyoteRememberDirection: {x: 0, y: 0, z: 0}
   _coyoteRememberSpeed: 0
   _animationAction: 0
-  _isAnimatorControlledExternally: 0
 --- !u!114 &2349658396617029072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -784,6 +794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1313590d96251e46aaef7e509eb58d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _skinRotationSpeed: 8
   _upwardsDirection: {x: 0, y: 0, z: 0}
   _counter: 0
@@ -800,10 +811,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a09ae06aa6eb6d54ba4ce3921ffdfa55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _TargetObject: {fileID: 0}
   _PreviousTarget: {fileID: 0}
   _homingDelay_: 0
   _isHomingAvailable: 0
+  _isHomingLocked: 0
+  _timeOnThisTarget: 0
 --- !u!114 &996890313225717832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -816,10 +830,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1a4862d66441f4f94e9a7d171185b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _Target: {fileID: 0}
   _CanBePerformedOnGround_: 0
   _skinRotationSpeed: 7
-  _speedBeforeAttack: 0
   _directionBeforeAttack: {x: 0, y: 0, z: 0}
   _targetDirection: {x: 0, y: 0, z: 0}
 --- !u!114 &8929781120038647770
@@ -834,9 +848,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181222eb924ad744a9ab86e4790de666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spinDashChargingSpeed_: 0.3
+  _Tools: {fileID: 0}
+  _spinDashChargingSpeed_: {x: 0, y: 0}
   _minimunCharge_: 10
-  _maximunCharge_: 100
+  _maximunCharge_: {x: 0, y: 0}
   _spinDashStillForce_: 20
 --- !u!114 &779638243685523423
 MonoBehaviour:
@@ -850,6 +865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36193597c27d39846afd0cfd81c7331c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _knockbackUpwardsForce_: 10
   _knockbackForce_: 10
   _knockbackDirection: {x: 0, y: 0, z: 0}
@@ -866,6 +882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b49af0d0f47fca44392a9c0940d9eb80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _Rail_int: {fileID: 0}
   _RF: {fileID: 0}
   _skinRotationSpeed: 20
@@ -885,6 +902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ad0cea500f9334c8b1e2539e9bc2ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _BounceUpSpeeds_: []
 --- !u!114 &6052093516140985174
 MonoBehaviour:
@@ -913,6 +931,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316796d67803e6b4f8719aa0db4b6204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _trailOffSet: {x: 0, y: -3, z: 0}
 --- !u!114 &4731894732532396599
 MonoBehaviour:
@@ -926,6 +945,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb68ae7e176fda245b8aebfcc653b81e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _PatherStarter: {fileID: 0}
   _playerSpeed: 0
 --- !u!114 &5674882071896522453
@@ -940,6 +960,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fadeadbb69111459e75fec9dcceb48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _skinRotationSpeed: 6
 --- !u!114 &1808404644376647470
 MonoBehaviour:
@@ -953,6 +974,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba0d88c045e601341b6f95f1153abd98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _CurrentUpreel: {fileID: 0}
 --- !u!114 &391286721165643762
 MonoBehaviour:
@@ -980,6 +1002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c4bcbabe54cf5449111d2ae80752cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _HomingControl: {fileID: 0}
   _WallHandler: {fileID: 0}
   _DropShadow: {fileID: 0}
@@ -1018,44 +1041,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b4131b28bfe78a40b3fee2d33ab913a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3399936635228185353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8040024586553236849}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7163a1e488e3d14f9298b2b9a5aa305, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _HomingControl: {fileID: 0}
-  _WallHandler: {fileID: 0}
-  _DropShadow: {fileID: 0}
-  _CamTarget: {fileID: 0}
-  _ConstantTarget: {fileID: 0}
-  _CoreCollider: {fileID: 0}
-  _CurrentWall: {fileID: 0}
-  _CharacterTransform: {fileID: 0}
-  _scrapeModi_: 1
-  _wallCheckDistance_: {x: 0, y: 0}
-  _wallLayerMask_:
-    serializedVersion: 2
-    m_Bits: 0
-  _climbModi_: 0
-  _fallOffAtFallSpeed_: 0
-  _originalVelocity: {x: 0, y: 0, z: 0}
-  _skinRotationSpeed: 4
-  _runningSpeed: 0
-  _raycastOrigin: {x: 0, y: 0, z: 0}
-  _isHoldingWall: 0
-  _counter: 0
-  _distanceFromWall: 0
-  _checkDistance: 0
-  _currentClimbingSpeed: 0
-  _isWall: 0
-  _previDirection: {x: 0, y: 0, z: 0}
+  _Tools: {fileID: 0}
 --- !u!114 &18308483529194356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1068,6 +1054,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ea18ef60704e74ba507d7e1ade1a2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Tools: {fileID: 0}
   _DropEffect: {fileID: 0}
   _releaseShakeAmmount: 3
 --- !u!114 &7549531087015490786
@@ -1082,21 +1069,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b97cbf795fc906440ad4f48f67910c76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _RailTransform: {fileID: 0}
-  _PathSpline: {fileID: 0}
-  _ConnectedRails: {fileID: 0}
-  _ZipHandle: {fileID: 0}
-  _ZipBody: {fileID: 0}
-  _whatKindOfRail: 0
-  _isGoingBackwards: 0
-  _movingDirection: 0
-  _pointOnSpline: 0
-  _sampleForwards: {x: 0, y: 0, z: 0}
-  _sampleRight: {x: 0, y: 0, z: 0}
-  _sampleLocation: {x: 0, y: 0, z: 0}
-  _sampleUpwards: {x: 0, y: 0, z: 0}
-  _grindingSpeed: 0
-  _setOffSet: {x: 0, y: 0, z: 0}
-  _upOffsetRail_: 2.05
-  _upOffsetZip_: -2.05
-  _isRailLost: 0

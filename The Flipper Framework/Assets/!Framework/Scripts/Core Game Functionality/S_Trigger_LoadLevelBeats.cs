@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,31 +16,32 @@ public class S_Trigger_LoadLevelBeats : S_Trigger_Base
 	private bool	_isCurrentlyDespawning = false;
 	private bool	_isCurrentlySpawning = false;
 
+	[NonSerialized] public bool _isInterupted = false;
 
 	private void Start () {
 		if(!Application.isPlaying) { return; }
 		_ListOfAllTriggers = FindObjectsByType<S_Trigger_LoadLevelBeats>(FindObjectsSortMode.None);
 
 		_isActive = true; //Sets this to true so GetAvailableObjects wont check every trigger more than once. Set to False after the below coroutine.
-		StartCoroutine(EnableOrDisableObjects(false, GetAvailableObjects(_ListOfSectionToControl), false));
+		StartCoroutine(EnableOrDisableObjects(false, GetAvailableObjects(_ListOfSectionToControl, false), false));
 	}
 
 	//When player enters, start activating all required items.
 	private void OnTriggerEnter ( Collider other ) {
 		if (other.CompareTag("Player"))
 		{
-			StartCoroutine(EnableOrDisableObjects(true, GetAvailableObjects(_ListOfSectionToControl)));
+			StartCoroutine(EnableOrDisableObjects(true, GetAvailableObjects(_ListOfSectionToControl, true)));
 		}
 	}
 
 	private void OnTriggerExit ( Collider other ) {
 		if (other.CompareTag("Player"))
 		{
-			StartCoroutine(EnableOrDisableObjects(false, GetAvailableObjects(_ListOfSectionToControl)));
+			StartCoroutine(EnableOrDisableObjects(false, GetAvailableObjects(_ListOfSectionToControl, false)));
 		}
 	}
 
-	List<GameObject> GetAvailableObjects ( GameObject[] SetObjects ) {
+	List<GameObject> GetAvailableObjects ( GameObject[] SetObjects, bool willSetTo ) {
 
 		List<GameObject> List = new List<GameObject>();
 		for (int i = 0 ; i < SetObjects.Length ; i++)
@@ -55,6 +57,9 @@ public class S_Trigger_LoadLevelBeats : S_Trigger_Base
 				{
 					if (TriggerToCheck._ListOfSectionToControl.Contains(SectionObject))
 					{
+						if(TriggerToCheck._isCurrentlyDespawning && willSetTo) { TriggerToCheck._isInterupted = true; continue; } //If an object is being despawned but this will respawn it, ensure it isn't ignored.
+						if(TriggerToCheck._isCurrentlySpawning && !willSetTo) { continue; }
+
 						isObjectActiveByAnotherTrigger = true;
 					}
 				}
@@ -72,26 +77,28 @@ public class S_Trigger_LoadLevelBeats : S_Trigger_Base
 	//Goes through each section object and 
 	IEnumerator EnableOrDisableObjects (bool enable, List<GameObject> EnableThese, bool delay = true) {
 
-		yield return new WaitForFixedUpdate();
-
 		_isActive = enable;
-
 		_isCurrentlyDespawning = !enable;
 		_isCurrentlySpawning = enable;
+
+		yield return new WaitForFixedUpdate();
 
 		//Once per frame checks a section object and enables or disables it.
 		for (int i = 0 ; i < EnableThese.Count ; i++)
 		{
+			//If this coroutine was called again to do the opposite (E.G. deactivating objects when this is still activating, or vice versa), then end this coroutine run.
+			if (!_isCurrentlySpawning && enable) { yield break; }
+			else if (!_isCurrentlyDespawning && !enable) { yield break; }
+			else if (_isInterupted) { _isInterupted = false; yield break; }
+
 			GameObject Set = EnableThese[i];
+			if(Set.activeSelf == enable) { continue; }
+
 			Set.SetActive(enable);
 			if (delay)
 			{
 				yield return new WaitForFixedUpdate();
 			}
-
-			//If this coroutine was called again to do the opposite (E.G. deactivating objects when this is still activating, or vice versa), then end this coroutine run.
-			if (!_isCurrentlySpawning && enable) { yield return null; }
-			else if (!_isCurrentlyDespawning && !enable) { yield return null; }
 		}
 
 		_isCurrentlySpawning = false;

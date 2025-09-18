@@ -12,7 +12,7 @@ public class S_S_MoreMaths
 		return (Vector1 - Vector2).sqrMagnitude;
 	}
 
-	public static Vector3 TreatAxisAsZeroForVector(Vector3 vector, float clamp ) {
+	public static Vector3 TreatAxisAsZeroForVector ( Vector3 vector, float clamp ) {
 		if (Mathf.Abs(vector.x) < clamp) vector.x = 0;
 		if (Mathf.Abs(vector.y) < clamp) vector.y = 0;
 		if (Mathf.Abs(vector.z) < clamp) vector.z = 0;
@@ -30,8 +30,11 @@ public class S_S_MoreMaths
 		return Vector1;
 	}
 
-	public static Vector3 GetDirection ( Vector3 fromStart, Vector3 toEnd ) {
-		return (toEnd - fromStart).normalized;
+	public static Vector3 GetDirection ( Vector3 fromStart, Vector3 toEnd, bool normalize = true ) {
+		if (normalize)
+			return (toEnd - fromStart).normalized;
+		else
+			return (toEnd - fromStart);
 	}
 
 	//	Comparisons
@@ -71,6 +74,36 @@ public class S_S_MoreMaths
 		float result = (numerator + denominator - 1) / denominator;
 
 		return (int)result;
+	}
+	#endregion
+
+	//	Time
+	#region TIME
+
+	public static Vector3 ConvertFloatTimeToMinutesVector ( float time ) {
+		float minutes = (int)time / (int)60;
+		float seconds = (int)time - (minutes * 60);
+		float milliseconds = time - (minutes * 60) - seconds;
+		milliseconds *= 100;
+
+		return new Vector3(minutes, seconds, milliseconds);
+	}
+
+	public static float ConvertVectorMinutesTimeToTotalTime ( Vector3 time ) {
+		float totalTime = (time.x * 60) + time.y + (time.z / 100);
+
+		return totalTime;
+	}
+
+	public static string DisplayIntAsStringInXDigits ( int value, int characters = 2 ) {
+		string str = value.ToString();
+		for (int i = 10 ; i < Mathf.Pow(10, characters) ; i *= 10)
+		{
+			if (value < i)
+				str = "0" + str;
+		}
+		str = str.Substring(0, characters);
+		return str;
 	}
 	#endregion
 }

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using Unity.VisualScripting;
 
 public class S_TitleScreenControl : MonoBehaviour
 {
@@ -13,8 +14,8 @@ public class S_TitleScreenControl : MonoBehaviour
 	public int          _delayBeforeMeasurersEnter;
 
 	[Header("On Start")]
-	public S_O_StageScenes _sceneToGoToOnStart;
-	public int          _framesBeforeLoading = 30;
+	public SceneField _sceneToGoToOnStart;
+	public float          _secondsBeforeLoading = 0.6f;
 	public AudioSource      _AudioOnStart;
 
 	[Header("Fading")]
@@ -22,19 +23,21 @@ public class S_TitleScreenControl : MonoBehaviour
 	public int      _framesToFadeInOnLoad = 30;
 	public int      _framesToFadeOutOnStart = 20;
 
-	//For tracking fade
-	private float   _currentAlpha = 1;
 
-	void Start () {
+	void OnEnable () {
+		Time.timeScale = 1;
 		_BlackFade.enabled = true;
 
-		StartCoroutine(FadeBlack(_BlackFade, 0, _framesToFadeInOnLoad, _currentAlpha));
-		_currentAlpha = 0;
+		StartCoroutine(FadeBlack(_BlackFade, 0, _framesToFadeInOnLoad, 1));
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_Measurers, "MoveIn", _delayBeforeMeasurersEnter));
 	}
 
+	private void OnDisable () {
+		Debug.Log(gameObject + "Disabled");
+	}
+
 	//Lerps from current alpha of the fade image to set alpha smoothly over desired frames
-	public static IEnumerator FadeBlack ( Image Fade, int goalAlpha, float frames, float currentAlpha ) {
+	public  IEnumerator FadeBlack ( Image Fade, int goalAlpha, float frames, float currentAlpha ) {
 
 		float startAlpha = currentAlpha;
 		for (float i = 1 ; i < frames + 1 ; i++)
@@ -53,30 +56,38 @@ public class S_TitleScreenControl : MonoBehaviour
 
 	//Called by a start button and starts the animation, then goes onto the inputting scene.
 	public void PressStart () {
+		if (!S_SpawnCharacter.s_CanSpawn) { return; } //Prevent spamming the button
+
 		S_CarryAcrossScenes.whatIsCurrentSceneType = S_CarryAcrossScenes.EnumGameSceneTypes.Menus;
-		StartCoroutine(DelayMovingToNextScene(_sceneToGoToOnStart, _framesBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Menus));
+		StartCoroutine(DelayMovingToNextScene(null, _sceneToGoToOnStart, _secondsBeforeLoading, S_CarryAcrossScenes.EnumGameSceneTypes.Menus));
 		StartCoroutine(S_S_Objects.TriggerAnimatorAfterDelay(_Measurers, "MoveOut", _delayBeforeMeasurersEnter));
+		_BlackFade.enabled = false;
+
 		if (_AudioOnStart != null) _AudioOnStart.Play();
 	}
 
-	public static IEnumerator DelayMovingToNextScene ( S_O_StageScenes Scene, int frames, S_CarryAcrossScenes.EnumGameSceneTypes NewSceneType, Action OnLoad = null ) {
-		//Allow any animation to finish.
-		for (int i = 0 ; i < frames ; i++)
-		{
-			yield return new WaitForFixedUpdate();
-		}
+	public static IEnumerator DelayMovingToNextScene ( S_O_StageInfo SceneSO, SceneField StandaloneScene, float seconds, S_CarryAcrossScenes.EnumGameSceneTypes NewSceneType, Action OnLoad = null ) {
 
-		bool hasSubScenes = Scene._Scenes != null && Scene._Scenes.Length > 0;
+		if (!S_SpawnCharacter.s_CanSpawn) { yield break; } //Cant have multiple running at once
+		S_SpawnCharacter.s_CanSpawn = false; //Ensures player will not spawn until level is COMPLETELY loaded, including important scenes.
+
+		//Allow any animation to finish.
+		yield return new WaitForSecondsRealtime(Mathf.Max(0.1f, seconds)); //Use seconds rather than frames because this can be called when timescale is 0
+
+		bool hasSubScenes = SceneSO != null && SceneSO._AdditionalScenes != null && SceneSO._AdditionalScenes.Length > 0;
 
 		//Tracking progress of loading scenes overall
 		float overallProgress = 0;
 		float mainProgress = 0;
 
 		//Tracking time taken
-		float minSecondsToLoadScene = Scene._minSecondsToLoadScenes;
+		float minSecondsToLoadScene = SceneSO != null ?  SceneSO._minSecondsToLoadScenes : 0;
 		float secondsTaken = 0;
 
-		AsyncOperation mainScene = SceneManager.LoadSceneAsync(Scene._BaseScene);
+		Time.timeScale = 0.01f;
+
+		SceneField baseScene = SceneSO != null ? SceneSO._BaseScene : StandaloneScene;
+		AsyncOperation mainScene = SceneManager.LoadSceneAsync(baseScene);
 		mainScene.allowSceneActivation = false;
 
 		while (mainProgress < 0.9f || (secondsTaken <= minSecondsToLoadScene && !hasSubScenes))
@@ -89,6 +100,7 @@ public class S_TitleScreenControl : MonoBehaviour
 		if (!hasSubScenes)
 		{
 			mainScene.allowSceneActivation = true;
+			OnReadyComplete();
 			OnLoadComplete();
 			yield break;
 		}
@@ -101,7 +113,7 @@ public class S_TitleScreenControl : MonoBehaviour
 		overallProgress = 0;
 
 		//If there are any sub-scenes, start to load them as well.
-		foreach (SceneField subScene in Scene._Scenes)
+		foreach (SceneField subScene in SceneSO._AdditionalScenes)
 		{
 			//Add subscene and ensure can't activate until told.
 			loadingAllScenes.Add(SceneManager.LoadSceneAsync(subScene, LoadSceneMode.Additive));
@@ -112,25 +124,50 @@ public class S_TitleScreenControl : MonoBehaviour
 
 		mainScene.allowSceneActivation = true;
 
+		bool allLevelsReady = false;
 
-		//Wait until all scenes are loaded and ready to activate simultaniously. 
-		while (overallProgress < .8999999f || secondsTaken <= minSecondsToLoadScene)
+		//Wait until all scenes are mostly loaded and ready to activate simultaniously. 
+		while (!allLevelsReady || secondsTaken <= minSecondsToLoadScene)
 		{
 			yield return new WaitForEndOfFrame();
 			UpdateEachFrame();
 
-			//Get average progress of each scene.
-			float currentProgress = 0;
+			bool allReady = true;
 			for (int i = 0 ; i < loadingAllScenes.Count ; i++)
 			{
-				currentProgress += loadingAllScenes[i].progress;
-				Debug.Log(loadingAllScenes[i].progress);
+				if (loadingAllScenes[i].progress < 0.9f)
+				{
+					allReady = false;
+					break;
+				}
 			}
-			overallProgress = currentProgress / (sceneCount);
+
+			allLevelsReady = allReady;
 		}
 
 		for (int i = 0 ; i < sceneCount ; i++)
 			loadingAllScenes[i].allowSceneActivation = true;
+
+		OnReadyComplete();
+
+		bool allLevelsLoaded = false;
+
+		//When all scenes have activate, spawn character.
+		while (!allLevelsLoaded)
+		{
+			yield return new WaitForEndOfFrame();
+
+			bool allLoaded = true;
+			for (int i = 0 ; i < loadingAllScenes.Count ; i++)
+			{
+				if (!loadingAllScenes[i].isDone)
+				{
+					allLoaded = false;
+					break;
+				}
+			}
+			allLevelsLoaded = allLoaded;
+		}
 
 		OnLoadComplete();
 
@@ -138,15 +175,20 @@ public class S_TitleScreenControl : MonoBehaviour
 		void UpdateEachFrame () {
 
 			mainProgress = mainScene.progress;
-			secondsTaken += Time.deltaTime;
+			secondsTaken += Time.unscaledDeltaTime;
 
 			if (!hasSubScenes)
 				overallProgress = mainProgress;
 		}
-
-		void OnLoadComplete () {
+		void OnReadyComplete () {
 			//Decides what objects can be carried to over to the next scene.
+			//For instance, menu unique objects should not be in a stage. Called seperately from load complete as whether or not to destroy these objects is based on the sceneloaded event.
 			S_CarryAcrossScenes.whatIsCurrentSceneType = NewSceneType;
+		}
+		void OnLoadComplete () {
+			//Once all scenes are ready, start the game
+			Time.timeScale = 1f;
+			S_SpawnCharacter.s_CanSpawn = true;
 
 			if (OnLoad != null)
 				OnLoad.Invoke();

@@ -55,7 +55,7 @@ public class S_PlayerMovement : S_Player_Base
 	//Methods
 	public delegate Vector3 DelegateAccelerationAndTurning ( Vector3 vector, Vector3 input, Vector2 modifier );        //A delegate for deciding methods to calculate acceleration and turning 
 	public DelegateAccelerationAndTurning   CallAccelerationAndTurning; //This delegate will be called in controlled velocity to return changes to acceleration and turning. This will usually be the base one in this script, but may be changed externally depending on the action.
-	[HideInInspector] public bool _lockAccelerationAndTurningToDefault; //If true, the delegate above will not be called, and instead the default one will be, preventing any overwriting while locked.	
+	[HideInInspector] public bool _lockAccelAndTurnToDefaultOnyl; //If true, the delegate above will not be called, and instead the default one will be, preventing any overwriting while locked.	
 
 
 	[HideInInspector]
@@ -125,6 +125,7 @@ public class S_PlayerMovement : S_Player_Base
 		if (_PlayerPhys._locksForCanControl.Count != 0)
 		{
 			_PlayerVel._externalRunningSpeed = -1;
+			_PlayerVel._additionalExternalRunningSpeed = 0;
 			return startVelocity;
 		}
 
@@ -139,7 +140,7 @@ public class S_PlayerMovement : S_Player_Base
 		Vector3 verticalVelocity = new Vector3(0.0f, localVelocity.y, 0.0f);
 
 		//Apply changes to the lateral velocity based on input.
-		if (!_lockAccelerationAndTurningToDefault)
+		if (!_lockAccelAndTurnToDefaultOnyl)
 		{
 			//Because this is a delegate, the method it is calling may change, but by default it will be the method in this script called Default.
 			lateralVelocity = CallAccelerationAndTurning(lateralVelocity, _moveInput, modifier);
@@ -167,11 +168,20 @@ public class S_PlayerMovement : S_Player_Base
 			}
 		}
 
+		if (_PlayerVel._additionalExternalRunningSpeed >= 0 && lateralVelocity.sqrMagnitude > 1)
+		{
+			lateralVelocity += lateralVelocity.normalized * _PlayerVel._additionalExternalRunningSpeed;
+			_PlayerVel._additionalExternalRunningSpeed = 0; //Set to a negative value so core speeds of 0 can be set externally.
+		}
+
 		//Before taking off, no matter the acceleration, there will be one frame before the player starts gaining speed, this is to give an easy change to remove speed if trying to move into an obstacle.
 		if (lateralVelocityBeforeChanges.sqrMagnitude < Mathf.Pow(0.0001f, 2))
 		{
 			lateralVelocity = lateralVelocity.normalized * 0.005f;
 		}
+
+		_PlayerVel._lateralVelocity = lateralVelocity;
+		
 
 		// Clamp horizontal running speed. coreVelocity can never exceed the player moving laterally faster than this.
 		localVelocity = lateralVelocity + verticalVelocity;
@@ -197,6 +207,9 @@ public class S_PlayerMovement : S_Player_Base
 		// Normalize to get input direction and magnitude seperately. For efficency and to prevent larger values at angles, the magnitude is based on the higher input.
 		Vector3 inputDirection = input.normalized;
 		float inputMagnitude = Mathf.Max(Mathf.Abs(_Input._inputOnController.x), Mathf.Abs(_Input._inputOnController.z));
+
+		Debug.DrawRay(_PlayerPhys._CharacterCenterPosition, inputDirection, Color.pink, 2f);
+
 
 		// Step 1) Determine angle between current lateral velocity and desired direction.
 		//         Creates a quarternion which rotates to the direction, which will be identity if velocity is too slow.

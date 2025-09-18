@@ -14,10 +14,9 @@ public class S_Trigger_External : S_Trigger_Base
 	private float _delayBetweenMultiTriggers = 0.3f;
 	private float _timeSinceTriggered = 0;
 	private bool _wastriggered;
-	private bool _triggeredThisLife = false;
 
 	private void Start () {
-		if(_triggerOnStart) { StartCoroutine(DelayBeforeTrigger()); }
+		if (_triggerOnStart) { StartCoroutine(DelayBeforeTrigger()); }
 	}
 
 	IEnumerator DelayBeforeTrigger () {
@@ -38,12 +37,6 @@ public class S_Trigger_External : S_Trigger_Base
 
 		TriggerGivenObjects(TriggerTypes.On, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
 		TriggerGivenObjects(TriggerTypes.Either, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
-		if(!_triggeredThisLife)
-		{
-			TriggerGivenObjects(TriggerTypes.Once, TriggerObjects._ObjectsToTriggerOn, _PlayerTools);
-			_triggeredThisLife = true;
-			S_Manager_LevelProgress.OnReset += EventResetOnDeath;
-		}
 	}
 
 	public void OnTriggerStay ( Collider other ) {
@@ -60,8 +53,8 @@ public class S_Trigger_External : S_Trigger_Base
 		TriggerGivenObjects(TriggerTypes.Off, TriggerObjects._ObjectsToTriggerOff, _PlayerTools);
 	}
 
-	public static void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects, S_CharacterTools Player ) {
-		if(gameObjects.Count == 0) { return; }
+	public static void TriggerGivenObjects ( TriggerTypes triggerType, List<GameObject> gameObjects, S_CharacterTools Player) {
+		if (gameObjects.Count == 0) { return; }
 
 		//Go through each given gameObject and trigger if possible.
 		for (int i = 0 ; i < gameObjects.Count ; i++)
@@ -75,19 +68,13 @@ public class S_Trigger_External : S_Trigger_Base
 			for (int triggerable = 0 ; triggerable < Triggers.Length ; triggerable++)
 			{
 				ITriggerable Trigger = Triggers[triggerable];
-				if(Trigger == null) { continue; }
+				if (Trigger == null) { continue; }
 
 				switch (triggerType)
 				{
 					case TriggerTypes.On: Trigger.TriggerObjectOn(Player); break;
 
-					case TriggerTypes.Once: Trigger.TriggerObjectOnce(Player); break;
-
 					case TriggerTypes.Off: Trigger.TriggerObjectOff(Player); break;
-
-					case TriggerTypes.Either: Trigger.TriggerObjectEither(Player); break;
-
-					case TriggerTypes.Reset: Trigger.ResetObject(Player); break;
 
 					case TriggerTypes.Frame: Trigger.TriggerObjectEachFrame(Player); break;
 
@@ -103,11 +90,6 @@ public class S_Trigger_External : S_Trigger_Base
 			_timeSinceTriggered += Time.deltaTime;
 			_wastriggered = _timeSinceTriggered >= _delayBetweenMultiTriggers;
 		}
-	}
-
-	void EventResetOnDeath ( object sender, EventArgs e ) {
-		_triggeredThisLife = false;
-		S_Manager_LevelProgress.OnReset -= EventResetOnDeath;
 	}
 
 
@@ -180,11 +162,11 @@ public class S_Trigger_External : S_Trigger_Base
 
 	private void CheckTriggerForPlayerToRead () {
 
-		HandleListsOfTriggerDataOnOrOff(ref TriggerObjects._TriggersForPlayerToReadActivate, TriggerObjects._ObjectsToTriggerOn);
-		HandleListsOfTriggerDataOnOrOff(ref TriggerObjects._TriggersForPlayerToReadDeactivate, TriggerObjects._ObjectsToTriggerOff);
+		HandleListsOfTriggerDataOnOrOff(ref TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadActivate, TriggerObjects._ObjectsToTriggerOn);
+		HandleListsOfTriggerDataOnOrOff(ref TriggerObjects.ReadOnlyTriggerData._TriggersForPlayerToReadDeactivate, TriggerObjects._ObjectsToTriggerOff);
 	}
 
-	private void HandleListsOfTriggerDataOnOrOff (ref List<GameObject> ReadTriggersOnOrOff, List<GameObject> TriggersSetOnOrOff ) {
+	private void HandleListsOfTriggerDataOnOrOff ( ref List<GameObject> ReadTriggersOnOrOff, List<GameObject> TriggersSetOnOrOff ) {
 		//First, clear the triggers to read, and their references to this, so they can be readded if necessary
 		for (int trig = 0 ; trig < ReadTriggersOnOrOff.Count ; trig++)
 		{
@@ -202,7 +184,7 @@ public class S_Trigger_External : S_Trigger_Base
 			if (!TriggersSetOnOrOff[i]) { continue; }
 			if (TriggersSetOnOrOff[i].TryGetComponent(out S_Trigger_External Trigger))
 			{
-				if (Trigger.TriggerObjects._isLogicInPlayerScript)
+				if (Trigger.TriggerObjects.ReadOnlyTriggerData._isLogicInPlayerScript)
 				{
 					ReadTriggersOnOrOff.Add(Trigger.gameObject);
 					CheckExternalTriggerDataHasTrigger(false, Trigger);
@@ -217,18 +199,18 @@ public class S_Trigger_External : S_Trigger_Base
 		if (removeThisTrigger)
 		{
 			//If the old TriggerToRead was triggered by this, remove it from that list, and if that's the last one, it has no current trigger.
-			if (TargetTriggerData.TriggerObjects._ObjectsThatTriggerThis.Contains(gameObject))
+			if (TargetTriggerData.TriggerObjects.ReadOnlyTriggerData._ObjectsThatTriggerThis.Contains(gameObject))
 			{
-				TargetTriggerData.TriggerObjects._ObjectsThatTriggerThis.Remove(gameObject);
+				TargetTriggerData.TriggerObjects.ReadOnlyTriggerData._ObjectsThatTriggerThis.Remove(gameObject);
 			}
-			if (TargetTriggerData.TriggerObjects._ObjectsThatTriggerThis.Count == 0) { TargetTriggerData.TriggerObjects._hasTrigger = false; }
+			if (TargetTriggerData.TriggerObjects.ReadOnlyTriggerData._ObjectsThatTriggerThis.Count == 0) { TargetTriggerData.TriggerObjects._hasTrigger = false; }
 		}
 		else
 		{
 			//If the new Trigger To read doesn't have this as an object activating it, add it.
-			if (!TargetTriggerData.TriggerObjects._ObjectsThatTriggerThis.Contains(gameObject))
+			if (!TargetTriggerData.TriggerObjects.ReadOnlyTriggerData._ObjectsThatTriggerThis.Contains(gameObject))
 			{
-				TargetTriggerData.TriggerObjects._ObjectsThatTriggerThis.Add(gameObject);
+				TargetTriggerData.TriggerObjects.ReadOnlyTriggerData._ObjectsThatTriggerThis.Add(gameObject);
 				TargetTriggerData.TriggerObjects._hasTrigger = true;
 			}
 		}
@@ -270,15 +252,29 @@ public class TriggerExternalData
 	[CustomReadOnly, Tooltip("This will be true if any trigger will activate this one. That includes itself or another.")]
 	[ColourIfEqualTo(false, 0.9f,0.5f,0.5f,1f)]
 	public bool _hasTrigger;
-	[CustomReadOnly] public List<GameObject> _ObjectsThatTriggerThis = new List<GameObject>();
 
-	[CustomReadOnly]
-	[Tooltip("Set true in code for triggers where their effects are scripted in a player script. _TriggerForPlayerToRead provides the data for said script.")]
-	public bool         _isLogicInPlayerScript;
-	//[OnlyDrawIf("_isLogicInPlayerScript", true)]
-	[CustomReadOnly, Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
-	public List<GameObject> _TriggersForPlayerToReadActivate = new List<GameObject>();
-	[CustomReadOnly, Tooltip("When the player exits this trigger, this will be the effect thats disabled, if currently active")]
-	public List<GameObject> _TriggersForPlayerToReadDeactivate = new List<GameObject>();
+
+	public ReadOnlyTriggerOjects ReadOnlyTriggerData = new ReadOnlyTriggerOjects()
+	{
+		_ObjectsThatTriggerThis = new List<GameObject>(),
+		_TriggersForPlayerToReadActivate = new List<GameObject>(),
+		_TriggersForPlayerToReadDeactivate = new List<GameObject>(),
+	};
+
+	[Serializable]
+	public struct ReadOnlyTriggerOjects
+	{
+		[CustomReadOnly] public List<GameObject> _ObjectsThatTriggerThis;
+
+		[CustomReadOnly]
+		[Tooltip("Set true in code for triggers where their effects are scripted in a player script. _TriggerForPlayerToRead provides the data for said script.")]
+		public bool         _isLogicInPlayerScript;
+		[CustomReadOnly]
+		[Tooltip("When the player enters this trigger, this will be what they base the effect on. If this is set to trigger self, it will be this, if not, it will take from ObjectsToTrigger")]
+		public List<GameObject> _TriggersForPlayerToReadActivate;
+		[CustomReadOnly]
+		[Tooltip("When the player exits this trigger, this will be the effect thats disabled, if currently active")]
+		public List<GameObject> _TriggersForPlayerToReadDeactivate;
+	}
 }
 

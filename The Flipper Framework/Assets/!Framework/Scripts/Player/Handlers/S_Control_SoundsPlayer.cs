@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class S_Control_SoundsPlayer : S_Player_Base
 {
+	private bool _isActive;
 
 	[Header("Audio Sources")]
 	[ColourIfNull(0.8f,0.6f,0.6f,1f)]public AudioSource  FeetSource;
@@ -53,10 +55,11 @@ public class S_Control_SoundsPlayer : S_Player_Base
 	public AudioClip Clip_DIe;
 	public AudioClip Clip_Spiked;
 	public AudioClip Clip_Bonk;
-	public AudioClip Clip_HitByDanger;
+	public GameObject Ob_HitByDanger;
 
 	[Header("Additional SFX")]
 	public GameObject _LevelUpSound;
+	public GameObject[] _ActionChainSounds;
 
 	[Header("Voice")]
 	public AudioClip[] CombatVoiceClips;
@@ -76,16 +79,37 @@ public class S_Control_SoundsPlayer : S_Player_Base
 			WindSource.volume = 0;
 		}
 
+		S_Manager_LevelProgress.OnStageClear += EventStageClear;
+		S_Manager_LevelProgress.OnDeath += EventSoundsOnDeath;
 	}
 
 	#region update
 
 	private void Update () {
+		if(!_isActive) { return; }
 		HandleWindSound();
 	}
 
+	public void EventStageClear ( object sender, EventArgs e ) {
+		_isActive = false;
+		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 0.7f, 0));
+	}
+
+	public void EventSoundsOnDeath ( object sender, EventArgs e ) {
+		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 0.4f, 0));
+		SpinDashSource.Stop();
+		GrindSource.Stop();
+	}
+
+	private void OnDestroy () {
+		S_Manager_LevelProgress.OnStageClear -= EventStageClear;
+		S_Manager_LevelProgress.OnDeath -= EventSoundsOnDeath;
+	}
+
 	private void HandleWindSound () {
-		if(_PlayerVel._speedMagnitudeSquared > 50 * 50)
+		if (_Actions._isPaused){ WindSource.volume = 0; return; }
+
+		if (_PlayerVel._speedMagnitudeSquared > 50 * 50)
 		{
 			if (!WindSource.isPlaying)
 				WindSource.Play();
@@ -100,43 +124,23 @@ public class S_Control_SoundsPlayer : S_Player_Base
 			WindSource.volume = Mathf.Lerp(WindSource.volume, 0, 0.2f);
 	}
 
-	private void HandleWindSoundOld () {
-		if (_PlayerVel._speedMagnitudeSquared > 70 * 70)
-		{
-			if (_windActive) { return; }
-			_windActive = true;
-			StopCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, 0));
-			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, _startWindSourceVolume));
-
-			if (!WindSource.isPlaying)
-				WindSource.Play();
-		}
-		else
-		{
-			if (!_windActive) { return; }
-			_windActive = false;
-			StopCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 2, _startWindSourceVolume));
-			StartCoroutine(S_S_Objects.LerpAudioSourceVolume(WindSource, 1, 0));
-		}
-	}
-
 	#endregion
 
 
 	#region VoiceSource
 
 	public void CombatVoicePlay () {
-		int rand = Random.Range(0, CombatVoiceClips.Length);
+		int rand = UnityEngine.Random.Range(0, CombatVoiceClips.Length);
 		VoiceSource.clip = CombatVoiceClips[rand];
 		VoiceSource.Play();
 	}
 	public void JumpingVoicePlay () {
-		int rand = Random.Range(0, JumpingVoiceClips.Length);
+		int rand = UnityEngine.Random.Range(0, JumpingVoiceClips.Length);
 		VoiceSource.clip = JumpingVoiceClips[rand];
 		VoiceSource.Play();
 	}
 	public void PainVoicePlay () {
-		int rand = Random.Range(0, PainVoiceClips.Length);
+		int rand = UnityEngine.Random.Range(0, PainVoiceClips.Length);
 		VoiceSource.clip = PainVoiceClips[rand];
 		VoiceSource.Play();
 	}
@@ -150,7 +154,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 		//if (FootSteps.Length > 0 && !FeetSource.isPlaying)
 		if (FootSteps.Length > 0)
 		{
-			int rand = Random.Range (0, FootSteps.Length);
+			int rand = UnityEngine.Random.Range (0, FootSteps.Length);
 			FeetSource.clip = FootSteps[rand];
 			FeetSource.Play();
 		}
@@ -225,10 +229,7 @@ public class S_Control_SoundsPlayer : S_Player_Base
 		DamageSource.clip = Clip_RingLoss;
 		DamageSource.Play();
 	}
-	public void HitSound () {
-		DamageSource.clip = Clip_HitByDanger;
-		DamageSource.Play();
-	}
+
 	public void BonkSound () {
 		DamageSource.clip = Clip_Bonk;
 		DamageSource.Play();
@@ -295,6 +296,13 @@ public class S_Control_SoundsPlayer : S_Player_Base
 
 	#region SpawningSFXObjects
 
+	public void ActionChainSound ( int score ) {
+		score = Mathf.Min(score, _ActionChainSounds.Length);
+		score -= 1;
+
+		Instantiate(_ActionChainSounds[score], transform.position, transform.rotation);
+	}
+
 	public void LevelUpSound () {
 		Instantiate(_LevelUpSound, transform.position, transform.rotation);
 	}
@@ -313,6 +321,9 @@ public class S_Control_SoundsPlayer : S_Player_Base
 
 	public void RailLandSound () {
 		Instantiate(Ob_RailLand, transform.position, transform.rotation);
+	}
+	public void HitSound () {
+		Instantiate(Ob_HitByDanger, transform.position, transform.rotation);
 	}
 
 	#endregion

@@ -26,17 +26,17 @@ MonoBehaviour:
     startMaxEnergy: 100
     energyOnPlayerStart: {x: 1, y: 0.5}
   CoreValuesStats:
-    dieAtDamageFromRingCount: 15
-    minRingLoss: {x: 0.8, y: 60}
-    maxRingLoss: 80
+    dieAtDamageFromRingCount: 10
+    minRingLoss: {x: 0.8, y: 30}
+    maxRingLoss: 50
     startMaxRingCount: 100
     ringsOnPlayerStart: {x: 0, y: 5}
     gainEnergyFromRings: 1
     gainEnergyOverTime: 1
-    energyGainPerRing: 1.5
-    energyGainPerSecond: 3
+    energyGainPerRing: 1.2
+    energyGainPerSecond: 2.5
     startMaxEnergy: 100
-    energyOnPlayerStart: {x: 0.8, y: 0.5}
+    energyOnPlayerStart: {x: 0.7, y: 0.5}
   StartAccelerationStats:
     runAcceleration: 0.8
     rollAccel: 0.4
@@ -1831,21 +1831,72 @@ MonoBehaviour:
     framesToChangeSpeed: 5
   HomingSearch:
     timeBetweenScans: 0.06
-    targetSearchDistance: 60
-    distanceModifierInCameraDirection: 1.2
-    radiusOfCameraTargetCheck: 15
-    minimumTargetDistance: 5
-    maximumTargetDistance: 80
+    targetSearchDistance: 70
+    distanceModifierInCameraDirection: 1.4
+    radiusOfCameraTargetCheck: 20
+    minimumTargetDistance: 8
+    maximumTargetDistance: 110
     TargetLayer:
       serializedVersion: 2
       m_Bits: 131072
     blockingLayers:
       serializedVersion: 2
       m_Bits: 9
-    cameraDirectionPriority: 0.5
-    facingAmount: 95
-    currentTargetPriority: 0.35
-    timeToKeepTarget: {x: 0.25, y: 0.3}
+    cameraDirectionPriority: 0.613
+    TargetPriorityByDistanceFromScreenMiddle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.3
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.05
+        value: 0.3
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.1
+        value: 0.6
+        inSlope: 1.8543906
+        outSlope: 1.8543906
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.086639404
+      - serializedVersion: 3
+        time: 0.8
+        value: 1
+        inSlope: 0.002906334
+        outSlope: 0.002906334
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.3275213
+      - serializedVersion: 3
+        time: 1
+        value: 1.2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    facingAmount: 90
+    currentTargetPriority: 0.686
+    timeToKeepTarget: {x: 0.3, y: 0.4}
     iconScale: 1.5
     iconDistanceScaling: 0.2
   StartHomingSearch:
@@ -1862,6 +1913,39 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
     cameraDirectionPriority: 0.5
+    TargetPriorityByDistanceFromScreenMiddle:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.1
+        value: 2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
     facingAmount: 100
     currentTargetPriority: 0.4
     timeToKeepTarget: {x: 0.18, y: 0.35}
@@ -1873,14 +1957,14 @@ MonoBehaviour:
     homingCountLimit: 0
     attackSpeed: 180
     timerLimit: 1.2
-    turnSpeed: 8
+    turnSpeed: 9
     successDelay: 0.3
     minimumSpeedOnHit: 120
     lerpToNewInputOnHit: 0.292
     lerpToPreviousDirectionOnHit: 0.782
-    canBeControlled: 1
+    canBeControlled: 0
     maximumSpeed: 240
-    minimumSpeed: 70
+    minimumSpeed: 60
     deceleration: 55
     acceleration: 70
     speedMultiplier: 2
@@ -2521,8 +2605,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 20
-        value: 0
+        time: 11.034882
+        value: 0.013305664
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2530,8 +2614,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 59.333435
-        value: 3.1740875
+        time: 24.718124
+        value: 2.9609528
         inSlope: 0.044856973
         outSlope: 0.044856973
         tangentMode: 0
@@ -2539,8 +2623,8 @@ MonoBehaviour:
         inWeight: 0.26487026
         outWeight: 0.58266133
       - serializedVersion: 3
-        time: 120
-        value: 5
+        time: 101.07364
+        value: 5.5195007
         inSlope: 0.022551361
         outSlope: 0.022551361
         tangentMode: 0
@@ -2548,8 +2632,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.38337955
       - serializedVersion: 3
-        time: 200
-        value: 7
+        time: 199.50195
+        value: 7.5195084
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2642,9 +2726,9 @@ MonoBehaviour:
   WhenHurt:
     invincibilityTime: 90
     flickerTimes: {x: 5, y: 10}
-    respawnAfter: {x: 30, y: 70, z: 100, w: 108}
-    ringReleaseSpeed: 550
-    ringArcSpeed: 250
+    respawnAfter: {x: 15, y: 55, z: 80, w: 92}
+    ringReleaseSpeed: 700
+    ringArcSpeed: 400
     RingsLostInSpawnByAmount:
       serializedVersion: 2
       m_Curve:
@@ -2658,7 +2742,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 30
+        time: 10
         value: 2
         inSlope: 0
         outSlope: 0
@@ -2667,7 +2751,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 50
+        time: 30
         value: 3
         inSlope: 0
         outSlope: 0
@@ -2676,16 +2760,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 75
-        value: 4
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 100
+        time: 40
         value: 5
         inSlope: 0
         outSlope: 0
@@ -3017,7 +3092,7 @@ MonoBehaviour:
     climbModifier: 1
     fallOffAtFallSpeed: 15
     jumpFromClimbingModifiers: {x: 0.8, y: 1.3}
-    jumpFromRunningModifiers: {x: 0.8, y: 1.5}
+    jumpFromRunningModifiers: {x: 1.2, y: 1.6}
   StartWallRunningStats:
     wallCheckDistance: {x: 10, y: 6}
     minHeight: 5

@@ -76,12 +76,10 @@ public class S_Triggered_LerpToNewTransform : S_Triggered_Base, ITriggerable
 
 	}
 
-	public void TriggerObjectOn ( S_CharacterTools Player = null ) {
-		if(!CanBeTriggeredOn(Player)) return;
-
+	public override void ChildTriggerObjectOn ( S_CharacterTools Player = null ) {
 		_isLerping = true;
 
-		_isCurrentlyOn = _currentlyTransformA;
+		_notInStartState = _currentlyTransformA;
 		GoalTransform = _currentlyTransformA ? TransformB : TransformA;
 		FromTransform = _currentlyTransformA ? TransformA : TransformB;
 
@@ -90,7 +88,7 @@ public class S_Triggered_LerpToNewTransform : S_Triggered_Base, ITriggerable
 		_currentLerp = timeToLerp;
 	}
 
-	public override void ResetToOriginal () {
+	public override void ChildResetToOriginal () {
 		TriggerObjectOn(null);
 		_currentLerp = 0; //Makes switch instant.
 	}

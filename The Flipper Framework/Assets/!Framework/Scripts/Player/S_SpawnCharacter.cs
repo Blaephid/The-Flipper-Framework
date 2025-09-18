@@ -1,4 +1,4 @@
-﻿using Cinemachine;
+﻿using Unity.Cinemachine;
 using NUnit.Framework.Constraints;
 using System;
 using System.Collections;
@@ -7,6 +7,9 @@ using UnityEngine;
 
 public class S_SpawnCharacter : S_Vis_Base
 {
+	[NonSerialized] public static bool s_CanSpawn = true;
+
+
 #if UNITY_EDITOR
 	[OnlyDrawIf("_viewVisualisationData", true)]
 	[DrawHorizontalWithOthers(new string[] { "_meshScale" }, new float[] { 2.5f, 1f })]
@@ -24,9 +27,9 @@ public class S_SpawnCharacter : S_Vis_Base
 	[SerializeField]
 
 	[Header("Stage Info")]
-	public GameObject      _DefaultCharacter;
+	public S_O_CharactersForMenu      _DefaultCharacter;
 	public CinemachineBrain _CameraBrain;
-	public S_O_StageScenes _StageInfo;
+	public S_O_StageInfo _StageInfo;
 	public AudioSource _MusicPlayer;
 	public GameObject _PostProcessing;
 
@@ -40,7 +43,7 @@ public class S_SpawnCharacter : S_Vis_Base
 
 
 	//Spawning
-	private GameObject            _CharacterToSpawn;
+	[NonSerialized] public S_O_CharactersForMenu            _CharacterToSpawn;
 	public static Transform _SpawnedPlayer;
 	public static float           _spawnCheckModifier = 1;
 
@@ -67,13 +70,6 @@ public class S_SpawnCharacter : S_Vis_Base
 	}
 
 #if UNITY_EDITOR
-	//[ExecuteInEditMode]
-	//[ExecuteAlways]
-	//private void Update () {
-	//	if(Application.isPlaying) { return; }
-	//	_hasVisualisationScripted = true;
-	//	UpdateLaunchDataToDirection();
-	//}
 
 	[ExecuteAlways]
 	private void OnEnable () {
@@ -89,7 +85,17 @@ public class S_SpawnCharacter : S_Vis_Base
 
 	// Use this for initialization
 	void Awake () {
-		//Some object shouldn't deactivate until the player is spawned in (like the start camera).
+		StartCoroutine(WaitUntilCanSpawn());
+	}
+
+	//If loading a scene directly in editor, s_CanSpawn will be true, but if loading in from a loading screen, it will not be true until every main scene is loaded in.
+	IEnumerator WaitUntilCanSpawn () {
+		while (!s_CanSpawn)
+		{
+			yield return new WaitForEndOfFrame();
+		}
+
+		//Some objects shouldn't deactivate until the player is spawned in (like the start camera).
 		for (int i = 0 ; i < _ListOfDeactivationsToDelay.Length ; i++)
 		{
 			_ListOfDeactivationsToDelay[i]._delayInSeconds = (_spawnDelay + 1) * Time.fixedDeltaTime;
@@ -117,7 +123,7 @@ public class S_SpawnCharacter : S_Vis_Base
 				_CharacterToSpawn = _DefaultCharacter;
 			}
 
-			GameObject Player = Instantiate(_CharacterToSpawn, transform.position, Quaternion.identity, transform);
+			GameObject Player = Instantiate(_CharacterToSpawn._Prefab, transform.position, Quaternion.identity, transform);
 
 			SetPlayerValuesOnStart(Player);
 			//Check S_CharacterTools Awake For assigning references to this. It's there because the Awakes of Player happen before any more code in this method.

@@ -12,6 +12,9 @@ public class S_CarryAcrossScenes : MonoBehaviour
 	public string ID = "";
 	[Tooltip("If true, if an instance with this ID is found, destroy that, and replace it with this.")]
 	public bool willReplaceOldInstancesWithThis;
+	[Tooltip("If true, when this overwrites new instances, it copies its values into itself.")]
+	[OnlyDrawIf("willReplaceOldInstancesWithThis", false)]
+	public bool willCopyValuesWhenOverwriting;
 	private S_CarryAcrossScenes Instance;
 
 	public bool CarryAcrossMenuScenes = true;
@@ -40,6 +43,7 @@ public class S_CarryAcrossScenes : MonoBehaviour
 
 			//Checks for every other instance of this script, and if one already has this ID, destroys this object as that is already in control.
 			S_CarryAcrossScenes[] Others = FindObjectsByType<S_CarryAcrossScenes>(FindObjectsSortMode.None);
+
 			for (int i = 0 ; i < Others.Length ; i++)
 			{
 				S_CarryAcrossScenes Other = Others[i];
@@ -53,6 +57,11 @@ public class S_CarryAcrossScenes : MonoBehaviour
 
 					else
 					{
+						//if an instance is already in control but repalces its values, pass on from this instance.
+						if (Others[i].willCopyValuesWhenOverwriting)
+						{
+							S_S_ObjectsStatic.CopyFrom<S_CarryAcrossScenes>(Others[i], this);
+						}
 						Destroy(gameObject);
 						return;
 					}

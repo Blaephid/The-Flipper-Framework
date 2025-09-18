@@ -26,7 +26,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 738236974348346796}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -137,6 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: MeasureLines
   willReplaceOldInstancesWithThis: 1
+  willCopyValuesWhenOverwriting: 0
   CarryAcrossMenuScenes: 1
   CarryAcrossCharacterScenes: 0
 --- !u!223 &8139089217478251516
@@ -281,6 +282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: MenuBackground
   willReplaceOldInstancesWithThis: 0
+  willCopyValuesWhenOverwriting: 0
   CarryAcrossMenuScenes: 1
   CarryAcrossCharacterScenes: 0
 --- !u!223 &4260636616732007236

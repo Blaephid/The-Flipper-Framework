@@ -55,8 +55,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.2, y: 4.54, z: 7.39}
-  m_Center: {x: 0, y: -1.82, z: -0.44}
+  m_Size: {x: 3.2, y: 7.06, z: 7.39}
+  m_Center: {x: 0, y: -0.95, z: -0.44}
 --- !u!114 &2618382156289611987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,6 +78,7 @@ MonoBehaviour:
   _normalOutlineColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _selectedOutlineColour: {r: 1, g: 1, b: 1, a: 1}
   _selectedFillColour: {r: 1, g: 1, b: 1, a: 0.1}
+  _hasDataChanged: 1
   _willSetBackwards_: 0
   _PositionToLockTo: {x: 0, y: 0, z: 0}
   _NewSpeedByCurrentSpeed:
@@ -159,7 +160,7 @@ MonoBehaviour:
   _cameraEffect:
     _willAffectCamera_: 0
     _CameraRotateTime_: {x: 0.15, y: 20}
-  _cameraFallBack: {x: 30, y: 60, z: 0.7}
+  _cameraFallBack: {x: 10, y: 30, z: 0.8}
 --- !u!114 &8399873651291111674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,7 +201,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 52ecf63b219f6844eadf60e95393e9ae,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 1f2dbda1b26ef874c807ed305cc7d0ba, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 1f2dbda1b26ef874c807ed305cc7d0ba, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1

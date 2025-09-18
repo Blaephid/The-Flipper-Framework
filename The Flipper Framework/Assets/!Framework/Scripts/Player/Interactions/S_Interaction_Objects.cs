@@ -50,6 +50,9 @@ public class S_Interaction_Objects : S_Player_Base
 
 	// Trackers
 	#region trackers
+	private bool _canAddObjectToActionChain = true;
+	private int _howManyDelaysOnActionChain = 0;
+
 	private Vector3     _translateOnPlatform;
 
 	[HideInInspector]
@@ -231,7 +234,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 	}
 
-	private void ExitWind(Collider Col ) {
+	private void ExitWind ( Collider Col ) {
 		S_Data_Updraft UpdraftScript = Col.GetComponentInParent<S_Data_Updraft>();
 		if (UpdraftScript == null) { return; }
 
@@ -249,21 +252,21 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 	//To prevent player blasting off as soon wind stops slowing them down, lerp from the speed the wind limited to, to their actual speed.
-	private IEnumerator LerpFromWindAffectedToNormalSpeed(Vector3 windVector ) {
+	private IEnumerator LerpFromWindAffectedToNormalSpeed ( Vector3 windVector ) {
 		windVector.y = 0;
 
 		float localSpeed = _PlayerVel._currentRunningSpeed;
 		float startWorldSpeed = _PlayerVel._horizontalSpeedMagnitude;
 		float frames = 25;
 
-		if(startWorldSpeed > localSpeed) { yield break; }
+		if (startWorldSpeed > localSpeed) { yield break; }
 
-		for (int i = 0 ; i <frames ; i++)
+		for (int i = 0 ; i < frames ; i++)
 		{
 			yield return new WaitForFixedUpdate();
 
 			if (_PlayerVel._currentRunningSpeed < localSpeed) localSpeed = _PlayerVel._currentRunningSpeed;
-			if(_PlayerVel._horizontalSpeedMagnitude < startWorldSpeed - 2) { yield break; }
+			if (_PlayerVel._horizontalSpeedMagnitude < startWorldSpeed - 2) { yield break; }
 
 			//Add a single frame push against the player, being lighter each frame until its gone.
 			float thisPush = localSpeed - startWorldSpeed;
@@ -390,7 +393,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 			_PlayerVel.AddGeneralVelocity(lateralWind, false, true); //Using general velocity so the player believably is still running at speed, even if going nowhere in the world.
 
-			if(_PlayerPhys._locksForIsGravityOn.Count > 0)
+			if (_PlayerPhys._locksForIsGravityOn.Count > 0)
 			{
 
 				//Apply vertical, decreasing core velocity if going towards wind, to combat gravity.
@@ -499,7 +502,7 @@ public class S_Interaction_Objects : S_Player_Base
 			_Input.LockInputForAWhile(SpeedPadScript._lockControlFrames_, false, GO.transform.forward, SpeedPadScript._lockInputTo_);
 		}
 
-		_ActionChain.AddToChain("Speed Pad", 2, 1, GO.GetInstanceID().ToString());
+		AddObjectToActionChain("Speed Pad", 2, 1, GO.GetInstanceID().ToString());
 	}
 
 	private void LaunchFromDashLauncher ( Collider Col ) {
@@ -514,15 +517,18 @@ public class S_Interaction_Objects : S_Player_Base
 			DashRingScript._launchData_._force_ ;
 		Vector3 direction = DashRingScript._launchData_._directionToUse_;
 
-		StartCoroutine(
-			LaunchInDirection(direction, force, DashRingScript._PositionToLockTo, GO.transform, _PlayerPhys.transform, DashRingScript._launchData_));
+		LaunchInDirection(direction, force, GO.transform, _PlayerPhys.transform, DashRingScript._launchData_);
 
 		ObjectRotatesCamera(GO, DashRingScript._cameraEffect);
 
-		_ActionChain.AddToChain(DashRingScript.source, 2, 1, GO.GetInstanceID().ToString());
+		AddObjectToActionChain(DashRingScript.source, 2, 1, GO.GetInstanceID().ToString());
 	}
 
 	private void BoostOnRail ( Collider Col ) {
+
+		if (!_Actions._ObjectForActions.TryGetComponent(out S_Action05_Rail RailAction)){return;}
+		if(RailAction._RF._distanceToHop > 6) { return; } //Won't activate if hopping OFF this rail
+
 		GameObject GO = GetObjectWithData(Col);
 		if (!GO.TryGetComponent(out S_Data_RailBooster RailBoosterScript)) { return; } //Ensures object has necessary script, and saves as varaible for efficiency.
 		GO.GetComponent<AudioSource>().Play();
@@ -532,16 +538,14 @@ public class S_Interaction_Objects : S_Player_Base
 		{
 			SnapToObject(GO.transform, RailBoosterScript._PositionToLockTo);
 		}
-		if (_Actions._ObjectForActions.TryGetComponent(out S_Action05_Rail RailAction))
-		{
-			_ActionChain.AddToChain("Rail Booster", 2, 1, GO.GetInstanceID().ToString());
-			StartCoroutine(RailAction.ApplyBoosters(RailBoosterScript));
-		}
+
+		AddObjectToActionChain("Rail Booster", 1, 1, GO.GetInstanceID().ToString());
+		StartCoroutine(RailAction.ApplyBoosters(RailBoosterScript));
 
 		ObjectRotatesCamera(GO, RailBoosterScript._cameraEffect);
 	}
 
-	private GameObject GetObjectWithData ( Collider Col ) {
+	public static GameObject GetObjectWithData ( Collider Col ) {
 		if (Col.TryGetComponent(out S_Data_Redirect Redirect))
 		{
 			return Redirect._ObjectWithMainScript;
@@ -549,19 +553,21 @@ public class S_Interaction_Objects : S_Player_Base
 		return Col.gameObject;
 	}
 
-	private Vector3 SnapToObject ( Transform Object, Vector3 Offset, bool toFeet = true ) {
-		//For consistency, ensure player always launches out of ring of off booster from the same point.
-		Vector3 snapPosition = Object.position + (Object.rotation * Offset);
+	private Vector3 SnapToObject ( Transform Object, Vector3 Offset, Vector3 mainSkinForwards = default(Vector3), bool toFeet = true ) {
 
-		Vector3 mainSkinForwards = _PlayerPhys.GetRelevantVector(_MainSkin.forward, false);
+		//Rotation
+		mainSkinForwards = mainSkinForwards == default(Vector3) ? _MainSkin.forward : mainSkinForwards;
 
 		_PlayerPhys.SetPlayerRotation(Quaternion.identity, true);
+		_Actions._ActionDefault.SetSkinRotationToVelocity(0, mainSkinForwards, Vector2.zero, transform.up);
+
+		//Locations
+		//For consistency, ensure player always launches out of ring of off booster from the same point.
+		Vector3 snapPosition = Object.position + (Object.rotation * Offset);
 		if (toFeet)
 			snapPosition -= _PlayerPhys._feetOffsetFromPivotPoint; //Because on ground, feet should be set to pad position.
 		else
 			snapPosition -= _PlayerPhys._colliderOffsetFromPivot;
-
-		_Actions._ActionDefault.SetSkinRotationToVelocity(0, mainSkinForwards, Vector2.zero, transform.up);
 
 		_PlayerPhys.SetPlayerPosition(snapPosition);
 
@@ -620,13 +626,13 @@ public class S_Interaction_Objects : S_Player_Base
 		if (SpringScript._keepHorizontal_)
 		{
 			//Since vertical will be taken over by environment, get horizontal core velocity.
-			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity, false);
+			Vector3 newCoreVelocity = _PlayerPhys.GetRelevantDirection(_PlayerVel._coreVelocity, false);
 
-			if(_Actions._speedBeforeAction != 0) { newCoreVelocity = newCoreVelocity.normalized * _Actions._speedBeforeAction; }
+			if (_Actions._speedBeforeAction != 0) { newCoreVelocity = newCoreVelocity.normalized * _Actions._speedBeforeAction; }
 
 			newCoreVelocity *= 0.85f;
 
-			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantVector(direction * SpringScript._launchData_._force_, false); //Combined the spring direction with force to get the only the force horizontally.
+			Vector3 launchHorizontalVelocity = _PlayerPhys.GetRelevantDirection(direction * SpringScript._launchData_._force_, false); //Combined the spring direction with force to get the only the force horizontally.
 
 			Vector3 combinedVelocityMagnitude = (launchHorizontalVelocity + newCoreVelocity); //The two put together normally so the magnitude is accurate.
 			Vector3 combinedVelocityDirection = (_PlayerVel.transform.TransformDirection(launchHorizontalVelocity) * 2) + newCoreVelocity; //The direction of the two put together, with the bounce being prioritised.
@@ -653,14 +659,13 @@ public class S_Interaction_Objects : S_Player_Base
 				newCoreVelocity = combinedVelocityMagnitude;
 			}
 
-			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_, 
-				Vector3.zero, newCoreVelocity, GO.transform, SpringScript._launchData_));
+			StartCoroutine(ApplyForceAfterDelay(upDirection * SpringScript._launchData_._force_
+				, newCoreVelocity, GO.transform, SpringScript._launchData_));
 		}
 		//If not keeping horizontal, then player will always travel along the same "path" created by this instance until control is restored or their stats change. See S_drawShortDirection for a representation of this path as a gizmo.
 		else if (!SpringScript._keepHorizontal_)
 		{
-			StartCoroutine(
-				LaunchInDirection(direction, SpringScript._launchData_._force_, Vector3.zero, GO.transform, _PlayerPhys.transform, SpringScript._launchData_));
+			LaunchInDirection(direction, SpringScript._launchData_._force_, GO.transform, _PlayerPhys.transform, SpringScript._launchData_);
 		}
 
 
@@ -669,7 +674,6 @@ public class S_Interaction_Objects : S_Player_Base
 		//If needed, rotate character in set direction, this will be run after the player rotation is set to velocity in ApplyForceAfterDelay, overwriting it.
 		if (SpringScript._changePlayerForwards)
 		{
-			Debug.DrawRay(transform.position, SpringScript.transform.forward * 10, Color.red, 10f);
 			_Actions._ActionDefault.SetSkinRotationToVelocity(0, SpringScript.transform.forward, Vector2.zero, transform.up);
 			_Actions._ActionDefault.LockSkinRotationToDirection(SpringScript.transform.forward);
 		}
@@ -679,7 +683,7 @@ public class S_Interaction_Objects : S_Player_Base
 		if (SpringScript._Animator != null)
 			SpringScript._Animator.SetTrigger("Hit");
 
-		_ActionChain.AddToChain("Spring", 2, 1, GO.GetInstanceID().ToString());
+		AddObjectToActionChain("Spring", 2, 1, GO.GetInstanceID().ToString());
 	}
 
 	public void ApplyLaunchEffects ( LaunchPlayerData launchData ) {
@@ -700,17 +704,16 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 	//Takes a power and direction and splits it across environmental and core velocity, then pushes player in the direction after a slight delay.
-	public IEnumerator LaunchInDirection ( Vector3 direction, float launchPower, Vector3 lockPosition, Transform Object, Transform Player, LaunchPlayerData launchData ) {
-		for (int i = 0 ; i < launchData._frameDelay ; i++)
-		{
-			yield return new WaitForFixedUpdate();
-		}
+	public void LaunchInDirection ( Vector3 direction, float launchPower, Transform ObjectlaunchPosition, Transform Player, LaunchPlayerData launchData ) {
 
-		Vector3[] split = SplitCoreAndEnvironmentalVelocities(Player,direction,launchPower,_PlayerVel._horizontalSpeedMagnitude,_PlayerPhys._PlayerMovement._currentMaxSpeed,launchData._useCore);
-		StartCoroutine(ApplyForceAfterDelay(split[0], lockPosition, split[1], Object, launchData));
+		if (launchData._shotOrigin != null)
+			ObjectlaunchPosition = launchData._shotOrigin;
+
+		Vector3[] split = SplitCoreAndEnvironmentalVelocities(Player,direction,launchPower,_PlayerVel._horizontalSpeedMagnitude,_PlayerPhys._PlayerMovement._currentMaxSpeed,launchData._coreVelocityImportance);
+		StartCoroutine(ApplyForceAfterDelay(split[0], split[1], ObjectlaunchPosition, launchData));
 	}
 
-	public static Vector3[] SplitCoreAndEnvironmentalVelocities ( Transform Player, Vector3 direction, float launchPower, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity ) {
+	public static Vector3[] SplitCoreAndEnvironmentalVelocities ( Transform Player, Vector3 direction, float launchPower, float currentCoreSpeed, float maxSpeed, float coreVelocityImportance ) {
 		//While the player will always move at the same velocity, the combination between environmental and core can vary, with one being prioritised.
 		//This is because if the player enters a spring at speed, they will want to keep that speed when the spring is finished.
 		//Core velocity vertically is removed, and handled by environment, but horizontal will be a combo of both velocity types, both going in the same direction.
@@ -718,7 +721,7 @@ public class S_Interaction_Objects : S_Player_Base
 		Vector3 launchHorizontalVelocity = Player? Player.InverseTransformDirection(direction * launchPower) : direction * launchPower; //Combined the spring direction with force to get only the force horizontally
 		launchHorizontalVelocity.y = 0;
 
-		Vector2 speeds = GetSpeedsForLaunch(launchHorizontalVelocity, currentCoreSpeed,maxSpeed, useCoreVelocity );
+		Vector2 speeds = GetSpeedsForLaunch(launchHorizontalVelocity, currentCoreSpeed,maxSpeed, coreVelocityImportance );
 		float coreSpeed = speeds.x;
 		float horizontalEnvSpeed = speeds.y;
 
@@ -728,19 +731,14 @@ public class S_Interaction_Objects : S_Player_Base
 		return new Vector3[2] { totalEnvironment, launchHorizontalVelocity.normalized * coreSpeed };
 	}
 
-	public static Vector2 GetSpeedsForLaunch ( Vector3 horizontalVelocity, float currentCoreSpeed, float maxSpeed, bool useCoreVelocity = false ) {
+	public static Vector2 GetSpeedsForLaunch ( Vector3 horizontalVelocity, float currentCoreSpeed, float maxSpeed, float coreVelocityImportance ) {
+
 		float newHorizontalSpeed = horizontalVelocity.magnitude; //Get the total speed that will actually be applied in world horizontally.
+		coreVelocityImportance = currentCoreSpeed > newHorizontalSpeed ? 1 : coreVelocityImportance; //If core is greater than force, then limit to launch force, but dont decrease unnecesarily.
 
-		//The value of core over velocity will either be what it was before (as environment makes up for whats lacking), or the bounce force itself (decreasing running speed if need be)
+		currentCoreSpeed = Mathf.Clamp(newHorizontalSpeed * coreVelocityImportance, 2, maxSpeed - 2);
 
-		//If set to prioritise core, or core speed is more than the bounce being set to.
-		if (currentCoreSpeed > newHorizontalSpeed || useCoreVelocity)
-		{
-			currentCoreSpeed = Mathf.Min(newHorizontalSpeed, maxSpeed); //In this case, bounce will be entirely through core velocity, not environmental.
-		}
-
-		float horizontalEnvSpeed = Mathf.Max(newHorizontalSpeed -  currentCoreSpeed, 1); //Environmental force will be added to make up for the speed lacking before going into the spring.
-		currentCoreSpeed = Mathf.Max(currentCoreSpeed, 1);
+		float horizontalEnvSpeed = Mathf.Max(newHorizontalSpeed -  currentCoreSpeed, 2); //Environmental force will be added to make up for the speed lacking.
 
 		return new Vector2(currentCoreSpeed, horizontalEnvSpeed);
 		//This is all in order to prevent springs being used to increase running speed, as the players running speed will not change if they don't unless they have control (most springs should take control away temporarily).
@@ -754,14 +752,25 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 	//To ensure force is accurate, and player is in start position, spend a few frames to lock them in position, before chaning velocity.
-	private IEnumerator ApplyForceAfterDelay ( Vector3 enVelocity, Vector3 offset, Vector3 coreVelocity, Transform Object, LaunchPlayerData launchData ) {
+	private IEnumerator ApplyForceAfterDelay ( Vector3 enVelocity, Vector3 coreVelocity, Transform Object, LaunchPlayerData launchData ) {
 
-		int frames = 2;
+		int frames = Mathf.Max(3,launchData._frameDelay);
 
+		//Lock Player
 		_Actions._canChangeActions = false;
 		_Actions._ActionDefault.StartAction(true); //Ensures player is still in correct state after delay.
+		_Actions._ActionDefault._canHandleSkinRotation = false;
 
-		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "ReadyForce");
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForCanControl, "ReadyLaunch");
+		S_S_Logic.AddLockToList(ref _PlayerPhys._locksForIsGravityOn, "ReadyLaunch");
+		if (launchData._delayGroundedFor > 0)
+		{
+			_PlayerPhys.SetIsGrounded(false);
+			_PlayerPhys._canChangeGrounded = false;
+			_PlayerPhys._keepNormal = Vector3.up;
+		}
+
+		_Input.LockInputForAWhile(frames + 2, false, Vector3.zero, S_GeneralEnums.LockControlDirection.NoInput);
 
 		//Player rotation. Will be determined by the force direction. Usually based on core, but if that isnt present, based on environment.
 		Vector3 lookDirection = coreVelocity.sqrMagnitude > 2 ? coreVelocity.normalized : enVelocity.normalized;
@@ -770,31 +779,56 @@ public class S_Interaction_Objects : S_Player_Base
 		for (int i = 0 ; i < frames ; i++)
 		{
 			_Actions._ActionDefault.StartAction(); //Ensures player cant change into another action, like a rail, while hitting a spring.
-			SnapToObject(Object, offset, false);
-			_Actions._ActionDefault.SetSkinRotationToVelocity(0, lookDirection);
+			SnapToObject(Object, Vector3.zero, lookDirection, false);
 
 			_PlayerVel.SetCoreVelocity(Vector3.zero, "Overwrite");
 			_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 			yield return new WaitForFixedUpdate();
 		}
 
-		SnapToObject(Object, offset, false); ; //Ensures player is set to inside of spring, so bounce is consistant. 
+		SnapToObject(Object, Vector3.zero, lookDirection, false); ;
 
-		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "ReadyForce");
+		Debug.DrawRay(Object.position, lookDirection * 12, Color.cyan, 10f);
+		Debug.DrawRay(Object.position, coreVelocity.normalized * 10, Color.red, 10f);
+		Debug.DrawRay(Object.position, enVelocity.normalized * 8, Color.green, 10f);
+		Debug.DrawRay(Object.position, _MainSkin.forward * 6, Color.black, 10f);
 
 		_PlayerVel.SetCoreVelocity(coreVelocity, "Overwrite"); //Undoes this being set to zero during delay.
 		_PlayerVel.SetEnvironmentalVelocity(enVelocity, true, true, S_GeneralEnums.ChangeLockState.Lock); //Apply bounce
 
+		//Unlocking player
+
 		if (launchData != default(LaunchPlayerData))
 			ApplyLaunchEffects(launchData);
 
+		StartCoroutine(CanChangeActionsAfterDelay());
+		StartCoroutine(CanChangeGroundedAfterDelay(launchData._delayGroundedFor));
+
+		for (int i = 0 ; i < 2 ; i++)
+		{
+			yield return new WaitForFixedUpdate();
+		}
+		_Actions._ActionDefault._canHandleSkinRotation = true;
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForCanControl, "ReadyLaunch");
+		S_S_Logic.RemoveLockFromList(ref _PlayerPhys._locksForIsGravityOn, "ReadyLaunch");
+	}
+
+	IEnumerator CanChangeActionsAfterDelay () {
 		//To ensure launch isn't interupted by entering a rail until launched a bit away.
 		for (int i = 0 ; i < 20 ; i++)
 		{
 			yield return new WaitForFixedUpdate();
 		}
 		_Actions._canChangeActions = true;
+	}
 
+	IEnumerator CanChangeGroundedAfterDelay ( int frames ) {
+		for (int i = 0 ; i < frames ; i++)
+		{
+			//_PlayerPhys.SetPlayerRotation(Quaternion.identity, true);
+			yield return new WaitForFixedUpdate();
+		}
+		_PlayerPhys._canChangeGrounded = true;
 	}
 
 	//Until the players hit the ground, all gravity calculations will use the set gravity value.
@@ -822,7 +856,6 @@ public class S_Interaction_Objects : S_Player_Base
 	}
 
 
-
 	private void ObjectWithNoSpecificTag ( Collider Col ) {
 		if (Col == null) return;
 
@@ -838,9 +871,32 @@ public class S_Interaction_Objects : S_Player_Base
 				_CoreValues.AdjustEnergy(DataRSR._energyGained);
 				_CoreValues.AdjustPoints(DataRSR._powerGained);
 
-				_ActionChain.AddToChain("Red Star Ring", 2, 1, Col.gameObject.GetInstanceID().ToString());
+				_ActionChain.AddToChain("Red Star Ring", 2, 1, Col.gameObject.GetInstanceID().ToString(), 15);
 				break;
 		}
+	}
+
+	private void AddObjectToActionChain( string source, int value, int differenceBetweenThisSourceInChain = 2, string subSource = "", float addSpeed = 0, bool sound = false ) {
+		if(_canAddObjectToActionChain)
+			_ActionChain.AddToChain(source, value, differenceBetweenThisSourceInChain, subSource, addSpeed, sound);
+
+		StartCoroutine(DelayAddingAnotherObjectToActionChain());
+	}
+
+	//To prevent getting too many points from multiple objects placed directrly in line with each other.
+	private IEnumerator DelayAddingAnotherObjectToActionChain () {
+		_canAddObjectToActionChain = false;
+
+		_howManyDelaysOnActionChain++;
+		int thisDelay = _howManyDelaysOnActionChain;
+
+		yield return new WaitForSeconds(0.3f);
+
+		//Only end delay after most recent delay
+		if (thisDelay != _howManyDelaysOnActionChain) { yield break; }
+
+		_howManyDelaysOnActionChain = 0; 
+		_canAddObjectToActionChain = true;
 	}
 
 	#endregion
@@ -866,7 +922,7 @@ public class S_Interaction_Objects : S_Player_Base
 
 		MonitorData.DestroyMonitor();
 
-		_ActionChain.AddToChain("Monitor", 2, 0, MonitorData.gameObject.GetInstanceID().ToString());
+		AddObjectToActionChain("Monitor", 2, 0, MonitorData.gameObject.GetInstanceID().ToString());
 	}
 	#endregion
 

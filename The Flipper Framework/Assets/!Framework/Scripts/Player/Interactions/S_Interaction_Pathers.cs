@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 using System.Collections;
-using Cinemachine;
+using Unity.Cinemachine;
 using SplineMesh;
 using System.Drawing;
 
@@ -96,12 +96,9 @@ public class S_Interaction_Pathers : MonoBehaviour
 		{
 			case "ZipLine":
 				//Can only enter a zipline if not already on one and in an action with grinding set as a situational action in the action manager.
-				if (!_canGrindOnRail) { return; }
-
-				if (col.transform.GetComponent<S_Control_Zipline>())
-				{
-					SetOnZipline(col);
-				}
+				if (!_canGrindOnRail) { return; }			
+				SetOnZipline(col);
+				
 				break;
 
 			case "Upreel":
@@ -192,9 +189,6 @@ public class S_Interaction_Pathers : MonoBehaviour
 
 			Vector3 offSet = Vector3.zero;
 
-			//Debug.DrawRay(collider.transform.position, Vector3.up * 10, UnityEngine.Color.red, 10f);
-			//Debug.DrawRay(transform.position, Vector3.up * 10, UnityEngine.Color.blue, 10f);
-
 			//Trigger Collisions on rails are organised by the PlaceOnSpline script, so if that had an offset to move the rail collision away from the spline, then follow that (this allows for multiple rails next to each other all following the same spline).
 			if (isTrigger)
 			{
@@ -229,20 +223,24 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	//Readies stats for movemement on zipline and the zipline itself.
-	private void SetOnZipline ( Collider col ) {
-		_PathSpline = col.transform.GetComponent<S_Control_Zipline>()._Rail;
+	private void SetOnZipline ( Collider Col ) {
+		GameObject GO = S_Interaction_Objects.GetObjectWithData(Col);
+		if (!GO.TryGetComponent(out S_Data_Zipline ZiplineScript)) { return; }
+
+		_PathSpline = ZiplineScript._Rail;
 		if (_PathSpline == null) { return; }
 
 		//Assigns what is the Zipline and handle, and sets it to not be kinematic to avoid gravity.
-		Rigidbody zipbody = col.GetComponent<Rigidbody>();
-		_RailAction._RF._ZipHandle = col.transform;
-		_RailAction._RF._ZipBody = zipbody;
-		zipbody.isKinematic = false;
+		_RailAction._RF._ZipHandlePivot = ZiplineScript._HandlePivot;
+		_RailAction._RF._ZipHandleGrip= ZiplineScript._HandGripPoint;
+		_RailAction._RF._ZipHandleCollider= ZiplineScript._CapsuleCollider;
+		_RailAction._RF._ZipBody = ZiplineScript._RB;
+		_RailAction._RF._ZipBody.isKinematic = false;
 
-		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(zipbody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.
+		Vector2 rangeAndDistanceSquared = S_RailFollow_Base.GetClosestPointOfSpline(_RailAction._RF._ZipBody.position, _PathSpline, Vector3.zero); //Gets place on rail closest to collision point.
 
 		//Disables the homing target so it isn't a presence if homing attack can be performed in the grind action
-		GameObject target = col.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
+		GameObject target = ZiplineScript._HomingTarget;
 		target.SetActive(false);
 
 		//Sets the player to the rail grind action, and sets their position and what spline to follow.
@@ -333,11 +331,11 @@ public class S_Interaction_Pathers : MonoBehaviour
 	}
 
 	//Called when leaving a pulley to prevent player attaching to it immediately.
-	public IEnumerator JumpFromZipLine ( Transform zipHandle, float time ) {
+	public IEnumerator JumpFromZipLine ( Transform zipHandle, Collider Col, float time ) {
 
 		//Disables the zipline handles collisions and homing target until after the delay
-		zipHandle.GetComponent<CapsuleCollider>().enabled = false;
-		GameObject target = zipHandle.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
+		Col.enabled = false;
+		GameObject target = zipHandle.transform.GetComponent<S_Data_Zipline>()._HomingTarget;
 		target.SetActive(false);
 
 		yield return new WaitForSeconds(time);

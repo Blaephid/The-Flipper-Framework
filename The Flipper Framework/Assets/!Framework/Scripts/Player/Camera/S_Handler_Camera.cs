@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Cinemachine;
+using Unity.Cinemachine;
 using System.Collections;
 using UnityEngine.Windows;
 using System;
@@ -11,10 +11,11 @@ public class S_Handler_Camera : MonoBehaviour
 {
 
 	public S_HedgeCamera          _HedgeCam;
-	public CinemachineVirtualCamera _VirtCam;
+	public CinemachineCamera _VirtCam;
 	private S_CharacterTools      _Tools;
 	private S_PlayerInput         _Input;
 	private S_PlayerPhysics       _PlayerPhys;
+	private S_Interaction_Triggers _Triggers;
 
 	private Transform             _MainSkin;
 
@@ -32,15 +33,16 @@ public class S_Handler_Camera : MonoBehaviour
 		_PlayerPhys = _Tools.GetComponent<S_PlayerPhysics>();
 		_Input = _Tools.GetComponent<S_PlayerInput>();
 		_MainSkin = _Tools.MainSkin;
+		_Triggers = _Tools.TriggerInteraction;
 
 		_initialDistance = _Tools.CameraStats.DistanceStats.CameraDistance;
 		_initialFOV = _Tools.CameraStats.FOVStats.baseFOV;
 	}
 	private void OnEnable () {
-		S_Manager_LevelProgress.OnDeath += EventOnDeath;
+		S_Manager_LevelProgress.OnReset += EventCamHandlerOnReset;
 	}
 	private void OnDisable () {
-		S_Manager_LevelProgress.OnDeath -= EventOnDeath;
+		S_Manager_LevelProgress.OnReset -= EventCamHandlerOnReset;
 	}
 
 	#region Trigger Interaction
@@ -122,6 +124,9 @@ public class S_Handler_Camera : MonoBehaviour
 
 		if (removeAll)
 		{
+			_HedgeCam.ClearCameraDirectionSet();
+			
+			_Triggers.ClearEffectTriggersOfType<S_Trigger_Camera>();
 			StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, !_HedgeCam._canAffectDistanceBySpeed, true));
 			StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, !_HedgeCam._canAffectFOVBySpeed, true));
 		}
@@ -134,11 +139,7 @@ public class S_Handler_Camera : MonoBehaviour
 				StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, true, !cameraData._affectNewFOVBySpeed));
 			}
 		}
-		//if (removeAll || cameraData._willChangeDistance)
-		//	StartCoroutine(LerpToNewDistance(cameraData ? cameraData._newDistance.y : 5, _initialDistance, true, cameraData && !removeAll ? !cameraData._affectNewDistanceBySpeed : true));
-		//if (removeAll || cameraData._willChangeFOV)
-		//	StartCoroutine(LerpToNewFOV(cameraData ? cameraData._newFOV.y : 5, _initialFOV, true, cameraData && !removeAll ? !cameraData._affectNewFOVBySpeed : true));
-
+		
 		SetLockCameras(cameraData, false, !removeAll);
 
 		if (removeAll || cameraData._lockToCharacterRotation)
@@ -270,7 +271,7 @@ public class S_Handler_Camera : MonoBehaviour
 		}
 	}
 
-	public void EventOnDeath ( object sender, EventArgs e ) {
+	public void EventCamHandlerOnReset ( object sender, EventArgs e ) {
 		RemoveAdditonalCameraEffects(null, true);
 
 		_HedgeCam._cameraMaxDistance_ = _initialDistance;

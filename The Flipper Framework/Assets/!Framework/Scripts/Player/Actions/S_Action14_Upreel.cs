@@ -75,7 +75,7 @@ public class S_Action14_Upreel : S_Action_Base, IMainAction
 		_PlayerPhys._canChangeGrounded = false;
 		_Actions._ActionDefault.SetColliderActive(false);
 
-		_ActionChain.AddToChain("Upreel", 2, 1);
+		_ActionChain.AddToChain("Upreel", 2, 1, _CurrentUpreel.gameObject.GetInstanceID().ToString());
 
 		_CurrentUpreel.DeployOrRetractHandle(false); //This method is in a script on the upreel rather than the player
 		MoveOnUpreel();

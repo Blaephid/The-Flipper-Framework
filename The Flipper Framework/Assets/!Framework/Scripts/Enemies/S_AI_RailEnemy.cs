@@ -71,7 +71,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 	public Vector3[] _modelStartRotations;
 	public float _disanceBetweenModels = 30;
 
-	[HideInInspector] public bool _isActive = false;
+	[HideInInspector] public bool _isMoving = false;
 
 	//Player Data
 	[HideInInspector] public S_Action05_Rail _PlayerRailAction;
@@ -97,6 +97,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 	public event System.Action<GameObject> OnFallBehindPlayer;
 	public event System.Action OnActivate;
 	public event System.Action OnDeactivate;
+	public event System.Action OnReset;
 
 
 	//At start
@@ -110,6 +111,8 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		_RB = GetComponent<Rigidbody>();
 		_RhinoActions = _Data._rhino_ ? GetComponent<S_AI_RhinoActions>() : null;
 
+		_doesTriggeringOffResetToStartState = false;
+
 		ResetRigidBody();
 
 		if (!_Data._StartSpline_) { return; }
@@ -119,20 +122,19 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		//Start Position
 		PlaceOnSplineBeforeGame();
 		_startPosition = transform.position;
-		_RF._setOffSet = -_Data._startOffset_;
 
 		SetAnimatorBool("CurrentlyOnRail", true);
 	}
 
 	private void Update () {
-		if (!_isActive) { return; }
+		if (!_isMoving) { return; }
 
 		_RF.CustomUpdate();
 		_RF.PlaceOnRail(SetRotation, SetPosition);
 	}
 
 	private void FixedUpdate () {
-		if (!_isActive) { return; }
+		if (!_isMoving) { return; }
 
 		_RF.CustomFixedUpdate();
 		_RF.PlaceOnRail(SetRotation, SetPosition);
@@ -143,48 +145,73 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 			LoseRail();
 	}
 
-	public void TriggerObjectOnce ( S_CharacterTools Player = null ) {
-		if (!CanBeTriggeredOn(Player)) { return; }
-		SetIsActive(true);
+	public override void ChildTriggerObjectOn ( S_CharacterTools Player = null ) {
+		if (!_PlayerVel && Player)
+		{
+			_PlayerVel = Player._PlayerVel;
+			_PlayerActions = Player._ActionManager;
+			_PlayerRailAction = _PlayerActions._ObjectForActions.GetComponent<S_Action05_Rail>();
+			if (_PlayerRailAction) _PlayerRF = _PlayerRailAction._RF;
+		}
+
+
+		SetIsMoving(true);
 		_RF.StartOnRail();
-
-		if (!_isActive) { return; }
-
-		_PlayerVel = Player._PlayerVel;
-		_PlayerActions = Player._ActionManager;
-		_PlayerRailAction = _PlayerActions._ObjectForActions.GetComponent<S_Action05_Rail>();
-		if (_PlayerRailAction) _PlayerRF = _PlayerRailAction._RF;
 
 		_useStartSpeed = _Data._startAtPlayerSpeed_ ? _PlayerVel._horizontalSpeedMagnitude : _Data._startSpeed_;
 		_RF._grindingSpeed = _useStartSpeed * _Data._CurveToFullSpeed_.Evaluate(0);
-
-		//S_Manager_LevelProgress.OnReset += EventReturnOnDeath;
 	}
 
-	public void TriggerObjectOff ( S_CharacterTools Player = null ) {
-		if (!CanBeTriggeredOff(Player)) { return; }
-		SetIsActive(false);
-		_RF._grindingSpeed = 0;
+	public override void ChildTriggerObjectOff ( S_CharacterTools Player = null ) {
+		
+		SetIsMoving(false);
 	}
 	#endregion
 
-	private void SetIsActive ( bool set ) {
-		_isActive = set;
+	private void SetIsMoving ( bool set ) {
+		_isMoving = set;
 		_timeGrinding = 0;
 
 		if (set)
 		{
+			
+			_RB.constraints = RigidbodyConstraints.FreezeRotation;
 			SetAnimatorTrigger("Start");
+			//For rhino actions
 			if (OnActivate != null)
 				OnActivate.Invoke();
 		}
-		else { OnDeactivate.Invoke(); }
+		//For rhino actions
+		else if (OnDeactivate != null) { OnDeactivate.Invoke(); }
 
-		if (!_RF || !_RF._PathSpline) { _isActive = false; }
+		if (!_RF || !_RF._PathSpline) { _isMoving = false; }
 	}
 
-	private void OnDestroy () {
-		Debug.Log(gameObject + " Destroyed");
+	public override void ChildResetToOriginal () {
+
+		this.enabled = true;
+		gameObject.SetActive(true);
+
+		TriggerObjectOff();
+
+		transform.position = _startPosition;
+		ResetSplineDetails();
+		PlaceOnSplineBeforeGame();
+		ResetRigidBody();
+
+		//Reset tracking values
+		_hasReachedGoalInFrontOfPlayer = false;
+		_playerDistanceIncludingOffset = 0;
+		_playerDistanceWithoutOffset = 0;
+		_playerSpeed = 0;
+		_listOfPlayerSpeeds = new List<float> { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
+		_timeGrinding = 0;
+
+		 if (OnReset != null) { OnReset.Invoke(); }
+	}
+
+	private void OnDisable () {
+
 	}
 
 	/// 
@@ -295,14 +322,14 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		_onSamePath = _PlayerActions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Rail && (OnSameRailOrConnected());
 		if (!_onSamePath)
 		{
-			if (Vector3.Angle(_PlayerVel._worldDirection, S_S_MoreMaths.GetDirection(_PlayerVel.transform.position, transform.position)) < 100)
+			if (Vector3.Angle(_PlayerVel._worldForwardDirection, S_S_MoreMaths.GetDirection(_PlayerVel.transform.position, transform.position)) < 100)
 				SetHasReachedGoalInFrontOfPlayer(true); //If player's direction is taking them towards the rhinos, then the rhinos are in front.
 			else SetHasReachedGoalInFrontOfPlayer(false);
 		}
 
 		if (!_Data._followPlayer_) return;
 
-		_listOfPlayerSpeeds.Insert(0, _PlayerVel._horizontalSpeedMagnitude);
+		_listOfPlayerSpeeds.Insert(0, Mathf.Min( _PlayerVel._horizontalSpeedMagnitude, _PlayerVel._PlayerMovement._currentMaxSpeed));
 		_listOfPlayerSpeeds.RemoveAt(_listOfPlayerSpeeds.Count - 1);
 		_playerSpeed = _listOfPlayerSpeeds[_listOfPlayerSpeeds.Count - 1]; //The player speed to lerp to is delayed by x frames.
 
@@ -315,10 +342,10 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 			case S_S_ActionHandling.PrimaryPlayerStates.Rail:
 				break; //Already handled above
 			case S_S_ActionHandling.PrimaryPlayerStates.Homing:
-				if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 10 * 10) //If player is homing in on this, slow down to allow the hit to be made.
-					goalSpeed = _RF._grindingSpeed * 0.96f;
+				if (S_S_MoreMaths.GetDistanceSqrOfVectors(_PlayerActions._currentTargetPosition, transform.position) < 20 * 20) //If player is homing in on this, slow down to allow the hit to be made.
+					goalSpeed = _RF._grindingSpeed * 0.94f;
 				else
-					goalSpeed = _RF._grindingSpeed * 1.08f;
+					goalSpeed = _RF._grindingSpeed * 1.02f;
 				break;
 			default:
 				//Lerp on player speed.
@@ -561,6 +588,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 
 		_RF._upOffsetRail_ = _Data._railUpOffset_;
 
+		_RF._setOffSet = -_Data._startOffset_;
 		Vector3 thisOffset = _RF._sampleRotation * _Data._startOffset_; //Add offset to allow multiple rails from one spline.
 
 		//Move to spline
@@ -578,6 +606,7 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		if (_Data._rhino_)
 		{
 			_RB.freezeRotation = false;
+			_RB.constraints = RigidbodyConstraints.None;
 			_RB.useGravity = true;
 			SetAnimatorTrigger("Jump");
 			SetAnimatorBool("IsActive", false);
@@ -589,37 +618,16 @@ public class S_AI_RailEnemy : S_Triggered_Base, ITriggerable
 		{
 			_RF._grindingSpeed = 0;
 			_RB.linearVelocity = Vector3.zero;
+			_RB.constraints = RigidbodyConstraints.FreezeAll;
 		}
 		_RF._grindingSpeed = 0;
-		_isActive = false;
+		_isMoving = false;
 	}
 
 	private void ResetRigidBody () {
 		_RB.linearVelocity = Vector3.zero;
 		_RB.useGravity = false;
-		_RB.freezeRotation = true;
-	}
-
-	public override void ResetToOriginal ( ) {
-
-		gameObject.SetActive(true);
-		enabled = true;
-
-		TriggerObjectOff();
-
-		transform.position = _startPosition;
-		ResetSplineDetails();
-		PlaceOnSplineBeforeGame();
-		ResetRigidBody();
-
-		//Reset tracking values
-		_hasReachedGoalInFrontOfPlayer = false;
-		_playerDistanceIncludingOffset = 0;
-		_playerDistanceWithoutOffset = 0;
-		_playerSpeed = 0;
-		_listOfPlayerSpeeds = new List<float> { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
-		_timeGrinding = 0;
-
+		_RB.constraints = RigidbodyConstraints.FreezeAll;
 	}
 
 	public void SetToSpline () {

@@ -134,7 +134,7 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 		float dir = _isSteppingRight ? 1 : -1;
 
 		Vector3 velocityInStepDirection = _MainSkin.transform.right * dir * (_thisStepSpeed / Time.fixedDeltaTime);
-		velocityInStepDirection = _PlayerPhys.GetRelevantVector(velocityInStepDirection, false);
+		velocityInStepDirection = _PlayerPhys.GetRelevantDirection(velocityInStepDirection, false);
 		velocityInStepDirection = transform.TransformDirection(velocityInStepDirection);
 
 		_PlayerVel.AddGeneralVelocity(velocityInStepDirection, false, false); //This will add velocity to this frame, that will be ignored next update.		

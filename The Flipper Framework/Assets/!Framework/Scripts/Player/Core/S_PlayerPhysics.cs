@@ -28,7 +28,7 @@ public class S_PlayerPhysics : S_Player_Base
 	private CapsuleCollider       _CharacterCapsule;
 	private Transform             _FeetTransform;
 	[HideInInspector]
-	public Transform             _CenterOfMass;
+	public Transform             _CenterOfMassTransform;
 	#endregion
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
@@ -68,8 +68,7 @@ public class S_PlayerPhysics : S_Player_Base
 	[NonSerialized] public Vector2               _bounceAirControl_;
 
 	[Header("Rolling Values")]
-	public float _rollingDownhillBoost_ 
-		{ get { return _rollingDownhillBoostBackingField * _CoreValues._multiplierFromEnergy; } set { _rollingDownhillBoostBackingField = value; } }
+	public float _rollingDownhillBoost_ { get { return _rollingDownhillBoostBackingField * _CoreValues._multiplierFromEnergy; } set { _rollingDownhillBoostBackingField = value; } }
 	private float                 _rollingDownhillBoostBackingField;
 
 	[NonSerialized] public float                 _rollingUphillBoost_;
@@ -145,7 +144,7 @@ public class S_PlayerPhysics : S_Player_Base
 	[HideInInspector]
 	public Vector3                _groundNormal;
 	private List<Vector3>              _listOfPreviousGroundNormals = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3 (0,0,0)};        //Used to prevent the player jittering between two different upwards direction due to matching the rotation of one making the other be detected.
-	private Vector3               _keepNormal;        //Used when in the air to remember up direction when the ground was lost.
+	[NonSerialized] public Vector3               _keepNormal;        //Used when in the air to remember up direction when the ground was lost.
 	private float                 _groundingDelay;    //Set when ground is lost and can't enter grounded state again until it's over.
 	[HideInInspector]
 	public float                  _timeOnGround;
@@ -215,8 +214,8 @@ public class S_PlayerPhysics : S_Player_Base
 
 	private void Start () {
 		//Set grounded to true then not to ensure all default values are set.
-		SetIsGrounded(true);
-		SetIsGrounded(false);
+		SetIsGrounded(true, 0, false);
+		SetIsGrounded(false, 0, false);
 
 		_fixedFrameCount = 0;
 		_frameCount = 0;
@@ -355,7 +354,7 @@ public class S_PlayerPhysics : S_Player_Base
 		_CharacterCenterPosition = _CharacterPivotPosition + _colliderOffsetFromPivot;
 		_CharacterCenterPositionUpper = _CharacterCenterPosition + transform.up * _CharacterCapsule.height / 4;
 		_CharacterCenterPositionLower = _CharacterCenterPosition - transform.up * _CharacterCapsule.height / 4;
-		_CenterOfMass.position = _CharacterCenterPosition;
+		_CenterOfMassTransform.position = _CharacterCenterPosition;
 	}
 
 	//Determines if the player is on the ground and sets _isGrounded to the answer.
@@ -397,6 +396,11 @@ public class S_PlayerPhysics : S_Player_Base
 				Vector3 offsetFromCenterForCheck = _PlayerVel._horizontalSpeedMagnitude > 30 ? _PlayerVel._worldVelocity * Time.fixedDeltaTime : _MainSkin.forward * 0.8f; //The offset from the main check that will rotate
 				Vector3 startForward = offsetFromCenterForCheck;
 
+				float forwardBoundary = Mathf.Cos(75 * Mathf.Deg2Rad); //Ground in front is more important than ground on the side.
+				float sideBoundary = Mathf.Cos(55 * Mathf.Deg2Rad); //Use Cos to get a dot that can be compared as calling .Angle for each check is expensive.
+				Vector2 countsAsSide = new Vector2(55, 120);
+
+
 				for (int i = 0 ; i < checksAtRotations.Length * distances.Length ; i++)
 				{
 					int distancesLevel = i / (checksAtRotations.Length); //First round is at first index, second round is at second index.
@@ -412,30 +416,25 @@ public class S_PlayerPhysics : S_Player_Base
 					Vector3 fromCenterToOuter = (thisEndPosition - castStartPosition).normalized;
 					thisEndPosition += fromCenterToOuter;
 
-					Debug.DrawLine(castStartPosition, thisEndPosition, Color.gray);
-
 					//Find floor
 					if (Physics.Linecast(castStartPosition, thisEndPosition, out RaycastHit hitSecondTemp, _Groundmask_))
 					{
 						Vector3 thisNormal = hitSecondTemp.normal;
 
-						//If this instance is too much of an outlier, ignore it because it is probably a wall.
-						//A slope behind or infront should be of higher priority than a slope on the side.
-						float boundary = 0.75f; float importance = 1;
+						float boundary = forwardBoundary; float importance = 1;
 
 						//if on side
-						if (Vector3.Angle(startForward, offsetFromCenterForCheck) > 40 && Vector3.Angle(startForward, offsetFromCenterForCheck) < 140)
+						if (Vector3.Angle(startForward, offsetFromCenterForCheck) > countsAsSide.x && Vector3.Angle(startForward, offsetFromCenterForCheck) < countsAsSide.y)
 						{
-							boundary = 0.45f; importance = 0.7f;
+							boundary = sideBoundary; importance = 0.85f;
 						}
 
-						if (Mathf.Abs(firstGroundHit.normal.y - thisNormal.y) < boundary)
+						//Only add if this instance is not too great an outlier, like a wall.
+						if ((Vector3.Dot(firstGroundHit.normal, thisNormal) > boundary))
 							tempNormal += (thisNormal * importance);
 					}
 				}
 				tempNormal = tempNormal.normalized; //Gets the average upwards direction by adding them all together then normalizing.
-
-				Debug.DrawRay(firstGroundHit.point, tempNormal * 5, Color.green, 10f);
 			}
 
 			//Depending on situation, can allow for greater difference in floor, like if in the air should be easier to find ground as normal to compare is always straight up
@@ -445,7 +444,6 @@ public class S_PlayerPhysics : S_Player_Base
 			else //or should be a higher limit if going uphill, calculated if new normal is pointing away moving direction
 			{
 				//If the directions without vertical lead to the normal facing away from move direction.
-				//useGroundDifferentLimit = Vector3.Angle(lateralDirection, lateralTempNormal) > 85f ? _groundDifferenceLimit_.z : useGroundDifferentLimit;
 				if (Vector3.Angle(tempNormal, -_PlayerVel._worldVelocity) < Vector3.Angle(_HitGround.normal, -_PlayerVel._worldVelocity))
 				{
 					useGroundDifferentLimit = _groundDifferenceLimit_.z;
@@ -627,8 +625,6 @@ public class S_PlayerPhysics : S_Player_Base
 		if (_timeOnGround > 0.12f && _PlayerVel._horizontalSpeedMagnitude > 3)
 		{
 
-			Debug.DrawRay(_CharacterCenterPosition, velocity * Time.deltaTime, Color.gray, 10f);
-
 			Vector3 currentGroundNormal = _groundNormal;
 			Vector3 raycastStartPosition = _HitGround.point + (_groundNormal * 0.07f);
 			Vector3 rayCastDirection = AlignWithNormal(_PlayerVel._worldVelocity.normalized, _groundNormal, 1);
@@ -657,14 +653,13 @@ public class S_PlayerPhysics : S_Player_Base
 		else if (_isGrounded)
 		{
 			//Gives a small chance to convert fall speed to run speed based on slopes.
-			if (_timeOnGround > 0.08)
+			if (_timeOnGround > 0.08 && velocity.sqrMagnitude > 5 * 5)
 			{
-				//Since stationary, remove any relative upwards force in core that might push the player off the ground.
-				velocity = GetRelevantVector(velocity);
+				velocity = GetRelevantDirection(velocity);
 				velocity.y = 0;
 				velocity = transform.TransformDirection(velocity);
 			}
-			_PlayerVel.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false);
+			_PlayerVel.AddGeneralVelocity(-_groundNormal * _forceTowardsGround_.x * 1.2f, false, false, false);
 		}
 		return velocity;
 	}
@@ -710,7 +705,7 @@ public class S_PlayerPhysics : S_Player_Base
 		velocity = Vector3.LerpUnclamped(velocity, Dir, lerpAmount);
 
 		// Adds velocity downwards to remain on the slope. This is general so it won't be involved in the next coreVelocity calculations, which needs to be relevant to the ground surface.
-		_PlayerVel.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false);
+		_PlayerVel.AddGeneralVelocity(-currentGroundNormal * forceDown, false, false, false);
 
 		return velocity;
 	}
@@ -836,12 +831,7 @@ public class S_PlayerPhysics : S_Player_Base
 					if (_keepNormal.y < _rotationResetThreshold_)
 					{
 						//Disabled turning until all the way over to prevent velocity changing because of the unqiue camera movement.
-						if (!_isUpsideDown)
-						{
-							_isUpsideDown = true;
-							S_S_Logic.AddLockToList(ref _locksForCanTurn, "isUpsideDown");
-							//_locksForCanTurn.Add(false);
-						}
+						S_S_Logic.AddLockToList(ref _locksForCanTurn, "isUpsideDown");
 
 						// Going off the current rotation, can tell if needs to rotate right or left (rotate right if right side is higher than left), and prepare the angle to rotate around. 
 						if (localRight.y >= 0)
@@ -887,21 +877,15 @@ public class S_PlayerPhysics : S_Player_Base
 				{
 					Quaternion targetRot = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
 					SetPlayerRotation(Quaternion.RotateTowards(transform.rotation, targetRot, 180f * Time.deltaTime));
-					//If the rotation amoung is less than the difference, then the rotation will complete to face upwards.
-					if (Quaternion.Angle(targetRot, transform.rotation) < 180 * Time.deltaTime)
-					{
-						if (_isUpsideDown)
-						{
-							S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, "isUpsideDown");
-							//_locksForCanTurn.Remove(false);
-						}
-						else if (_amountToRotate > 60)
-							StartCoroutine(_CamHandler._HedgeCam.KeepGoingToHeightForFrames(30, 50, 60));
-
-						_amountToRotate = 0;
-						_isUpsideDown = false;
-					}
 				}
+			}
+			//On rotation to face upwards complete
+			else
+			{
+				S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, "isUpsideDown");
+				if (_amountToRotate > 60)
+					StartCoroutine(_CamHandler._HedgeCam.KeepGoingToHeightForFrames(30, 50, 60));
+				_amountToRotate = 0;
 			}
 		}
 
@@ -912,25 +896,20 @@ public class S_PlayerPhysics : S_Player_Base
 	}
 
 	//Called anywhere to get what the input velocity is in the player's local space.
-	public Vector3 GetRelevantVector ( Vector3 vel, bool includeY = true ) {
-		vel = transform.InverseTransformDirection(vel);
+	public Vector3 GetRelevantDirection ( Vector3 dir, bool includeY = true ) {
+		dir = transform.InverseTransformDirection(dir);
 		if (!includeY)
 		{
-			vel.y = 0;
+			dir.y = 0;
 		}
-		return vel;
+		return dir;
 	}
 
 	//Since there's such a difference between being grounded and not, this is called whenever the value is changed to affect any other relevant variables at the same time.
-	public void SetIsGrounded ( bool value, float timer = 0 ) {
+	public void SetIsGrounded ( bool value, float timer = 0, bool canAddToAction = true ) {
 		if (_isGrounded != value)
 		{
 			_isGrounded = value;
-
-			_timeOnGround = 0;
-			_timeInAir = 0;
-			_timeUpHill = 0;
-
 
 			//If changed to be in the air when was on the ground
 			if (!_isGrounded)
@@ -950,12 +929,20 @@ public class S_PlayerPhysics : S_Player_Base
 				{
 					_isUpsideDown = false;
 					S_S_Logic.RemoveLockFromList(ref _locksForCanTurn, "isUpsideDown");
-					//_locksForCanTurn.Remove(false);
 				}
 				_keepNormalCounter = 0;
 
 				if (_Actions) _Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
+
+				if (canAddToAction)
+					StartCoroutine(_ActionChain.CheckLandingQuality(_groundNormal));
 			}
+
+
+			_timeOnGround = 0;
+			_timeInAir = 0;
+			_timeUpHill = 0;
+
 		}
 	}
 
@@ -1097,7 +1084,7 @@ public class S_PlayerPhysics : S_Player_Base
 		_CharacterCapsule = _Tools.CharacterCapsule.GetComponent<CapsuleCollider>();
 		_FeetTransform = _Tools.FeetPoint;
 
-		_CenterOfMass = _Tools.CenterOfMass;
+		_CenterOfMassTransform = _Tools.CenterOfMass;
 	}
 	#endregion
 }

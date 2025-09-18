@@ -97,7 +97,7 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 			_Sounds.BonkSound();
 		else
 		{
-			_Sounds.HitSound(); //If not frontier reaction (where ring loss is delayed), this will be overwritten by ring long sound.
+			_Sounds.HitSound();
 			_Sounds.PainVoicePlay();
 		}
 
@@ -163,7 +163,7 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 			if (_PlayerPhys._isGrounded) { upForce *= 1.25f; }
 
 			//Make direction local to player rotation so we can change the y and xz values seperately.
-			Vector3 newSpeed = _PlayerPhys.GetRelevantVector(_knockbackDirection);
+			Vector3 newSpeed = _PlayerPhys.GetRelevantDirection(_knockbackDirection);
 			newSpeed.y = 0;
 			newSpeed.Normalize(); //Get the horizontal direction local to player rotation
 			newSpeed *= force;
@@ -229,7 +229,7 @@ public class S_Action04_Hurt : S_Action_Base, IMainAction
 			if (_PlayerPhys._isGrounded && _counter > 10)
 			{
 				//Get local horizontal vector
-				Vector3 newVelocity = _PlayerPhys.GetRelevantVector(_PlayerVel._coreVelocity);
+				Vector3 newVelocity = _PlayerPhys.GetRelevantDirection(_PlayerVel._coreVelocity);
 				float keepY = newVelocity.y;
 				newVelocity.y = 0;
 

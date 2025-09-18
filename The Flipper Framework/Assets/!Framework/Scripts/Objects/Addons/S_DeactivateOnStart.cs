@@ -19,7 +19,7 @@ public class S_DeactivateOnStart : MonoBehaviour
 	void Start () {
 		StartCoroutine(Delay());
 
-		if(_applyOnRespawn) { S_Manager_LevelProgress.OnReset += EventApplyOnDeath; }
+		if(_applyOnRespawn) { S_Manager_LevelProgress.OnReset += EventDeactivateOnReset; }
 	}
 
 	IEnumerator Delay() {
@@ -35,6 +35,7 @@ public class S_DeactivateOnStart : MonoBehaviour
 				gameObject.SetActive(false);
 				break;
 			case enumDeactivate.stopRendering:
+				gameObject.GetComponent<MeshRenderer>().enabled = false;
 				gameObject.GetComponent<Renderer>().enabled = false;
 				break;
 			case enumDeactivate.Destroy:
@@ -43,9 +44,9 @@ public class S_DeactivateOnStart : MonoBehaviour
 		}
 	}
 
-	void EventApplyOnDeath ( object sender, EventArgs e ) {
+	void EventDeactivateOnReset ( object sender, EventArgs e ) {
 
-		S_Manager_LevelProgress.OnReset -= EventApplyOnDeath;
+		S_Manager_LevelProgress.OnReset -= EventDeactivateOnReset;
 
 		Deactivate();
 	}

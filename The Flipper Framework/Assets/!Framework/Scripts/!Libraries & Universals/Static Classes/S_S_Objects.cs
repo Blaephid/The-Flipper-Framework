@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 public class S_S_Objects
@@ -22,32 +23,57 @@ public class S_S_Objects
 	}
 
 
-	//Takes an animator and the name of a trigger, then after x frames, sends that trigger to than animator.
-	public static IEnumerator TriggerAnimatorAfterDelay ( Animator Animator, string trigger, int frames = 0 ) {
-		for (int i = 0 ; i < frames ; i++)
+	//Takes an animator and the name of a trigger, then after x frames, sends that trigger to that animator.
+	public static IEnumerator TriggerAnimatorAfterDelay ( Animator Animator, string trigger, int frames = 0, float seconds = 0 ) {
+		if (!Animator) { yield break; }
+
+		if (trigger == "") trigger = "Trigger";
+
+		if (seconds != 0 || Time.timeScale < 0.5f)
 		{
-			yield return new WaitForFixedUpdate();
+			seconds = seconds == 0 ? frames / 55 : seconds;
+			yield return new WaitForSecondsRealtime(seconds);
 		}
+		else
+		{
+			for (int i = 0 ; i < frames ; i++)
+			{
+				yield return new WaitForFixedUpdate();
+			}
+		}
+
+		if (!Animator) { yield break; }
 		Animator.SetTrigger(trigger);
 	}
 
 	//Sames as above but with a specific animation component rather than an animator.
-	public static IEnumerator TriggerAnimationAfterDelay ( Animation Clip, int frames ) {
-		for (int i = 0 ; i < frames ; i++)
+	public static IEnumerator TriggerAnimationAfterDelay ( Animation Clip, int frames, float seconds = 0 ) {
+		if (!Clip) { yield break; }
+
+		if (seconds != 0 || Time.timeScale < 0.5f)
 		{
-			yield return new WaitForFixedUpdate();
+			seconds = seconds == 0 ? frames / 55 : seconds;
+			yield return new WaitForSecondsRealtime(seconds);
 		}
+		else
+		{
+			for (int i = 0 ; i < frames ; i++)
+			{
+				yield return new WaitForFixedUpdate();
+			}
+		}
+		if (!Clip) { yield break; }
 		Clip.Play();
 	}
 
 
 	//Takes an object and finds the scale needed for its bounds to fit neatly with the camera field of view, so it fills the camera edges
-	public static Vector2 GetScaleToFitCameraBounds(Camera Cam, float zOffset, Transform transform, bool setTo ) {
+	public static Vector2 GetScaleToFitCameraBounds ( Camera Cam, float zOffset, Transform transform, bool setTo ) {
 
 		float height = 2f * zOffset * Mathf.Tan(Cam.fieldOfView * 0.5f * Mathf.Deg2Rad);
 		float width = height * Cam.aspect;
 
-		if(setTo)
+		if (setTo)
 		{
 			transform.parent = Cam.transform;
 			transform.localPosition = new Vector3(0, 0, zOffset);
@@ -58,8 +84,8 @@ public class S_S_Objects
 	}
 
 	//Used for fading audio in or out.
-	public static IEnumerator LerpAudioSourceVolume(AudioSource Source, float duration, float targetVolume ) {
-		if(!Source) { yield break; }
+	public static IEnumerator LerpAudioSourceVolume ( AudioSource Source, float seconds, float targetVolume ) {
+		if (!Source) { yield break; }
 		float initialVolume = Source.volume;
 		float time = 0;
 
@@ -67,10 +93,29 @@ public class S_S_Objects
 
 		while (Source.volume != targetVolume)
 		{
-			yield return null;
-			time += Time.deltaTime;
-			lerpProgress = time / duration;
+			yield return new WaitForEndOfFrame();
+			time += Time.unscaledDeltaTime;
+			lerpProgress = time / seconds;
+
+			if (!Source) { yield break; }
+
 			Source.volume = Mathf.Lerp(initialVolume, targetVolume, lerpProgress);
 		}
 	}
+	
 }
+
+//Similar to above, but class itself is static as well.
+public static class S_S_ObjectsStatic
+{
+	public static void CopyFrom<T> ( this T target, T source ) where T : Component {
+		FieldInfo[] fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+		foreach (var field in fields)
+		{
+			field.SetValue(target, field.GetValue(source));
+		}
+	}
+}
+
+

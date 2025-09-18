@@ -23,6 +23,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	[HideInInspector] public S_RailFollow_Base _RF;
 
+	private Transform _HandGripTransform;
+
 	#endregion
 
 
@@ -101,6 +103,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	[HideInInspector]
 	public bool         _isGrinding; //USed to ensure no calculations are made from this still being active for possibly one frame called by Update when ending action.
+
+	private bool    _isPausedLocal;
 	#endregion
 	#endregion
 
@@ -125,7 +129,6 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 		_RF.ApplyHopUpdate(_hopSpeed_, _HopSpeedByTime_); //As rail hopping is shared between player and rhinoliners. The fixedUpdate version is not shared as those handle physics differently.
 
 		EffectsControl();
-		SoundControl();
 		//Handle animations
 		switch (_RF._whatKindOfRail)
 		{
@@ -145,6 +148,23 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 	new private void FixedUpdate () {
 		base.FixedUpdate();
+		if(_Actions._isPaused)
+		{
+			if(!_isPausedLocal)
+			{
+				_Sounds.RailGrindStop();
+				_isPausedLocal = true;
+			}
+			return;
+		}
+		else if(!_Actions._isPaused && _isPausedLocal)
+		{
+			_Sounds.RailGrindSound(true);
+			_isPausedLocal = false;
+		}
+
+		SoundControl();
+
 		if (!enabled || !_isGrinding || !_RF._RailTransform) { return; }
 
 		_PlayerPhys._timeOnGround = 0;
@@ -224,8 +244,15 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 				case S_S_ActionHandling.PrimaryPlayerStates.DropCharge:
 					float charge = GetComponent<S_Action08_DropCharge>().GetCharge();
 					_RF._grindingSpeed = Mathf.Max(charge, _RF._grindingSpeed + (charge / 2));
+					if (!_PlayerPhys._isGrounded) StartCoroutine(_ActionChain.CheckLandingQuality(_RF._sampleUpwards));
+
+					float chainValue = Mathf.Lerp(0, 2, _Actions._charge / 180);
+					chainValue = Mathf.Round(chainValue);
+					_ActionChain.AddToChain("Drop Dash", (int)chainValue, 4, "", 5);
 					break;
 				default:
+					if (_Actions._whatCurrentAction == S_S_ActionHandling.PrimaryPlayerStates.Bounce) _ActionChain.AddToChain("Bounce", 1, 5);
+
 					//If any other action, then check if speed on rail is gained from falling onto, or being launched up into.
 					if (Mathf.Abs(_PlayerVel._worldVelocity.y) > _RF._grindingSpeed)
 					{
@@ -240,6 +267,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 							_RF._grindingSpeed = Mathf.Abs(_PlayerVel._worldVelocity.y);
 						}
 					}
+					if(!_PlayerPhys._isGrounded) StartCoroutine(_ActionChain.CheckLandingQuality(_RF._sampleUpwards));
 					break;
 			}
 
@@ -268,7 +296,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 					_CharacterAnimator.SetInteger("Action", 10);
 					break;
 				case S_Interaction_Pathers.PathTypes.zipline:
-					_RF._ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; //Ensures there won't be weird collisions along the zipline.
+					_RF._ZipHandlePivot.GetComponentInChildren<MeshCollider>().enabled = false; //Ensures there won't be weird collisions along the zipline.
 					_CharacterAnimator.SetInteger("Action", 9);
 					break;
 			}
@@ -327,7 +355,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 					_PlayerPhys._groundNormal = Vector3.up; // Fix rotation
 
 					//After a delay, restore zipline collisions and physics
-					StartCoroutine(_Rail_int.JumpFromZipLine(_RF._ZipHandle, 1));
+					StartCoroutine(_Rail_int.JumpFromZipLine(_RF._ZipHandlePivot, _RF._ZipHandleCollider, 1));
 					_RF._ZipBody.isKinematic = true;
 					break;
 			}
@@ -344,7 +372,8 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		//If left, they would still be called if the player went from a zipline onto a rail as they wouldn't be overwritten.
 		_RF._ZipBody = null;
-		_RF._ZipHandle = null;
+		_RF._ZipHandleGrip = null;
+		_RF._ZipHandlePivot = null;
 
 		_Actions._listOfSpeedOnPaths.RemoveAt(0); //Remove the speed that was used for this action. As a list because this stop action might be called after the other action's StartAction.
 
@@ -375,10 +404,10 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 			case S_Interaction_Pathers.PathTypes.zipline:
 				//Set ziphandle rotation to follow sample
-				_RF._ZipHandle.rotation = _RF._RailTransform.rotation * _RF._Sample.Rotation;
+				_RF._ZipHandlePivot.rotation = _RF._RailTransform.rotation * _RF._Sample.Rotation;
 				//Since the handle and by extent the player can be tilted up to the sides (not changing forward direction), adjust the eueler angles to reflect this.
 				//_pulleyRotate is handled in input, but applied here.
-				_RF._ZipHandle.eulerAngles = new Vector3(_RF._ZipHandle.eulerAngles.x, _RF._ZipHandle.eulerAngles.y, _RF._ZipHandle.eulerAngles.z + _pulleyRotate * 70f * _RF._movingDirection);
+				_RF._ZipHandlePivot.eulerAngles = new Vector3(_RF._ZipHandlePivot.eulerAngles.x, _RF._ZipHandlePivot.eulerAngles.y, _RF._ZipHandlePivot.eulerAngles.z + _pulleyRotate * 70f * _RF._movingDirection);
 
 				_Actions._ActionDefault.SetSkinRotationToVelocity(_skinRotationSpeed, _RF._sampleForwards);
 				_MainSkin.eulerAngles = new Vector3(_MainSkin.eulerAngles.x, _MainSkin.eulerAngles.y, _pulleyRotate * 70f);
@@ -388,6 +417,11 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	}
 
 	public void SetPosition ( Vector3 position ) {
+		if(_RF._whatKindOfRail == S_Interaction_Pathers.PathTypes.zipline)
+		{
+			Vector3 handOffset = _HandGripTransform.position - _PlayerPhys._CharacterPivotPosition;
+			position -= handOffset;
+		}
 
 		_PlayerPhys.SetPlayerPosition(position);
 	}
@@ -396,7 +430,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 	public void MoveOnRail () {
 
 		if (!_isGrinding) { return; }
-		_PlayerPhys.SetIsGrounded(true, 0.5f);
+		_PlayerPhys.SetIsGrounded(true, 0.5f, false);
 
 		HandleRailSpeed(); //Make changes to player speed based on angle
 
@@ -423,9 +457,9 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 			case S_Interaction_Pathers.PathTypes.zipline:
 
 				//If the end of a zipline, then the handle must go flying off the end, so disable trigger for player and homing target, but renable collider with world.
-				_RF._ZipHandle.GetComponent<CapsuleCollider>().enabled = false;
-				if (_RF._ZipHandle.GetComponentInChildren<MeshCollider>()) { _RF._ZipHandle.GetComponentInChildren<MeshCollider>().enabled = false; }
-				GameObject target = _RF._ZipHandle.transform.GetComponent<S_Control_Zipline>()._HomingTarget;
+				_RF._ZipHandleCollider.enabled = false;
+				if (_RF._ZipHandlePivot.GetComponentInChildren<MeshCollider>()) { _RF._ZipHandlePivot.GetComponentInChildren<MeshCollider>().enabled = false; }
+				GameObject target = _RF._ZipHandlePivot.transform.GetComponent<S_Data_Zipline>()._HomingTarget;
 				target.SetActive(false);
 
 				//_PlayerPhys.SetCoreVelocity(_ZipBody.velocity); //Make sure zip handle flies off
@@ -571,7 +605,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 				//Crouching, relevant to slope physics.
 				_isCrouching = _Input._RollPressed;
-				_CharacterAnimator.SetBool("isRolling", _isCrouching);
+				_CharacterAnimator.SetBool("isCrouching", _Input._RollPressed);
 
 				RailTrick();
 
@@ -775,6 +809,7 @@ public class S_Action05_Rail : S_Action_Base, IMainAction
 
 		_Rail_int = _Tools.PathInteraction;
 		_RF = GetComponent<S_RailFollow_Base>();
+		_HandGripTransform = _Tools.HandGripPoint;
 	}
 
 	//Reponsible for assigning stats from the stats script.

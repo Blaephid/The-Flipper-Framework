@@ -15,7 +15,7 @@ public enum enumCameraControlType
 public class S_Trigger_Camera : S_Trigger_External
 {
 	public S_Trigger_Camera () {
-		TriggerObjects._isLogicInPlayerScript = true;
+		TriggerObjects.ReadOnlyTriggerData._isLogicInPlayerScript = true;
 	}
 
 	[Header("Functionality"), DrawHorizontalWithOthers(new string[] { "_willReleaseOnExit" }, new float[] { 2.5f, 1f })]

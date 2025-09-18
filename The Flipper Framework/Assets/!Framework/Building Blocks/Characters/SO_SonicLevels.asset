@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_SonicLevels
   m_EditorClassIdentifier: 
   Title: Title
-  pointsFromSpheres: 20
+  pointsFromSpheres: 15
   pointsPerActionChainLevel:
     serializedVersion: 2
     m_Curve:
@@ -47,12 +47,21 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 15
       value: 300
-      inSlope: 0
-      outSlope: 0
+      inSlope: 15.313135
+      outSlope: 15.313135
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.08379288
+    - serializedVersion: 3
+      time: 60
+      value: 700
+      inSlope: 3.3426487
+      outSlope: 3.3426487
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.1138588
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -80,17 +89,35 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 20
       value: 2.5
-      inSlope: -0.34870285
-      outSlope: -0.34870285
+      inSlope: -0.265766
+      outSlope: 0.0011982395
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.06973791
+      outWeight: 0.104680255
+    - serializedVersion: 3
+      time: 40
+      value: 2
+      inSlope: -0.071803264
+      outSlope: -0.071803264
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.120977305
+      inWeight: 0.108630754
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 50
+      value: 0.5
+      inSlope: Infinity
+      outSlope: Infinity
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  pointsFromRolling: 200
-  pointsFromPerfectHomingAttack: 25
+  pointsFromRolling: 40
+  pointsFromPerfectHomingAttack: 30
   _Levels:
   - level: 1
     requiredPoints: 800

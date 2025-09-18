@@ -16,6 +16,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	[SerializeField, ColourIfNull(0.8f,0,0,1)] VisualEffect _SpeedLinesCharacter;
 
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] VisualEffect _ActionChainEffect;
+	[SerializeField] Color[] _ActionChainColours = new Color[1];
 
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem SpinDashEnergy;
 	[SerializeField, ColourIfNull(0.8f, 0, 0, 1)] ParticleSystem RailsSparksLeft;
@@ -53,6 +54,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	//Trackers
 	private bool _canShowLesserTrails = true;
 	private bool _canShowDefaultTrail = true;
+	private bool _canHandleLines = true;
 
 	private void Start () {
 		SpinDashEnergy.Stop();
@@ -68,15 +70,30 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		_ActionChainEffect.Stop();
 		_PointsGain.Stop();
 		_Quickstep.Stop();
+
+		S_Manager_LevelProgress.OnStageClear += EventStageClear;
+	}
+
+	private void OnDestroy () {
+		S_Manager_LevelProgress.OnStageClear -= EventStageClear;
 	}
 
 	void Update () {
 
 		HandleMouths();
 
+		if (!_canHandleLines) { return; }
 		HandleSpeedLinesOnCharacter();
 		HandleSpeedLinesOnScreen();
-		HandleTrailsOnCharacter();
+		HandleTrailsOnCharacter(_PlayerVel._speedMagnitude);
+	}
+
+	public void EventStageClear ( object sender, EventArgs e ) {
+		_canHandleLines = false;
+
+		HandleSpeedLinesOnCharacter(0);
+		HandleSpeedLinesOnScreen(0);
+		HandleTrailsOnCharacter(0);
 	}
 
 	//VFX
@@ -84,22 +101,24 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	//Private
 
-	private void HandleSpeedLinesOnCharacter () {
+	private void HandleSpeedLinesOnCharacter (float currentSpeed = -1) {
+
+		currentSpeed = currentSpeed == -1 ? _PlayerVel._currentRunningSpeed : currentSpeed;
 
 		CheckIntensity(_SpeedLinesWind, _speedLinesThreshold.x);
 		CheckIntensity(_SpeedLinesCharacter, _speedLinesThreshold.y);
 		return;
 
 		void CheckIntensity (VisualEffect lines, float threshold) {
-			if (_PlayerVel._currentRunningSpeed > threshold)
+			if (currentSpeed > threshold)
 			{
 				lines.Play();
 
-				float intensity = _PlayerVel._currentRunningSpeed / _PlayerMovement._currentMaxSpeed;
+				float intensity = currentSpeed / _PlayerMovement._currentMaxSpeed;
 				lines.SetFloat("Intensity", intensity);
-				lines.SetFloat("Player Speed", _PlayerVel._currentRunningSpeed);
+				lines.SetFloat("Player Speed", currentSpeed);
 			}
-			else if (_PlayerVel._currentRunningSpeed < threshold - 2)
+			else if (currentSpeed < threshold - 2)
 			{
 				lines.Stop();
 			}
@@ -108,10 +127,13 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	}
 
 	//Controls and activates the anime style speedlines on the screen edges based on speed.
-	private void HandleSpeedLinesOnScreen () {
-		if (_PlayerVel._currentRunningSpeed > 50)
+	private void HandleSpeedLinesOnScreen (float currentSpeed = -1) {
+
+		currentSpeed = currentSpeed == -1 ? _PlayerVel._currentRunningSpeed : currentSpeed;
+
+		if (currentSpeed > 50)
 		{
-			float intensity = Mathf.Min(_PlayerVel._currentRunningSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
+			float intensity = Mathf.Min(currentSpeed / _PlayerPhys._PlayerMovement._currentMaxSpeed , 1.1f);
 			intensity = Mathf.Max(Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)) - intensity, intensity - Mathf.Abs(intensity - Mathf.Lerp(intensity, 1.1f, 0.5f)));
 			_SpeedLinesScreen.SetFloat("Intensity", intensity);
 		}
@@ -121,7 +143,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		}
 	}
 
-	private void HandleTrailsOnCharacter () {
+	private void HandleTrailsOnCharacter (float speed) {
 
 		DefaultTrail();
 		LesserTrails();
@@ -130,7 +152,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		void DefaultTrail () {
 			if (_canShowDefaultTrail)
 			{
-				if (_PlayerVel._horizontalSpeedMagnitude > 60)
+				if (speed > 60)
 				{
 					_DefaultSpeedTrail.emitting = true;
 					return;
@@ -141,7 +163,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 		void LesserTrails () {
 			if (!_canShowLesserTrails) { return; }
-			EnableLesserTrails(_PlayerVel._speedMagnitudeSquared > 40 * 40 && _PlayerVel._currentRunningSpeed > 10, false);
+			EnableLesserTrails(speed > 40 * 40 && _PlayerVel._currentRunningSpeed > 10, false);
 		}
 	}
 
@@ -228,7 +250,13 @@ public class S_Control_EffectsPlayer : S_Player_Base
 
 	//Trigger
 
-	public void ActionChainAdd () {
+	public void ActionChainAdd (int score) {
+		if (score <= 0) return;
+		score = Mathf.Min(score, _ActionChainColours.Length);
+		score -= 1;
+
+		_ActionChainEffect.SetVector4("Colour", _ActionChainColours[score]);	
+
 		_ActionChainEffect.Stop();
 		_ActionChainEffect.Play();
 	}

@@ -3,6 +3,7 @@ using System;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.InputSystem;
+using UnityEditor;
 
 public class S_Manager_LevelProgress : S_Player_Base
 {
@@ -17,6 +18,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 	public static event EventHandler OnReset;
 	public static event EventHandler OnDeath;
+	public static event EventHandler OnStageClear;
 
 	private S_Control_EffectsPlayer _Effects;
 	private S_Handler_HealthAndHurt _HealthAndHurt;
@@ -24,8 +26,6 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 	[Header("On Level End")]
 	public SceneField               _StageCompleteScene;
-
-	private Collider              _GoalRingObject;
 	#endregion
 
 	// Trackers
@@ -96,7 +96,6 @@ public class S_Manager_LevelProgress : S_Player_Base
 				if (Col.TryGetComponent(out S_Data_GoalRing GoalRingData))
 				{
 					GoalRingData.OnGet(transform);
-					_GoalRingObject = Col;
 
 					StartCoroutine(TransitionToStageComplete(GoalRingData));
 				}
@@ -127,6 +126,9 @@ public class S_Manager_LevelProgress : S_Player_Base
 
 		StartCoroutine(S_S_Objects.LerpAudioSourceVolume(_CoreValues._Music, 2, 0));
 
+		if (OnStageClear != null)
+			OnStageClear.Invoke(this, EventArgs.Empty);
+
 		float timeCount = 0;
 		while (timeCount <= totalTime && totalTime > 0)
 		{
@@ -142,12 +144,16 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_Tools.GetComponent<PlayerInput>().SwitchCurrentActionMap("Stage Complete");
 
 		//Activates the stage complete screen.
-		_CoreUIElements._Root.SetActive(false);
-		_MainSkin.gameObject.SetActive(false);
-		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
-		_PlayerPhys._arePhysicsEnabled = false;
-
 		GoalRingData.OnStageEnd(_Score);
+
+		//Effects on character
+		_CoreUIElements._HudRoot.SetActive(false);
+		_MainSkin.gameObject.SetActive(false);
+		_Actions._isPaused = true;
+
+		_PlayerPhys._arePhysicsEnabled = false;
+		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
+		_PlayerVel.SetTotalVelocity(); //Because fixedupdates will be called less, and physics are disabled
 	}
 
 	#endregion
@@ -162,13 +168,21 @@ public class S_Manager_LevelProgress : S_Player_Base
 	public void CallRespawnEvents () {
 		if (OnReset != null)
 		{
+			//Debug.Log(OnReset.GetInvocationList().Length);
+
+			//	foreach (var d in OnReset.GetInvocationList())
+			//	{
+			//		UnityEngine.Object target = d.Target as UnityEngine.Object;
+			//		Debug.Log($"Listener: {d.Method.Name} on {target}");
+			//	}
+
 			OnReset.Invoke(this, EventArgs.Empty);
 		}
-		if (OnDeath != null)
-		{
-			OnDeath.Invoke(this, EventArgs.Empty);
-		}
+	}
 
+	public void CallDeathEvents () {
+		if (OnDeath != null)
+			OnDeath.Invoke(this, EventArgs.Empty);
 	}
 
 	//Called after enough time has passed after death, right before removing the fade to black. This will reposition the player, but trackers (like physic checkers) are reset in the Handler_HealthAndHurt script.
@@ -188,6 +202,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_HealthAndHurt.SetShield(false);
 
 		//Transform
+		_PlayerPhys.SetPlayerPosition(new Vector3 (9999,9999,9999)); //Ensures player exits all triggers its currently in, then reenters.
 		_PlayerPhys.SetPlayerPosition(_respawnPosition);
 		_PlayerPhys.SetPlayerRotation(Quaternion.identity.normalized, true);
 		_MainSkin.forward = _respawnForwards;
@@ -198,6 +213,11 @@ public class S_Manager_LevelProgress : S_Player_Base
 		//Camera
 		_CamHandler._HedgeCam._lookTimer = 0;
 		_CamHandler._HedgeCam.SetBehind(0); //Sets camera back to behind player.
+
+		//Ensure no fallback is active
+		StartCoroutine(_CamHandler._HedgeCam.ApplyCameraFallBack(Vector2.zero, 0, 0, 0, 0, "Death"));
+		_Tools.MainCamera.transform.position = _CamHandler._HedgeCam.transform.position;
+		_Tools.MainCamera.transform.rotation = _CamHandler._HedgeCam.transform.rotation;
 	}
 
 	public void TriggerAnimatorOnRespawn () {
@@ -221,8 +241,7 @@ public class S_Manager_LevelProgress : S_Player_Base
 		_RespawnLaunch = launchData;
 		_respawnTransform = transform;
 
-		StartCoroutine
-			(Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, Vector3.zero, transform, Objects.transform, launchData));
+		Objects.LaunchInDirection(launchData._directionToUse_, launchData._force_, transform, Objects.transform, launchData);
 
 	}
 
