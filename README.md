@@ -15,5 +15,6 @@ For info on the code, please read the code style guide.
 Almost all scripts should contain tooltips to explain how they work, and the showroom gives tip on the player controller.
 
 License:
-It's all fair game, do what you want with it, but know you cannot do anything with this for monetary gain without removing any and all Sonic assets from the project. None of us own the IP. 
-Also, do please credit me and the following if you create any projects with it. SuperSonic68. NotSoGreedy, LakeFeperd. While the Flipper Framework is my own work, it is built on the prior Unity engines of these taleneted developers.
+It's all fair game, do what you want with it, but know you cannot do anything with this for monetary gain without removing any and all Sonic assets from the project. None of us own the IP.
+Please go through the Unity package manager and credits in the packages folder to find the Unity packages used here. They may have specific licenses.
+Also, do please credit me when you use this as a base.
