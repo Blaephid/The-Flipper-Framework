@@ -287,7 +287,7 @@ public class S_ActionChain : S_Player_Base
 		yield break;
 
 		void PerfectLanding () {
-	
+			Debug.Log("Perfect Landing");
 			AddToChain("Perfect Landing", 2, 1,"", 15, true);
 		}
 

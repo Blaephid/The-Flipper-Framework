@@ -906,7 +906,7 @@ public class S_PlayerPhysics : S_Player_Base
 	}
 
 	//Since there's such a difference between being grounded and not, this is called whenever the value is changed to affect any other relevant variables at the same time.
-	public void SetIsGrounded ( bool value, float timer = 0, bool canAddToAction = true ) {
+	public void SetIsGrounded ( bool value, float timer = 0, bool canAddToActionChain = true ) {
 		if (_isGrounded != value)
 		{
 			_isGrounded = value;
@@ -934,7 +934,7 @@ public class S_PlayerPhysics : S_Player_Base
 
 				if (_Actions) _Events._OnGrounded.Invoke(); // Any methods attatched to the Unity event in editor will be called. These should all be called "EventOnGrounded".
 
-				if (canAddToAction)
+				if (canAddToActionChain)
 					StartCoroutine(_ActionChain.CheckLandingQuality(_groundNormal));
 			}
 
