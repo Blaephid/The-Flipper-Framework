@@ -101,7 +101,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 			CheckCanceling();
 			HandleInputs();
 
-			if(_counter > 0.5f && !_hasAddedToChain) { _hasAddedToChain = true; _ActionChain.AddToChain("Wall Run", 1, 1); }
+			if(_counter > 0.4f && !_hasAddedToChain) { _hasAddedToChain = true; _ActionChain.AddToChain("Wall Run", 1, 2); }
 		}
 		else
 		{
@@ -155,8 +155,8 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		_originalVelocity = _PlayerVel._totalVelocity;
 		_PlayerVel.SetBothVelocities(Vector3.zero, Vector2.one);
 
-		_PlayerPhys.SetIsGrounded(true); //This is to reset actions like JumpDash and Homing as if grounded
-		_PlayerPhys.SetIsGrounded(false); //Will now be treated as not grounded until the action is over.
+		_PlayerPhys.SetIsGrounded(true, 0, false); //This is to reset actions like JumpDash and Homing as if grounded
+		_PlayerPhys.SetIsGrounded(false, 0, false); //Will now be treated as not grounded until the action is over.
 		_PlayerPhys._canChangeGrounded = false;
 
 		//Control
@@ -172,7 +172,7 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		if (isFirstTime) { SetUpAction(); return; }
 
 		//Wall fields
-		//_WallHandler._BannedWall = _CurrentWall;
+		_WallHandler._BannedWall = _CurrentWall;
 		_isWall = false;
 
 		//Universal
@@ -210,7 +210,6 @@ public class S_Action12_WallRunning : S_Action_Base, IMainAction
 		int wallDirection = _isWallOnRight ? 1: -1;
 		Vector3 raycastOrigin = _PlayerPhys._CharacterCenterPosition + _MainSkin.forward * 0.3f;
 		_isWall = Physics.Raycast(raycastOrigin, _MainSkin.right * wallDirection, out RaycastHit tempHit, _checkDistance, _wallLayerMask_);
-		
 
 		//Animator
 		_PlayerVel._currentRunningSpeed = _runningSpeed;

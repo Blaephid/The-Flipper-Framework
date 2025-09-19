@@ -21,17 +21,17 @@ MonoBehaviour:
   _Ranks:
     Time_XRank: {x: 2, y: 20, z: 0}
     TimeTotal_XRank: 140
-    Time_SRank: {x: 3, y: 0, z: 0}
-    TimeTotal_SRank: 180
-    Time_ARank: {x: 3, y: 30, z: 0}
-    TimeTotal_ARank: 210
-    Time_BRank: {x: 4, y: 0, z: 0}
-    TimeTotal_BRank: 240
+    Time_SRank: {x: 3, y: 15, z: 0}
+    TimeTotal_SRank: 195
+    Time_ARank: {x: 3, y: 40, z: 0}
+    TimeTotal_ARank: 220
+    Time_BRank: {x: 4, y: 10, z: 0}
+    TimeTotal_BRank: 250
     Time_CRank: {x: 4, y: 30, z: 0}
     TimeTotal_CRank: 270
     Time_DRank: {x: 99, y: 59, z: 0}
     TimeTotal_DRank: 5999
-    Rings_SRank: 240
+    Rings_SRank: 250
     Rings_ARank: 180
     Rings_BRank: 130
     Rings_CRank: 100

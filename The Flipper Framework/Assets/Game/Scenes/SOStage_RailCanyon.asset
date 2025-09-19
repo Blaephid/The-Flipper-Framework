@@ -27,19 +27,19 @@ MonoBehaviour:
   - m_SceneAsset: {fileID: 102900000, guid: eab1bdef08d432649a90cc7d6731eed8, type: 3}
     m_SceneName: Sc_Rail Canyon PART 3
   _Ranks:
-    Time_XRank: {x: 1, y: 15, z: 0}
-    TimeTotal_XRank: 75
-    Time_SRank: {x: 1, y: 55, z: 0}
-    TimeTotal_SRank: 115
-    Time_ARank: {x: 2, y: 25, z: 0}
-    TimeTotal_ARank: 145
-    Time_BRank: {x: 3, y: 0, z: 0}
-    TimeTotal_BRank: 180
-    Time_CRank: {x: 3, y: 40, z: 0}
-    TimeTotal_CRank: 220
+    Time_XRank: {x: 1, y: 20, z: 0}
+    TimeTotal_XRank: 80
+    Time_SRank: {x: 1, y: 45, z: 0}
+    TimeTotal_SRank: 105
+    Time_ARank: {x: 2, y: 20, z: 0}
+    TimeTotal_ARank: 140
+    Time_BRank: {x: 2, y: 5, z: 0}
+    TimeTotal_BRank: 125
+    Time_CRank: {x: 3, y: 30, z: 0}
+    TimeTotal_CRank: 210
     Time_DRank: {x: 99, y: 59, z: 0}
     TimeTotal_DRank: 5999
-    Rings_SRank: 199
+    Rings_SRank: 200
     Rings_ARank: 150
     Rings_BRank: 100
     Rings_CRank: 50

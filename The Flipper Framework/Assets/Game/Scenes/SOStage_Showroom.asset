@@ -19,16 +19,16 @@ MonoBehaviour:
     m_SceneName: Sc_Showroom
   _AdditionalScenes: []
   _Ranks:
-    Time_XRank: {x: 0, y: 30, z: 0}
-    TimeTotal_XRank: 30
-    Time_SRank: {x: 1, y: 0, z: 0}
-    TimeTotal_SRank: 60
-    Time_ARank: {x: 2, y: 0, z: 0}
-    TimeTotal_ARank: 120
-    Time_BRank: {x: 3, y: 0, z: 0}
-    TimeTotal_BRank: 180
-    Time_CRank: {x: 4, y: 0, z: 0}
-    TimeTotal_CRank: 240
+    Time_XRank: {x: 0, y: 13, z: 0}
+    TimeTotal_XRank: 13
+    Time_SRank: {x: 2, y: 0, z: 0}
+    TimeTotal_SRank: 120
+    Time_ARank: {x: 3, y: 30, z: 0}
+    TimeTotal_ARank: 210
+    Time_BRank: {x: 5, y: 0, z: 0}
+    TimeTotal_BRank: 300
+    Time_CRank: {x: 6, y: 0, z: 0}
+    TimeTotal_CRank: 360
     Time_DRank: {x: 99, y: 59, z: 0}
     TimeTotal_DRank: 5999
     Rings_SRank: 300

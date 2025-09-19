@@ -127,7 +127,7 @@ public class S_Action07_RingRoad : S_Action_Base, IMainAction
 
 		_directionToGo = _PlayerVel._worldVelocity.normalized; //This will be changed to reflect the spline later, but this allows checking and movement before that.
 
-		_ActionChain.AddToChain("Light Speed Dash", 2, 1);
+		_ActionChain.AddToChain("Light Speed Dash", 1, 5);
 
 		_Actions.ChangeAction(S_S_ActionHandling.PrimaryPlayerStates.RingRoad);
 		this.enabled = true;

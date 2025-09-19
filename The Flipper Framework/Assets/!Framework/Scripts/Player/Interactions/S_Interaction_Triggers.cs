@@ -110,8 +110,8 @@ public class S_Interaction_Triggers : S_Player_Base
 				_PlayerPhys.SetIsGrounded(true); break;
 			case S_GeneralEnums.ChangeGroundedState.SetToOppositeThenBack:
 				bool current = _PlayerPhys._isGrounded;
-				_PlayerPhys.SetIsGrounded(!current);
-				_PlayerPhys.SetIsGrounded(current);
+				_PlayerPhys.SetIsGrounded(!current,0, false);
+				_PlayerPhys.SetIsGrounded(current, 0, false);
 				break;
 		}
 
