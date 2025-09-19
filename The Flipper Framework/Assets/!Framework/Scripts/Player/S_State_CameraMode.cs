@@ -22,6 +22,9 @@ public class S_State_CameraMode : MonoBehaviour
 
 	public CinemachineCamera	_VirtualCamera;
 	private Transform                       _CamTransform;
+
+	List<Canvas>                    _ListOfCanvasesToReenable = new List<Canvas>();
+	public GameObject[]             _ObjectsToDisableOnCameraMode;
 	#endregion
 
 	// Trackers
@@ -94,6 +97,9 @@ public class S_State_CameraMode : MonoBehaviour
 			_saveInput = new Vector2(_InputScript.moveX, _InputScript.moveY); //Saves input so they can be set again as input are called as negative when switching action maps.
 
 			_PlayerInput.SwitchCurrentActionMap("Camera Mode"); //Changes inputs to ones relevant to controlling the camera
+
+			HandleObjects(false);
+			HideUI();
 		}
 		//If exiting mode
 		else
@@ -103,6 +109,9 @@ public class S_State_CameraMode : MonoBehaviour
 			_InputScript.moveY = _saveInput.y;
 
 			_PlayerInput.SwitchCurrentActionMap("Character Controls"); //Changes Inputs to ones relevant to controlling the character
+
+			HandleObjects(true);
+			ReturnUI();
 		}
 
 		enabled = newState; //Allows script to call Update function.
@@ -110,6 +119,35 @@ public class S_State_CameraMode : MonoBehaviour
 		_VirtualCamera.gameObject.SetActive(newState);
 
 		Time.timeScale = newState ? _timeScaleWhenActive : 1; //Either set time scale to normal, or to a very low value. This will either make things move normally, or barely move at all/
+	}
+
+	private void HideUI () {
+		_ListOfCanvasesToReenable.Clear();
+		Canvas[] CanvasesInUse = GameObject.FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+
+		foreach (Canvas canvas in CanvasesInUse)
+		{
+			if (canvas.enabled)
+			{
+				canvas.enabled = false;
+				_ListOfCanvasesToReenable.Add(canvas);
+			}
+		}
+	}
+
+	private void ReturnUI () {
+		foreach (Canvas canvas in _ListOfCanvasesToReenable)
+		{
+			canvas.enabled = true;
+		}
+		_ListOfCanvasesToReenable.Clear();
+	}
+
+	private void HandleObjects(bool set ) {
+		foreach (GameObject GO in _ObjectsToDisableOnCameraMode)
+		{
+			GO.SetActive(set);
+		}
 	}
 
 	//Check the 3 directions the camera can move in, one by one. Applying inputs.
@@ -125,7 +163,7 @@ public class S_State_CameraMode : MonoBehaviour
 	//Rather than using physics, check the movement direction for a blockage, and move in that direction if there isn't one.
 	private void TryMove (Vector3 direction) {
 		Vector3 previousPosition = _CamTransform.position;
-		if (!Physics.Raycast(_CamTransform.position, direction, 2, _Tools.CameraStats.DistanceStats.CollidableLayers))
+		if (!Physics.Raycast(_CamTransform.position, direction, 1, _Tools.CameraStats.DistanceStats.CollidableLayers))
 		{
 			_CamTransform.Translate(direction * _moveSpeed * _timeValuePerFrame, Space.World);
 

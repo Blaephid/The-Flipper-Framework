@@ -165,6 +165,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f5ef85eb390c04bb495406b01b98b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &483212520965020897 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5497508209986241130, guid: 71fa442458744984f909f71d50a2c086,
+    type: 3}
+  m_PrefabInstance: {fileID: 5404220241408564875}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1480864705968184944 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6805699039582454011, guid: 71fa442458744984f909f71d50a2c086,
@@ -177,6 +183,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
+--- !u!1 &3563017236915465696 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8902988512783151979, guid: 71fa442458744984f909f71d50a2c086,
+    type: 3}
+  m_PrefabInstance: {fileID: 5404220241408564875}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3754819910592959668 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9143549132673583679, guid: 71fa442458744984f909f71d50a2c086,
+    type: 3}
+  m_PrefabInstance: {fileID: 5404220241408564875}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4752012363757727717 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 796345193869160814, guid: 71fa442458744984f909f71d50a2c086,
+    type: 3}
+  m_PrefabInstance: {fileID: 5404220241408564875}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5400017215913025193 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4242608932995106, guid: 71fa442458744984f909f71d50a2c086,
@@ -195,6 +219,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514900622d8654843bb4ebdbc2468f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &5985705090920713495 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1868671397663970204, guid: 71fa442458744984f909f71d50a2c086,
+    type: 3}
+  m_PrefabInstance: {fileID: 5404220241408564875}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6225059401288121592 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2061662532465713779, guid: 71fa442458744984f909f71d50a2c086,
@@ -207,6 +237,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4118abbbd81f40f4a9a770c7cb7576c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &7214215780720283163 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3378173244698497168, guid: 71fa442458744984f909f71d50a2c086,
+    type: 3}
+  m_PrefabInstance: {fileID: 5404220241408564875}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7476512044897495804 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3260128645584876663, guid: 71fa442458744984f909f71d50a2c086,
@@ -541,9 +577,69 @@ PrefabInstance:
       objectReference: {fileID: 6225059401288121592}
     - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
         type: 3}
+      propertyPath: _moveSpeed
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _ascendSpeed
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
       propertyPath: _VirtualCamera
       value: 
       objectReference: {fileID: 1480864705968184944}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _rotateSpeed.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _rotateSpeed.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _maxDistanceFromPlayer
+      value: 800
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: _ObjectsToDisableOnCameraMode.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[0]'
+      value: 
+      objectReference: {fileID: 3563017236915465696}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[1]'
+      value: 
+      objectReference: {fileID: 4752012363757727717}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[2]'
+      value: 
+      objectReference: {fileID: 5985705090920713495}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[3]'
+      value: 
+      objectReference: {fileID: 7214215780720283163}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[4]'
+      value: 
+      objectReference: {fileID: 483212520965020897}
+    - target: {fileID: 8680034794976259033, guid: 749dc6a02381bea4d992b33d7c015589,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[5]'
+      value: 
+      objectReference: {fileID: 3754819910592959668}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

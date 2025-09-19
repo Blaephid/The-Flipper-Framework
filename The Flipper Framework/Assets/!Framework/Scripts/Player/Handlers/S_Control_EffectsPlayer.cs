@@ -64,7 +64,7 @@ public class S_Control_EffectsPlayer : S_Player_Base
 		if (RailsSparksRight)
 			RailsSparksRight.Stop();
 
-		_BlurBurst.gameObject.SetActive(false);
+		_BlurBurst.Stop();
 		_SpeedLinesWind.Stop();
 		_SpeedLinesCharacter.Stop();
 		_ActionChainEffect.Stop();
@@ -300,8 +300,8 @@ public class S_Control_EffectsPlayer : S_Player_Base
 	public void TriggerBlurBurstScreen () {
 		Vector2 screenPosition = MainCamera.WorldToViewportPoint(_PlayerPhys._CharacterCenterPosition);
 
-		_BlurBurst.gameObject.SetActive(false);
-		_BlurBurst.gameObject.SetActive(true);
+		_BlurBurst.Stop();
+		_BlurBurst.Play();
 		_BlurBurst.SetVector3("Screen Position", screenPosition);
 	}
 
