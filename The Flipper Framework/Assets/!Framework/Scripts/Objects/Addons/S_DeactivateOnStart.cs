@@ -19,7 +19,8 @@ public class S_DeactivateOnStart : MonoBehaviour
 	void Start () {
 		StartCoroutine(Delay());
 
-		if(_applyOnRespawn) { S_Manager_LevelProgress.OnReset += EventDeactivateOnReset; }
+		if(_applyOnRespawn) 
+		{ S_Manager_LevelProgress.OnReset += EventDeactivateOnReset; }
 	}
 
 	IEnumerator Delay() {
@@ -28,6 +29,7 @@ public class S_DeactivateOnStart : MonoBehaviour
 	}
 
 	void Deactivate () {
+		if(this == null || this != enabled) { return; }
 
 		switch (_whatAction)
 		{
@@ -49,6 +51,10 @@ public class S_DeactivateOnStart : MonoBehaviour
 		S_Manager_LevelProgress.OnReset -= EventDeactivateOnReset;
 
 		Deactivate();
+	}
+
+	private void OnDestroy () {
+		S_Manager_LevelProgress.OnReset -= EventDeactivateOnReset;
 	}
 
 }

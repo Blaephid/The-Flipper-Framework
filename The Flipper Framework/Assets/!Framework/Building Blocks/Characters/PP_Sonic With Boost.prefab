@@ -6493,7 +6493,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
   Priority:
     Enabled: 1
-    m_Value: 100
+    m_Value: 1000
   OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20241001
@@ -7151,8 +7151,8 @@ VisualEffect:
   m_GameObject: {fileID: 796345193869160814}
   m_Enabled: 1
   m_Asset: {fileID: 8926484042661614526, guid: b838594a2f83e4642900037760f87363, type: 3}
-  m_InitialEventName: OnPlay
-  m_InitialEventNameOverriden: 0
+  m_InitialEventName: 
+  m_InitialEventNameOverriden: 1
   m_StartSeed: 0
   m_ResetSeedOnPlay: 1
   m_AllowInstancing: 1
@@ -8000,8 +8000,8 @@ VisualEffect:
   m_GameObject: {fileID: 1868671397663970204}
   m_Enabled: 1
   m_Asset: {fileID: 8926484042661614526, guid: 463df51f326853f4a9c633b6fb787bb0, type: 3}
-  m_InitialEventName: OnPlay
-  m_InitialEventNameOverriden: 0
+  m_InitialEventName: 
+  m_InitialEventNameOverriden: 1
   m_StartSeed: 0
   m_ResetSeedOnPlay: 1
   m_AllowInstancing: 1
@@ -11261,8 +11261,8 @@ VisualEffect:
   m_GameObject: {fileID: 5497508209986241130}
   m_Enabled: 1
   m_Asset: {fileID: 8926484042661614526, guid: e4885401644c2034e86b15267347ba6c, type: 3}
-  m_InitialEventName: OnPlay
-  m_InitialEventNameOverriden: 0
+  m_InitialEventName: 
+  m_InitialEventNameOverriden: 1
   m_StartSeed: 0
   m_ResetSeedOnPlay: 1
   m_AllowInstancing: 1
@@ -27174,8 +27174,8 @@ VisualEffect:
   m_GameObject: {fileID: 8902988512783151979}
   m_Enabled: 1
   m_Asset: {fileID: 8926484042661614526, guid: 2533f66da96aa974fb320e6f3779cd04, type: 3}
-  m_InitialEventName: OnPlay
-  m_InitialEventNameOverriden: 0
+  m_InitialEventName: 
+  m_InitialEventNameOverriden: 1
   m_StartSeed: 0
   m_ResetSeedOnPlay: 1
   m_AllowInstancing: 1
@@ -28493,9 +28493,69 @@ PrefabInstance:
       objectReference: {fileID: 2061662532465713779}
     - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
+      propertyPath: _moveSpeed
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _ascendSpeed
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
       propertyPath: _VirtualCamera
       value: 
       objectReference: {fileID: 6805699039582454011}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _rotateSpeed.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _rotateSpeed.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _maxDistanceFromPlayer
+      value: 800
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _ObjectsToDisableOnCameraMode.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8902988512783151979}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[1]'
+      value: 
+      objectReference: {fileID: 796345193869160814}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1868671397663970204}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[3]'
+      value: 
+      objectReference: {fileID: 5497508209986241130}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[4]'
+      value: 
+      objectReference: {fileID: 9143549132673583679}
+    - target: {fileID: 8680034794976259033, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: '_ObjectsToDisableOnCameraMode.Array.data[5]'
+      value: 
+      objectReference: {fileID: 3378173244698497168}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
