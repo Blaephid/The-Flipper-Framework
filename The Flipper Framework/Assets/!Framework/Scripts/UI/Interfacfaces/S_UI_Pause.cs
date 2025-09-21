@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class S_UI_Pause : MonoBehaviour
 {
+	public S_UI_Options _Options;
 	public GameObject _Pause;
 	public Animator   _PauseAnimator;
 
@@ -28,33 +29,43 @@ public class S_UI_Pause : MonoBehaviour
 
 	public void PauseToggle () {
 
+		//ENTER
 		if (_isPausedLocal)
 		{
+
 			_PauseAnimator.SetTrigger("Exit");
-			StartCoroutine(WaitOneFrameBeforeSettingTimeScale(1));
 			Cursor.visible = false;
 			Cursor.lockState = CursorLockMode.Locked;
 
 			GameObject.FindFirstObjectByType<S_ActionManager>()._isPaused = false;
 			_isPausedLocal = false;
+
+			if (!_Options._isOptionsOpen)
+				StartCoroutine(WaitBeforeSettingTimeScale(1, 0.05f));
+			else
+				StartCoroutine(WaitBeforeSettingTimeScale(1, 0.45f));
 		}
+		//EXIT
 		else
 		{
 			SetPanelActive(true);
 			_PauseAnimator.SetTrigger("Enter");
-			StartCoroutine(WaitOneFrameBeforeSettingTimeScale(0));
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
 
 			GameObject.FindFirstObjectByType<S_ActionManager>()._isPaused = true;
 			_isPausedLocal = true;
+
+			_Options.OnPauseOpen();
+
+			StartCoroutine(WaitBeforeSettingTimeScale(0, 0.05f));
 		}
 
 	}
 
 	//Gives one frame for any _isPaused effects to happen.
-	private IEnumerator WaitOneFrameBeforeSettingTimeScale (float set) {
-		yield return new WaitForSecondsRealtime(0.05f);
+	private IEnumerator WaitBeforeSettingTimeScale (float set, float seconds) {
+		yield return new WaitForSecondsRealtime(seconds);
 		Time.timeScale = set;
 	}
 

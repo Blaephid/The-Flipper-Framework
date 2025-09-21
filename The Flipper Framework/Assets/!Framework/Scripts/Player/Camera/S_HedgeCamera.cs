@@ -86,8 +86,8 @@ public class S_HedgeCamera : MonoBehaviour
 	[NonSerialized] public float                 _cameraVerticalRotationSpeed_ = 10;
 	private AnimationCurve        _VerticalFollowSpeedByAngle_;
 
-	[NonSerialized] public float                 _inputXSpeed_ = 1;
-	[NonSerialized] public float                 _inputYSpeed_ = 0.5f;
+	[NonSerialized] public float                 _maxInputXSpeed_ = 1;
+	[NonSerialized] public float                 _maxInputYSpeed_ = 0.5f;
 
 	[NonSerialized] public float                 _afterMoveXDelay_ = 0.3f;
 	[NonSerialized] public float                 _afterMoveYDelay_ = 0.5f;
@@ -214,9 +214,9 @@ public class S_HedgeCamera : MonoBehaviour
 	[HideInInspector]
 	public float                  _invertedY = 1;
 	[HideInInspector]
-	public float                  _sensiX;
+	public float                  _sensiX = 1;
 	[HideInInspector]
-	public float                  _sensiY;
+	public float                  _sensiY = 1;
 
 	private Vector3               _hitNormal;
 
@@ -315,8 +315,8 @@ public class S_HedgeCamera : MonoBehaviour
 
 		float camMoveSpeed = _PlayerVel._speedMagnitudeSquared > 100 ?     Time.deltaTime :    Time.deltaTime * _stationaryCamIncrease_;
 		camMoveSpeed *= _moveModifier;
-		float movementX = _Input.moveCamX * _inputXSpeed_ * _invertedX;
-		float movementY = _Input.moveCamY * _inputYSpeed_ * _invertedY;
+		float movementX = _Input.moveCamX * _maxInputXSpeed_ * _invertedX *_sensiX;
+		float movementY = _Input.moveCamY * _maxInputYSpeed_ * _invertedY *_sensiY;
 		_moveModifier = Mathf.MoveTowards(_moveModifier, 1, Time.deltaTime);
 
 		if (!_isXLocked)
@@ -1150,8 +1150,8 @@ public class S_HedgeCamera : MonoBehaviour
 		_cameraVerticalRotationSpeed_ = _Tools.CameraStats.AligningStats.CameraVerticalRotationSpeed;
 		_VerticalFollowSpeedByAngle_ = _Tools.CameraStats.AligningStats.vertFollowSpeedByAngle;
 
-		_inputXSpeed_ = _Tools.CameraStats.InputStats.InputXSpeed;
-		_inputYSpeed_ = _Tools.CameraStats.InputStats.InputYSpeed;
+		_maxInputXSpeed_ = _Tools.CameraStats.InputStats.InputXSpeed;
+		_maxInputYSpeed_ = _Tools.CameraStats.InputStats.InputYSpeed;
 		_stationaryCamIncrease_ = _Tools.CameraStats.InputStats.stationaryCamIncrease;
 
 		_afterMoveXDelay_ = _Tools.CameraStats.RotateBehindStats.afterMoveXDelay;

@@ -58,9 +58,9 @@ public class S_PlayerInput : S_Player_Base
 	Vector2 CurrentCamMovement;
 	[HideInInspector] public float  moveCamX;
 	[HideInInspector] public float  moveCamY;
-	private float                   camSensi;
+	private float                   controllerCamSensi;
 	[HideInInspector]
-	public float                    mouseSensi;
+	public float                    mouseCamSensi;
 
 	[HideInInspector] public bool           _JumpPressed;
 	[HideInInspector] public bool           _RollPressed;
@@ -98,8 +98,8 @@ public class S_PlayerInput : S_Player_Base
 		}
 
 		//Managing Inputs
-		mouseSensi = _Tools.CameraStats.InputStats.InputMouseSensi;
-		camSensi = _Tools.CameraStats.InputStats.InputSensi;
+		mouseCamSensi = _Tools.CameraStats.InputStats.InputMouseSensi;
+		controllerCamSensi = _Tools.CameraStats.InputStats.InputSensi;
 
 		_PlayerInputComponent = GetComponent<PlayerInput>();
 		_PlayerInputComponent.SwitchCurrentActionMap("Character Controls"); //Changes inputs to ones relevant to controlling the camera
@@ -307,8 +307,8 @@ public class S_PlayerInput : S_Player_Base
 
 		_isUsingMouse = false;
 		CurrentCamMovement = ctx.ReadValue<Vector2>();
-		moveCamX = CurrentCamMovement.x * camSensi;
-		moveCamY = CurrentCamMovement.y * camSensi;
+		moveCamX = CurrentCamMovement.x * controllerCamSensi;
+		moveCamY = CurrentCamMovement.y * controllerCamSensi;
 	}
 
 	public void CamMouseInput ( InputAction.CallbackContext ctx ) {
@@ -316,8 +316,8 @@ public class S_PlayerInput : S_Player_Base
 
 		_isUsingMouse = true;
 		CurrentCamMovement = ctx.ReadValue<Vector2>();
-		moveCamX = CurrentCamMovement.x * mouseSensi;
-		moveCamY = CurrentCamMovement.y * mouseSensi;
+		moveCamX = CurrentCamMovement.x * mouseCamSensi;
+		moveCamY = CurrentCamMovement.y * mouseCamSensi;
 	}
 
 	public void Jump ( InputAction.CallbackContext ctx ) {
