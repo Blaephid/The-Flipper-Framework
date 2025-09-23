@@ -24,8 +24,8 @@ public class S_Handler_WallActions : MonoBehaviour
 	private Animator              _CharacterAnimator;
 	private Transform             _MainSkin;
 
-	private S_Action12_WallRunning	_WallRunning;
-	private S_Action15_WallClimbing	_WallClimbing;
+	private S_Action12_WallRunning  _WallRunning;
+	private S_Action15_WallClimbing _WallClimbing;
 
 	[HideInInspector]
 	public GameObject _BannedWall;
@@ -36,6 +36,7 @@ public class S_Handler_WallActions : MonoBehaviour
 
 	//Stats - See Stats scriptable objects for tooltips explaining their purpose.
 	#region Stats
+	private bool _canOnlyEnterFromQuickstep_;
 	private Vector2 _wallCheckDistance_;
 	private LayerMask _WallLayerMask_;
 	#endregion
@@ -153,7 +154,7 @@ public class S_Handler_WallActions : MonoBehaviour
 		}
 
 		//If running AttemptAction is being called.
-		if(_WallRunning && _WallRunning._inAStateConnectedToThis)
+		if (_WallRunning && _WallRunning._inAStateConnectedToThis)
 		{
 			//Offset origin
 			origin -= _MainSkin.forward * 0.2f;
@@ -173,7 +174,7 @@ public class S_Handler_WallActions : MonoBehaviour
 			else if (IsInputtingInCharacterAngle(-_MainSkin.right) && IsRunningFastEnough(50))
 			{
 				origin += _MainSkin.right * 0.4f; //For scanning to the left, but same distance on right.
-				_isWallLeft = Physics.BoxCast(origin, new Vector3 (0.05f, 0.15f, 1f), -_MainSkin.right, out _LeftWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
+				_isWallLeft = Physics.BoxCast(origin, new Vector3(0.05f, 0.15f, 1f), -_MainSkin.right, out _LeftWallHit, _MainSkin.rotation, distance, _WallLayerMask_);
 				_isWallLeft = IsWallNotBanned(_LeftWallHit);
 			}
 		}
@@ -198,7 +199,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	private bool IsInputtingInCharacterAngle ( Vector3 characterAngle ) {
-		
+
 		return Vector3.Angle(_Input._constantInputRelevantToCharacter, characterAngle) < 80;
 	}
 
@@ -211,12 +212,12 @@ public class S_Handler_WallActions : MonoBehaviour
 	}
 
 	private bool IsInputtingTowardsWall ( Vector3 hitPoint, float angleLimit = 20 ) {
-		if(_Input._constantInputRelevantToCharacter.sqrMagnitude < 0.5) { return false; }
+		if (_Input._constantInputRelevantToCharacter.sqrMagnitude < 0.5) { return false; }
 
 		Vector3 directionToWall = hitPoint - _PlayerPhys._CharacterCenterPosition;
 		float angle =Vector3.Angle(directionToWall.normalized, _Input._constantInputRelevantToCharacter);
 
- 		return angle < angleLimit;
+		return angle < angleLimit;
 	}
 
 	private bool IsFacingWallEnough ( Vector3 wallNormal ) {
@@ -253,27 +254,33 @@ public class S_Handler_WallActions : MonoBehaviour
 		//If has detected a wall on one of the sides
 		if (_isWallLeft || _isWallRight)
 		{
+			if (!_Actions._isQuickstepping && _canOnlyEnterFromQuickstep_) { return false; }
+
 			//For less lines, set the hit to be used, prioritising the right side than the left
- 			RaycastHit RelevantHit = _isWallRight ? _RightWallHit : _LeftWallHit;
+			RaycastHit RelevantHit = _isWallRight ? _RightWallHit : _LeftWallHit;
 
 			//Can only wallrun if intentionally inputting to the side on the controller (to prevent accidentally snapping when holding forwards into a wall).
-			if(Mathf.Abs(_Input._inputOnController.x) > 0.2f)
+			if (Mathf.Abs(_Input._inputOnController.x) < 0.2f) 
 			{
-				if (IsWallVerticalEnough(RelevantHit.normal, 0.3f))
+				if (!_Actions._isQuickstepping) return false;
+				else if (Mathf.Abs(_Input._inputOnController.x) < 0.05f) return false; //If quickstepping, can be a bit more lenient
+			}
+
+			if (IsWallVerticalEnough(RelevantHit.normal, 0.3f))
+			{
+				if (IsInputtingTowardsWall(RelevantHit.point, 50))
 				{
-					if (IsInputtingTowardsWall(RelevantHit.point, 50))
-					{
-						_WallRunning.SetupRunning(RelevantHit, _isWallRight);
-						return true;
-					}
+					_WallRunning.SetupRunning(RelevantHit, _isWallRight);
+					return true;
 				}
 			}
+
 		}
 		return false;
 	}
 
 	public bool IsInputtingToWall ( Vector3 directionToWall ) {
-		if(_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.5f)
+		if (_Input._constantInputRelevantToCharacter.sqrMagnitude > 0.5f)
 		{
 			directionToWall.y = 0;
 			directionToWall.Normalize();
@@ -327,6 +334,7 @@ public class S_Handler_WallActions : MonoBehaviour
 	private void AssignStats () {
 		_WallLayerMask_ = _Tools.Stats.WallActionsStats.WallLayerMask;
 		_wallCheckDistance_ = _Tools.Stats.WallActionsStats.wallCheckDistance;
+		_canOnlyEnterFromQuickstep_ = _Tools.Stats.WallActionsStats.canOnlyEnterFromQuickstep;
 	}
 	#endregion
 

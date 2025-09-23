@@ -78,6 +78,8 @@ public class S_ActionManager : MonoBehaviour
 	public float       _speedBeforeAction; //Used by some actions like homing for previous speed to be accessible. Set to 0 on switch.
 	[HideInInspector]
 	public Vector3 _currentTargetPosition; //Used for actions like the Homing Attack that focus in on a specfic point. Can be used to find if an object is currently the target by comparing its own position to this.
+	[HideInInspector]
+	public bool          _isQuickstepping;                   //Used for actions that can only be performed from a quickstep. WallRunning has an option to turn this on
 
 	//Can perform actions
 

@@ -25,7 +25,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 4207
+  controlID: 498
   draggingID: 0
 --- !u!114 &2
 MonoBehaviour:
@@ -195,9 +195,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
+      m_SelectedIDs: 860b0100
       m_LastClickedID: 0
-      m_ExpandedIDs: 9641f7ff9841f7ff1a52f7ff605bf9ff7e5bf9ff50aaf9ff8cbbfafff4cdfbffdcd1fbffe6d1fbff22d2fbff4c1bfcffd6cffcffced0fcff52d1fcfff85cfdffb4caffffc6730200ee77020002780200027a0200fe8502000686020056860200
+      m_ExpandedIDs: e2faffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -265,7 +265,7 @@ MonoBehaviour:
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
     m_Text: Inspector
-    m_Image: {fileID: -440750813802333266, guid: 0000000000000000d000000000000000,
+    m_Image: {fileID: -2667387946076563598, guid: 0000000000000000d000000000000000,
       type: 0}
     m_Tooltip: 
     m_TextWithWhitespace: "Inspector\u200B"
@@ -902,9 +902,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 280.9838, y: 102.826866, z: 151.17311}
+    m_Target: {x: -55.486984, y: -23.815895, z: -670.1715}
     speed: 2
-    m_Value: {x: -0.64706105, y: 1.023549, z: -0.77482706}
+    m_Value: {x: -55.486984, y: -23.815895, z: -670.1715}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -950,13 +950,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.1010152, y: -0.14632219, z: 0.015122125, w: -0.9840561}
+    m_Target: {x: 0.036082886, y: 0.95923615, z: -0.14412424, w: 0.24084929}
     speed: 2
-    m_Value: {x: -0.1720558, y: 0.04606071, z: -0.0080692815, w: -0.9839767}
+    m_Value: {x: 0.035906035, y: 0.95942086, z: -0.14415187, w: 0.23967217}
   m_Size:
-    m_Target: 95.38864
+    m_Target: 149.19449
     speed: 2
-    m_Value: 6.7440095
+    m_Value: 149.19449
   m_Ortho:
     m_Target: 0
     speed: 2

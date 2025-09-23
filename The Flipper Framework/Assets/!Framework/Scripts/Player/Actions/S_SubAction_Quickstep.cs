@@ -21,6 +21,7 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 	private float	_distanceToStep_;
 	private float	_stepDuration_;
 	private Vector2     _quickStepCooldown_;
+	private float    _minimumSpeedForQuickstep_;
 	#endregion
 
 	// Trackers
@@ -60,6 +61,7 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 		}
 		if (_distanceToStep_ == 0) 
 		{
+			_Actions._isQuickstepping = false;
 			_distanceToStep_ = -1;  //To prevent the cooldown being called repeatedly.
 			StartCoroutine(CoolDown());
 		}
@@ -71,7 +73,7 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 		if (!base.AttemptAction()) return false;
 
 		//Enable Quickstep if in a position to do so, otherwise end the function.
-		if (_PlayerVel._horizontalSpeedMagnitude > 10f && !enabled)
+		if (_PlayerVel._horizontalSpeedMagnitude >= _minimumSpeedForQuickstep_ && !enabled)
 		{
 			//Gets an input and makes it relevant to camera, then start the action if it's still there.
 			if (_Input._RightStepPressed)
@@ -116,6 +118,8 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 
 		//Effects
 		_Effects.QuickStepBlur(_isSteppingRight);
+
+		_Actions._isQuickstepping = true;
 	}
 
 	#endregion
@@ -208,6 +212,7 @@ public class S_SubAction_Quickstep : S_Action_Base, ISubAction
 	public override void AssignStats () {
 		base.AssignStats();
 		_quickStepCooldown_ = _Tools.Stats.QuickstepStats.cooldown;
+		_minimumSpeedForQuickstep_ = _Tools.Stats.QuickstepStats.minimumSpeedForQuickstep;
 		enabled = false;
 	}
 }
