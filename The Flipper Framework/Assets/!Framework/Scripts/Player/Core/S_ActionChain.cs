@@ -287,7 +287,6 @@ public class S_ActionChain : S_Player_Base
 		yield break;
 
 		void PerfectLanding () {
-			Debug.Log("Perfect Landing");
 			AddToChain("Perfect Landing", 2, 1,"", 15, true);
 		}
 
@@ -309,6 +308,7 @@ public class S_ActionChain : S_Player_Base
 
 		_PointsGainedByLevel_ = _Tools.LevelUpStats.pointsPerActionChainLevel;
 		_ChainCountdownByLevel_ = _Tools.LevelUpStats.chainCountDownPerLevel;
+		_isActionChainEnabled = _Tools.LevelUpStats._isActionChainEnabled;
 	}
 
 }

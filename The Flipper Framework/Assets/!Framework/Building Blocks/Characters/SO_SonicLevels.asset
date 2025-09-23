@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: SO_SonicLevels
   m_EditorClassIdentifier: 
   Title: Title
+  _canLevelUp: 1
+  _arePointsEnabled: 1
+  _isActionChainEnabled: 1
   pointsFromSpheres: 15
   pointsPerActionChainLevel:
     serializedVersion: 2

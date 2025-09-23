@@ -53,6 +53,9 @@ public class S_PlayerCoreValues : S_Player_Base
 
 
 	//Points
+	private bool _arePointsEnabled = true;
+	private bool _canLevelUp = true;
+
 	private float _currentPointsNeedForNextLevel;
 	public float _pointsCount { get; private set; }
 	public AnimationCurve _barFillByPointsCount;
@@ -224,6 +227,8 @@ public class S_PlayerCoreValues : S_Player_Base
 	}
 
 	public void AdjustPoints ( float change ) {
+		if (!_arePointsEnabled) return;
+
 		_pointsCount += change;
 		_pointsCount = Mathf.Clamp(_pointsCount, 0, _currentPointsNeedForNextLevel + 1);
 
@@ -245,6 +250,8 @@ public class S_PlayerCoreValues : S_Player_Base
 	}
 
 	private void CheckLevelUp () {
+		if(!_canLevelUp) { return; }
+
 		if (_pointsCount < _currentPointsNeedForNextLevel && _currentPointsNeedForNextLevel != 0) { return; }
 		if (_level == _Tools.LevelUpStats._Levels.Count + 1) { return; }
 
@@ -301,6 +308,9 @@ public class S_PlayerCoreValues : S_Player_Base
 
 	public override void AssignStats () {
 		base.AssignStats();
+
+		_arePointsEnabled = _Tools.LevelUpStats._arePointsEnabled;
+		_canLevelUp = _Tools.LevelUpStats._canLevelUp;
 
 		_dieAtRingCount_ = _Tools.Stats.CoreValuesStats.dieAtDamageFromRingCount;
 		_startMaxRings_ = _Tools.Stats.CoreValuesStats.startMaxRingCount;

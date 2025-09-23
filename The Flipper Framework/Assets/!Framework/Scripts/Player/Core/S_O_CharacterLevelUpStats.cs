@@ -10,6 +10,11 @@ public class S_O_CharacterLevelUpStats : ScriptableObject
 {
 	[HideInInspector] public string Title = "Title";
 
+	[Header("Main Control")]
+	public bool _canLevelUp = true;
+	public bool _arePointsEnabled = true;
+	public bool _isActionChainEnabled = true;
+
 	[Header("Gaining Points")]
 	public float pointsFromSpheres = 5;
 	public AnimationCurve pointsPerActionChainLevel = new AnimationCurve(new Keyframe[]

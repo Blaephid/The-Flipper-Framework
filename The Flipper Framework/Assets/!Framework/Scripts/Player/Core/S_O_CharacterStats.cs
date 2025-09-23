@@ -647,6 +647,7 @@ public class S_O_CharacterStats : ScriptableObject
 	static StrucQuickstep SetStrucQuickstep () {
 		return new StrucQuickstep
 		{
+			minimumSpeedForQuickstep = 10f,
 			stepDuration = 55f,
 			stepDistance = 8f,
 			airStepDuration = 48f,
@@ -660,6 +661,8 @@ public class S_O_CharacterStats : ScriptableObject
 	[System.Serializable]
 	public struct StrucQuickstep
 	{
+		[Tooltip("Surface: How fast laterally the player must be moving at least to perform a quickstep.")]
+		public float        minimumSpeedForQuickstep;
 		[Header("Grounded")]
 		[Tooltip("Surface: The speed to move left or right when stepping. This is a force, so the distance traveled will equal this multiplied by time between frames.")]
 		public float        stepDuration;
@@ -1558,6 +1561,7 @@ public class S_O_CharacterStats : ScriptableObject
 			scrapeModifier = 1f,
 			climbModifier = 1f,
 			fallOffAtFallSpeed = 15,
+			canOnlyEnterFromQuickstep = false,
 
 			jumpFromClimbingModifiers = new Vector2(0.8f, 1.3f),
 			jumpFromRunningModifiers = new Vector2(1.4f, 0.8f)
@@ -1568,6 +1572,7 @@ public class S_O_CharacterStats : ScriptableObject
 	public struct StrucWallActions
 	{
 		[Header ("Finding Walls")]
+		public bool             canOnlyEnterFromQuickstep;
 		public Vector2            wallCheckDistance;
 		public float            minHeight;
 		public LayerMask        WallLayerMask;
