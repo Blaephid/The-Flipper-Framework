@@ -1,4 +1,6 @@
 This is a Unity template to help create Sonic the Hedgehog content.
+Please join the Flipper Discord for tutorials, advice, and more.
+https://discord.gg/T5JpZa25C5
 
 It contains
   - A fully functioning player controller, with movement, actions, animations, and effects.
