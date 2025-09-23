@@ -630,7 +630,7 @@ MonoBehaviour:
   moveVec: {x: 0, y: 0}
   moveCamX: 0
   moveCamY: 0
-  mouseSensi: 0
+  mouseCamSensi: 0
   _JumpPressed: 0
   _RollPressed: 0
   _SpecialPressed: 0
@@ -27142,7 +27142,6 @@ GameObject:
   - component: {fileID: 7134222801698499946}
   - component: {fileID: 8504017863207021424}
   - component: {fileID: 5883207787526221164}
-  - component: {fileID: 4393463378906969995}
   m_Layer: 8
   m_Name: Cam Speed Lines
   m_TagString: Untagged
@@ -27174,7 +27173,7 @@ VisualEffect:
   m_GameObject: {fileID: 8902988512783151979}
   m_Enabled: 1
   m_Asset: {fileID: 8926484042661614526, guid: 2533f66da96aa974fb320e6f3779cd04, type: 3}
-  m_InitialEventName: 
+  m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 1
   m_StartSeed: 0
   m_ResetSeedOnPlay: 1
@@ -27308,25 +27307,6 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4393463378906969995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8902988512783151979}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b655def90baa094b8b7d1160a44ef19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CameraToStickTo: {fileID: 7373451749790825816}
-  _useMainCamera: 0
-  _updateInGameTime: 0
-  _affectChildren: 0
-  childrenOffset: {x: 0, y: 0, z: 0}
-  _customZOffset: 0
-  fitbutton: 0
 --- !u!1 &8950381718385962081
 GameObject:
   m_ObjectHideFlags: 0
@@ -28370,6 +28350,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _MainActions.Array.data[1].ConnectedStates.Array.size
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
+        type: 3}
+      propertyPath: _MainActions.Array.data[3].ConnectedStates.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4436607989046450415, guid: 0e8f736d2dd9706438972762531b3f8f,
         type: 3}
