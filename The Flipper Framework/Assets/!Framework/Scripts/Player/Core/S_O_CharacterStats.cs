@@ -1617,12 +1617,12 @@ public class S_O_CharacterStatsEditor : S_CustomInspector_Base
 		//Start Tite and description
 		_OwnerScript.Title = EditorGUILayout.TextField(_OwnerScript.Title);
 
-		EditorGUILayout.TextArea("This objects contains a bunch of stats you can change to adjust how the character controls. \n" +
+		EditorGUILayout.HelpBox("This object contains a bunch of stats you can change to adjust how the character controls. \n" +
 		"Feel free to copy and paste at your leisure, or input your own. \n" +
-		"Every stat is organised in Strucs relevant to its purpose, and hovering over one will display a tooltip describing its function. \n" +
+		"Every stat is organised in Structs relevant to its purpose, and hovering over one will display a tooltip describing its function. \n" +
 		"The tooltip will also say if it's a core stat (meaning it has large effects on the controller and should be changed with care), or a surface stat " +
-		"(meaning it can easily be changed without much damage, and is ideal for making different character control different in the same playstyle). \n" +
-		"You can also return each struct to its default values if you're not happy with your changes.", EditorStyles.textArea);
+		"(meaning it can easily be changed without much damage, and is ideal for making different characters control different in the same playstyle). \n" +
+		"You can also return each struct to its default values if you're not happy with your changes.", MessageType.Info);
 
 		//Order of Drawing
 		EditorGUILayout.Space();
